@@ -31,10 +31,11 @@ const ProductNavigationSwiperSimple = ({ items, data, setCart, cart }) => {
                 {/* Header */}
                 {data?.title && (
                     <div className="flex flex-wrap gap-4 justify-between items-center pb-4">
+                        
                         <h2 className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title">
                             <TextWithHighlight text={data?.title} />
                         </h2>
-                    
+
                         {data?.link_catalog && (
                             <a
                                 href={data.link_catalog}
@@ -43,6 +44,7 @@ const ProductNavigationSwiperSimple = ({ items, data, setCart, cart }) => {
                                 Ver más productos
                             </a>
                         )}
+                        
                     </div>
                 )}
 

@@ -104,7 +104,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                
             </div >
 
-            <div className="w-full lg:w-3/5 flex flex-col justify-center items-center px-[5%] lg:px-[10%] mx-auto py-10 md:py-12 2xl:py-14">
+            <div className="w-full lg:w-3/5 flex flex-col justify-center items-center px-[5%] lg:px-[10%] mx-auto pt-10 md:pt-12 2xl:pt-14">
                 <div className='flex flex-col gap-6'>
                     <h3 className="text-center text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-medium tracking-normal customtext-neutral-dark leading-normal font-title">
                         {product?.name}
