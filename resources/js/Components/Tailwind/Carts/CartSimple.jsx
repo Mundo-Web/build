@@ -5,8 +5,17 @@ import CartItemRow from "../Components/CartItemRow";
 const CartSimple = ({ data, cart, setCart }) => {
 
   const totalPrice = cart.reduce((acc, item) => {
-    const finalPrice = item.discount > 0 ? Math.min(item.price, item.discount) : item.price;
-    return acc + (finalPrice * item.quantity); // Sumar el precio total por cantidad
+    let finalPrice;
+    
+    if (item.type === 'combo') {
+      // Para combos, usar directamente el precio del combo
+      finalPrice = item.discount > 0 ? Math.min(item.price, item.discount) : item.price;
+    } else {
+      // Para items individuales, aplicar descuentos si existen
+      finalPrice = item.discount > 0 ? Math.min(item.price, item.discount) : item.price;
+    }
+    
+    return acc + (finalPrice * item.quantity);
   }, 0);
 
   const subTotal = (totalPrice * 100) / 118

@@ -1383,4 +1383,56 @@ class ItemController extends BasicController
             return response($response->toArray(), $response->status);
         }
     }
+
+    /**
+     * Get combos that contain a specific item
+     */
+    public function getItemCombos(Request $request, $itemId)
+    {
+        $response = new Response();
+        
+        try {
+            $combos = Combo::whereHas('items', function($query) use ($itemId) {
+                $query->where('item_id', $itemId);
+            })
+            ->with(['items' => function($query) {
+                $query->select('items.id', 'items.name', 'items.image', 'items.final_price');
+            }])
+            ->where('visible', true)
+            ->get();
+
+            $formattedCombos = $combos->map(function ($combo) {
+                return [
+                    'id' => $combo->id,
+                    'name' => $combo->name,
+                    'price' => $combo->price,
+                    'discount' => $combo->discount ?? 0,
+                    'final_price' => $combo->final_price ?: $combo->price,
+                    'discount_percent' => $combo->discount_percent ?? 0,
+                    'image' => $combo->image ?: ($combo->items->first()->image ?? null),
+                    'type' => 'combo',
+                    'combo_items' => $combo->items->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'image' => $item->image,
+                            'price' => $item->final_price,
+                            'quantity' => $item->pivot->quantity ?? 1,
+                            'is_main_item' => $item->pivot->is_main_item ?? false
+                        ];
+                    }),
+                ];
+            });
+
+            $response->status = 200;
+            $response->message = 'Combos obtenidos correctamente';
+            $response->data = $formattedCombos;
+
+        } catch (\Throwable $th) {
+            $response->status = 400;
+            $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
+        } finally {
+            return response($response->toArray(), $response->status);
+        }
+    }
 }

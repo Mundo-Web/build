@@ -229,17 +229,42 @@ const System = ({
     }, [favorites]);
 
     useEffect(() => {
-        itemsRest.verifyStock(cart.map((x) => x.id)).then((items) => {
-            const newCart = items.map((item) => {
-                const found = cart.find((x) => x.id == item.id);
-                if (!found) return;
-                found.price = item.price;
-                found.discount = item.discount;
-                found.name = item.name;
-                return found;
-            });
-            setCart(newCart);
+        // Separar combos de productos normales
+        const regularItems = cart.filter(x => x.type !== 'combo');
+        const combos = cart.filter(x => x.type === 'combo');
+        
+        console.log('🔍 System.jsx verifyStock:', {
+            totalItems: cart.length,
+            regularItems: regularItems.length,
+            combos: combos.length
         });
+        
+        if (regularItems.length > 0) {
+            itemsRest.verifyStock(regularItems.map((x) => x.id)).then((items) => {
+                const verifiedRegularItems = items.map((item) => {
+                    const found = regularItems.find((x) => x.id == item.id);
+                    if (!found) return;
+                    found.price = item.price;
+                    found.discount = item.discount;
+                    found.name = item.name;
+                    return found;
+                }).filter(Boolean); // Filtrar undefined/null
+                
+                // Combinar productos verificados con combos sin modificar
+                const newCart = [...verifiedRegularItems, ...combos];
+                
+                console.log('✅ System.jsx cart updated:', {
+                    verifiedItems: verifiedRegularItems.length,
+                    preservedCombos: combos.length,
+                    totalInNewCart: newCart.length
+                });
+                
+                setCart(newCart);
+            });
+        } else if (combos.length > 0) {
+            // Si solo hay combos, mantenerlos sin verificación
+            console.log('🔒 System.jsx: Only combos in cart, preserving as-is');
+        }
     }, [null]);
 
     // Preload crítico para mobile

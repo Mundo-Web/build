@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Combo;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\SaleStatus;
@@ -146,19 +147,62 @@ class PaymentController extends Controller
             foreach ($request->cart as $item) {
                 $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
                 $itemName = is_array($item) ? $item['name'] ?? null : $item->name ?? null;
-                $itemPrice = is_array($item) ? $item['final_price'] ?? null : $item->final_price ?? null;
+                $itemPrice = is_array($item) ? $item['final_price'] ?? $item['price'] ?? null : $item->final_price ?? $item->price ?? null;
                 $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
                 $itemImage = is_array($item) ? $item['image'] ?? null : $item->image ?? null;
-                SaleDetail::create([
-                    'sale_id' => $sale->id,
-                    'item_id' => $itemId,
-                    'name' => $itemName,
-                    'price' => $itemPrice,
-                    'quantity' => $itemQuantity,
-                    'image' => $itemImage,
-                ]);
+                $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
+                
+                if ($itemType === 'combo') {
+                    // Es un combo
+                    $comboJpa = \App\Models\Combo::with('items')->find($itemId);
+                    if ($comboJpa) {
+                        // Usar el precio final del combo (con descuento si aplica) o el precio base
+                        $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0 
+                            ? $comboJpa->final_price 
+                            : $comboJpa->price;
+                            
+                        SaleDetail::create([
+                            'sale_id' => $sale->id,
+                            'item_id' => null, // NULL para combos
+                            'combo_id' => $comboJpa->id,
+                            'type' => 'combo',
+                            'name' => $comboJpa->name,
+                            'price' => $comboPriceToUse,
+                            'quantity' => $itemQuantity,
+                            'image' => $comboJpa->image,
+                            'combo_data' => [
+                                'items' => $comboJpa->items->map(function($comboItem) {
+                                    return [
+                                        'id' => $comboItem->id,
+                                        'name' => $comboItem->name,
+                                        'quantity' => $comboItem->pivot->quantity,
+                                        'is_main_item' => $comboItem->pivot->is_main_item
+                                    ];
+                                })->toArray()
+                            ]
+                        ]);
+                        
+                        // Actualizar stock de los items del combo
+                        foreach ($comboJpa->items as $comboItem) {
+                            $stockReduction = $comboItem->pivot->quantity * $itemQuantity;
+                            Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+                        }
+                    }
+                } else {
+                    // Es un item individual
+                    SaleDetail::create([
+                        'sale_id' => $sale->id,
+                        'item_id' => $itemId,
+                        'combo_id' => null,
+                        'type' => 'item',
+                        'name' => $itemName,
+                        'price' => $itemPrice,
+                        'quantity' => $itemQuantity,
+                        'image' => $itemImage,
+                    ]);
 
-                Item::where('id', $itemId)->decrement('stock', $itemQuantity);
+                    Item::where('id', $itemId)->decrement('stock', $itemQuantity);
+                }
             }
 
             Log::info('PaymentController - Detalles de venta procesados exitosamente');

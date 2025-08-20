@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import ItemsRest from "../../../Actions/ItemsRest";
+import { CombosCartRest } from "../../../Actions/CombosCartRest";
 import Swal from "sweetalert2";
 import { Notify } from "sode-extend-react";
 import ProductInfinite from "../Products/ProductInfinite";
@@ -38,10 +39,10 @@ import HtmlContent from "../../../Utils/HtmlContent";
 
 
 
-
 const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     console.log(item);
     const itemsRest = new ItemsRest();
+    const combosRest = new CombosCartRest();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState({
         url: item?.image,
@@ -185,7 +186,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
     const onAddClicked = (product) => {
         const newCart = structuredClone(cart);
-        const index = newCart.findIndex((x) => x.id == product.id);
+        const index = newCart.findIndex((x) => x.id == product?.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
@@ -195,7 +196,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
         /*   Swal.fire({
                title: "Producto agregado",
-               text: `Se agregó ${product.name} al carrito`,
+               text: `Se agregó ${product?.name} al carrito`,
                icon: "success",
                timer: 1500,
            });*/
@@ -204,6 +205,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     };
 
     const [associatedItems, setAssociatedItems] = useState([]);
+    const [availableCombos, setAvailableCombos] = useState([]);
     const [relationsItems, setRelationsItems] = useState([]);
     const inCart = cart?.find((x) => x.id == item?.id);
 
@@ -211,6 +213,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
         if (item?.id) {
             productosRelacionados(item);
             obtenerCombo(item);
+            loadAvailableCombos(item);
             handleViewUpdate(item);
         }
     }, [item]); // Agregar `item` como dependencia
@@ -257,6 +260,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             }
         } catch (error) {
             return;
+        }
+    };
+
+    const loadAvailableCombos = async (item) => {
+        try {
+            // Buscar combos que contengan este item
+            const response = await combosRest.getItemCombos(item.id);
+            
+            if (response && response.data) {
+                setAvailableCombos(response.data);
+            }
+        } catch (error) {
+            console.error('Error loading combos:', error);
+            setAvailableCombos([]);
         }
     };
 
@@ -309,8 +326,49 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             // Mostrar un mensaje de error al usuario si es necesario
         }
     };
+    const addComboToCart = (combo) => {
+        const newCart = structuredClone(cart);
+        
+        // Verificar si el combo ya está en el carrito
+        const existingComboIndex = newCart.findIndex(
+            (x) => x.id === combo.id && x.type === 'combo'
+        );
+        
+        if (existingComboIndex === -1) {
+            // Agregar nuevo combo al carrito
+            newCart.push({
+                ...combo,
+                type: 'combo',
+                quantity: 1,
+                image:combo?.image,
+                final_price: combo?.final_price || combo?.price,
+                price: combo?.price,
+                discount: combo?.discount || 0,
+                discount_percent: combo?.discount_percent || 0
+            });
+        } else {
+            // Incrementar cantidad del combo existente
+            newCart[existingComboIndex].quantity++;
+        }
+         setCart(newCart);
+
+        /*   Swal.fire({
+               title: "Producto agregado",
+               text: `Se agregó ${product?.name} al carrito`,
+               icon: "success",
+               timer: 1500,
+           });*/
+        setModalOpen(!modalOpen);
+        setTimeout(() => setModalOpen(false), 3000);
+    };
+
     const total = associatedItems.reduce(
-        (sum, product) => sum + parseFloat(product.final_price),
+        (sum, product) => sum + parseFloat(product?.final_price),
+        0
+    );
+    
+    const comboTotal = availableCombos.reduce(
+        (sum, combo) => sum + parseFloat(combo?.price || 0),
         0
     );
     const [expandedSpecificationMain, setExpanded] = useState(false);
@@ -320,7 +378,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             const newCart = structuredClone(prevCart); // Clona el estado anterior
 
             [...associatedItems, item].forEach((product) => {
-                const index = newCart.findIndex((x) => x.id === product.id);
+                const index = newCart.findIndex((x) => x.id === product?.id);
                 if (index === -1) {
                     newCart.push({ ...product, quantity: quantity });
                 } else {
@@ -952,73 +1010,163 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     </h2>
                                 </div>
 
-                                <div className=" flex gap-4">
-                                    <div className="w-2/3 flex gap-2">
-                                        {associatedItems.map(
-                                            (product, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center gap-2"
-                                                >
-                                                    <img
-                                                        src={`/storage/images/item/${product.image}`}
-                                                        className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
-                                                        onError={(e) =>
-                                                        (e.target.src =
-                                                            "/api/cover/thumbnail/null")
-                                                        }
-                                                    />
-                                                    {index <
-                                                        associatedItems.length -
-                                                        1 && (
-                                                            <span className="text-2xl font-bold">
-                                                                <Plus />
-                                                            </span>
-                                                        )}
+                                {/* Mostrar combos disponibles */}
+                                {availableCombos.length > 0 && (
+                                    <div className="mb-6">
+                                        <h3 className="text-sm font-medium text-gray-700 mb-4">
+                                            Combos recomendados
+                                        </h3>
+                                        {availableCombos.map((combo, index) => (
+                                            <div key={`combo-${combo.id}`} className="border rounded-lg p-4 mb-4 bg-blue-50">
+                                                {/* Header del combo */}
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <div className="bg-blue-500 text-white rounded-full p-1">
+                                                        <ShoppingCart size={14} />
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-blue-600">COMBO: {combo.name}</span>
                                                 </div>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
+                                                
+                                                {/* Mostrar productos del combo */}
+                                                <div className="flex gap-4 mb-4">
+                                                    <div className="w-2/3 flex gap-2">
+                                                        {combo.combo_items?.map((comboItem, itemIndex) => (
+                                                            <div key={itemIndex} className="flex items-center gap-2">
+                                                                <img
+                                                                    src={`/storage/images/item/${comboItem.image}`}
+                                                                    className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
+                                                                    onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
+                                                                    alt={comboItem.name}
+                                                                />
+                                                                {itemIndex < combo.combo_items.length - 1 && (
+                                                                    <span className="text-lg font-bold text-blue-600">
+                                                                        <Plus size={16} />
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
 
-                                {associatedItems.map((product, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
-                                    >
-                                        <CheckSquare className="w-5 h-5 customtext-primary" />
-                                        <div className="flex-1 font-semibold">
-                                            <span className="text-[10px] customtext-neutral-dark block">
-                                                {product.brand.name}
-                                            </span>
-                                            <p className="text-sm customtext-neutral-light font-medium">
-                                                {product.name}
-                                            </p>
+                                                {/* Lista detallada de productos */}
+                                                {combo.combo_items?.map((comboItem, itemIndex) => (
+                                                    <div key={itemIndex} className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white">
+                                                        <CheckSquare className="w-4 h-4 text-blue-600" />
+                                                        <div className="flex-1 font-semibold">
+                                                            <p className="text-sm text-gray-700 font-medium">
+                                                                {comboItem.name}
+                                                            </p>
+                                                            <span className="text-xs text-gray-500">
+                                                                Cantidad: {comboItem.quantity || 1}
+                                                            </span>
+                                                        </div>
+                                                        <p className="font-bold text-gray-700 text-sm">
+                                                            S/ {parseFloat(comboItem.price).toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                ))}
+
+                                                {/* Total y botón */}
+                                                <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
+                                                    {combo.discount > 0 && (
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="text-xs text-blue-600 line-through">
+                                                                S/ {parseFloat(combo.price).toFixed(2)}
+                                                            </span>
+                                                            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
+                                                                -{combo.discount_percent}%
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    <span className="text-xs font-semibold text-blue-700">
+                                                        {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
+                                                    </span>
+                                                    <p className="font-bold mb-2 text-blue-800 text-lg">
+                                                        S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                    </p>
+                                                    <button
+                                                        onClick={() => addComboToCart(combo)}
+                                                        className="bg-blue-600 text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                    >
+                                                        Agregar combo completo
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Items asociados individuales */}
+                                {associatedItems.length > 0 && (
+                                    <>
+                                        <div className=" flex gap-4">
+                                            <div className="w-2/3 flex gap-2">
+                                                {associatedItems.map(
+                                                    (product, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className="flex items-center gap-2"
+                                                        >
+                                                            <img
+                                                                src={`/storage/images/item/${product?.image}`}
+                                                                className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
+                                                                onError={(e) =>
+                                                                (e.target.src =
+                                                                    "/api/cover/thumbnail/null")
+                                                                }
+                                                            />
+                                                            {index <
+                                                                associatedItems.length -
+                                                                1 && (
+                                                                    <span className="text-2xl font-bold">
+                                                                        <Plus />
+                                                                    </span>
+                                                                )}
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
-                                        <p className="font-bold customtext-neutral-dark">
-                                            S/{" "}
-                                            {parseFloat(
-                                                product.final_price
-                                            ).toFixed(2)}
-                                        </p>
-                                    </div>
-                                ))}
 
-                                <div className=" w-full flex flex-col justify-start items-start bg-gray-50 p-4 rounded-lg mt-4">
-                                    <span className="text-xs font-semibold customtext-neutral-light">
-                                        Total
-                                    </span>
+                                        {associatedItems.map((product, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
+                                            >
+                                                <CheckSquare className="w-5 h-5 customtext-primary" />
+                                                <div className="flex-1 font-semibold">
+                                                    <span className="text-[10px] customtext-neutral-dark block">
+                                                        {product?.brand?.name}
+                                                    </span>
+                                                    <p className="text-sm customtext-neutral-light font-medium">
+                                                        {product?.name}
+                                                    </p>
+                                                </div>
+                                                <p className="font-bold customtext-neutral-dark">
+                                                    S/{" "}
+                                                    {parseFloat(
+                                                        product?.final_price
+                                                    ).toFixed(2)}
+                                                </p>
+                                            </div>
+                                        ))}
 
-                                    <p className="font-bold mb-2 customtext-neutral-dark">
-                                        S/ {total.toFixed(2)}
-                                    </p>
-                                    <button
-                                        onClick={() => addAssociatedItems()}
-                                        className={`bg-primary text-xs font-semibold  w-max py-3 px-6 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || 'text-white'}`}
-                                    >
-                                        Agregar al carrito
-                                    </button>
-                                </div>
+                                        <div className=" w-full flex flex-col justify-start items-start bg-gray-50 p-4 rounded-lg mt-4">
+                                            <span className="text-xs font-semibold customtext-neutral-light">
+                                                Total
+                                            </span>
+
+                                            <p className="font-bold mb-2 customtext-neutral-dark">
+                                                S/ {total.toFixed(2)}
+                                            </p>
+                                            <button
+                                                onClick={() => addAssociatedItems()}
+                                                className={`bg-primary text-xs font-semibold  w-max py-3 px-6 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || 'text-white'}`}
+                                            >
+                                                Agregar al carrito
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             {/* Delivery Options - Mejoradas */}
                             <div className="border rounded-lg overflow-hidden flex justify-center">
@@ -1247,7 +1395,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             </div>
 
                             {/* Complementary Products */}
-                            {associatedItems && associatedItems.length > 0 && (
+                            {(associatedItems.length > 0 || availableCombos.length > 0) && (
                                 <div className="mt-8 ">
                                     <div className="flex items-center gap-2 mb-6">
                                         <ShoppingCart className="w-6 h-6 customtext-primary" />
@@ -1257,74 +1405,164 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                         </h2>
                                     </div>
 
-                                    <div className=" flex gap-4">
-                                        <div className="w-2/3 flex gap-2">
-                                            {associatedItems.map(
-                                                (product, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-center gap-2"
-                                                    >
-                                                        <img
-                                                            src={`/storage/images/item/${product.image}`}
-                                                            className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
-                                                            onError={(e) =>
-                                                            (e.target.src =
-                                                                "/api/cover/thumbnail/null")
-                                                            }
-                                                        />
-                                                        {index <
-                                                            associatedItems.length -
-                                                            1 && (
-                                                                <span className="text-2xl font-bold">
-                                                                    <Plus />
-                                                                </span>
-                                                            )}
+                                    {/* Mostrar combos disponibles */}
+                                    {availableCombos.length > 0 && (
+                                        <div className="mb-6">
+                                            <h3 className="text-sm font-medium text-gray-700 mb-4">
+                                                Combos recomendados
+                                            </h3>
+                                            {availableCombos.map((combo) => (
+                                                <div key={`combo-desktop-${combo.id}`} className="border rounded-lg p-6 mb-4 bg-blue-50">
+                                                    {/* Header del combo */}
+                                                    <div className="flex items-center gap-2 mb-4">
+                                                        <div className="bg-blue-500 text-white rounded-full p-1">
+                                                            <ShoppingCart size={16} />
+                                                        </div>
+                                                        <span className="text-base font-semibold text-blue-600">COMBO: {combo.name}</span>
                                                     </div>
-                                                )
-                                            )}
-                                        </div>
-                                        <div className=" w-1/3 flex flex-col justify-between items-end bg-gray-50 p-4 rounded-lg mt-4">
-                                            <span className="text-xs font-semibold customtext-neutral-light">
-                                                Total
-                                            </span>
+                                                    
+                                                    {/* Mostrar productos del combo en fila */}
+                                                    <div className="flex gap-4 mb-4">
+                                                        <div className="w-2/3 flex gap-2">
+                                                            {combo.combo_items?.map((comboItem, itemIndex) => (
+                                                                <div key={itemIndex} className="flex items-center gap-2">
+                                                                    <img
+                                                                        src={`/storage/images/item/${comboItem.image}`}
+                                                                        className="rounded-lg aspect-square w-24 h-24 object-cover bg-white"
+                                                                        onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
+                                                                        alt={comboItem.name}
+                                                                    />
+                                                                    {itemIndex < combo.combo_items.length - 1 && (
+                                                                        <span className="text-2xl font-bold text-blue-600">
+                                                                            <Plus />
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        
+                                                        {/* Sección de precio y botón */}
+                                                        <div className="w-1/3 flex flex-col justify-between items-end bg-blue-100 p-4 rounded-lg">
+                                                            {combo.discount > 0 && (
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="text-sm text-blue-600 line-through">
+                                                                        S/ {parseFloat(combo.price).toFixed(2)}
+                                                                    </span>
+                                                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
+                                                                        -{combo.discount_percent}%
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                            <span className="text-xs font-semibold text-blue-700">
+                                                                {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
+                                                            </span>
+                                                            <p className="font-bold mb-2 text-blue-800 text-xl">
+                                                                S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                            </p>
+                                                            <button
+                                                                onClick={() => addComboToCart(combo)}
+                                                                className="bg-blue-600 text-white text-sm font-semibold w-full py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                            >
+                                                                Agregar combo completo
+                                                            </button>
+                                                        </div>
+                                                    </div>
 
-                                            <p className="font-bold mb-2 customtext-neutral-dark">
-                                                S/ {total.toFixed(2)}
-                                            </p>
-                                            <button
-                                                onClick={() =>
-                                                    addAssociatedItems()
-                                                }
-                                                className={`bg-primary text-xs font-semibold w-full py-3 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || 'text-white'}`}
-                                            >
-                                                Agregar al carrito
-                                            </button>
+                                                    {/* Lista detallada de productos */}
+                                                    {combo.combo_items?.map((comboItem, itemIndex) => (
+                                                        <div key={itemIndex} className="flex mt-2 gap-4 p-4 border rounded-lg items-center bg-white">
+                                                            <CheckSquare className="w-5 h-5 text-blue-600" />
+                                                            <div className="flex-1 font-semibold">
+                                                                <p className="text-sm text-gray-700 font-medium">
+                                                                    {comboItem.name}
+                                                                </p>
+                                                                <span className="text-xs text-gray-500">
+                                                                    Cantidad: {comboItem.quantity || 1}
+                                                                </span>
+                                                            </div>
+                                                            <p className="font-bold text-gray-700">
+                                                                S/ {parseFloat(comboItem.price).toFixed(2)}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
+                                    )}
 
-                                    {associatedItems.map((product, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
-                                        >
-                                            <CheckSquare className="w-5 h-5 customtext-primary" />
-                                            <div className="flex-1 font-semibold">
-                                                <span className="text-[10px] customtext-neutral-dark block">
-                                                    {product.brand.name}
-                                                </span>
-                                                <p className="text-sm customtext-neutral-light font-medium">
-                                                    {product.name}
-                                                </p>
+                                    {/* Items asociados individuales */}
+                                    {associatedItems.length > 0 && (
+                                        <>
+                                            <div className=" flex gap-4">
+                                                <div className="w-2/3 flex gap-2">
+                                                    {associatedItems.map(
+                                                        (product, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex items-center gap-2"
+                                                            >
+                                                                <img
+                                                                    src={`/storage/images/item/${product?.image}`}
+                                                                    className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
+                                                                    onError={(e) =>
+                                                                    (e.target.src =
+                                                                        "/api/cover/thumbnail/null")
+                                                                    }
+                                                                />
+                                                                {index <
+                                                                    associatedItems.length -
+                                                                    1 && (
+                                                                        <span className="text-2xl font-bold">
+                                                                            <Plus />
+                                                                        </span>
+                                                                    )}
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                                <div className=" w-1/3 flex flex-col justify-between items-end bg-gray-50 p-4 rounded-lg mt-4">
+                                                    <span className="text-xs font-semibold customtext-neutral-light">
+                                                        Total
+                                                    </span>
+
+                                                    <p className="font-bold mb-2 customtext-neutral-dark">
+                                                        S/ {total.toFixed(2)}
+                                                    </p>
+                                                    <button
+                                                        onClick={() =>
+                                                            addAssociatedItems()
+                                                        }
+                                                        className={`bg-primary text-xs font-semibold w-full py-3 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || 'text-white'}`}
+                                                    >
+                                                        Agregar al carrito
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <p className="font-bold customtext-neutral-dark">
-                                                S/{" "}
-                                                {parseFloat(
-                                                    product.final_price
-                                                ).toFixed(2)}
-                                            </p>
-                                        </div>
-                                    ))}
+
+                                            {associatedItems.map((product, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
+                                                >
+                                                    <CheckSquare className="w-5 h-5 customtext-primary" />
+                                                    <div className="flex-1 font-semibold">
+                                                        <span className="text-[10px] customtext-neutral-dark block">
+                                                            {product?.brand?.name}
+                                                        </span>
+                                                        <p className="text-sm customtext-neutral-light font-medium">
+                                                            {product?.name}
+                                                        </p>
+                                                    </div>
+                                                    <p className="font-bold customtext-neutral-dark">
+                                                        S/{" "}
+                                                        {parseFloat(
+                                                            product?.final_price
+                                                        ).toFixed(2)}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>

@@ -17,7 +17,10 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
     
     // Calcular el precio total incluyendo IGV
     const totalPrice = cart.reduce((acc, item) => {
-        const finalPrice = item.final_price;
+        // Use the correct price based on item type
+        const finalPrice = item.type === 'combo' 
+            ? (item.final_price || item.price) 
+            : item.final_price;
         return acc + finalPrice * item.quantity; // Sumar el precio total por cantidad
     }, 0);
 

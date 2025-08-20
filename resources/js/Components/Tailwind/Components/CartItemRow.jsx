@@ -1,18 +1,29 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Number2Currency from "../../../Utils/Number2Currency";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, Package } from "lucide-react";
 import Tippy from "@tippyjs/react";
 
 const CartItemRow = ({ setCart, index, ...item }) => {
-    const onDelete = () => setCart(old => old.filter(x => x.id !== item.id));
+    const isCombo = item.type === 'combo';
+    
+    const onDelete = () => setCart(old => old.filter(x => 
+        x.id !== item.id || (x.type !== item.type)
+    ));
     
     const updateQuantity = (newQuantity) => {
         if(newQuantity < 1) return onDelete();
         setCart(old => old.map(x => 
-            x.id === item.id ? { ...x, quantity: newQuantity } : x
+            (x.id === item.id && x.type === item.type) 
+                ? { ...x, quantity: newQuantity } 
+                : x
         ));
     };
+
+    // Determinar precio final según si es combo o item
+    const finalPrice = isCombo 
+        ? (item.final_price || item.price) // Para combos usar final_price o price
+        : (item.discount > 0 ? Math.min(item.price, item.discount) : item.price);
 
     return (
         <motion.div
@@ -22,20 +33,35 @@ const CartItemRow = ({ setCart, index, ...item }) => {
             transition={{ delay: index * 0.05 }}
             className="flex gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 relative">
                 <img
-                    src={`/storage/images/item/${item.image}`}
+                    src={isCombo 
+                        ? (item.image ? `/storage/images/combo/${item.image}` : `/storage/images/item/${item.image}`)
+                        : `/storage/images/item/${item.image}`
+                    }
                     onError={(e) => e.target.src = "/assets/img/noimage/no_img.jpg"}
                     className="w-20 h-20 rounded-lg object-cover border border-gray-100"
                     alt={item.name}
                 />
+                {isCombo && (
+                    <div className="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full p-1">
+                        <Package size={12} />
+                    </div>
+                )}
             </div>
             
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-900 truncate">
-                        {item.name}
-                    </h3>
+                    <div>
+                        <h3 className="font-semibold text-gray-900 truncate">
+                            {item.name}
+                        </h3>
+                        {isCombo && (
+                            <span className="text-xs text-blue-600 font-medium">
+                                Combo ({item.combo_items?.length || 0} productos)
+                            </span>
+                        )}
+                    </div>
                     <Tippy content="Eliminar">
                         <button
                             onClick={onDelete}
@@ -46,7 +72,7 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                     </Tippy>
                 </div>
                 
-                {item?.discount > 0 && (
+                {!isCombo && item?.discount > 0 && (
                     <div className="text-sm text-gray-500 mb-2">
                         <span className="line-through mr-2">
                             {Number2Currency(item.price)}
@@ -54,6 +80,23 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                         <span className="text-red-500">
                             -{Number(item.discount_percent).toFixed(0)}%
                         </span>
+                    </div>
+                )}
+
+                {isCombo && item?.discount > 0 && (
+                    <div className="text-sm text-gray-500 mb-2">
+                        <span className="line-through mr-2">
+                            S/ {Number2Currency(item.price)}
+                        </span>
+                        <span className="text-red-500">
+                            -{Number(item.discount_percent).toFixed(0)}%
+                        </span>
+                    </div>
+                )}
+
+                {isCombo && item.combo_items && (
+                    <div className="text-xs text-gray-500 mb-2">
+                        Incluye: {item.combo_items.map(comboItem => comboItem.name).join(', ')}
                     </div>
                 )}
                 
@@ -77,7 +120,7 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                     </div>
                     
                     <span className="font-semibold text-gray-900">
-                        S/. {Number2Currency(item.final_price * item.quantity)}
+                        S/. {Number2Currency(finalPrice * item.quantity)}
                     </span>
                 </div>
             </div>

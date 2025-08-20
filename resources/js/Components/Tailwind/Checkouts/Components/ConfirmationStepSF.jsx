@@ -71,7 +71,15 @@ export default function ConfirmationStepSF({
     }
 
     const totalPrice = order?.items?.reduce((acc, item) => {
-        const itemPrice = item.price || 0;
+        // Handle combo pricing properly
+        let itemPrice = 0;
+        if (item.type === 'combo') {
+            // For combos, use the combo's own price, not sum of individual items
+            itemPrice = item.final_price || item.price || 0;
+        } else {
+            // For regular items, use their price
+            itemPrice = item.price || 0;
+        }
         const quantity = item.quantity || 0;
         return acc + (itemPrice * quantity);
     }, 0) || 0;
@@ -86,6 +94,24 @@ export default function ConfirmationStepSF({
     // Calcular igual que en ConfirmationStep.jsx
     const totalBeforeDiscount = parseFloat(subTotal) + parseFloat(igv) + deliveryCost;
     const totalFinal = totalBeforeDiscount - couponDiscountAmount - automaticDiscount;
+    
+    console.log('ConfirmationStepSF - Debug order data:', {
+        totalPrice,
+        subTotal,
+        igv,
+        deliveryCost,
+        couponDiscountAmount,
+        automaticDiscount,
+        totalFinal,
+        orderItems: order.items?.map(item => ({
+            name: item.name,
+            type: item.type,
+            price: item.price,
+            final_price: item.final_price,
+            quantity: item.quantity
+        }))
+    });
+    
     console.log(order.delivery, "order.coupon_discount");
     return (
         <div className="mx-auto">

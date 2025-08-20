@@ -20,7 +20,52 @@ export default function ConfirmationStep({
     automaticDiscountTotal = 0,
     generals
 }) {
-    // Use the totalFinal passed as prop instead of calculating locally
+    console.log('ConfirmationStep - Props received:', {
+        cart,
+        cartLength: cart?.length,
+        subTotal,
+        igv,
+        totalFinal,
+        delivery,
+        couponDiscount,
+        automaticDiscountTotal
+    });
+
+    // Recalculate subtotal if it's 0 or incorrect
+    const recalculatedTotal = cart.reduce((acc, item) => {
+        const getItemPrice = () => {
+            if (item.type === 'combo') {
+                return item.final_price || item.price;
+            } else {
+                return item.final_price;
+            }
+        };
+        return acc + (getItemPrice() * item.quantity);
+    }, 0);
+    
+    // Use recalculated values if the passed ones are 0 or incorrect
+    const actualSubTotal = subTotal > 0 ? subTotal : parseFloat((recalculatedTotal / 1.18).toFixed(2));
+    const actualIgv = subTotal > 0 ? igv : parseFloat((recalculatedTotal - actualSubTotal).toFixed(2));
+    
+    // Always recalculate totalFinal to ensure it's correct
+    const actualTotalFinal = actualSubTotal + actualIgv + (delivery || 0) - (couponDiscount || 0) - (automaticDiscountTotal || 0);
+    
+    console.log('ConfirmationStep - Debug totals:', {
+        recalculatedTotal,
+        passedSubTotal: subTotal,
+        passedIgv: igv,
+        actualSubTotal,
+        actualIgv,
+        passedTotalFinal: totalFinal,
+        actualTotalFinal,
+        cart: cart.map(item => ({
+            name: item.name,
+            type: item.type,
+            price: item.price,
+            final_price: item.final_price,
+            quantity: item.quantity
+        }))
+    });
 
     // Execute conversion scripts when component mounts
     useEffect(() => {
@@ -88,44 +133,96 @@ export default function ConfirmationStep({
 
                     <div className="space-y-6 bg-[#F7F9FB] p-6 md:p-8 rounded-xl shadow-inner">
                         <div className="space-y-6 border-b-2 pb-6">
-                            {cart.map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ x: -20, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: index * 0.2 }}
-                                    className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300"
-                                >
-                                    <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-                                        <div className="bg-gray-50 p-3 rounded-xl">
-                                            <img
-                                                src={`/storage/images/item/${item?.image}`}
-                                                alt={item?.name}
-                                                className="w-24 h-24 object-cover rounded-lg"
-                                                onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
-                                                }
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                        <div className="text-center sm:text-left flex-1">
-                                            <div className="flex flex-col sm:flex-row sm:justify-between mb-3">
-                                                <h3 className="font-semibold text-xl lg:w-8/12 line-clamp-3">{item?.name}</h3>
-                                                <div className="mt-2 sm:mt-0 text-center lg:text-right lg:w-4/12">
-                                                    <div className="font-bold text-lg customtext-primary">{CurrencySymbol()}{Number2Currency(item?.final_price * item?.quantity)}</div>
+                            {cart.map((item, index) => {
+                                // Función para obtener el precio correcto según el tipo
+                                const getItemPrice = () => {
+                                    if (item.type === 'combo') {
+                                        return item.final_price || item.price;
+                                    } else {
+                                        return item.final_price;
+                                    }
+                                };
 
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ x: -20, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        transition={{ delay: index * 0.2 }}
+                                        className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300"
+                                    >
+                                        <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+                                            <div className="bg-gray-50 p-3 rounded-xl">
+                                                <img
+                                                    src={`/storage/images/item/${item?.image}`}
+                                                    alt={item?.name}
+                                                    className="w-24 h-24 object-cover rounded-lg"
+                                                    onError={(e) =>
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
+                                                    }
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                            <div className="text-center sm:text-left flex-1">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between mb-3">
+                                                    <div className="lg:w-8/12">
+                                                        <h3 className="font-semibold text-xl line-clamp-3 mb-2">{item?.name}</h3>
+                                                        
+                                                        {/* Mostrar badge e items del combo */}
+                                                        {item.type === 'combo' && (
+                                                            <div className="mt-2">
+                                                                <div className="mb-2">
+                                                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                                                        COMBO
+                                                                    </span>
+                                                                </div>
+                                                                <div className="text-sm text-gray-600">
+                                                                    <span className="font-medium">Contiene:</span>
+                                                                    <div className="mt-1">
+                                                                        {item.combo_items && item.combo_items.length > 0 ? (
+                                                                            item.combo_items.map((comboItem, idx) => (
+                                                                                <div key={idx} className="text-xs text-gray-500">
+                                                                                    • {comboItem.quantity || 1}x {comboItem.name}
+                                                                                </div>
+                                                                            ))
+                                                                        ) : item.items && item.items.length > 0 ? (
+                                                                            item.items.map((comboItem, idx) => (
+                                                                                <div key={idx} className="text-xs text-gray-500">
+                                                                                    • {comboItem.quantity || 1}x {comboItem.name}
+                                                                                </div>
+                                                                            ))
+                                                                        ) : (
+                                                                            <span className="text-xs text-gray-400">Información de combo no disponible</span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="mt-2 sm:mt-0 text-center lg:text-right lg:w-4/12">
+                                                        <div className="font-bold text-lg customtext-primary">
+                                                            {CurrencySymbol()}{Number2Currency(getItemPrice() * item?.quantity)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                    {item?.brand?.name&&(
+                                                    <p className="text-sm customtext-neutral-dark">
+                                                        Marca: <span className="customtext-neutral-dark font-medium">{item?.brand?.name || 'N/A'}</span>
+                                                    </p>)}
+                                                    <p className="text-sm customtext-neutral-dark">
+                                                        Cantidad: <span className="customtext-neutral-dark font-medium">{item?.quantity}</span>
+                                                    </p>
+                                                   {item?.sku && ( <p className="text-sm customtext-neutral-dark">
+                                                        SKU: <span className="customtext-neutral-dark font-medium">{item?.sku || 'N/A'}</span>
+                                                    </p>)}
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                                <p className="text-sm customtext-neutral-dark">Marca: <span className="customtext-neutral-dark font-medium">{item?.brand?.name}</span></p>
-                                                <p className="text-sm customtext-neutral-dark">Cantidad: <span className="customtext-neutral-dark font-medium">{item?.quantity}</span></p>
-                                                <p className="text-sm customtext-neutral-dark">SKU: <span className="customtext-neutral-dark font-medium">{item?.sku}</span></p>
-                                            </div>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                    </motion.div>
+                                );
+                            })}
                         </div>
 
                         <motion.div
@@ -135,8 +232,8 @@ export default function ConfirmationStep({
                             className="space-y-4 mt-6"
                         >
                             {[
-                                { label: "Subtotal", value: subTotal, show: true },
-                                { label: "IGV", value: igv, show: Number(generals?.find(x => x.correlative === 'igv_checkout')?.description) > 0 },
+                                { label: "Subtotal", value: actualSubTotal, show: true },
+                                { label: "IGV", value: actualIgv, show: Number(generals?.find(x => x.correlative === 'igv_checkout')?.description) > 0 },
                                 { label: "Seguro", value: seguroImportacionTotal, show: Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 },
                                 { label: "Derecho arancelario", value: derechoArancelarioTotal, show: Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 },
                                 { label: "Envío", value: delivery, show: true }
@@ -189,7 +286,7 @@ export default function ConfirmationStep({
                             <div className="py-4 border-y-2 mt-6">
                                 <div className="flex justify-between font-bold text-xl md:text-2xl items-center">
                                     <span>Total</span>
-                                    <span>{CurrencySymbol()}{Number2Currency(totalFinal)}</span>
+                                    <span>{CurrencySymbol()}{Number2Currency(actualTotalFinal)}</span>
                                 </div>
                             </div>
                         </motion.div>

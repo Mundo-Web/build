@@ -7,6 +7,7 @@ use App\Jobs\SendSaleEmail;
 use App\Jobs\SendSaleWhatsApp;
 use App\Models\Sale;
 use App\Models\Bundle;
+use App\Models\Combo;
 use App\Models\Coupon;
 use App\Models\DeliveryPrice;
 use App\Models\Item;
@@ -63,11 +64,30 @@ class SaleController extends BasicController
     static function create(array $sale, array $details): array
     {
         try {
-            $itemsJpa = Item::whereIn('id', array_map(fn($item) => $item['id'], $details))->get();
+            // Separar items y combos
+            $itemDetails = array_filter($details, fn($item) => ($item['type'] ?? 'item') === 'item');
+            $comboDetails = array_filter($details, fn($item) => ($item['type'] ?? 'item') === 'combo');
+
+            $itemsJpa = [];
+            $combosJpa = [];
+
+            // Procesar items individuales
+            if (!empty($itemDetails)) {
+                $itemIds = array_map(fn($item) => $item['id'], $itemDetails);
+                $itemsJpa = Item::whereIn('id', $itemIds)->get();
+            }
+
+            // Procesar combos
+            if (!empty($comboDetails)) {
+                $comboIds = array_map(fn($combo) => $combo['id'], $comboDetails);
+                $combosJpa = Combo::with('items')->whereIn('id', $comboIds)->get();
+            }
 
             $itemsJpa2Proccess = [];
+            $combosJpa2Process = [];
 
-            foreach ($details as $detail) {
+            // Procesar items individuales
+            foreach ($itemDetails as $detail) {
                 $itemJpa = clone $itemsJpa->firstWhere('id', $detail['id']);
                 $itemJpa->final_price = $itemJpa->discount != 0
                     ? $itemJpa->discount
@@ -76,6 +96,20 @@ class SaleController extends BasicController
                 $itemJpa->colors = $detail['colors'];
                 $itemJpa->user_formula_id = $detail['formula_id'];
                 $itemsJpa2Proccess[] = $itemJpa;
+            }
+
+            // Procesar combos
+            foreach ($comboDetails as $detail) {
+                $comboJpa = clone $combosJpa->firstWhere('id', $detail['id']);
+                $comboJpa->quantity = $detail['quantity'];
+                $comboJpa->user_formula_id = $detail['formula_id'] ?? null;
+                
+                // Asegurar que usa el precio correcto del combo
+                $comboJpa->price_to_use = $comboJpa->final_price && $comboJpa->final_price > 0 
+                    ? $comboJpa->final_price 
+                    : $comboJpa->price;
+                    
+                $combosJpa2Process[] = $comboJpa;
             }
 
             $saleJpa = new Sale();
@@ -138,13 +172,21 @@ class SaleController extends BasicController
                 $userJpa->save();
             }
 
-            // Sale Header
-            $totalPrice = array_sum(array_map(
+            // Sale Header - Calcular total incluyendo items y combos
+            $itemsTotal = array_sum(array_map(
                 fn($item) => $item['final_price'] * $item['quantity'],
                 $itemsJpa2Proccess
             ));
 
-            $totalItems = array_sum(array_map(fn($item) => $item['quantity'], $itemsJpa2Proccess));
+            $combosTotal = array_sum(array_map(
+                fn($combo) => $combo->price_to_use * $combo->quantity,
+                $combosJpa2Process
+            ));
+
+            $totalPrice = $itemsTotal + $combosTotal;
+
+            $totalItems = array_sum(array_map(fn($item) => $item['quantity'], $itemsJpa2Proccess)) +
+                         array_sum(array_map(fn($combo) => $combo['quantity'], $combosJpa2Process));
 
             $bundleJpa = Bundle::where('status', true)
                 ->whereRaw("
@@ -221,20 +263,58 @@ class SaleController extends BasicController
             $saleJpa->save();
 
             $detailsJpa = array();
+            
+            // Crear detalles para items individuales
             foreach ($itemsJpa2Proccess as $itemJpa) {
                 $detailJpa = new SaleDetail();
                 $detailJpa->sale_id = $saleJpa->id;
                 $detailJpa->item_id = $itemJpa->id;
+                $detailJpa->type = 'item';
                 $detailJpa->name = $itemJpa->name;
                 $detailJpa->price = $itemJpa->final_price;
                 $detailJpa->quantity = $itemJpa->quantity;
                 $detailJpa->colors = $itemJpa->colors;
                 $detailJpa->user_formula_id = $itemJpa->user_formula_id;
-                $detailJpa->image = $itemJpa->image ?? null; // Agregar imagen
+                $detailJpa->image = $itemJpa->image ?? null;
                 $detailJpa->save();
 
                 // Actualizar stock como PaymentController
                 Item::where('id', $itemJpa->id)->decrement('stock', $itemJpa->quantity);
+
+                $detailsJpa[] = $detailJpa->toArray();
+            }
+
+            // Crear detalles para combos
+            foreach ($combosJpa2Process as $comboJpa) {
+                $detailJpa = new SaleDetail();
+                $detailJpa->sale_id = $saleJpa->id;
+                $detailJpa->combo_id = $comboJpa->id;
+                $detailJpa->type = 'combo';
+                $detailJpa->name = $comboJpa->name;
+                $detailJpa->price = $comboJpa->price_to_use; // Usar el precio correcto
+                $detailJpa->quantity = $comboJpa->quantity;
+                $detailJpa->user_formula_id = $comboJpa->user_formula_id;
+                $detailJpa->image = $comboJpa->image ?? null;
+                
+                // Guardar datos del combo para referencia
+                $detailJpa->combo_data = [
+                    'items' => $comboJpa->items->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'quantity' => $item->pivot->quantity,
+                            'is_main_item' => $item->pivot->is_main_item
+                        ];
+                    })->toArray()
+                ];
+                
+                $detailJpa->save();
+
+                // Actualizar stock de items del combo
+                foreach ($comboJpa->items as $comboItem) {
+                    $stockReduction = $comboItem->pivot->quantity * $comboJpa->quantity;
+                    Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+                }
 
                 $detailsJpa[] = $detailJpa->toArray();
             }
@@ -262,9 +342,18 @@ class SaleController extends BasicController
         $montocupon = 0;
 
         foreach ($details as $item) {
-            $itemJpa = Item::find($item['id']);
-            if ($itemJpa) {
-                $tempTotal += $itemJpa->final_price * $item['quantity'];
+            if (($item['type'] ?? 'item') === 'combo') {
+                // Es un combo
+                $comboJpa = Combo::find($item['id']);
+                if ($comboJpa) {
+                    $tempTotal += $comboJpa->price * $item['quantity'];
+                }
+            } else {
+                // Es un item individual
+                $itemJpa = Item::find($item['id']);
+                if ($itemJpa) {
+                    $tempTotal += $itemJpa->final_price * $item['quantity'];
+                }
             }
         }
 
@@ -378,23 +467,67 @@ class SaleController extends BasicController
         $details = JSON::parse($request->details);
         
         foreach ($details as $item) {
-            $itemJpa = Item::find($item['id']);
-            
-            // Crear detalle de venta con todos los campos como PaymentController
-            SaleDetail::create([
-                'sale_id' => $jpa->id,
-                'item_id' => $itemJpa->id,
-                'name' => $itemJpa->name,
-                'price' => $itemJpa->final_price,
-                'quantity' => $item['quantity'],
-                'colors' => $itemJpa->color,
-                'image' => $itemJpa->image,
-            ]);
-            
-            $totalPrice += $itemJpa->final_price * $item['quantity'];
-            
-            // Actualizar stock como lo hace PaymentController
-            Item::where('id', $itemJpa->id)->decrement('stock', $item['quantity']);
+            if (($item['type'] ?? 'item') === 'combo') {
+                // Es un combo
+                $comboJpa = Combo::find($item['id']);
+                if ($comboJpa) {
+                    // Usar el precio final del combo (con descuento si aplica) o el precio base
+                    $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0 
+                        ? $comboJpa->final_price 
+                        : $comboJpa->price;
+                        
+                    // Crear detalle de venta para el combo
+                    $saleDetail = SaleDetail::create([
+                        'sale_id' => $jpa->id,
+                        'item_id' => null, // NULL para combos
+                        'combo_id' => $comboJpa->id,
+                        'type' => 'combo',
+                        'name' => $comboJpa->name,
+                        'price' => $comboPriceToUse,
+                        'quantity' => $item['quantity'],
+                        'image' => $comboJpa->image,
+                        'combo_data' => [
+                            'items' => $comboJpa->items->map(function($comboItem) {
+                                return [
+                                    'id' => $comboItem->id,
+                                    'name' => $comboItem->name,
+                                    'quantity' => $comboItem->pivot->quantity,
+                                    'is_main_item' => $comboItem->pivot->is_main_item
+                                ];
+                            })->toArray()
+                        ]
+                    ]);
+                    
+                    $totalPrice += $comboPriceToUse * $item['quantity'];
+                    
+                    // Actualizar stock de los items del combo
+                    foreach ($comboJpa->items as $comboItem) {
+                        $stockReduction = $comboItem->pivot->quantity * $item['quantity'];
+                        Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+                    }
+                }
+            } else {
+                // Es un item individual
+                $itemJpa = Item::find($item['id']);
+                if ($itemJpa) {
+                    // Crear detalle de venta con todos los campos como PaymentController
+                    SaleDetail::create([
+                        'sale_id' => $jpa->id,
+                        'item_id' => $itemJpa->id,
+                        'type' => 'item',
+                        'name' => $itemJpa->name,
+                        'price' => $itemJpa->final_price,
+                        'quantity' => $item['quantity'],
+                        'colors' => $itemJpa->color,
+                        'image' => $itemJpa->image,
+                    ]);
+                    
+                    $totalPrice += $itemJpa->final_price * $item['quantity'];
+                    
+                    // Actualizar stock como lo hace PaymentController
+                    Item::where('id', $itemJpa->id)->decrement('stock', $item['quantity']);
+                }
+            }
         }
 
         // Aplicar descuentos de cupones

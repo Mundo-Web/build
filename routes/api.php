@@ -177,6 +177,11 @@ Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->w
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
 
+// Combos API para carrito
+Route::get('/combos-as-products', [App\Http\Controllers\Api\ComboApiController::class, 'index']);
+Route::get('/combos-as-products/{id}', [App\Http\Controllers\Api\ComboApiController::class, 'show']);
+Route::get('/items/{id}/combos', [ItemController::class, 'getItemCombos']);
+
 Route::post('/pago', [PaymentController::class, 'charge']);
 Route::get('/pago/{sale_id}', [PaymentController::class, 'getPaymentStatus']);
 

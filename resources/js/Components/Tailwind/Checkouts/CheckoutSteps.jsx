@@ -11,7 +11,44 @@ import useEcommerceTracking from "../../../Hooks/useEcommerceTracking";
 
 export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items, generals,data, categorias }) {
     const [currentStep, setCurrentStep] = useState(1);
-    const totalPrice = cart.reduce((acc, item) => acc + item.final_price * item.quantity, 0);
+    
+    // Debug: Monitorear cambios en el carrito
+    useEffect(() => {
+        const combosInCart = cart.filter(item => item.type === 'combo');
+        console.log('🔍 CheckoutSteps cart changed:', {
+            totalItems: cart.length,
+            combos: combosInCart.length,
+            currentStep,
+            cart: cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                type: item.type,
+                quantity: item.quantity,
+                final_price: item.final_price,
+                price: item.price
+            }))
+        });
+        
+        // Si hay combos pero el carrito se vació repentinamente, alertar
+        if (combosInCart.length === 0 && cart.length === 0) {
+            console.warn('🚨 ALERT: Cart is empty - this might indicate combos were removed');
+        }
+    }, [cart, currentStep]);
+    
+    // Función para calcular precio correcto según tipo de producto
+    const getItemPrice = (item) => {
+        if (item.type === 'combo') {
+            return item.final_price || item.price;
+        } else {
+            return item.final_price;
+        }
+    };
+    
+    const totalPrice = cart.reduce((acc, item) => {
+        const itemPrice = getItemPrice(item);
+        return acc + (itemPrice * item.quantity);
+    }, 0);
+    
     console.log(categorias, 'eeeeeeeeeeee');
     // Hook de tracking
     const { 

@@ -35,7 +35,9 @@ export default class DiscountRulesRest {
                         quantity: parseInt(item.quantity) || 1,
                         price: parseFloat(item.price || item.final_price || 0),
                         name: String(item.name || item.description || 'Producto sin nombre'),
-                        category_id: item.category_id ? String(item.category_id) : null // Keep as string for UUID
+                        category_id: item.category_id ? String(item.category_id) : null, // Keep as string for UUID
+                        type: item.type || 'item', // Preservar tipo para combos
+                        combo_id: item.type === 'combo' ? item.id : null // ID del combo si es combo
                     };
                     
                     // Debug: Log cada item procesado

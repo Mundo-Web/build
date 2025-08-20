@@ -977,7 +977,35 @@ const Sales = ({ statuses = [] }) => {
                                                             ) : null}
                                                         </td>
                                                         <td>
-                                                            {detail.name}{detail.colors ? ' - ' + detail.colors : ''}
+                                                            <div>
+                                                                <strong>{detail.name}</strong>{detail.colors ? ' - ' + detail.colors : ''}
+                                                                
+                                                                {/* Verificar si es combo por diferentes campos */}
+                                                                {(detail.type === 'combo' || detail.combo_id) && (
+                                                                    <div className="mt-1">
+                                                                        <small className="text-muted d-block">
+                                                                            <span className="badge bg-info me-1">COMBO</span>
+                                                                            Contiene:
+                                                                        </small>
+                                                                        
+                                                                        {/* Verificar diferentes estructuras de combo_data */}
+                                                                        {detail.combo_data && detail.combo_data.items && detail.combo_data.items.length > 0 ? (
+                                                                            <small className="text-muted">
+                                                                                {detail.combo_data.items.map((item, idx) => (
+                                                                                    <span key={idx}>
+                                                                                        {item.quantity || 1}x {item.name}
+                                                                                        {idx < detail.combo_data.items.length - 1 ? ', ' : ''}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </small>
+                                                                        ) : (
+                                                                            <small className="text-muted text-warning">
+                                                                                📋 Información de combo no disponible
+                                                                            </small>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                         <td align="right">
                                                             <span className="text-nowrap">

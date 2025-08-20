@@ -43,6 +43,15 @@ export default function CartStep({
     
     // Apply discount rules when cart changes
     useEffect(() => {
+        const combosInCart = cart.filter(item => item.type === 'combo');
+        
+        console.log('🔍 CartStep useEffect triggered:', {
+            cartLength: cart.length,
+            subTotal,
+            combosCount: combosInCart.length,
+            combos: combosInCart
+        });
+        
         if (cart.length > 0 && subTotal > 0) {
             applyDiscountRules();
         } else {
@@ -63,18 +72,23 @@ export default function CartStep({
         try {
             // Debug: Log información detallada del carrito antes de enviar
             const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const combosInCart = cart.filter(item => item.type === 'combo');
+            
             console.log('🛒 CartStep applying discounts:', {
                 cart,
                 subTotal,
                 totalWithoutDiscounts,
                 totalQuantity,
                 cartLength: cart.length,
+                combosInCart: combosInCart.length,
+                combos: combosInCart,
                 cartItems: cart.map(item => ({
                     id: item.id || item.item_id,
                     name: item.name,
                     quantity: item.quantity,
                     price: item.price || item.final_price,
-                    category_id: item.category_id
+                    category_id: item.category_id,
+                    type: item.type
                 }))
             });
             
@@ -110,6 +124,12 @@ export default function CartStep({
                 // Update parent component state
                 if (setAutomaticDiscounts) setAutomaticDiscounts(discounts);
                 if (setAutomaticDiscountTotal) setAutomaticDiscountTotal(discountAmount);
+                
+                // IMPORTANTE: NO modificar el carrito aquí
+                // El servidor puede devolver cart_items modificados, pero no los usamos
+                // para actualizar el carrito del usuario
+                console.log('🔒 Preserving original cart, not updating from server response');
+                
             } else {
                 console.error('❌ Discount application failed:', {
                     error: result.error,
