@@ -38,6 +38,7 @@ const Combos = ({ items }) => {
   const priceRef = useRef();
   const discountRef = useRef();
   const itemsRef = useRef();
+  const imageRef = useRef();
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -116,6 +117,8 @@ const Combos = ({ items }) => {
       nameRef.current.value = comboData.name || '';
       priceRef.current.value = comboData.price || 0;
       discountRef.current.value = comboData.discount || 0;
+      imageRef.current.value = null
+      imageRef.image.src = `/storage/images/combo/${comboData?.image ?? 'undefined'}`
 
       // Cargar los productos asociados
       const products = comboData.items || [];
@@ -159,7 +162,18 @@ const Combos = ({ items }) => {
       })),
 
     }
-    const result = await combosRest.save(request)
+
+    const formData = new FormData()
+    for (const key in request) {
+      formData.append(key, request[key])
+    }
+
+    const symbol = imageRef.current.files[0]
+    if (symbol) {
+      formData.append('image', symbol)
+    }
+
+    const result = await combosRest.save(formData)
     if (!result) return;
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -238,10 +252,18 @@ const Combos = ({ items }) => {
           }
         },
         {
+          dataField: 'image',
+          caption: 'Imagen',
+          width: '80px',
+          cellTemplate: (container, { data }) => {
+            ReactAppend(container, <img src={`/storage/images/combo/${data.image}`} style={{ width: '80px', height: '48px', objectFit: 'cover', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+          }
+        },
+        {
           dataField: 'final_price',
           caption: 'Precio',
           dataType: 'number',
-          width: '75px',
+          width: '100px',
           cellTemplate: (container, { data }) => {
 
             container.html(renderToString(<>
@@ -284,8 +306,12 @@ const Combos = ({ items }) => {
     <Modal modalRef={modalRef} title={isEditing ? 'Editar combo' : 'Agregar combo'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='combo-container'>
         <input ref={idRef} type='hidden' />
+
         <div className="col-md-6">
+
           <InputFormGroup eRef={nameRef} label='Nombre' required />
+          <InputFormGroup label="Precio" eRef={priceRef} type="number" readOnly />
+          <InputFormGroup eRef={discountRef} label='Descuento' type='number' step='0.01' onChange={handleDiscountChange} />
           <SelectAPIFormGroup
             id="items"
             eRef={itemsRef}
@@ -299,8 +325,8 @@ const Combos = ({ items }) => {
 
         </div>
         <div className="col-md-6">
-          <InputFormGroup label="Precio" eRef={priceRef} type="number" readOnly />
-          <InputFormGroup eRef={discountRef} label='Descuento' type='number' step='0.01' onChange={handleDiscountChange} />
+          <ImageFormGroup eRef={imageRef} label='Imagen del Combo' col='col-12' aspect='4/3' required />
+
         </div >
         {/* Lista de productos seleccionados */}
         <div className="col-md-12 row">

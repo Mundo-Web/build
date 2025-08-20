@@ -1717,7 +1717,7 @@
     ]
   },
   "resources/js/Admin/Combos.jsx": {
-    "file": "assets/Combos-DCp9Bf_U.js",
+    "file": "assets/Combos-M0XpZpK-.js",
     "name": "Combos",
     "src": "resources/js/Admin/Combos.jsx",
     "isEntry": true,
@@ -1731,6 +1731,7 @@
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_Modal-BYL-UsqM.js",
       "_Table-CCZDHBJ5.js",
+      "_ImageFormGroup-Brimgjsn.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectAPIFormGroup-1XgklNMJ.js",
       "_DxButton-DV0H-ZcL.js",

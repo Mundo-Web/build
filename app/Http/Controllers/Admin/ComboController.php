@@ -20,7 +20,7 @@ class ComboController extends BasicController
     public $model = Combo::class;
     public $reactView = 'Admin/Combos';
 
-    //  public $imageFields = ['image'];
+    public $imageFields = ['image'];
 
 
     public function show($id)
