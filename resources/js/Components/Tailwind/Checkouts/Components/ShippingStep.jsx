@@ -1331,7 +1331,7 @@ export default function ShippingStep({
                     {cart.map((item) => (
                         <div key={item.id} className="flex items-center gap-4">
                             <img
-                                src={`/storage/images/item/${item.image}`}
+                                src={item.type === 'combo' ? `/storage/images/combo/${item.image}` : `/storage/images/item/${item.image}`}
                                 alt={item.name}
                                 className="w-16 h-16 object-cover rounded-lg"
                                 onError={(e) =>

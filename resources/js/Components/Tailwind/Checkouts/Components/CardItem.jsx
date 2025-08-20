@@ -125,7 +125,7 @@ const CardItem = ({ setCart, hasPromotion, onPromotionClick, categorias, ...item
                             <div className="text-xs text-gray-500 line-through">S/ {Number(originalPrice * item?.quantity).toFixed(2)}</div>
                         )}
                         {/* Para items normales */}
-                        {!isCombo && (
+                        {!isCombo && item?.discount > 0 && item?.price > item?.final_price && (
                             <div className="text-xs text-gray-500 line-through">S/ {Number(originalPrice * item?.quantity).toFixed(2)}</div>
                         )}
                         <div className="font-bold text-lg">S/ {Number(itemPrice * item?.quantity).toFixed(2)}</div>

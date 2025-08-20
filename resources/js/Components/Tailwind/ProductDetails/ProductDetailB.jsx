@@ -512,15 +512,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <div>
                                 <div className="text-3xl font-bold customtext-primary">
                                     S/ {item?.final_price}
+                                      {item?.discount > 0 && item?.price > item?.final_price &&(
                                     <span className="ml-2 text-sm line-through text-gray-400">
                                         S/ {item?.price}
-                                    </span>
+                                    </span>)}
                                 </div>
                                 <div className="text-xs customtext-neutral-light mt-1">SKU: {item?.sku}</div>
                             </div>
+                              {item?.discount > 0 && item?.price > item?.final_price &&(
                             <div className="bg-secondary customtext-primary px-3 py-1 rounded-full text-sm">
                                 {Number(item?.discount_percent).toFixed(0)}% OFF
-                            </div>
+                            </div>)}
                         </div>
                     </div>
 
@@ -600,6 +602,95 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             )}
                         </div>
                     </div>
+
+                    {/* Complementary Products Mobile */}
+                    {(associatedItems.length > 0 || availableCombos.length > 0) && (
+                        <div className="mt-8">
+                            <div className="flex items-center gap-2 mb-6">
+                                <ShoppingCart className="w-6 h-6 customtext-primary" />
+                                <h2 className="text-base font-semibold">
+                                    Completa tu compra con estos productos
+                                </h2>
+                            </div>
+
+                            {/* Mostrar combos disponibles */}
+                            {availableCombos.length > 0 && (
+                                <div className="mb-6">
+                                    {availableCombos.map((combo, index) => (
+                                        <div key={`combo-mobile-${combo.id}`} className="border rounded-lg p-4 mb-4 bg-gay-50">
+                                           
+                                            
+                                            {/* Mostrar productos del combo */}
+                                            <div className="flex gap-4 mb-4">
+                                                <div className="w-full flex gap-2 overflow-x-auto">
+                                                    {combo.combo_items?.map((comboItem, itemIndex) => (
+                                                        <div key={itemIndex} className="flex items-center gap-2">
+                                                            <img
+                                                                src={`/storage/images/item/${comboItem.image}`}
+                                                                className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
+                                                                onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
+                                                                alt={comboItem.name}
+                                                            />
+                                                            {itemIndex < combo.combo_items.length - 1 && (
+                                                                <span className="text-lg font-bold customtext-primary flex items-center justify-center">
+                                                                    <Plus size={16} />
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Lista detallada de productos */}
+                                            {combo.combo_items?.map((comboItem, itemIndex) => (
+                                                <div key={itemIndex} className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white">
+                                                    <CheckSquare className="w-4 h-4 customtext-primary" />
+                                                    <div className="flex-1 font-semibold">
+                                                        <p className="text-sm text-gray-700 font-medium">
+                                                            {comboItem.name}
+                                                        </p>
+                                                        <span className="text-xs text-gray-500">
+                                                            Cantidad: {comboItem.quantity || 1}
+                                                        </span>
+                                                    </div>
+                                                    <p className="font-bold text-gray-700 text-sm">
+                                                        S/ {parseFloat(comboItem.price).toFixed(2)}
+                                                    </p>
+                                                </div>
+                                            ))}
+
+                                            {/* Total y botón */}
+                                            <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
+                                                {combo.discount > 0 && (
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-xs customtext-primary line-through">
+                                                            S/ {parseFloat(combo.price).toFixed(2)}
+                                                        </span>
+                                                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
+                                                            -{combo.discount_percent}%
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                <span className="text-xs font-semibold customtext-primary">
+                                                    {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
+                                                </span>
+                                                <p className="font-bold mb-2 customtext-primary text-2xl ">
+                                                    S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                </p>
+                                                <button
+                                                    onClick={() => addComboToCart(combo)}
+                                                    className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                >
+                                                    Agregar combo completo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                        </div>
+                    )}
 
                     {/* Entrega y Soporte */}
                     {/* Delivery Options - Mejoradas */}
@@ -1023,7 +1114,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     <div className="bg-blue-500 text-white rounded-full p-1">
                                                         <ShoppingCart size={14} />
                                                     </div>
-                                                    <span className="text-sm font-semibold text-blue-600">COMBO: {combo.name}</span>
+                                                    <span className="text-sm font-semibold customtext-primary">COMBO: {combo.name}</span>
                                                 </div>
                                                 
                                                 {/* Mostrar productos del combo */}
@@ -1038,7 +1129,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                     alt={comboItem.name}
                                                                 />
                                                                 {itemIndex < combo.combo_items.length - 1 && (
-                                                                    <span className="text-lg font-bold text-blue-600">
+                                                                    <span className="text-lg font-bold customtext-primary">
                                                                         <Plus size={16} />
                                                                     </span>
                                                                 )}
@@ -1050,7 +1141,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {/* Lista detallada de productos */}
                                                 {combo.combo_items?.map((comboItem, itemIndex) => (
                                                     <div key={itemIndex} className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white">
-                                                        <CheckSquare className="w-4 h-4 text-blue-600" />
+                                                        <CheckSquare className="w-4 h-4 customtext-primary" />
                                                         <div className="flex-1 font-semibold">
                                                             <p className="text-sm text-gray-700 font-medium">
                                                                 {comboItem.name}
@@ -1069,7 +1160,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
                                                     {combo.discount > 0 && (
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <span className="text-xs text-blue-600 line-through">
+                                                            <span className="text-xs customtext-primary line-through">
                                                                 S/ {parseFloat(combo.price).toFixed(2)}
                                                             </span>
                                                             <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -1077,15 +1168,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             </span>
                                                         </div>
                                                     )}
-                                                    <span className="text-xs font-semibold text-blue-700">
+                                                    <span className="text-xs font-semibold customtext-primary">
                                                         {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
                                                     </span>
-                                                    <p className="font-bold mb-2 text-blue-800 text-lg">
+                                                    <p className="font-bold mb-2 customtext-primary text-lg">
                                                         S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
                                                     </p>
                                                     <button
                                                         onClick={() => addComboToCart(combo)}
-                                                        className="bg-blue-600 text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                        className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
                                                     >
                                                         Agregar combo completo
                                                     </button>
@@ -1327,16 +1418,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
                                 {/* Price Section */}
                                 <div className=" w-5/12 ">
+                                    {item?.discount > 0 && item?.price > item?.final_price &&(
                                     <p className="text-sm customtext-neutral-light mb-1">
                                         Precio:{" "}
                                         <span className="line-through">
                                             S/ {item?.price}
                                         </span>
-                                    </p>
-                                    <div className="flex items-center gap-4 relative ">
+                                    </p>)}
+                                
+                                      <div className="flex items-center gap-4 relative ">
                                         <span className="text-[36px] font-bold ">
                                             S/ {item?.final_price}
                                         </span>
+                                          {item?.discount > 0 && item?.price > item?.final_price &&(
                                         <span className=" absolute text-sm -top-8 right-0 bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
                                             -
                                             {Number(
@@ -1344,7 +1438,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             ).toFixed(1)}
                                             %
                                         </span>
+                                        )}
                                     </div>
+                                  
 
                                     {/* Quantity */}
                                     <div className="mt-4">
@@ -1408,19 +1504,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     {/* Mostrar combos disponibles */}
                                     {availableCombos.length > 0 && (
                                         <div className="mb-6">
-                                            <h3 className="text-sm font-medium text-gray-700 mb-4">
-                                                Combos recomendados
-                                            </h3>
+                                          
                                             {availableCombos.map((combo) => (
-                                                <div key={`combo-desktop-${combo.id}`} className="border rounded-lg p-6 mb-4 bg-blue-50">
-                                                    {/* Header del combo */}
-                                                    <div className="flex items-center gap-2 mb-4">
-                                                        <div className="bg-blue-500 text-white rounded-full p-1">
-                                                            <ShoppingCart size={16} />
-                                                        </div>
-                                                        <span className="text-base font-semibold text-blue-600">COMBO: {combo.name}</span>
-                                                    </div>
-                                                    
+                                                <div key={`combo-desktop-${combo.id}`} className="border rounded-lg p-6 mb-4 bg-gray-50">
+                                                  
                                                     {/* Mostrar productos del combo en fila */}
                                                     <div className="flex gap-4 mb-4">
                                                         <div className="w-2/3 flex gap-2">
@@ -1433,7 +1520,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                         alt={comboItem.name}
                                                                     />
                                                                     {itemIndex < combo.combo_items.length - 1 && (
-                                                                        <span className="text-2xl font-bold text-blue-600">
+                                                                        <span className="text-2xl font-bold customtext-primary">
                                                                             <Plus />
                                                                         </span>
                                                                     )}
@@ -1445,25 +1532,25 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         <div className="w-1/3 flex flex-col justify-between items-end bg-blue-100 p-4 rounded-lg">
                                                             {combo.discount > 0 && (
                                                                 <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="text-sm text-blue-600 line-through">
+                                                                    <span className="text-sm customtext-primary line-through">
                                                                         S/ {parseFloat(combo.price).toFixed(2)}
                                                                     </span>
-                                                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
+                                                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
                                                                         -{combo.discount_percent}%
                                                                     </span>
                                                                 </div>
                                                             )}
-                                                            <span className="text-xs font-semibold text-blue-700">
+                                                            <span className="text-xs font-semibold customtext-primary">
                                                                 {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
                                                             </span>
-                                                            <p className="font-bold mb-2 text-blue-800 text-xl">
+                                                            <p className="font-bold mb-2 customtext-primary text-xl">
                                                                 S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
                                                             </p>
                                                             <button
                                                                 onClick={() => addComboToCart(combo)}
-                                                                className="bg-blue-600 text-white text-sm font-semibold w-full py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                                className="bg-primary text-white text-sm font-semibold w-full py-3 rounded-xl hover:bg-accent transition-all duration-300 hover:shadow-md"
                                                             >
-                                                                Agregar combo completo
+                                                                Agregar combo
                                                             </button>
                                                         </div>
                                                     </div>
@@ -1471,7 +1558,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     {/* Lista detallada de productos */}
                                                     {combo.combo_items?.map((comboItem, itemIndex) => (
                                                         <div key={itemIndex} className="flex mt-2 gap-4 p-4 border rounded-lg items-center bg-white">
-                                                            <CheckSquare className="w-5 h-5 text-blue-600" />
+                                                            <CheckSquare className="w-5 h-5 customtext-primary" />
                                                             <div className="flex-1 font-semibold">
                                                                 <p className="text-sm text-gray-700 font-medium">
                                                                     {comboItem.name}
@@ -1490,79 +1577,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                         </div>
                                     )}
 
-                                    {/* Items asociados individuales */}
-                                    {associatedItems.length > 0 && (
-                                        <>
-                                            <div className=" flex gap-4">
-                                                <div className="w-2/3 flex gap-2">
-                                                    {associatedItems.map(
-                                                        (product, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="flex items-center gap-2"
-                                                            >
-                                                                <img
-                                                                    src={`/storage/images/item/${product?.image}`}
-                                                                    className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
-                                                                    onError={(e) =>
-                                                                    (e.target.src =
-                                                                        "/api/cover/thumbnail/null")
-                                                                    }
-                                                                />
-                                                                {index <
-                                                                    associatedItems.length -
-                                                                    1 && (
-                                                                        <span className="text-2xl font-bold">
-                                                                            <Plus />
-                                                                        </span>
-                                                                    )}
-                                                            </div>
-                                                        )
-                                                    )}
-                                                </div>
-                                                <div className=" w-1/3 flex flex-col justify-between items-end bg-gray-50 p-4 rounded-lg mt-4">
-                                                    <span className="text-xs font-semibold customtext-neutral-light">
-                                                        Total
-                                                    </span>
-
-                                                    <p className="font-bold mb-2 customtext-neutral-dark">
-                                                        S/ {total.toFixed(2)}
-                                                    </p>
-                                                    <button
-                                                        onClick={() =>
-                                                            addAssociatedItems()
-                                                        }
-                                                        className={`bg-primary text-xs font-semibold w-full py-3 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || 'text-white'}`}
-                                                    >
-                                                        Agregar al carrito
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {associatedItems.map((product, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
-                                                >
-                                                    <CheckSquare className="w-5 h-5 customtext-primary" />
-                                                    <div className="flex-1 font-semibold">
-                                                        <span className="text-[10px] customtext-neutral-dark block">
-                                                            {product?.brand?.name}
-                                                        </span>
-                                                        <p className="text-sm customtext-neutral-light font-medium">
-                                                            {product?.name}
-                                                        </p>
-                                                    </div>
-                                                    <p className="font-bold customtext-neutral-dark">
-                                                        S/{" "}
-                                                        {parseFloat(
-                                                            product?.final_price
-                                                        ).toFixed(2)}
-                                                    </p>
-                                                </div>
-                                            ))}
-                                        </>
-                                    )}
+                                  
                                 </div>
                             )}
                         </div>
@@ -1789,7 +1804,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     <h3 className="font-bold text-lg text-gray-900 flex-1">{store.name}</h3>
                                                     {/* Badge del tipo de establecimiento */}
                                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${store.type === 'tienda' ? 'bg-green-100 text-green-800' :
-                                                            store.type === 'oficina' ? 'bg-blue-100 text-blue-800' :
+                                                            store.type === 'oficina' ? 'bg-blue-100 customtext-primary' :
                                                                 store.type === 'almacen' ? 'bg-yellow-100 text-yellow-800' :
                                                                     store.type === 'showroom' ? 'bg-purple-100 text-purple-800' :
                                                                         'bg-gray-100 text-gray-800'
