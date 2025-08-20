@@ -1045,11 +1045,13 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
     useEffect(() => {
         // Cuando cambian los filtros, volvemos a la primera página SIN hacer scroll
-        // Solo si ya se hizo la búsqueda inicial
-        if (hasSearched) {
-            fetchProducts(1, true); // Es un filtrado
-        }
-    }, [selectedFilters, hasSearched]);
+        // Siempre ejecutar cuando los filtros cambien (tanto búsqueda inicial como filtrado)
+        console.log("🔄 useEffect detectó cambio en selectedFilters:");
+        console.log("📊 Filtros actuales:", selectedFilters);
+        console.log("🚀 Ejecutando fetchProducts...");
+        
+        fetchProducts(1, hasSearched); // true si ya había búsqueda, false si es inicial
+    }, [selectedFilters]); // Eliminar hasSearched como dependencia
 
     // useEffect para detectar cambios en el filtro de nombre y aplicar búsqueda inteligente
     useEffect(() => {
@@ -2063,18 +2065,37 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         <motion.button
                                             className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
                                             onClick={() => {
-                                                setSelectedFilters({
-                                                    collection_id: [],
-                                                    category_id: [],
-                                                    brand_id: [],
-                                                    subcategory_id: [],
-                                                    tag_id: [],
-                                                    price: [],
-                                                    name: null,
-                                                    sort_by: "created_at",
-                                                    order: "desc",
+                                                console.log("🧹 Limpiando todos los filtros...");
+                                                console.log("📊 Estado actual antes de limpiar:", selectedFilters);
+                                                
+                                                // Limpiar cada filtro individualmente usando setSelectedFilters con función
+                                                // Esto simula el comportamiento de handleFilterChange que funciona correctamente
+                                                setSelectedFilters((prev) => {
+                                                    console.log("🔄 Estado previo en setSelectedFilters:", prev);
+                                                    
+                                                    const cleanFilters = {
+                                                        collection_id: [],
+                                                        category_id: [],
+                                                        brand_id: [],
+                                                        subcategory_id: [],
+                                                        tag_id: [],
+                                                        price: [],
+                                                        name: null,
+                                                        sort: [
+                                                            {
+                                                                selector: "final_price",
+                                                                desc: true,
+                                                            },
+                                                        ],
+                                                    };
+                                                    
+                                                    console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
+                                                    return cleanFilters;
                                                 });
+                                                
                                                 setFilterSequence([]);
+                                                
+                                                console.log("✅ Filtros limpiados correctamente - useEffect debería detectar el cambio");
                                             }}
                                             whileHover={{ scale: 1.02, y: -2 }}
                                             whileTap={{ scale: 0.98 }}
@@ -2252,18 +2273,36 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                     <motion.button
                                                         className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                                                         onClick={() => {
-                                                            setSelectedFilters({
-                                                                collection_id: [],
-                                                                category_id: [],
-                                                                brand_id: [],
-                                                                subcategory_id: [],
-                                                                tag_id: [],
-                                                                price: [],
-                                                                name: null,
-                                                                sort_by: "created_at",
-                                                                order: "desc",
+                                                            console.log("🧹 Limpiando filtros desde mensaje 'sin resultados'...");
+                                                            console.log("📊 Estado actual antes de limpiar:", selectedFilters);
+                                                            
+                                                            // Limpiar usando setSelectedFilters con función (como handleFilterChange)
+                                                            setSelectedFilters((prev) => {
+                                                                console.log("🔄 Estado previo en setSelectedFilters:", prev);
+                                                                
+                                                                const cleanFilters = {
+                                                                    collection_id: [],
+                                                                    category_id: [],
+                                                                    brand_id: [],
+                                                                    subcategory_id: [],
+                                                                    tag_id: [],
+                                                                    price: [],
+                                                                    name: null,
+                                                                    sort: [
+                                                                        {
+                                                                            selector: "final_price",
+                                                                            desc: true,
+                                                                        },
+                                                                    ],
+                                                                };
+                                                                
+                                                                console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
+                                                                return cleanFilters;
                                                             });
+                                                            
                                                             setFilterSequence([]);
+                                                            
+                                                            console.log("✅ Filtros limpiados correctamente desde 'sin resultados'");
                                                         }}
                                                         whileHover={{ scale: 1.05, y: -2 }}
                                                         whileTap={{ scale: 0.95 }}
