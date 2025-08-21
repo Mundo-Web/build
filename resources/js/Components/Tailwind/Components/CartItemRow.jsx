@@ -44,7 +44,7 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                     alt={item.name}
                 />
                 {isCombo && (
-                    <div className="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full p-1">
+                    <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full p-1">
                         <Package size={12} />
                     </div>
                 )}
@@ -57,7 +57,7 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                             {item.name}
                         </h3>
                         {isCombo && (
-                            <span className="text-xs text-blue-600 font-medium">
+                            <span className="text-xs customtext-primary font-medium">
                                 Combo ({item.combo_items?.length || 0} productos)
                             </span>
                         )}

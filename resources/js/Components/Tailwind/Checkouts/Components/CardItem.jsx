@@ -74,7 +74,7 @@ const CardItem = ({ setCart, hasPromotion, onPromotionClick, categorias, ...item
                         />
                         {/* Badge para combos */}
                         {isCombo && (
-                            <div className="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full p-1">
+                            <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full p-1">
                                 <Package size={12} />
                             </div>
                         )}
@@ -91,7 +91,7 @@ const CardItem = ({ setCart, hasPromotion, onPromotionClick, categorias, ...item
                     <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-lg mb-2 line-clamp-2">{item?.name}</h3>
                         {isCombo && (
-                            <p className="text-xs text-blue-600 font-medium mb-1">
+                            <p className="text-xs customtext-primary font-medium mb-1">
                                 Combo ({item.combo_items?.length || 0} productos)
                             </p>
                         )}

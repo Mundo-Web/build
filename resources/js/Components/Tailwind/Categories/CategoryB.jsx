@@ -32,7 +32,7 @@ const CategoryB = () => {
                     <h2 className="text-2xl font-bold">Productos destacados</h2>
                     <a
                         href="#"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-600"
                     >
                         Ver todos
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

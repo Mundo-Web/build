@@ -682,7 +682,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 </p>
                                                 <button
                                                     onClick={() => addComboToCart(combo)}
-                                                    className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                    className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-primary transition-all duration-300 hover:shadow-md"
                                                 >
                                                     Agregar combo completo
                                                 </button>
@@ -1114,7 +1114,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             <div key={`combo-${combo.id}`} className="border rounded-lg p-4 mb-4 bg-blue-50">
                                                 {/* Header del combo */}
                                                 <div className="flex items-center gap-2 mb-4">
-                                                    <div className="bg-blue-500 text-white rounded-full p-1">
+                                                    <div className="bg-primary text-white rounded-full p-1">
                                                         <ShoppingCart size={14} />
                                                     </div>
                                                     <span className="text-sm font-semibold customtext-primary">COMBO: {combo.name}</span>
@@ -1179,7 +1179,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     </p>
                                                     <button
                                                         onClick={() => addComboToCart(combo)}
-                                                        className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-md"
+                                                        className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-primary transition-all duration-300 hover:shadow-md"
                                                     >
                                                         Agregar combo completo
                                                     </button>

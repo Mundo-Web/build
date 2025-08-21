@@ -82,7 +82,7 @@ export default function PostDetailSimple({ item }) {
                     <div className="flex gap-4">
                         <button
                             aria-label="Compartir en Facebook"
-                            className="p-2 rounded-full bg-[#03030414] hover:bg-blue-500 customtext-neutral-light hover:text-white transition"
+                            className="p-2 rounded-full bg-[#03030414] hover:bg-primary customtext-neutral-light hover:text-white transition"
                             onClick={() => handleShare("facebook")}
                         >
                             <Facebook />

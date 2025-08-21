@@ -882,13 +882,13 @@ const ContactGrid = ({ data, contacts }) => {
                                                 <div className="p-6 rounded-full bg-white/80 backdrop-blur-sm mb-4 inline-block">
                                                     {(() => {
                                                         const IconComponent = getStoreTypeIcon(selectedStore.type);
-                                                        return <IconComponent className="w-12 h-12 text-blue-600" />;
+                                                        return <IconComponent className="w-12 h-12 customtext-primary" />;
                                                     })()}
                                                 </div>
                                                 <h4 className="text-2xl font-bold text-gray-700 mb-2">
                                                     {selectedStore.name}
                                                 </h4>
-                                                <p className="text-blue-600 font-medium mb-2">
+                                                <p className="customtext-primary font-medium mb-2">
                                                     {selectedStore.type === 'principal' ? 'Sede Principal' : getStoreTypeName(selectedStore.type)}
                                                 </p>
                                                 <p className="text-gray-600 flex items-center justify-center gap-2">
@@ -908,8 +908,8 @@ const ContactGrid = ({ data, contacts }) => {
                                     transition={{ duration: 0.5, delay: 0.2 }}
                                 >
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 rounded-lg bg-amber-50">
-                                            <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className="p-2 rounded-lg bg-blue-50">
+                                            <svg className="w-6 h-6 customtext-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         </div>
@@ -978,11 +978,11 @@ const ContactGrid = ({ data, contacts }) => {
                                                             transition={{ duration: 0.3, delay: index * 0.05 }}
                                                         >
                                                             <span className={`font-medium ${
-                                                                isToday ? 'text-blue-700' : 'text-gray-700'
+                                                                isToday ? 'customtext-primary' : 'text-gray-700'
                                                             }`}>
                                                                 {schedule.day}
                                                                 {isToday && (
-                                                                    <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded-full">
+                                                                    <span className="ml-2 text-xs bg-primary text-white px-2 py-1 rounded-full">
                                                                         Hoy
                                                                     </span>
                                                                 )}
@@ -991,7 +991,7 @@ const ContactGrid = ({ data, contacts }) => {
                                                                 isClosed
                                                                     ? 'text-red-500 font-medium' 
                                                                     : isToday 
-                                                                        ? 'text-blue-600 font-medium' 
+                                                                        ? 'customtext-primary font-medium' 
                                                                         : 'text-gray-600'
                                                             }`}>
                                                                 {hoursText}
@@ -1019,12 +1019,12 @@ const ContactGrid = ({ data, contacts }) => {
                                             {selectedStore.phone && (
                                                 <a 
                                                     href={`tel:${selectedStore.phone}`}
-                                                    className="flex items-center gap-3 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition-colors group"
+                                                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group"
                                                 >
-                                                    <PhoneCall className="w-5 h-5 text-green-500 group-hover:text-green-600" />
+                                                    <PhoneCall className="w-5 h-5 customtext-neutral-dark group-hover:customtext-primary" />
                                                     <div>
-                                                        <p className="font-medium text-green-700">Llamar ahora</p>
-                                                        <p className="text-sm text-green-600">{selectedStore.phone}</p>
+                                                        <p className="font-medium customtext-neutral-dark">Llamar ahora</p>
+                                                        <p className="text-sm customtext-neutral-dark">{selectedStore.phone}</p>
                                                     </div>
                                                 </a>
                                             )}
@@ -1034,10 +1034,10 @@ const ContactGrid = ({ data, contacts }) => {
                                                     href={`mailto:${selectedStore.email}`}
                                                     className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors group"
                                                 >
-                                                    <Mail className="w-5 h-5 text-blue-500 group-hover:text-blue-600" />
+                                                    <Mail className="w-5 h-5 customtext-primary group-hover:customtext-primary" />
                                                     <div>
-                                                        <p className="font-medium text-blue-700">Enviar email</p>
-                                                        <p className="text-sm text-blue-600">{selectedStore.email}</p>
+                                                        <p className="font-medium customtext-primary">Enviar email</p>
+                                                        <p className="text-sm customtext-primary">{selectedStore.email}</p>
                                                     </div>
                                                 </a>
                                             )}
@@ -1056,7 +1056,7 @@ const ContactGrid = ({ data, contacts }) => {
                                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
                                     <h5 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-blue-50">
-                                            <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-5 h-5 customtext-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
@@ -1093,7 +1093,7 @@ const ContactGrid = ({ data, contacts }) => {
                                                         <div className="w-full h-full bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 flex items-center justify-center">
                                                             {(() => {
                                                                 const IconComponent = getStoreTypeIcon(store.type);
-                                                                return <IconComponent className="w-16 h-16 text-blue-600" />;
+                                                                return <IconComponent className="w-16 h-16 customtext-primary" />;
                                                             })()}
                                                         </div>
                                                     )}
@@ -1118,7 +1118,7 @@ const ContactGrid = ({ data, contacts }) => {
                                                     <div className="absolute top-3 right-3 p-2 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
                                                         {(() => {
                                                             const IconComponent = getStoreTypeIcon(store.type);
-                                                            return <IconComponent className="w-4 h-4 text-blue-600" />;
+                                                            return <IconComponent className="w-4 h-4 customtext-primary" />;
                                                         })()}
                                                     </div>
                                                     
