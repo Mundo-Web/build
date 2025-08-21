@@ -18,9 +18,26 @@ class GeneralController extends BasicController
 
     public function setReactViewProperties(Request $request)
     {
-        $generals = General::all();
+        $user = $request->user();
+        
+        // Verificar si el usuario tiene rol Root
+        $hasRootRole = $user && $user->roles && $user->roles->contains('name', 'Root');
+        
+        if ($hasRootRole) {
+            // Root puede ver todos los campos para gestionar visibilidad
+            $generals = General::all();
+        } else {
+            // Admin solo puede ver campos con status = 1
+            $generals = General::where('status', 1)->get();
+        }
+        
+        // Para Root, también enviamos todos los campos para el modal de gestión
+        $allGenerals = $hasRootRole ? General::all() : null;
+        
         return [
-            'generals' => $generals
+            'generals' => $generals,
+            'allGenerals' => $allGenerals,
+            'hasRootRole' => $hasRootRole
         ];
     }
 
@@ -71,6 +88,37 @@ class GeneralController extends BasicController
             return [
                 'message' => "Configuración general actualizada exitosamente ({$processedCount} elementos procesados)",
                 'processed_count' => $processedCount
+            ];
+        });
+        return response($response->toArray(), $response->status);
+    }
+
+    public function updateVisibility(Request $request): HttpResponse|ResponseFactory
+    {
+        $response = Response::simpleTryCatch(function () use ($request) {
+            $updates = $request->input('updates', []);
+            $updatedCount = 0;
+
+            foreach ($updates as $update) {
+                $correlative = $update['correlative'] ?? null;
+                $status = $update['status'] ?? 0;
+
+                if ($correlative) {
+                    $general = General::where('correlative', $correlative)->first();
+                    if ($general) {
+                        $general->status = $status;
+                        $general->save();
+                        $updatedCount++;
+                    }
+                }
+            }
+
+            Log::info("GeneralController updateVisibility - Updated {$updatedCount} records");
+
+            return [
+                'success' => true,
+                'message' => "Visibilidad actualizada exitosamente ({$updatedCount} campos actualizados)",
+                'updated_count' => $updatedCount
             ];
         });
         return response($response->toArray(), $response->status);

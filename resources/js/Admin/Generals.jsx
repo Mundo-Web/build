@@ -17,19 +17,95 @@ import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
 const generalsRest = new GeneralsRest();
 const galleryRest = new GalleryRest();
 
-const Generals = ({ generals }) => {
+const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole }) => {
+  // Función para verificar si el usuario tiene rol Root
+  const hasRootRole = () => {
+    // Usar el valor del backend si está disponible, sino usar el método original
+    if (typeof backendRootRole !== 'undefined') {
+      return backendRootRole;
+    }
+    return session?.roles?.some(role => role.name === 'Root') || false;
+  };
+
+  // Filtrar generals según el rol del usuario
+  const getVisibleGenerals = () => {
+    // El backend ya filtra según el rol, usamos directamente los generals recibidos
+    return generals;
+  };
+
+  const visibleGenerals = getVisibleGenerals();
+
+  // Función para verificar si un campo debe mostrarse
+  const shouldShowField = (correlative) => {
+    return generals.some(general => general.correlative === correlative);
+  };
+
+  // Lista de campos sensibles que podrían estar ocultos para Admin
+  const sensitiveFields = [
+    'copyright', 'address', 'support_phone', 'support_email', 'coorporative_email',
+    'privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy',
+    'phone_whatsapp', 'message_whatsapp', 'igv_checkout', 'shipping_free', 'currency',
+    // Campos de checkout/pagos (sensibles)
+    'checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key',
+    'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key',
+    'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description',
+    'checkout_transfer', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description',
+    // Píxeles y analytics (sensibles)
+    'google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id',
+    'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id',
+    'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id',
+    'custom_head_scripts', 'custom_body_scripts',
+    // Google OAuth (muy sensible)
+    'google_client_id', 'google_client_secret', 'google_oauth_enabled',
+    // Importación
+    'importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion',
+    // Campos básicos también pueden ser ocultos
+    'phone_contact', 'email_contact', 'cintillo', 'opening_hours'
+  ];
+
+  // Mapeo de tabs a correlatives
+  const tabCorrelatives = {
+    'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'phone_whatsapp', 'message_whatsapp'],
+    'checkout': ['checkout_culqi', 'checkout_mercadopago', 'checkout_dwallet', 'checkout_transfer'],
+    'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario'],
+    'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy'],
+    'shippingfree': ['shipping_free'],
+    'pixels': ['google_analytics_id', 'facebook_pixel_id', 'tiktok_pixel_id', 'custom_head_scripts'],
+    'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
+  };
+
+  // Función para verificar si un tab debe mostrarse
+  const shouldShowTab = (tabName) => {
+    const correlatives = tabCorrelatives[tabName];
+    if (!correlatives) return true; // Si no está mapeado, siempre mostrar
+    // Mostrar tab si al menos uno de sus campos está disponible
+    return correlatives.some(correlative => shouldShowField(correlative));
+  };
+
+  // Componente helper para renderizar campos condicionalmente
+  const ConditionalField = ({ correlative, children, fallback = null }) => {
+    // TODOS los campos ahora verifican si deben mostrarse (incluso Root)
+    return shouldShowField(correlative) ? children : fallback;
+  };
+
   const location =
     generals.find((x) => x.correlative == "location")?.description ?? "0,0";
 
   // First add these to your formData state
   // Filtrar solo los generales que son plantillas de email (excluyendo correo de soporte)
-  const emailTemplates = generals.filter(g => g.correlative.endsWith('_email') && g.correlative !== 'support_email'&& g.correlative !== 'coorporative_email');
+  const emailTemplates = generals.filter(g => g.correlative.endsWith('_email') && g.correlative !== 'support_email' && g.correlative !== 'coorporative_email');
   const [showPreview, setShowPreview] = useState(false);
   const [selectedEmailCorrelative, setSelectedEmailCorrelative] = useState(emailTemplates[0]?.correlative || "");
   const [templateVariables, setTemplateVariables] = useState({});
   const [loadingVars, setLoadingVars] = useState(false);
   const [varsError, setVarsError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Estados para gestión de visibilidad de campos
+  const [showVisibilityModal, setShowVisibilityModal] = useState(false);
+  const [fieldVisibility, setFieldVisibility] = useState({});
+  const [savingVisibility, setSavingVisibility] = useState(false);
+
   // Fetch variables for selected template
   useEffect(() => {
     if (!selectedEmailCorrelative) return;
@@ -62,6 +138,21 @@ const Generals = ({ generals }) => {
         setLoadingVars(false);
       });
   }, [selectedEmailCorrelative]);
+
+  // Inicializar estado de visibilidad de campos
+  useEffect(() => {
+    if (hasRootRole() && allGenerals && allGenerals.length > 0) {
+      const visibility = {};
+      allGenerals.forEach(general => {
+        if (general && general.correlative) {
+          visibility[general.correlative] = general.status === 1 || general.status === '1';
+        }
+      });
+      console.log('Initialized field visibility:', visibility);
+      setFieldVisibility(visibility);
+    }
+  }, [allGenerals]);
+
   const [formData, setFormData] = useState({
     email_templates: Object.fromEntries(
       emailTemplates.map(t => [t.correlative, t.description ?? ""])
@@ -138,13 +229,13 @@ const Generals = ({ generals }) => {
     checkout_dwallet_qr: generals.find(x => x.correlative == 'checkout_dwallet_qr')?.description ?? "",
     checkout_dwallet_name: generals.find(x => x.correlative == 'checkout_dwallet_name')?.description ?? "",
     checkout_dwallet_description: generals.find(x => x.correlative == 'checkout_dwallet_description')?.description ?? "",
-    checkout_transfer: generals.find(x => x.correlative == 'checkout_transfer')?.description?? "",
-    checkout_transfer_cci: generals.find(x => x.correlative == 'checkout_transfer_cci')?.description?? "",
-    checkout_transfer_name: generals.find(x => x.correlative == 'checkout_transfer_name')?.description?? "",
-    checkout_transfer_description: generals.find(x => x.correlative == 'checkout_transfer_description')?.description?? "",
-    transfer_accounts: generals.find(x => x.correlative == 'transfer_accounts')?.description 
-    ? JSON.parse(generals.find(x => x.correlative == 'transfer_accounts')?.description)
-    : [
+    checkout_transfer: generals.find(x => x.correlative == 'checkout_transfer')?.description ?? "",
+    checkout_transfer_cci: generals.find(x => x.correlative == 'checkout_transfer_cci')?.description ?? "",
+    checkout_transfer_name: generals.find(x => x.correlative == 'checkout_transfer_name')?.description ?? "",
+    checkout_transfer_description: generals.find(x => x.correlative == 'checkout_transfer_description')?.description ?? "",
+    transfer_accounts: generals.find(x => x.correlative == 'transfer_accounts')?.description
+      ? JSON.parse(generals.find(x => x.correlative == 'transfer_accounts')?.description)
+      : [
         {
           image: null,
           cc: "",
@@ -215,6 +306,53 @@ const Generals = ({ generals }) => {
 
   const [activeTab, setActiveTab] = useState("general");
 
+  // Funciones para gestión de visibilidad de campos
+  const handleToggleFieldVisibility = (correlative) => {
+    setFieldVisibility(prev => ({
+      ...prev,
+      [correlative]: !prev[correlative]
+    }));
+  };
+
+  const handleSaveVisibility = async () => {
+    setSavingVisibility(true);
+    try {
+      // Verificar que hay cambios que guardar
+      if (Object.keys(fieldVisibility).length === 0) {
+        toast.error("No hay campos para actualizar");
+        return;
+      }
+
+      // Preparar los datos para enviar al servidor
+      const visibilityUpdates = Object.entries(fieldVisibility).map(([correlative, isVisible]) => ({
+        correlative,
+        status: isVisible ? 1 : 0
+      }));
+
+      console.log('Sending visibility updates:', visibilityUpdates);
+
+      const response = await generalsRest.updateVisibility(visibilityUpdates);
+
+      console.log('Response:', response);
+
+      if (response.success) {
+        toast.success("Visibilidad de campos actualizada correctamente");
+        setShowVisibilityModal(false);
+        // Recargar la página para reflejar los cambios
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        toast.error(response.message || "Error al actualizar la visibilidad de campos");
+      }
+    } catch (error) {
+      console.error("Error details:", error);
+      toast.error("Error al actualizar la visibilidad de campos: " + error.message);
+    } finally {
+      setSavingVisibility(false);
+    }
+  };
+
   const handleInputChange = (e, index, field) => {
     const { value } = e.target;
     const list = [...formData[field]];
@@ -253,11 +391,11 @@ const Generals = ({ generals }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (isLoading) return; // Prevenir múltiples envíos
-    
+
     setIsLoading(true);
-    
+
     // Construir la estructura de datos que espera el backend
     const dataToSend = [
       // Guardar todos los templates de email
@@ -577,7 +715,7 @@ const Generals = ({ generals }) => {
 
     try {
       const result = await generalsRest.save(dataToSend);
-      
+
       if (result) {
         console.log('Datos guardados exitosamente:', result);
         // Las notificaciones se manejan automáticamente en BasicRest
@@ -591,543 +729,590 @@ const Generals = ({ generals }) => {
   };
 
   return (
-    <div className="card">
-      <form className="card-body" onSubmit={handleSubmit}>
-        <ul className="nav nav-tabs" id="contactTabs" role="tablist">
-          <li className="nav-item" role="presentation">
+    <div>
+      <div className="card">
+        {hasRootRole() && (
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <h4 className="card-title mb-0">Configuración General</h4>
             <button
-              className={`nav-link ${activeTab === "general" ? "active" : ""
-                }`}
-              onClick={() => setActiveTab("general")}
               type="button"
-              role="tab"
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => setShowVisibilityModal(true)}
             >
-              Configuración general
+              <i className="fas fa-eye me-1"></i>
+              Gestionar Visibilidad
             </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className={`nav-link ${activeTab === "contact" ? "active" : ""
-                }`}
-              onClick={() => setActiveTab("contact")}
-              type="button"
-              role="tab"
-            >
-              Información de Contacto
-            </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className={`nav-link ${activeTab === "checkout" ? "active" : ""
-                }`}
-              onClick={() => setActiveTab("checkout")}
-              type="button"
-              role="tab"
-            >
-              Métodos de Pago
-            </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className={`nav-link ${activeTab === "importation" ? "active" : ""
-                }`}
-              onClick={() => setActiveTab("importation")}
-              type="button"
-              role="tab"
-            >
-              Cálculos de importación
-            </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className={`nav-link ${activeTab === "policies" ? "active" : ""
-                }`}
-              onClick={() => setActiveTab("policies")}
-              type="button"
-              role="tab"
-            >
-              Políticas y Términos
-            </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className={`nav-link ${activeTab === "location" ? "active" : ""
-                }`}
-              onClick={() => setActiveTab("location")}
-              type="button"
-              role="tab"
-            >
-              Ubicación
-            </button>
-          </li>
-
-        <li className="nav-item" role="presentation">
-          <button
-            className={`nav-link ${activeTab === "email" ? "active" : ""}`}
-            onClick={() => setActiveTab("email")}
-            type="button"
-            role="tab"
-          >
-            Email
-          </button>
-        </li>
-        <li className="nav-item" role="presentation">
-          <button
-            className={`nav-link ${activeTab === "shippingfree" ? "active" : ""}`}
-            onClick={() => setActiveTab("shippingfree")}
-            type="button"
-            role="tab"
-          >
-            Envio Gratis
-          </button>
-        </li>
-       
-        <li className="nav-item" role="presentation">
-          <button
-            className={`nav-link ${activeTab === "pixels" ? "active" : ""}`}
-            onClick={() => setActiveTab("pixels")}
-            type="button"
-            role="tab"
-          >
-            Píxeles & Analytics
-          </button>
-        </li>
-        <li className="nav-item" role="presentation">
-          <button
-            className={`nav-link ${activeTab === "oauth" ? "active" : ""}`}
-            onClick={() => setActiveTab("oauth")}
-            type="button"
-            role="tab"
-          >
-            OAuth & Autenticación
-          </button>
-        </li>
-
-        </ul>
-
-        <div className="tab-content" id="generalTabsContent">
-          <div
-            className={`tab-pane fade ${activeTab === "email" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="mb-2">
-              <label htmlFor="email_correlative" className="form-label">
-                Tipo de Email
-              </label>
-              <select
-                id="email_correlative"
-                className="form-select mb-3"
-                value={selectedEmailCorrelative}
-                onChange={e => setSelectedEmailCorrelative(e.target.value)}
+          </div>
+        )}
+        <form className="card-body" onSubmit={handleSubmit}>
+          <ul className="nav nav-tabs" id="contactTabs" role="tablist">
+            <li className="nav-item" role="presentation">
+              <button
+                className={`nav-link ${activeTab === "general" ? "active" : ""
+                  }`}
+                onClick={() => setActiveTab("general")}
+                type="button"
+                role="tab"
               >
-                {emailTemplates.map(t => (
-                  <option key={t.correlative} value={t.correlative}>{t.name || t.correlative}</option>
-                ))}
-              </select>
-              <TinyMCEFormGroup
-              height={600}
-                label={
-                  <>
-                    Plantilla de Email (HTML seguro, variables: <code>{`{{variable}}`}</code>)
-                    <small className="d-block text-muted">
-                      No se permite código PHP ni Blade. Solo variables seguras.<br />
-                      {loadingVars && <span>Cargando variables...</span>}
-                      {varsError && <span className="text-danger">{varsError}</span>}
-                      {!loadingVars && !varsError && (
-                        <>
-                          <b>Variables disponibles:</b>{" "}
-                          {Object.keys(templateVariables).length === 0
-                            ? <span>No hay variables para esta notificación.</span>
-                            : Object.entries(templateVariables).map(([key, desc]) => (
-                                <span key={key} style={{display:'inline-block', marginRight:8}}>
+                Configuración general
+              </button>
+            </li>
+            {shouldShowTab('contact') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "contact" ? "active" : ""
+                    }`}
+                  onClick={() => setActiveTab("contact")}
+                  type="button"
+                  role="tab"
+                >
+                  Información de Contacto
+                </button>
+              </li>
+            )}
+            {shouldShowTab('checkout') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "checkout" ? "active" : ""
+                    }`}
+                  onClick={() => setActiveTab("checkout")}
+                  type="button"
+                  role="tab"
+                >
+                  Métodos de Pago
+                </button>
+              </li>
+            )}
+            {shouldShowTab('importation') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "importation" ? "active" : ""
+                    }`}
+                  onClick={() => setActiveTab("importation")}
+                  type="button"
+                  role="tab"
+                >
+                  Cálculos de importación
+                </button>
+              </li>
+            )}
+            {shouldShowTab('policies') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "policies" ? "active" : ""
+                    }`}
+                  onClick={() => setActiveTab("policies")}
+                  type="button"
+                  role="tab"
+                >
+                  Políticas y Términos
+                </button>
+              </li>
+            )}
+            <li className="nav-item" role="presentation">
+              <button
+                className={`nav-link ${activeTab === "location" ? "active" : ""
+                  }`}
+                onClick={() => setActiveTab("location")}
+                type="button"
+                role="tab"
+              >
+                Ubicación
+              </button>
+            </li>
+
+            <li className="nav-item" role="presentation">
+              <button
+                className={`nav-link ${activeTab === "email" ? "active" : ""}`}
+                onClick={() => setActiveTab("email")}
+                type="button"
+                role="tab"
+              >
+                Email
+              </button>
+            </li>
+            {shouldShowTab('shippingfree') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "shippingfree" ? "active" : ""}`}
+                  onClick={() => setActiveTab("shippingfree")}
+                  type="button"
+                  role="tab"
+                >
+                  Envio Gratis
+                </button>
+              </li>
+            )}
+
+            {shouldShowTab('pixels') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "pixels" ? "active" : ""}`}
+                  onClick={() => setActiveTab("pixels")}
+                  type="button"
+                  role="tab"
+                >
+                  Píxeles & Analytics
+                </button>
+              </li>
+            )}
+            {shouldShowTab('oauth') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "oauth" ? "active" : ""}`}
+                  onClick={() => setActiveTab("oauth")}
+                  type="button"
+                  role="tab"
+                >
+                  OAuth & Autenticación
+                </button>
+              </li>
+            )}
+
+          </ul>
+
+          <div className="tab-content">
+            {/* Tab de Email */}
+            <div
+              className={`tab-pane fade ${activeTab === "email" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="mb-2">
+                <label htmlFor="email_correlative" className="form-label">
+                  Tipo de Email
+                </label>
+                <select
+                  id="email_correlative"
+                  className="form-select mb-3"
+                  value={selectedEmailCorrelative}
+                  onChange={e => setSelectedEmailCorrelative(e.target.value)}
+                >
+                  {emailTemplates.map(t => (
+                    <option key={t.correlative} value={t.correlative}>{t.name || t.correlative}</option>
+                  ))}
+                </select>
+                <TinyMCEFormGroup
+                  height={600}
+                  label={
+                    <>
+                      Plantilla de Email (HTML seguro, variables: <code>{`{{variable}}`}</code>)
+                      <small className="d-block text-muted">
+                        No se permite código PHP ni Blade. Solo variables seguras.<br />
+                        {loadingVars && <span>Cargando variables...</span>}
+                        {varsError && <span className="text-danger">{varsError}</span>}
+                        {!loadingVars && !varsError && (
+                          <>
+                            <b>Variables disponibles:</b>{" "}
+                            {Object.keys(templateVariables).length === 0
+                              ? <span>No hay variables para esta notificación.</span>
+                              : Object.entries(templateVariables).map(([key, desc]) => (
+                                <span key={key} style={{ display: 'inline-block', marginRight: 8 }}>
                                   <code>{`{{${key}}}`}</code> <span className="text-muted">({desc})</span>{" "}
                                 </span>
                               ))
+                            }
+                          </>
+                        )}
+                      </small>
+                    </>
+                  }
+                  value={formData.email_templates[selectedEmailCorrelative] || ""}
+                  onChange={content => setFormData({
+                    ...formData,
+                    email_templates: {
+                      ...formData.email_templates,
+                      [selectedEmailCorrelative]: content
+                    }
+                  })}
+                />
+              </div>
+            </div>
+            <div
+              className={`tab-pane fade ${activeTab === "general" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-md-6 mb-2">
+                  {formData.cintillos.map((cintillo, index) => (
+                    <div
+                      key={`cintillo-${index}`}
+                      className="mb-3"
+                    >
+                      <label
+                        htmlFor={`cintillo-${index}`}
+                        className="form-label"
+                      >
+                        Cintillo {index + 1} (No usar coma)
+                      </label>
+                      <div className="input-group">
+                        <textarea
+                          className="form-control"
+                          id={`cintillo-${index}`}
+                          value={cintillo}
+                          onChange={(e) =>
+                            handleInputChange(
+                              e,
+                              index,
+                              "cintillos"
+                            )
                           }
-                        </>
-                      )}
-                    </small>
-                  </>
-                }
-                value={formData.email_templates[selectedEmailCorrelative] || ""}
-                onChange={content => setFormData({
-                  ...formData,
-                  email_templates: {
-                    ...formData.email_templates,
-                    [selectedEmailCorrelative]: content
-                  }
-                })}
-              />
-            </div>
-          </div>
-          <div
-            className={`tab-pane fade ${activeTab === "general" ? "show active" : ""
-              }`}
-            role="tabpanel"
-          >
-            <div className="row">
-              <div className="col-md-6 mb-2">
-                {formData.cintillos.map((cintillo, index) => (
-                  <div
-                    key={`cintillo-${index}`}
-                    className="mb-3"
-                  >
-                    <label
-                      htmlFor={`cintillo-${index}`}
-                      className="form-label"
-                    >
-                      Cintillo {index + 1} (No usar coma)
-                    </label>
-                    <div className="input-group">
-                      <textarea
-                        className="form-control"
-                        id={`cintillo-${index}`}
-                        value={cintillo}
-                        onChange={(e) =>
-                          handleInputChange(
-                            e,
-                            index,
-                            "cintillos"
-                          )
-                        }
-                        rows="2"
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger"
-                        onClick={() =>
-                          handleRemoveField(
-                            index,
-                            "cintillos"
-                          )
-                        }
-                      >
-                        <i className="fa fa-trash"></i>
-                      </button>
+                          rows="2"
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          onClick={() =>
+                            handleRemoveField(
+                              index,
+                              "cintillos"
+                            )
+                          }
+                        >
+                          <i className="fa fa-trash"></i>
+                        </button>
+                      </div>
                     </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={() => handleAddField("cintillos")}
+                  >
+                    Agregar cintillo
+                  </button>
+                </div>
+                <ConditionalField correlative="copyright">
+                  <div className="col-md-6 mb-2">
+                    <label htmlFor="copyright" className="form-label">
+                      Copyright
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="copyright"
+                      value={formData.copyright}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          copyright: e.target.value,
+                        })
+                      }
+                    ></textarea>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  className="btn btn-outline-primary"
-                  onClick={() => handleAddField("cintillos")}
-                >
-                  Agregar cintillo
-                </button>
+                </ConditionalField>
               </div>
-              <div className="col-md-6 mb-2">
-                <label htmlFor="copyright" className="form-label">
-                  Copyright
-                </label>
-                <textarea
-                  className="form-control"
-                  id="copyright"
-                  value={formData.copyright}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      copyright: e.target.value,
-                    })
-                  }
-                ></textarea>
-              </div>
+              <ConditionalField correlative="address">
+                <div className="mb-2">
+                  <label htmlFor="address" className="form-label">
+                    Dirección
+                  </label>
+                  <textarea
+                    className="form-control"
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: e.target.value,
+                      })
+                    }
+                    required
+                  ></textarea>
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="openingHours">
+                <div className="mb-2">
+                  <TextareaFormGroup
+                    label="Horarios de atencion"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        openingHours: e.target.value,
+                      })
+                    }
+                    value={formData.openingHours}
+                    required
+                  />
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="igvCheckout">
+                <div className="mb-2">
+                  <label
+                    htmlFor="igvCheckout"
+                    className="form-label"
+                  >
+                    IGV
+                    <small className="d-block text-muted">Dejar en 0 si no se quiere mostrar</small>
+                  </label>
+                  <input
+                    type="number"
+                    step={0.01}
+                    className="form-control"
+                    id="igvCheckout"
+                    value={formData.igvCheckout}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        igvCheckout: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="currency">
+                <div className="mb-2">
+                  <label
+                    htmlFor="currency"
+                    className="form-label"
+                  >
+                    Moneda
+                    <small className="d-block text-muted" style={{ fontWeight: 'lighter' }}>¿Qué moneda maneja tu empresa?</small>
+                  </label>
+                  <select
+                    className="form-control"
+                    id="currency"
+                    value={formData.currency}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        currency: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="pen">Soles (S/)</option>
+                    <option value="usd">Dólares ($)</option>
+                  </select>
+                </div>
+              </ConditionalField>
             </div>
-            <div className="mb-2">
-              <label htmlFor="address" className="form-label">
-                Dirección
-              </label>
-              <textarea
-                className="form-control"
-                id="address"
-                value={formData.address}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    address: e.target.value,
-                  })
-                }
-                required
-              ></textarea>
-            </div>
-            <div className="mb-2">
-              <TextareaFormGroup
-                label="Horarios de atencion"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    openingHours: e.target.value,
-                  })
-                }
-                value={formData.openingHours}
-                required
-              />
-            </div>
-            <div className="mb-2">
-              <label
-                htmlFor="igvCheckout"
-                className="form-label"
-              >
-                IGV
-                <small className="d-block text-muted">Dejar en 0 si no se quiere mostrar</small>
-              </label>
-              <input
-                type="number"
-                step={0.01}
-                className="form-control"
-                id="igvCheckout"
-                value={formData.igvCheckout}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    igvCheckout: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <label
-                htmlFor="currency"
-                className="form-label"
-              >
-                Moneda
-                <small className="d-block text-muted" style={{ fontWeight: 'lighter' }}>¿Qué moneda maneja tu empresa?</small>
-              </label>
-              <select
-                className="form-control"
-                id="currency"
-                value={formData.currency}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    currency: e.target.value,
-                  })
-                }
-              >
-                <option value="pen">Soles (S/)</option>
-                <option value="usd">Dólares ($)</option>
-              </select>
-            </div>
-          </div>
-        </div>
 
-        <div className="tab-content" id="contactTabsContent">
-          <div
-            className={`tab-pane fade ${activeTab === "contact" ? "show active" : ""
-              }`}
-            role="tabpanel"
-          >
-            <div className="row mb-2">
-              <div className="col-md-6">
-                {formData.phones.map((phone, index) => (
-                  <div
-                    key={`phone-${index}`}
-                    className="mb-3"
-                  >
-                    <label
-                      htmlFor={`phone-${index}`}
-                      className="form-label"
-                    >
-                      Teléfono {index + 1}
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type="tel"
-                        className="form-control"
-                        id={`phone-${index}`}
-                        value={phone}
-                        onChange={(e) =>
-                          handleInputChange(
-                            e,
-                            index,
-                            "phones"
-                          )
-                        }
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger"
-                        onClick={() =>
-                          handleRemoveField(
-                            index,
-                            "phones"
-                          )
-                        }
+            {/* Tab de Contacto */}
+            <div
+              className={`tab-pane fade ${activeTab === "contact" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <ConditionalField correlative="phone">
+                <div className="row mb-2">
+                  <div className="col-md-6">
+                    {formData.phones.map((phone, index) => (
+                      <div
+                        key={`phone-${index}`}
+                        className="mb-3"
                       >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  className="btn btn-outline-primary"
-                  onClick={() => handleAddField("phones")}
-                >
-                  Agregar teléfono
-                </button>
-              </div>
-              <div className="col-md-6">
-                {formData.emails.map((email, index) => (
-                  <div
-                    key={`email-${index}`}
-                    className="mb-3"
-                  >
-                    <label
-                      htmlFor={`email-${index}`}
-                      className="form-label"
+                        <label
+                          htmlFor={`phone-${index}`}
+                          className="form-label"
+                        >
+                          Teléfono {index + 1}
+                        </label>
+                        <div className="input-group">
+                          <input
+                            type="tel"
+                            className="form-control"
+                            id={`phone-${index}`}
+                            value={phone}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                index,
+                                "phones"
+                              )
+                            }
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger"
+                            onClick={() =>
+                              handleRemoveField(
+                                index,
+                                "phones"
+                              )
+                            }
+                          >
+                            <i className="fa fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary"
+                      onClick={() => handleAddField("phones")}
                     >
-                      Correo {index + 1}
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id={`email-${index}`}
-                        value={email}
-                        onChange={(e) =>
-                          handleInputChange(
-                            e,
-                            index,
-                            "emails"
-                          )
-                        }
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger"
-                        onClick={() =>
-                          handleRemoveField(
-                            index,
-                            "emails"
-                          )
-                        }
-                      >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </div>
+                      Agregar teléfono
+                    </button>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  className="btn btn-outline-primary"
-                  onClick={() => handleAddField("emails")}
-                >
-                  Agregar correo
-                </button>
-              </div>
-            </div>
-            <div className="mb-2">
-              <label
-                htmlFor="supportPhone"
-                className="form-label"
-              >
-                Número de soporte
-              </label>
-              <input
-                type="tel"
-                className="form-control"
-                id="supportPhone"
-                value={formData.supportPhone}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    supportPhone: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-             <div className="mb-2">
-              <label
-                htmlFor="coorporativeEmail"
-                className="form-label"
-              >
-                Correo corporativo
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                id="coorporativeEmail"
-                value={formData.coorporativeEmail}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    coorporativeEmail: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <label
-                htmlFor="supportEmail"
-                className="form-label"
-              >
-                Correo de soporte
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                id="supportEmail"
-                value={formData.supportEmail}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    supportEmail: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-           
-            <div className="mb-2">
-              <label
-                htmlFor="phoneWhatsapp"
-                className="form-label"
-              >
-                Número de Whatsapp
-              </label>
-              <input
-                type="tel"
-                className="form-control"
-                id="phoneWhatsapp"
-                value={formData.phoneWhatsapp}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    phoneWhatsapp: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-            <div className="mb-2">
-              <label
-                htmlFor="messageWhatsapp"
-                className="form-label"
-              >
-                Mensaje de Whatsapp
-              </label>
-              <input
-                type="tel"
-                className="form-control"
-                id="messageWhatsapp"
-                value={formData.messageWhatsapp}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    messageWhatsapp: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-          </div>
+                  <div className="col-md-6">
+                    {formData.emails.map((email, index) => (
+                      <div
+                        key={`email-${index}`}
+                        className="mb-3"
+                      >
+                        <label
+                          htmlFor={`email-${index}`}
+                          className="form-label"
+                        >
+                          Correo {index + 1}
+                        </label>
+                        <div className="input-group">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id={`email-${index}`}
+                            value={email}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                index,
+                                "emails"
+                              )
+                            }
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger"
+                            onClick={() =>
+                              handleRemoveField(
+                                index,
+                                "emails"
+                              )
+                            }
+                          >
+                            <i className="fa fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary"
+                      onClick={() => handleAddField("emails")}
+                    >
+                      Agregar correo
+                    </button>
+                  </div>
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="support_phone">
+                <div className="mb-2">
+                  <label
+                    htmlFor="supportPhone"
+                    className="form-label"
+                  >
+                    Número de soporte
+                  </label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    id="supportPhone"
+                    value={formData.supportPhone}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        supportPhone: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="coorporative_email">
+                <div className="mb-2">
+                  <label
+                    htmlFor="coorporativeEmail"
+                    className="form-label"
+                  >
+                    Correo corporativo
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="coorporativeEmail"
+                    value={formData.coorporativeEmail}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        coorporativeEmail: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="support_email">
+                <div className="mb-2">
+                  <label
+                    htmlFor="supportEmail"
+                    className="form-label"
+                  >
+                    Correo de soporte
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="supportEmail"
+                    value={formData.supportEmail}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        supportEmail: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </ConditionalField>
 
+              <ConditionalField correlative="phone_whatsapp">
+                <div className="mb-2">
+                  <label
+                    htmlFor="phoneWhatsapp"
+                    className="form-label"
+                  >
+                    Número de Whatsapp
+                  </label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    id="phoneWhatsapp"
+                    value={formData.phoneWhatsapp}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phoneWhatsapp: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="message_whatsapp">
+                <div className="mb-2">
+                  <label
+                    htmlFor="messageWhatsapp"
+                    className="form-label"
+                  >
+                    Mensaje de Whatsapp
+                  </label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    id="messageWhatsapp"
+                    value={formData.messageWhatsapp}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        messageWhatsapp: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </ConditionalField>
+            </div>
+         
           <div
-            className={`tab-pane fade ${activeTab === "checkout" ? "show active" : ""
-              }`}
+            className={`tab-pane fade ${activeTab === "checkout" ? "show active" : ""}`}
             role="tabpanel"
           >
             <div className="row">
@@ -1148,8 +1333,8 @@ const Generals = ({ generals }) => {
                 </div>
               </div>
               <div className="col-sm-9">
-                <div className="tab-content pt-0">
-                  <div className="tab-pane fade active show" id="v-culqi" role="tabpanel" aria-labelledby="v-culqi-tab">
+                <div className="tab-pane fade active show" id="v-culqi" role="tabpanel" aria-labelledby="v-culqi-tab">
+                  <ConditionalField correlative="checkout_culqi">
                     <div className="mb-2">
                       <div className="form-check">
                         <input
@@ -1165,6 +1350,8 @@ const Generals = ({ generals }) => {
                         </label>
                       </div>
                     </div>
+                  </ConditionalField>
+                  <ConditionalField correlative="checkout_culqi_name">
                     <div className="mb-2">
                       <label className="form-label">Título del formulario</label>
                       <input
@@ -1177,173 +1364,174 @@ const Generals = ({ generals }) => {
                         })}
                       />
                     </div>
-                    <div className="mb-2">
-                      <label className="form-label">Clave Pública</label>
+                  </ConditionalField>
+                  <div className="mb-2">
+                    <label className="form-label">Clave Pública</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.checkout_culqi_public_key}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_culqi_public_key: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label">Clave Privada</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={formData.checkout_culqi_private_key}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_culqi_private_key: e.target.value
+                      })}
+                    />
+                  </div>
+                </div>
+                <div className="tab-pane fade" id="v-mercadopago" role="tabpanel" aria-labelledby="v-mercadopago-tab">
+                  <div className="mb-2">
+                    <div className="form-check">
                       <input
-                        type="text"
-                        className="form-control"
-                        value={formData.checkout_culqi_public_key}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_culqi_public_key: e.target.value
-                        })}
+                        type="checkbox"
+                        className="form-check-input"
+                        id="checkout-mercadopago"
+                        checked={formData.checkout_mercadopago == 'true'}
+                        onChange={(e) => setFormData({ ...formData, checkout_mercadopago: String(e.target.checked) })}
                       />
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">Clave Privada</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        value={formData.checkout_culqi_private_key}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_culqi_private_key: e.target.value
-                        })}
-                      />
+                      <label className="form-check-label form-label" htmlFor="checkout-mercadopago">
+                        Habilitar pago con Mercado Pago
+                        <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Mercado Pago </small>
+                      </label>
                     </div>
                   </div>
-                  <div className="tab-pane fade" id="v-mercadopago" role="tabpanel" aria-labelledby="v-mercadopago-tab">
-                    <div className="mb-2">
-                      <div className="form-check">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="checkout-mercadopago"
-                          checked={formData.checkout_mercadopago == 'true'}
-                          onChange={(e) => setFormData({ ...formData, checkout_mercadopago: String(e.target.checked) })}
+                  <div className="mb-2">
+                    <label className="form-label">Título del formulario</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.checkout_mercadopago_name}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_mercadopago_name: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label">Clave Pública</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.checkout_mercadopago_public_key}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_mercadopago_public_key: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label">Clave Privada (Access Token)</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={formData.checkout_mercadopago_private_key}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_mercadopago_private_key: e.target.value
+                      })}
+                    />
+                  </div>
+                </div>
+                <div className="tab-pane fade" id="v-digital-wallet" role="tabpanel" aria-labelledby="v-digital-wallet-tab">
+                  <div className="mb-2">
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="checkout-dwallet"
+                        checked={formData.checkout_dwallet == 'true'}
+                        onChange={(e) => setFormData({ ...formData, checkout_dwallet: String(e.target.checked) })}
+                      />
+                      <label className="form-check-label form-label" htmlFor="checkout-dwallet">
+                        Habilitar pago con Yape/Plin
+                        <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Yape/Plin </small>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label">QR</label>
+                    {
+                      formData.checkout_dwallet_qr
+                        ? <div className="position-relative">
+                          <Tippy content="Eliminar QR">
+                            <button className="position-absolute btn btn-xs btn-danger" style={{
+                              top: '5px',
+                              left: '5px'
+                            }} onClick={() => setFormData({
+                              ...formData,
+                              checkout_dwallet_qr: null
+                            })}>
+                              <i className="mdi mdi-delete"></i>
+                            </button>
+                          </Tippy>
+                          <img src={`/assets/resources/${formData.checkout_dwallet_qr}`} className="img-thumbnail" style={{
+                            height: '200px',
+                            width: 'auto'
+                          }} />
+                        </div>
+                        : <input
+                          type="file"
+                          className="form-control"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            e.target.value = null
+
+                            const ext = file.name.split('.').pop()
+                            const dwallet_name = `qr-digital-wallet.${ext}`
+
+                            const request = new FormData()
+                            request.append('image', file)
+                            request.append('name', dwallet_name)
+
+                            const result = await galleryRest.save(request)
+                            if (!result) return;
+
+                            setFormData({
+                              ...formData,
+                              checkout_dwallet_qr: dwallet_name
+                            });
+                          }}
                         />
-                        <label className="form-check-label form-label" htmlFor="checkout-mercadopago">
-                          Habilitar pago con Mercado Pago
-                          <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Mercado Pago </small>
-                        </label>
-                      </div>
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">Título del formulario</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={formData.checkout_mercadopago_name}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_mercadopago_name: e.target.value
-                        })}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">Clave Pública</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={formData.checkout_mercadopago_public_key}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_mercadopago_public_key: e.target.value
-                        })}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">Clave Privada (Access Token)</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        value={formData.checkout_mercadopago_private_key}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_mercadopago_private_key: e.target.value
-                        })}
-                      />
-                    </div>
+                    }
                   </div>
-                  <div className="tab-pane fade" id="v-digital-wallet" role="tabpanel" aria-labelledby="v-digital-wallet-tab">
-                    <div className="mb-2">
-                      <div className="form-check">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="checkout-dwallet"
-                          checked={formData.checkout_dwallet == 'true'}
-                          onChange={(e) => setFormData({ ...formData, checkout_dwallet: String(e.target.checked) })}
-                        />
-                        <label className="form-check-label form-label" htmlFor="checkout-dwallet">
-                          Habilitar pago con Yape/Plin
-                          <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Yape/Plin </small>
-                        </label>
-                      </div>
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">QR</label>
-                      {
-                        formData.checkout_dwallet_qr
-                          ? <div className="position-relative">
-                            <Tippy content="Eliminar QR">
-                              <button className="position-absolute btn btn-xs btn-danger" style={{
-                                top: '5px',
-                                left: '5px'
-                              }} onClick={() => setFormData({
-                                ...formData,
-                                checkout_dwallet_qr: null
-                              })}>
-                                <i className="mdi mdi-delete"></i>
-                              </button>
-                            </Tippy>
-                            <img src={`/assets/resources/${formData.checkout_dwallet_qr}`} className="img-thumbnail" style={{
-                              height: '200px',
-                              width: 'auto'
-                            }} />
-                          </div>
-                          : <input
-                            type="file"
-                            className="form-control"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files[0];
-                              if (!file) return;
-                              e.target.value = null
-
-                              const ext = file.name.split('.').pop()
-                              const dwallet_name = `qr-digital-wallet.${ext}`
-
-                              const request = new FormData()
-                              request.append('image', file)
-                              request.append('name', dwallet_name)
-
-                              const result = await galleryRest.save(request)
-                              if (!result) return;
-
-                              setFormData({
-                                ...formData,
-                                checkout_dwallet_qr: dwallet_name
-                              });
-                            }}
-                          />
-                      }
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">Título</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={formData.checkout_dwallet_name}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_dwallet_name: e.target.value
-                        })}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label">Descripción</label>
-                      <textarea
-                        className="form-control"
-                        value={formData.checkout_dwallet_description}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_dwallet_description: e.target.value
-                        })}
-                      />
-                    </div>
+                  <div className="mb-2">
+                    <label className="form-label">Título</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.checkout_dwallet_name}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_dwallet_name: e.target.value
+                      })}
+                    />
                   </div>
-                  {/* <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
+                  <div className="mb-2">
+                    <label className="form-label">Descripción</label>
+                    <textarea
+                      className="form-control"
+                      value={formData.checkout_dwallet_description}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        checkout_dwallet_description: e.target.value
+                      })}
+                    />
+                  </div>
+                </div>
+                {/* <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
                     <div className="mb-2">
                       <div className="form-check">
                         <input
@@ -1395,180 +1583,179 @@ const Generals = ({ generals }) => {
                       />
                     </div>
                   </div> */}
-                  <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
-                    <div className="mb-2">
-                      <div className="form-check">
+                <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
+                  <div className="mb-2">
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="checkout-transfer"
+                        checked={formData.checkout_transfer === 'true'}
+                        onChange={(e) => setFormData({ ...formData, checkout_transfer: String(e.target.checked) })}
+                      />
+                      <label className="form-check-label form-label" htmlFor="checkout-transfer">
+                        Habilitar pago por transferencia
+                        <small className="text-muted d-block">Al habilitar esta opción, permite pagos por transferencia</small>
+                      </label>
+                    </div>
+                  </div>
+
+                  {formData.transfer_accounts.map((account, index) => (
+                    <div key={index} className="mb-4 p-3 border rounded">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <h5>Cuenta Bancaria #{index + 1}</h5>
+                        {index > 0 && (
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm"
+                            onClick={() => {
+                              const accounts = [...formData.transfer_accounts];
+                              accounts.splice(index, 1);
+                              setFormData({ ...formData, transfer_accounts: accounts });
+                            }}
+                          >
+                            Eliminar Cuenta
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label">Imagen de la Cuenta</label>
+                        {account.image ? (
+                          <div className="position-relative">
+                            <Tippy content="Eliminar Imagen">
+                              <button
+                                className="position-absolute btn btn-xs btn-danger"
+                                style={{ top: '5px', left: '5px' }}
+                                onClick={() => {
+                                  const accounts = [...formData.transfer_accounts];
+                                  accounts[index].image = null;
+                                  setFormData({ ...formData, transfer_accounts: accounts });
+                                }}
+                              >
+                                <i className="mdi mdi-delete"></i>
+                              </button>
+                            </Tippy>
+                            <img
+                              src={`/assets/resources/${account.image}`}
+                              className="img-thumbnail"
+                              style={{ height: '200px', width: 'auto' }}
+                            />
+                          </div>
+                        ) : (
+                          <input
+                            type="file"
+                            className="form-control"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
+                              e.target.value = null;
+
+                              const ext = file.name.split('.').pop();
+                              const imageName = `transfer-account-${Date.now()}.${ext}`;
+
+                              const request = new FormData();
+                              request.append('image', file);
+                              request.append('name', imageName);
+
+                              const result = await galleryRest.save(request);
+                              if (!result) return;
+
+                              const accounts = [...formData.transfer_accounts];
+                              accounts[index].image = imageName;
+                              setFormData({ ...formData, transfer_accounts: accounts });
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label">Número de Cuenta (CC)</label>
                         <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="checkout-transfer"
-                          checked={formData.checkout_transfer === 'true'}
-                          onChange={(e) => setFormData({ ...formData, checkout_transfer: String(e.target.checked) })}
+                          type="text"
+                          className="form-control"
+                          value={account.cc}
+                          onChange={(e) => {
+                            const accounts = [...formData.transfer_accounts];
+                            accounts[index].cc = e.target.value;
+                            setFormData({ ...formData, transfer_accounts: accounts });
+                          }}
                         />
-                        <label className="form-check-label form-label" htmlFor="checkout-transfer">
-                          Habilitar pago por transferencia
-                          <small className="text-muted d-block">Al habilitar esta opción, permite pagos por transferencia</small>
-                        </label>
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label">Código de Cuenta Interbancario (CCI)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={account.cci}
+                          onChange={(e) => {
+                            const accounts = [...formData.transfer_accounts];
+                            accounts[index].cci = e.target.value;
+                            setFormData({ ...formData, transfer_accounts: accounts });
+                          }}
+                        />
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label">Nombre del Banco/Titular</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={account.name}
+                          onChange={(e) => {
+                            const accounts = [...formData.transfer_accounts];
+                            accounts[index].name = e.target.value;
+                            setFormData({ ...formData, transfer_accounts: accounts });
+                          }}
+                        />
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label">Descripción</label>
+                        <textarea
+                          className="form-control"
+                          value={account.description}
+                          onChange={(e) => {
+                            const accounts = [...formData.transfer_accounts];
+                            accounts[index].description = e.target.value;
+                            setFormData({ ...formData, transfer_accounts: accounts });
+                          }}
+                        />
                       </div>
                     </div>
+                  ))}
 
-                    {formData.transfer_accounts.map((account, index) => (
-                      <div key={index} className="mb-4 p-3 border rounded">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <h5>Cuenta Bancaria #{index + 1}</h5>
-                          {index > 0 && (
-                            <button 
-                              type="button" 
-                              className="btn btn-danger btn-sm"
-                              onClick={() => {
-                                const accounts = [...formData.transfer_accounts];
-                                accounts.splice(index, 1);
-                                setFormData({...formData, transfer_accounts: accounts});
-                              }}
-                            >
-                              Eliminar Cuenta
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="form-label">Imagen de la Cuenta</label>
-                          {account.image ? (
-                            <div className="position-relative">
-                              <Tippy content="Eliminar Imagen">
-                                <button 
-                                  className="position-absolute btn btn-xs btn-danger" 
-                                  style={{top: '5px', left: '5px'}} 
-                                  onClick={() => {
-                                    const accounts = [...formData.transfer_accounts];
-                                    accounts[index].image = null;
-                                    setFormData({...formData, transfer_accounts: accounts});
-                                  }}
-                                >
-                                  <i className="mdi mdi-delete"></i>
-                                </button>
-                              </Tippy>
-                              <img 
-                                src={`/assets/resources/${account.image}`} 
-                                className="img-thumbnail" 
-                                style={{height: '200px', width: 'auto'}} 
-                              />
-                            </div>
-                          ) : (
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*"
-                              onChange={async (e) => {
-                                const file = e.target.files[0];
-                                if (!file) return;
-                                e.target.value = null;
-
-                                const ext = file.name.split('.').pop();
-                                const imageName = `transfer-account-${Date.now()}.${ext}`;
-
-                                const request = new FormData();
-                                request.append('image', file);
-                                request.append('name', imageName);
-
-                                const result = await galleryRest.save(request);
-                                if (!result) return;
-
-                                const accounts = [...formData.transfer_accounts];
-                                accounts[index].image = imageName;
-                                setFormData({...formData, transfer_accounts: accounts});
-                              }}
-                            />
-                          )}
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="form-label">Número de Cuenta (CC)</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={account.cc}
-                            onChange={(e) => {
-                              const accounts = [...formData.transfer_accounts];
-                              accounts[index].cc = e.target.value;
-                              setFormData({...formData, transfer_accounts: accounts});
-                            }}
-                          />
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="form-label">Código de Cuenta Interbancario (CCI)</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={account.cci}
-                            onChange={(e) => {
-                              const accounts = [...formData.transfer_accounts];
-                              accounts[index].cci = e.target.value;
-                              setFormData({...formData, transfer_accounts: accounts});
-                            }}
-                          />
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="form-label">Nombre del Banco/Titular</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={account.name}
-                            onChange={(e) => {
-                              const accounts = [...formData.transfer_accounts];
-                              accounts[index].name = e.target.value;
-                              setFormData({...formData, transfer_accounts: accounts});
-                            }}
-                          />
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="form-label">Descripción</label>
-                          <textarea
-                            className="form-control"
-                            value={account.description}
-                            onChange={(e) => {
-                              const accounts = [...formData.transfer_accounts];
-                              accounts[index].description = e.target.value;
-                              setFormData({...formData, transfer_accounts: accounts});
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-
-                    <button
-                      type="button"
-                      className="btn btn-primary mt-2"
-                      onClick={() => {
-                        setFormData({
-                          ...formData,
-                          transfer_accounts: [
-                            ...formData.transfer_accounts,
-                            {
-                              image: null,
-                              cc: "",
-                              cci: "",
-                              name: "",
-                              description: ""
-                            }
-                          ]
-                        });
-                      }}
-                    >
-                      Agregar Otra Cuenta
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary mt-2"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        transfer_accounts: [
+                          ...formData.transfer_accounts,
+                          {
+                            image: null,
+                            cc: "",
+                            cci: "",
+                            name: "",
+                            description: ""
+                          }
+                        ]
+                      });
+                    }}
+                  >
+                    Agregar Otra Cuenta
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Tab de Policies */}
           <div
-            className={`tab-pane fade ${activeTab === "policies" ? "show active" : ""
-              }`}
+            className={`tab-pane fade ${activeTab === "policies" ? "show active" : ""}`}
             role="tabpanel"
           >
             <div className="mb-2">
@@ -1622,8 +1809,7 @@ const Generals = ({ generals }) => {
           </div>
 
           <div
-            className={`tab-pane fade ${activeTab === "location" ? "show active" : ""
-              }`}
+            className={`tab-pane fade ${activeTab === "location" ? "show active" : ""}`}
             role="tabpanel"
           >
             <LoadScript googleMapsApiKey={Global.GMAPS_API_KEY}>
@@ -1645,23 +1831,22 @@ const Generals = ({ generals }) => {
           </div>
 
           <div
-            className={`tab-pane fade ${activeTab === "shippingfree" ? "show active" : ""
-              }`}
+            className={`tab-pane fade ${activeTab === "shippingfree" ? "show active" : ""}`}
             role="tabpanel"
           >
             <div className="mb-2">
-                <label className="form-label">Envio gratis a partir de:</label>
-                <input
-                  type="text"
-                  placeholder="Ingrese el monto para envio gratis"
-                  className="form-control"
-                  value={formData.shippingFree}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    shippingFree: e.target.value
-                  })}
-                />
-              </div>
+              <label className="form-label">Envio gratis a partir de:</label>
+              <input
+                type="text"
+                placeholder="Ingrese el monto para envio gratis"
+                className="form-control"
+                value={formData.shippingFree}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  shippingFree: e.target.value
+                })}
+              />
+            </div>
           </div>
 
           <div
@@ -1693,7 +1878,7 @@ const Generals = ({ generals }) => {
                           importation_flete: e.target.value,
                         })
                       }
-                      
+
                     />
                     <span className="input-group-text">por kg</span>
                   </div>
@@ -1718,7 +1903,7 @@ const Generals = ({ generals }) => {
                           importation_seguro: e.target.value,
                         })
                       }
-                      
+
                     />
                     <span className="input-group-text">%</span>
                   </div>
@@ -1743,7 +1928,7 @@ const Generals = ({ generals }) => {
                           importation_derecho_arancelario: e.target.value,
                         })
                       }
-                      
+
                     />
                     <span className="input-group-text">%</span>
                   </div>
@@ -1768,7 +1953,7 @@ const Generals = ({ generals }) => {
                     }
                     rows={3}
                     style={{ minHeight: (3 * 27), fieldSizing: 'content' }}
-                    
+
                   />
                 </div>
               </div>
@@ -1776,8 +1961,7 @@ const Generals = ({ generals }) => {
           </div>
 
           <div
-            className={`tab-pane fade ${activeTab === "corporate" ? "show active" : ""
-              }`}
+            className={`tab-pane fade ${activeTab === "corporate" ? "show active" : ""}`}
             role="tabpanel"
           >
             <div className="mb-2">
@@ -1797,8 +1981,7 @@ const Generals = ({ generals }) => {
           </div>
 
           <div
-            className={`tab-pane fade ${activeTab === "pixels" ? "show active" : ""
-              }`}
+            className={`tab-pane fade ${activeTab === "pixels" ? "show active" : ""}`}
             role="tabpanel"
           >
             <div className="row">
@@ -1818,7 +2001,7 @@ const Generals = ({ generals }) => {
                   />
                   <small className="text-muted">ID de Google Analytics para tracking de visitas</small>
                 </div>
-                
+
                 <div className="mb-3">
                   <label className="form-label">Google Tag Manager ID</label>
                   <input
@@ -2030,7 +2213,7 @@ const Generals = ({ generals }) => {
             <div className="row">
               <div className="col-12">
                 <h5 className="mb-4">🔐 Configuración de Google OAuth</h5>
-                
+
                 {/* Switch para habilitar Google OAuth */}
                 <div className="mb-4">
                   <div className="form-check form-switch">
@@ -2091,7 +2274,7 @@ const Generals = ({ generals }) => {
                           <small className="text-muted">Client ID obtenido de Google Cloud Console</small>
                         </div>
                       </div>
-                      
+
                       <div className="col-md-6">
                         <div className="mb-3">
                           <label className="form-label">Google Client Secret</label>
@@ -2114,7 +2297,7 @@ const Generals = ({ generals }) => {
                       <div className="alert alert-success">
                         <h6>✅ Configuración completa</h6>
                         <p className="mb-0">
-                          Una vez guardada la configuración, los botones de "Continuar con Google" 
+                          Una vez guardada la configuración, los botones de "Continuar con Google"
                           aparecerán automáticamente en las páginas de login y registro.
                         </p>
                       </div>
@@ -2123,7 +2306,7 @@ const Generals = ({ generals }) => {
                     <div className="alert alert-warning">
                       <h6>⚠️ Importante para producción:</h6>
                       <p className="mb-0">
-                        Para usar en producción, asegúrate de actualizar los dominios autorizados 
+                        Para usar en producción, asegúrate de actualizar los dominios autorizados
                         en Google Cloud Console con tu dominio real (ej: https://tudominio.com)
                       </p>
                     </div>
@@ -2141,7 +2324,7 @@ const Generals = ({ generals }) => {
             <div className="row">
               <div className="col-12">
                 <h5 className="mb-4">💳 Configuración de Pasarelas de Pago</h5>
-                
+
                 {/* Culqi Configuration */}
                 <div className="card mb-4">
                   <div className="card-header">
@@ -2201,7 +2384,7 @@ const Generals = ({ generals }) => {
                               <small className="text-muted">Nombre que aparecerá en el formulario de pago</small>
                             </div>
                           </div>
-                          
+
                           <div className="col-md-6">
                             <div className="mb-3">
                               <label className="form-label">Llave Pública</label>
@@ -2252,7 +2435,7 @@ const Generals = ({ generals }) => {
                         <div className="alert alert-warning">
                           <h6>⚠️ Importante para producción:</h6>
                           <p className="mb-0">
-                            Para usar en producción, asegúrate de cambiar a las llaves de producción (pk_live_ y sk_live_) 
+                            Para usar en producción, asegúrate de cambiar a las llaves de producción (pk_live_ y sk_live_)
                             y configurar correctamente los webhooks en el panel de Culqi.
                           </p>
                         </div>
@@ -2274,26 +2457,168 @@ const Generals = ({ generals }) => {
               </div>
             </div>
           </div>
-        </div>
+          </div>
 
-        <button 
-          type="submit" 
-          className="btn btn-primary mt-3"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              Guardando...
-            </>
-          ) : (
-            'Guardar'
-          )}
-        </button>
-        <Toaster />
-      </form>
+         
+
+
+          <button
+            type="submit"
+            className="btn btn-primary mt-3"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Guardando...
+              </>
+            ) : (
+              'Guardar'
+            )}
+          </button>
+          <Toaster />
+        </form>
+
+      </div>
+      {/* Modal para gestión de visibilidad de campos */}
+      {
+        showVisibilityModal && (
+          <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Gestionar Visibilidad de Campos</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowVisibilityModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p className="text-muted mb-3">
+                    Selecciona qué campos serán visibles para los usuarios Admin. Los campos marcados
+                    estarán disponibles para Admin, los desmarcados solo serán visibles para Root.
+                  </p>
+                  
+                  {/* Organizar campos por categorías */}
+                  {Object.entries(tabCorrelatives).map(([tabKey, correlatives]) => {
+                    const tabName = {
+                      'email': 'Email',
+                      'contact': 'Contacto', 
+                      'checkout': 'Checkout',
+                      'policies': 'Políticas'
+                    }[tabKey] || tabKey;
+                    
+                    const tabFields = (allGenerals || generals).filter(general => 
+                      correlatives.includes(general.correlative)
+                    );
+                    
+                    if (tabFields.length === 0) return null;
+                    
+                    return (
+                      <div key={tabKey} className="mb-4">
+                        <h6 className="text-primary mb-3">
+                          <i className="fas fa-folder me-2"></i>
+                          {tabName}
+                        </h6>
+                        <div className="row">
+                          {tabFields.map((general) => (
+                            <div key={general.correlative} className="col-md-6 mb-2">
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`field-${general.correlative}`}
+                                  checked={fieldVisibility[general.correlative] || false}
+                                  onChange={() => handleToggleFieldVisibility(general.correlative)}
+                                />
+                                <label className="form-check-label" htmlFor={`field-${general.correlative}`}>
+                                  <strong>{general.name}</strong>
+
+                                </label>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Campos que no pertenecen a ninguna categoría */}
+                  {(() => {
+                    const allCategorizedCorrelatives = Object.values(tabCorrelatives).flat();
+                    const uncategorizedFields = (allGenerals || generals).filter(general => 
+                      !allCategorizedCorrelatives.includes(general.correlative)
+                    );
+                    
+                    if (uncategorizedFields.length === 0) return null;
+                    
+                    return (
+                      <div className="mb-4">
+                        <h6 className="text-secondary mb-3">
+                          <i className="fas fa-question-circle me-2"></i>
+                          Otros Campos
+                        </h6>
+                        <div className="row">
+                          {uncategorizedFields.map((general) => (
+                            <div key={general.correlative} className="col-md-6 mb-2">
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`field-${general.correlative}`}
+                                  checked={fieldVisibility[general.correlative] || false}
+                                  onChange={() => handleToggleFieldVisibility(general.correlative)}
+                                />
+                                <label className="form-check-label" htmlFor={`field-${general.correlative}`}>
+                                  <strong>{general.name}</strong>
+                                 
+                                </label>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowVisibilityModal(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleSaveVisibility}
+                    disabled={savingVisibility}
+                  >
+                    {savingVisibility ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-1"></span>
+                        Guardando...
+                      </>
+                    ) : (
+                      'Guardar Cambios'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        )}
+      {/* Backdrop del modal */}
+      {showVisibilityModal && (
+        <div className="modal-backdrop fade show"></div>
+      )}
     </div>
-  );
+  )
 };
 
 CreateReactScript((el, properties) => {

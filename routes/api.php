@@ -481,6 +481,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/generals', [AdminGeneralController::class, 'save']);
     Route::post('/generals/paginate', [AdminGeneralController::class, 'paginate']);
+    Route::post('/generals/visibility', [AdminGeneralController::class, 'updateVisibility']);
     Route::patch('/generals/status', [AdminGeneralController::class, 'status']);
     Route::patch('/generals/{field}', [AdminGeneralController::class, 'boolean']);
     Route::delete('/generals/{id}', [AdminGeneralController::class, 'delete']);
