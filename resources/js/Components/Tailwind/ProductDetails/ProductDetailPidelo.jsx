@@ -409,9 +409,9 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                             {/* Product Header */}
                             <div className="font-paragraph">
                                 <span className="customtext-neutral-dark text-sm">{item?.brand?.name}</span>
-                                <h1 className="customtext-neutral-dark text-6xl font-bold mt-2 leading-[1.0]">{item?.name}</h1>
+                                <h1 className="customtext-neutral-dark text-xl  lg:text-6xl font-bold mt-2 leading-[1.0]">{item?.name}</h1>
 
-                                <p className="customtext-neutral-dark text-base mt-4 opacity-80" dangerouslySetInnerHTML={{ __html: item?.description }}></p>
+                                <p className="customtext-neutral-dark text-sm line-clamp-5 lg:line-clamp-none lg:text-base mt-4 opacity-80" dangerouslySetInnerHTML={{ __html: item?.description }}></p>
                             </div>
 
                             {/* Quantity and Color Selectors - 50/50 Layout */}
@@ -626,7 +626,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                     </svg>
 
                                     <span>Este producto tiene</span>
-                                    <span className={` customtext-neutral-dark px-2 py-1 rounded-lg font-semibold ${data?.class_badge || "bg-primary"}`}>Garantía de Entrega</span>
+                                    <span className={` customtext-neutral-dark px-1 lg:px-2 py-1 text-[9px] lg:text-sm rounded-lg font-semibold ${data?.class_badge || "bg-primary"}`}>Garantía de Entrega</span>
                                 </div>
 
                                 <div className="text-sm flex gap-2 text-gray-600">
@@ -652,7 +652,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                     Hasta x6 cuotas sin intereses
                                 </div>
 
-                                <div className="flex flex-row gap-2 items-center justify-center">
+                                <div className="flex flex-row flex-wrap gap-2 items-center justify-center">
                                     <img src="/assets/img/banks/mastercard.png" alt="Mastercard" className="h-6" />
                                     <img src="/assets/img/banks/bitpay.png" alt="Bitpay" className="h-6" />
                                     
