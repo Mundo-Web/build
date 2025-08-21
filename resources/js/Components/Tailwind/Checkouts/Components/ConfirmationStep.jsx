@@ -258,8 +258,8 @@ export default function ConfirmationStep({
                             {[ 
                                 { label: "Subtotal", value: actualSubTotal },
                                 { label: "IGV", value: actualIgv },
-                                { label: "Seguro", value: actualSeguroImportacionTotal },
-                                { label: "Derecho arancelario", value: actualDerechoArancelarioTotal },
+                                ...(actualSeguroImportacionTotal > 0 ? [{ label: "Seguro de Importación", value: actualSeguroImportacionTotal }] : []),
+                                ...(actualDerechoArancelarioTotal > 0 ? [{ label: "Derecho Arancelario", value: actualDerechoArancelarioTotal }] : []),
                                 { label: "Envío", value: delivery }
                             ].map((item, index) => (
                                 <div key={index} className="flex justify-between items-center py-2">

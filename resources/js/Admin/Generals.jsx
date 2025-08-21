@@ -1693,7 +1693,7 @@ const Generals = ({ generals }) => {
                           importation_flete: e.target.value,
                         })
                       }
-                      required
+                      
                     />
                     <span className="input-group-text">por kg</span>
                   </div>
@@ -1718,7 +1718,7 @@ const Generals = ({ generals }) => {
                           importation_seguro: e.target.value,
                         })
                       }
-                      required
+                      
                     />
                     <span className="input-group-text">%</span>
                   </div>
@@ -1743,7 +1743,7 @@ const Generals = ({ generals }) => {
                           importation_derecho_arancelario: e.target.value,
                         })
                       }
-                      required
+                      
                     />
                     <span className="input-group-text">%</span>
                   </div>
@@ -1768,7 +1768,7 @@ const Generals = ({ generals }) => {
                     }
                     rows={3}
                     style={{ minHeight: (3 * 27), fieldSizing: 'content' }}
-                    required
+                    
                   />
                 </div>
               </div>
