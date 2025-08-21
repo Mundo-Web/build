@@ -69,6 +69,12 @@ const Combos = ({ items }) => {
     }
   }, [selectedProducts]);
 
+  // Debug: Verificar cuando se establece el mainProduct
+  useEffect(() => {
+    console.log('Main product changed:', mainProduct);
+    console.log('Selected products:', selectedProducts);
+  }, [mainProduct, selectedProducts]);
+
   // Manejador para cuando se selecciona un producto
   const handleProductChange = (event) => {
     const selectedData = $(event.target).select2("data"); // Obtiene los datos seleccionados
@@ -122,25 +128,32 @@ const Combos = ({ items }) => {
 
       // Cargar los productos asociados
       const products = comboData.items || [];
+      
+      // Encontrar el producto principal antes de establecer el estado
+      const mainItemId = comboData.items.find((item) => item.pivot?.is_main_item)?.id;
+      const mainProductToSet = mainItemId ? products.find((product) => product.id === mainItemId) : null;
+      
+      // Establecer los productos y el producto principal
       setSelectedProducts(products);
+      setMainProduct(mainProductToSet);
 
       // Seleccionar los productos en el campo SelectAPIFormGroup
       setTimeout(() => {
         const productIds = products.map((product) => product.id.toString());
-        itemsRef.current.setValue(productIds); // Asegúrate de que `setValue` sea un método válido en `SelectAPIFormGroup`
-      }, 0);
-
-      // Establecer el producto principal si existe
-      const mainItemId = comboData.items.find((item) => item.pivot.is_main_item)?.id;
-      if (mainItemId) {
-        setMainProduct(products.find((product) => product.id === mainItemId));
-      }
+        if (itemsRef.current?.setValue) {
+          itemsRef.current.setValue(productIds);
+        }
+      }, 100); // Aumenté el tiempo para dar más margen
     } else {
       setIsEditing(false);
       idRef.current.value = '';
       nameRef.current.value = '';
       priceRef.current.value = 0;
       discountRef.current.value = 0;
+      // Limpiar estados de productos
+      setSelectedProducts([]);
+      setMainProduct(null);
+      setTotalPrice(0);
     }
 
     // Mostrar el modal
@@ -334,24 +347,31 @@ const Combos = ({ items }) => {
           <ul className="list-unstyled col-md-12 row">
             {selectedProducts.map((product) => (
               <li key={product.id} className="col-md-6" >
-                <input
-                  type="radio"
-                  name="mainProduct"
-                  checked={mainProduct?.id === product.id}
-                  onChange={() => setMainProduct(product)}
-                />
+                <div className="form-check mb-2">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="mainProduct"
+                    id={`mainProduct_${product.id}`}
+                    checked={mainProduct?.id === product.id}
+                    onChange={() => setMainProduct(product)}
+                  />
+                  <label className="form-check-label" htmlFor={`mainProduct_${product.id}`}>
+                    Producto principal
+                  </label>
+                </div>
                 <div>
 
-                  <div class="card mb-3">
-                    <div class="row g-0">
-                      <div class="col-md-4">
-                        <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} class="img-thumbnail rounded-start" alt={product.name} />
+                  <div className="card mb-3">
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} className="img-thumbnail rounded-start" alt={product.name} />
                       </div>
-                      <div class="col-md-8">
-                        <div class="card-body">
-                          <h5 class="card-title">{product?.name} </h5>
-                          <p class="card-text small line-clamp-2">{product?.summary} </p>
-                          <p class="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
+                      <div className="col-md-8">
+                        <div className="card-body">
+                          <h5 className="card-title">{product?.name} </h5>
+                          <p className="card-text small line-clamp-2">{product?.summary} </p>
+                          <p className="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
 
                           <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
                         </div>
