@@ -28,7 +28,10 @@ export default function ConfirmationStep({
         totalFinal,
         delivery,
         couponDiscount,
-        automaticDiscountTotal
+        automaticDiscountTotal,
+        seguroImportacionTotal,
+        derechoArancelarioTotal,
+        fleteTotal
     });
 
     // Recalculate subtotal if it's 0 or incorrect
@@ -47,8 +50,24 @@ export default function ConfirmationStep({
     const actualSubTotal = subTotal > 0 ? subTotal : parseFloat((recalculatedTotal / 1.18).toFixed(2));
     const actualIgv = subTotal > 0 ? igv : parseFloat((recalculatedTotal - actualSubTotal).toFixed(2));
     
+    // Recalculate importation costs if they are 0
+    const pesoTotal = cart.reduce((acc, item) => {
+        const weight = parseFloat(item.weight) || 0;
+        return acc + weight * item.quantity;
+    }, 0);
+    
+    const costoxpeso = Number(generals?.find(x => x.correlative === 'importation_flete')?.description) || 0;
+    const actualFleteTotal = fleteTotal > 0 ? fleteTotal : (costoxpeso > 0 ? pesoTotal * costoxpeso : 0);
+    
+    const seguroImportacion = (Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) || 0) / 100;
+    const actualSeguroImportacionTotal = seguroImportacionTotal > 0 ? seguroImportacionTotal : actualSubTotal * seguroImportacion;
+    
+    const CIF = parseFloat(actualSubTotal) + parseFloat(actualFleteTotal) + parseFloat(actualSeguroImportacionTotal);
+    const derechoArancelario = (Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) || 0) / 100;
+    const actualDerechoArancelarioTotal = derechoArancelarioTotal > 0 ? derechoArancelarioTotal : CIF * derechoArancelario;
+    
     // Always recalculate totalFinal to ensure it's correct
-    const actualTotalFinal = actualSubTotal + actualIgv + (delivery || 0) - (couponDiscount || 0) - (automaticDiscountTotal || 0);
+    const actualTotalFinal = actualSubTotal + actualIgv + (delivery || 0) + actualSeguroImportacionTotal + actualDerechoArancelarioTotal - (couponDiscount || 0) - (automaticDiscountTotal || 0);
     
     console.log('ConfirmationStep - Debug totals:', {
         recalculatedTotal,
@@ -56,6 +75,10 @@ export default function ConfirmationStep({
         passedIgv: igv,
         actualSubTotal,
         actualIgv,
+        passedSeguro: seguroImportacionTotal,
+        actualSeguro: actualSeguroImportacionTotal,
+        passedDerecho: derechoArancelarioTotal,
+        actualDerecho: actualDerechoArancelarioTotal,
         passedTotalFinal: totalFinal,
         actualTotalFinal,
         cart: cart.map(item => ({
@@ -63,7 +86,8 @@ export default function ConfirmationStep({
             type: item.type,
             price: item.price,
             final_price: item.final_price,
-            quantity: item.quantity
+            quantity: item.quantity,
+            weight: item.weight
         }))
     });
 
@@ -231,16 +255,16 @@ export default function ConfirmationStep({
                             transition={{ delay: 0.8 }}
                             className="space-y-4 mt-6"
                         >
-                            {[
-                                { label: "Subtotal", value: actualSubTotal, show: true },
-                                { label: "IGV", value: actualIgv, show: Number(generals?.find(x => x.correlative === 'igv_checkout')?.description) > 0 },
-                                { label: "Seguro", value: seguroImportacionTotal, show: Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 },
-                                { label: "Derecho arancelario", value: derechoArancelarioTotal, show: Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 },
-                                { label: "Envío", value: delivery, show: true }
-                            ].filter(item => item.show).map((item, index) => (
+                            {[ 
+                                { label: "Subtotal", value: actualSubTotal },
+                                { label: "IGV", value: actualIgv },
+                                { label: "Seguro", value: actualSeguroImportacionTotal },
+                                { label: "Derecho arancelario", value: actualDerechoArancelarioTotal },
+                                { label: "Envío", value: delivery }
+                            ].map((item, index) => (
                                 <div key={index} className="flex justify-between items-center py-2">
-                                    <span className="customtext-neutral-dark">{item?.label}</span>
-                                    <span className="font-semibold">{CurrencySymbol()}{Number2Currency(item?.value)}</span>
+                                    <span className="customtext-neutral-dark">{item.label}</span>
+                                    <span className="font-semibold">{CurrencySymbol()}{Number2Currency(item.value)}</span>
                                 </div>
                             ))}
 

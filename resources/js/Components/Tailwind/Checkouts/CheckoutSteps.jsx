@@ -93,7 +93,7 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
     const [automaticDiscountTotal, setAutomaticDiscountTotal] = useState(0);
     
     // Calcular total final con todos los descuentos e importaciones
-    const totalWithoutDiscounts = subTotal + igv + parseFloat(envio) + parseFloat(derechoArancelarioTotal);
+    const totalWithoutDiscounts = subTotal + igv + parseFloat(envio) + parseFloat(seguroImportacionTotal) + parseFloat(derechoArancelarioTotal);
     const totalAllDiscounts = couponDiscount + automaticDiscountTotal;
     const totalFinal = Math.max(0, totalWithoutDiscounts - totalAllDiscounts);
     

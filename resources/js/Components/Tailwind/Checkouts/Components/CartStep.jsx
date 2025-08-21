@@ -289,13 +289,10 @@ export default function CartStep({
                         <span className="customtext-neutral-dark">Subtotal</span>
                         <span className="font-semibold">{CurrencySymbol()}{Number2Currency(subTotal)}</span>
                     </div>
-                    {
-                        Number(generals?.find(x => x.correlative === 'igv_checkout')?.description) > 0 &&
-                        <div className="flex justify-between">
-                            <span className="customtext-neutral-dark">IGV</span>
-                            <span className="font-semibold">{CurrencySymbol()}{Number2Currency(igv)}</span>
-                        </div>
-                    }
+                    <div className="flex justify-between">
+                        <span className="customtext-neutral-dark">IGV ({Number(generals?.find(x => x.correlative === 'igv_checkout')?.description || 18)}%)</span>
+                        <span className="font-semibold">{CurrencySymbol()}{Number2Currency(igv)}</span>
+                    </div>
                     {
                         Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
                         <div className="flex justify-between">

@@ -932,7 +932,7 @@ export default function ShippingStep({
     };
 
     // Calcular el total base antes de cupón
-    const totalBase = roundToTwoDecimals(subTotal) + roundToTwoDecimals(igv) + roundToTwoDecimals(envio) - roundToTwoDecimals(automaticDiscountTotal);
+    const totalBase = roundToTwoDecimals(subTotal) + roundToTwoDecimals(igv) + roundToTwoDecimals(envio) + roundToTwoDecimals(seguroImportacionTotal) + roundToTwoDecimals(derechoArancelarioTotal) - roundToTwoDecimals(automaticDiscountTotal);
 
     // Calcular el descuento del cupón sobre el total base
     let calculatedCouponDiscount = 0;
@@ -1353,13 +1353,10 @@ export default function ShippingStep({
                         <span>Subtotal:</span>
                         <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(subTotal))}</span>
                     </div>
-                    {
-                        Number(generals?.find(x => x.correlative === 'igv_checkout')?.description) > 0 &&
-                        <div className="flex justify-between">
-                            <span>IGV ({Number(generals?.find(x => x.correlative === 'igv_checkout')?.description || 18)}%):</span>
-                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(igv))}</span>
-                        </div>
-                    }
+                    <div className="flex justify-between">
+                        <span>IGV ({Number(generals?.find(x => x.correlative === 'igv_checkout')?.description || 18)}%):</span>
+                        <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(igv))}</span>
+                    </div>
                     {
                         Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
                         <div className="flex justify-between">
