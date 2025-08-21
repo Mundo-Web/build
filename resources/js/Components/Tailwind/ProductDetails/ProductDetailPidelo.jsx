@@ -24,6 +24,9 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import ProductNavigationSwiper from "../Products/ProductNavigationSwiper";
 import em from "../../../Utils/em";
+import Global from "../../../Utils/Global";
+import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
+import ProductBananaLab from "../Products/ProductBananaLab";
 
 
 export default function ProductDetailPidelo({ item, data, setCart, cart, textstatic, contacts }) {
@@ -95,18 +98,24 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
         setCart(newCart);
 
         Swal.fire({
-            title: "Producto agregado",
-            text: `Se agregó ${selectedVariant.name || product.name} al carrito`,
+            title: '<span style="font-size:2rem;font-weight:700;color:#222">Producto agregado</span>',
+            html: `<div style="font-size:1.1rem;color:#444;margin-bottom:1rem;">Se agregó <b>${selectedVariant.name || product.name}</b> al carrito</div>
+                <img src='/storage/images/item/${selectedVariant.image || product.image}' style='width:100px;height:100px;border-radius:16px;margin:auto;background:#fff;object-fit:cover;' />`,
             icon: "success",
             showCancelButton: true,
-            confirmButtonText: "Abrir mini carrito",
-            cancelButtonText: "Seguir comprando",
+            confirmButtonText: '<span style="font-size:1rem;font-weight:600;">Abrir mini carrito</span>',
+            cancelButtonText: '<span style="font-size:1rem;font-weight:600;">Seguir comprando</span>',
             reverseButtons: true,
             timer: 5000,
+            customClass: {
+                popup: 'swal2-elegant-modal',
+                confirmButton: 'swal2-confirm-primary',
+                cancelButton: 'swal2-cancel-secondary',
+            },
+            buttonsStyling: false,
         }).then((result) => {
             if (result.isConfirmed) {
                 setModalOpen(!modalOpen);
-
             }
         });
     };
@@ -290,6 +299,45 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
             body: "Se agregaron con éxito los productos",
         });
     };
+    // Custom styles for SweetAlert2 elegant modal
+    useEffect(() => {
+        const styleId = 'swal2-elegant-modal-style';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.innerHTML = `
+                .swal2-elegant-modal {
+                    border-radius: 2rem !important;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+                    padding: 2.5rem 2rem 2rem 2rem !important;
+                    background: #fff !important;
+                }
+                .swal2-confirm-primary {
+                    background: ${Global.APP_COLOR_PRIMARY} !important;
+                    color: #fff !important;
+                    border-radius: 1rem !important;
+                    font-size: 1rem !important;
+                    font-weight: 600 !important;
+                    padding: 0.75rem 2rem !important;
+                    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+                    border: none !important;
+                    transition: background 0.2s;
+                }
+                
+                .swal2-cancel-secondary {
+                    background: #e5e7eb !important;
+                    color: #222 !important;
+                    border-radius: 1rem !important;
+                    font-size: 1rem !important;
+                    font-weight: 600 !important;
+                    padding: 0.75rem 2rem !important;
+                    border: none !important;
+                    margin-left: 0.5rem !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }, []);
     return (
         <>
             <div className="px-primary mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
@@ -473,10 +521,9 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                             {/* Product Details */}
                             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                                <h3 className="text-lg font-semibold customtext-neutral-dark mb-3">Detalles del Producto</h3>
-
+                               
                                 {/* Availability */}
-                                <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                <div className="flex gap-4 items-center justify-start ">
                                     <span className="customtext-neutral-dark text-sm font-medium">Disponibilidad</span>
                                     <span className={`px-3  py-1 rounded-full text-xs font-semibold ${selectedVariant?.stock > 0
                                             ? ` customtext-neutral-dark ${data?.class_badge || "bg-primary"}`
@@ -488,7 +535,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                                 {/* Brand */}
                                 {item?.brand?.name && (
-                                    <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                    <div className="flex gap-4 items-center justify-start ">
                                         <span className="customtext-neutral-dark text-sm font-medium">Marca</span>
                                         <span className="customtext-neutral-dark text-sm font-bold">{item.brand.name}</span>
                                     </div>
@@ -496,7 +543,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                                 {/* Weight */}
                                 {item?.weight && (
-                                    <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                    <div className="flex gap-4 items-center justify-start ">
                                         <span className="customtext-neutral-dark text-sm font-medium">Peso con empaque</span>
                                         <span className="customtext-neutral-dark text-sm font-bold">{item.weight} kg</span>
                                     </div>
@@ -504,7 +551,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                                 {/* Stock Quantity */}
                                 {selectedVariant?.stock > 0 && (
-                                    <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                    <div className="flex gap-4 items-center justify-start ">
                                         <span className="customtext-neutral-dark text-sm font-medium">Stock disponible</span>
                                         <span className="customtext-neutral-dark text-sm font-bold">{selectedVariant.stock} unidades</span>
                                     </div>
@@ -512,7 +559,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                                 {/* SKU */}
                                 {item?.sku && (
-                                    <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                    <div className="flex gap-4 items-center justify-start ">
                                         <span className="customtext-neutral-dark text-sm font-medium">SKU</span>
                                         <span className="customtext-neutral-dark text-sm font-mono bg-gray-200 px-2 py-1 rounded">{item.sku}</span>
                                     </div>
@@ -520,7 +567,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                                 {/* Category */}
                                 {item?.category?.name && (
-                                    <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                    <div className="flex gap-4 items-center justify-start ">
                                         <span className="customtext-neutral-dark text-sm font-medium">Categoría</span>
                                         <span className="customtext-neutral-dark text-sm font-bold">{item.category.name}</span>
                                     </div>
@@ -561,7 +608,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                     </svg>
 
                                     <span>Este producto tiene</span>
-                                    <span className={` customtext-neutral-dark px-2 py-1 rounded font-semibold ${data?.class_badge || "bg-primary"}`}>Garantía de Entrega</span>
+                                    <span className={` customtext-neutral-dark px-2 py-1 rounded-lg font-semibold ${data?.class_badge || "bg-primary"}`}>Garantía de Entrega</span>
                                 </div>
 
                                 <div className="text-sm flex gap-2 text-gray-600">
@@ -629,9 +676,11 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
             {/* Productos relacionados */}
             {relationsItems.length > 0 && (
                 <div className="-mt-10 mb-10 p-4">
-                    <ProductNavigationSwiper
-                        data={{ title: "Productos relacionados", link_catalog: "/catalogo" }}
+                    <ProductBananaLab
+                        data={{ title: "Productos relacionados", text_button: "Ver todos", link_catalog: "/catalogo" }}
                         items={relationsItems}
+                        setFavorites={[]}
+                        favorites={[]}
                         cart={cart}
                         setCart={setCart}
                     />

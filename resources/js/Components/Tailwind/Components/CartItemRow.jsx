@@ -52,8 +52,8 @@ const CartItemRow = ({ setCart, index, ...item }) => {
             
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between gap-2 mb-2">
-                    <div>
-                        <h3 className="font-semibold text-gray-900 truncate">
+                    <div className="max-w-52">
+                        <h3 className="font-semibold line-clamp-2  text-gray-900 truncate">
                             {item.name}
                         </h3>
                         {isCombo && (
