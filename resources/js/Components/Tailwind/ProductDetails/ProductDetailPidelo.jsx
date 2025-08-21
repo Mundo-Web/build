@@ -79,7 +79,25 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
     //         timer: 1500,
     //     });
     // };
+      // Comprar: agrega al carrito y redirige al cart, sin abrir modal
+    const onBuyClicked = (product) => {
+        const variantToAdd = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
+        const newCart = structuredClone(cart);
+        const index = newCart.findIndex((x) => x.id == variantToAdd.id);
+        if (index == -1) {
+            newCart.push({
+                ...variantToAdd,
+                quantity: quantity,
+            });
+        } else {
+            newCart[index].quantity++;
+        }
+        setCart(newCart);
+        // Redirige al carrito
+        window.location.href = '/cart';
+    };
     const onAddClicked = (product) => {
+  
 
         const variantToAdd = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
         const newCart = structuredClone(cart);
@@ -653,6 +671,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                 <button
                                     className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg hover:opacity-90 transition"
                                     disabled={selectedVariant?.stock <= 0}
+                                    onClick={() => onBuyClicked(item)}
                                 >
                                     Comprar
                                 </button>

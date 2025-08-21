@@ -8151,7 +8151,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-BfMFNJe1.js",
+    "file": "assets/ProductDetail-DrTyLFbh.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -8463,7 +8463,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailPidelo.jsx": {
-    "file": "assets/ProductDetailPidelo-C0Ap0OpZ.js",
+    "file": "assets/ProductDetailPidelo-4t8BVQRs.js",
     "name": "ProductDetailPidelo",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailPidelo.jsx",
     "isEntry": true,
@@ -8478,6 +8478,7 @@
       "resources/js/Components/Tailwind/Products/ProductMakita.jsx",
       "resources/js/Components/Tailwind/Products/ProductNavigation.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
+      "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
@@ -8497,7 +8498,11 @@
       "_package-DBFPPBi1.js",
       "_trash-2-DU7LB6-f.js",
       "_plus-CTIomuuF.js",
-      "_index-BZvh78jk.js"
+      "_index-BZvh78jk.js",
+      "_shopping-bag-C59bLmNC.js",
+      "_x-fof_H3Vv.js",
+      "_shopping-cart-DLRnxGTD.js",
+      "_arrow-right-MB8dWH_Y.js"
     ],
     "css": [
       "swiper.css",
@@ -10303,7 +10308,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BSa3EIUI.js",
+    "file": "assets/System-IudPSwlc.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
