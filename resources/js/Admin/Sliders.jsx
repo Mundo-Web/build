@@ -13,6 +13,7 @@ import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
 import getYTVideoId from '../Utils/getYTVideoId';
+import Fillable from '../Utils/Fillable';
 
 const slidersRest = new SlidersRest()
 
@@ -81,7 +82,7 @@ const Sliders = () => {
         formData.append('bg_image', file)
       }
 
-       const image = imageRef.current.files[0]
+      const image = imageRef.current.files[0]
       if (image) {
         formData.append('image', image)
       }
@@ -150,13 +151,31 @@ const Sliders = () => {
           caption: 'ID',
           visible: false
         },
-        {
+        Fillable.has('sliders', 'name') && {
+
           dataField: 'name',
           caption: 'Titulo',
           width: '75%',
+
         },
+        Fillable.has('sliders', 'bg_image') &&
         {
           dataField: 'bg_image',
+          caption: 'Imagen',
+          width: '90px',
+          cellTemplate: (container, { data }) => {
+            ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
+              style={{
+                width: '80px', height: '48px',
+                objectFit: 'cover', objectPosition: 'center',
+                borderRadius: '4px'
+              }}
+              onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+          }
+        },
+        Fillable.has('sliders', 'image') &&
+        {
+          dataField: 'image',
           caption: 'Imagen',
           width: '90px',
           cellTemplate: (container, { data }) => {
@@ -224,7 +243,7 @@ const Sliders = () => {
       <div className='row' id='sliders-container'>
         <input ref={idRef} type='hidden' />
         <div>
-          <ul class="nav nav-pills navtab-bg nav-justified">
+          <ul hidden={!Fillable.has('sliders', 'image') || !Fillable.has('sliders', 'bg_image') ||!Fillable.has('sliders', 'bg_video')} class="nav nav-pills navtab-bg nav-justified">
             <li class="nav-item">
               <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" class={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
                 Imagen
@@ -238,10 +257,10 @@ const Sliders = () => {
           </ul>
           <div class="tab-content">
             <div class={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
-              <ImageFormGroup eRef={bgImageRef} label='Imagen de fondo' />
-              <ImageFormGroup eRef={imageRef} label='Imagen' />
+              <ImageFormGroup hidden={!Fillable.has('sliders', 'bg_image')} eRef={bgImageRef} label='Imagen de fondo' />
+              <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} label='Imagen' />
             </div>
-            <div class={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
+            <div hidden={!Fillable.has('sliders', 'bg_video')} class={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
               <InputFormGroup eRef={bgVideoRef} label='URL (Youtube)' type='link' onChange={e => setIframeSrc(getYTVideoId(e.target.value))} />
               <iframe src={`https://www.youtube.com/embed/${iframeSrc}`} className='w-100 rounded border mb-2' style={{
                 aspectRatio: 21 / 9
