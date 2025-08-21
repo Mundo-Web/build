@@ -126,7 +126,55 @@ const Combos = ({ items }) => {
 
       // Cargar los productos asociados
       const products = comboData.items || [];
+      
+      // Debug: Verificar la estructura de datos
+      console.log('Combo data items:', comboData.items);
+      console.log('Products loaded:', products);
+      
+      // Establecer el producto principal ANTES de setSelectedProducts
+      const mainItemData = comboData.items.find((item) => {
+        // Verificar múltiples formatos posibles de is_main_item
+        const pivotValue = item.pivot?.is_main_item;
+        const directValue = item.is_main_item;
+        
+        // Convertir a boolean considerando diferentes tipos
+        const isMainItem = pivotValue === 1 || 
+                          pivotValue === '1' || 
+                          pivotValue === true ||
+                          pivotValue === 'true' ||
+                          directValue === 1 ||
+                          directValue === '1' ||
+                          directValue === true ||
+                          directValue === 'true';
+        
+        console.log(`Product ${item.id} (${item.name}):`, {
+          pivotValue, 
+          directValue, 
+          isMainItem,
+          rawPivot: item.pivot
+        });
+        
+        return isMainItem;
+      });
+      
+      console.log('Main item found:', mainItemData);
+      
+      // Primero establecer productos
       setSelectedProducts(products);
+      
+      // Usar setTimeout para asegurar que el estado se actualice después del render
+      setTimeout(() => {
+        if (mainItemData) {
+          const mainProductFound = products.find((product) => 
+            parseInt(product.id) === parseInt(mainItemData.id)
+          );
+          console.log('Setting main product to:', mainProductFound);
+          setMainProduct(mainProductFound);
+        } else {
+          console.log('No main product found, clearing mainProduct');
+          setMainProduct(null);
+        }
+      }, 50);
 
       // Seleccionar los productos en el campo SelectAPIFormGroup sin trigger
       setTimeout(() => {
@@ -135,12 +183,6 @@ const Combos = ({ items }) => {
           $(itemsRef.current).val(productIds);
         }
       }, 100);
-
-      // Establecer el producto principal si existe
-      const mainItemId = comboData.items.find((item) => item.pivot.is_main_item)?.id;
-      if (mainItemId) {
-        setMainProduct(products.find((product) => product.id === mainItemId));
-      }
     } else {
       setIsEditing(false);
       // Limpiar todos los estados
@@ -361,13 +403,22 @@ const Combos = ({ items }) => {
         <div className="col-md-12 row">
           <h4 className="col-md-12">Productos Seleccionados</h4>
           <ul className="list-unstyled col-md-12 row">
-            {selectedProducts.map((product) => (
+            {selectedProducts.map((product) => {
+              const isMainProduct = mainProduct && (
+                parseInt(mainProduct.id) === parseInt(product.id) ||
+                mainProduct.id === product.id
+              );
+              
+              return (
               <li key={product.id} className="col-md-6" >
                 <input
                   type="radio"
                   name="mainProduct"
-                  checked={mainProduct?.id === product.id}
-                  onChange={() => setMainProduct(product)}
+                  checked={isMainProduct}
+                  onChange={() => {
+                    console.log('Setting main product to:', product);
+                    setMainProduct(product);
+                  }}
                 />
                 <div>
 
@@ -389,10 +440,9 @@ const Combos = ({ items }) => {
                   </div>
                 </div>
 
-
-
               </li>
-            ))}
+              )
+            })}
           </ul>
         </div>
       </div>

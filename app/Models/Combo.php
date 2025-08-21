@@ -23,11 +23,9 @@ class Combo extends Model
         return $this->belongsToMany(Item::class, 'combo_items')->withPivot('is_main_item');
     }
 
-
-
     public function mainItem()
     {
         return $this->belongsToMany(Item::class, 'combo_items')
-            ->wherePivot('is_main_item', true);
+            ->wherePivot('is_main_item', 1); // Usar 1 en lugar de true para mayor compatibilidad
     }
 }
