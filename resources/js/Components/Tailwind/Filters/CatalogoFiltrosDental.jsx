@@ -332,7 +332,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                 console.log("📝 Enviando parámetros para conversión:", params);
                 const response = await itemsRest.convertSlugs(params);
                 console.log("📦 Respuesta de conversión de slugs:", response);
-                
+
                 if (response.status === 200) {
                     console.log("✅ Conversión exitosa, aplicando filtros...");
                     const newFilters = {
@@ -343,10 +343,10 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                         collection_id: Array.isArray(response.data.collection_ids) ? response.data.collection_ids : (response.data.collection_ids ? [response.data.collection_ids] : []),
                         store_id: Array.isArray(response.data.store_ids) ? response.data.store_ids : (response.data.store_ids ? [response.data.store_ids] : []),
                     };
-                    
+
                     console.log("🔄 Estableciendo filtros desde URL:", newFilters);
                     setSelectedFilters(newFilters);
-                    
+
                     if (response.data.store_ids) {
                         console.log("🏪 Store IDs encontrados:", response.data.store_ids);
                     }
@@ -444,7 +444,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
             transformedFilters.push(ArrayJoin(brandConditions, 'or'));
         }
 
-         if (filters.store_id.length > 0) {
+        if (filters.store_id.length > 0) {
             const storeConditions = filters.store_id.map((slug) => [
                 "store.id",
                 "=",
@@ -452,7 +452,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
             ]);
             transformedFilters.push(ArrayJoin(storeConditions, 'or'));
         }
-       
+
 
         if (filters.tag_id && filters.tag_id.length > 0) {
             const tagConditions = filters.tag_id.map((tagId) => [
@@ -1066,7 +1066,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
             setSubcategories(filteredData.subcategories || []);
             setStores(filteredData.stores || []);
             setPriceRanges(filteredData.priceRanges || []);
-            
+
             // Convert slugs from GET parameters to IDs AFTER data is loaded
             setTimeout(() => {
                 convertSlugsToIds();
@@ -1088,11 +1088,14 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
 
     useEffect(() => {
         // Cuando cambian los filtros, volvemos a la primera página SIN hacer scroll
-        // Solo si ya se hizo la búsqueda inicial
-        if (hasSearched) {
-            fetchProducts(1, true); // Es un filtrado
-        }
-    }, [selectedFilters, hasSearched]);
+        // Siempre ejecutar cuando los filtros cambien (tanto búsqueda inicial como filtrado)
+        console.log("🔄 useEffect detectó cambio en selectedFilters:");
+        console.log("📊 Filtros actuales:", selectedFilters);
+        console.log("🚀 Ejecutando fetchProducts...");
+        
+        fetchProducts(1, hasSearched); // true si ya había búsqueda, false si es inicial
+    }, [selectedFilters]); // Eliminar hasSearched como dependencia
+   
 
     // useEffect para detectar cambios en el filtro de nombre y aplicar búsqueda inteligente
     useEffect(() => {
@@ -2241,19 +2244,38 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                         <motion.button
                                             className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
                                             onClick={() => {
-                                                setSelectedFilters({
-                                                    collection_id: [],
-                                                    category_id: [],
-                                                    brand_id: [],
-                                                    subcategory_id: [],
-                                                    store_id: [],
-                                                    tag_id: [],
-                                                    price: [],
-                                                    name: null,
-                                                    sort_by: "created_at",
-                                                    order: "desc",
+                                                console.log("🧹 Limpiando todos los filtros...");
+                                                console.log("📊 Estado actual antes de limpiar:", selectedFilters);
+
+                                                // Limpiar cada filtro individualmente usando setSelectedFilters con función
+                                                // Esto simula el comportamiento de handleFilterChange que funciona correctamente
+                                                setSelectedFilters((prev) => {
+                                                    console.log("🔄 Estado previo en setSelectedFilters:", prev);
+
+                                                    const cleanFilters = {
+                                                        collection_id: [],
+                                                        category_id: [],
+                                                        brand_id: [],
+                                                        subcategory_id: [],
+                                                        store_id: [],
+                                                        tag_id: [],
+                                                        price: [],
+                                                        name: null,
+                                                        sort: [
+                                                            {
+                                                                selector: "final_price",
+                                                                desc: true,
+                                                            },
+                                                        ],
+                                                    };
+
+                                                    console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
+                                                    return cleanFilters;
                                                 });
+
                                                 setFilterSequence([]);
+
+                                                console.log("✅ Filtros limpiados correctamente - useEffect debería detectar el cambio");
                                             }}
                                             whileHover={{ scale: 1.02, y: -2 }}
                                             whileTap={{ scale: 0.98 }}
