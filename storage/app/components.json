@@ -2237,7 +2237,11 @@
                     "class_card_description",
                     "class_card_title",
                     "class_card_button",
-                    "class_card_container"
+                    "class_card_container",
+                    "title_ubication",
+                    "description_ubication",
+                    "stores_support"
+
                 ]
             },
             {

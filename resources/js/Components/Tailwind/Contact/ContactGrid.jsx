@@ -636,7 +636,7 @@ const ContactGrid = ({ data, contacts }) => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.5 }}
                     >
-                        Nuestras Ubicaciones
+                      {data?.title_ubication || "Nuestras Ubicaciones"}
                     </motion.h3>
                     <motion.p
                         className={` mb-4 ${data?.class_card_description || 'customtext-neutral-light'}`}
@@ -644,15 +644,15 @@ const ContactGrid = ({ data, contacts }) => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.6 }}
                     >
-                        Encuentra nuestras tiendas, oficinas y agencias más cercanas a tu ubicación.
+                       {data?.description_ubication || "Encuentra nuestras tiendas, oficinas y agencias más cercanas a tu ubicación."}
                     </motion.p>
                 </motion.div>
 
                 {/* Layout responsivo: si hay tiendas, división en columnas; si no, mapa completo */}
-                <div className={`flex flex-col gap-8 ${!loadingStores && Object.keys(storesByType).length > 0 ? 'lg:flex-row' : ''}`}>
+                <div className={`flex flex-col gap-8 ${data?.stores_support && !loadingStores && Object.keys(storesByType).length > 0 ? 'lg:flex-row' : ''}`}>
                     
                     {/* Sección de sucursales - solo si hay tiendas */}
-                    {!loadingStores && Object.keys(storesByType).length > 0 && (
+                    {data?.stores_support && !loadingStores && Object.keys(storesByType).length > 0 && (
                         <motion.div
                             className="lg:w-1/3 space-y-4"
                             initial={{ x: -50, opacity: 0 }}
@@ -678,7 +678,7 @@ const ContactGrid = ({ data, contacts }) => {
 
                     {/* Sección del mapa y detalles */}
                     <motion.div
-                        className={`${!loadingStores && Object.keys(storesByType).length > 0 ? 'lg:w-2/3' : 'w-full'} space-y-6`}
+                        className={`${data?.stores_support &&  !loadingStores && Object.keys(storesByType).length > 0 ? 'lg:w-2/3' : 'w-full'} space-y-6`}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.8 }}
@@ -699,11 +699,11 @@ const ContactGrid = ({ data, contacts }) => {
                             >
                                 <GoogleMap
                                     mapContainerStyle={{ width: "100%", height: "500px", borderRadius: "12px" }}
-                                    zoom={selectedStore ? 16 : (allStores.length > 0 ? 12 : 16)}
+                                    zoom={selectedStore ? 16 : (data?.stores_support && allStores.length > 0 ? 12 : 16)}
                                     center={selectedStore && selectedStore.latitude && selectedStore.longitude ? {
                                         lat: parseFloat(selectedStore.latitude),
                                         lng: parseFloat(selectedStore.longitude)
-                                    } : (allStores.length > 0 ? {
+                                    } : (data?.stores_support && allStores.length > 0 ? {
                                         lat: allStores.filter(store => store.latitude && store.longitude)
                                             .reduce((sum, store) => sum + parseFloat(store.latitude), parseFloat(locationGps.lat)) / 
                                             (allStores.filter(store => store.latitude && store.longitude).length + 1),
@@ -746,7 +746,7 @@ const ContactGrid = ({ data, contacts }) => {
                                     />
 
                                     {/* Marcadores de todas las tiendas */}
-                                    {allStores
+                                    {data?.stores_support &&  allStores
                                         .filter(store => store.latitude && store.longitude && 
                                             store.latitude !== "0" && store.longitude !== "0")
                                         .map((store) => (
@@ -771,7 +771,7 @@ const ContactGrid = ({ data, contacts }) => {
                                     ))}
 
                                     {/* InfoWindow para mostrar detalles de la tienda seleccionada */}
-                                    {selectedStore && (
+                                    {data?.stores_support &&  selectedStore && (
                                         <InfoWindow
                                             position={{
                                                 lat: parseFloat(selectedStore.latitude),
@@ -830,7 +830,7 @@ const ContactGrid = ({ data, contacts }) => {
                         </div>
 
                         {/* Información detallada de la tienda seleccionada */}
-                        {selectedStore ? (
+                        {data?.stores_support &&  selectedStore ? (
                             <motion.div
                                 className="space-y-6"
                                 initial={{ y: 30, opacity: 0 }}
@@ -1045,7 +1045,7 @@ const ContactGrid = ({ data, contacts }) => {
                                     </div>
                                 </motion.div>
                             </motion.div>
-                        ) : !loadingStores && Object.keys(storesByType).length > 0 && (
+                        ) : data?.stores_support && !loadingStores && Object.keys(storesByType).length > 0 && (
                             <motion.div
                                 className="space-y-6"
                                 initial={{ y: 30, opacity: 0 }}
