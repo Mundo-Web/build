@@ -56,24 +56,19 @@ const Combos = ({ items }) => {
 
   useEffect(() => {
     if (priceRef.current) {
-      priceRef.current.value = totalPrice.toFixed(2); // Actualiza el campo con el precio acumulado
+      priceRef.current.value = totalPrice.toFixed(2);
     }
   }, [totalPrice]);
 
-  useEffect(() => {
-    if (itemsRef.current) {
-      const selectedIds = selectedProducts.map((product) => product.id.toString());
-      $(itemsRef.current)
-        .val(selectedIds)
-        .trigger("change");
-    }
-  }, [selectedProducts]);
-
-  // Debug: Verificar cuando se establece el mainProduct
-  useEffect(() => {
-    console.log('Main product changed:', mainProduct);
-    console.log('Selected products:', selectedProducts);
-  }, [mainProduct, selectedProducts]);
+  // Comentamos este useEffect que causaba bucle infinito
+  // useEffect(() => {
+  //   if (itemsRef.current) {
+  //     const selectedIds = selectedProducts.map((product) => product.id.toString());
+  //     $(itemsRef.current)
+  //       .val(selectedIds)
+  //       .trigger("change");
+  //   }
+  // }, [selectedProducts]);
 
   // Manejador para cuando se selecciona un producto
   const handleProductChange = (event) => {
@@ -92,8 +87,11 @@ const Combos = ({ items }) => {
     const updatedProducts = selectedProducts.filter((p) => p.id !== productId);
     setSelectedProducts(updatedProducts);
 
-    const selectedIds = updatedProducts.map((p) => p.id.toString());
-    $(itemsRef.current).val(selectedIds).trigger("change");
+    // Actualizar el select2 sin trigger para evitar bucles
+    if (itemsRef.current) {
+      const selectedIds = updatedProducts.map((p) => p.id.toString());
+      $(itemsRef.current).val(selectedIds);
+    }
 
     if (mainProduct?.id === productId) {
       setMainProduct(null);
@@ -128,32 +126,38 @@ const Combos = ({ items }) => {
 
       // Cargar los productos asociados
       const products = comboData.items || [];
-      
-      // Encontrar el producto principal antes de establecer el estado
-      const mainItemId = comboData.items.find((item) => item.pivot?.is_main_item)?.id;
-      const mainProductToSet = mainItemId ? products.find((product) => product.id === mainItemId) : null;
-      
-      // Establecer los productos y el producto principal
       setSelectedProducts(products);
-      setMainProduct(mainProductToSet);
 
-      // Seleccionar los productos en el campo SelectAPIFormGroup
+      // Seleccionar los productos en el campo SelectAPIFormGroup sin trigger
       setTimeout(() => {
-        const productIds = products.map((product) => product.id.toString());
-        if (itemsRef.current?.setValue) {
-          itemsRef.current.setValue(productIds);
+        if (itemsRef.current) {
+          const productIds = products.map((product) => product.id.toString());
+          $(itemsRef.current).val(productIds);
         }
-      }, 100); // Aumenté el tiempo para dar más margen
+      }, 100);
+
+      // Establecer el producto principal si existe
+      const mainItemId = comboData.items.find((item) => item.pivot.is_main_item)?.id;
+      if (mainItemId) {
+        setMainProduct(products.find((product) => product.id === mainItemId));
+      }
     } else {
       setIsEditing(false);
+      // Limpiar todos los estados
+      setSelectedProducts([]);
+      setMainProduct(null);
+      setTotalPrice(0);
+      
+      // Limpiar el formulario
       idRef.current.value = '';
       nameRef.current.value = '';
       priceRef.current.value = 0;
       discountRef.current.value = 0;
-      // Limpiar estados de productos
-      setSelectedProducts([]);
-      setMainProduct(null);
-      setTotalPrice(0);
+      
+      // Limpiar el select2
+      if (itemsRef.current) {
+        $(itemsRef.current).val([]);
+      }
     }
 
     // Mostrar el modal
@@ -169,17 +173,22 @@ const Combos = ({ items }) => {
       discount: discountRef.current.value,
       final_price: discountRef.current.value > 0 && discountRef.current.value < totalPrice ? discountRef.current.value : totalPrice,
       discount_percent: 100 - (discountRef.current.value / priceRef.current.value) * 100,
-      items: selectedProducts.map((product) => ({
-        item_id: product.id,
-        is_main_item: mainProduct?.id === product.id,
-      })),
-
     }
 
     const formData = new FormData()
+    
+    // Agregar campos básicos
     for (const key in request) {
-      formData.append(key, request[key])
+      if (request[key] !== undefined) {
+        formData.append(key, request[key])
+      }
     }
+
+    // Agregar items de manera correcta
+    selectedProducts.forEach((product, index) => {
+      formData.append(`items[${index}][item_id]`, product.id);
+      formData.append(`items[${index}][is_main_item]`, mainProduct?.id === product.id ? 1 : 0);
+    });
 
     const symbol = imageRef.current.files[0]
     if (symbol) {
@@ -190,9 +199,16 @@ const Combos = ({ items }) => {
     if (!result) return;
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
+    
+    // Limpiar todos los estados
     setSelectedProducts([]);
     setMainProduct(null);
     setTotalPrice(0);
+    
+    // Limpiar el select2
+    if (itemsRef.current) {
+      $(itemsRef.current).val([]);
+    }
   }
 
 
@@ -347,31 +363,24 @@ const Combos = ({ items }) => {
           <ul className="list-unstyled col-md-12 row">
             {selectedProducts.map((product) => (
               <li key={product.id} className="col-md-6" >
-                <div className="form-check mb-2">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="mainProduct"
-                    id={`mainProduct_${product.id}`}
-                    checked={mainProduct?.id === product.id}
-                    onChange={() => setMainProduct(product)}
-                  />
-                  <label className="form-check-label" htmlFor={`mainProduct_${product.id}`}>
-                    Producto principal
-                  </label>
-                </div>
+                <input
+                  type="radio"
+                  name="mainProduct"
+                  checked={mainProduct?.id === product.id}
+                  onChange={() => setMainProduct(product)}
+                />
                 <div>
 
-                  <div className="card mb-3">
-                    <div className="row g-0">
-                      <div className="col-md-4">
-                        <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} className="img-thumbnail rounded-start" alt={product.name} />
+                  <div class="card mb-3">
+                    <div class="row g-0">
+                      <div class="col-md-4">
+                        <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} class="img-thumbnail rounded-start" alt={product.name} />
                       </div>
-                      <div className="col-md-8">
-                        <div className="card-body">
-                          <h5 className="card-title">{product?.name} </h5>
-                          <p className="card-text small line-clamp-2">{product?.summary} </p>
-                          <p className="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
+                      <div class="col-md-8">
+                        <div class="card-body">
+                          <h5 class="card-title">{product?.name} </h5>
+                          <p class="card-text small line-clamp-2">{product?.summary} </p>
+                          <p class="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
 
                           <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
                         </div>
