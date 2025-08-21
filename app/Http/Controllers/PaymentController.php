@@ -101,7 +101,10 @@ class PaymentController extends Controller
                 'coupon_code' => $request->coupon_code,
                 'coupon_discount' => $request->coupon_discount,
                 'applied_promotions' => $request->applied_promotions,
-                'promotion_discount' => $request->promotion_discount
+                'promotion_discount' => $request->promotion_discount,
+                'seguro_importacion_total' => $request->seguro_importacion_total,
+                'derecho_arancelario_total' => $request->derecho_arancelario_total,
+                'flete_total' => $request->flete_total
             ]);
 
             $sale = Sale::create([
@@ -123,6 +126,9 @@ class PaymentController extends Controller
                 'comment' => $request->comment,
                 'amount' => $request->amount,
                 'delivery' => $request->delivery,
+                'seguro_importacion_total' => $request->seguro_importacion_total ?? 0,
+                'derecho_arancelario_total' => $request->derecho_arancelario_total ?? 0,
+                'flete_total' => $request->flete_total ?? 0,
                 'delivery_type' => $request->delivery_type,
                 'store_id' => $request->store_id,
                 'coupon_id' => $request->coupon_id,

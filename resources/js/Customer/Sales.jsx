@@ -64,7 +64,10 @@ const Sales = ({ statuses = [] }) => {
 
     const totalAmount =
         Number(saleLoaded?.amount) +
-        Number(saleLoaded?.delivery || 0) -
+        Number(saleLoaded?.delivery || 0) +
+        Number(saleLoaded?.seguro_importacion_total || 0) +
+        Number(saleLoaded?.derecho_arancelario_total || 0) +
+        Number(saleLoaded?.flete_total || 0) -
         Number(saleLoaded?.bundle_discount || 0) -
         Number(saleLoaded?.renewal_discount || 0) -
         Number(saleLoaded?.coupon_discount || 0);
@@ -166,6 +169,9 @@ const Sales = ({ statuses = [] }) => {
                         cellTemplate: (container, { data }) => {
                             const amount = Number(data.amount) || 0;
                             const delivery = Number(data.delivery) || 0;
+                            const seguro_importacion = Number(data.seguro_importacion_total) || 0;
+                            const derecho_arancelario = Number(data.derecho_arancelario_total) || 0;
+                            const flete = Number(data.flete_total) || 0;
                             const bundle_discount =
                                 Number(data.bundle_discount) || 0;
                             const renewal_discount =
@@ -175,7 +181,10 @@ const Sales = ({ statuses = [] }) => {
                             container.text(
                                 `S/. ${Number2Currency(
                                     amount +
-                                        delivery -
+                                        delivery +
+                                        seguro_importacion +
+                                        derecho_arancelario +
+                                        flete -
                                         bundle_discount -
                                         renewal_discount -
                                         coupon_discount
@@ -406,6 +415,41 @@ const Sales = ({ statuses = [] }) => {
                                         {Number2Currency(saleLoaded?.delivery)}
                                     </span>
                                 </div>
+                                
+                                {/* Mostrar costos de importación si existen */}
+                                {(saleLoaded?.seguro_importacion_total > 0 || saleLoaded?.derecho_arancelario_total > 0 || saleLoaded?.flete_total > 0) && (
+                                    <>
+                                        {saleLoaded?.seguro_importacion_total > 0 && (
+                                            <div className="d-flex justify-content-between text-info">
+                                                <b>Seguro de Importación:</b>
+                                                <span>
+                                                    S/{" "}
+                                                    {Number2Currency(saleLoaded?.seguro_importacion_total)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        {saleLoaded?.derecho_arancelario_total > 0 && (
+                                            <div className="d-flex justify-content-between text-info">
+                                                <b>Derecho Arancelario:</b>
+                                                <span>
+                                                    S/{" "}
+                                                    {Number2Currency(saleLoaded?.derecho_arancelario_total)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        {saleLoaded?.flete_total > 0 && (
+                                            <div className="d-flex justify-content-between text-info">
+                                                <b>Flete:</b>
+                                                <span>
+                                                    S/{" "}
+                                                    {Number2Currency(saleLoaded?.flete_total)}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                                 <hr className="my-2" />
                                 <div className="d-flex justify-content-between">
                                     <b>Total:</b>

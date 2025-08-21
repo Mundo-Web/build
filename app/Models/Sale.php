@@ -43,6 +43,9 @@ class Sale extends Model
         'comment',
         'amount',
         'delivery',
+        'seguro_importacion_total',
+        'derecho_arancelario_total',
+        'flete_total',
         'delivery_type',
         'store_id',
         'status_id',
@@ -73,6 +76,9 @@ class Sale extends Model
         'renewal_discount' => 'decimal:2',
         'amount' => 'decimal:2',
         'delivery' => 'decimal:2',
+        'seguro_importacion_total' => 'decimal:2',
+        'derecho_arancelario_total' => 'decimal:2',
+        'flete_total' => 'decimal:2',
     ];
 
     public function details()

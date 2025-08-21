@@ -664,6 +664,10 @@ export default function ShippingStep({
                 document_type: formData.documentType, // Cambiar a document_type para que coincida con lo que espera el backend
                 amount: roundToTwoDecimals(finalTotalWithCoupon),
                 delivery: roundToTwoDecimals(envio),
+                // Campos de importación
+                seguro_importacion_total: roundToTwoDecimals(seguroImportacionTotal || 0),
+                derecho_arancelario_total: roundToTwoDecimals(derechoArancelarioTotal || 0),
+                flete_total: roundToTwoDecimals(fleteTotal || 0),
                 delivery_type: selectedOption, // Agregar tipo de entrega
                 store_id: selectedOption === "store_pickup" ? selectedStore?.id : null, // ID de tienda si es retiro en tienda
                 cart: cart,

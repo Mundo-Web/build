@@ -324,6 +324,9 @@ const Sales = ({ statuses = [] }) => {
                             // TOTALES DE LA VENTA (repetidos en cada fila para referencia)
                             'VENTA_SUBTOTAL': sale.subtotal,
                             'VENTA_COSTO_ENVIO': sale.delivery_cost,
+                            'VENTA_SEGURO_IMPORTACION': sale.seguro_importacion_total || 0,
+                            'VENTA_DERECHO_ARANCELARIO': sale.derecho_arancelario_total || 0,
+                            'VENTA_FLETE_TOTAL': sale.flete_total || 0,
                             'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
                             'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
                             'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
@@ -377,6 +380,9 @@ const Sales = ({ statuses = [] }) => {
                         // TOTALES DE LA VENTA
                         'VENTA_SUBTOTAL': sale.subtotal,
                         'VENTA_COSTO_ENVIO': sale.delivery_cost,
+                        'VENTA_SEGURO_IMPORTACION': sale.seguro_importacion_total || 0,
+                        'VENTA_DERECHO_ARANCELARIO': sale.derecho_arancelario_total || 0,
+                        'VENTA_FLETE_TOTAL': sale.flete_total || 0,
                         'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
                         'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
                         'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
@@ -435,6 +441,9 @@ const Sales = ({ statuses = [] }) => {
                 // COLUMNAS DE TOTALES DE VENTA
                 { wch: 12 }, // VENTA_SUBTOTAL
                 { wch: 12 }, // VENTA_COSTO_ENVIO
+                { wch: 16 }, // VENTA_SEGURO_IMPORTACION
+                { wch: 18 }, // VENTA_DERECHO_ARANCELARIO
+                { wch: 12 }, // VENTA_FLETE_TOTAL
                 { wch: 15 }, // VENTA_DESCUENTO_PAQUETE
                 { wch: 18 }, // VENTA_DESCUENTO_RENOVACION
                 { wch: 15 }, // VENTA_DESCUENTO_CUPON
@@ -708,7 +717,10 @@ const Sales = ({ statuses = [] }) => {
     }
 
     const subtotalReal = saleLoaded?.details?.reduce((sum, detail) => sum + (detail.price * detail.quantity), 0) || 0;
-    const totalAmount = subtotalReal + Number(saleLoaded?.delivery || 0) - 
+    const totalAmount = subtotalReal + Number(saleLoaded?.delivery || 0) + 
+        Number(saleLoaded?.seguro_importacion_total || 0) + 
+        Number(saleLoaded?.derecho_arancelario_total || 0) + 
+        Number(saleLoaded?.flete_total || 0) - 
         Number(saleLoaded?.promotion_discount || 0) - 
         Number(saleLoaded?.coupon_discount || 0) - 
         Number(saleLoaded?.bundle_discount || 0) - 
@@ -1210,6 +1222,41 @@ const Sales = ({ statuses = [] }) => {
                                     </span>
                                 </div>
                                 
+                                {/* Mostrar costos de importación si existen */}
+                                {(saleLoaded?.seguro_importacion_total > 0 || saleLoaded?.derecho_arancelario_total > 0 || saleLoaded?.flete_total > 0) && (
+                                    <>
+                                        {saleLoaded?.seguro_importacion_total > 0 && (
+                                            <div className="d-flex justify-content-between text-info">
+                                                <b>Seguro de Importación:</b>
+                                                <span>
+                                                    S/{" "}
+                                                    {Number2Currency(saleLoaded?.seguro_importacion_total)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        {saleLoaded?.derecho_arancelario_total > 0 && (
+                                            <div className="d-flex justify-content-between text-info">
+                                                <b>Derecho Arancelario:</b>
+                                                <span>
+                                                    S/{" "}
+                                                    {Number2Currency(saleLoaded?.derecho_arancelario_total)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        {saleLoaded?.flete_total > 0 && (
+                                            <div className="d-flex justify-content-between text-info">
+                                                <b>Flete:</b>
+                                                <span>
+                                                    S/{" "}
+                                                    {Number2Currency(saleLoaded?.flete_total)}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                
                                 {/* Mostrar descuentos automáticos en el resumen */}
                                 {saleLoaded?.promotion_discount > 0 && (
                                     <div className="d-flex justify-content-between text-primary">
@@ -1267,6 +1314,9 @@ const Sales = ({ statuses = [] }) => {
                                     <strong>Cálculo:</strong> 
                                     {Number2Currency(subtotalReal)} (subtotal)
                                     + {Number2Currency(saleLoaded?.delivery)} (envío)
+                                    {saleLoaded?.seguro_importacion_total > 0 && ` + ${Number2Currency(saleLoaded?.seguro_importacion_total)} (seguro)`}
+                                    {saleLoaded?.derecho_arancelario_total > 0 && ` + ${Number2Currency(saleLoaded?.derecho_arancelario_total)} (derecho arancelario)`}
+                                    {saleLoaded?.flete_total > 0 && ` + ${Number2Currency(saleLoaded?.flete_total)} (flete)`}
                                     {saleLoaded?.promotion_discount > 0 && ` - ${Number2Currency(saleLoaded?.promotion_discount)} (promociones)`}
                                     {saleLoaded?.coupon_discount > 0 && ` - ${Number2Currency(saleLoaded?.coupon_discount)} (cupón)`}
                                     {saleLoaded?.bundle_discount > 0 && ` - ${Number2Currency(saleLoaded?.bundle_discount)} (paquete)`}
