@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Slider extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids,HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
