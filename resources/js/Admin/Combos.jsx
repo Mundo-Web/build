@@ -126,55 +126,16 @@ const Combos = ({ items }) => {
 
       // Cargar los productos asociados
       const products = comboData.items || [];
-      
-      // Debug: Verificar la estructura de datos
       console.log('Combo data items:', comboData.items);
       console.log('Products loaded:', products);
-      
-      // Establecer el producto principal ANTES de setSelectedProducts
-      const mainItemData = comboData.items.find((item) => {
-        // Verificar múltiples formatos posibles de is_main_item
-        const pivotValue = item.pivot?.is_main_item;
-        const directValue = item.is_main_item;
-        
-        // Convertir a boolean considerando diferentes tipos
-        const isMainItem = pivotValue === 1 || 
-                          pivotValue === '1' || 
-                          pivotValue === true ||
-                          pivotValue === 'true' ||
-                          directValue === 1 ||
-                          directValue === '1' ||
-                          directValue === true ||
-                          directValue === 'true';
-        
-        console.log(`Product ${item.id} (${item.name}):`, {
-          pivotValue, 
-          directValue, 
-          isMainItem,
-          rawPivot: item.pivot
-        });
-        
-        return isMainItem;
+
+      // Detectar el producto principal desde el pivot
+      const mainProductFromPivot = products.find(product => {
+        const pivotValue = product.pivot?.is_main_item;
+        return pivotValue === 1 || pivotValue === '1' || pivotValue === true || pivotValue === 'true';
       });
-      
-      console.log('Main item found:', mainItemData);
-      
-      // Primero establecer productos
+      setMainProduct(mainProductFromPivot || null);
       setSelectedProducts(products);
-      
-      // Usar setTimeout para asegurar que el estado se actualice después del render
-      setTimeout(() => {
-        if (mainItemData) {
-          const mainProductFound = products.find((product) => 
-            parseInt(product.id) === parseInt(mainItemData.id)
-          );
-          console.log('Setting main product to:', mainProductFound);
-          setMainProduct(mainProductFound);
-        } else {
-          console.log('No main product found, clearing mainProduct');
-          setMainProduct(null);
-        }
-      }, 50);
 
       // Seleccionar los productos en el campo SelectAPIFormGroup sin trigger
       setTimeout(() => {
@@ -404,43 +365,35 @@ const Combos = ({ items }) => {
           <h4 className="col-md-12">Productos Seleccionados</h4>
           <ul className="list-unstyled col-md-12 row">
             {selectedProducts.map((product) => {
-              const isMainProduct = mainProduct && (
-                parseInt(mainProduct.id) === parseInt(product.id) ||
-                mainProduct.id === product.id
-              );
-              
+              const isMainProduct = mainProduct && (`${mainProduct.id}` === `${product.id}`);
               return (
-              <li key={product.id} className="col-md-6" >
-                <input
-                  type="radio"
-                  name="mainProduct"
-                  checked={isMainProduct}
-                  onChange={() => {
-                    console.log('Setting main product to:', product);
-                    setMainProduct(product);
-                  }}
-                />
-                <div>
-
-                  <div class="card mb-3">
-                    <div class="row g-0">
-                      <div class="col-md-4">
-                        <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} class="img-thumbnail rounded-start" alt={product.name} />
-                      </div>
-                      <div class="col-md-8">
-                        <div class="card-body">
-                          <h5 class="card-title">{product?.name} </h5>
-                          <p class="card-text small line-clamp-2">{product?.summary} </p>
-                          <p class="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
-
-                          <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
+                <li key={product.id} className="col-md-6" >
+                  <input
+                    type="radio"
+                    name="mainProduct"
+                    checked={isMainProduct}
+                    onChange={() => {
+                      setMainProduct(product);
+                    }}
+                  />
+                  <div>
+                    <div class="card mb-3">
+                      <div class="row g-0">
+                        <div class="col-md-4">
+                          <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} class="img-thumbnail rounded-start" alt={product.name} />
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body">
+                            <h5 class="card-title">{product?.name} </h5>
+                            <p class="card-text small line-clamp-2">{product?.summary} </p>
+                            <p class="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
+                            <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-              </li>
+                </li>
               )
             })}
           </ul>
