@@ -280,43 +280,119 @@ const Sales = ({ statuses = [] }) => {
                 return;
             }
 
-            // Formatear datos para Excel
-            const excelData = salesData.map(sale => ({
-                'ID_PEDIDO': sale.correlative_code,
-                'FECHA': sale.created_at,
-                'ESTADO': sale.status_name,
-                'CLIENTE_NOMBRES': sale.fullname,
-                'CLIENTE_EMAIL': sale.email,
-                'CLIENTE_TELEFONO': sale.phone,
-                'TIPO_DOCUMENTO': sale.document_type,
-                'NUMERO_DOCUMENTO': sale.document,
-                'RAZON_SOCIAL': sale.business_name,
-                'TIPO_COMPROBANTE': sale.invoice_type,
-                'METODO_PAGO': sale.payment_method,
-                'ID_TRANSACCION': sale.culqi_charge_id,
-                'ESTADO_PAGO': sale.payment_status,
-                'TIPO_ENTREGA': sale.delivery_type,
-                'DIRECCION_ENTREGA': sale.full_address,
-                'TIENDA_RETIRO': sale.store_name,
-                'DIRECCION_TIENDA': sale.store_address,
-                'TELEFONO_TIENDA': sale.store_phone,
-                'HORARIO_TIENDA': sale.store_schedule,
-                'REFERENCIA': sale.reference,
-                'COMENTARIO': sale.comment,
-                'UBIGEO': sale.ubigeo,
-                'PRODUCTOS': sale.products_formatted,
-                'CANTIDAD_PRODUCTOS': sale.products_count,
-                'CANTIDAD_TOTAL': sale.products_total_quantity,
-                'SUBTOTAL': sale.subtotal,
-                'COSTO_ENVIO': sale.delivery_cost,
-                'DESCUENTO_PAQUETE': sale.bundle_discount,
-                'DESCUENTO_RENOVACION': sale.renewal_discount,
-                'DESCUENTO_CUPON': sale.coupon_discount,
-                'CODIGO_CUPON': sale.coupon_code,
-                'DESCUENTO_PROMOCION': sale.promotion_discount,
-                'PROMOCIONES_APLICADAS': sale.applied_promotions,
-                'TOTAL_FINAL': sale.total_amount
-            }));
+            // Formatear datos para Excel - Una fila por cada producto de cada venta
+            const excelData = [];
+            
+            salesData.forEach(sale => {
+                // Si la venta tiene productos, crear una fila por cada producto
+                if (sale.details && sale.details.length > 0) {
+                    sale.details.forEach((product, productIndex) => {
+                        excelData.push({
+                            'ID_PEDIDO': sale.correlative_code,
+                            'FECHA': sale.created_at,
+                            'ESTADO': sale.status_name,
+                            'CLIENTE_NOMBRES': sale.fullname,
+                            'CLIENTE_EMAIL': sale.email,
+                            'CLIENTE_TELEFONO': sale.phone,
+                            'TIPO_DOCUMENTO': sale.document_type,
+                            'NUMERO_DOCUMENTO': sale.document,
+                            'RAZON_SOCIAL': sale.business_name,
+                            'TIPO_COMPROBANTE': sale.invoice_type,
+                            'METODO_PAGO': sale.payment_method,
+                            'ID_TRANSACCION': sale.culqi_charge_id,
+                            'ESTADO_PAGO': sale.payment_status,
+                            'TIPO_ENTREGA': sale.delivery_type,
+                            'DIRECCION_ENTREGA': sale.full_address,
+                            'TIENDA_RETIRO': sale.store_name,
+                            'DIRECCION_TIENDA': sale.store_address,
+                            'TELEFONO_TIENDA': sale.store_phone,
+                            'HORARIO_TIENDA': sale.store_schedule,
+                            'REFERENCIA': sale.reference,
+                            'COMENTARIO': sale.comment,
+                            'UBIGEO': sale.ubigeo,
+                            
+                            // DETALLES DEL PRODUCTO INDIVIDUAL
+                            'PRODUCTO_NOMBRE': product.name,
+                            'PRODUCTO_PRECIO_UNITARIO': product.price,
+                            'PRODUCTO_CANTIDAD': product.quantity,
+                            'PRODUCTO_SUBTOTAL': product.price * product.quantity,
+                            'PRODUCTO_TIPO': product.type || 'individual',
+                            'PRODUCTO_COLORES': product.colors || '',
+                            'PRODUCTO_COMBO_ITEMS': product.combo_data && product.combo_data.items ? 
+                                product.combo_data.items.map(item => `${item.quantity || 1}x ${item.name}`).join(', ') : '',
+                            
+                            // TOTALES DE LA VENTA (repetidos en cada fila para referencia)
+                            'VENTA_SUBTOTAL': sale.subtotal,
+                            'VENTA_COSTO_ENVIO': sale.delivery_cost,
+                            'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
+                            'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
+                            'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
+                            'VENTA_CODIGO_CUPON': sale.coupon_code,
+                            'VENTA_DESCUENTO_PROMOCION': sale.promotion_discount,
+                            'VENTA_PROMOCIONES_APLICADAS': sale.applied_promotions,
+                            'VENTA_TOTAL_FINAL': sale.total_amount,
+                            
+                            // INDICADORES DE FILA
+                            'PRODUCTO_NUMERO': productIndex + 1,
+                            'TOTAL_PRODUCTOS_EN_VENTA': sale.details.length,
+                            'ES_PRIMER_PRODUCTO': productIndex === 0 ? 'SI' : 'NO',
+                            'ES_ULTIMO_PRODUCTO': productIndex === sale.details.length - 1 ? 'SI' : 'NO'
+                        });
+                    });
+                } else {
+                    // Si no tiene productos, crear una fila con datos de la venta pero sin productos
+                    excelData.push({
+                        'ID_PEDIDO': sale.correlative_code,
+                        'FECHA': sale.created_at,
+                        'ESTADO': sale.status_name,
+                        'CLIENTE_NOMBRES': sale.fullname,
+                        'CLIENTE_EMAIL': sale.email,
+                        'CLIENTE_TELEFONO': sale.phone,
+                        'TIPO_DOCUMENTO': sale.document_type,
+                        'NUMERO_DOCUMENTO': sale.document,
+                        'RAZON_SOCIAL': sale.business_name,
+                        'TIPO_COMPROBANTE': sale.invoice_type,
+                        'METODO_PAGO': sale.payment_method,
+                        'ID_TRANSACCION': sale.culqi_charge_id,
+                        'ESTADO_PAGO': sale.payment_status,
+                        'TIPO_ENTREGA': sale.delivery_type,
+                        'DIRECCION_ENTREGA': sale.full_address,
+                        'TIENDA_RETIRO': sale.store_name,
+                        'DIRECCION_TIENDA': sale.store_address,
+                        'TELEFONO_TIENDA': sale.store_phone,
+                        'HORARIO_TIENDA': sale.store_schedule,
+                        'REFERENCIA': sale.reference,
+                        'COMENTARIO': sale.comment,
+                        'UBIGEO': sale.ubigeo,
+                        
+                        // DETALLES DEL PRODUCTO INDIVIDUAL (vacíos)
+                        'PRODUCTO_NOMBRE': 'SIN PRODUCTOS',
+                        'PRODUCTO_PRECIO_UNITARIO': 0,
+                        'PRODUCTO_CANTIDAD': 0,
+                        'PRODUCTO_SUBTOTAL': 0,
+                        'PRODUCTO_TIPO': '',
+                        'PRODUCTO_COLORES': '',
+                        'PRODUCTO_COMBO_ITEMS': '',
+                        
+                        // TOTALES DE LA VENTA
+                        'VENTA_SUBTOTAL': sale.subtotal,
+                        'VENTA_COSTO_ENVIO': sale.delivery_cost,
+                        'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
+                        'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
+                        'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
+                        'VENTA_CODIGO_CUPON': sale.coupon_code,
+                        'VENTA_DESCUENTO_PROMOCION': sale.promotion_discount,
+                        'VENTA_PROMOCIONES_APLICADAS': sale.applied_promotions,
+                        'VENTA_TOTAL_FINAL': sale.total_amount,
+                        
+                        // INDICADORES DE FILA
+                        'PRODUCTO_NUMERO': 0,
+                        'TOTAL_PRODUCTOS_EN_VENTA': 0,
+                        'ES_PRIMER_PRODUCTO': 'SI',
+                        'ES_ULTIMO_PRODUCTO': 'SI'
+                    });
+                }
+            });
 
             // Crear libro de Excel
             const workbook = XLSX.utils.book_new();
@@ -346,18 +422,32 @@ const Sales = ({ statuses = [] }) => {
                 { wch: 20 }, // REFERENCIA
                 { wch: 30 }, // COMENTARIO
                 { wch: 10 }, // UBIGEO
-                { wch: 60 }, // PRODUCTOS
-                { wch: 10 }, // CANTIDAD_PRODUCTOS
-                { wch: 10 }, // CANTIDAD_TOTAL
-                { wch: 12 }, // SUBTOTAL
-                { wch: 12 }, // COSTO_ENVIO
-                { wch: 15 }, // DESCUENTO_PAQUETE
-                { wch: 18 }, // DESCUENTO_RENOVACION
-                { wch: 15 }, // DESCUENTO_CUPON
-                { wch: 15 }, // CODIGO_CUPON
-                { wch: 18 }, // DESCUENTO_PROMOCION
-                { wch: 40 }, // PROMOCIONES_APLICADAS
-                { wch: 12 }  // TOTAL_FINAL
+                
+                // COLUMNAS DE PRODUCTO INDIVIDUAL
+                { wch: 40 }, // PRODUCTO_NOMBRE
+                { wch: 15 }, // PRODUCTO_PRECIO_UNITARIO
+                { wch: 12 }, // PRODUCTO_CANTIDAD
+                { wch: 15 }, // PRODUCTO_SUBTOTAL
+                { wch: 12 }, // PRODUCTO_TIPO
+                { wch: 20 }, // PRODUCTO_COLORES
+                { wch: 50 }, // PRODUCTO_COMBO_ITEMS
+                
+                // COLUMNAS DE TOTALES DE VENTA
+                { wch: 12 }, // VENTA_SUBTOTAL
+                { wch: 12 }, // VENTA_COSTO_ENVIO
+                { wch: 15 }, // VENTA_DESCUENTO_PAQUETE
+                { wch: 18 }, // VENTA_DESCUENTO_RENOVACION
+                { wch: 15 }, // VENTA_DESCUENTO_CUPON
+                { wch: 15 }, // VENTA_CODIGO_CUPON
+                { wch: 18 }, // VENTA_DESCUENTO_PROMOCION
+                { wch: 40 }, // VENTA_PROMOCIONES_APLICADAS
+                { wch: 12 }, // VENTA_TOTAL_FINAL
+                
+                // COLUMNAS DE CONTROL
+                { wch: 10 }, // PRODUCTO_NUMERO
+                { wch: 15 }, // TOTAL_PRODUCTOS_EN_VENTA
+                { wch: 12 }, // ES_PRIMER_PRODUCTO
+                { wch: 12 }  // ES_ULTIMO_PRODUCTO
             ];
 
             worksheet['!cols'] = columnWidths;
@@ -388,6 +478,10 @@ const Sales = ({ statuses = [] }) => {
                 filterInfo += `\n📊 Estado: ${statusName}`;
             }
 
+            // Calcular estadísticas
+            const totalSales = salesData.length;
+            const totalProductRows = excelData.length;
+
             Swal.fire({
                 title: '<div style="display: flex; align-items: center; justify-content: center; gap: 12px; color: #155724;"><i class="fas fa-check-circle" style="color: #28a745; font-size: 28px;"></i><span style="font-weight: 600;">¡Exportación Exitosa!</span></div>',
                 html: `
@@ -403,11 +497,11 @@ const Sales = ({ statuses = [] }) => {
                         <!-- Estadísticas principales -->
                         <div style="
                             display: grid; 
-                            grid-template-columns: 1fr 1fr; 
-                            gap: 20px; 
+                            grid-template-columns: 1fr 1fr 1fr; 
+                            gap: 15px; 
                             margin-bottom: 20px;
                         ">
-                            <!-- Total exportado -->
+                            <!-- Ventas exportadas -->
                             <div style="
                                 background: white;
                                 padding: 18px;
@@ -416,14 +510,34 @@ const Sales = ({ statuses = [] }) => {
                                 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                                 border-top: 3px solid #17a2b8;
                             ">
-                                <div style="color: #17a2b8; font-size: 24px; margin-bottom: 8px;">
-                                    <i class="fas fa-chart-bar"></i>
+                                <div style="color: #17a2b8; font-size: 20px; margin-bottom: 8px;">
+                                    <i class="fas fa-shopping-cart"></i>
                                 </div>
-                                <div style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 4px;">
-                                    ${salesData.length}
+                                <div style="font-size: 24px; font-weight: bold; color: #2c3e50; margin-bottom: 4px;">
+                                    ${totalSales}
                                 </div>
-                                <div style="font-size: 13px; color: #6c757d; font-weight: 500;">
-                                    Ventas Exportadas
+                                <div style="font-size: 12px; color: #6c757d; font-weight: 500;">
+                                    Ventas
+                                </div>
+                            </div>
+                            
+                            <!-- Filas de productos -->
+                            <div style="
+                                background: white;
+                                padding: 18px;
+                                border-radius: 12px;
+                                text-align: center;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                                border-top: 3px solid #ffc107;
+                            ">
+                                <div style="color: #ffc107; font-size: 20px; margin-bottom: 8px;">
+                                    <i class="fas fa-list"></i>
+                                </div>
+                                <div style="font-size: 24px; font-weight: bold; color: #2c3e50; margin-bottom: 4px;">
+                                    ${totalProductRows}
+                                </div>
+                                <div style="font-size: 12px; color: #6c757d; font-weight: 500;">
+                                    Filas de Productos
                                 </div>
                             </div>
                             
@@ -436,15 +550,54 @@ const Sales = ({ statuses = [] }) => {
                                 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                                 border-top: 3px solid #28a745;
                             ">
-                                <div style="color: #28a745; font-size: 24px; margin-bottom: 8px;">
+                                <div style="color: #28a745; font-size: 20px; margin-bottom: 8px;">
                                     <i class="fas fa-file-excel"></i>
                                 </div>
-                                <div style="font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 4px; word-break: break-all;">
+                                <div style="font-size: 10px; font-weight: bold; color: #2c3e50; margin-bottom: 4px; word-break: break-all;">
                                     ${filename}
                                 </div>
-                                <div style="font-size: 13px; color: #6c757d; font-weight: 500;">
-                                    Archivo Excel
+                                <div style="font-size: 12px; color: #6c757d; font-weight: 500;">
+                                    Excel Detallado
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información del formato -->
+                        <div style="
+                            background: white;
+                            padding: 18px;
+                            border-radius: 12px;
+                            border-left: 4px solid #007bff;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                            margin-bottom: 15px;
+                        ">
+                            <div style="
+                                display: flex; 
+                                align-items: center; 
+                                margin-bottom: 12px;
+                                color: #0056b3;
+                                font-weight: 600;
+                                font-size: 15px;
+                            ">
+                                <i class="fas fa-info-circle" style="margin-right: 10px; color: #007bff;"></i>
+                                Formato de Exportación
+                            </div>
+                            <div style="
+                                font-size: 14px; 
+                                color: #495057; 
+                                line-height: 1.6;
+                                background: #e3f2fd;
+                                padding: 12px;
+                                border-radius: 8px;
+                                border: 1px solid #bbdefb;
+                            ">
+                                <strong>📋 Cada producto tiene su propia fila</strong><br/>
+                                Perfecto para importar en software de facturación<br/>
+                                <small class="text-muted">
+                                    • Datos de venta repetidos por cada producto<br/>
+                                    • Información detallada de cada item<br/>
+                                    • Columnas de control para identificar productos
+                                </small>
                             </div>
                         </div>
                         
@@ -493,7 +646,7 @@ const Sales = ({ statuses = [] }) => {
                         ">
                             <div style="color: #155724; font-size: 15px; font-weight: 500;">
                                 <i class="fas fa-download" style="margin-right: 8px;"></i>
-                                El archivo se ha descargado exitosamente
+                                Archivo con formato detallado listo para facturación
                             </div>
                         </div>
                     </div>
@@ -501,9 +654,9 @@ const Sales = ({ statuses = [] }) => {
                 icon: "success",
                 confirmButtonText: '<i class="fas fa-thumbs-up"></i> ¡Perfecto!',
                 confirmButtonColor: '#28a745',
-                timer: 8000,
+                timer: 10000,
                 timerProgressBar: true,
-                width: '700px'
+                width: '750px'
             });
 
         } catch (error) {

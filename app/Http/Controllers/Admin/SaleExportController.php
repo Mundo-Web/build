@@ -52,13 +52,44 @@ class SaleExportController extends Controller
                 $promotionDiscount = (float) ($sale->promotion_discount ?? 0);
                 $total = $subtotal + $delivery - $bundleDiscount - $renewalDiscount - $couponDiscount - $promotionDiscount;
 
-                // Formatear productos
+                // Formatear productos (mantener formato anterior para compatibilidad)
                 $products = $sale->details->map(function($detail) {
                     $productName = $detail->name ?? 'Producto sin nombre';
                     $colorInfo = $detail->colors ? " - Color: {$detail->colors}" : '';
                     
                     return "{$productName}{$colorInfo} - Cantidad: {$detail->quantity} - Precio: S/ " . number_format($detail->price, 2);
                 })->join(' | ');
+
+                // Formatear detalles de productos individuales para la nueva exportación
+                $productDetails = $sale->details->map(function($detail) {
+                    $comboData = null;
+                    
+                    // Si es un combo, intentar parsear los datos del combo
+                    if ($detail->type === 'combo' || $detail->combo_id) {
+                        try {
+                            if ($detail->combo_data) {
+                                $comboData = is_string($detail->combo_data) 
+                                    ? json_decode($detail->combo_data, true) 
+                                    : $detail->combo_data;
+                            }
+                        } catch (\Exception $e) {
+                            $comboData = null;
+                        }
+                    }
+
+                    return [
+                        'id' => $detail->id,
+                        'name' => $detail->name ?? 'Producto sin nombre',
+                        'price' => (float) ($detail->price ?? 0),
+                        'quantity' => (int) ($detail->quantity ?? 1),
+                        'type' => $detail->type ?? 'individual',
+                        'colors' => $detail->colors ?? '',
+                        'image' => $detail->image ?? '',
+                        'combo_id' => $detail->combo_id ?? null,
+                        'combo_data' => $comboData,
+                        'subtotal' => (float) ($detail->price ?? 0) * (int) ($detail->quantity ?? 1)
+                    ];
+                });
 
                 // Formatear dirección completa
                 $fullAddress = $sale->delivery_type !== 'store_pickup' 
@@ -70,6 +101,26 @@ class SaleExportController extends Controller
                         $sale->country . ($sale->zip_code ? ' - ' . $sale->zip_code : '')
                     ])))
                     : 'RETIRO EN TIENDA: ' . ($sale->store ? $sale->store->name . ' - ' . $sale->store->address : 'Tienda no especificada');
+
+                // Formatear promociones aplicadas
+                $appliedPromotions = '';
+                try {
+                    if ($sale->applied_promotions) {
+                        $promotions = is_string($sale->applied_promotions) 
+                            ? json_decode($sale->applied_promotions, true) 
+                            : $sale->applied_promotions;
+                        
+                        if (is_array($promotions) && !empty($promotions)) {
+                            $appliedPromotions = collect($promotions)->map(function($promo) {
+                                $name = $promo['rule_name'] ?? $promo['name'] ?? 'Promoción';
+                                $amount = $promo['discount_amount'] ?? $promo['amount'] ?? 0;
+                                return "{$name}: S/ " . number_format($amount, 2);
+                            })->join(' | ');
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $appliedPromotions = '';
+                }
 
                 return [
                     'id' => $sale->id,
@@ -115,10 +166,13 @@ class SaleExportController extends Controller
                     'store_phone' => $sale->store ? $sale->store->phone : '',
                     'store_schedule' => $sale->store ? $sale->store->schedule : '',
                     
-                    // Productos
+                    // Productos (formato anterior para compatibilidad)
                     'products_formatted' => $products,
                     'products_count' => $sale->details->count(),
                     'products_total_quantity' => $sale->details->sum('quantity'),
+                    
+                    // NUEVO: Detalles de productos individuales
+                    'details' => $productDetails,
                     
                     // Totales y descuentos
                     'subtotal' => number_format($subtotal, 2),
@@ -128,6 +182,7 @@ class SaleExportController extends Controller
                     'coupon_discount' => number_format($couponDiscount, 2),
                     'coupon_code' => $sale->coupon_code ?? '',
                     'promotion_discount' => number_format($promotionDiscount, 2),
+                    'applied_promotions' => $appliedPromotions,
                     'total_amount' => number_format($total, 2),
                     
                     // Valores numéricos para cálculos
