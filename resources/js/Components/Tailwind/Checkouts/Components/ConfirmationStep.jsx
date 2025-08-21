@@ -154,7 +154,7 @@ export default function ConfirmationStep({
                                         <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                                             <div className="bg-gray-50 p-3 rounded-xl">
                                                 <img
-                                                    src={`/storage/images/item/${item?.image}`}
+                                                    src={item?.type === "combo" ? `/storage/images/combo/${item?.image}` : `/storage/images/item/${item?.image}`}
                                                     alt={item?.name}
                                                     className="w-24 h-24 object-cover rounded-lg"
                                                     onError={(e) =>

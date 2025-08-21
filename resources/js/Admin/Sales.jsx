@@ -966,7 +966,7 @@ const Sales = ({ statuses = [] }) => {
                                                             {detail.image ? (
                                                                 <img
                                                                     className="object-scale-down mx-auto block"
-                                                                    src={`/storage/images/item/${detail.image}`}
+                                                                    src={detail?.type === "combo" ? `/storage/images/combo/${detail.image}` : `/storage/images/item/${detail.image}`}
                                                                     alt={detail.name}
                                                                     style={{
                                                                         height: '5rem',
