@@ -265,7 +265,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
     const loadAvailableCombos = async (item) => {
         try {
-            // Buscar combos que contengan este item
+            // El backend ya filtra por:
+            // - status = 1 (activos)
+            // - visible = true 
+            // - is_main_item = 1 (solo si el item actual es el producto principal)
             const response = await combosRest.getItemCombos(item.id);
             
             if (response && response.data) {

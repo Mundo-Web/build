@@ -1393,12 +1393,14 @@ class ItemController extends BasicController
         
         try {
             $combos = Combo::whereHas('items', function($query) use ($itemId) {
-                $query->where('item_id', $itemId);
+                $query->where('item_id', $itemId)
+                      ->where('is_main_item', 1);
             })
             ->with(['items' => function($query) {
                 $query->select('items.id', 'items.name', 'items.image', 'items.final_price');
             }])
             ->where('visible', true)
+            ->where('status', 1)
             ->get();
 
             $formattedCombos = $combos->map(function ($combo) {
