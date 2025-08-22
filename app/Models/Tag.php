@@ -28,6 +28,8 @@ class Tag extends Model
         'promotional_status',
     ];
 
+    
+
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',

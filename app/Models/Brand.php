@@ -23,6 +23,13 @@ class Brand extends Model
         'status',
     ];
 
+    
+    protected $casts = [
+        'featured'=>'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
+
     public function items()
     {
         return $this->hasMany(Item::class);
