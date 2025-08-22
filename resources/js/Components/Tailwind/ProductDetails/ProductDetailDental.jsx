@@ -781,7 +781,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
             {relationsItems.length > 0 && (
                 <ProductBananaLab
                     data={{ title: "Te puede interesar", style_offer: "circle", background: "", class_button_primary: "lg:bg-primary", class_button: "bg-accent customtext-netrual-dark !font-semibold", class_section: "bg-secondary", text_button: "Ir a catalogo", link_catalog: "/catalogo" }}
-                    items={relationsItems}
+                    items={relationsItems.slice(0, 4)}
                     cart={cart}
                     setCart={setCart}
                     favorites={favorites}
