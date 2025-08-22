@@ -22,6 +22,11 @@ class Testimony extends Model
         'visible',
         'status'
     ];
+    protected $casts = [
+        
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
 
     static function lastTen()
     {

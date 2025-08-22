@@ -25,6 +25,12 @@ class SubCategory extends Model
         'status',
     ];
 
+    protected $casts = [
+        'featured'=>'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

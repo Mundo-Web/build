@@ -23,6 +23,11 @@ class Message extends Model
         'seen',
         'status',
     ];
+    protected $casts = [
+        'seen'=>'boolean',
+      
+        'status' => 'boolean',
+    ];
     /**
      * Route notifications for the mail channel.
      *

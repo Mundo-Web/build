@@ -23,6 +23,14 @@ class SaleStatus extends Model
         'icon',
     ];
 
+    protected $casts = [
+       
+        'visible' => 'boolean',
+        'status' => 'boolean',
+        'editable'=>'boolean',
+        'reversible'=>'boolean',
+    ];
+
     public static function getByName($name)
     {
         return self::where('name', $name)->first();

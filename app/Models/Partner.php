@@ -20,4 +20,10 @@ class Partner extends Model
         'visible',
         'status',
     ];
+
+    protected $casts = [
+      
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
 }

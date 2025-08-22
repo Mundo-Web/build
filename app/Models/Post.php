@@ -23,6 +23,10 @@ class Post extends Model
         'status',
         'slug',
     ];
+    protected $casts = [
+     
+        'status' => 'boolean',
+    ];
 
     public function category()
     {

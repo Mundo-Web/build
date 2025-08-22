@@ -21,6 +21,10 @@ class General extends Model
         'description',
         'status',
     ];
+    protected $casts = [
+       
+        'status' => 'boolean',
+    ];
 
     static function get(string $general)
     {

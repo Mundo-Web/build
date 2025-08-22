@@ -53,6 +53,7 @@ class User extends Authenticatable
         'document_number',
         'google_id',
     ];
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -72,6 +73,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'status'=>'boolean',
     ];
 
     public function isRoot()

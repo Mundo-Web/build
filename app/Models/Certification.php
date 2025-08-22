@@ -20,4 +20,9 @@ class Certification extends Model
         'status',
         'image',
     ];
+
+    protected $casts = [
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
 }

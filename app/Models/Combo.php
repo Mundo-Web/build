@@ -17,6 +17,11 @@ class Combo extends Model
 
     protected $fillable = ['name', 'price', 'discount', 'final_price', 'discount_percent', 'image', 'visible', 'status'];
 
+    protected $casts = [
+    
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
     // Relación con los items que pertenecen al combo
     public function items()
     {

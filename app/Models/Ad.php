@@ -26,6 +26,13 @@ class Ad extends Model
         'invasivo',
         'status',
     ];
+    
+    protected $casts = [
+        'invasivo' => 'boolean',
+      
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
 
     public static function today()
     {

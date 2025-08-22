@@ -22,4 +22,10 @@ class Collection extends Model
         'visible',
         'status',
     ];
+
+    protected $casts = [
+        'featured'=>'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
 }
