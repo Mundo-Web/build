@@ -49,6 +49,15 @@ class Item extends Model
         'store_id'
     ];
 
+    protected $casts = [
+        'is_new' => 'boolean',
+        'offering'=>'boolean',
+        'recommended'=>'boolean',
+        'featured'=>'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
+    ];
+
     static function getForeign(Builder $builder, string $model, $relation)
     {
         $table = (new $model)->getTable();
