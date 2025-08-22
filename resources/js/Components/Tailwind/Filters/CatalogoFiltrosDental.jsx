@@ -2455,19 +2455,38 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                     <motion.button
                                                         className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                                                         onClick={() => {
-                                                            setSelectedFilters({
-                                                                collection_id: [],
-                                                                category_id: [],
-                                                                brand_id: [],
-                                                                subcategory_id: [],
-                                                                store_id: [],
-                                                                tag_id: [],
-                                                                price: [],
-                                                                name: null,
-                                                                sort_by: "created_at",
-                                                                order: "desc",
+                                                            console.log("🧹 Limpiando todos los filtros...");
+                                                            console.log("📊 Estado actual antes de limpiar:", selectedFilters);
+            
+                                                            // Limpiar cada filtro individualmente usando setSelectedFilters con función
+                                                            // Esto simula el comportamiento de handleFilterChange que funciona correctamente
+                                                            setSelectedFilters((prev) => {
+                                                                console.log("🔄 Estado previo en setSelectedFilters:", prev);
+            
+                                                                const cleanFilters = {
+                                                                    collection_id: [],
+                                                                    category_id: [],
+                                                                    brand_id: [],
+                                                                    subcategory_id: [],
+                                                                    store_id: [],
+                                                                    tag_id: [],
+                                                                    price: [],
+                                                                    name: null,
+                                                                    sort: [
+                                                                        {
+                                                                            selector: "final_price",
+                                                                            desc: true,
+                                                                        },
+                                                                    ],
+                                                                };
+            
+                                                                console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
+                                                                return cleanFilters;
                                                             });
+            
                                                             setFilterSequence([]);
+            
+                                                            console.log("✅ Filtros limpiados correctamente - useEffect debería detectar el cambio");
                                                         }}
                                                         whileHover={{ scale: 1.05, y: -2 }}
                                                         whileTap={{ scale: 0.95 }}
