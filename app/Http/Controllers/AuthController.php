@@ -112,7 +112,7 @@ class AuthController extends Controller
       'message' => $message ?? null,
       'global' => [
         'PUBLIC_RSA_KEY' => Controller::$PUBLIC_RSA_KEY,
-        'APP_NAME' => env('APP_NAME', 'Trasciende'),
+        'APP_NAME' => env('APP_NAME'),
         'APP_URL' => env('APP_URL'),
         'APP_DOMAIN' => env('APP_DOMAIN'),
         'APP_PROTOCOL' => env('APP_PROTOCOL', 'https'),
