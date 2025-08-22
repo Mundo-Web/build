@@ -15,11 +15,13 @@ class SubscriptionController extends BasicController
     public function beforeSave(Request $request)
     {
         $provider = Text::getEmailProvider($request->email);
-        $subscription = $this->model::select('id')->where('description', $request->email)->first();
+        $subscription = $this->model::select('id', 'status')->where('description', $request->email)->first();
+
         return [
             'id' => $subscription->id ?? null,
             'name' => $provider,
-            'description' => $request->email
+            'description' => $request->email,
+            'status' => $subscription ? true : ($request->status ?? true)
         ];
     }
 
