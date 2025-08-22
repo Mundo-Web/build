@@ -35,6 +35,14 @@ import ProductBananaLab from "../Products/ProductBananaLab";
 const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, setFavorites }) => {
 
     const itemsRest = new ItemsRest();
+
+    // Función para formatear números con separadores de miles
+    const formatPrice = (price) => {
+        return Number(price).toLocaleString('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    };
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState({
         url: item?.image,
@@ -252,9 +260,9 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         <div className="flex justify-between items-start">
                             <div>
                                 <div className="text-3xl font-bold customtext-primary">
-                                    S/ {item?.final_price}
+                                    S/ {formatPrice(item?.final_price)}
                                     <span className="ml-2 text-sm line-through text-gray-400">
-                                        S/ {item?.price}
+                                        S/ {formatPrice(item?.price)}
                                     </span>
                                 </div>
                                 <div className="text-xs text-gray-500 mt-1">SKU: {item?.sku}</div>
@@ -269,7 +277,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
 
                     {/* Acordeones */}
                     <div className="space-y-2">
-                     
+
 
                         {/* Descripción */}
                         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -296,7 +304,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 </div>
                             )}
                         </div>
-                           {/* Especificaciones */}
+                        {/* Especificaciones */}
                         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                             <div className="border-b">
                                 <button
@@ -422,27 +430,27 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                             <div className="flex lg:hidden gap-8 border-b-2 pb-8">
                                 {/* Price Section */}
                                 <div className=" w-full ">
-                                 {item?.discount > 0 && item?.discount < item?.price && (
-                                       <p className="text-sm customtext-primary mb-1">
-                                        Precio:{" "}
-                                        <span className="line-through line-clamp-1">
-                                            S/ {item?.price}
-                                        </span>
-                                    </p>
-                                 )}
+                                    {item?.discount > 0 && item?.discount < item?.price && (
+                                        <p className="text-sm customtext-primary mb-1">
+                                            Precio:{" "}
+                                            <span className="line-through line-clamp-1">
+                                                S/ {formatPrice(item?.price)}
+                                            </span>
+                                        </p>
+                                    )}
                                     <div className="flex items-center gap-4 ">
                                         <span className="text-[40px] font-bold line-clamp-1">
-                                            S/ {item?.final_price}
+                                            S/ {formatPrice(item?.final_price)}
                                         </span>
-                                          {item?.discount > 0 && item?.discount < item?.price && (
-                                        <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
-                                            -
-                                            {Number(
-                                                item?.discount_percent
-                                            ).toFixed(1)}
-                                            %
-                                        </span>
-                                          )}
+                                        {item?.discount > 0 && item?.discount < item?.price && (
+                                            <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
+                                                -
+                                                {Number(
+                                                    item?.discount_percent
+                                                ).toFixed(1)}
+                                                %
+                                            </span>
+                                        )}
                                     </div>
 
                                     {/* Quantity */}
@@ -570,30 +578,30 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 <div className=" w-full ">
                                     <div className="flex gap-8">
                                         <div>
-                                               {item?.discount > 0 && item?.discount < item?.price && (
-                                            <p className="text-sm customtext-primary mb-1 font-bold">
-                                                Precio:{" "}
-                                                <span className="line-through">
-                                                    S/ {item?.price}
-                                                </span>
-                                            </p>
-                                               )}
+                                            {item?.discount > 0 && item?.discount < item?.price && (
+                                                <p className="text-sm customtext-primary mb-1 font-bold">
+                                                    Precio:{" "}
+                                                    <span className="line-through">
+                                                        S/ {formatPrice(item?.price)}
+                                                    </span>
+                                                </p>
+                                            )}
                                             <div className="flex items-center gap-4 relative customtext-neutral-dark font-extrabold">
                                                 <span className="text-[40px] font-bold ">
-                                                    S/ {item?.final_price}
+                                                    S/ {formatPrice(item?.final_price)}
                                                 </span>
 
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4 mt-4">
-                                               {item?.discount > 0 && item?.discount < item?.price && (
-                                            <span className=" bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
-                                                -
-                                                {Number(
-                                                    item?.discount_percent
-                                                ).toFixed(0)}
-                                                %
-                                            </span>)}
+                                            {item?.discount > 0 && item?.discount < item?.price && (
+                                                <span className=" bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
+                                                    -
+                                                    {Number(
+                                                        item?.discount_percent
+                                                    ).toFixed(0)}
+                                                    %
+                                                </span>)}
                                         </div>
                                     </div>
 
@@ -649,21 +657,21 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                             className="flex items-start gap-3"
                                                         >
                                                             <CircleCheckIcon className="customtext-primary min-h-4 min-w-4 max-h-4 max-w-4 mt-1" />
-                                                           
-                                                                
-                                                              
-                                                                {spec?.description}
-                                                               
+
+
+
+                                                            {spec?.description}
+
                                                         </li>
                                                     )
                                             )}
-                                           
+
                                         </ul>
-                                      
+
                                     </div>
                                 </div>
 
-                                    <div className="flex-1 w-full ">
+                                <div className="flex-1 w-full ">
                                     <div className="bg-gray-100 rounded-lg p-6">
                                         <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
                                             Especificaciones Técnicas
@@ -675,8 +683,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 }`}
                                             style={{ listStyleType: "disc" }}
                                         >
-                                          
-                                             {item?.specifications.filter(spec => spec.type === "general").length > 0 ? (
+
+                                            {item?.specifications.filter(spec => spec.type === "general").length > 0 ? (
                                                 <div className="overflow-hidden rounded-lg border border-gray-200">
                                                     <table className="w-full">
                                                         <thead>
@@ -715,7 +723,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 </div>
                                             )}
                                         </ul>
-                                      
+
                                     </div>
                                 </div>
 
@@ -772,7 +780,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
             </div>
             {relationsItems.length > 0 && (
                 <ProductBananaLab
-                    data={{ title: "Te puede interesar", style_offer: "circle", background: "", class_button_primary: "lg:bg-primary", class_button: "bg-accent customtext-netrual-dark !font-semibold" ,class_section: "bg-secondary",text_button:"Ir a catalogo",link_catalog:"/catalogo" }}
+                    data={{ title: "Te puede interesar", style_offer: "circle", background: "", class_button_primary: "lg:bg-primary", class_button: "bg-accent customtext-netrual-dark !font-semibold", class_section: "bg-secondary", text_button: "Ir a catalogo", link_catalog: "/catalogo" }}
                     items={relationsItems}
                     cart={cart}
                     setCart={setCart}
