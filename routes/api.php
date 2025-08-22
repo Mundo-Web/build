@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryControll
 use App\Http\Controllers\Admin\SystemColorController as AdminSystemColorController;
 use App\Http\Controllers\Admin\SystemController as AdminSystemController;
 use App\Http\Controllers\Admin\TagController as AdminTagController;
+use App\Http\Controllers\Admin\PostTagController as AdminPostTagController;
 use App\Http\Controllers\Admin\WebDetailController as AdminWebDetailController;
 
 use App\Http\Controllers\Admin\ItemImageController as AdminItemImageController;
@@ -402,6 +403,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/tags/status', [AdminTagController::class, 'status']);
     Route::patch('/tags/{field}', [AdminTagController::class, 'boolean']);
     Route::delete('/tags/{id}', [AdminTagController::class, 'delete']);
+
+    // Post Tags routes
+    Route::post('/post-tags', [AdminPostTagController::class, 'save']);
+    Route::post('/post-tags/paginate', [AdminPostTagController::class, 'paginate']);
+    Route::post('/post-tags/update-promotional-status', [AdminPostTagController::class, 'updatePromotionalStatus']);
+    Route::patch('/post-tags/status', [AdminPostTagController::class, 'status']);
+    Route::patch('/post-tags/{field}', [AdminPostTagController::class, 'boolean']);
+    Route::delete('/post-tags/{id}', [AdminPostTagController::class, 'delete']);
 
     Route::post('/delivery-zones', [AdminDeliveryZoneController::class, 'save']);
     Route::post('/delivery-zones/paginate', [AdminDeliveryZoneController::class, 'paginate']);

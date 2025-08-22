@@ -13,6 +13,7 @@ import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
 import Global from '../Utils/Global';
+import Fillable from '../Utils/Fillable';
 
 const tagsRest = new TagsRest()
 
@@ -84,6 +85,7 @@ const Tags = () => {
     formData.append('description', descriptionRef.current.value)
     formData.append('background_color', backgroundColorRef.current.value)
     formData.append('text_color', textColorRef.current.value)
+    formData.append('tag_type', 'item') // Identificador para tags de items
 
     // Fechas promocionales
     if (startDateRef.current.value) {
@@ -94,7 +96,7 @@ const Tags = () => {
     }
 
     // Agregar icono (imagen pequeña) si se seleccionó una nueva
-    if (iconRef.current.src && iconRef.current.src) {
+    if (iconRef.current.files && iconRef.current.files[0]) {
       formData.append('icon', iconRef.current.files[0])
     }
 
@@ -116,6 +118,13 @@ const Tags = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  const onMenuChange = async ({ id, value }) => {
+    const result = await tagsRest.boolean({ id, field: 'menu', value })
+    if (!result) return
+    $(gridRef.current).dxDataGrid('instance').refresh()
+  }
+
+
   const onDeleteClicked = async (id) => {
     const { isConfirmed } = await Swal.fire({
       title: 'Eliminar registro',
@@ -132,7 +141,7 @@ const Tags = () => {
   }
 
   return (<>
-    <Table gridRef={gridRef} title='Etiquetas' rest={tagsRest}
+    <Table gridRef={gridRef} title='Tags de Productos' rest={tagsRest}
       toolBar={(container) => {
         container.unshift({
           widget: 'dxButton', location: 'after',
@@ -212,8 +221,8 @@ const Tags = () => {
           widget: 'dxButton', location: 'after',
           options: {
             icon: 'plus',
-            text: 'Nuevo registro',
-            hint: 'Nuevo registro',
+            text: 'Nuevo Tag de Producto',
+            hint: 'Nuevo Tag de Producto',
             onClick: () => onModalOpen()
           }
         });
@@ -224,17 +233,17 @@ const Tags = () => {
           caption: 'ID',
           visible: false
         },
-        {
+        Fillable.has('tags', 'name') && {
           dataField: 'name',
           caption: 'Etiqueta',
           width: '25%',
         },
-        {
+        Fillable.has('tags', 'description') && {
           dataField: 'description',
           caption: 'Descripción',
           width: '20%',
         },
-        {
+        Fillable.has('tags', 'promotional_status') && {
           dataField: 'promotional_status',
           caption: 'Estado Promocional',
           width: '15%',
@@ -276,6 +285,7 @@ const Tags = () => {
             ReactAppend(container, content)
           }
         },
+        Fillable.has('tags', 'menu') &&
         {
           dataField: 'preview',
           caption: 'Vista Previa',
@@ -321,7 +331,8 @@ const Tags = () => {
             ReactAppend(container, content)
           }
         },
-        {
+
+        Fillable.has('tags', 'image') && {
           dataField: 'image',
           caption: 'Imagen Principal',
           width: '15%',
@@ -349,7 +360,19 @@ const Tags = () => {
             }
           }
         },
-        {
+        Fillable.has('tags', 'menu') && {
+          dataField: 'menu',
+          caption: 'Menú',
+          dataType: 'boolean',
+          cellTemplate: (container, { data }) => {
+            $(container).empty()
+            ReactAppend(container, <SwitchFormGroup checked={data.menu == 1} onChange={() => onMenuChange({
+              id: data.id,
+              value: !data.menu
+            })} />)
+          }
+        },
+        Fillable.has('tags', 'visible') && {
           dataField: 'visible',
           caption: 'Visible',
           dataType: 'boolean',
@@ -382,42 +405,48 @@ const Tags = () => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar etiqueta' : 'Agregar etiqueta'} onSubmit={onModalSubmit} size='lg'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar Tag de Producto' : 'Agregar Tag de Producto'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='tags-container'>
         <input ref={idRef} type='hidden' />
 
-        <InputFormGroup eRef={nameRef} label='Nombre de la Etiqueta' col='col-12' required />
+        <div className='row'>
+          <div className='col-md-8'>
+            <InputFormGroup eRef={nameRef} label='Nombre del Tag' col='col-12' required hidden={!Fillable.has('tags', 'name')} />
 
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' col='col-12' rows={2} />
+            <TextareaFormGroup eRef={descriptionRef} label='Descripción' col='col-12' rows={4} hidden={!Fillable.has('tags', 'description')} />
+          </div>
+          <ImageFormGroup eRef={iconRef} label='Icono' col='col-md-4' aspect='6/5' hidden={!Fillable.has('tags', 'icon')} />
 
+        </div>
         {/* Sección de Fechas Promocionales */}
-        <div className="col-12">
-          <div className="alert alert-info mb-3">
-            <h6 className="alert-heading mb-2">
-              <i className="fas fa-calendar-alt me-2"></i>
-              Configuración Promocional
-            </h6>
-            <div className="row small">
-              <div className="col-md-6">
-                <p className="mb-1"><strong>🔄 Etiquetas Permanentes:</strong></p>
-                <p className="mb-2">Sin fechas → Siempre visibles</p>
-                <p className="mb-1"><strong>📅 Etiquetas Promocionales:</strong></p>
-                <p className="mb-0">Con fechas → Solo activas en el período especificado</p>
-              </div>
-              <div className="col-md-6">
-                <p className="mb-1"><strong>Ejemplos de uso:</strong></p>
-                <ul className="mb-0 small">
-                  <li>Black Friday: 29/11/2024 - 02/12/2024</li>
-                  <li>Cyber Monday: 02/12/2024 - 03/12/2024</li>
-                  <li>Descuentos Navideños: 15/12/2024 - 25/12/2024</li>
-                  <li>Ofertas de Año Nuevo: 26/12/2024 - 05/01/2025</li>
-                </ul>
+        {Fillable.has('tags', 'start_date') && Fillable.has('tags', 'end_date') && (
+          <div className="col-12">
+            <div className="alert alert-info mb-3">
+              <h6 className="alert-heading mb-2">
+                <i className="fas fa-calendar-alt me-2"></i>
+                Configuración Promocional
+              </h6>
+              <div className="row small">
+                <div className="col-md-6">
+                  <p className="mb-1"><strong>🔄 Etiquetas Permanentes:</strong></p>
+                  <p className="mb-2">Sin fechas → Siempre visibles</p>
+                  <p className="mb-1"><strong>📅 Etiquetas Promocionales:</strong></p>
+                  <p className="mb-0">Con fechas → Solo activas en el período especificado</p>
+                </div>
+                <div className="col-md-6">
+                  <p className="mb-1"><strong>Ejemplos de uso:</strong></p>
+                  <ul className="mb-0 small">
+                    <li>Black Friday: 29/11/2024 - 02/12/2024</li>
+                    <li>Cyber Monday: 02/12/2024 - 03/12/2024</li>
+                    <li>Descuentos Navideños: 15/12/2024 - 25/12/2024</li>
+                    <li>Ofertas de Año Nuevo: 26/12/2024 - 05/01/2025</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </div>)}
 
-        <div className='col-md-6'>
+        <div className='col-md-6' hidden={!Fillable.has('tags', 'start_date')}>
           <div className="form-group mb-2">
             <label className="form-label">
               <i className="fas fa-play-circle text-success me-1"></i>
@@ -433,7 +462,7 @@ const Tags = () => {
           </div>
         </div>
 
-        <div className='col-md-6'>
+        <div className='col-md-6' hidden={!Fillable.has('tags', 'end_date')}>
           <div className="form-group mb-2">
             <label className="form-label">
               <i className="fas fa-stop-circle text-danger me-1"></i>
@@ -449,23 +478,22 @@ const Tags = () => {
           </div>
         </div>
 
-        <div className='col-md-6'>
+        <div className='col-md-6' hidden={!Fillable.has('tags', 'background_color')}>
           <div className="form-group mb-2">
             <label className="form-label">Color de Fondo</label>
             <input ref={backgroundColorRef} type="color" className="form-control form-control-color" defaultValue="#3b82f6" />
           </div>
         </div>
 
-        <div className='col-md-6'>
+        <div className='col-md-6' hidden={!Fillable.has('tags', 'text_color')}>
           <div className="form-group mb-2">
             <label className="form-label">Color de Texto</label>
             <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
           </div>
         </div>
 
-        <ImageFormGroup eRef={iconRef} label='Icono (imagen pequeña que aparece al lado del texto)' col='col-md-6' aspect='1/1' />
 
-        <ImageFormGroup eRef={imageRef} label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' />
+        <ImageFormGroup eRef={imageRef} label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
       </div>
     </Modal>
   </>
@@ -473,7 +501,7 @@ const Tags = () => {
 }
 
 CreateReactScript((el, properties) => {
-  createRoot(el).render(<BaseAdminto {...properties} title='Etiquetas'>
+  createRoot(el).render(<BaseAdminto {...properties} title='Tags de Productos'>
     <Tags {...properties} />
   </BaseAdminto>);
 })

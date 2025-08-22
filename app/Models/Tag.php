@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class Tag extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -26,6 +26,8 @@ class Tag extends Model
         'start_date',
         'end_date',
         'promotional_status',
+        'tag_type',
+        'menu',
     ];
 
     
@@ -35,6 +37,7 @@ class Tag extends Model
         'end_date' => 'datetime',
         'visible' => 'boolean',
         'status' => 'boolean',
+        'menu' => 'boolean',
     ];
 
     /**
@@ -112,6 +115,25 @@ class Tag extends Model
     public function scopeExpired($query)
     {
         return $query->where('promotional_status', 'expired');
+    }
+
+    /**
+     * Scope para obtener solo tags de items
+     */
+    public function scopeForItems($query)
+    {
+        return $query->where(function($q) {
+            $q->where('tag_type', 'item')
+              ->orWhereNull('tag_type'); // Para compatibilidad con tags existentes
+        });
+    }
+
+    /**
+     * Scope para obtener solo tags de posts
+     */
+    public function scopeForPosts($query)
+    {
+        return $query->where('tag_type', 'post');
     }
 
     /**

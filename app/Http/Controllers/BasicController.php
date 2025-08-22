@@ -175,6 +175,14 @@ class BasicController extends Controller
       // Aplicar with dinámicamente
       $instance = $this->setPaginationInstance($request, $this->model)->with($withRelations);
 
+      // Aplicar filtros del método beforeIndex si existe
+      if (method_exists($this, 'beforeIndex')) {
+        $beforeIndexConfig = $this->beforeIndex($request);
+        if (isset($beforeIndexConfig['filter']) && is_callable($beforeIndexConfig['filter'])) {
+          $beforeIndexConfig['filter']($instance);
+        }
+      }
+
       $originalInstance = clone $instance;
 
       $originalInstance = clone $instance;

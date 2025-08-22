@@ -1337,6 +1337,7 @@ class ItemController extends BasicController
                 ->where('tags.visible', true)
                 ->where('items.status', true)
                 ->where('items.visible', true)
+                ->where('tags.menu',true)
                 // Solo tags activos: permanentes (sin fechas) o promocionales activos
                 ->where(function($query) {
                     $query->where('tags.promotional_status', 'permanent')
@@ -1344,6 +1345,7 @@ class ItemController extends BasicController
                 })
                 ->select(
                     'tags.id', 
+                    'tags.menu',
                     'tags.name', 
                     'tags.description',
                     'tags.icon',
@@ -1357,6 +1359,7 @@ class ItemController extends BasicController
                 )
                 ->groupBy(
                     'tags.id', 
+                    'tags.menu',
                     'tags.name', 
                     'tags.description',
                     'tags.icon',

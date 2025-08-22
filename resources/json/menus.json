@@ -35,7 +35,7 @@
         "icon": "mdi mdi-view-dashboard",
         "children": [
           { "label": "Posts", "href": "/admin/posts", "icon": "mdi mdi-post" },
-        
+          { "label": "Tags Posts", "href": "/admin/post-tags", "icon": "mdi mdi-label-multiple" },
           { "label": "Categorías", "href": "/admin/blog-categories", "icon": "mdi mdi-shape-outline" }
         ]
       },

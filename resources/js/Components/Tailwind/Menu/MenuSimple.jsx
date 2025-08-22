@@ -29,7 +29,7 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
                 if (response?.data) {
                     // Filtrar y ordenar tags: promocionales activos primero, luego permanentes
                     const activeTags = response.data.filter(tag => 
-                        tag.promotional_status === 'permanent' || tag.promotional_status === 'active'
+                        tag.promotional_status === 'permanent' || tag.promotional_status === 'active' && tag.menu==="1"  || tag.menu===1
                     ).sort((a, b) => {
                         // Promocionales activos primero
                         if (a.promotional_status === 'active' && b.promotional_status !== 'active') return -1;
