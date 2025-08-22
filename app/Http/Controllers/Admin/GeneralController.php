@@ -23,13 +23,10 @@ class GeneralController extends BasicController
         // Verificar si el usuario tiene rol Root
         $hasRootRole = $user && $user->roles && $user->roles->contains('name', 'Root');
         
-        if ($hasRootRole) {
-            // Root puede ver todos los campos para gestionar visibilidad
-            $generals = General::all();
-        } else {
+     
             // Admin solo puede ver campos con status = 1
             $generals = General::where('status', 1)->get();
-        }
+        
         
         // Para Root, también enviamos todos los campos para el modal de gestión
         $allGenerals = $hasRootRole ? General::all() : null;

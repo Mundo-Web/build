@@ -13,6 +13,7 @@ import Global from "../Utils/Global";
 import GalleryRest from "../Actions/Admin/GalleryRest";
 import Tippy from "@tippyjs/react";
 import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
+import { some } from "lodash";
 
 const generalsRest = new GeneralsRest();
 const galleryRest = new GalleryRest();
@@ -40,37 +41,20 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     return generals.some(general => general.correlative === correlative);
   };
 
-  // Lista de campos sensibles que podrían estar ocultos para Admin
-  const sensitiveFields = [
-    'copyright', 'address', 'support_phone', 'support_email', 'coorporative_email',
-    'privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy',
-    'phone_whatsapp', 'message_whatsapp', 'igv_checkout', 'shipping_free', 'currency',
-    // Campos de checkout/pagos (sensibles)
-    'checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key',
-    'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key',
-    'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description',
-    'checkout_transfer', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description',
-    // Píxeles y analytics (sensibles)
-    'google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id',
-    'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id',
-    'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id',
-    'custom_head_scripts', 'custom_body_scripts',
-    // Google OAuth (muy sensible)
-    'google_client_id', 'google_client_secret', 'google_oauth_enabled',
-    // Importación
-    'importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion',
-    // Campos básicos también pueden ser ocultos
-    'phone_contact', 'email_contact', 'cintillo', 'opening_hours'
-  ];
 
-  // Mapeo de tabs a correlatives
+
+  // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours'],
+    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'phone_whatsapp', 'message_whatsapp'],
-    'checkout': ['checkout_culqi', 'checkout_mercadopago', 'checkout_dwallet', 'checkout_transfer'],
-    'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario'],
+    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
+    'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy'],
-    'shippingfree': ['shipping_free'],
-    'pixels': ['google_analytics_id', 'facebook_pixel_id', 'tiktok_pixel_id', 'custom_head_scripts'],
+    'location': ['location'],
+    'shippingfree': ['shipping_free', 'igv_checkout', 'currency'],
+
+    'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts'],
     'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
   };
 
@@ -336,7 +320,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       console.log('Response:', response);
 
       if (response.success) {
-        toast.success("Visibilidad de campos actualizada correctamente");
+        //toast.success("Visibilidad de campos actualizada correctamente");
         setShowVisibilityModal(false);
         // Recargar la página para reflejar los cambios
         setTimeout(() => {
@@ -839,7 +823,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   type="button"
                   role="tab"
                 >
-                  Envio Gratis
+                  Envio y Facturación
                 </button>
               </li>
             )}
@@ -1019,7 +1003,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   ></textarea>
                 </div>
               </ConditionalField>
-              <ConditionalField correlative="openingHours">
+              <ConditionalField correlative="opening_hours">
                 <div className="mb-2">
                   <TextareaFormGroup
                     label="Horarios de atencion"
@@ -1034,55 +1018,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   />
                 </div>
               </ConditionalField>
-              <ConditionalField correlative="igvCheckout">
-                <div className="mb-2">
-                  <label
-                    htmlFor="igvCheckout"
-                    className="form-label"
-                  >
-                    IGV
-                    <small className="d-block text-muted">Dejar en 0 si no se quiere mostrar</small>
-                  </label>
-                  <input
-                    type="number"
-                    step={0.01}
-                    className="form-control"
-                    id="igvCheckout"
-                    value={formData.igvCheckout}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        igvCheckout: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </ConditionalField>
-              <ConditionalField correlative="currency">
-                <div className="mb-2">
-                  <label
-                    htmlFor="currency"
-                    className="form-label"
-                  >
-                    Moneda
-                    <small className="d-block text-muted" style={{ fontWeight: 'lighter' }}>¿Qué moneda maneja tu empresa?</small>
-                  </label>
-                  <select
-                    className="form-control"
-                    id="currency"
-                    value={formData.currency}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        currency: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="pen">Soles (S/)</option>
-                    <option value="usd">Dólares ($)</option>
-                  </select>
-                </div>
-              </ConditionalField>
+
             </div>
 
             {/* Tab de Contacto */}
@@ -1090,8 +1026,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               className={`tab-pane fade ${activeTab === "contact" ? "show active" : ""}`}
               role="tabpanel"
             >
-              <ConditionalField correlative="phone">
-                <div className="row mb-2">
+
+              <div className="row mb-2">
+                <ConditionalField correlative="phone_contact">
                   <div className="col-md-6">
                     {formData.phones.map((phone, index) => (
                       <div
@@ -1142,6 +1079,8 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       Agregar teléfono
                     </button>
                   </div>
+                </ConditionalField>
+                <ConditionalField correlative="email_contact">
                   <div className="col-md-6">
                     {formData.emails.map((email, index) => (
                       <div
@@ -1192,8 +1131,10 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       Agregar correo
                     </button>
                   </div>
-                </div>
-              </ConditionalField>
+
+                </ConditionalField>
+              </div>
+
               <ConditionalField correlative="support_phone">
                 <div className="mb-2">
                   <label
@@ -1262,276 +1203,292 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   />
                 </div>
               </ConditionalField>
-
-              <ConditionalField correlative="phone_whatsapp">
-                <div className="mb-2">
-                  <label
-                    htmlFor="phoneWhatsapp"
-                    className="form-label"
-                  >
-                    Número de Whatsapp
-                  </label>
-                  <input
-                    type="tel"
-                    className="form-control"
-                    id="phoneWhatsapp"
-                    value={formData.phoneWhatsapp}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        phoneWhatsapp: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-              </ConditionalField>
-              <ConditionalField correlative="message_whatsapp">
-                <div className="mb-2">
-                  <label
-                    htmlFor="messageWhatsapp"
-                    className="form-label"
-                  >
-                    Mensaje de Whatsapp
-                  </label>
-                  <input
-                    type="tel"
-                    className="form-control"
-                    id="messageWhatsapp"
-                    value={formData.messageWhatsapp}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        messageWhatsapp: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-              </ConditionalField>
-            </div>
-         
-          <div
-            className={`tab-pane fade ${activeTab === "checkout" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="row">
-              <div className="col-sm-3">
-                <div className="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                  <a className="nav-link active show mb-1" id="v-culqi-tab" data-bs-toggle="pill" href="#v-culqi" role="tab" aria-controls="v-culqi" aria-selected="true">
-                    Culqi
-                  </a>
-                  <a className="nav-link mb-1" id="v-mercadopago-tab" data-bs-toggle="pill" href="#v-mercadopago" role="tab" aria-controls="v-mercadopago" aria-selected="false">
-                    Mercado Pago
-                  </a>
-                  <a className="nav-link mb-1" id="v-digital-wallet-tab" data-bs-toggle="pill" href="#v-digital-wallet" role="tab" aria-controls="v-digital-wallet" aria-selected="false">
-                    Yape / Plin
-                  </a>
-                  <a className="nav-link mb-1" id="v-transfer-tab" data-bs-toggle="pill" href="#v-transfer" role="tab" aria-controls="v-transfer" aria-selected="false">
-                    Transferencia
-                  </a>
-                </div>
-              </div>
-              <div className="col-sm-9">
-                <div className="tab-pane fade active show" id="v-culqi" role="tabpanel" aria-labelledby="v-culqi-tab">
-                  <ConditionalField correlative="checkout_culqi">
+              {generals?.some((general) => general.correlative === "phone_whatsapp") && generals?.some((general) => general.correlative === "message_whatsapp") && (
+                <div className="card bg-success" style={{ backgroundColor: "#8dfcbb", padding: "8px", color:"#FFFFFF" }}>
+                  <ConditionalField correlative="phone_whatsapp">
                     <div className="mb-2">
-                      <div className="form-check">
+                      <label
+                        htmlFor="phoneWhatsapp"
+                        className="form-label"
+                      >
+                        Número de Whatsapp
+                      </label>
+                      <input
+                        type="tel"
+                        className="form-control"
+                        id="phoneWhatsapp"
+                        value={formData.phoneWhatsapp}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            phoneWhatsapp: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                  </ConditionalField>
+                  <ConditionalField correlative="message_whatsapp">
+                    <div className="mb-2">
+                      <label
+                        htmlFor="messageWhatsapp"
+                        className="form-label"
+                      >
+                        Mensaje de Whatsapp
+                      </label>
+                      <input
+                        type="tel"
+                        className="form-control"
+                        id="messageWhatsapp"
+                        value={formData.messageWhatsapp}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            messageWhatsapp: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                  </ConditionalField>
+                </div>)}
+            </div>
+
+            <div
+              className={`tab-pane fade ${activeTab === "checkout" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-sm-3">
+                  <div className="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    {some(generals, (general) => general.correlative === "checkout_culqi") && (
+                      <a className="nav-link active show mb-1" id="v-culqi-tab" data-bs-toggle="pill" href="#v-culqi" role="tab" aria-controls="v-culqi" aria-selected="true">
+                        Culqi
+                      </a>
+                    )}
+                    {some(generals, (general) => general.correlative === "checkout_mercadopago") && (
+                      <a className="nav-link mb-1" id="v-mercadopago-tab" data-bs-toggle="pill" href="#v-mercadopago" role="tab" aria-controls="v-mercadopago" aria-selected="false">
+                        Mercado Pago
+                      </a>
+                    )}
+                    {some(generals, (general) => general.correlative === "checkout_dwallet") && (
+                      <a className="nav-link mb-1" id="v-digital-wallet-tab" data-bs-toggle="pill" href="#v-digital-wallet" role="tab" aria-controls="v-digital-wallet" aria-selected="false">
+                        Yape / Plin
+                      </a>
+                    )}
+                    {some(generals, (general) => general.correlative === "checkout_transfer") && (
+                      <a className="nav-link mb-1" id="v-transfer-tab" data-bs-toggle="pill" href="#v-transfer" role="tab" aria-controls="v-transfer" aria-selected="false">
+                        Transferencia
+                      </a>
+                    )}
+                  </div>
+                </div>
+                <div className="tab-content col-sm-9">
+                  <ConditionalField correlative="checkout_culqi">
+                    <div className="tab-pane fade active show" id="v-culqi" role="tabpanel" aria-labelledby="v-culqi-tab">
+                      <ConditionalField correlative="checkout_culqi">
+                        <div className="mb-2">
+                          <div className="form-check">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              id="checkout-culqi"
+                              checked={formData.checkout_culqi == 'true'}
+                              onChange={(e) => setFormData({ ...formData, checkout_culqi: String(e.target.checked) })}
+                            />
+                            <label className="form-check-label form-label" htmlFor="checkout-culqi">
+                              Habilitar pago con Culqi
+                              <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Culqi </small>
+                            </label>
+                          </div>
+                        </div>
+                      </ConditionalField>
+                      <ConditionalField correlative="checkout_culqi_name">
+                        <div className="mb-2">
+                          <label className="form-label">Título del formulario</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={formData.checkout_culqi_name}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              checkout_culqi_name: e.target.value
+                            })}
+                          />
+                        </div>
+                      </ConditionalField>
+                      <div className="mb-2">
+                        <label className="form-label">Clave Pública</label>
                         <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="checkout-culqi"
-                          checked={formData.checkout_culqi == 'true'}
-                          onChange={(e) => setFormData({ ...formData, checkout_culqi: String(e.target.checked) })}
+                          type="text"
+                          className="form-control"
+                          value={formData.checkout_culqi_public_key}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_culqi_public_key: e.target.value
+                          })}
                         />
-                        <label className="form-check-label form-label" htmlFor="checkout-culqi">
-                          Habilitar pago con Culqi
-                          <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Culqi </small>
-                        </label>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Clave Privada</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={formData.checkout_culqi_private_key}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_culqi_private_key: e.target.value
+                          })}
+                        />
                       </div>
                     </div>
                   </ConditionalField>
-                  <ConditionalField correlative="checkout_culqi_name">
-                    <div className="mb-2">
-                      <label className="form-label">Título del formulario</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={formData.checkout_culqi_name}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          checkout_culqi_name: e.target.value
-                        })}
-                      />
+                  <ConditionalField correlative="checkout_mercadopago">
+                    <div className="tab-pane fade" id="v-mercadopago" role="tabpanel" aria-labelledby="v-mercadopago-tab">
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="checkout-mercadopago"
+                            checked={formData.checkout_mercadopago == 'true'}
+                            onChange={(e) => setFormData({ ...formData, checkout_mercadopago: String(e.target.checked) })}
+                          />
+                          <label className="form-check-label form-label" htmlFor="checkout-mercadopago">
+                            Habilitar pago con Mercado Pago
+                            <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Mercado Pago </small>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Título del formulario</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.checkout_mercadopago_name}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_mercadopago_name: e.target.value
+                          })}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Clave Pública</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.checkout_mercadopago_public_key}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_mercadopago_public_key: e.target.value
+                          })}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Clave Privada (Access Token)</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={formData.checkout_mercadopago_private_key}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_mercadopago_private_key: e.target.value
+                          })}
+                        />
+                      </div>
                     </div>
                   </ConditionalField>
-                  <div className="mb-2">
-                    <label className="form-label">Clave Pública</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.checkout_culqi_public_key}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_culqi_public_key: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">Clave Privada</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      value={formData.checkout_culqi_private_key}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_culqi_private_key: e.target.value
-                      })}
-                    />
-                  </div>
-                </div>
-                <div className="tab-pane fade" id="v-mercadopago" role="tabpanel" aria-labelledby="v-mercadopago-tab">
-                  <div className="mb-2">
-                    <div className="form-check">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="checkout-mercadopago"
-                        checked={formData.checkout_mercadopago == 'true'}
-                        onChange={(e) => setFormData({ ...formData, checkout_mercadopago: String(e.target.checked) })}
-                      />
-                      <label className="form-check-label form-label" htmlFor="checkout-mercadopago">
-                        Habilitar pago con Mercado Pago
-                        <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Mercado Pago </small>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">Título del formulario</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.checkout_mercadopago_name}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_mercadopago_name: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">Clave Pública</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.checkout_mercadopago_public_key}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_mercadopago_public_key: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">Clave Privada (Access Token)</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      value={formData.checkout_mercadopago_private_key}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_mercadopago_private_key: e.target.value
-                      })}
-                    />
-                  </div>
-                </div>
-                <div className="tab-pane fade" id="v-digital-wallet" role="tabpanel" aria-labelledby="v-digital-wallet-tab">
-                  <div className="mb-2">
-                    <div className="form-check">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="checkout-dwallet"
-                        checked={formData.checkout_dwallet == 'true'}
-                        onChange={(e) => setFormData({ ...formData, checkout_dwallet: String(e.target.checked) })}
-                      />
-                      <label className="form-check-label form-label" htmlFor="checkout-dwallet">
-                        Habilitar pago con Yape/Plin
-                        <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Yape/Plin </small>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">QR</label>
-                    {
-                      formData.checkout_dwallet_qr
-                        ? <div className="position-relative">
-                          <Tippy content="Eliminar QR">
-                            <button className="position-absolute btn btn-xs btn-danger" style={{
-                              top: '5px',
-                              left: '5px'
-                            }} onClick={() => setFormData({
-                              ...formData,
-                              checkout_dwallet_qr: null
-                            })}>
-                              <i className="mdi mdi-delete"></i>
-                            </button>
-                          </Tippy>
-                          <img src={`/assets/resources/${formData.checkout_dwallet_qr}`} className="img-thumbnail" style={{
-                            height: '200px',
-                            width: 'auto'
-                          }} />
+                  <ConditionalField correlative="checkout_dwallet">
+                    <div className="tab-pane fade" id="v-digital-wallet" role="tabpanel" aria-labelledby="v-digital-wallet-tab">
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="checkout-dwallet"
+                            checked={formData.checkout_dwallet == 'true'}
+                            onChange={(e) => setFormData({ ...formData, checkout_dwallet: String(e.target.checked) })}
+                          />
+                          <label className="form-check-label form-label" htmlFor="checkout-dwallet">
+                            Habilitar pago con Yape/Plin
+                            <small className="text-muted d-block">Al habilitar esta opción, permite pagos por Yape/Plin </small>
+                          </label>
                         </div>
-                        : <input
-                          type="file"
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">QR</label>
+                        {
+                          formData.checkout_dwallet_qr
+                            ? <div className="position-relative">
+                              <Tippy content="Eliminar QR">
+                                <button className="position-absolute btn btn-xs btn-danger" style={{
+                                  top: '5px',
+                                  left: '5px'
+                                }} onClick={() => setFormData({
+                                  ...formData,
+                                  checkout_dwallet_qr: null
+                                })}>
+                                  <i className="mdi mdi-delete"></i>
+                                </button>
+                              </Tippy>
+                              <img src={`/assets/resources/${formData.checkout_dwallet_qr}`} className="img-thumbnail" style={{
+                                height: '200px',
+                                width: 'auto'
+                              }} />
+                            </div>
+                            : <input
+                              type="file"
+                              className="form-control"
+                              accept="image/*"
+                              onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                e.target.value = null
+
+                                const ext = file.name.split('.').pop()
+                                const dwallet_name = `qr-digital-wallet.${ext}`
+
+                                const request = new FormData()
+                                request.append('image', file)
+                                request.append('name', dwallet_name)
+
+                                const result = await galleryRest.save(request)
+                                if (!result) return;
+
+                                setFormData({
+                                  ...formData,
+                                  checkout_dwallet_qr: dwallet_name
+                                });
+                              }}
+                            />
+                        }
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Título</label>
+                        <input
+                          type="text"
                           className="form-control"
-                          accept="image/*"
-                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            if (!file) return;
-                            e.target.value = null
-
-                            const ext = file.name.split('.').pop()
-                            const dwallet_name = `qr-digital-wallet.${ext}`
-
-                            const request = new FormData()
-                            request.append('image', file)
-                            request.append('name', dwallet_name)
-
-                            const result = await galleryRest.save(request)
-                            if (!result) return;
-
-                            setFormData({
-                              ...formData,
-                              checkout_dwallet_qr: dwallet_name
-                            });
-                          }}
+                          value={formData.checkout_dwallet_name}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_dwallet_name: e.target.value
+                          })}
                         />
-                    }
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">Título</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.checkout_dwallet_name}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_dwallet_name: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label">Descripción</label>
-                    <textarea
-                      className="form-control"
-                      value={formData.checkout_dwallet_description}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        checkout_dwallet_description: e.target.value
-                      })}
-                    />
-                  </div>
-                </div>
-                {/* <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Descripción</label>
+                        <textarea
+                          className="form-control"
+                          value={formData.checkout_dwallet_description}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            checkout_dwallet_description: e.target.value
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </ConditionalField>
+                  {/* <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
                     <div className="mb-2">
                       <div className="form-check">
                         <input
@@ -1583,883 +1540,941 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       />
                     </div>
                   </div> */}
-                <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
-                  <div className="mb-2">
-                    <div className="form-check">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="checkout-transfer"
-                        checked={formData.checkout_transfer === 'true'}
-                        onChange={(e) => setFormData({ ...formData, checkout_transfer: String(e.target.checked) })}
-                      />
-                      <label className="form-check-label form-label" htmlFor="checkout-transfer">
-                        Habilitar pago por transferencia
-                        <small className="text-muted d-block">Al habilitar esta opción, permite pagos por transferencia</small>
-                      </label>
-                    </div>
-                  </div>
-
-                  {formData.transfer_accounts.map((account, index) => (
-                    <div key={index} className="mb-4 p-3 border rounded">
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h5>Cuenta Bancaria #{index + 1}</h5>
-                        {index > 0 && (
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-sm"
-                            onClick={() => {
-                              const accounts = [...formData.transfer_accounts];
-                              accounts.splice(index, 1);
-                              setFormData({ ...formData, transfer_accounts: accounts });
-                            }}
-                          >
-                            Eliminar Cuenta
-                          </button>
-                        )}
+                  <ConditionalField correlative="checkout_transfer">
+                    <div className="tab-pane fade" id="v-transfer" role="tabpanel" aria-labelledby="v-transfer-tab">
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="checkout-transfer"
+                            checked={formData.checkout_transfer === 'true'}
+                            onChange={(e) => setFormData({ ...formData, checkout_transfer: String(e.target.checked) })}
+                          />
+                          <label className="form-check-label form-label" htmlFor="checkout-transfer">
+                            Habilitar pago por transferencia
+                            <small className="text-muted d-block">Al habilitar esta opción, permite pagos por transferencia</small>
+                          </label>
+                        </div>
                       </div>
 
-                      <div className="mb-2">
-                        <label className="form-label">Imagen de la Cuenta</label>
-                        {account.image ? (
-                          <div className="position-relative">
-                            <Tippy content="Eliminar Imagen">
+                      {formData.transfer_accounts.map((account, index) => (
+                        <div key={index} className="mb-4 p-3 border rounded">
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <h5>Cuenta Bancaria #{index + 1}</h5>
+                            {index > 0 && (
                               <button
-                                className="position-absolute btn btn-xs btn-danger"
-                                style={{ top: '5px', left: '5px' }}
+                                type="button"
+                                className="btn btn-danger btn-sm"
                                 onClick={() => {
                                   const accounts = [...formData.transfer_accounts];
-                                  accounts[index].image = null;
+                                  accounts.splice(index, 1);
                                   setFormData({ ...formData, transfer_accounts: accounts });
                                 }}
                               >
-                                <i className="mdi mdi-delete"></i>
+                                Eliminar Cuenta
                               </button>
-                            </Tippy>
-                            <img
-                              src={`/assets/resources/${account.image}`}
-                              className="img-thumbnail"
-                              style={{ height: '200px', width: 'auto' }}
+                            )}
+                          </div>
+
+                          <div className="mb-2">
+                            <label className="form-label">Imagen de la Cuenta</label>
+                            {account.image ? (
+                              <div className="position-relative">
+                                <Tippy content="Eliminar Imagen">
+                                  <button
+                                    className="position-absolute btn btn-xs btn-danger"
+                                    style={{ top: '5px', left: '5px' }}
+                                    onClick={() => {
+                                      const accounts = [...formData.transfer_accounts];
+                                      accounts[index].image = null;
+                                      setFormData({ ...formData, transfer_accounts: accounts });
+                                    }}
+                                  >
+                                    <i className="mdi mdi-delete"></i>
+                                  </button>
+                                </Tippy>
+                                <img
+                                  src={`/assets/resources/${account.image}`}
+                                  className="img-thumbnail"
+                                  style={{ height: '200px', width: 'auto' }}
+                                />
+                              </div>
+                            ) : (
+                              <input
+                                type="file"
+                                className="form-control"
+                                accept="image/*"
+                                onChange={async (e) => {
+                                  const file = e.target.files[0];
+                                  if (!file) return;
+                                  e.target.value = null;
+
+                                  const ext = file.name.split('.').pop();
+                                  const imageName = `transfer-account-${Date.now()}.${ext}`;
+
+                                  const request = new FormData();
+                                  request.append('image', file);
+                                  request.append('name', imageName);
+
+                                  const result = await galleryRest.save(request);
+                                  if (!result) return;
+
+                                  const accounts = [...formData.transfer_accounts];
+                                  accounts[index].image = imageName;
+                                  setFormData({ ...formData, transfer_accounts: accounts });
+                                }}
+                              />
+                            )}
+                          </div>
+
+                          <div className="mb-2">
+                            <label className="form-label">Número de Cuenta (CC)</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={account.cc}
+                              onChange={(e) => {
+                                const accounts = [...formData.transfer_accounts];
+                                accounts[index].cc = e.target.value;
+                                setFormData({ ...formData, transfer_accounts: accounts });
+                              }}
                             />
                           </div>
-                        ) : (
-                          <input
-                            type="file"
-                            className="form-control"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files[0];
-                              if (!file) return;
-                              e.target.value = null;
 
-                              const ext = file.name.split('.').pop();
-                              const imageName = `transfer-account-${Date.now()}.${ext}`;
+                          <div className="mb-2">
+                            <label className="form-label">Código de Cuenta Interbancario (CCI)</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={account.cci}
+                              onChange={(e) => {
+                                const accounts = [...formData.transfer_accounts];
+                                accounts[index].cci = e.target.value;
+                                setFormData({ ...formData, transfer_accounts: accounts });
+                              }}
+                            />
+                          </div>
 
-                              const request = new FormData();
-                              request.append('image', file);
-                              request.append('name', imageName);
+                          <div className="mb-2">
+                            <label className="form-label">Nombre del Banco/Titular</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={account.name}
+                              onChange={(e) => {
+                                const accounts = [...formData.transfer_accounts];
+                                accounts[index].name = e.target.value;
+                                setFormData({ ...formData, transfer_accounts: accounts });
+                              }}
+                            />
+                          </div>
 
-                              const result = await galleryRest.save(request);
-                              if (!result) return;
+                          <div className="mb-2">
+                            <label className="form-label">Descripción</label>
+                            <textarea
+                              className="form-control"
+                              value={account.description}
+                              onChange={(e) => {
+                                const accounts = [...formData.transfer_accounts];
+                                accounts[index].description = e.target.value;
+                                setFormData({ ...formData, transfer_accounts: accounts });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
 
-                              const accounts = [...formData.transfer_accounts];
-                              accounts[index].image = imageName;
-                              setFormData({ ...formData, transfer_accounts: accounts });
-                            }}
-                          />
-                        )}
-                      </div>
-
-                      <div className="mb-2">
-                        <label className="form-label">Número de Cuenta (CC)</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={account.cc}
-                          onChange={(e) => {
-                            const accounts = [...formData.transfer_accounts];
-                            accounts[index].cc = e.target.value;
-                            setFormData({ ...formData, transfer_accounts: accounts });
-                          }}
-                        />
-                      </div>
-
-                      <div className="mb-2">
-                        <label className="form-label">Código de Cuenta Interbancario (CCI)</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={account.cci}
-                          onChange={(e) => {
-                            const accounts = [...formData.transfer_accounts];
-                            accounts[index].cci = e.target.value;
-                            setFormData({ ...formData, transfer_accounts: accounts });
-                          }}
-                        />
-                      </div>
-
-                      <div className="mb-2">
-                        <label className="form-label">Nombre del Banco/Titular</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={account.name}
-                          onChange={(e) => {
-                            const accounts = [...formData.transfer_accounts];
-                            accounts[index].name = e.target.value;
-                            setFormData({ ...formData, transfer_accounts: accounts });
-                          }}
-                        />
-                      </div>
-
-                      <div className="mb-2">
-                        <label className="form-label">Descripción</label>
-                        <textarea
-                          className="form-control"
-                          value={account.description}
-                          onChange={(e) => {
-                            const accounts = [...formData.transfer_accounts];
-                            accounts[index].description = e.target.value;
-                            setFormData({ ...formData, transfer_accounts: accounts });
-                          }}
-                        />
-                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-primary mt-2"
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            transfer_accounts: [
+                              ...formData.transfer_accounts,
+                              {
+                                image: null,
+                                cc: "",
+                                cci: "",
+                                name: "",
+                                description: ""
+                              }
+                            ]
+                          });
+                        }}
+                      >
+                        Agregar Otra Cuenta
+                      </button>
                     </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    className="btn btn-primary mt-2"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        transfer_accounts: [
-                          ...formData.transfer_accounts,
-                          {
-                            image: null,
-                            cc: "",
-                            cci: "",
-                            name: "",
-                            description: ""
-                          }
-                        ]
-                      });
-                    }}
-                  >
-                    Agregar Otra Cuenta
-                  </button>
+                  </ConditionalField>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Tab de Policies */}
-          <div
-            className={`tab-pane fade ${activeTab === "policies" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="mb-2">
-              <QuillFormGroup
-                label="Política de privacidad"
-                value={formData.privacyPolicy}
-                onChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    privacyPolicy: value,
-                  })
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <QuillFormGroup
-                label="Términos y condiciones"
-                value={formData.termsConditions}
-                onChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    termsConditions: value,
-                  })
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <QuillFormGroup
-                label="Políticas de envío"
-                value={formData.deliveryPolicy}
-                onChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    deliveryPolicy: value,
-                  })
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <QuillFormGroup
-                label="Políticas de devolución y cambio"
-                value={formData.salebackPolicy}
-                onChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    salebackPolicy: value,
-                  })
-                }
-              />
-            </div>
-          </div>
+            {/* Tab de Policies */}
+            <div
+              className={`tab-pane fade ${activeTab === "policies" ? "show active" : ""}`}
+              role="tabpanel"
+            >
 
-          <div
-            className={`tab-pane fade ${activeTab === "location" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <LoadScript googleMapsApiKey={Global.GMAPS_API_KEY}>
-              <GoogleMap
-                mapContainerStyle={{
-                  width: "100%",
-                  height: "400px",
-                }}
-                center={formData.location}
-                zoom={10}
-                onClick={handleMapClick}
-              >
-                <Marker position={formData.location} />
-              </GoogleMap>
-            </LoadScript>
-            <small className="form-text text-muted">
-              Haz clic en el mapa para seleccionar la ubicación.
-            </small>
-          </div>
+              <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "privacy_policy")}>
+                <QuillFormGroup
+                  label="Política de privacidad"
+                  value={formData.privacyPolicy}
+                  onChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      privacyPolicy: value,
+                    })
+                  }
+                />
+              </div>
 
-          <div
-            className={`tab-pane fade ${activeTab === "shippingfree" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="mb-2">
-              <label className="form-label">Envio gratis a partir de:</label>
-              <input
-                type="text"
-                placeholder="Ingrese el monto para envio gratis"
-                className="form-control"
-                value={formData.shippingFree}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  shippingFree: e.target.value
-                })}
-              />
-            </div>
-          </div>
+            
 
-          <div
-            className={`tab-pane fade ${activeTab === "importation" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="row mb-2">
-              <div className="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
-                <div className="mb-3">
-                  <label
-                    htmlFor="importation_flete"
-                    className="form-label"
-                  >
-                    Precio por peso (flete)
-                  </label>
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <i className="mdi mdi-circle-multiple"></i>
-                    </span>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-control"
-                      id="importation_flete"
-                      value={formData.importation_flete}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          importation_flete: e.target.value,
-                        })
-                      }
-
-                    />
-                    <span className="input-group-text">por kg</span>
-                  </div>
+                <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "terms_conditions")}>
+                  <QuillFormGroup
+                    label="Términos y condiciones"
+                    value={formData.termsConditions}
+                    onChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        termsConditions: value,
+                      })
+                    }
+                  />
                 </div>
-                <div className="mb-3">
-                  <label
-                    htmlFor="importation_seguro"
-                    className="form-label"
-                  >
-                    Seguro de importación
-                  </label>
-                  <div className="input-group">
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-control"
-                      id="importation_seguro"
-                      value={formData.importation_seguro}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          importation_seguro: e.target.value,
-                        })
-                      }
 
-                    />
-                    <span className="input-group-text">%</span>
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <label
-                    htmlFor="importation_derecho_arancelario"
-                    className="form-label"
-                  >
-                    Derechos arancelarios
-                  </label>
-                  <div className="input-group">
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-control"
-                      id="importation_derecho_arancelario"
-                      value={formData.importation_derecho_arancelario}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          importation_derecho_arancelario: e.target.value,
-                        })
-                      }
+              <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "delivery_policy")} >
+                <QuillFormGroup
+                  label="Políticas de envío"
+                  value={formData.deliveryPolicy}
+                  onChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      deliveryPolicy: value,
+                    })
+                  }
+                />
+              </div>
+              <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "saleback_policy")}>
+                <QuillFormGroup
+                  label="Políticas de devolución y cambio"
+                  value={formData.salebackPolicy}
+                  onChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      salebackPolicy: value,
+                    })
+                  }
+                />
+              </div>
+            </div>
 
-                    />
-                    <span className="input-group-text">%</span>
-                  </div>
-                </div>
-                <div className="mb-3">
+            <div
+              className={`tab-pane fade ${activeTab === "location" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <LoadScript googleMapsApiKey={Global.GMAPS_API_KEY}>
+                <GoogleMap
+                  mapContainerStyle={{
+                    width: "100%",
+                    height: "400px",
+                  }}
+                  center={formData.location}
+                  zoom={10}
+                  onClick={handleMapClick}
+                >
+                  <Marker position={formData.location} />
+                </GoogleMap>
+              </LoadScript>
+              <small className="form-text text-muted">
+                Haz clic en el mapa para seleccionar la ubicación.
+              </small>
+            </div>
+
+            <div
+              className={`tab-pane fade ${activeTab === "shippingfree" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <ConditionalField correlative="igv_checkout">
+                <div className="mb-2">
                   <label
-                    htmlFor="importation_derecho_arancelario_descripcion"
+                    htmlFor="igvCheckout"
                     className="form-label"
                   >
-                    Descripción de derechos arancelarios
-                    <small className="text-muted d-block">Qué porcentajes se están considerando en cálculo de derechos arancelarios</small>
+                    IGV
+                    <small className="d-block text-muted">Dejar en 0 si no se quiere mostrar</small>
                   </label>
-                  <textarea
+                  <input
+                    type="number"
+                    step={0.01}
                     className="form-control"
-                    id="importation_derecho_arancelario_descripcion"
-                    value={formData.importation_derecho_arancelario_descripcion}
+                    id="igvCheckout"
+                    value={formData.igvCheckout}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        importation_derecho_arancelario_descripcion: e.target.value,
+                        igvCheckout: e.target.value,
                       })
                     }
-                    rows={3}
-                    style={{ minHeight: (3 * 27), fieldSizing: 'content' }}
-
                   />
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="currency">
+                <div className="mb-2">
+                  <label
+                    htmlFor="currency"
+                    className="form-label"
+                  >
+                    Moneda
+                    <small className="d-block text-muted" style={{ fontWeight: 'lighter' }}>¿Qué moneda maneja tu empresa?</small>
+                  </label>
+                  <select
+                    className="form-control"
+                    id="currency"
+                    value={formData.currency}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        currency: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="pen">Soles (S/)</option>
+                    <option value="usd">Dólares ($)</option>
+                  </select>
+                </div>
+              </ConditionalField>
+              <ConditionalField correlative="shipping_free">
+                <div className="mb-2">
+                  <label className="form-label">Envio gratis a partir de:</label>
+                  <input
+                    type="text"
+                    placeholder="Ingrese el monto para envio gratis"
+                    className="form-control"
+                    value={formData.shippingFree}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      shippingFree: e.target.value
+                    })}
+                  />
+                </div>
+              </ConditionalField>
+            </div>
+
+            <div
+              className={`tab-pane fade ${activeTab === "importation" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row mb-2">
+                <div className="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+                  <div className="mb-3">
+                    <label
+                      htmlFor="importation_flete"
+                      className="form-label"
+                    >
+                      Precio por peso (flete)
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text">
+                        <i className="mdi mdi-circle-multiple"></i>
+                      </span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        className="form-control"
+                        id="importation_flete"
+                        value={formData.importation_flete}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            importation_flete: e.target.value,
+                          })
+                        }
+
+                      />
+                      <span className="input-group-text">por kg</span>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="importation_seguro"
+                      className="form-label"
+                    >
+                      Seguro de importación
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        step="0.01"
+                        className="form-control"
+                        id="importation_seguro"
+                        value={formData.importation_seguro}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            importation_seguro: e.target.value,
+                          })
+                        }
+
+                      />
+                      <span className="input-group-text">%</span>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="importation_derecho_arancelario"
+                      className="form-label"
+                    >
+                      Derechos arancelarios
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        step="0.01"
+                        className="form-control"
+                        id="importation_derecho_arancelario"
+                        value={formData.importation_derecho_arancelario}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            importation_derecho_arancelario: e.target.value,
+                          })
+                        }
+
+                      />
+                      <span className="input-group-text">%</span>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="importation_derecho_arancelario_descripcion"
+                      className="form-label"
+                    >
+                      Descripción de derechos arancelarios
+                      <small className="text-muted d-block">Qué porcentajes se están considerando en cálculo de derechos arancelarios</small>
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="importation_derecho_arancelario_descripcion"
+                      value={formData.importation_derecho_arancelario_descripcion}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          importation_derecho_arancelario_descripcion: e.target.value,
+                        })
+                      }
+                      rows={3}
+                      style={{ minHeight: (3 * 27), fieldSizing: 'content' }}
+
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div
-            className={`tab-pane fade ${activeTab === "corporate" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="mb-2">
-              <label className="form-label">Email Corporativo Principal</label>
-              <input
-                type="email"
-                placeholder="contacto@empresa.com"
-                className="form-control"
-                value={formData.coorporativeEmail}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  coorporativeEmail: e.target.value
-                })}
-              />
-              <small className="text-muted">Este email se usará para comunicaciones corporativas y notificaciones del sistema</small>
-            </div>
-          </div>
-
-          <div
-            className={`tab-pane fade ${activeTab === "pixels" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="row">
-              <div className="col-md-6">
-                <h5 className="mb-3">Google Analytics & Ads</h5>
-                <div className="mb-3">
-                  <label className="form-label">Google Analytics ID</label>
-                  <input
-                    type="text"
-                    placeholder="G-XXXXXXXXXX o UA-XXXXXXXX-X"
-                    className="form-control"
-                    value={formData.googleAnalyticsId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      googleAnalyticsId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID de Google Analytics para tracking de visitas</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Google Tag Manager ID</label>
-                  <input
-                    type="text"
-                    placeholder="GTM-XXXXXXX"
-                    className="form-control"
-                    value={formData.googleTagManagerId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      googleTagManagerId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID de Google Tag Manager</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Google Ads Conversion ID</label>
-                  <input
-                    type="text"
-                    placeholder="AW-XXXXXXXXX"
-                    className="form-control"
-                    value={formData.googleAdsConversionId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      googleAdsConversionId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID de conversión de Google Ads</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Google Ads Conversion Label</label>
-                  <input
-                    type="text"
-                    placeholder="xxxxxxxxxxxxxxxxxxxxxxx"
-                    className="form-control"
-                    value={formData.googleAdsConversionLabel}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      googleAdsConversionLabel: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">Etiqueta de conversión de Google Ads</small>
-                </div>
-
-                <h5 className="mb-3">Redes Sociales</h5>
-                <div className="mb-3">
-                  <label className="form-label">Facebook Pixel ID</label>
-                  <input
-                    type="text"
-                    placeholder="XXXXXXXXXXXXXXX"
-                    className="form-control"
-                    value={formData.facebookPixelId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      facebookPixelId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID del píxel de Facebook</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">TikTok Pixel ID</label>
-                  <input
-                    type="text"
-                    placeholder="XXXXXXXXXXXXXXXXX"
-                    className="form-control"
-                    value={formData.tiktokPixelId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      tiktokPixelId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID del píxel de TikTok</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">LinkedIn Insight Tag ID</label>
-                  <input
-                    type="text"
-                    placeholder="XXXXXXX"
-                    className="form-control"
-                    value={formData.linkedinInsightTag}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      linkedinInsightTag: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID del Insight Tag de LinkedIn</small>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <h5 className="mb-3">Otras Plataformas</h5>
-                <div className="mb-3">
-                  <label className="form-label">Hotjar ID</label>
-                  <input
-                    type="text"
-                    placeholder="XXXXXXX"
-                    className="form-control"
-                    value={formData.hotjarId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      hotjarId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID de Hotjar para mapas de calor</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Microsoft Clarity ID</label>
-                  <input
-                    type="text"
-                    placeholder="xxxxxxxxxx"
-                    className="form-control"
-                    value={formData.clarityId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      clarityId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID de Microsoft Clarity</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Twitter Pixel ID</label>
-                  <input
-                    type="text"
-                    placeholder="o1234"
-                    className="form-control"
-                    value={formData.twitterPixelId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      twitterPixelId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID del píxel de Twitter</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Pinterest Tag ID</label>
-                  <input
-                    type="text"
-                    placeholder="26xxxxxxxxxxxxxxxxxx"
-                    className="form-control"
-                    value={formData.pinterestTagId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      pinterestTagId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID del tag de Pinterest</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Snapchat Pixel ID</label>
-                  <input
-                    type="text"
-                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                    className="form-control"
-                    value={formData.snapchatPixelId}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      snapchatPixelId: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">ID del píxel de Snapchat</small>
-                </div>
-
-                <h5 className="mb-3">Scripts Personalizados</h5>
-                <div className="mb-3">
-                  <label className="form-label">Scripts en Head</label>
-                  <textarea
-                    rows="4"
-                    placeholder="Scripts que se insertarán en el &lt;head&gt;"
-                    className="form-control"
-                    value={formData.customHeadScripts}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      customHeadScripts: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">Scripts personalizados para el &lt;head&gt;</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Scripts en Body</label>
-                  <textarea
-                    rows="4"
-                    placeholder="Scripts que se insertarán antes del &lt;/body&gt;"
-                    className="form-control"
-                    value={formData.customBodyScripts}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      customBodyScripts: e.target.value
-                    })}
-                  />
-                  <small className="text-muted">Scripts personalizados para el final del &lt;body&gt;</small>
-                </div>
+            <div
+              className={`tab-pane fade ${activeTab === "corporate" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="mb-2">
+                <label className="form-label">Email Corporativo Principal</label>
+                <input
+                  type="email"
+                  placeholder="contacto@empresa.com"
+                  className="form-control"
+                  value={formData.coorporativeEmail}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    coorporativeEmail: e.target.value
+                  })}
+                />
+                <small className="text-muted">Este email se usará para comunicaciones corporativas y notificaciones del sistema</small>
               </div>
             </div>
-          </div>
 
-          {/* OAuth & Autenticación Tab */}
-          <div
-            className={`tab-pane fade ${activeTab === "oauth" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="row">
-              <div className="col-12">
-                <h5 className="mb-4">🔐 Configuración de Google OAuth</h5>
-
-                {/* Switch para habilitar Google OAuth */}
-                <div className="mb-4">
-                  <div className="form-check form-switch">
+            <div
+              className={`tab-pane fade ${activeTab === "pixels" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-md-6">
+                  <h5 className="mb-3">Google Analytics & Ads</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Google Analytics ID</label>
                     <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="googleOauthEnabled"
-                      checked={formData.googleOauthEnabled === "true"}
+                      type="text"
+                      placeholder="G-XXXXXXXXXX o UA-XXXXXXXX-X"
+                      className="form-control"
+                      value={formData.googleAnalyticsId}
                       onChange={(e) => setFormData({
                         ...formData,
-                        googleOauthEnabled: String(e.target.checked)
+                        googleAnalyticsId: e.target.value
                       })}
                     />
-                    <label className="form-check-label" htmlFor="googleOauthEnabled">
-                      <strong>Habilitar inicio de sesión con Google</strong>
-                    </label>
+                    <small className="text-muted">ID de Google Analytics para tracking de visitas</small>
                   </div>
-                  <small className="text-muted">
-                    Permite a los clientes registrarse e iniciar sesión usando su cuenta de Google
-                  </small>
+
+                  <div className="mb-3">
+                    <label className="form-label">Google Tag Manager ID</label>
+                    <input
+                      type="text"
+                      placeholder="GTM-XXXXXXX"
+                      className="form-control"
+                      value={formData.googleTagManagerId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        googleTagManagerId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID de Google Tag Manager</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Google Ads Conversion ID</label>
+                    <input
+                      type="text"
+                      placeholder="AW-XXXXXXXXX"
+                      className="form-control"
+                      value={formData.googleAdsConversionId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        googleAdsConversionId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID de conversión de Google Ads</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Google Ads Conversion Label</label>
+                    <input
+                      type="text"
+                      placeholder="xxxxxxxxxxxxxxxxxxxxxxx"
+                      className="form-control"
+                      value={formData.googleAdsConversionLabel}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        googleAdsConversionLabel: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">Etiqueta de conversión de Google Ads</small>
+                  </div>
+
+                  <h5 className="mb-3">Redes Sociales</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Facebook Pixel ID</label>
+                    <input
+                      type="text"
+                      placeholder="XXXXXXXXXXXXXXX"
+                      className="form-control"
+                      value={formData.facebookPixelId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        facebookPixelId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID del píxel de Facebook</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">TikTok Pixel ID</label>
+                    <input
+                      type="text"
+                      placeholder="XXXXXXXXXXXXXXXXX"
+                      className="form-control"
+                      value={formData.tiktokPixelId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        tiktokPixelId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID del píxel de TikTok</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">LinkedIn Insight Tag ID</label>
+                    <input
+                      type="text"
+                      placeholder="XXXXXXX"
+                      className="form-control"
+                      value={formData.linkedinInsightTag}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        linkedinInsightTag: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID del Insight Tag de LinkedIn</small>
+                  </div>
                 </div>
 
-                {formData.googleOauthEnabled === "true" && (
-                  <>
-                    <div className="alert alert-info">
-                      <h6>📋 Instrucciones de configuración:</h6>
-                      <ol className="mb-0">
-                        <li>Ve a <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">Google Cloud Console</a></li>
-                        <li>Crea un nuevo proyecto o selecciona uno existente</li>
-                        <li>Habilita la API de "Google+ API" y "Google Sign-In API"</li>
-                        <li>Ve a "Credenciales" → "Crear credenciales" → "ID de cliente OAuth 2.0"</li>
-                        <li>Configura como "Aplicación web"</li>
-                        <li>Agrega estos dominios autorizados:
-                          <ul>
-                            <li><strong>JavaScript origins:</strong> <code>{window.location.origin}</code></li>
-                            <li><strong>Redirect URIs:</strong> <code>{window.location.origin}/auth/google/callback</code></li>
-                          </ul>
-                        </li>
-                        <li>Copia el Client ID y Client Secret en los campos de abajo</li>
-                      </ol>
-                    </div>
+                <div className="col-md-6">
+                  <h5 className="mb-3">Otras Plataformas</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Hotjar ID</label>
+                    <input
+                      type="text"
+                      placeholder="XXXXXXX"
+                      className="form-control"
+                      value={formData.hotjarId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        hotjarId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID de Hotjar para mapas de calor</small>
+                  </div>
 
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="mb-3">
-                          <label className="form-label">Google Client ID</label>
-                          <input
-                            type="text"
-                            placeholder="123456789-abcdefghijk.apps.googleusercontent.com"
-                            className="form-control"
-                            value={formData.googleClientId}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              googleClientId: e.target.value
-                            })}
-                          />
-                          <small className="text-muted">Client ID obtenido de Google Cloud Console</small>
-                        </div>
-                      </div>
+                  <div className="mb-3">
+                    <label className="form-label">Microsoft Clarity ID</label>
+                    <input
+                      type="text"
+                      placeholder="xxxxxxxxxx"
+                      className="form-control"
+                      value={formData.clarityId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        clarityId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID de Microsoft Clarity</small>
+                  </div>
 
-                      <div className="col-md-6">
-                        <div className="mb-3">
-                          <label className="form-label">Google Client Secret</label>
-                          <input
-                            type="password"
-                            placeholder="GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx"
-                            className="form-control"
-                            value={formData.googleClientSecret}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              googleClientSecret: e.target.value
-                            })}
-                          />
-                          <small className="text-muted">Client Secret obtenido de Google Cloud Console</small>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mb-3">
+                    <label className="form-label">Twitter Pixel ID</label>
+                    <input
+                      type="text"
+                      placeholder="o1234"
+                      className="form-control"
+                      value={formData.twitterPixelId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        twitterPixelId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID del píxel de Twitter</small>
+                  </div>
 
-                    {formData.googleClientId && formData.googleClientSecret && (
-                      <div className="alert alert-success">
-                        <h6>✅ Configuración completa</h6>
-                        <p className="mb-0">
-                          Una vez guardada la configuración, los botones de "Continuar con Google"
-                          aparecerán automáticamente en las páginas de login y registro.
-                        </p>
-                      </div>
-                    )}
+                  <div className="mb-3">
+                    <label className="form-label">Pinterest Tag ID</label>
+                    <input
+                      type="text"
+                      placeholder="26xxxxxxxxxxxxxxxxxx"
+                      className="form-control"
+                      value={formData.pinterestTagId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pinterestTagId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID del tag de Pinterest</small>
+                  </div>
 
-                    <div className="alert alert-warning">
-                      <h6>⚠️ Importante para producción:</h6>
-                      <p className="mb-0">
-                        Para usar en producción, asegúrate de actualizar los dominios autorizados
-                        en Google Cloud Console con tu dominio real (ej: https://tudominio.com)
-                      </p>
-                    </div>
-                  </>
-                )}
+                  <div className="mb-3">
+                    <label className="form-label">Snapchat Pixel ID</label>
+                    <input
+                      type="text"
+                      placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                      className="form-control"
+                      value={formData.snapchatPixelId}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        snapchatPixelId: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">ID del píxel de Snapchat</small>
+                  </div>
+
+                  <h5 className="mb-3">Scripts Personalizados</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Scripts en Head</label>
+                    <textarea
+                      rows="4"
+                      placeholder="Scripts que se insertarán en el &lt;head&gt;"
+                      className="form-control"
+                      value={formData.customHeadScripts}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        customHeadScripts: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">Scripts personalizados para el &lt;head&gt;</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Scripts en Body</label>
+                    <textarea
+                      rows="4"
+                      placeholder="Scripts que se insertarán antes del &lt;/body&gt;"
+                      className="form-control"
+                      value={formData.customBodyScripts}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        customBodyScripts: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">Scripts personalizados para el final del &lt;body&gt;</small>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Pasarelas de Pago Tab */}
-          <div
-            className={`tab-pane fade ${activeTab === "payments" ? "show active" : ""}`}
-            role="tabpanel"
-          >
-            <div className="row">
-              <div className="col-12">
-                <h5 className="mb-4">💳 Configuración de Pasarelas de Pago</h5>
+            {/* OAuth & Autenticación Tab */}
+            <div
+              className={`tab-pane fade ${activeTab === "oauth" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-12">
+                  <h5 className="mb-4">🔐 Configuración de Google OAuth</h5>
 
-                {/* Culqi Configuration */}
-                <div className="card mb-4">
-                  <div className="card-header">
-                    <h6 className="card-title mb-0">🔒 Culqi - Pagos con Tarjeta</h6>
-                  </div>
-                  <div className="card-body">
-                    {/* Switch para habilitar Culqi */}
-                    <div className="mb-4">
-                      <div className="form-check form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="culqiEnabled"
-                          checked={formData.checkout_culqi === "true"}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            checkout_culqi: String(e.target.checked)
-                          })}
-                        />
-                        <label className="form-check-label" htmlFor="culqiEnabled">
-                          <strong>Habilitar pagos con Culqi</strong>
-                        </label>
-                      </div>
-                      <small className="text-muted">
-                        Permite a los clientes pagar con tarjetas de crédito/débito, Yape, y otros métodos
-                      </small>
+                  {/* Switch para habilitar Google OAuth */}
+                  <div className="mb-4">
+                    <div className="form-check form-switch">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="googleOauthEnabled"
+                        checked={formData.googleOauthEnabled === "true"}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          googleOauthEnabled: String(e.target.checked)
+                        })}
+                      />
+                      <label className="form-check-label" htmlFor="googleOauthEnabled">
+                        <strong>Habilitar inicio de sesión con Google</strong>
+                      </label>
                     </div>
+                    <small className="text-muted">
+                      Permite a los clientes registrarse e iniciar sesión usando su cuenta de Google
+                    </small>
+                  </div>
 
-                    {formData.checkout_culqi === "true" && (
-                      <>
-                        <div className="alert alert-info">
-                          <h6>📋 Instrucciones de configuración:</h6>
-                          <ol className="mb-0">
-                            <li>Ve a <a href="https://culqi.com" target="_blank" rel="noopener noreferrer">Culqi.com</a> y crea una cuenta</li>
-                            <li>Ve al panel de Culqi → Desarrollo → Llaves API</li>
-                            <li>Copia la <strong>Llave Pública</strong> y <strong>Llave Privada</strong></li>
-                            <li>Para producción, cambia a las llaves de producción</li>
-                            <li>Configura los webhooks si es necesario</li>
-                          </ol>
-                        </div>
+                  {formData.googleOauthEnabled === "true" && (
+                    <>
+                      <div className="alert alert-info">
+                        <h6>📋 Instrucciones de configuración:</h6>
+                        <ol className="mb-0">
+                          <li>Ve a <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">Google Cloud Console</a></li>
+                          <li>Crea un nuevo proyecto o selecciona uno existente</li>
+                          <li>Habilita la API de "Google+ API" y "Google Sign-In API"</li>
+                          <li>Ve a "Credenciales" → "Crear credenciales" → "ID de cliente OAuth 2.0"</li>
+                          <li>Configura como "Aplicación web"</li>
+                          <li>Agrega estos dominios autorizados:
+                            <ul>
+                              <li><strong>JavaScript origins:</strong> <code>{window.location.origin}</code></li>
+                              <li><strong>Redirect URIs:</strong> <code>{window.location.origin}/auth/google/callback</code></li>
+                            </ul>
+                          </li>
+                          <li>Copia el Client ID y Client Secret en los campos de abajo</li>
+                        </ol>
+                      </div>
 
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="mb-3">
-                              <label className="form-label">Nombre de la cuenta</label>
-                              <input
-                                type="text"
-                                placeholder="Mi Tienda"
-                                className="form-control"
-                                value={formData.checkout_culqi_name}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  checkout_culqi_name: e.target.value
-                                })}
-                              />
-                              <small className="text-muted">Nombre que aparecerá en el formulario de pago</small>
-                            </div>
-                          </div>
-
-                          <div className="col-md-6">
-                            <div className="mb-3">
-                              <label className="form-label">Llave Pública</label>
-                              <input
-                                type="text"
-                                placeholder="pk_test_xxxxxxxxxxxxxxxxx"
-                                className="form-control"
-                                value={formData.checkout_culqi_public_key}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  checkout_culqi_public_key: e.target.value
-                                })}
-                              />
-                              <small className="text-muted">Llave pública de Culqi (pk_test_ o pk_live_)</small>
-                            </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label className="form-label">Google Client ID</label>
+                            <input
+                              type="text"
+                              placeholder="123456789-abcdefghijk.apps.googleusercontent.com"
+                              className="form-control"
+                              value={formData.googleClientId}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                googleClientId: e.target.value
+                              })}
+                            />
+                            <small className="text-muted">Client ID obtenido de Google Cloud Console</small>
                           </div>
                         </div>
 
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="mb-3">
-                              <label className="form-label">Llave Privada</label>
-                              <input
-                                type="password"
-                                placeholder="sk_test_xxxxxxxxxxxxxxxxx"
-                                className="form-control"
-                                value={formData.checkout_culqi_private_key}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  checkout_culqi_private_key: e.target.value
-                                })}
-                              />
-                              <small className="text-muted">Llave privada de Culqi (sk_test_ o sk_live_)</small>
-                            </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label className="form-label">Google Client Secret</label>
+                            <input
+                              type="password"
+                              placeholder="GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx"
+                              className="form-control"
+                              value={formData.googleClientSecret}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                googleClientSecret: e.target.value
+                              })}
+                            />
+                            <small className="text-muted">Client Secret obtenido de Google Cloud Console</small>
                           </div>
                         </div>
+                      </div>
 
-                        {formData.checkout_culqi_public_key && formData.checkout_culqi_private_key && (
-                          <div className="alert alert-success">
-                            <h6>✅ Configuración completa</h6>
-                            <p className="mb-0">
-                              Una vez guardada la configuración, los pagos con Culqi estarán disponibles en el checkout.
-                              Los clientes podrán pagar con tarjetas, Yape, banca móvil y otros métodos.
-                            </p>
-                          </div>
-                        )}
-
-                        <div className="alert alert-warning">
-                          <h6>⚠️ Importante para producción:</h6>
+                      {formData.googleClientId && formData.googleClientSecret && (
+                        <div className="alert alert-success">
+                          <h6>✅ Configuración completa</h6>
                           <p className="mb-0">
-                            Para usar en producción, asegúrate de cambiar a las llaves de producción (pk_live_ y sk_live_)
-                            y configurar correctamente los webhooks en el panel de Culqi.
+                            Una vez guardada la configuración, los botones de "Continuar con Google"
+                            aparecerán automáticamente en las páginas de login y registro.
                           </p>
                         </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                      )}
 
-                {/* Información adicional */}
-                <div className="alert alert-info">
-                  <h6>ℹ️ Información adicional</h6>
-                  <p className="mb-2">Las configuraciones de pasarelas de pago se almacenan de forma segura en la base de datos.</p>
-                  <ul className="mb-0">
-                    <li>Las llaves privadas nunca se exponen al frontend</li>
-                    <li>Las configuraciones se pueden cambiar sin editar archivos del servidor</li>
-                    <li>Los cambios toman efecto inmediatamente después de guardar</li>
-                  </ul>
+                      <div className="alert alert-warning">
+                        <h6>⚠️ Importante para producción:</h6>
+                        <p className="mb-0">
+                          Para usar en producción, asegúrate de actualizar los dominios autorizados
+                          en Google Cloud Console con tu dominio real (ej: https://tudominio.com)
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Pasarelas de Pago Tab */}
+            <div
+              className={`tab-pane fade ${activeTab === "payments" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-12">
+                  <h5 className="mb-4">💳 Configuración de Pasarelas de Pago</h5>
+
+                  {/* Culqi Configuration */}
+                  <div className="card mb-4">
+                    <div className="card-header">
+                      <h6 className="card-title mb-0">🔒 Culqi - Pagos con Tarjeta</h6>
+                    </div>
+                    <div className="card-body">
+                      {/* Switch para habilitar Culqi */}
+                      <div className="mb-4">
+                        <div className="form-check form-switch">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id="culqiEnabled"
+                            checked={formData.checkout_culqi === "true"}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              checkout_culqi: String(e.target.checked)
+                            })}
+                          />
+                          <label className="form-check-label" htmlFor="culqiEnabled">
+                            <strong>Habilitar pagos con Culqi</strong>
+                          </label>
+                        </div>
+                        <small className="text-muted">
+                          Permite a los clientes pagar con tarjetas de crédito/débito, Yape, y otros métodos
+                        </small>
+                      </div>
+
+                      {formData.checkout_culqi === "true" && (
+                        <>
+                          <div className="alert alert-info">
+                            <h6>📋 Instrucciones de configuración:</h6>
+                            <ol className="mb-0">
+                              <li>Ve a <a href="https://culqi.com" target="_blank" rel="noopener noreferrer">Culqi.com</a> y crea una cuenta</li>
+                              <li>Ve al panel de Culqi → Desarrollo → Llaves API</li>
+                              <li>Copia la <strong>Llave Pública</strong> y <strong>Llave Privada</strong></li>
+                              <li>Para producción, cambia a las llaves de producción</li>
+                              <li>Configura los webhooks si es necesario</li>
+                            </ol>
+                          </div>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="mb-3">
+                                <label className="form-label">Nombre de la cuenta</label>
+                                <input
+                                  type="text"
+                                  placeholder="Mi Tienda"
+                                  className="form-control"
+                                  value={formData.checkout_culqi_name}
+                                  onChange={(e) => setFormData({
+                                    ...formData,
+                                    checkout_culqi_name: e.target.value
+                                  })}
+                                />
+                                <small className="text-muted">Nombre que aparecerá en el formulario de pago</small>
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              <div className="mb-3">
+                                <label className="form-label">Llave Pública</label>
+                                <input
+                                  type="text"
+                                  placeholder="pk_test_xxxxxxxxxxxxxxxxx"
+                                  className="form-control"
+                                  value={formData.checkout_culqi_public_key}
+                                  onChange={(e) => setFormData({
+                                    ...formData,
+                                    checkout_culqi_public_key: e.target.value
+                                  })}
+                                />
+                                <small className="text-muted">Llave pública de Culqi (pk_test_ o pk_live_)</small>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="mb-3">
+                                <label className="form-label">Llave Privada</label>
+                                <input
+                                  type="password"
+                                  placeholder="sk_test_xxxxxxxxxxxxxxxxx"
+                                  className="form-control"
+                                  value={formData.checkout_culqi_private_key}
+                                  onChange={(e) => setFormData({
+                                    ...formData,
+                                    checkout_culqi_private_key: e.target.value
+                                  })}
+                                />
+                                <small className="text-muted">Llave privada de Culqi (sk_test_ o sk_live_)</small>
+                              </div>
+                            </div>
+                          </div>
+
+                          {formData.checkout_culqi_public_key && formData.checkout_culqi_private_key && (
+                            <div className="alert alert-success">
+                              <h6>✅ Configuración completa</h6>
+                              <p className="mb-0">
+                                Una vez guardada la configuración, los pagos con Culqi estarán disponibles en el checkout.
+                                Los clientes podrán pagar con tarjetas, Yape, banca móvil y otros métodos.
+                              </p>
+                            </div>
+                          )}
+
+                          <div className="alert alert-warning">
+                            <h6>⚠️ Importante para producción:</h6>
+                            <p className="mb-0">
+                              Para usar en producción, asegúrate de cambiar a las llaves de producción (pk_live_ y sk_live_)
+                              y configurar correctamente los webhooks en el panel de Culqi.
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Información adicional */}
+                  <div className="alert alert-info">
+                    <h6>ℹ️ Información adicional</h6>
+                    <p className="mb-2">Las configuraciones de pasarelas de pago se almacenan de forma segura en la base de datos.</p>
+                    <ul className="mb-0">
+                      <li>Las llaves privadas nunca se exponen al frontend</li>
+                      <li>Las configuraciones se pueden cambiar sin editar archivos del servidor</li>
+                      <li>Los cambios toman efecto inmediatamente después de guardar</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          </div>
 
-         
+
 
 
           <button
@@ -2499,28 +2514,37 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     Selecciona qué campos serán visibles para los usuarios Admin. Los campos marcados
                     estarán disponibles para Admin, los desmarcados solo serán visibles para Root.
                   </p>
-                  
+
                   {/* Organizar campos por categorías */}
                   {Object.entries(tabCorrelatives).map(([tabKey, correlatives]) => {
-                    const tabName = {
-                      'email': 'Email',
-                      'contact': 'Contacto', 
-                      'checkout': 'Checkout',
-                      'policies': 'Políticas'
-                    }[tabKey] || tabKey;
-                    
-                    const tabFields = (allGenerals || generals).filter(general => 
+                    const tabNames = {
+                      'general': 'General',
+                      'email': 'Templates de Email',
+                      'contact': 'Contacto & WhatsApp',
+                      'checkout': 'Métodos de Pago',
+                      'importation': 'Costos de Importación',
+                      'policies': 'Políticas & Términos',
+                      'location': 'Ubicación & Mapa',
+                      'shippingfree': 'Envío & Facturación',
+                      'corporate': 'Datos Corporativos',
+                      'pixels': 'Analítica & Pixels',
+                      'oauth': 'OAuth & Autenticación'
+                    };
+
+                    const tabName = tabNames[tabKey] || tabKey;
+
+                    const tabFields = (allGenerals || generals).filter(general =>
                       correlatives.includes(general.correlative)
                     );
-                    
+
                     if (tabFields.length === 0) return null;
-                    
+
                     return (
                       <div key={tabKey} className="mb-4">
-                        <h6 className="text-primary mb-3">
-                          <i className="fas fa-folder me-2"></i>
-                          {tabName}
-                        </h6>
+                        <div className="d-flex align-items-center mb-3">
+                          <h4 className="text-primary mb-0 me-2 ">{tabName}</h4>
+                         
+                        </div>
                         <div className="row">
                           {tabFields.map((general) => (
                             <div key={general.correlative} className="col-md-6 mb-2">
@@ -2534,31 +2558,32 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                 />
                                 <label className="form-check-label" htmlFor={`field-${general.correlative}`}>
                                   <strong>{general.name}</strong>
-
+                                 
                                 </label>
                               </div>
                             </div>
                           ))}
                         </div>
+                        <hr className="my-3" />
                       </div>
                     );
                   })}
-                  
+
                   {/* Campos que no pertenecen a ninguna categoría */}
                   {(() => {
                     const allCategorizedCorrelatives = Object.values(tabCorrelatives).flat();
-                    const uncategorizedFields = (allGenerals || generals).filter(general => 
+                    const uncategorizedFields = (allGenerals || generals).filter(general =>
                       !allCategorizedCorrelatives.includes(general.correlative)
                     );
-                    
+
                     if (uncategorizedFields.length === 0) return null;
-                    
+
                     return (
                       <div className="mb-4">
-                        <h6 className="text-secondary mb-3">
-                          <i className="fas fa-question-circle me-2"></i>
-                          Otros Campos
-                        </h6>
+                        <div className="d-flex align-items-center mb-3">
+                          <h4 className="text-secondary mb-0 me-2">Otros Campos</h4>
+                     
+                        </div>
                         <div className="row">
                           {uncategorizedFields.map((general) => (
                             <div key={general.correlative} className="col-md-6 mb-2">
@@ -2572,7 +2597,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                 />
                                 <label className="form-check-label" htmlFor={`field-${general.correlative}`}>
                                   <strong>{general.name}</strong>
-                                 
+                                
                                 </label>
                               </div>
                             </div>

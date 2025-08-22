@@ -2119,7 +2119,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-vWcdjfP3.js",
+    "file": "assets/Generals-CpjbTLa_.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -2138,6 +2138,7 @@
       "_GalleryRest-C8-B-epb.js",
       "_tippy-react.esm-DmkRJDEW.js",
       "_TextareaFormGroup-CliirJM1.js",
+      "resources/js/Components/Tailwind/Checkouts/Components/ShippingStep.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_index-pSueRYGM.js",
