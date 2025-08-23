@@ -200,7 +200,7 @@ export default function FooterPaani({ data = footerData, generals, socials }) {
                                             key={index}
                                             content={`Ver ${social.name} en ${social.description}`}>
 
-                                            <a key={index} className="text-xl w-8 h-8 flex items-center justify-center  bg-white rounded-full p-2 customtext-primary" href={social.link} target="_blank" rel="noopener noreferrer">
+                                            <a key={index}  className="text-xl w-8 h-8 flex items-center justify-center  bg-white rounded-full p-2 customtext-primary" href={social.link} target="_blank" rel="noopener noreferrer">
                                                 <i className={social.icon} />
                                             </a>
                                         </Tippy>

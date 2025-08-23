@@ -1239,7 +1239,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-DOFyKCSI.js",
+    "file": "assets/About-ClpQbO80.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -2083,7 +2083,7 @@
     ]
   },
   "resources/js/Admin/Gallery.jsx": {
-    "file": "assets/Gallery-DJt_sZVp.js",
+    "file": "assets/Gallery-BawSKRhw.js",
     "name": "Gallery",
     "src": "resources/js/Admin/Gallery.jsx",
     "isEntry": true,
@@ -2095,7 +2095,6 @@
       "_CreateReactScript-BXKjjBW1.js",
       "_GalleryRest-e3DwqTSB.js",
       "_BasicRest-BCYKfs4R.js",
-      "_ImageFormGroup-Brimgjsn.js",
       "_index-DRg3WPTA.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
@@ -3103,7 +3102,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-cB3e-dmQ.js",
+    "file": "assets/Blog-dS1loRMq.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3147,7 +3146,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-aSX1_QSW.js",
+    "file": "assets/BlogArticle-G8pcbTVx.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -4742,7 +4741,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-BXOaSrjS.js",
+    "file": "assets/Base-CG2R3yna.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -6946,7 +6945,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer.jsx": {
-    "file": "assets/Footer-C-rate11.js",
+    "file": "assets/Footer-SV3n2TQj.js",
     "name": "Footer",
     "src": "resources/js/Components/Tailwind/Footer.jsx",
     "isEntry": true,
@@ -6973,7 +6972,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer/Footer2Den1.jsx": {
-    "file": "assets/Footer2Den1-C2655d3I.js",
+    "file": "assets/Footer2Den1-ClHf4mv5.js",
     "name": "Footer2Den1",
     "src": "resources/js/Components/Tailwind/Footer/Footer2Den1.jsx",
     "isDynamicEntry": true,
@@ -9989,7 +9988,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-C6VK9Q7Z.js",
+    "file": "assets/Contact-DRAqim8t.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -10032,7 +10031,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-l6P-1mMW.js",
+    "file": "assets/CourseDetails-CmRlYKw7.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -10067,7 +10066,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-DVI9X_I-.js",
+    "file": "assets/Courses-Ck667DgG.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -10160,7 +10159,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-pDLsHbvT.js",
+    "file": "assets/Home-xa15GxeY.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -10298,7 +10297,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-vylFleST.js",
+    "file": "assets/BusinessIWorkCard-D180qWPL.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -10306,11 +10305,10 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-DKOTUah5.js",
-      "_BasicRest-BCYKfs4R.js",
+      "_index-DRg3WPTA.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
-      "_index-DRg3WPTA.js",
       "_index-C0Swrixi.js",
       "_index-fNjTmf9T.js"
     ]
@@ -10360,7 +10358,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DAy3JAIV.js",
+    "file": "assets/System-BCqUJaOQ.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

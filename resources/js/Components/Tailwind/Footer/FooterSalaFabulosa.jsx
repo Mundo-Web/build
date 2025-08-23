@@ -215,7 +215,7 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
             <ul className="flex text-white gap-2">
               {socials.map((social, index) => (
                 <Tippy key={index} content={`Ver ${social.name} en ${social.description}`}>
-                  <a href={social.link} className={`text-base flex bg-white customtext-primary ${social.icon} w-8
+                  <a href={social.link} target="_blank" rel="noopener noreferrer" className={`text-base flex bg-white customtext-primary ${social.icon} w-8
                             h-8 pt-0.5 items-center justify-center rounded-full`} />
                 </Tippy>
               ))}
