@@ -100,8 +100,7 @@ export default function SignUpSimple() {
                                         Crear una nueva cuenta
                                     </h1>
                                     <p className="customtext-neutral-light">
-                                        Class aptent taciti sociosqu ad litora torquent
-                                        per conubia nostra, per inceptos himenaeos.
+                                       Completa tus datos para crear tu cuenta y acceder a todas nuestras funciones de manera rápida y segura.
                                     </p>
                                 </div>
                                 <form className="space-y-4 mt-4" onSubmit={onSignUpSubmit}>

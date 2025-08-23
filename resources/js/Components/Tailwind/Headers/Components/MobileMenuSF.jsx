@@ -41,7 +41,7 @@ export default function MobileMenuSF({ search, setSearch, pages, items, headerPo
                                 handleMainMenuItemClick("categories")
                             }
                         >
-                            <span>Categorias</span>
+                            <span>Categorías</span>
                             <ChevronRight className="h-5 w-5 customtext-neutral-dark" />
                         </button>
                     </div>

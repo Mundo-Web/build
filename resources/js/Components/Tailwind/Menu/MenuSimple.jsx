@@ -181,7 +181,7 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
                                         className="font-medium customtext-neutral-dark flex items-center gap-2 hover:customtext-primary pr-6 transition-colors duration-300 relative before:absolute before:right-0 before:top-1/2 before:-translate-y-1/2 before:h-3 before:w-[1px] before:bg-[#262624]"
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     >
-                                        Categorias
+                                        Categorías
                                         {isMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                     </button>
                                     {isMenuOpen && (

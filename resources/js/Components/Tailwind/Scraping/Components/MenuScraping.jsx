@@ -23,7 +23,7 @@ const MenuScraping = ({ pages = [], items }) => {
                 <ul className="flex items-center gap-6 text-sm" ref={menuRef}>
                     <li className="relative py-3" >
                         <button className="customtext-neutral-dark flex items-center gap-2 hover:customtext-primary  pr-6 transition-colors duration-300 relative before:absolute before:right-0 before:top-1/2 before:-translate-y-1/2 before:h-3 before:w-[1px] before:bg-[#262624]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                            Categorias
+                            Categorías
                             {isMenuOpen ?
                                 <i className="mdi mdi-chevron-up"></i>
                                 :
