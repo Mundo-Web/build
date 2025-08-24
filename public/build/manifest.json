@@ -2083,7 +2083,7 @@
     ]
   },
   "resources/js/Admin/Gallery.jsx": {
-    "file": "assets/Gallery-BawSKRhw.js",
+    "file": "assets/Gallery-DJt_sZVp.js",
     "name": "Gallery",
     "src": "resources/js/Admin/Gallery.jsx",
     "isEntry": true,
@@ -2095,6 +2095,7 @@
       "_CreateReactScript-BXKjjBW1.js",
       "_GalleryRest-e3DwqTSB.js",
       "_BasicRest-BCYKfs4R.js",
+      "_ImageFormGroup-Brimgjsn.js",
       "_index-DRg3WPTA.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
@@ -2160,7 +2161,7 @@
     ]
   },
   "resources/js/Admin/Home.jsx": {
-    "file": "assets/Home-RbbeeokV.js",
+    "file": "assets/Home-DK5_zmXA.js",
     "name": "Home",
     "src": "resources/js/Admin/Home.jsx",
     "isEntry": true,
@@ -2175,6 +2176,9 @@
       "__commonjsHelpers-D6-XlEtG.js",
       "_index-yBjzXJbu.js",
       "_index-Chjiymov.js",
+      "_index-DRg3WPTA.js",
+      "_BasicRest-BCYKfs4R.js",
+      "_tippy-react.esm-Ce0cOK54.js",
       "_index-fNjTmf9T.js",
       "_index.esm-BNsoPXs8.js",
       "_index-NIGUFBhG.js",
@@ -2184,7 +2188,6 @@
       "_General-BmbBKdsB.js",
       "_LaravelSession-Dz9cpV3l.js",
       "_CanAccess-CiBvBfVT.js",
-      "_tippy-react.esm-Ce0cOK54.js",
       "_Logout-W0zm0J8x.js",
       "_MenuItemContainer-CEON2wjZ.js"
     ],
@@ -10297,7 +10300,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-D180qWPL.js",
+    "file": "assets/BusinessIWorkCard-vylFleST.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -10305,10 +10308,11 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-DKOTUah5.js",
-      "_index-DRg3WPTA.js",
+      "_BasicRest-BCYKfs4R.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-DRg3WPTA.js",
       "_index-C0Swrixi.js",
       "_index-fNjTmf9T.js"
     ]
