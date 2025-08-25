@@ -421,7 +421,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                             "/api/cover/thumbnail/null")
                                         }
                                         alt="Product main"
-                                        className="w-full h-auto object-contain"
+                                        className="w-full h-auto max-h-[500px] object-contain"
                                     />
                                 </div>
                             </div>
