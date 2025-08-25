@@ -25,7 +25,7 @@ import Fillable from "../Utils/Fillable";
 
 const itemsRest = new ItemsRest();
 
-const Items = ({ categories, brands, collections,stores }) => {
+const Items = ({ categories, brands, collections, stores }) => {
     //!FALTA EDIT AND DELETEDE GALERIA
 
     const [itemData, setItemData] = useState([]);
@@ -145,7 +145,7 @@ const Items = ({ categories, brands, collections,stores }) => {
             .val(data?.brand_id || null)
             .trigger("change");
 
-            console.log("data item:", data)
+        console.log("data item:", data)
         $(storeRef.current)
             .val(data?.store_id && data.store_id !== "" ? data.store_id : "")
             .trigger("change");
@@ -169,14 +169,11 @@ const Items = ({ categories, brands, collections,stores }) => {
 
 
 
-        bannerRef.image.src = `/storage/images/item/${data?.banner ?? "undefined"
-            }`;
+        bannerRef.image.src = data?.banner ? `/storage/images/item/${data.banner}` : '';
 
-        imageRef.image.src = `/storage/images/item/${data?.image ?? "undefined"
-            }`;
+        imageRef.image.src = data?.image ? `/storage/images/item/${data.image}` : '';
 
-        textureRef.image.src = `/storage/images/item/${data?.texture ?? "undefined"
-            }`;
+        textureRef.image.src = data?.texture ? `/storage/images/item/${data.texture}` : '';
 
         setCurrentPdf(data?.pdf ? `/storage/images/item/${data?.pdf}` : "");
 
@@ -209,6 +206,12 @@ const Items = ({ categories, brands, collections,stores }) => {
         // Nuevos campos
         setFeatures(data?.features?.map(f => typeof f === 'object' ? f : { feature: f }) || []);
         stockRef.current.value = data?.stock;
+
+        // Reset delete flags using direct references - only when opening modal
+        if (bannerRef.deleteRef) bannerRef.deleteRef.value = '';
+        if (imageRef.deleteRef) imageRef.deleteRef.value = '';
+        if (textureRef.deleteRef) textureRef.deleteRef.value = '';
+
         $(modalRef.current).modal("show");
     };
 
@@ -281,6 +284,27 @@ const Items = ({ categories, brands, collections,stores }) => {
             formData.append("pdf", pdf);
         }
 
+        // Check for image deletion flags using React state
+        console.log('Checking delete flags:');
+        console.log('bannerRef.getDeleteFlag():', bannerRef.getDeleteFlag?.());
+        console.log('imageRef.getDeleteFlag():', imageRef.getDeleteFlag?.());
+        console.log('textureRef.getDeleteFlag():', textureRef.getDeleteFlag?.());
+
+        if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
+            formData.append('banner_delete', 'DELETE');
+            console.log('Adding banner delete flag: DELETE');
+        }
+
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+            console.log('Adding image delete flag: DELETE');
+        }
+
+        if (textureRef.getDeleteFlag && textureRef.getDeleteFlag()) {
+            formData.append('texture_delete', 'DELETE');
+            console.log('Adding texture delete flag: DELETE');
+        }
+
         //TODO: Preparar los datos de la galería
 
         // Galería
@@ -301,10 +325,19 @@ const Items = ({ categories, brands, collections,stores }) => {
             formData.append("deleted_images", JSON.stringify(deletedImages)); // Imágenes eliminadas
         }
 
-        console.log(formData);
+        // Debug: Log all FormData entries
+        console.log('FormData contents:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
 
         const result = await itemsRest.save(formData);
         if (!result) return;
+
+        // Reset delete flags after successful save
+        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (textureRef.resetDeleteFlag) textureRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -720,10 +753,10 @@ const Items = ({ categories, brands, collections,stores }) => {
                             ))}
                         </SelectFormGroup>
 
-                       <SelectFormGroup
+                        <SelectFormGroup
                             eRef={storeRef}
                             label="Tienda"
-                            
+
                             dropdownParent="#principal-container"
                             onChange={(e) =>
                                 setSelectedStore(e.target.value)
@@ -828,6 +861,7 @@ const Items = ({ categories, brands, collections,stores }) => {
 
                         <ImageFormGroup
                             eRef={textureRef}
+                            name="texture"
                             label="Imagen Textura"
                             aspect={1}
                             col="col-lg-6 col-md-12 col-sm-6"
@@ -863,6 +897,7 @@ const Items = ({ categories, brands, collections,stores }) => {
                         <div className="row">
                             <ImageFormGroup
                                 eRef={bannerRef}
+                                name="banner"
                                 label="Banner"
                                 aspect={2 / 1}
                                 col="col-12"
@@ -870,6 +905,7 @@ const Items = ({ categories, brands, collections,stores }) => {
                             />
                             <ImageFormGroup
                                 eRef={imageRef}
+                                name="image"
                                 label="Imagen"
                                 aspect={1}
                                 col="col-lg-6 col-md-12 col-sm-6"

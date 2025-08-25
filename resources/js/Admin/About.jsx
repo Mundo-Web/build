@@ -57,6 +57,9 @@ const About = ({ details: detailsDB }) => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         correlativeRef.current.value = data?.correlative ?? "";
         nameRef.current.value = data?.name ?? "";
@@ -64,7 +67,7 @@ const About = ({ details: detailsDB }) => {
         titleRef.current.value = data?.title ?? "";
         linkRef.current.value = data?.link ?? "";
         imageRef.current.value = null;
-        imageRef.image.src = `/storage/images/aboutus/${data?.image ?? "undefined"}`;
+        imageRef.image.src = data?.image ? `/storage/images/aboutus/${data.image}` : '';
         $(modalRef.current).modal("show");
     };
 
@@ -90,8 +93,16 @@ const About = ({ details: detailsDB }) => {
             formData.append("image", image);
         }
 
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await aboutusRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -334,6 +345,7 @@ const About = ({ details: detailsDB }) => {
                     
                     <ImageFormGroup
                         eRef={imageRef}
+                        name="image"
                         label="Imagen"
                         col="col-12"
                         rows={3}

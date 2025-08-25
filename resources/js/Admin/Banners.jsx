@@ -36,13 +36,17 @@ const Banners = ({ pages }) => {
         if (banner?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flags when opening modal
+        if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = banner?.id ?? "";
         nameRef.current.value = banner?.data?.name ?? "";
         descriptionRef.current.value = banner?.data?.description ?? "";
         backgroundRef.current.value = null;
-        backgroundRef.image.src = `/storage/images/system/${banner?.data?.background}`;
+        backgroundRef.image.src = banner?.data?.background ? `/storage/images/system/${banner.data.background}` : '';
         imageRef.current.value = null;
-        imageRef.image.src = `/storage/images/system/${banner?.data?.image}`;
+        imageRef.image.src = banner?.data?.image ? `/storage/images/system/${banner.data.image}` : '';
         buttonTextRef.current.value = banner?.data?.button_text ?? "";
         buttonLinkRef.current.value = banner?.data?.button_link ?? "";
 
@@ -79,8 +83,20 @@ const Banners = ({ pages }) => {
             formData.append("image", image);
         }
 
+        // Check for image deletion flags
+        if (backgroundRef.getDeleteFlag && backgroundRef.getDeleteFlag()) {
+            formData.append('background_delete', 'DELETE');
+        }
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await bannersRest.save(formData);
         if (!result) return;
+
+        // Reset delete flags after successful save
+        if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -272,11 +288,12 @@ const Banners = ({ pages }) => {
                 size="md"
             >
                 <input ref={idRef} type="hidden" />
-                <ImageFormGroup eRef={backgroundRef} label="Fondo" />
+                <ImageFormGroup eRef={backgroundRef} name="background" label="Fondo" />
                 <div className="row">
                     <div className="col-sm-6">
                         <ImageFormGroup
                             eRef={imageRef}
+                            name="image"
                             label="Imagen"
                             aspect={1}
                         />

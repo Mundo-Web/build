@@ -48,9 +48,9 @@ const Sliders = () => {
     setActiveTab(data?.bg_type ?? 'image')
     setIframeSrc(data?.bg_video ?? '')
     imageRef.current.value = null
-    imageRef.current.src = `/storage/images/slider/${data?.image}`
+    imageRef.image.src = data?.image ? `/storage/images/slider/${data.image}` : ''
     bgImageRef.current.value = null
-    bgImageRef.image.src = `/storage/images/slider/${data?.bg_image}`
+    bgImageRef.image.src = data?.bg_image ? `/storage/images/slider/${data.bg_image}` : ''
     bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
     buttonTextRef.current.value = data?.button_text ?? ''
     buttonLinkRef.current.value = data?.button_link ?? ''
@@ -90,8 +90,21 @@ const Sliders = () => {
       formData.append('bg_image', null)
     }
 
+      // Check for image deletion flags
+    if (bgImageRef.getDeleteFlag && bgImageRef.getDeleteFlag()) {
+        formData.append('bg_image_delete', 'DELETE');
+    }
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+        formData.append('image_delete', 'DELETE');
+    }
+
     const result = await slidersRest.save(formData)
     if (!result) return
+
+
+    if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -179,7 +192,7 @@ const Sliders = () => {
           caption: 'Imagen',
           width: '90px',
           cellTemplate: (container, { data }) => {
-            ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
+            ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
               style={{
                 width: '80px', height: '48px',
                 objectFit: 'cover', objectPosition: 'center',
@@ -257,8 +270,8 @@ const Sliders = () => {
           </ul>
           <div class="tab-content">
             <div class={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
-              <ImageFormGroup hidden={!Fillable.has('sliders', 'bg_image')} eRef={bgImageRef} label='Imagen de fondo' />
-              <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} label='Imagen' />
+              <ImageFormGroup hidden={!Fillable.has('sliders', 'bg_image')} eRef={bgImageRef} name="bg_image" label='Imagen de fondo' />
+              <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} name="image" label='Imagen' />
             </div>
             <div hidden={!Fillable.has('sliders', 'bg_video')} class={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
               <InputFormGroup eRef={bgVideoRef} label='URL (Youtube)' type='link' onChange={e => setIframeSrc(getYTVideoId(e.target.value))} />

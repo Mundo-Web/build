@@ -32,10 +32,13 @@ const Brands = () => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
+    // Reset delete flag when opening modal
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
-    imageRef.image.src = `/storage/images/brand/${data?.image}`
+    imageRef.image.src = data?.image ? `/storage/images/brand/${data.image}` : ''
     imageRef.current.value = null
 
     $(modalRef.current).modal('show')
@@ -59,8 +62,16 @@ const Brands = () => {
       formData.append('image', file)
     }
 
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
     const result = await brandsRest.save(formData)
     if (!result) return
+
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -185,7 +196,7 @@ const Brands = () => {
         }
       ]} />
     <Modal modalRef={modalRef} title={isEditing ? 'Editar marca' : 'Agregar marca'} onSubmit={onModalSubmit} size='sm'>
-      <ImageFormGroup eRef={imageRef} label='Imagen' col='col-12' aspect={16 / 9} />
+      <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-12' aspect={16 / 9} />
       <div className='row' id='faqs-container'>
         <input ref={idRef} type='hidden' />
         <InputFormGroup eRef={nameRef} label='Marca' col='col-12' required />

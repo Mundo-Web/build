@@ -176,6 +176,20 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
         imageSrc = fileName;
       }
 
+      // Check for image deletion flag
+      if (imageFormRef.current?.getDeleteFlag && imageFormRef.current.getDeleteFlag()) {
+        const formData = new FormData();
+        formData.append('image_delete', 'DELETE');
+        
+        const deleteResult = await galleryRest.save(formData);
+        if (!deleteResult) {
+          toast.error('Error al eliminar la imagen');
+          return;
+        }
+        
+        imageSrc = null; // Clear the image source
+      }
+
       const updatedImages = [...images];
       const imageData = {
         name: newImageForm.title, // Usar title como name para mostrar en el card
@@ -432,6 +446,7 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
                   <div className="col-md-6">
                     <ImageFormGroup
                       ref={imageFormRef}
+                      name="image"
                       label={editingImage !== null ? 'Cambiar imagen (opcional)' : 'Imagen *'}
                       aspect={newImageForm.aspect}
                       onChange={handleImageChange}

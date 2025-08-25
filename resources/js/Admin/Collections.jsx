@@ -31,10 +31,13 @@ const Collections = () => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = `/storage/images/collection/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/collection/${data.image}` : '';
         imageRef.current.value = null;
 
         $(modalRef.current).modal("show");
@@ -58,8 +61,16 @@ const Collections = () => {
             formData.append("image", file);
         }
 
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await collectionsRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -245,6 +256,7 @@ const Collections = () => {
             >
                 <ImageFormGroup
                     eRef={imageRef}
+                    name="image"
                     label="Imagen"
                     col="col-12"
                     aspect={16 / 9}

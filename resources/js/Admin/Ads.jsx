@@ -37,6 +37,9 @@ const Ads = ({ }) => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
+    // Reset delete flag when opening modal
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
@@ -77,8 +80,16 @@ const Ads = ({ }) => {
       formData.append('image', file)
     }
 
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
     const result = await adsRest.save(formData)
     if (!result) return
+
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -230,7 +241,7 @@ const Ads = ({ }) => {
     <Modal modalRef={modalRef} title={isEditing ? 'Editar anuncio' : 'Agregar anuncio'} onSubmit={onModalSubmit} size='md'>
       <div className='row' id='principal-container'>
         <input ref={idRef} type='hidden' />
-        <ImageFormGroup eRef={imageRef} label='Imagen' col='col-md-4' aspect={1} fit='contain' required />
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-md-4' aspect={1} fit='contain' required />
         <div className="col-md-8">
           <SwitchFormGroup eRef={invasivoRef} label='¿El anuncio es invasivo?' specification='Solo se mostrará este anuncio y no los demás' />
           <TextareaFormGroup eRef={nameRef} label='Título' rows={1} />

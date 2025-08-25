@@ -32,12 +32,15 @@ const Indicators = () => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
+    // Reset delete flag when opening modal
+    if (symbolRef.resetDeleteFlag) symbolRef.resetDeleteFlag();
+
     idRef.current.value = data?.id ?? ''
 
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
     symbolRef.current.value = null
-    symbolRef.image.src = `/storage/images/indicator/${data?.symbol ?? 'undefined'}`
+    symbolRef.image.src = data?.symbol ? `/storage/images/indicator/${data.symbol}` : ''
 
     $(modalRef.current).modal('show')
   }
@@ -61,10 +64,16 @@ const Indicators = () => {
       formData.append('symbol', symbol)
     }
 
+    // Check for image deletion flag
+    if (symbolRef.getDeleteFlag && symbolRef.getDeleteFlag()) {
+      formData.append('symbol_delete', 'DELETE');
+    }
+
     const result = await indicatorsRest.save(formData)
     if (!result) return
 
-
+    // Reset delete flag after successful save
+    if (symbolRef.resetDeleteFlag) symbolRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -194,7 +203,7 @@ const Indicators = () => {
       <div className='row' id='indicators-container'>
         <input ref={idRef} type='hidden' />
         <InputFormGroup eRef={nameRef} label='Número' col='col-sm-8' rows={2} required />
-        <ImageFormGroup eRef={symbolRef} label='Símbolo' col='col-sm-4' rows={2} required />
+        <ImageFormGroup eRef={symbolRef} name="symbol" label='Símbolo' col='col-sm-4' rows={2} required />
         <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
       </div>
     </Modal>

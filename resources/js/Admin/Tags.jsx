@@ -52,12 +52,11 @@ const Tags = () => {
     // Para el icono (imagen pequeña que va al lado del texto)
 
 
-    iconRef.image.src = `/storage/images/tag/${data?.icon ?? "undefined"
-      }`;
+    iconRef.image.src = data?.icon ? `/storage/images/tag/${data.icon}` : '';
 
 
 
-    imageRef.image.src = `/storage/images/tag/${data?.image ?? "undefined"}`;
+    imageRef.image.src = data?.image ? `/storage/images/tag/${data.image}` : '';
 
 
     $(modalRef.current).modal('show')
@@ -105,9 +104,22 @@ const Tags = () => {
       formData.append('image', imageRef.current.files[0])
     }
 
+
+    // Check for image deletion flag
+    if (iconRef.getDeleteFlag && iconRef.getDeleteFlag()) {
+      formData.append('icon_delete', 'DELETE');
+    }
+
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
     const result = await tagsRest.save(formData)
     if (!result) return
 
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+    if (iconRef.resetDeleteFlag) iconRef.resetDeleteFlag();
+    
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
   }
@@ -415,7 +427,7 @@ const Tags = () => {
 
             <TextareaFormGroup eRef={descriptionRef} label='Descripción' col='col-12' rows={4} hidden={!Fillable.has('tags', 'description')} />
           </div>
-          <ImageFormGroup eRef={iconRef} label='Icono' col='col-md-4' aspect='6/5' hidden={!Fillable.has('tags', 'icon')} />
+          <ImageFormGroup eRef={iconRef} name="icon" label='Icono' col='col-md-4' aspect='6/5' hidden={!Fillable.has('tags', 'icon')} />
 
         </div>
         {/* Sección de Fechas Promocionales */}
@@ -493,7 +505,7 @@ const Tags = () => {
         </div>
 
 
-        <ImageFormGroup eRef={imageRef} label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
       </div>
     </Modal>
   </>

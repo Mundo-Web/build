@@ -35,13 +35,16 @@ const Testimonies = ({ countries, details }) => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
         $(countryRef.current)
             .val(data?.country_id ?? "89")
             .trigger("change");
         descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = `/storage/images/testimony/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/testimony/${data.image}` : '';
         imageRef.current.value = null;
 
         $(modalRef.current).modal("show");
@@ -62,14 +65,22 @@ const Testimonies = ({ countries, details }) => {
         for (const key in request) {
             formData.append(key, request[key]);
         }
-     
-       const file = imageRef.current.files[0]
-    if (file) {
-      formData.append('image', file)
-    }
+
+        const file = imageRef.current.files[0]
+        if (file) {
+            formData.append('image', file)
+        }
+
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
 
         const result = await testimoniesRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -149,6 +160,7 @@ const Testimonies = ({ countries, details }) => {
                                             className="avatar-xs rounded-circle"
                                             src={`/storage/images/testimony/${data.image}`}
                                             alt={data.name}
+                                            onError={e => e.target.src = '/api/cover/thumbnail/null'}
                                         />,
                                         <p
                                             className="mb-0"
@@ -223,6 +235,7 @@ const Testimonies = ({ countries, details }) => {
                         <div className="row">
                             <ImageFormGroup
                                 eRef={imageRef}
+                                name="image"
                                 label="Imagen"
                                 col="col-sm-4 col-xs-12"
                                 aspect={1}

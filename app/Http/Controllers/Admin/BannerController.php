@@ -45,6 +45,33 @@ class BannerController extends BasicController
 
             $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
             foreach ($this->imageFields as $field) {
+
+                // Check if image should be deleted (when hidden field contains 'DELETE')
+                $deleteFlag = $request->input($field . '_delete');
+                \Log::info("BasicController save - Checking delete flag for field: {$field}, value: " . ($deleteFlag ?? 'null'));
+
+                if ($deleteFlag === 'DELETE') {
+                    \Log::info("BasicController save - Deleting image for field: {$field}");
+                    // Find existing record to delete old image file
+                    if (isset($body['id'])) {
+                        $existingRecord = $this->model::find($body['id']);
+                        if ($existingRecord && $existingRecord->{$field}) {
+                            $oldFilename = $existingRecord->{$field};
+                            if (!Text::has($oldFilename, '.')) {
+                                $oldFilename = "{$oldFilename}.enc";
+                            }
+                            $oldPath = "images/{$snake_case}/{$oldFilename}";
+                            \Log::info("BasicController save - Deleting file: {$oldPath}");
+                            Storage::delete($oldPath);
+                        }
+                    }
+                    // Set field to null in database
+                    $body[$field] = null;
+                    \Log::info("BasicController save - Set {$field} to null in body");
+                    continue;
+                }
+
+
                 if (!$request->hasFile($field)) continue;
                 $full = $request->file($field);
                 $uuid = Crypto::randomUUID();

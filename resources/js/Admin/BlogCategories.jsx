@@ -32,12 +32,16 @@ const BlogCategories = () => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flags when opening modal
+        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        bannerRef.image.src = `/storage/images/category/${data?.banner}`;
+        bannerRef.image.src = data?.banner ? `/storage/images/category/${data.banner}` : '';
         bannerRef.current.value = null;
-        imageRef.image.src = `/storage/images/category/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/category/${data.image}` : '';
         imageRef.current.value = null;
 
         $(modalRef.current).modal("show");
@@ -65,8 +69,20 @@ const BlogCategories = () => {
             formData.append("banner", file2);
         }
 
+        // Check for image deletion flags
+        if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
+            formData.append('banner_delete', 'DELETE');
+        }
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await categoriesRest.save(formData);
         if (!result) return;
+
+        // Reset delete flags after successful save
+        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -279,6 +295,7 @@ const BlogCategories = () => {
                     <div className="col-md-6">
                         <ImageFormGroup
                             eRef={bannerRef}
+                            name="banner"
                             label="Banner"
                             col="col-12"
                             aspect={3 / 1}
@@ -286,6 +303,7 @@ const BlogCategories = () => {
                         />
                         <ImageFormGroup
                             eRef={imageRef}
+                            name="image"
                             label="Imagen"
                             col="col-12"
                             aspect={16 / 9}

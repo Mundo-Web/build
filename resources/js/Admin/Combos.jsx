@@ -122,7 +122,10 @@ const Combos = ({ items }) => {
       priceRef.current.value = comboData.price || 0;
       discountRef.current.value = comboData.discount || 0;
       imageRef.current.value = null
-      imageRef.image.src = `/storage/images/combo/${comboData?.image ?? 'undefined'}`
+      imageRef.image.src = comboData?.image ? `/storage/images/combo/${comboData.image}` : ''
+      
+      // Reset delete flag when opening modal
+      if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
       // Cargar los productos asociados
       const products = comboData.items || [];
@@ -156,6 +159,9 @@ const Combos = ({ items }) => {
       nameRef.current.value = '';
       priceRef.current.value = 0;
       discountRef.current.value = 0;
+      
+      // Reset delete flag when opening modal for new combo
+      if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
       
       // Limpiar el select2
       if (itemsRef.current) {
@@ -198,8 +204,17 @@ const Combos = ({ items }) => {
       formData.append('image', symbol)
     }
 
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
     const result = await combosRest.save(formData)
     if (!result) return;
+    
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+    
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
     
@@ -357,7 +372,7 @@ const Combos = ({ items }) => {
 
         </div>
         <div className="col-md-6">
-          <ImageFormGroup eRef={imageRef} label='Imagen del Combo' col='col-12' aspect='4/3' required />
+          <ImageFormGroup eRef={imageRef} name="image" label='Imagen del Combo' col='col-12' aspect='4/3' required />
 
         </div >
         {/* Lista de productos seleccionados */}

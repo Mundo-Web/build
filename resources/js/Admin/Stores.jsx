@@ -76,11 +76,12 @@ const Stores = ({ ubigeos = [] }) => {
         managerRef.current.value = data?.manager ?? "";
         capacityRef.current.value = data?.capacity ?? "";
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         // Limpiar el input de imagen
         if (imageRef.current) {
-           imageRef.image.src = `/storage/images/store/${
-                      data?.image ?? "undefined"
-                  }`;
+           imageRef.image.src = data?.image ? `/storage/images/store/${data.image}` : '';
         }
 
         $(ubigeoRef.current)
@@ -341,6 +342,11 @@ const Stores = ({ ubigeos = [] }) => {
             formData.append("image", imageRef.current.files[0]);
         }
 
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         // Debug: Mostrar los datos que se van a enviar
         console.log("Datos a enviar:");
         console.log("- Latitud:", latitude);
@@ -351,6 +357,9 @@ const Stores = ({ ubigeos = [] }) => {
 
         const result = await storesRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -844,6 +853,7 @@ const Stores = ({ ubigeos = [] }) => {
                     <div className="col-12">
                         <ImageFormGroup
                             eRef={imageRef}
+                            name="image"
                             label="Imagen de la tienda"
                             col="col-12"
                             accept="image/*"

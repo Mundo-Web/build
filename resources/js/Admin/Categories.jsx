@@ -6,7 +6,6 @@ import { createRoot } from "react-dom/client";
 import Swal from "sweetalert2";
 import CategoriesRest from "../Actions/Admin/CategoriesRest";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
-import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
@@ -35,10 +34,14 @@ const Categories = () => {
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        bannerRef.image.src = `/storage/images/blog_category/${data?.banner}`;
+        bannerRef.image.src = data?.banner ? `/storage/images/category/${data.banner}` : '';
         bannerRef.current.value = null;
-        imageRef.image.src = `/storage/images/blog_category/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/category/${data.image}` : '';
         imageRef.current.value = null;
+
+        // Reset delete flags using React state - only when opening modal
+        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(modalRef.current).modal("show");
     };
@@ -65,8 +68,29 @@ const Categories = () => {
             formData.append("banner", file2);
         }
 
+        // Check for image deletion flags using React state
+        if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
+            formData.append('banner_delete', 'DELETE');
+            console.log('Adding banner delete flag: DELETE');
+        }
+
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+            console.log('Adding image delete flag: DELETE');
+        }
+
+        // Debug: Log all FormData entries
+        console.log('FormData contents:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+
         const result = await categoriesRest.save(formData);
         if (!result) return;
+
+        // Reset delete flags after successful save
+        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -153,7 +177,7 @@ const Categories = () => {
                         caption: "Descripción",
                         width: "50%",
                     },
-                      Fillable.has('categories', 'image') && {
+                    Fillable.has('categories', 'image') && {
                         dataField: "image",
                         caption: "Imagen",
                         width: "90px",
@@ -178,7 +202,7 @@ const Categories = () => {
                             );
                         },
                     },
-                     Fillable.has('categories', 'banner') && {
+                    Fillable.has('categories', 'banner') && {
                         dataField: "banner",
                         caption: "Banner",
                         width: "90px",
@@ -279,6 +303,7 @@ const Categories = () => {
                     <div className="col-md-6">
                         <ImageFormGroup
                             eRef={bannerRef}
+                            name="banner"
                             label="Banner"
                             col="col-12"
                             aspect={3 / 1}
@@ -286,6 +311,7 @@ const Categories = () => {
                         />
                         <ImageFormGroup
                             eRef={imageRef}
+                            name="image"
                             label="Imagen"
                             col="col-12"
                             aspect={16 / 9}

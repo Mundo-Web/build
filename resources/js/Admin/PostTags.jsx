@@ -254,9 +254,9 @@ const PostTags = () => {
             <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
           </div>
         </div>
-     <ImageFormGroup eRef={iconRef} label='Icono del Tag' col='col-md-6' aspect='1/1' hidden={!Fillable.has('tags', 'icon')} />
+     <ImageFormGroup eRef={iconRef} name="icon" label='Icono del Tag' col='col-md-6' aspect='1/1' hidden={!Fillable.has('tags', 'icon')} />
 
-        <ImageFormGroup eRef={imageRef} label='Imagen Representativa' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen Representativa' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
  */}
      
    
