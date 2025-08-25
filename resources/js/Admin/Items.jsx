@@ -381,7 +381,7 @@ const Items = ({ categories, brands, collections, stores }) => {
     const [specifications, setSpecifications] = useState([]); // Especificaciones
 
     // Opciones del campo "type"
-    const typeOptions = ["Principal", "General", "Icono"];
+    const typeOptions = ["Principal", "General"];
     const [showImportModal, setShowImportModal] = useState(false);
     const modalImportRef = useRef();
     const onModalImportOpen = () => {
