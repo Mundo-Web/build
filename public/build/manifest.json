@@ -2617,7 +2617,7 @@
     ]
   },
   "resources/js/Admin/Sliders.jsx": {
-    "file": "assets/Sliders-DCqB31Aw.js",
+    "file": "assets/Sliders-BRdvWAuv.js",
     "name": "Sliders",
     "src": "resources/js/Admin/Sliders.jsx",
     "isEntry": true,
@@ -9417,7 +9417,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-CKhlp1qU.js",
+    "file": "assets/Slider-DCXiGjHO.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -10360,7 +10360,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DzQvcJdq.js",
+    "file": "assets/System-qwX0wpRF.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

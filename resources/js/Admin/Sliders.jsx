@@ -28,6 +28,7 @@ const Sliders = () => {
   const descriptionRef = useRef()
   const imageRef = useRef()
   const bgImageRef = useRef()
+  const bgImageMobileRef = useRef()
   const bgVideoRef = useRef()
   const buttonTextRef = useRef()
   const buttonLinkRef = useRef()
@@ -51,6 +52,8 @@ const Sliders = () => {
     imageRef.image.src = data?.image ? `/storage/images/slider/${data.image}` : ''
     bgImageRef.current.value = null
     bgImageRef.image.src = data?.bg_image ? `/storage/images/slider/${data.bg_image}` : ''
+    bgImageMobileRef.current.value = null
+    bgImageMobileRef.image.src = data?.bg_image_mobile ? `/storage/images/slider/${data.bg_image_mobile}` : ''
     bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
     buttonTextRef.current.value = data?.button_text ?? ''
     buttonLinkRef.current.value = data?.button_link ?? ''
@@ -82,17 +85,26 @@ const Sliders = () => {
         formData.append('bg_image', file)
       }
 
+      const mobileFile = bgImageMobileRef.current.files[0]
+      if (mobileFile) {
+        formData.append('bg_image_mobile', mobileFile)
+      }
+
       const image = imageRef.current.files[0]
       if (image) {
         formData.append('image', image)
       }
     } else {
       formData.append('bg_image', null)
+      formData.append('bg_image_mobile', null)
     }
 
       // Check for image deletion flags
     if (bgImageRef.getDeleteFlag && bgImageRef.getDeleteFlag()) {
         formData.append('bg_image_delete', 'DELETE');
+    }
+    if (bgImageMobileRef.getDeleteFlag && bgImageMobileRef.getDeleteFlag()) {
+        formData.append('bg_image_mobile_delete', 'DELETE');
     }
     if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
         formData.append('image_delete', 'DELETE');
@@ -103,6 +115,7 @@ const Sliders = () => {
 
 
     if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
+    if (bgImageMobileRef.resetDeleteFlag) bgImageMobileRef.resetDeleteFlag();
     if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
 
@@ -186,6 +199,21 @@ const Sliders = () => {
               onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
           }
         },
+          Fillable.has('sliders', 'bg_image_mobile') &&
+        {
+          dataField: 'bg_image_mobile',
+          caption: 'Imagen Mobile',
+          width: '90px',
+          cellTemplate: (container, { data }) => {
+            ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image_mobile}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
+              style={{
+                width: '80px', height: '48px',
+                objectFit: 'cover', objectPosition: 'center',
+                borderRadius: '4px'
+              }}
+              onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+          }
+        },
         Fillable.has('sliders', 'image') &&
         {
           dataField: 'image',
@@ -252,7 +280,7 @@ const Sliders = () => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar slider' : 'Agregar slider'} onSubmit={onModalSubmit} size='md'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar slider' : 'Agregar slider'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='sliders-container'>
         <input ref={idRef} type='hidden' />
         <div>
@@ -270,7 +298,24 @@ const Sliders = () => {
           </ul>
           <div class="tab-content">
             <div class={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
-              <ImageFormGroup hidden={!Fillable.has('sliders', 'bg_image')} eRef={bgImageRef} name="bg_image" label='Imagen de fondo' />
+          <div className='row'>
+                <ImageFormGroup 
+                hidden={!Fillable.has('sliders', 'bg_image')} 
+                eRef={bgImageRef} 
+                name="bg_image" 
+                aspect={Fillable.has('sliders', 'bg_image_mobile') ? '4/3' : '16/9'}
+                label='Imagen de fondo (Desktop)' 
+                col={Fillable.has('sliders', 'bg_image_mobile') ? 'col-md-8' : 'col-12'}
+              />
+              <ImageFormGroup 
+                hidden={!Fillable.has('sliders', 'bg_image_mobile')} 
+                eRef={bgImageMobileRef} 
+                name="bg_image_mobile" 
+                aspect='9/14'
+                label='Imagen (Mobile)' 
+                col="col-md-4"
+              />
+          </div>
               <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} name="image" label='Imagen' />
             </div>
             <div hidden={!Fillable.has('sliders', 'bg_video')} class={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">

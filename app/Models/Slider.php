@@ -18,6 +18,7 @@ class Slider extends Model
         'description',
         'bg_type',
         'bg_image',
+        'bg_image_mobile',
         'bg_video',	
         'image',
         'button_text',
