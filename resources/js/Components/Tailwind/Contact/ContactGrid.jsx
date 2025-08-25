@@ -52,6 +52,9 @@ const ContactGrid = ({ data, contacts }) => {
     const [selectedStore, setSelectedStore] = useState(null);
     const [storesByType, setStoresByType] = useState({});
 
+    // Estado para la tienda principal
+    const [mainStoreData, setMainStoreData] = useState(null);
+
     // Cargar todas las tiendas desde la API
     useEffect(() => {
         const loadStores = async () => {
@@ -76,15 +79,24 @@ const ContactGrid = ({ data, contacts }) => {
                     const activeStores = data.filter(store => store.status !== false);
                     setAllStores(activeStores);
 
-                    // Organizar tiendas por tipo
-                    const groupedByType = activeStores.reduce((acc, store) => {
-                        const type = store.type || 'otro';
-                        if (!acc[type]) {
-                            acc[type] = [];
-                        }
-                        acc[type].push(store);
-                        return acc;
-                    }, {});
+                    // Buscar tienda principal
+                    const mainStore = activeStores.find(store => store.type === 'tienda_principal');
+                    if (mainStore) {
+                        setMainStoreData(mainStore);
+                        console.log('Tienda principal encontrada:', mainStore);
+                    }
+
+                    // Organizar tiendas por tipo (excluyendo tienda_principal para no duplicar)
+                    const groupedByType = activeStores
+                        .filter(store => store.type !== 'tienda_principal')
+                        .reduce((acc, store) => {
+                            const type = store.type || 'otro';
+                            if (!acc[type]) {
+                                acc[type] = [];
+                            }
+                            acc[type].push(store);
+                            return acc;
+                        }, {});
 
                     setStoresByType(groupedByType);
                     console.log('Stores grouped by type:', groupedByType);
@@ -147,7 +159,7 @@ const ContactGrid = ({ data, contacts }) => {
     // Componente para renderizar tarjetas de tiendas por tipo
     const renderStoreTypeCard = (type, stores, index) => {
         const IconComponent = getStoreTypeIcon(type);
-        
+
         return (
             <motion.div
                 key={type}
@@ -185,11 +197,10 @@ const ContactGrid = ({ data, contacts }) => {
                     {stores.map((store, storeIndex) => (
                         <motion.div
                             key={store.id}
-                            className={`bg-white p-4 rounded-lg border transition-all duration-300 cursor-pointer ${
-                                selectedStore?.id === store.id 
-                                    ? 'border-blue-500 shadow-lg bg-blue-50' 
+                            className={`bg-white p-4 rounded-lg border transition-all duration-300 cursor-pointer ${selectedStore?.id === store.id
+                                    ? 'border-blue-500 shadow-lg bg-blue-50'
                                     : 'border-gray-100 hover:shadow-md hover:border-blue-200'
-                            }`}
+                                }`}
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ duration: 0.4, delay: 1.5 + (index * 0.1) + (storeIndex * 0.05) }}
@@ -197,12 +208,12 @@ const ContactGrid = ({ data, contacts }) => {
                             onClick={() => setSelectedStore(store)}
                         >
                             <div className="flex items-start gap-3">
-                              
+
                                 <div className="flex-1">
                                     <h4 className="customtext-neutral-dark font-bold mb-2 text-lg">
                                         {store.name}
                                     </h4>
-                                    
+
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm">
                                             <MapPin className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
@@ -210,11 +221,11 @@ const ContactGrid = ({ data, contacts }) => {
                                                 {store.address}
                                             </p>
                                         </div>
-                                        
+
                                         {store.phone && (
                                             <div className="flex items-center gap-2 text-sm">
                                                 <PhoneCall className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
-                                                <a 
+                                                <a
                                                     href={`tel:${store.phone}`}
                                                     className="customtext-primary hover:customtext-neutral-dark transition-colors font-medium"
                                                 >
@@ -222,11 +233,11 @@ const ContactGrid = ({ data, contacts }) => {
                                                 </a>
                                             </div>
                                         )}
-                                        
+
                                         {store.email && (
                                             <div className="flex items-center gap-2 text-sm">
                                                 <Mail className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
-                                                <a 
+                                                <a
                                                     href={`mailto:${store.email}`}
                                                     className="customtext-primary hover:customtext-neutral-dark transition-colors font-medium"
                                                 >
@@ -234,8 +245,8 @@ const ContactGrid = ({ data, contacts }) => {
                                                 </a>
                                             </div>
                                         )}
-                                        
-                                      
+
+
                                     </div>
                                 </div>
                             </div>
@@ -531,15 +542,44 @@ const ContactGrid = ({ data, contacts }) => {
                             <motion.h3
                                 className={`font-bold text-lg ${data?.class_card_title || 'customtext-neutral-dark'}`}
                             >
-                                Tienda Principal
+                                {mainStoreData ? mainStoreData.name : 'Tienda Principal'}
                             </motion.h3>
                         </motion.div>
                         <motion.p
-                            className="customtext-primary font-bold"
+                            className="customtext-primary font-bold mb-2"
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
-                            {getContact("address")}
+                            {mainStoreData ? mainStoreData.address : getContact("address")}
                         </motion.p>
+
+                        {/* Información adicional si existe tienda principal */}
+                        {mainStoreData && (
+                            <div className="space-y-2 mt-3">
+                                {mainStoreData.phone && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <PhoneCall className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
+                                        <a
+                                            href={`tel:${mainStoreData.phone}`}
+                                            className="customtext-primary hover:customtext-neutral-dark transition-colors font-medium"
+                                        >
+                                            {mainStoreData.phone}
+                                        </a>
+                                    </div>
+                                )}
+
+                                {mainStoreData.email && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Mail className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
+                                        <a
+                                            href={`mailto:${mainStoreData.email}`}
+                                            className="customtext-primary hover:customtext-neutral-dark transition-colors font-medium"
+                                        >
+                                            {mainStoreData.email}
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </motion.div>
 
                     <motion.div
@@ -636,7 +676,7 @@ const ContactGrid = ({ data, contacts }) => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.5 }}
                     >
-                      {data?.title_ubication || "Nuestras Ubicaciones"}
+                        {data?.title_ubication || "Nuestras Ubicaciones"}
                     </motion.h3>
                     <motion.p
                         className={` mb-4 ${data?.class_card_description || 'customtext-neutral-light'}`}
@@ -644,13 +684,13 @@ const ContactGrid = ({ data, contacts }) => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.6 }}
                     >
-                       {data?.description_ubication || "Encuentra nuestras tiendas, oficinas y agencias más cercanas a tu ubicación."}
+                        {data?.description_ubication || "Encuentra nuestras tiendas, oficinas y agencias más cercanas a tu ubicación."}
                     </motion.p>
                 </motion.div>
 
                 {/* Layout responsivo: si hay tiendas, división en columnas; si no, mapa completo */}
                 <div className={`flex flex-col gap-8 ${data?.stores_support && !loadingStores && Object.keys(storesByType).length > 0 ? 'lg:flex-row' : ''}`}>
-                    
+
                     {/* Sección de sucursales - solo si hay tiendas */}
                     {data?.stores_support && !loadingStores && Object.keys(storesByType).length > 0 && (
                         <motion.div
@@ -668,7 +708,7 @@ const ContactGrid = ({ data, contacts }) => {
                             ) : (
                                 <div className="space-y-4">
                                     {/* Renderizar tarjetas por tipo de tienda */}
-                                    {Object.entries(storesByType).map(([type, stores], index) => 
+                                    {Object.entries(storesByType).map(([type, stores], index) =>
                                         renderStoreTypeCard(type, stores, index)
                                     )}
                                 </div>
@@ -678,7 +718,7 @@ const ContactGrid = ({ data, contacts }) => {
 
                     {/* Sección del mapa y detalles */}
                     <motion.div
-                        className={`${data?.stores_support &&  !loadingStores && Object.keys(storesByType).length > 0 ? 'lg:w-2/3' : 'w-full'} space-y-6`}
+                        className={`${data?.stores_support && !loadingStores && Object.keys(storesByType).length > 0 ? 'lg:w-2/3' : 'w-full'} space-y-6`}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.8 }}
@@ -705,10 +745,10 @@ const ContactGrid = ({ data, contacts }) => {
                                         lng: parseFloat(selectedStore.longitude)
                                     } : (data?.stores_support && allStores.length > 0 ? {
                                         lat: allStores.filter(store => store.latitude && store.longitude)
-                                            .reduce((sum, store) => sum + parseFloat(store.latitude), parseFloat(locationGps.lat)) / 
+                                            .reduce((sum, store) => sum + parseFloat(store.latitude), parseFloat(locationGps.lat)) /
                                             (allStores.filter(store => store.latitude && store.longitude).length + 1),
                                         lng: allStores.filter(store => store.latitude && store.longitude)
-                                            .reduce((sum, store) => sum + parseFloat(store.longitude), parseFloat(locationGps.lng)) / 
+                                            .reduce((sum, store) => sum + parseFloat(store.longitude), parseFloat(locationGps.lng)) /
                                             (allStores.filter(store => store.latitude && store.longitude).length + 1)
                                     } : locationGps)}
                                     options={{
@@ -723,7 +763,10 @@ const ContactGrid = ({ data, contacts }) => {
                                 >
                                     {/* Marcador de la ubicación principal */}
                                     <Marker
-                                        position={locationGps}
+                                        position={mainStoreData && mainStoreData.latitude && mainStoreData.longitude ? {
+                                            lat: parseFloat(mainStoreData.latitude),
+                                            lng: parseFloat(mainStoreData.longitude)
+                                        } : locationGps}
                                         icon={{
                                             url: "data:image/svg+xml;base64," + btoa(`
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${Global.APP_COLOR_PRIMARY}" width="48" height="48">
@@ -733,8 +776,11 @@ const ContactGrid = ({ data, contacts }) => {
                                             scaledSize: { width: 48, height: 48 },
                                             anchor: { x: 24, y: 48 }
                                         }}
-                                        title="Sede Principal"
-                                        onClick={() => setSelectedStore({
+                                        title={mainStoreData ? mainStoreData.name : "Sede Principal"}
+                                        onClick={() => setSelectedStore(mainStoreData ? {
+                                            ...mainStoreData,
+                                            type: 'principal'
+                                        } : {
                                             id: 'main',
                                             name: 'Sede Principal',
                                             type: 'principal',
@@ -746,32 +792,32 @@ const ContactGrid = ({ data, contacts }) => {
                                     />
 
                                     {/* Marcadores de todas las tiendas */}
-                                    {data?.stores_support &&  allStores
-                                        .filter(store => store.latitude && store.longitude && 
+                                    {data?.stores_support && allStores
+                                        .filter(store => store.latitude && store.longitude &&
                                             store.latitude !== "0" && store.longitude !== "0")
                                         .map((store) => (
-                                        <Marker
-                                            key={store.id}
-                                            position={{
-                                                lat: parseFloat(store.latitude),
-                                                lng: parseFloat(store.longitude)
-                                            }}
-                                            icon={{
-                                                url: "data:image/svg+xml;base64," + btoa(`
+                                            <Marker
+                                                key={store.id}
+                                                position={{
+                                                    lat: parseFloat(store.latitude),
+                                                    lng: parseFloat(store.longitude)
+                                                }}
+                                                icon={{
+                                                    url: "data:image/svg+xml;base64," + btoa(`
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${getStoreTypeColor(store.type)}" width="36" height="36">
                                                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                                                     </svg>
                                                 `),
-                                                scaledSize: { width: 36, height: 36 },
-                                                anchor: { x: 18, y: 36 }
-                                            }}
-                                            title={`${store.name} (${getStoreTypeName(store.type)})`}
-                                            onClick={() => setSelectedStore(store)}
-                                        />
-                                    ))}
+                                                    scaledSize: { width: 36, height: 36 },
+                                                    anchor: { x: 18, y: 36 }
+                                                }}
+                                                title={`${store.name} (${getStoreTypeName(store.type)})`}
+                                                onClick={() => setSelectedStore(store)}
+                                            />
+                                        ))}
 
                                     {/* InfoWindow para mostrar detalles de la tienda seleccionada */}
-                                    {data?.stores_support &&  selectedStore && (
+                                    {data?.stores_support && selectedStore && (
                                         <InfoWindow
                                             position={{
                                                 lat: parseFloat(selectedStore.latitude),
@@ -830,7 +876,7 @@ const ContactGrid = ({ data, contacts }) => {
                         </div>
 
                         {/* Información detallada de la tienda seleccionada */}
-                        {data?.stores_support &&  selectedStore ? (
+                        {data?.stores_support && selectedStore ? (
                             <motion.div
                                 className="space-y-6"
                                 initial={{ y: 30, opacity: 0 }}
@@ -846,9 +892,9 @@ const ContactGrid = ({ data, contacts }) => {
                                 >
                                     {selectedStore.image ? (
                                         <div className="relative">
-                                            <img 
-                                                src={`/storage/images/store/${selectedStore.image}`} 
-                                            
+                                            <img
+                                                src={`/storage/images/store/${selectedStore.image}`}
+
                                                 alt={selectedStore.name}
                                                 className="w-full h-64 object-cover"
                                             />
@@ -923,8 +969,8 @@ const ContactGrid = ({ data, contacts }) => {
                                                 let businessHours;
                                                 try {
                                                     // Intentamos parsear el JSON de business_hours
-                                                    businessHours = typeof selectedStore.business_hours === 'string' 
-                                                        ? JSON.parse(selectedStore.business_hours) 
+                                                    businessHours = typeof selectedStore.business_hours === 'string'
+                                                        ? JSON.parse(selectedStore.business_hours)
                                                         : selectedStore.business_hours;
                                                 } catch (error) {
                                                     console.error('Error parsing business_hours:', error);
@@ -961,25 +1007,23 @@ const ContactGrid = ({ data, contacts }) => {
                                                 return businessHours.map((schedule, index) => {
                                                     const isToday = index === todayIndex;
                                                     const isClosed = schedule.closed;
-                                                    const hoursText = isClosed 
-                                                        ? 'Cerrado' 
+                                                    const hoursText = isClosed
+                                                        ? 'Cerrado'
                                                         : `${formatTime(schedule.open)} - ${formatTime(schedule.close)}`;
 
                                                     return (
                                                         <motion.div
                                                             key={schedule.day}
-                                                            className={`flex justify-between items-center p-3 rounded-lg transition-all ${
-                                                                isToday 
-                                                                    ? 'bg-blue-50 border-2 border-blue-200' 
+                                                            className={`flex justify-between items-center p-3 rounded-lg transition-all ${isToday
+                                                                    ? 'bg-blue-50 border-2 border-blue-200'
                                                                     : 'bg-gray-50 border border-gray-200'
-                                                            }`}
+                                                                }`}
                                                             initial={{ x: -20, opacity: 0 }}
                                                             animate={{ x: 0, opacity: 1 }}
                                                             transition={{ duration: 0.3, delay: index * 0.05 }}
                                                         >
-                                                            <span className={`font-medium ${
-                                                                isToday ? 'customtext-primary' : 'text-gray-700'
-                                                            }`}>
+                                                            <span className={`font-medium ${isToday ? 'customtext-primary' : 'text-gray-700'
+                                                                }`}>
                                                                 {schedule.day}
                                                                 {isToday && (
                                                                     <span className="ml-2 text-xs bg-primary text-white px-2 py-1 rounded-full">
@@ -987,13 +1031,12 @@ const ContactGrid = ({ data, contacts }) => {
                                                                     </span>
                                                                 )}
                                                             </span>
-                                                            <span className={`text-sm ${
-                                                                isClosed
-                                                                    ? 'text-red-500 font-medium' 
-                                                                    : isToday 
-                                                                        ? 'customtext-primary font-medium' 
+                                                            <span className={`text-sm ${isClosed
+                                                                    ? 'text-red-500 font-medium'
+                                                                    : isToday
+                                                                        ? 'customtext-primary font-medium'
                                                                         : 'text-gray-600'
-                                                            }`}>
+                                                                }`}>
                                                                 {hoursText}
                                                             </span>
                                                         </motion.div>
@@ -1017,7 +1060,7 @@ const ContactGrid = ({ data, contacts }) => {
                                     <div className="mt-6 pt-6 border-t border-gray-200">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {selectedStore.phone && (
-                                                <a 
+                                                <a
                                                     href={`tel:${selectedStore.phone}`}
                                                     className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group"
                                                 >
@@ -1028,9 +1071,9 @@ const ContactGrid = ({ data, contacts }) => {
                                                     </div>
                                                 </a>
                                             )}
-                                            
+
                                             {selectedStore.email && (
-                                                <a 
+                                                <a
                                                     href={`mailto:${selectedStore.email}`}
                                                     className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors group"
                                                 >
@@ -1062,7 +1105,7 @@ const ContactGrid = ({ data, contacts }) => {
                                         </div>
                                         Galería de Sucursales
                                     </h5>
-                                    
+
                                     <div className="grid grid-cols-2 gap-4 h-80">
                                         {allStores.slice(0, 4).map((store, index) => {
                                             // Layout optimizado para 4 imágenes
@@ -1084,8 +1127,8 @@ const ContactGrid = ({ data, contacts }) => {
                                                     onClick={() => setSelectedStore(store)}
                                                 >
                                                     {store.image ? (
-                                                        <img 
-                                                            src={`/storage/images/store/${store.image}`} 
+                                                        <img
+                                                            src={`/storage/images/store/${store.image}`}
                                                             alt={store.name}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -1097,7 +1140,7 @@ const ContactGrid = ({ data, contacts }) => {
                                                             })()}
                                                         </div>
                                                     )}
-                                                    
+
                                                     {/* Overlay con información mejorado */}
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
                                                         <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -1113,7 +1156,7 @@ const ContactGrid = ({ data, contacts }) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {/* Badge de tipo en la esquina superior */}
                                                     <div className="absolute top-3 right-3 p-2 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
                                                         {(() => {
@@ -1121,7 +1164,7 @@ const ContactGrid = ({ data, contacts }) => {
                                                             return <IconComponent className="w-4 h-4 customtext-primary" />;
                                                         })()}
                                                     </div>
-                                                    
+
                                                     {/* Indicador de clic */}
                                                     <div className="absolute top-3 left-3 p-2 rounded-lg bg-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                         <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
