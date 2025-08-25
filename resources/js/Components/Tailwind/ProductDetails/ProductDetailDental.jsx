@@ -222,13 +222,13 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         >
                             {[item?.image, ...item?.images]
                                 .filter((image, index, self) =>
-                                    index === self.findIndex((img) => img.url === image.url)
+                                    index === self.findIndex((img) => img?.url === image?.url)
                                 )
                                 .map((img, i) => (
                                     <SwiperSlide key={i}>
                                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                                             <img
-                                                src={`/storage/images/item/${img.url || img}`}
+                                                src={`/storage/images/item/${img?.url || img}`}
                                                 className="w-full h-full object-contain"
                                                 loading="lazy"
                                                 onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
@@ -413,15 +413,15 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     <img
                                         src={
                                             selectedImage.type === "main"
-                                                ? `/storage/images/item/${selectedImage.url}`
-                                                : `/storage/images/item/${selectedImage.url}`
+                                                ? `/storage/images/item/${selectedImage?.url}`
+                                                : `/storage/images/item/${selectedImage?.url}`
                                         }
                                         onError={(e) =>
                                         (e.target.src =
                                             "/api/cover/thumbnail/null")
                                         }
                                         alt="Product main"
-                                        className="w-full h-auto max-h-[500px] object-contain"
+                                        className="w-full min-h-[600px] max-h-[600px] object-cover"
                                     />
                                 </div>
                             </div>
