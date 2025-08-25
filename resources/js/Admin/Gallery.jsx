@@ -443,16 +443,7 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
                 </div>
 
                 <div className="row">
-                  <div className="col-md-6">
-                    <ImageFormGroup
-                      ref={imageFormRef}
-                      name="image"
-                      label={editingImage !== null ? 'Cambiar imagen (opcional)' : 'Imagen *'}
-                      aspect={newImageForm.aspect}
-                      onChange={handleImageChange}
-                      required={editingImage === null}
-                    />
-                  </div>
+                
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Descripción</label>
@@ -466,10 +457,7 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
                       ></textarea>
                     </div>
                   </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-12">
+                  <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Aspect Ratio</label>
                       <select 
@@ -504,32 +492,8 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
                   </div>
                 </div>
 
-                {/* Ejemplos de imágenes comunes */}
-                <div className="mb-3">
-                  <label className="form-label">Ejemplos de títulos y nombres de archivo:</label>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <ul className="list-unstyled small text-muted">
-                        <li>• <strong>Título:</strong> "Logo de login" → <strong>Archivo:</strong> logo-login</li>
-                        <li>• <strong>Título:</strong> "Fondo de registro" → <strong>Archivo:</strong> bg-signup</li>
-                        <li>• <strong>Título:</strong> "Recuperar contraseña" → <strong>Archivo:</strong> forgot-password</li>
-                        <li>• <strong>Título:</strong> "Header de emails" → <strong>Archivo:</strong> email-header</li>
-                      </ul>
-                    </div>
-                    <div className="col-md-6">
-                      <ul className="list-unstyled small text-muted">
-                        <li>• <strong>Título:</strong> "Hero del dashboard" → <strong>Archivo:</strong> dashboard-hero</li>
-                        <li>• <strong>Título:</strong> "Placeholder de perfil" → <strong>Archivo:</strong> profile-placeholder</li>
-                        <li>• <strong>Título:</strong> "Página de mantenimiento" → <strong>Archivo:</strong> maintenance</li>
-                        <li>• <strong>Título:</strong> "Error 404" → <strong>Archivo:</strong> 404-error</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <small className="text-info">
-                    <i className="mdi mdi-information me-1"></i>
-                    El archivo se guardará automáticamente en /assets/resources/ con el formato: nombre-archivo.extensión
-                  </small>
-                </div>
+
+         
               </form>
             </div>
             <div className="modal-footer">
