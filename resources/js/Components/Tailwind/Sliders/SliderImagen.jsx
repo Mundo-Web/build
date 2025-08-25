@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -10,7 +10,7 @@ const SliderImagen = ({ items, data }) => {
     const nextSlideRef = useRef(null);
     const swiperRef = useRef(null);
     const [imagesLoaded, setImagesLoaded] = useState(false);
-    const [maxHeight, setMaxHeight] = useState(0);
+    const [, setMaxHeight] = useState(0);
 
     // Adjust button colors
     useEffect(() => {
@@ -66,11 +66,15 @@ const SliderImagen = ({ items, data }) => {
                         </button>
 
                         <Swiper
-                            modules={[Navigation]}
+                            modules={data?.autoplay ? [Navigation, Autoplay] : [Navigation]}
                             navigation={{
                                 prevEl: prevSlideRef.current,
                                 nextEl: nextSlideRef.current,
                             }}
+                            autoplay={data?.autoplay ? {
+                                delay: 3000,
+                                disableOnInteraction: false,
+                            } : false}
                             loop={true}
                             spaceBetween={30}
                             slidesPerView={2}
@@ -84,26 +88,26 @@ const SliderImagen = ({ items, data }) => {
                             }}
                             className="w-full !px-10 2xl:!px-4 !flex !justify-between"
                         >
-                            {[...items,...items].filter((brand) => brand.image).map((brand, index) => (
+                            {[...items, ...items].filter((brand) => brand.image).map((brand, index) => (
                                 <SwiperSlide key={index}>
-                                  <a  href={`catalogo?brand=${brand?.slug}`}>
-                                      <div 
-                                        className={`group w-full flex items-center justify-center px-2 font-font-secondary ${imagesLoaded ? 'h-[50px] lg:h-[80px]' : 'auto'}`}
-                             
-                                    >
-                                        <img
-                                            src={`/storage/images/brand/${brand.image}`}
-                                            alt={brand.name}
-                                            className={`brand-logo max-h-[50px] lg:max-h-[60px] w-auto object-contain  hover:scale-105 transition-transform cursor-pointer ${data?.class_image || "grayscale brightness-0 invert"}`}
-                                            onLoad={handleImagesLoad}
-                                            style={{
-                                             
-                                                objectFit: 'contain',
-                                                objectPosition: 'center'
-                                            }}
-                                        />
-                                    </div>
-                                  </a>
+                                    <a href={`catalogo?brand=${brand?.slug}`}>
+                                        <div
+                                            className={`group w-full flex items-center justify-center px-2 font-font-secondary ${imagesLoaded ? 'h-[50px] lg:h-[80px]' : 'auto'}`}
+
+                                        >
+                                            <img
+                                                src={`/storage/images/brand/${brand.image}`}
+                                                alt={brand.name}
+                                                className={`brand-logo max-h-[50px] lg:max-h-[60px] w-auto object-contain  hover:scale-105 transition-transform cursor-pointer ${data?.class_image || "grayscale brightness-0 invert"}`}
+                                                onLoad={handleImagesLoad}
+                                                style={{
+
+                                                    objectFit: 'contain',
+                                                    objectPosition: 'center'
+                                                }}
+                                            />
+                                        </div>
+                                    </a>
                                 </SwiperSlide>
                             ))}
                         </Swiper>

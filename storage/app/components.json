@@ -599,7 +599,8 @@
                     "class_section",
                     "class_content",
                     "class_button",
-                    "class_image"
+                    "class_image",
+                    "autoplay"
                     
                 ],
                 "using": {
