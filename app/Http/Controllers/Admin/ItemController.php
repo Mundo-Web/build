@@ -119,24 +119,49 @@ class ItemController extends BasicController
             }
 
             // Guardar las imágenes nuevas de la galería
+            $newImagesCount = 0;
             if ($request->hasFile('gallery')) {
-
-                foreach ($request->file('gallery') as $file) {
+                // Obtener el último orden de las imágenes existentes
+                $lastOrder = $item->images()->max('order') ?? 0;
+                
+                foreach ($request->file('gallery') as $index => $file) {
                     $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                     $full = $file;
                     $uuid = Crypto::randomUUID();
                     $ext = $full->getClientOriginalExtension();
                     $path = "images/{$snake_case}/{$uuid}.{$ext}";
                     Storage::put($path, file_get_contents($full));
-                    $item->images()->create(['url' => "{$uuid}.{$ext}"]);
+                    
+                    // Crear imagen con orden secuencial
+                    $item->images()->create([
+                        'url' => "{$uuid}.{$ext}",
+                        'order' => $lastOrder + $index + 1
+                    ]);
+                    $newImagesCount++;
                 }
             }
 
-            // Actualizar las imágenes existentes
-            if ($request->has('gallery_ids')) {
+            // Actualizar el orden de las imágenes existentes
+            if ($request->has('gallery_order')) {
+                $galleryOrder = json_decode($request->input('gallery_order'), true);
+                \Log::info('Gallery order received:', ['gallery_order' => $galleryOrder]);
+                
+                foreach ($galleryOrder as $index => $imageData) {
+                    if (isset($imageData['id']) && $imageData['type'] === 'existing') {
+                        $item->images()->where('id', $imageData['id'])->update([
+                            'order' => $index + 1,
+                            'item_id' => $item->id
+                        ]);
+                    }
+                }
+            } else if ($request->has('gallery_ids')) {
+                // Fallback para compatibilidad (sin reordenamiento)
                 $existingImageIds = $request->input('gallery_ids');
-                foreach ($existingImageIds as $id) {
-                    $item->images()->where('id', $id)->update(['item_id' => $item->id]);
+                foreach ($existingImageIds as $index => $id) {
+                    $item->images()->where('id', $id)->update([
+                        'item_id' => $item->id,
+                        'order' => $index + 1
+                    ]);
                 }
             }
 
@@ -144,6 +169,12 @@ class ItemController extends BasicController
             if ($request->has('deleted_images')) {
                 $deletedImageIds = $request->input('deleted_images');
                 $item->images()->whereIn('id', $deletedImageIds)->delete();
+                
+                // Reordenar las imágenes restantes después de eliminar
+                $remainingImages = $item->images()->orderBy('order')->get();
+                foreach ($remainingImages as $index => $image) {
+                    $image->update(['order' => $index + 1]);
+                }
             }
 
             DB::commit();

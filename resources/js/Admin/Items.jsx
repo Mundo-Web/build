@@ -111,6 +111,39 @@ const Items = ({ categories, brands, collections, stores }) => {
         }
     };
 
+    // Funciones para drag & drop de reordenamiento
+    const [draggedIndex, setDraggedIndex] = useState(null);
+    
+    const handleDragStart = (e, index) => {
+        setDraggedIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+    
+    const handleDragEnd = () => {
+        setDraggedIndex(null);
+    };
+    
+    const handleDragOverReorder = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+    
+    const handleDropReorder = (e, dropIndex) => {
+        e.preventDefault();
+        if (draggedIndex === null || draggedIndex === dropIndex) return;
+        
+        const newGallery = [...gallery];
+        const draggedItem = newGallery[draggedIndex];
+        
+        // Remover el elemento arrastrado
+        newGallery.splice(draggedIndex, 1);
+        // Insertar en la nueva posición
+        newGallery.splice(dropIndex, 0, draggedItem);
+        
+        setGallery(newGallery);
+        setDraggedIndex(null);
+    };
+
     /*************************/
 
     useEffect(() => {
@@ -311,17 +344,27 @@ const Items = ({ categories, brands, collections, stores }) => {
         let galleryIndex = 0;
         let galleryIdsIndex = 0;
         
-        gallery.forEach((img) => {
+        // Crear array con el orden de las imágenes (solo las no marcadas para eliminar)
+        const galleryOrder = [];
+        
+        gallery.forEach((img, index) => {
             if (!img.toDelete) {
                 if (img.file) {
                     formData.append(`gallery[${galleryIndex}]`, img.file); // Imágenes nuevas
+                    galleryOrder.push({ type: 'new', index: galleryIndex });
                     galleryIndex++;
                 } else {
                     formData.append(`gallery_ids[${galleryIdsIndex}]`, img.id); // IDs de imágenes existentes
+                    galleryOrder.push({ type: 'existing', id: img.id, index: galleryIdsIndex });
                     galleryIdsIndex++;
                 }
             }
         });
+        
+        // Enviar el orden de la galería al backend
+        if (galleryOrder.length > 0) {
+            formData.append('gallery_order', JSON.stringify(galleryOrder));
+        }
 
         const deletedImages = gallery
             .filter((img) => img.toDelete)
@@ -1032,7 +1075,15 @@ const Items = ({ categories, brands, collections, stores }) => {
                                         <div className="card-body">
                                             {/* Galería de Imágenes */}
                                             <div className="mb-3">
-                                                <label className="form-label fw-bold">Galería de Imágenes</label>
+                                                <label className="form-label fw-semibold text-dark mb-3">
+                                                    <i className="fas fa-images me-2 text-primary"></i>
+                                                    Galería de Imágenes
+                                                    {gallery.filter(img => !img.toDelete).length > 0 && (
+                                                        <span className="badge bg-primary ms-2">
+                                                            {gallery.filter(img => !img.toDelete).length}
+                                                        </span>
+                                                    )}
+                                                </label>
                                                 
                                                 <input
                                                     id="input-item-gallery"
@@ -1044,80 +1095,165 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                     onChange={handleGalleryChange}
                                                 />
                                                 
-                                                {/* Contenedor flex para imágenes + botón de subir */}
-                                                <div className="d-flex flex-wrap gap-2 align-items-start">
-                                                    {/* Imágenes existentes - filtrar las marcadas para eliminar */}
+                                                {/* Contenedor de la galería con grid responsive */}
+                                                <div className="gallery-container" style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                                                    gap: '16px',
+                                                    padding: '16px',
+                                                    backgroundColor: '#f8f9fa',
+                                                    borderRadius: '12px',
+                                                    border: '2px dashed #dee2e6',
+                                                    minHeight: '160px'
+                                                }}>
+                                                    {/* Imágenes existentes con drag & drop */}
                                                     {gallery.filter(image => !image.toDelete).map((image, index) => {
-                                                        // Obtener el índice original para la función de eliminar
                                                         const originalIndex = gallery.findIndex(img => img === image);
+                                                        const displayIndex = index + 1;
                                                         return (
                                                             <div
                                                                 key={originalIndex}
-                                                                className="position-relative"
+                                                                className="gallery-item position-relative"
+                                                                draggable
+                                                                onDragStart={(e) => handleDragStart(e, originalIndex)}
+                                                                onDragEnd={handleDragEnd}
+                                                                onDragOver={handleDragOverReorder}
+                                                                onDrop={(e) => handleDropReorder(e, originalIndex)}
                                                                 style={{
-                                                                    width: "100px",
-                                                                    height: "100px",
+                                                                    aspectRatio: '1',
+                                                                    borderRadius: '12px',
+                                                                    overflow: 'hidden',
+                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                                                    transition: 'all 0.3s ease',
+                                                                    cursor: 'grab',
+                                                                    transform: draggedIndex === originalIndex ? 'scale(1.05)' : 'scale(1)',
+                                                                    opacity: draggedIndex === originalIndex ? 0.8 : 1,
+                                                                    border: '3px solid transparent',
+                                                                    background: 'white'
+                                                                }}
+                                                                onMouseEnter={(e) => {
+                                                                    if (draggedIndex === null) {
+                                                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                                                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
+                                                                    }
+                                                                }}
+                                                                onMouseLeave={(e) => {
+                                                                    if (draggedIndex === null) {
+                                                                        e.currentTarget.style.transform = 'scale(1)';
+                                                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                                                    }
                                                                 }}
                                                             >
+                                                                {/* Indicador de posición */}
+                                                                <div className="position-absolute top-0 start-0 m-2">
+                                                                    <span className="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style={{
+                                                                        width: '24px',
+                                                                        height: '24px',
+                                                                        fontSize: '11px',
+                                                                        fontWeight: 'bold'
+                                                                    }}>
+                                                                        {displayIndex}
+                                                                    </span>
+                                                                </div>
+                                                                
+                                                                {/* Imagen */}
                                                                 <img
                                                                     src={image.url}
-                                                                    alt="preview"
-                                                                    className="rounded"
+                                                                    alt={`Imagen ${displayIndex}`}
+                                                                    className="w-100 h-100"
                                                                     style={{
-                                                                        width: "100%",
-                                                                        height: "100%",
-                                                                        objectFit: "cover",
+                                                                        objectFit: 'cover',
+                                                                        pointerEvents: 'none'
                                                                     }}
                                                                 />
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn btn-danger btn-sm position-absolute top-0 end-0"
-                                                                    style={{
-                                                                        width: '20px',
-                                                                        height: '20px',
-                                                                        padding: '0',
-                                                                        fontSize: '12px',
-                                                                        lineHeight: '1'
-                                                                    }}
-                                                                    onClick={(e) => removeGalleryImage(e, originalIndex)}
-                                                                >
-                                                                    ×
-                                                                </button>
+                                                                
+                                                                {/* Overlay con controles */}
+                                                                <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{
+                                                                    background: 'rgba(0,0,0,0.7)',
+                                                                    opacity: 0,
+                                                                    transition: 'opacity 0.3s ease'
+                                                                }} onMouseEnter={(e) => e.currentTarget.style.opacity = 1} onMouseLeave={(e) => e.currentTarget.style.opacity = 0}>
+                                                                    <div className="d-flex gap-2">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                            style={{ width: '32px', height: '32px' }}
+                                                                            title="Mover imagen"
+                                                                        >
+                                                                            <i className="fas fa-arrows-alt text-dark"></i>
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                            style={{ width: '32px', height: '32px' }}
+                                                                            onClick={(e) => removeGalleryImage(e, originalIndex)}
+                                                                            title="Eliminar imagen"
+                                                                        >
+                                                                            <i className="fas fa-trash text-white"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         );
                                                     })}
                                                     
-                                                    {/* Botón de subir imagen - SIEMPRE al final */}
+                                                    {/* Botón de agregar imagen mejorado */}
                                                     <div
-                                                        className="border-2 border-dashed rounded d-flex align-items-center justify-content-center"
+                                                        className="gallery-add-button d-flex flex-column align-items-center justify-content-center"
                                                         style={{
-                                                            borderColor: '#dee2e6',
+                                                            aspectRatio: '1',
+                                                            border: '3px dashed #0d6efd',
+                                                            borderRadius: '12px',
+                                                            backgroundColor: 'rgba(13, 110, 253, 0.05)',
                                                             cursor: 'pointer',
-                                                            height: '100px',
-                                                            width: '100px',
-                                                            backgroundColor: '#f8f9fa',
-                                                            transition: 'all 0.3s ease'
+                                                            transition: 'all 0.3s ease',
+                                                            minHeight: '120px'
                                                         }}
                                                         onClick={() => galleryRef.current.click()}
                                                         onDrop={handleDrop}
                                                         onDragOver={handleDragOver}
                                                         onMouseEnter={(e) => {
-                                                            e.target.style.borderColor = '#0d6efd';
-                                                            e.target.style.backgroundColor = '#e7f1ff';
+                                                            e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+                                                            e.currentTarget.style.borderColor = '#0056b3';
+                                                            e.currentTarget.style.transform = 'scale(1.02)';
                                                         }}
                                                         onMouseLeave={(e) => {
-                                                            e.target.style.borderColor = '#dee2e6';
-                                                            e.target.style.backgroundColor = '#f8f9fa';
+                                                            e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.05)';
+                                                            e.currentTarget.style.borderColor = '#0d6efd';
+                                                            e.currentTarget.style.transform = 'scale(1)';
                                                         }}
                                                     >
                                                         <div className="text-center">
-                                                            <i className="fas fa-plus fa-lg text-muted mb-1"></i>
-                                                            <p className="mb-0 text-muted" style={{fontSize: '10px'}}>
-                                                                Subir
+                                                            <div className="mb-2" style={{
+                                                                width: '48px',
+                                                                height: '48px',
+                                                                backgroundColor: '#0d6efd',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                margin: '0 auto'
+                                                            }}>
+                                                                <i className="fas fa-plus text-white fa-lg"></i>
+                                                            </div>
+                                                            <p className="mb-0 text-primary fw-semibold" style={{ fontSize: '12px' }}>
+                                                                Agregar Imagen
                                                             </p>
+                                                            <small className="text-muted" style={{ fontSize: '10px' }}>
+                                                                Arrastra o haz clic
+                                                            </small>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
+                                                {/* Mensaje cuando no hay imágenes */}
+                                                {gallery.filter(img => !img.toDelete).length === 0 && (
+                                                    <div className="text-center py-4 text-muted">
+                                                        <i className="fas fa-images fa-3x mb-3 opacity-50"></i>
+                                                        <p className="mb-1">No hay imágenes en la galería</p>
+                                                        <small>Arrastra archivos aquí o haz clic en "Agregar Imagen"</small>
+                                                    </div>
+                                                )}
                                             </div>
                                             
                                             {/* Video Link */}

@@ -130,7 +130,7 @@ class Item extends Model
 
     public function images()
     {
-        return $this->hasMany(ItemImage::class);
+        return $this->hasMany(ItemImage::class)->orderBy('order');
     }
 
     public function specifications()
