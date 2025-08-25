@@ -33,7 +33,7 @@ class ItemController extends BasicController
     public function mediaGallery(Request $request, string $uuid)
     {
         try {
-            $snake_case = 'item/gallery';
+            $snake_case = 'item';
             if (Text::has($uuid, '.')) {
                 $route = "images/{$snake_case}/{$uuid}";
             } else {
@@ -53,13 +53,9 @@ class ItemController extends BasicController
             ]);
         }
     }
-    /*
     public function save(Request $request): HttpResponse|ResponseFactory
     {
-
-
-//dump($request->all());
-
+        \Log::info('ItemController save method called - Custom save executing');
         DB::beginTransaction();
         try {
             // Validar los datos recibidos
@@ -78,9 +74,9 @@ class ItemController extends BasicController
                 'gallery' => 'nullable|array',
                 'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'gallery_ids' => 'nullable|array',
-                'gallery_ids.*' => 'nullable|integer',
+                'gallery_ids.*' => 'nullable|string',
                 'deleted_images' => 'nullable|array',
-                'deleted_images.*' => 'nullable|integer',
+                'deleted_images.*' => 'nullable|string',
             ]);
 
             // Crear o actualizar el elemento
@@ -130,7 +126,7 @@ class ItemController extends BasicController
                     $full = $file;
                     $uuid = Crypto::randomUUID();
                     $ext = $full->getClientOriginalExtension();
-                    $path = "images/{$snake_case}/gallery/{$uuid}.{$ext}";
+                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
                     Storage::put($path, file_get_contents($full));
                     $item->images()->create(['url' => "{$uuid}.{$ext}"]);
                 }
@@ -157,8 +153,7 @@ class ItemController extends BasicController
             return response(['message' => 'Error al guardar el elemento: ' . $e->getMessage()], 500);
         }
     }
-*/
-    public function beforeSave(Request $request)
+    /*public function beforeSave(Request $request)
     {
         $body = $request->all();
         
@@ -178,7 +173,7 @@ class ItemController extends BasicController
         ]);
         
         return $body;
-    }
+    }*/
 
     public function setReactViewProperties(Request $request)
     {

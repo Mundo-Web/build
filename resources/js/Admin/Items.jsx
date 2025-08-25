@@ -307,22 +307,29 @@ const Items = ({ categories, brands, collections, stores }) => {
 
         //TODO: Preparar los datos de la galería
 
-        // Galería
-        gallery.forEach((img, index) => {
+        // Galería - Separar imágenes nuevas y existentes
+        let galleryIndex = 0;
+        let galleryIdsIndex = 0;
+        
+        gallery.forEach((img) => {
             if (!img.toDelete) {
                 if (img.file) {
-                    formData.append(`gallery[${index}]`, img.file); // Imágenes nuevas
+                    formData.append(`gallery[${galleryIndex}]`, img.file); // Imágenes nuevas
+                    galleryIndex++;
                 } else {
-                    formData.append(`gallery_ids[${index}]`, img.id); // IDs de imágenes existentes
+                    formData.append(`gallery_ids[${galleryIdsIndex}]`, img.id); // IDs de imágenes existentes
+                    galleryIdsIndex++;
                 }
             }
         });
 
         const deletedImages = gallery
             .filter((img) => img.toDelete)
-            .map((img) => parseInt(img.id, 10)); // Asegurar que sean enteros
+            .map((img) => img.id); // Mantener como UUID strings
         if (deletedImages.length > 0) {
-            formData.append("deleted_images", JSON.stringify(deletedImages)); // Imágenes eliminadas
+            deletedImages.forEach((id, index) => {
+                formData.append(`deleted_images[${index}]`, id); // Enviar cada ID por separado
+            });
         }
 
         // Debug: Log all FormData entries
@@ -690,304 +697,519 @@ const Items = ({ categories, brands, collections, stores }) => {
                 onSubmit={onModalSubmit}
                 size="xl"
             >
-                <div className="row" id="principal-container">
+                <div id="principal-container">
                     <input ref={idRef} type="hidden" />
-                    <div className="col-md-3">
-                        <InputFormGroup
-                            eRef={skuRef}
-                            label="SKU"
-                            required
-                            hidden={!Fillable.has('items', 'sku')}
-                        />
-                        <SelectFormGroup
-                            eRef={categoryRef}
-                            label="Categoría"
-                            required
-                            dropdownParent="#principal-container"
-                            onChange={(e) =>
-                                setSelectedCategory(e.target.value)
-                            }
-                            hidden={!Fillable.has('items', 'category_id')}
-                        >
-                            {categories.map((item, index) => (
-                                <option key={index} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </SelectFormGroup>
-                        <SelectFormGroup
-                            eRef={collectionRef}
-                            label="Colección"
-                            dropdownParent="#principal-container"
-                            onChange={(e) =>
-                                setSelectedCollection(e.target.value)
-                            }
-                            hidden={!Fillable.has('items', 'collection_id')}
-                        >
-                            {collections.map((item, index) => (
-                                <option key={index} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </SelectFormGroup>
-                        <SelectAPIFormGroup
-                            eRef={subcategoryRef}
-                            label="Subcategoría"
-                            searchAPI="/api/admin/subcategories/paginate"
-                            searchBy="name"
-                            filter={["category_id", "=", selectedCategory]}
-                            dropdownParent="#principal-container"
-                            hidden={!Fillable.has('items', 'subcategory_id')}
-                        />
+                    
+                    {/* Sistema de Pestañas */}
+                    <ul className="nav nav-pills nav-justified mb-4" role="tablist" style={{
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: '8px',
+                        padding: '4px',
+                        border: '1px solid #e9ecef'
+                    }}>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link active" 
+                                id="basic-info-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#basic-info" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="basic-info" 
+                                aria-selected="true"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <i className="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="pricing-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#pricing" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="pricing" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <i className="fas fa-dollar-sign me-2"></i>
+                                Precios y Stock
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="multimedia-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#multimedia" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="multimedia" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <i className="fas fa-images me-2"></i>
+                                Multimedia
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="features-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#features" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="features" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <i className="fas fa-list-ul me-2"></i>
+                                Características
+                            </button>
+                        </li>
+                    </ul>
 
-                        <SelectFormGroup
-                            eRef={brandRef}
-                            label="Marca"
-                            dropdownParent="#principal-container"
-                            hidden={!Fillable.has('items', 'brand_id')}
-                        >
-                            {brands.map((item, index) => (
-                                <option key={index} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </SelectFormGroup>
-
-                        <SelectFormGroup
-                            eRef={storeRef}
-                            label="Tienda"
-
-                            dropdownParent="#principal-container"
-                            onChange={(e) =>
-                                setSelectedStore(e.target.value)
-                            }
-                            hidden={!Fillable.has('items', 'store_id')}
-                        >
-                            <option value="">Seleccionar tienda (opcional)</option>
-                            {stores.map((item, index) => (
-                                <option key={index} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </SelectFormGroup>
-                        <InputFormGroup
-                            label="Stock"
-                            eRef={stockRef}
-                            type="number"
-                            required
-                            hidden={!Fillable.has('items', 'stock')}
-                        />
-
-
-
-                        <InputFormGroup
-                            eRef={priceRef}
-                            label="Precio"
-                            type="number"
-                            step="0.01"
-                            required
-                            hidden={!Fillable.has('items', 'price')}
-                        />
-                        <InputFormGroup
-                            eRef={discountRef}
-                            label="Descuento"
-                            type="number"
-                            step="0.01"
-                        />
-
-                        <SelectAPIFormGroup
-                            id="tags"
-                            eRef={tagsRef}
-                            searchAPI={"/api/admin/tags/paginate"}
-                            searchBy="name"
-                            label="Tags"
-                            dropdownParent="#principal-container"
-                            tags
-                            multiple
-                        />
-                    </div>
-                    <div className="col-md-5">
-                        {/*Agregar aqui lo que falta */}
-                        <InputFormGroup
-                            eRef={nameRef}
-                            label="Nombre"
-                            required
-                            hidden={!Fillable.has('items', 'name')}
-                        />
-
-                        <InputFormGroup
-                            eRef={colorRef}
-                            label="Color"
-                            required
-                            hidden={!Fillable.has('items', 'color')}
-                        />
-
-                        <InputFormGroup
-                            eRef={sizeRef}
-                            label="Talla"
-                            required
-                            hidden={!Fillable.has('items', 'size')}
-                        />
-
-                        <div className="col-12" hidden={!Fillable.has('items', 'pdf')}>
-                            <label className="form-label">Archivo PDF</label>
-                            <input
-                                ref={pdfRef}
-                                type="file"
-                                className="form-control"
-                                accept=".pdf"
-                            />
-                            <small className="text-muted">Subir documento PDF relacionado al producto</small>
-                        </div>
-
-                        {currentPdf && (
-                            <div className="my-2">
-                                <a
-                                    href={currentPdf}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                >
-                                    <i className="fas fa-file-pdf me-1"></i> Ver PDF actual
-                                </a>
-                            </div>
-                        )}
-
-                        <InputFormGroup
-                            eRef={linkvideoRef}
-                            label="Link de video"
-                            hidden={!Fillable.has('items', 'linkvideo')}
-                        />
-
-                        <ImageFormGroup
-                            eRef={textureRef}
-                            name="texture"
-                            label="Imagen Textura"
-                            aspect={1}
-                            col="col-lg-6 col-md-12 col-sm-6"
-                            hidden={!Fillable.has('items', 'texture')}
-                        />
-                        <TextareaFormGroup
-                            eRef={summaryRef}
-                            label="Resumen"
-                            rows={3}
-                            hidden={!Fillable.has('items', 'summary')}
-                        />
-                        {/* Sección de Características */}
-                        {/* Características (Lista de textos) */}
-                        <DynamicField
-                            ref={featuresRef}
-                            label="Características"
-                            structure=""
-                            value={features}
-                            onChange={setFeatures}
-                        />
-
-                        {/* Especificaciones (Objetos con campos, con "type" como <select>) */}
-                        <DynamicField
-                            ref={specificationsRef}
-                            label="Especificaciones"
-                            structure={{ type: "", title: "", description: "" }}
-                            value={specifications}
-                            onChange={setSpecifications}
-                            typeOptions={typeOptions}
-                        />
-                    </div>
-                    <div className="col-md-4">
-                        <div className="row">
-                            <ImageFormGroup
-                                eRef={bannerRef}
-                                name="banner"
-                                label="Banner"
-                                aspect={2 / 1}
-                                col="col-12"
-                                hidden={!Fillable.has('items', 'banner')}
-                            />
-                            <ImageFormGroup
-                                eRef={imageRef}
-                                name="image"
-                                label="Imagen"
-                                aspect={1}
-                                col="col-lg-6 col-md-12 col-sm-6"
-                                hidden={!Fillable.has('items', 'image')}
-                            />
-
-                            <div className="col-lg-6 col-md-12 col-sm-6">
-                                <label className="form-label">Galeria</label>
-                                <input
-                                    id="input-item-gallery"
-                                    ref={galleryRef}
-                                    type="file"
-                                    multiple
-                                    accept="image/*"
-                                    hidden
-                                    onChange={handleGalleryChange}
-                                />
-                                <div
-                                    style={{
-                                        border: "2px dashed #ccc",
-                                        padding: "20px",
-                                        textAlign: "center",
-                                        itemr: "pointer",
-                                        borderRadius: "4px",
-                                        boxShadow:
-                                            "2.5px 2.5px 5px rgba(0,0,0,.125)",
-                                        aspectRatio: "21/9",
-                                        height: "209px",
-                                        width: "100%",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                    onClick={() => galleryRef.current.click()}
-                                    onDrop={handleDrop}
-                                    onDragOver={handleDragOver}
-                                >
-                                    <span className="form-label d-block mb-1">
-                                        Arrastra y suelta imágenes aquí o haz
-                                        clic para agregar
-                                    </span>
+                    {/* Contenido de las Pestañas */}
+                    <div className="tab-content">
+                        {/* Pestaña: Información Básica */}
+                        <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-tag me-2"></i>Identificación</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <InputFormGroup
+                                                eRef={skuRef}
+                                                label="SKU"
+                                                required
+                                                hidden={!Fillable.has('items', 'sku')}
+                                            />
+                                            <InputFormGroup
+                                                eRef={nameRef}
+                                                label="Nombre del Producto"
+                                                required
+                                                hidden={!Fillable.has('items', 'name')}
+                                            />
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <InputFormGroup
+                                                        eRef={colorRef}
+                                                        label="Color"
+                                                        required
+                                                        hidden={!Fillable.has('items', 'color')}
+                                                    />
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <InputFormGroup
+                                                        eRef={sizeRef}
+                                                        label="Talla"
+                                                        required
+                                                        hidden={!Fillable.has('items', 'size')}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-sitemap me-2"></i>Categorización</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <SelectFormGroup
+                                                eRef={categoryRef}
+                                                label="Categoría"
+                                                required
+                                                dropdownParent="#principal-container"
+                                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                                hidden={!Fillable.has('items', 'category_id')}
+                                            >
+                                                {categories.map((item, index) => (
+                                                    <option key={index} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                            </SelectFormGroup>
+                                            
+                                            <SelectFormGroup
+                                                eRef={collectionRef}
+                                                label="Colección"
+                                                dropdownParent="#principal-container"
+                                                onChange={(e) => setSelectedCollection(e.target.value)}
+                                                hidden={!Fillable.has('items', 'collection_id')}
+                                            >
+                                                {collections.map((item, index) => (
+                                                    <option key={index} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                            </SelectFormGroup>
+                                            
+                                            <SelectAPIFormGroup
+                                                eRef={subcategoryRef}
+                                                label="Subcategoría"
+                                                searchAPI="/api/admin/subcategories/paginate"
+                                                searchBy="name"
+                                                filter={["category_id", "=", selectedCategory]}
+                                                dropdownParent="#principal-container"
+                                                hidden={!Fillable.has('items', 'subcategory_id')}
+                                            />
+                                            
+                                            <SelectFormGroup
+                                                eRef={brandRef}
+                                                label="Marca"
+                                                dropdownParent="#principal-container"
+                                                hidden={!Fillable.has('items', 'brand_id')}
+                                            >
+                                                {brands.map((item, index) => (
+                                                    <option key={index} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                            </SelectFormGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-12">
+                                    <div className="card border-0 shadow-sm">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-align-left me-2"></i>Descripción</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <TextareaFormGroup
+                                                eRef={summaryRef}
+                                                label="Resumen"
+                                                rows={3}
+                                                hidden={!Fillable.has('items', 'summary')}
+                                            />
+                                            
+                                            <SelectFormGroup
+                                                eRef={storeRef}
+                                                label="Tienda"
+                                                dropdownParent="#principal-container"
+                                                onChange={(e) => setSelectedStore(e.target.value)}
+                                                hidden={!Fillable.has('items', 'store_id')}
+                                            >
+                                                <option value="">Seleccionar tienda (opcional)</option>
+                                                {stores.map((item, index) => (
+                                                    <option key={index} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                            </SelectFormGroup>
+                                            
+                                            <SelectAPIFormGroup
+                                                id="tags"
+                                                eRef={tagsRef}
+                                                searchAPI={"/api/admin/tags/paginate"}
+                                                searchBy="name"
+                                                label="Tags"
+                                                dropdownParent="#principal-container"
+                                                tags
+                                                multiple
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="col-md-12 col-sm-6">
-                                <div className="d-flex flex-wrap gap-1  mt-2">
-                                    {gallery.map((image, index) => (
-                                        <div
-                                            key={index}
-                                            className="position-relative"
-                                            style={{
-                                                width: "80px",
-                                                height: "80px",
-                                            }}
-                                        >
-                                            <img
-                                                src={`${image.url}`}
-                                                alt="preview"
-                                                style={{
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    objectFit: "cover",
-                                                    borderRadius: "4px",
-                                                }}
-                                            />
-                                            <button
-                                                className="btn btn-xs btn-danger position-absolute"
-                                                style={{ top: 0, right: 0 }}
-                                                onClick={(e) =>
-                                                    removeGalleryImage(e, index)
-                                                }
-                                            >
-                                                ×
-                                            </button>
+                        </div>
+
+                        {/* Pestaña: Precios y Stock */}
+                        <div className="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-dollar-sign me-2"></i>Precios</h6>
                                         </div>
-                                    ))}
+                                        <div className="card-body">
+                                            <InputFormGroup
+                                                eRef={priceRef}
+                                                label="Precio Regular"
+                                                type="number"
+                                                step="0.01"
+                                                required
+                                                hidden={!Fillable.has('items', 'price')}
+                                            />
+                                            <InputFormGroup
+                                                eRef={discountRef}
+                                                label="Precio con Descuento"
+                                                type="number"
+                                                step="0.01"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-boxes me-2"></i>Inventario</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <InputFormGroup
+                                                label="Stock Disponible"
+                                                eRef={stockRef}
+                                                type="number"
+                                                required
+                                                hidden={!Fillable.has('items', 'stock')}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pestaña: Multimedia */}
+                        <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-image me-2"></i>Imágenes Principales</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="row">
+                                                <ImageFormGroup
+                                                    eRef={bannerRef}
+                                                    name="banner"
+                                                    label="Banner"
+                                                    aspect={2 / 1}
+                                                    col="col-12"
+                                                    hidden={!Fillable.has('items', 'banner')}
+                                                />
+                                                <ImageFormGroup
+                                                    eRef={imageRef}
+                                                    name="image"
+                                                    label="Imagen Principal"
+                                                    aspect={1}
+                                                    col="col-md-6"
+                                                    hidden={!Fillable.has('items', 'image')}
+                                                />
+                                                <ImageFormGroup
+                                                    eRef={textureRef}
+                                                    name="texture"
+                                                    label="Textura"
+                                                    aspect={1}
+                                                    col="col-md-6"
+                                                    hidden={!Fillable.has('items', 'texture')}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-photo-video me-2"></i>Galería y Multimedia</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            {/* Galería de Imágenes */}
+                                            <div className="mb-3">
+                                                <label className="form-label fw-bold">Galería de Imágenes</label>
+                                                
+                                                <input
+                                                    id="input-item-gallery"
+                                                    ref={galleryRef}
+                                                    type="file"
+                                                    multiple
+                                                    accept="image/*"
+                                                    hidden
+                                                    onChange={handleGalleryChange}
+                                                />
+                                                
+                                                {/* Contenedor flex para imágenes + botón de subir */}
+                                                <div className="d-flex flex-wrap gap-2 align-items-start">
+                                                    {/* Imágenes existentes - filtrar las marcadas para eliminar */}
+                                                    {gallery.filter(image => !image.toDelete).map((image, index) => {
+                                                        // Obtener el índice original para la función de eliminar
+                                                        const originalIndex = gallery.findIndex(img => img === image);
+                                                        return (
+                                                            <div
+                                                                key={originalIndex}
+                                                                className="position-relative"
+                                                                style={{
+                                                                    width: "100px",
+                                                                    height: "100px",
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={image.url}
+                                                                    alt="preview"
+                                                                    className="rounded"
+                                                                    style={{
+                                                                        width: "100%",
+                                                                        height: "100%",
+                                                                        objectFit: "cover",
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                                                    style={{
+                                                                        width: '20px',
+                                                                        height: '20px',
+                                                                        padding: '0',
+                                                                        fontSize: '12px',
+                                                                        lineHeight: '1'
+                                                                    }}
+                                                                    onClick={(e) => removeGalleryImage(e, originalIndex)}
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    
+                                                    {/* Botón de subir imagen - SIEMPRE al final */}
+                                                    <div
+                                                        className="border-2 border-dashed rounded d-flex align-items-center justify-content-center"
+                                                        style={{
+                                                            borderColor: '#dee2e6',
+                                                            cursor: 'pointer',
+                                                            height: '100px',
+                                                            width: '100px',
+                                                            backgroundColor: '#f8f9fa',
+                                                            transition: 'all 0.3s ease'
+                                                        }}
+                                                        onClick={() => galleryRef.current.click()}
+                                                        onDrop={handleDrop}
+                                                        onDragOver={handleDragOver}
+                                                        onMouseEnter={(e) => {
+                                                            e.target.style.borderColor = '#0d6efd';
+                                                            e.target.style.backgroundColor = '#e7f1ff';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.target.style.borderColor = '#dee2e6';
+                                                            e.target.style.backgroundColor = '#f8f9fa';
+                                                        }}
+                                                    >
+                                                        <div className="text-center">
+                                                            <i className="fas fa-plus fa-lg text-muted mb-1"></i>
+                                                            <p className="mb-0 text-muted" style={{fontSize: '10px'}}>
+                                                                Subir
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Video Link */}
+                                            <InputFormGroup
+                                                eRef={linkvideoRef}
+                                                label="Link de Video"
+                                                placeholder="https://youtube.com/watch?v=..."
+                                                hidden={!Fillable.has('items', 'linkvideo')}
+                                            />
+                                            
+                                            {/* PDF */}
+                                            <div className="mb-3" hidden={!Fillable.has('items', 'pdf')}>
+                                                <label className="form-label fw-bold">Archivo PDF</label>
+                                                <input
+                                                    ref={pdfRef}
+                                                    type="file"
+                                                    className="form-control"
+                                                    accept=".pdf"
+                                                />
+                                                <small className="text-muted">Catálogo, manual o documento relacionado</small>
+                                                
+                                                {currentPdf && (
+                                                    <div className="mt-2">
+                                                        <a
+                                                            href={currentPdf}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="btn btn-sm btn-outline-primary"
+                                                        >
+                                                            <i className="fas fa-file-pdf me-1"></i> Ver PDF actual
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pestaña: Características */}
+                        <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <DynamicField
+                                                ref={featuresRef}
+                                                label="Lista de Características"
+                                                structure=""
+                                                value={features}
+                                                onChange={setFeatures}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-md-6">
+                                    <div className="card border-0 shadow-sm h-100">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <DynamicField
+                                                ref={specificationsRef}
+                                                label="Especificaciones Técnicas"
+                                                structure={{ type: "", title: "", description: "" }}
+                                                value={specifications}
+                                                onChange={setSpecifications}
+                                                typeOptions={typeOptions}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-12">
+                                    <div className="card border-0 shadow-sm">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-edit me-2"></i>Descripción Detallada</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <QuillFormGroup eRef={descriptionRef} label="Descripción Completa" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <hr className="my-1" />
-                <QuillFormGroup eRef={descriptionRef} label="Descripcion" />
             </Modal>
             <Modal modalRef={modalImportRef} title={"Importar Datos"} size="sm">
                 <ModalImportItem gridRef={gridRef} modalRef={modalImportRef} />
