@@ -1202,7 +1202,7 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                         className="gallery-add-button d-flex flex-column align-items-center justify-content-center"
                                                         style={{
                                                             aspectRatio: '1',
-                                                            border: '3px dashed #0d6efd',
+                                                            border: '3px dashed #71b6f9',
                                                             borderRadius: '12px',
                                                             backgroundColor: 'rgba(13, 110, 253, 0.05)',
                                                             cursor: 'pointer',
@@ -1224,10 +1224,10 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                         }}
                                                     >
                                                         <div className="text-center">
-                                                            <div className="mb-2" style={{
+                                                            <div className="mb-2 bg-primary" style={{
                                                                 width: '48px',
                                                                 height: '48px',
-                                                                backgroundColor: '#0d6efd',
+                                                               
                                                                 borderRadius: '50%',
                                                                 display: 'flex',
                                                                 alignItems: 'center',
