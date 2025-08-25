@@ -86,17 +86,15 @@ const ContactGrid = ({ data, contacts }) => {
                         console.log('Tienda principal encontrada:', mainStore);
                     }
 
-                    // Organizar tiendas por tipo (excluyendo tienda_principal para no duplicar)
-                    const groupedByType = activeStores
-                        .filter(store => store.type !== 'tienda_principal')
-                        .reduce((acc, store) => {
-                            const type = store.type || 'otro';
-                            if (!acc[type]) {
-                                acc[type] = [];
-                            }
-                            acc[type].push(store);
-                            return acc;
-                        }, {});
+                    // Organizar tiendas por tipo (incluyendo tienda_principal)
+                    const groupedByType = activeStores.reduce((acc, store) => {
+                        const type = store.type || 'otro';
+                        if (!acc[type]) {
+                            acc[type] = [];
+                        }
+                        acc[type].push(store);
+                        return acc;
+                    }, {});
 
                     setStoresByType(groupedByType);
                     console.log('Stores grouped by type:', groupedByType);
@@ -146,6 +144,7 @@ const ContactGrid = ({ data, contacts }) => {
     // Función para obtener el nombre formateado del tipo
     const getStoreTypeName = (type) => {
         const typeNames = {
+            'tienda_principal': 'Tienda Principal',
             'tienda': 'Tiendas',
             'oficina': 'Oficinas',
             'agencia': 'Agencias',
@@ -198,8 +197,8 @@ const ContactGrid = ({ data, contacts }) => {
                         <motion.div
                             key={store.id}
                             className={`bg-white p-4 rounded-lg border transition-all duration-300 cursor-pointer ${selectedStore?.id === store.id
-                                    ? 'border-blue-500 shadow-lg bg-blue-50'
-                                    : 'border-gray-100 hover:shadow-md hover:border-blue-200'
+                                ? 'border-blue-500 shadow-lg bg-blue-50'
+                                : 'border-gray-100 hover:shadow-md hover:border-blue-200'
                                 }`}
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
@@ -542,44 +541,15 @@ const ContactGrid = ({ data, contacts }) => {
                             <motion.h3
                                 className={`font-bold text-lg ${data?.class_card_title || 'customtext-neutral-dark'}`}
                             >
-                                {mainStoreData ? mainStoreData.name : 'Tienda Principal'}
+                                Tienda Principal
                             </motion.h3>
                         </motion.div>
                         <motion.p
-                            className="customtext-primary font-bold mb-2"
+                            className="customtext-primary font-bold"
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
                             {mainStoreData ? mainStoreData.address : getContact("address")}
                         </motion.p>
-
-                        {/* Información adicional si existe tienda principal */}
-                        {mainStoreData && (
-                            <div className="space-y-2 mt-3">
-                                {mainStoreData.phone && (
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <PhoneCall className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
-                                        <a
-                                            href={`tel:${mainStoreData.phone}`}
-                                            className="customtext-primary hover:customtext-neutral-dark transition-colors font-medium"
-                                        >
-                                            {mainStoreData.phone}
-                                        </a>
-                                    </div>
-                                )}
-
-                                {mainStoreData.email && (
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <Mail className="w-4 h-4 customtext-neutral-light flex-shrink-0" />
-                                        <a
-                                            href={`mailto:${mainStoreData.email}`}
-                                            className="customtext-primary hover:customtext-neutral-dark transition-colors font-medium"
-                                        >
-                                            {mainStoreData.email}
-                                        </a>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </motion.div>
 
                     <motion.div
@@ -1015,8 +985,8 @@ const ContactGrid = ({ data, contacts }) => {
                                                         <motion.div
                                                             key={schedule.day}
                                                             className={`flex justify-between items-center p-3 rounded-lg transition-all ${isToday
-                                                                    ? 'bg-blue-50 border-2 border-blue-200'
-                                                                    : 'bg-gray-50 border border-gray-200'
+                                                                ? 'bg-blue-50 border-2 border-blue-200'
+                                                                : 'bg-gray-50 border border-gray-200'
                                                                 }`}
                                                             initial={{ x: -20, opacity: 0 }}
                                                             animate={{ x: 0, opacity: 1 }}
@@ -1032,10 +1002,10 @@ const ContactGrid = ({ data, contacts }) => {
                                                                 )}
                                                             </span>
                                                             <span className={`text-sm ${isClosed
-                                                                    ? 'text-red-500 font-medium'
-                                                                    : isToday
-                                                                        ? 'customtext-primary font-medium'
-                                                                        : 'text-gray-600'
+                                                                ? 'text-red-500 font-medium'
+                                                                : isToday
+                                                                    ? 'customtext-primary font-medium'
+                                                                    : 'text-gray-600'
                                                                 }`}>
                                                                 {hoursText}
                                                             </span>
