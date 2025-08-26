@@ -2190,7 +2190,8 @@
                 "generals":[
                     "importation_flete",
                     "importation_seguro",
-                    "importation_derecho_arancelario"
+                    "importation_derecho_arancelario",
+                    "importation_derecho_arancelario_descripcion"
                 ]
             },
             {
