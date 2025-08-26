@@ -142,7 +142,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                             Horarios de atención
                         </h3>
 
-                        <p    className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>  {generals.find((contact) => contact.correlative === "opening_hours")
+                        <p className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>  {generals.find((contact) => contact.correlative === "opening_hours")
                             ?.description || ""}</p>
                     </div>
                 </div>
@@ -200,8 +200,9 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         <div className="flex gap-4" >
                             {socials.map((social, index) => (
                                 <Tippy key={index} content={`Ver ${social.name} en ${social.description}`}>
-                                    <a href={social.link}   target="_blank" rel="noopener noreferrer"  className={`text-base flex bg-white customtext-primary ${social.icon} w-8
-                            h-8 pt-0.5 items-center justify-center rounded-full`} />
+                                    <a href={social.link} target="_blank" rel="noopener noreferrer" className="text-base flex bg-white customtext-primary w-8 h-8 pt-0.5 items-center justify-center rounded-full">
+                                        <i className={social.icon}></i>
+                                    </a>
                                 </Tippy>
                             ))}
                         </div>

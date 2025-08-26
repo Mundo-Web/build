@@ -1239,7 +1239,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-9Iw1jBdI.js",
+    "file": "assets/About-BknFDEiY.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3104,7 +3104,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-Z8yIPTnH.js",
+    "file": "assets/Blog-D96Md6Rr.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3148,7 +3148,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-9r2SQOtE.js",
+    "file": "assets/BlogArticle-Cj6OqAIM.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -4743,7 +4743,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-DTeX9OxR.js",
+    "file": "assets/Base-CL_EOOdo.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -6947,7 +6947,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer.jsx": {
-    "file": "assets/Footer-SV3n2TQj.js",
+    "file": "assets/Footer-CKRLSMjP.js",
     "name": "Footer",
     "src": "resources/js/Components/Tailwind/Footer.jsx",
     "isEntry": true,
@@ -9990,7 +9990,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-C0krQG94.js",
+    "file": "assets/Contact-CcXNdOVe.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -10033,7 +10033,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-DQ-ykkq3.js",
+    "file": "assets/CourseDetails-Dr_Nj1kg.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -10068,7 +10068,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-3vtMorLA.js",
+    "file": "assets/Courses-DCv0i3KS.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -10161,7 +10161,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-DGXS7umv.js",
+    "file": "assets/Home-DmHu7HPw.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -10360,7 +10360,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-qwX0wpRF.js",
+    "file": "assets/System-DuzTJX_m.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
