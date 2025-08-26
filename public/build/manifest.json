@@ -2968,7 +2968,7 @@
     ]
   },
   "resources/js/Admin/Tags.jsx": {
-    "file": "assets/Tags-tRMfSbRU.js",
+    "file": "assets/Tags-9LfqEr2w.js",
     "name": "Tags",
     "src": "resources/js/Admin/Tags.jsx",
     "isEntry": true,
@@ -2976,9 +2976,8 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_Base-7gkrOv9S.js",
       "_SwitchFormGroup-DXN0cwVk.js",
-      "_TextareaFormGroup-CliirJM1.js",
-      "_ImageFormGroup-DkVgPNU5.js",
       "_index-BOnQTV8N.js",
+      "_ImageFormGroup-DkVgPNU5.js",
       "resources/js/Utils/ReactAppend.jsx",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_BasicRest-BCYKfs4R.js",

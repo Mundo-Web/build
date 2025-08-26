@@ -119,7 +119,7 @@ const Tags = () => {
     // Reset delete flag after successful save
     if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
     if (iconRef.resetDeleteFlag) iconRef.resetDeleteFlag();
-    
+
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
   }
@@ -252,7 +252,7 @@ const Tags = () => {
         },
         Fillable.has('tags', 'description') && {
           dataField: 'description',
-          caption: 'Descripción',
+          caption: 'ToolTip',
           width: '20%',
         },
         Fillable.has('tags', 'promotional_status') && {
@@ -328,7 +328,8 @@ const Tags = () => {
                   <span>{data.name}</span>
                 </span>
                 {/* Mostrar fechas si es promocional */}
-                {(data.start_date || data.end_date) && (
+           {Fillable.has('tags', 'start_date') && Fillable.has('tags', 'end_date') && 
+                 (data.start_date || data.end_date) && (
                   <div style={{ fontSize: '10px', color: '#6c757d', marginTop: '2px' }}>
                     {data.start_date && (
                       <div>📅 Inicio: {new Date(data.start_date).toLocaleDateString()}</div>
@@ -338,6 +339,7 @@ const Tags = () => {
                     )}
                   </div>
                 )}
+             
               </div>
             )
             ReactAppend(container, content)
@@ -425,7 +427,7 @@ const Tags = () => {
           <div className='col-md-8'>
             <InputFormGroup eRef={nameRef} label='Nombre del Tag' col='col-12' required hidden={!Fillable.has('tags', 'name')} />
 
-            <TextareaFormGroup eRef={descriptionRef} label='Descripción' col='col-12' rows={4} hidden={!Fillable.has('tags', 'description')} />
+            <InputFormGroup eRef={descriptionRef} label='ToolTip' col='col-12' hidden={!Fillable.has('tags', 'description')} />
           </div>
           <ImageFormGroup eRef={iconRef} name="icon" label='Icono' col='col-md-4' aspect='6/5' hidden={!Fillable.has('tags', 'icon')} />
 
@@ -490,7 +492,8 @@ const Tags = () => {
           </div>
         </div>
 
-        <div className='col-md-6' hidden={!Fillable.has('tags', 'background_color')}>
+      <div className='row col-md-6'>
+          <div className='col-md-6' hidden={!Fillable.has('tags', 'background_color')}>
           <div className="form-group mb-2">
             <label className="form-label">Color de Fondo</label>
             <input ref={backgroundColorRef} type="color" className="form-control form-control-color" defaultValue="#3b82f6" />
@@ -503,6 +506,7 @@ const Tags = () => {
             <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
           </div>
         </div>
+      </div>
 
 
         <ImageFormGroup eRef={imageRef} name="image" label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
