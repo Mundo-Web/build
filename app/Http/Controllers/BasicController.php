@@ -19,12 +19,13 @@ use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use SoDe\Extend\Crypto;
 use SoDe\Extend\Response;
 use SoDe\Extend\Text;
-use Illuminate\Support\Facades\Schema;
+
 use Illuminate\Support\Str;
 
 
@@ -40,6 +41,7 @@ class BasicController extends Controller
   public $reactData = null;
   public $with4get = [];
   public $manageFillable = null;
+  public $defaultOrderBy = null; // Campo por defecto para ordenamiento (ej: 'order_index')
 
   public function get(Request $request, string $id)
   {
@@ -224,7 +226,13 @@ class BasicController extends Controller
             );
           }
         } else { //MEJORAR IMPLMENTAR ASC O DESC DESDE EL REST, PARA MEJORARLO LA INTERACTIVIDAD CON OTRAS TABLAS
-          $instance->orderBy($this->prefix4filter ? $this->prefix4filter . '.id' : 'id', 'ASC');
+          // Usar defaultOrderBy si está definido, sino usar id como antes
+          if ($this->defaultOrderBy) {
+            $orderField = $this->prefix4filter ? $this->prefix4filter . '.' . $this->defaultOrderBy : $this->defaultOrderBy;
+            $instance->orderBy($orderField, 'ASC');
+          } else {
+            $instance->orderBy($this->prefix4filter ? $this->prefix4filter . '.id' : 'id', 'ASC');
+          }
         }
       }
 
@@ -348,6 +356,14 @@ class BasicController extends Controller
 
       if (!$jpa) {
         $body['slug'] = Crypto::randomUUID();
+        
+        // Auto-asignar order_index si el modelo lo tiene y no se envió desde el frontend
+        $table = (new $this->model)->getTable();
+        if (Schema::hasColumn($table, 'order_index') && !isset($body['order_index'])) {
+          $maxOrderIndex = $this->model::max('order_index');
+          $body['order_index'] = ($maxOrderIndex !== null) ? $maxOrderIndex + 1 : 0;
+        }
+        
         $jpa = $this->model::create($body);
         $isNew = true;
         \Log::info('BasicController save - Creando nuevo registro con ID: ' . $jpa->id);
@@ -459,6 +475,71 @@ class BasicController extends Controller
   public function afterDelete(Model $data)
   {
     return [];
+  }
+
+  public function reorder(Request $request, $id)
+  {
+    try {
+      $targetModel = $this->model::findOrFail($id);
+      $newOrderIndex = $request->input('order_index');
+      $oldOrderIndex = $targetModel->order_index;
+
+      // Si el orden no cambió, no hacer nada
+      if ($oldOrderIndex == $newOrderIndex) {
+        return response()->json([
+          'success' => true,
+          'message' => 'Sin cambios en el orden'
+        ]);
+      }
+
+      // Obtener todos los registros ordenados por order_index
+      $allModels = $this->model::orderBy('order_index', 'asc')->get();
+      
+      // Crear array con los order_index actuales (sin el elemento que se mueve)
+      $otherModels = $allModels->filter(function($model) use ($id) {
+        return $model->id != $id;
+      })->values(); // Reindexar la colección
+
+      // Insertar el modelo objetivo en la nueva posición
+      $reorderedModels = collect();
+      $targetInserted = false;
+      
+      // Si la nueva posición es 0 (al inicio)
+      if ($newOrderIndex == 0) {
+        $reorderedModels->push($targetModel);
+        $targetInserted = true;
+      }
+      
+      foreach ($otherModels as $index => $model) {
+        // Si no hemos insertado el target y llegamos a la posición deseada
+        if (!$targetInserted && $index == $newOrderIndex) {
+          $reorderedModels->push($targetModel);
+          $targetInserted = true;
+        }
+        $reorderedModels->push($model);
+      }
+      
+      // Si no se insertó (nueva posición al final)
+      if (!$targetInserted) {
+        $reorderedModels->push($targetModel);
+      }
+
+      // Actualizar order_index de todos los modelos secuencialmente
+      foreach ($reorderedModels as $index => $model) {
+        $model->order_index = $index;
+        $model->save();
+      }
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Registros reordenados correctamente'
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'message' => 'Error al reordenar registros: ' . $e->getMessage()
+      ], 500);
+    }
   }
 
   public function delete(Request $request, string $id)

@@ -14,9 +14,12 @@ class SliderController extends BasicController
     public $reactView = 'Admin/Sliders';
     public $imageFields = ['bg_image', 'bg_image_mobile', 'image'];
     public $softDeletion = false;
+    public $defaultOrderBy = 'order_index'; // Ordenar por order_index por defecto
 
     public function setReactViewProperties(Request $request)
     {
         return [];
     }
+
+
 }

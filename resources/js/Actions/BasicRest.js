@@ -264,6 +264,48 @@ class BasicRest {
             return null;
         }
     };
+
+    reorder = async (id, orderIndex) => {
+        try {
+            const response = await fetch(`/api/${this.path}/${id}/reorder`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+                },
+                body: JSON.stringify({ order_index: orderIndex })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (this.is_use_notify && result.success) {
+                toast.success("¡Excelente!", {
+                    description: result.message,
+                    duration: 3000,
+                    position: "bottom-center",
+                    richColors: true
+                });
+            }
+            
+            return result;
+        } catch (error) {
+            if (this.is_use_notify) {
+                toast.error("¡Error!", {
+                    description: error.message,
+                    duration: 3000,
+                    position: "bottom-center",
+                    richColors: true
+                });
+            }
+            console.error('Error reordering:', error);
+            return false;
+        }
+    };
 }
 
 export default BasicRest;

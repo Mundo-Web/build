@@ -7,7 +7,7 @@ import { Toaster } from 'sonner';
 
 const fillableRest = new FillableRest()
 
-const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar, masterDetail, filterValue, exportable, exportableName, customizeCell = () => { }, onRefresh = () => { } }) => {
+const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar, masterDetail, filterValue, exportable, exportableName, customizeCell = () => { }, onRefresh = () => { }, rowDragging, sorting }) => {
   const modalRef = useRef()
   const [saving, setSaving] = useState(false)
   const [activeModel, setActiveModel] = useState(Fillable.models[0] ?? null)
@@ -37,6 +37,7 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
         load: async (params) => {
           const data = await rest.paginate({
             ...params,
+            requireTotalCount: true,
             // _token: $('[name="csrf_token"]').attr('content')
           })
           onRefresh(data)
@@ -129,6 +130,8 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
       },
       columns,
       masterDetail,
+      rowDragging,
+      sorting,
       onContentReady: (...props) => {
         tippy('.tippy-here', { arrow: true, animation: 'scale' })
       }

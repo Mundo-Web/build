@@ -25,6 +25,7 @@ class Slider extends Model
         'button_link',
         'visible',
         'status',
+        'order_index',
     ];
 
     protected $casts = [
