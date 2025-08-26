@@ -293,6 +293,17 @@ const Items = ({ categories, brands, collections, stores }) => {
         for (const key in request) {
             if (key === 'features' || key === 'specifications') {
                 formData.append(key, JSON.stringify(request[key]));
+            } else if (key === 'tags') {
+                // Asegurar que tags sea un array
+                const tagsValue = request[key];
+                if (Array.isArray(tagsValue)) {
+                    tagsValue.forEach((tag, index) => {
+                        formData.append(`tags[${index}]`, tag);
+                    });
+                } else if (tagsValue) {
+                    // Si no es array pero tiene valor, convertir a array
+                    formData.append('tags[0]', tagsValue);
+                }
             } else {
                 formData.append(key, request[key]);
             }

@@ -119,7 +119,14 @@ class Item extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'item_tags', 'item_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'item_tags', 'item_id', 'tag_id')
+                    ->where('status', true)
+                    ->where(function($query) {
+                        $query->where('tag_type', 'item')
+                              ->orWhereNull('tag_type');
+                    })
+                    ->whereNotNull('name')
+                    ->where('name', '!=', '');
     }
 
     public function combos()

@@ -29,6 +29,7 @@ class ItemController extends BasicController
     public $imageFields = ['image', 'banner', 'texture', 'pdf'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
+    public $with4get = ['tags'];
 
     public function mediaGallery(Request $request, string $uuid)
     {
@@ -177,6 +178,10 @@ class ItemController extends BasicController
                 }
             }
 
+            // Llamar al método afterSave para procesar tags y otros elementos
+            $isNew = !$request->has('id') || empty($request->input('id'));
+            $this->afterSave($request, $item, $isNew);
+
             DB::commit();
             return response(['message' => 'Elemento guardado correctamente'], 200);
         } catch (\Exception $e) {
@@ -224,7 +229,7 @@ class ItemController extends BasicController
     public function setPaginationInstance(Request $request, string $model)
     {
         return $model::select(['items.*'])
-            ->with(['category', 'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features'])
+            ->with(['category','tags' ,'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features'])
             ->leftJoin('categories AS category', 'category.id', 'items.category_id');
     }
 
@@ -232,7 +237,15 @@ class ItemController extends BasicController
 
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
     {
-        $tags = explode(',', $request->tags ?? '');
+        // Manejar tags como array o string separada por comas
+        $tags = $request->input('tags', []);
+        if (is_string($tags)) {
+            $tags = explode(',', $tags);
+        }
+        // Filtrar valores vacíos
+        $tags = array_filter($tags, function($tag) {
+            return !empty(trim($tag));
+        });
 
         DB::transaction(function () use ($jpa, $tags, $request) {
             // Manejo de Tags

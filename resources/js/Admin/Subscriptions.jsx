@@ -21,8 +21,8 @@ const Subscriptions = () => {
 
   const onDeleteClicked = async (id) => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Eliminar subscripcion',
-      text: '¿Estas seguro de eliminar esta subscripcion?',
+      title: 'Eliminar suscripción',
+      text: '¿Estas seguro de eliminar esta suscripción?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Si, eliminar',
