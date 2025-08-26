@@ -128,7 +128,7 @@ const TopBarPages = ({ items, data, pages = [] }) => {
           )}
          </ul>
         </div>
-        <p className="hidden md:block text-xs">{data.isCopyright ?
+        <p className="hidden md:block text-xs">{data?.isCopyright ?
           ` Copyright © ${new Date().getFullYear()} ${Global.APP_NAME}. Reservados todos los derechos.`
           : <AnimatedCintillo />}</p>
 
