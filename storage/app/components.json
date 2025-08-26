@@ -532,8 +532,10 @@
                         "bg_image",
                         "bg_image_mobile",
                         "button_text",
-                        "button_link"
+                        "button_link",
+                        "order_index"
                     ]
+                    
                 },
                  "generals": [
                     "phone_whatsapp",

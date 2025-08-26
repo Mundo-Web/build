@@ -157,8 +157,11 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     const isDragging = useRef(false);
     const startX = useRef(0);
     const currentTranslate = useRef(0);
-
-    const duplicatedItems = [items[items.length - 1], ...items, items[0]];
+    console.log("sliders",items)
+    
+    // Ordenar items por order_index de menor a mayor antes de reasignar índices
+    const sortedItems = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
+    const duplicatedItems = [sortedItems[sortedItems.length - 1], ...sortedItems, sortedItems[0]];
     const validAlignments = ["center", "left", "right"];
     const validPosition = ["yes", "true", "si"];
     const showPagination = validAlignments.includes(data?.paginationAlignment);
@@ -322,7 +325,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         buttonsRef.current.forEach((button) => {
             if (button) adjustTextColor(button);
         });
-    }, [items]);
+    }, [sortedItems]);
 
     // Estado para saber si la imagen actual es oscura
     const [isDarkBg, setIsDarkBg] = useState(false);
@@ -538,7 +541,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                     : "left-1/2 transform -translate-x-1/2"
                             }`}
                         >
-                            {items.map((_, index) => (
+                            {sortedItems.map((_, index) => (
                                 <div
                                     key={`dot-${index}`}
                                     className={`inline-flex mx-1 w-3 h-3 rounded-full ${
