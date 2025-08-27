@@ -387,7 +387,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                     {duplicatedItems.map((item, index) => (
                         <div
                             key={`slide-${index}`}
-                            className="w-full h-[589px] lg:h-auto  flex-shrink-0 relative"
+                            className="w-full h-[calc(100dvh-20dvh)] lg:h-auto  flex-shrink-0 relative"
                         >
                            <AnimatePresence>
                                 {currentIndex === index && (
