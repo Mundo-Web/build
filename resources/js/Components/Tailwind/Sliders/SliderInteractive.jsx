@@ -428,7 +428,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                           )}
 
 
-                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[530px] md:h-[600px] flex flex-col items-start justify-end md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}>
+                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}>
                                 <AnimatePresence mode="wait">
                                     <motion.div 
                                         key={`content-${currentIndex}-${item.name}`}
@@ -436,9 +436,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                         initial="initial"
                                         animate="animate"
                                         exit="exit"
-                                        className="flex flex-col gap-5 lg:gap-10 items-start"
+                                        className="flex flex-col gap-5 lg:gap-10 h-full lg:h-auto py-20 lg:py-0 items-start justify-between lg:justify-normal lg:items-start"
                                     >
-                                        <motion.h2
+                                       <div>
+                                         <motion.h2
                                             variants={titleVariants}
                                             className={`${Global.APP_CORRELATIVE==="stechperu" ?"w-9/12  md:w-full md:max-w-md " :"w-full  md:w-full md:max-w-lg "} font-title text-[40px] leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_title}`}
                                             style={{
@@ -456,6 +457,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                         >
                                             {item.description}
                                         </motion.p>
+                                       </div>
                                         {item.button_text && item.button_link && (
                                             <motion.div 
                                                 variants={buttonsVariants}
