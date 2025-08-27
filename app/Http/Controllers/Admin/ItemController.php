@@ -70,8 +70,11 @@ class ItemController extends BasicController
                 'discount' => 'nullable|numeric',
                 'tags' => 'nullable|array',
                 'description' => 'nullable|string',
+                'weight' => 'nullable|numeric',
+               
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+           
                 'gallery' => 'nullable|array',
                 'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'gallery_ids' => 'nullable|array',
@@ -87,12 +90,19 @@ class ItemController extends BasicController
                     'category_id' => $request->input('category_id'),
                     'subcategory_id' => $request->input('subcategory_id'),
                     'brand_id' => $request->input('brand_id'),
+                    'collection_id' => $request->input('collection_id'),
+                    'store_id' => $request->input('store_id'),
                     'name' => $request->input('name'),
+                    'sku' => $request->input('sku'),
+                    'color' => $request->input('color'),
+                    'size' => $request->input('size'),
                     'summary' => $request->input('summary'),
                     'price' => $request->input('price'),
-                     'weight' => $request->input('weight'),
                     'discount' => $request->input('discount'),
                     'description' => $request->input('description'),
+                    'weight' => $request->input('weight'),
+                    'stock' => $request->input('stock'),
+                    'linkvideo' => $request->input('linkvideo'),
                 ]
             );
 
@@ -117,6 +127,44 @@ class ItemController extends BasicController
                 $path = "images/{$snake_case}/{$uuid}.{$ext}";
                 Storage::put($path, file_get_contents($full));
                 $item->banner = "{$uuid}.{$ext}";
+                $item->save();
+            }
+
+            // Guardar la textura
+            if ($request->hasFile('texture')) {
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+                $full = $request->file("texture");
+                $uuid = Crypto::randomUUID();
+                $ext = $full->getClientOriginalExtension();
+                $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                Storage::put($path, file_get_contents($full));
+                $item->texture = "{$uuid}.{$ext}";
+                $item->save();
+            }
+
+            // Guardar el PDF
+            if ($request->hasFile('pdf')) {
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+                $full = $request->file("pdf");
+                $uuid = Crypto::randomUUID();
+                $ext = $full->getClientOriginalExtension();
+                $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                Storage::put($path, file_get_contents($full));
+                $item->pdf = "{$uuid}.{$ext}";
+                $item->save();
+            }
+
+            // Manejar eliminación de archivos
+            if ($request->has('image_delete') && $request->input('image_delete') === 'DELETE') {
+                $item->image = null;
+                $item->save();
+            }
+            if ($request->has('banner_delete') && $request->input('banner_delete') === 'DELETE') {
+                $item->banner = null;
+                $item->save();
+            }
+            if ($request->has('texture_delete') && $request->input('texture_delete') === 'DELETE') {
+                $item->texture = null;
                 $item->save();
             }
 

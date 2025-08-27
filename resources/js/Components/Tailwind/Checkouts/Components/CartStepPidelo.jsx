@@ -351,7 +351,7 @@ export default function CartStepPidelo({
                         </div>
                     )}
                     
-                    <div className="flex justify-between">
+                    {/*<div className="flex justify-between">
                         <span className="customtext-neutral-dark">
                             Envío
                             {
@@ -362,7 +362,7 @@ export default function CartStepPidelo({
                             }
                         </span>
                         <span className="font-semibold">{CurrencySymbol()}{Number2Currency(envio)}</span>
-                    </div>
+                    </div> */}
                     
                     {/* Estado de carga de descuentos */}
                     {isLoadingDiscounts && (
