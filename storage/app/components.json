@@ -518,6 +518,7 @@
                     "showNavigation",
                     "imageBgPosition",
                     "overlayMobile",
+                    "overlayMobileDark",
                     "whatsapp_info",
                     "class_button_primary",
                     "class_icon_primary",

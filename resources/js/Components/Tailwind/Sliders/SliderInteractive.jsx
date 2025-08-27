@@ -423,6 +423,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                           {data?.overlayMobile && (
                               <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
                           )}
+                            {data?.overlayMobileDark && (
+                              <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
+                          )}
+
 
                             <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[530px] md:h-[600px] flex flex-col items-start justify-end md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}>
                                 <AnimatePresence mode="wait">
