@@ -90,6 +90,7 @@ class ItemController extends BasicController
                     'name' => $request->input('name'),
                     'summary' => $request->input('summary'),
                     'price' => $request->input('price'),
+                     'weight' => $request->input('weight'),
                     'discount' => $request->input('discount'),
                     'description' => $request->input('description'),
                 ]

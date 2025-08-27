@@ -1,10 +1,11 @@
 import React from "react";
 
+
 const CheckoutCulqi = React.lazy(() => import("./Checkouts/CheckoutCulqi"));
 const CheckoutKuchara = React.lazy(() => import("./Checkouts/CheckoutKuchara"));
 const CheckoutSteps = React.lazy(() => import("./Checkouts/CheckoutSteps"));
 const CheckoutStepsSF = React.lazy(() => import("./Checkouts/CheckoutStepsSF"));
-
+const CheckoutStepsPidelo = React.lazy(() => import("./Checkouts/CheckoutStepsPidelo"));
 const Checkout = ({
     which,
     data,
@@ -37,6 +38,19 @@ const Checkout = ({
             case "CheckoutSteps":
                 return (
                     <CheckoutSteps
+                        data={data}
+                        cart={cart}
+                        setCart={setCart}
+                        user={isUser}
+                        ubigeos={ubigeos}
+                        items={items}
+                        generals={generals}
+                        categorias={categorias}
+                    />
+                );
+             case "CheckoutStepsPidelo":
+                return (
+                    <CheckoutStepsPidelo
                         data={data}
                         cart={cart}
                         setCart={setCart}

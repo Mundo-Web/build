@@ -70,6 +70,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             'talla' => ['size', 'talla', 'size_talla'],
             'agrupador' => ['agrupador'],
             'tienda' => ['tienda', 'store', 'store_id', 'Tienda'],
+            'peso' => ['peso', 'weight','Peso'],
             'especificaciones_principales' => [
                 'especificaciones_principales_separadas_por_comas',
                 'especificaciones_principales_separadas_por_coma',
@@ -161,10 +162,16 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             $nombreProducto = $this->getFieldValue($row, 'nombre_producto');
             
             // Debug temporal - agregar logging
+            $pesoValue = $this->getFieldValue($row, 'peso');
+            $pesoNumeric = $this->getNumericValue($row, 'peso', 0);
+            
             Log::info("Procesando fila:", [
                 'sku_encontrado' => $sku,
                 'nombre_encontrado' => $nombreProducto,
+                'peso_raw' => $pesoValue,
+                'peso_numeric' => $pesoNumeric,
                 'campos_disponibles' => array_keys($row),
+                'mapeo_peso' => $this->fieldMappings['peso'] ?? 'no definido',
                 'mapeo_nombre' => $this->fieldMappings['nombre_producto'] ?? 'no definido'
             ]);
             
@@ -267,8 +274,16 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'image' => $this->getMainImage($row, 'sku'),
                 'slug' => $slug,
                 'stock' => $this->getNumericValue($row, 'stock', 10),
+                'weight' => $this->getNumericValue($row, 'peso', 0),
                 'pdf' => $this->getPdfFile($sku),
             ];
+            
+            // Debug: verificar datos antes de crear el item
+            Log::info("Datos del item antes de crear:", [
+                'sku' => $sku,
+                'weight_en_itemData' => $itemData['weight'],
+                'itemData_completo' => $itemData
+            ]);
 
             // Agregar campos opcionales si existen
             if ($this->hasField($row, 'color')) {

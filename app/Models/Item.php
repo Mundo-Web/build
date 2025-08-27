@@ -46,6 +46,7 @@ class Item extends Model
         'linkvideo',
         'size',
         'grouper',
+        'weight',
         'store_id'
     ];
 

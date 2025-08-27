@@ -2196,6 +2196,20 @@
                     "importation_derecho_arancelario_descripcion"
                 ]
             },
+              {
+                "id": "CheckoutStepsPidelo",
+                "name": "StepsPidelo",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "generals":[
+                    "importation_flete",
+                    "importation_seguro",
+                    "importation_derecho_arancelario",
+                    "importation_derecho_arancelario_descripcion"
+                ]
+            },
             {
                 "id": "CheckoutStepsSF",
                 "name": "StepsSF",

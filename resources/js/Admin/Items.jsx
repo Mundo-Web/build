@@ -61,6 +61,7 @@ const Items = ({ categories, brands, collections, stores }) => {
 
     const featuresRef = useRef([]);
     const specificationsRef = useRef([]);
+    const weightRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -191,7 +192,7 @@ const Items = ({ categories, brands, collections, stores }) => {
         linkvideoRef.current.value = data?.linkvideo || "";
         priceRef.current.value = data?.price || 0;
         discountRef.current.value = data?.discount || 0;
-
+        weightRef.current.value = data?.weight || 0;
 
 
         SetSelectValue(tagsRef.current, data?.tags ?? [], "id", "name");
@@ -283,6 +284,7 @@ const Items = ({ categories, brands, collections, stores }) => {
             features: cleanFeatures,
             specifications: cleanSpecs,
             linkvideo: linkvideoRef.current.value,
+            weight: weightRef.current.value || 0,
             store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
         };
 
@@ -584,6 +586,12 @@ const Items = ({ categories, brands, collections, stores }) => {
                             );
                         },
                     },
+                    Fillable.has('items', 'weight') && {
+                        dataField: "weight",
+                        caption: "Peso",
+                        dataType: "number",
+                        width: "75px",
+                    },
                     {
                         dataField: "image",
                         caption: "Imagen",
@@ -881,6 +889,14 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                         label="Talla"
                                                         required
                                                         hidden={!Fillable.has('items', 'size')}
+                                                    />
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <InputFormGroup
+                                                        eRef={weightRef}
+                                                        label="Peso"
+                                                        
+                                                        hidden={!Fillable.has('items', 'weight')}
                                                     />
                                                 </div>
                                             </div>
