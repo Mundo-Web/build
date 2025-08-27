@@ -319,6 +319,22 @@ export default function CartStepPidelo({
                         </div>
                     }
                     
+                    {/* Mostrar flete */}
+                    {fleteTotal > 0 && (
+                        <div className="flex justify-between">
+                            <span className="customtext-neutral-dark">
+                                Flete
+                                {
+                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span className="font-semibold">{CurrencySymbol()}{Number2Currency(fleteTotal)}</span>
+                        </div>
+                    )}
+                    
                     {/* Derecho Arancelario Simplificado */}
                     {derechoArancelarioTotal > 0 && (
                         <div className="flex justify-between">

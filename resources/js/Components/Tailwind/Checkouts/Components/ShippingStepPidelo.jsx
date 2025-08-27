@@ -1382,6 +1382,22 @@ export default function ShippingStepPidelo({
                         </div>
                     }
                     
+                    {/* Flete */}
+                    {fleteTotal > 0 && (
+                        <div className="flex justify-between">
+                            <span>
+                                Flete
+                                {
+                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(fleteTotal))}</span>
+                        </div>
+                    )}
+                    
                     {/* Derecho Arancelario Simplificado */}
                     {
                         Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 &&

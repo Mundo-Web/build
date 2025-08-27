@@ -90,28 +90,30 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     // Seguro de importación (sobre subtotal con descuentos)
     const seguroImportacion = (Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) || 0) / 100;
     const seguroImportacionTotal = subTotalConDescuentos * seguroImportacion;
-    
+
+    // Debug logs para verificar cálculos
+    console.log('=== DEBUG CÁLCULOS ===');
+    console.log('subTotalConDescuentos:', subTotalConDescuentos);
+    console.log('seguroImportacion rate:', seguroImportacion);
+    console.log('seguroImportacionTotal:', seguroImportacionTotal);
+    console.log('fleteTotal:', fleteTotal);
+
     // 4. CIF (Cost, Insurance, Freight) = Subtotal con descuentos + Flete + Seguro
     const valorCIF = parseFloat(subTotalConDescuentos) + parseFloat(fleteTotal) + parseFloat(seguroImportacionTotal);
-    
+    console.log('valorCIF:', valorCIF);
+
     // 5. Derecho Arancelario sobre el valor CIF
-    // ADV: 4% (sobre CIF)
-    const advRate = 4 / 100;
-    const advTotal = valorCIF * advRate;
+    // Obtener el porcentaje de derecho arancelario desde generals
+    const derechoArancelarioRate = (Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) || 0) / 100;
+    const derechoArancelarioTotal = valorCIF * derechoArancelarioRate;
+    console.log('derechoArancelarioRate:', derechoArancelarioRate);
+    console.log('derechoArancelarioTotal:', derechoArancelarioTotal);
+    console.log('=== FIN DEBUG ===');
     
-    // Base para IGV e IPM = CIF + ADV
-    const baseIgvIpm = valorCIF + advTotal;
-    
-    // IGV: 16% (sobre CIF + ADV)
-    const igvRate = 16 / 100;
-    const igvTotal = baseIgvIpm * igvRate;
-    
-    // IPM: 2% (sobre CIF + ADV)
-    const ipmRate = 2 / 100;
-    const ipmTotal = baseIgvIpm * ipmRate;
-    
-    // Total Derecho Arancelario
-    const derechoArancelarioTotal = advTotal + igvTotal + ipmTotal;
+    // Variables individuales para compatibilidad (ahora todo está en derechoArancelarioTotal)
+    const advTotal = derechoArancelarioTotal; // Para compatibilidad con componentes existentes
+    const igvTotal = 0; // Ya no se calcula por separado
+    const ipmTotal = 0; // Ya no se calcula por separado
     
     // 6. Total Final = Subtotal con descuentos + Derecho Arancelario + Envío
     const totalFinal = subTotalConDescuentos + derechoArancelarioTotal + parseFloat(envio);
@@ -120,11 +122,11 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const totalWithoutDiscounts = subTotal + parseFloat(envio) + parseFloat(seguroImportacionTotal) + parseFloat(derechoArancelarioTotal);
     
     // Variables individuales para mostrar en el resumen
-    const igv = igvTotal; // Para mostrar en el resumen
+    const igv = igvTotal; // Para mostrar en el resumen (ahora 0)
     const fleteDisplay = fleteTotal;
     const seguroDisplay = seguroImportacionTotal;
-    const advDisplay = advTotal;
-    const ipmDisplay = ipmTotal;
+    const advDisplay = derechoArancelarioTotal; // Mostrar el derecho arancelario total
+    const ipmDisplay = ipmTotal; // Para mostrar en el resumen (ahora 0)
     
     const [sale, setSale] = useState([]);
     const [code, setCode] = useState([]);
