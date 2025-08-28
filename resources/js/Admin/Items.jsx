@@ -147,15 +147,8 @@ const Items = ({ categories, brands, collections, stores }) => {
 
     /*************************/
 
-    useEffect(() => {
-        if (itemData && itemData.images) {
-            const existingImages = itemData.images.map((img) => ({
-                id: img.id, // ID de la imagen en la BD
-                url: `/storage/images/item/${img.url}`, // Ruta de la imagen almacenada
-            }));
-            setGallery(existingImages);
-        }
-    }, [itemData]);
+    // Eliminado useEffect duplicado que causaba la duplicación de imágenes
+    // La carga de imágenes se maneja directamente en onModalOpen
 
     const onModalOpen = (data) => {
 

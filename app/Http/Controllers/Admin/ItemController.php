@@ -335,17 +335,8 @@ class ItemController extends BasicController
                 ]);
             }
         });
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $file) {
-                if (!$file) continue;
-
-                $imageRequest = new Request();
-                $imageRequest->replace(['item_id' => $jpa->id]);
-                $imageRequest->files->set('url', $file);
-
-                (new ItemImageController())->save($imageRequest);
-            }
-        }
+        
+        // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
 
         // Decodificar features y specifications
         $features = json_decode($request->input('features'), true);
