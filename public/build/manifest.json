@@ -1478,7 +1478,7 @@
     ]
   },
   "resources/js/Admin/BlogCategories.jsx": {
-    "file": "assets/BlogCategories-DiAvu4ms.js",
+    "file": "assets/BlogCategories-BBiKT1cc.js",
     "name": "BlogCategories",
     "src": "resources/js/Admin/BlogCategories.jsx",
     "isEntry": true,
@@ -1492,6 +1492,7 @@
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_BlogCategoriesRest-YDkx9Ajz.js",
       "_ImageFormGroup-DkVgPNU5.js",
+      "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
       "_Table-CvbvbA3m.js",
       "_DxButton-DV0H-ZcL.js",
@@ -1564,7 +1565,7 @@
     ]
   },
   "resources/js/Admin/Categories.jsx": {
-    "file": "assets/Categories-Qq3BDSma.js",
+    "file": "assets/Categories-Ce91UtX-.js",
     "name": "Categories",
     "src": "resources/js/Admin/Categories.jsx",
     "isEntry": true,
@@ -1583,6 +1584,7 @@
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-C2S32NoH.js",
       "_ReactAppend-Vm5G2nof.js",
+      "_InputFormGroup-iZIO11ZN.js",
       "_index-yBjzXJbu.js",
       "_Global-DWbVqTT_.js",
       "_tippy-react.esm-DmkRJDEW.js",

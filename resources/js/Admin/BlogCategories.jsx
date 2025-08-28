@@ -292,7 +292,7 @@ const BlogCategories = () => {
             >
                 <input ref={idRef} type="hidden" />
                 <div className="row" id="categories-container">
-                    <div className="col-md-6">
+                    <div className="col-md-6" hidden={!Fillable.has('blog_categories', 'banner') && !Fillable.has('blog_categories', 'image')}>
                         <ImageFormGroup
                             eRef={bannerRef}
                             name="banner"
@@ -311,8 +311,8 @@ const BlogCategories = () => {
                         />
 
                     </div>
-                    <div className="col-md-6">
-                        <TextareaFormGroup
+                    <div className={!Fillable.has('blog_categories', 'banner') && !Fillable.has('blog_categories', 'image') ? 'col-md-12' : 'col-md-6'}>
+                        <InputFormGroup
                             eRef={nameRef}
                             label="Categoría"
                             rows={2}
