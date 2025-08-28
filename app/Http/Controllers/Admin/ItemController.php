@@ -83,15 +83,36 @@ class ItemController extends BasicController
                 'deleted_images.*' => 'nullable|string',
             ]);
 
+            // Procesar campos que pueden ser null
+            $storeId = $request->input('store_id');
+            if ($storeId === '' || $storeId === 'null' || $storeId === null) {
+                $storeId = null;
+            }
+            
+            $collectionId = $request->input('collection_id');
+            if ($collectionId === '' || $collectionId === 'null' || $collectionId === null) {
+                $collectionId = null;
+            }
+            
+            $subcategoryId = $request->input('subcategory_id');
+            if ($subcategoryId === '' || $subcategoryId === 'null' || $subcategoryId === null) {
+                $subcategoryId = null;
+            }
+            
+            $brandId = $request->input('brand_id');
+            if ($brandId === '' || $brandId === 'null' || $brandId === null) {
+                $brandId = null;
+            }
+
             // Crear o actualizar el elemento
             $item = Item::updateOrCreate(
                 ['id' => $request->input('id')],
                 [
                     'category_id' => $request->input('category_id'),
-                    'subcategory_id' => $request->input('subcategory_id'),
-                    'brand_id' => $request->input('brand_id'),
-                    'collection_id' => $request->input('collection_id'),
-                    'store_id' => $request->input('store_id'),
+                    'subcategory_id' => $subcategoryId,
+                    'brand_id' => $brandId,
+                    'collection_id' => $collectionId,
+                    'store_id' => $storeId,
                     'name' => $request->input('name'),
                     'sku' => $request->input('sku'),
                     'color' => $request->input('color'),
