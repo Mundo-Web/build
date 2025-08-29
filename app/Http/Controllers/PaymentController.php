@@ -181,6 +181,7 @@ class PaymentController extends Controller
                                     return [
                                         'id' => $comboItem->id,
                                         'name' => $comboItem->name,
+                                        'sku' => $comboItem->sku,
                                         'quantity' => $comboItem->pivot->quantity,
                                         'is_main_item' => $comboItem->pivot->is_main_item
                                     ];

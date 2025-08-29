@@ -305,6 +305,7 @@ class SaleController extends BasicController
                         return [
                             'id' => $item->id,
                             'name' => $item->name,
+                            'sku' => $item->sku,
                             'quantity' => $item->pivot->quantity,
                             'is_main_item' => $item->pivot->is_main_item
                         ];
@@ -494,6 +495,7 @@ class SaleController extends BasicController
                                 return [
                                     'id' => $comboItem->id,
                                     'name' => $comboItem->name,
+                                    'sku' => $comboItem->sku,
                                     'quantity' => $comboItem->pivot->quantity,
                                     'is_main_item' => $comboItem->pivot->is_main_item
                                 ];

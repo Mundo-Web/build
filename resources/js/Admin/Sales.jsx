@@ -13,6 +13,7 @@ import Modal from "../Components/Adminto/Modal";
 import Tippy from "@tippyjs/react";
 import SaleStatusesRest from "../Actions/Admin/SaleStatusesRest";
 import SaleExportRest from "../Actions/Admin/SaleExportRest";
+import SalesConfigRest from "../Actions/Admin/SalesConfigRest";
 import * as XLSX from 'xlsx';
 import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import { renderToString } from "react-dom/server";
@@ -20,8 +21,9 @@ import { renderToString } from "react-dom/server";
 const salesRest = new SalesRest();
 const saleStatusesRest = new SaleStatusesRest();
 const saleExportRest = new SaleExportRest();
+const salesConfigRest = new SalesConfigRest();
 
-const Sales = ({ statuses = [] }) => {
+const Sales = ({ statuses = [], hasRootRole = false }) => {
     const gridRef = useRef();
     const notifyClientRef = useRef()
     const modalRef = useRef();
@@ -109,10 +111,6 @@ const Sales = ({ statuses = [] }) => {
     const onModalOpen = async (saleId) => {
         notifyClientRef.current.checked = true
         const newSale = await salesRest.get(saleId);
-        console.log("Sale data loaded:", newSale.data); // Debug: ver todos los datos que llegan
-        console.log("Status data:", newSale.data.status); // Debug: ver estado específico
-        console.log("Status reversible:", newSale.data.status?.reversible); // Debug: ver reversible
-        console.log("All statuses:", statuses); // Debug: ver todos los estados disponibles
         setSaleLoaded(newSale.data);
         
         // Cargar el historial de estados usando la nueva API
@@ -131,6 +129,136 @@ const Sales = ({ statuses = [] }) => {
         endDate: '',
         status: ''
     });
+    const [showConfigModal, setShowConfigModal] = useState(false);
+    const configModalRef = useRef();
+    const [exportConfig, setExportConfig] = useState({});
+
+
+    // Cargar configuración de exportación al montar el componente
+    useEffect(() => {
+        if (hasRootRole) {
+            loadExportConfig();
+        }
+    }, [hasRootRole]);
+
+    // Monitorear cambios en exportConfig
+    useEffect(() => {
+        // Configuración cargada
+    }, [exportConfig]);
+
+    const loadExportConfig = async () => {
+        try {
+            const result = await salesConfigRest.getExportConfig();
+            
+            if (result && result.data && result.data.success && result.data.config) {
+                // Usar exactamente la configuración guardada, respetando los campos en false
+                setExportConfig(result.data.config);
+            } else {
+                // Si no hay configuración guardada, usar configuración vacía
+                // La lógica de exportación manejará este caso
+                setExportConfig({});
+            }
+        } catch (error) {
+            console.error('Error loading export config:', error);
+            // En caso de error, usar configuración vacía
+            setExportConfig({});
+        }
+    };
+
+    const saveExportConfig = async () => {
+        try {
+            const result = await salesConfigRest.saveExportConfig(exportConfig);
+            if (result && result.success) {
+                $(configModalRef.current).modal('hide');
+                Swal.fire({
+                    title: 'Configuración guardada',
+                    text: 'La configuración de exportación se ha guardado correctamente',
+                    icon: 'success',
+                    timer: 2000
+                });
+            }
+        } catch (error) {
+            console.error('Error saving export config:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo guardar la configuración',
+                icon: 'error'
+            });
+        }
+    };
+
+    // Definir todos los campos exportables organizados por categorías
+    const exportableFields = {
+        // === INFORMACIÓN BÁSICA DE LA VENTA ===
+        'ID_PEDIDO': '📋 ID del Pedido',
+        'FECHA': '📅 Fecha de Venta',
+        'ESTADO': '🔄 Estado de la Venta',
+        'REFERENCIA': '🔗 Referencia',
+        'COMENTARIO': '💬 Comentarios',
+        'UBIGEO': '📍 Código Ubigeo',
+        
+        // === INFORMACIÓN DEL CLIENTE ===
+        'CLIENTE_NOMBRES': '👤 Nombres del Cliente',
+        'CLIENTE_EMAIL': '📧 Email del Cliente',
+        'CLIENTE_TELEFONO': '📞 Teléfono del Cliente',
+        'TIPO_DOCUMENTO': '🆔 Tipo de Documento',
+        'NUMERO_DOCUMENTO': '🔢 Número de Documento',
+        'RAZON_SOCIAL': '🏢 Razón Social',
+        
+        // === INFORMACIÓN DE FACTURACIÓN ===
+        'TIPO_COMPROBANTE': '📄 Tipo de Comprobante',
+        'METODO_PAGO': '💳 Método de Pago',
+        'ID_TRANSACCION': '🔐 ID de Transacción',
+        'ESTADO_PAGO': '💰 Estado del Pago',
+        
+        // === INFORMACIÓN DE ENTREGA ===
+        'TIPO_ENTREGA': '🚚 Tipo de Entrega',
+        'DIRECCION_ENTREGA': '📍 Dirección de Entrega',
+        'TIENDA_RETIRO': '🏪 Tienda de Retiro',
+        'DIRECCION_TIENDA': '📍 Dirección de Tienda',
+        'TELEFONO_TIENDA': '📞 Teléfono de Tienda',
+        'HORARIO_TIENDA': '🕐 Horario de Tienda',
+        
+        // === INFORMACIÓN DEL PRODUCTO ===
+        'PRODUCTO_NOMBRE': '🛍️ Nombre del Producto',
+        'PRODUCTO_SKU': '🏷️ SKU del Producto',
+        'PRODUCTO_PRECIO_UNITARIO': '💵 Precio Unitario',
+        'PRODUCTO_CANTIDAD': '🔢 Cantidad',
+        'PRODUCTO_SUBTOTAL': '💲 Subtotal del Producto',
+        'PRODUCTO_TIPO': '📦 Tipo de Producto',
+        'PRODUCTO_COLORES': '🎨 Colores del Producto',
+        
+        // === INFORMACIÓN DE COMBOS ===
+        'PRODUCTO_COMBO_ORIGINAL': '📦 Producto Combo Original',
+        'PRODUCTO_COMBO_PRECIO_ORIGINAL': '💰 Precio Original del Combo',
+        'PRODUCTO_COMBO_DESCUENTO_APLICADO': '🏷️ Descuento Aplicado al Combo',
+        'PRODUCTO_COMBO_ITEMS': '📋 Items del Combo',
+        
+        // === TOTALES Y COSTOS DE LA VENTA ===
+        'VENTA_SUBTOTAL': '💰 Subtotal de la Venta',
+        'VENTA_COSTO_ENVIO': '🚚 Costo de Envío',
+        'VENTA_SEGURO_IMPORTACION': '🛡️ Seguro de Importación',
+        'VENTA_DERECHO_ARANCELARIO': '📊 Derecho Arancelario',
+        'VENTA_FLETE_TOTAL': '🚢 Flete Total',
+        'VENTA_TOTAL_FINAL': '💯 Total Final',
+        
+        // === DESCUENTOS Y PROMOCIONES ===
+        'VENTA_DESCUENTO_PAQUETE': '📦 Descuento por Paquete',
+        'VENTA_DESCUENTO_RENOVACION': '🔄 Descuento por Renovación',
+        'VENTA_DESCUENTO_CUPON': '🎫 Descuento por Cupón',
+        'VENTA_CODIGO_CUPON': '🎟️ Código de Cupón',
+        'VENTA_DESCUENTO_PROMOCION': '🎉 Descuento por Promoción',
+        'VENTA_PROMOCIONES_APLICADAS': '🎊 Promociones Aplicadas',
+        
+        // === INDICADORES DE FILA ===
+        'PRODUCTO_NUMERO': '🔢 Número de Producto en la Venta',
+        'TOTAL_PRODUCTOS_EN_VENTA': '📊 Total de Productos en Venta',
+        'ES_PRIMER_PRODUCTO': '🥇 Es Primer Producto',
+        'ES_ULTIMO_PRODUCTO': '🏁 Es Último Producto',
+        'ES_COMBO_ITEM': '📦 Es Item de Combo',
+        'COMBO_ITEM_NUMERO': '🔢 Número de Item en Combo',
+        'TOTAL_ITEMS_EN_COMBO': '📊 Total de Items en Combo'
+    };
 
     const showExportModal = () => {
         Swal.fire({
@@ -229,6 +357,19 @@ const Sales = ({ statuses = [] }) => {
 
     const exportToExcel = async (filters = {}) => {
         try {
+            // Recargar la configuración directamente para asegurar que tenemos la más reciente
+        let currentConfig = exportConfig;
+        if (Object.keys(currentConfig).length === 0) {
+            try {
+                const result = await salesConfigRest.getExportConfig();
+                if (result && result.data && result.data.success && result.data.config) {
+                    currentConfig = result.data.config;
+                }
+            } catch (error) {
+                console.error('Error al recargar configuración:', error);
+            }
+        }
+            
             // Mostrar indicador de carga
             Swal.fire({
                 title: 'Exportando datos...',
@@ -280,71 +421,284 @@ const Sales = ({ statuses = [] }) => {
                 return;
             }
 
+            // Función para calcular precios proporcionales en combos
+            const calculateProportionalPrices = (comboItems, comboFinalPrice, comboOriginalPrice) => {
+                if (!comboItems || comboItems.length === 0) return [];
+                
+                // Calcular precio total original de todos los items
+                const totalOriginalPrice = comboItems.reduce((sum, item) => {
+                    const itemPrice = parseFloat(item.price) || 0;
+                    const itemQuantity = parseInt(item.quantity) || 1;
+                    return sum + (itemPrice * itemQuantity);
+                }, 0);
+                
+                // Si no hay precio original, usar distribución equitativa
+                if (totalOriginalPrice === 0) {
+                    const pricePerItem = comboFinalPrice / comboItems.length;
+                    return comboItems.map(item => ({
+                        ...item,
+                        proportional_price: pricePerItem / (parseInt(item.quantity) || 1)
+                    }));
+                }
+                
+                // Calcular factor de proporción basado en el descuento aplicado
+                const proportionFactor = comboFinalPrice / totalOriginalPrice;
+                
+                return comboItems.map(item => {
+                    const itemPrice = parseFloat(item.price) || 0;
+                    const proportionalPrice = itemPrice * proportionFactor;
+                    return {
+                        ...item,
+                        proportional_price: proportionalPrice
+                    };
+                });
+            };
+
+            // Función auxiliar para filtrar campos según configuración
+            const filterFieldsByConfig = (rowData) => {
+                const filteredData = {};
+                
+                // Mapeo directo: cada columna del Excel se mapea a su correspondiente clave en exportableFields
+                const fieldMapping = {
+                    // Información básica de la venta
+                    'ID_PEDIDO': 'ID_PEDIDO',
+                    'FECHA': 'FECHA',
+                    'ESTADO': 'ESTADO',
+                    'REFERENCIA': 'REFERENCIA',
+                    'COMENTARIO': 'COMENTARIO',
+                    'UBIGEO': 'UBIGEO',
+                    
+                    // Información del cliente
+                    'CLIENTE_NOMBRES': 'CLIENTE_NOMBRES',
+                    'CLIENTE_EMAIL': 'CLIENTE_EMAIL',
+                    'CLIENTE_TELEFONO': 'CLIENTE_TELEFONO',
+                    'TIPO_DOCUMENTO': 'TIPO_DOCUMENTO',
+                    'NUMERO_DOCUMENTO': 'NUMERO_DOCUMENTO',
+                    'RAZON_SOCIAL': 'RAZON_SOCIAL',
+                    
+                    // Información de facturación
+                    'TIPO_COMPROBANTE': 'TIPO_COMPROBANTE',
+                    'METODO_PAGO': 'METODO_PAGO',
+                    'ID_TRANSACCION': 'ID_TRANSACCION',
+                    'ESTADO_PAGO': 'ESTADO_PAGO',
+                    
+                    // Información de entrega
+                    'TIPO_ENTREGA': 'TIPO_ENTREGA',
+                    'DIRECCION_ENTREGA': 'DIRECCION_ENTREGA',
+                    'TIENDA_RETIRO': 'TIENDA_RETIRO',
+                    'DIRECCION_TIENDA': 'DIRECCION_TIENDA',
+                    'TELEFONO_TIENDA': 'TELEFONO_TIENDA',
+                    'HORARIO_TIENDA': 'HORARIO_TIENDA',
+                    
+                    // Información del producto
+                    'PRODUCTO_NOMBRE': 'PRODUCTO_NOMBRE',
+                    'PRODUCTO_SKU': 'PRODUCTO_SKU',
+                    'PRODUCTO_PRECIO_UNITARIO': 'PRODUCTO_PRECIO_UNITARIO',
+                    'PRODUCTO_CANTIDAD': 'PRODUCTO_CANTIDAD',
+                    'PRODUCTO_SUBTOTAL': 'PRODUCTO_SUBTOTAL',
+                    'PRODUCTO_TIPO': 'PRODUCTO_TIPO',
+                    'PRODUCTO_COLORES': 'PRODUCTO_COLORES',
+                    
+                    // Información de combos
+                    'PRODUCTO_COMBO_ORIGINAL': 'PRODUCTO_COMBO_ORIGINAL',
+                    'PRODUCTO_COMBO_PRECIO_ORIGINAL': 'PRODUCTO_COMBO_PRECIO_ORIGINAL',
+                    'PRODUCTO_COMBO_DESCUENTO_APLICADO': 'PRODUCTO_COMBO_DESCUENTO_APLICADO',
+                    'PRODUCTO_COMBO_ITEMS': 'PRODUCTO_COMBO_ITEMS',
+                    
+                    // Totales y costos de la venta
+                    'VENTA_SUBTOTAL': 'VENTA_SUBTOTAL',
+                    'VENTA_COSTO_ENVIO': 'VENTA_COSTO_ENVIO',
+                    'VENTA_SEGURO_IMPORTACION': 'VENTA_SEGURO_IMPORTACION',
+                    'VENTA_DERECHO_ARANCELARIO': 'VENTA_DERECHO_ARANCELARIO',
+                    'VENTA_FLETE_TOTAL': 'VENTA_FLETE_TOTAL',
+                    'VENTA_TOTAL_FINAL': 'VENTA_TOTAL_FINAL',
+                    
+                    // Descuentos y promociones
+                    'VENTA_DESCUENTO_PAQUETE': 'VENTA_DESCUENTO_PAQUETE',
+                    'VENTA_DESCUENTO_RENOVACION': 'VENTA_DESCUENTO_RENOVACION',
+                    'VENTA_DESCUENTO_CUPON': 'VENTA_DESCUENTO_CUPON',
+                    'VENTA_CODIGO_CUPON': 'VENTA_CODIGO_CUPON',
+                    'VENTA_DESCUENTO_PROMOCION': 'VENTA_DESCUENTO_PROMOCION',
+                    'VENTA_PROMOCIONES_APLICADAS': 'VENTA_PROMOCIONES_APLICADAS',
+                    
+                    // Indicadores de fila
+                    'PRODUCTO_NUMERO': 'PRODUCTO_NUMERO',
+                    'TOTAL_PRODUCTOS_EN_VENTA': 'TOTAL_PRODUCTOS_EN_VENTA',
+                    'ES_PRIMER_PRODUCTO': 'ES_PRIMER_PRODUCTO',
+                    'ES_ULTIMO_PRODUCTO': 'ES_ULTIMO_PRODUCTO',
+                    'ES_COMBO_ITEM': 'ES_COMBO_ITEM',
+                    'COMBO_ITEM_NUMERO': 'COMBO_ITEM_NUMERO',
+                    'TOTAL_ITEMS_EN_COMBO': 'TOTAL_ITEMS_EN_COMBO'
+                };
+
+                // Usar la configuración guardada directamente, respetando los campos en false
+                const configToUse = currentConfig || {};
+                
+                Object.keys(rowData).forEach(key => {
+                    const configKey = fieldMapping[key] || key;
+                    // Solo incluir campos que estén explícitamente marcados como true en la configuración
+                    if (configToUse[configKey] === true) {
+                        filteredData[key] = rowData[key];
+                    }
+                });
+                
+                return filteredData;
+            };
+
             // Formatear datos para Excel - Una fila por cada producto de cada venta
             const excelData = [];
+            let globalProductIndex = 0;
             
             salesData.forEach(sale => {
                 // Si la venta tiene productos, crear una fila por cada producto
                 if (sale.details && sale.details.length > 0) {
                     sale.details.forEach((product, productIndex) => {
-                        excelData.push({
-                            'ID_PEDIDO': sale.correlative_code,
-                            'FECHA': sale.created_at,
-                            'ESTADO': sale.status_name,
-                            'CLIENTE_NOMBRES': sale.fullname,
-                            'CLIENTE_EMAIL': sale.email,
-                            'CLIENTE_TELEFONO': sale.phone,
-                            'TIPO_DOCUMENTO': sale.document_type,
-                            'NUMERO_DOCUMENTO': sale.document,
-                            'RAZON_SOCIAL': sale.business_name,
-                            'TIPO_COMPROBANTE': sale.invoice_type,
-                            'METODO_PAGO': sale.payment_method,
-                            'ID_TRANSACCION': sale.culqi_charge_id,
-                            'ESTADO_PAGO': sale.payment_status,
-                            'TIPO_ENTREGA': sale.delivery_type,
-                            'DIRECCION_ENTREGA': sale.full_address,
-                            'TIENDA_RETIRO': sale.store_name,
-                            'DIRECCION_TIENDA': sale.store_address,
-                            'TELEFONO_TIENDA': sale.store_phone,
-                            'HORARIO_TIENDA': sale.store_schedule,
-                            'REFERENCIA': sale.reference,
-                            'COMENTARIO': sale.comment,
-                            'UBIGEO': sale.ubigeo,
+                        // Verificar si es un combo y tiene items para desglosar
+                        if ((product.type === 'combo' || product.combo_id) && product.combo_data && product.combo_data.items && product.combo_data.items.length > 0) {
+                            // Desglosar combo en productos individuales
+                            const comboItems = calculateProportionalPrices(
+                                product.combo_data.items,
+                                parseFloat(product.price) * parseInt(product.quantity),
+                                product.combo_data.original_price || product.price
+                            );
                             
-                            // DETALLES DEL PRODUCTO INDIVIDUAL
-                            'PRODUCTO_NOMBRE': product.name,
-                            'PRODUCTO_PRECIO_UNITARIO': product.price,
-                            'PRODUCTO_CANTIDAD': product.quantity,
-                            'PRODUCTO_SUBTOTAL': product.price * product.quantity,
-                            'PRODUCTO_TIPO': product.type || 'individual',
-                            'PRODUCTO_COLORES': product.colors || '',
-                            'PRODUCTO_COMBO_ITEMS': product.combo_data && product.combo_data.items ? 
-                                product.combo_data.items.map(item => `${item.quantity || 1}x ${item.name}`).join(', ') : '',
+                            comboItems.forEach((comboItem, comboItemIndex) => {
+                                globalProductIndex++;
+                                const itemQuantity = (parseInt(comboItem.quantity) || 1) * parseInt(product.quantity);
+                                const itemUnitPrice = parseFloat(comboItem.proportional_price) || 0;
+                                const itemSubtotal = itemUnitPrice * itemQuantity;
+                                
+                                const rowData = {
+                                    'ID_PEDIDO': sale.correlative_code,
+                                    'FECHA': sale.created_at,
+                                    'ESTADO': sale.status_name,
+                                    'CLIENTE_NOMBRES': sale.fullname,
+                                    'CLIENTE_EMAIL': sale.email,
+                                    'CLIENTE_TELEFONO': sale.phone,
+                                    'TIPO_DOCUMENTO': sale.document_type,
+                                    'NUMERO_DOCUMENTO': sale.document,
+                                    'RAZON_SOCIAL': sale.business_name,
+                                    'TIPO_COMPROBANTE': sale.invoice_type,
+                                    'METODO_PAGO': sale.payment_method,
+                                    'ID_TRANSACCION': sale.culqi_charge_id,
+                                    'ESTADO_PAGO': sale.payment_status,
+                                    'TIPO_ENTREGA': sale.delivery_type,
+                                    'DIRECCION_ENTREGA': sale.full_address,
+                                    'TIENDA_RETIRO': sale.store_name,
+                                    'DIRECCION_TIENDA': sale.store_address,
+                                    'TELEFONO_TIENDA': sale.store_phone,
+                                    'HORARIO_TIENDA': sale.store_schedule,
+                                    'REFERENCIA': sale.reference,
+                                    'COMENTARIO': sale.comment,
+                                    'UBIGEO': sale.ubigeo,
+                                    
+                                    // DETALLES DEL PRODUCTO INDIVIDUAL (del combo desglosado)
+                                    'PRODUCTO_NOMBRE': `${comboItem.name} (de combo: ${product.name})`,
+                                    'PRODUCTO_SKU': comboItem.sku || '',
+                                    'PRODUCTO_PRECIO_UNITARIO': itemUnitPrice.toFixed(2),
+                                    'PRODUCTO_CANTIDAD': itemQuantity,
+                                    'PRODUCTO_SUBTOTAL': itemSubtotal.toFixed(2),
+                                    'PRODUCTO_TIPO': 'combo_item',
+                                    'PRODUCTO_COLORES': comboItem.colors || '',
+                                    'PRODUCTO_COMBO_ORIGINAL': product.name,
+                                    'PRODUCTO_COMBO_PRECIO_ORIGINAL': product.price,
+                                    'PRODUCTO_COMBO_DESCUENTO_APLICADO': ((parseFloat(product.combo_data.original_price || product.price) - parseFloat(product.price)) / parseFloat(product.combo_data.original_price || product.price) * 100).toFixed(2) + '%',
+                                    
+                                    // TOTALES DE LA VENTA (repetidos en cada fila para referencia)
+                                    'VENTA_SUBTOTAL': sale.subtotal,
+                                    'VENTA_COSTO_ENVIO': sale.delivery_cost,
+                                    'VENTA_SEGURO_IMPORTACION': sale.seguro_importacion_total || 0,
+                                    'VENTA_DERECHO_ARANCELARIO': sale.derecho_arancelario_total || 0,
+                                    'VENTA_FLETE_TOTAL': sale.flete_total || 0,
+                                    'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
+                                    'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
+                                    'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
+                                    'VENTA_CODIGO_CUPON': sale.coupon_code,
+                                    'VENTA_DESCUENTO_PROMOCION': sale.promotion_discount,
+                                    'VENTA_PROMOCIONES_APLICADAS': sale.applied_promotions,
+                                    'VENTA_TOTAL_FINAL': sale.total_amount,
+                                    
+                                    // INDICADORES DE FILA
+                                    'PRODUCTO_NUMERO': globalProductIndex,
+                                    'TOTAL_PRODUCTOS_EN_VENTA': sale.details.length,
+                                    'ES_PRIMER_PRODUCTO': globalProductIndex === 1 ? 'SI' : 'NO',
+                                    'ES_COMBO_ITEM': 'SI',
+                                    'COMBO_ITEM_NUMERO': comboItemIndex + 1,
+                                    'TOTAL_ITEMS_EN_COMBO': comboItems.length
+                                };
+                                
+                                // Agregar fila sin filtrar (se filtrará después)
+                                excelData.push(rowData);
+                            });
+                        } else {
+                            // Producto individual normal
+                            globalProductIndex++;
+                            const rowData = {
+                                'ID_PEDIDO': sale.correlative_code,
+                                'FECHA': sale.created_at,
+                                'ESTADO': sale.status_name,
+                                'CLIENTE_NOMBRES': sale.fullname,
+                                'CLIENTE_EMAIL': sale.email,
+                                'CLIENTE_TELEFONO': sale.phone,
+                                'TIPO_DOCUMENTO': sale.document_type,
+                                'NUMERO_DOCUMENTO': sale.document,
+                                'RAZON_SOCIAL': sale.business_name,
+                                'TIPO_COMPROBANTE': sale.invoice_type,
+                                'METODO_PAGO': sale.payment_method,
+                                'ID_TRANSACCION': sale.culqi_charge_id,
+                                'ESTADO_PAGO': sale.payment_status,
+                                'TIPO_ENTREGA': sale.delivery_type,
+                                'DIRECCION_ENTREGA': sale.full_address,
+                                'TIENDA_RETIRO': sale.store_name,
+                                'DIRECCION_TIENDA': sale.store_address,
+                                'TELEFONO_TIENDA': sale.store_phone,
+                                'HORARIO_TIENDA': sale.store_schedule,
+                                'REFERENCIA': sale.reference,
+                                'COMENTARIO': sale.comment,
+                                'UBIGEO': sale.ubigeo,
+                                
+                                // DETALLES DEL PRODUCTO INDIVIDUAL
+                                'PRODUCTO_NOMBRE': product.name,
+                                'PRODUCTO_SKU': product.sku || '',
+                                'PRODUCTO_PRECIO_UNITARIO': product.price,
+                                'PRODUCTO_CANTIDAD': product.quantity,
+                                'PRODUCTO_SUBTOTAL': product.price * product.quantity,
+                                'PRODUCTO_TIPO': product.type || 'individual',
+                                'PRODUCTO_COLORES': product.colors || '',
+                                'PRODUCTO_COMBO_ORIGINAL': '',
+                                'PRODUCTO_COMBO_PRECIO_ORIGINAL': '',
+                                'PRODUCTO_COMBO_DESCUENTO_APLICADO': '',
+                                
+                                // TOTALES DE LA VENTA (repetidos en cada fila para referencia)
+                                'VENTA_SUBTOTAL': sale.subtotal,
+                                'VENTA_COSTO_ENVIO': sale.delivery_cost,
+                                'VENTA_SEGURO_IMPORTACION': sale.seguro_importacion_total || 0,
+                                'VENTA_DERECHO_ARANCELARIO': sale.derecho_arancelario_total || 0,
+                                'VENTA_FLETE_TOTAL': sale.flete_total || 0,
+                                'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
+                                'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
+                                'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
+                                'VENTA_CODIGO_CUPON': sale.coupon_code,
+                                'VENTA_DESCUENTO_PROMOCION': sale.promotion_discount,
+                                'VENTA_PROMOCIONES_APLICADAS': sale.applied_promotions,
+                                'VENTA_TOTAL_FINAL': sale.total_amount,
+                                
+                                // INDICADORES DE FILA
+                                'PRODUCTO_NUMERO': globalProductIndex,
+                                'TOTAL_PRODUCTOS_EN_VENTA': sale.details.length,
+                                'ES_PRIMER_PRODUCTO': globalProductIndex === 1 ? 'SI' : 'NO',
+                                'ES_COMBO_ITEM': 'NO',
+                                'COMBO_ITEM_NUMERO': '',
+                                'TOTAL_ITEMS_EN_COMBO': ''
+                            };
                             
-                            // TOTALES DE LA VENTA (repetidos en cada fila para referencia)
-                            'VENTA_SUBTOTAL': sale.subtotal,
-                            'VENTA_COSTO_ENVIO': sale.delivery_cost,
-                            'VENTA_SEGURO_IMPORTACION': sale.seguro_importacion_total || 0,
-                            'VENTA_DERECHO_ARANCELARIO': sale.derecho_arancelario_total || 0,
-                            'VENTA_FLETE_TOTAL': sale.flete_total || 0,
-                            'VENTA_DESCUENTO_PAQUETE': sale.bundle_discount,
-                            'VENTA_DESCUENTO_RENOVACION': sale.renewal_discount,
-                            'VENTA_DESCUENTO_CUPON': sale.coupon_discount,
-                            'VENTA_CODIGO_CUPON': sale.coupon_code,
-                            'VENTA_DESCUENTO_PROMOCION': sale.promotion_discount,
-                            'VENTA_PROMOCIONES_APLICADAS': sale.applied_promotions,
-                            'VENTA_TOTAL_FINAL': sale.total_amount,
-                            
-                            // INDICADORES DE FILA
-                            'PRODUCTO_NUMERO': productIndex + 1,
-                            'TOTAL_PRODUCTOS_EN_VENTA': sale.details.length,
-                            'ES_PRIMER_PRODUCTO': productIndex === 0 ? 'SI' : 'NO',
-                            'ES_ULTIMO_PRODUCTO': productIndex === sale.details.length - 1 ? 'SI' : 'NO'
-                        });
+                            // Agregar fila sin filtrar (se filtrará después)
+                            excelData.push(rowData);
+                        }
                     });
                 } else {
                     // Si no tiene productos, crear una fila con datos de la venta pero sin productos
-                    excelData.push({
+                    const rowData = {
                         'ID_PEDIDO': sale.correlative_code,
                         'FECHA': sale.created_at,
                         'ESTADO': sale.status_name,
@@ -396,70 +750,272 @@ const Sales = ({ statuses = [] }) => {
                         'TOTAL_PRODUCTOS_EN_VENTA': 0,
                         'ES_PRIMER_PRODUCTO': 'SI',
                         'ES_ULTIMO_PRODUCTO': 'SI'
-                    });
+                    };
+                    
+                    // Agregar fila sin filtrar (se filtrará después)
+                    excelData.push(rowData);
                 }
             });
 
             // Crear libro de Excel
             const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            
+            // Obtener solo las columnas que están configuradas como true
+            const enabledColumns = [];
+            // Mapeo directo: cada columna del Excel se mapea a su correspondiente clave en exportableFields
+            const fieldMapping = {
+                // Información básica de la venta
+                'ID_PEDIDO': 'ID_PEDIDO',
+                'FECHA': 'FECHA',
+                'ESTADO': 'ESTADO',
+                'REFERENCIA': 'REFERENCIA',
+                'COMENTARIO': 'COMENTARIO',
+                'UBIGEO': 'UBIGEO',
+                
+                // Información del cliente
+                'CLIENTE_NOMBRES': 'CLIENTE_NOMBRES',
+                'CLIENTE_EMAIL': 'CLIENTE_EMAIL',
+                'CLIENTE_TELEFONO': 'CLIENTE_TELEFONO',
+                'TIPO_DOCUMENTO': 'TIPO_DOCUMENTO',
+                'NUMERO_DOCUMENTO': 'NUMERO_DOCUMENTO',
+                'RAZON_SOCIAL': 'RAZON_SOCIAL',
+                
+                // Información de facturación
+                'TIPO_COMPROBANTE': 'TIPO_COMPROBANTE',
+                'METODO_PAGO': 'METODO_PAGO',
+                'ID_TRANSACCION': 'ID_TRANSACCION',
+                'ESTADO_PAGO': 'ESTADO_PAGO',
+                
+                // Información de entrega
+                'TIPO_ENTREGA': 'TIPO_ENTREGA',
+                'DIRECCION_ENTREGA': 'DIRECCION_ENTREGA',
+                'TIENDA_RETIRO': 'TIENDA_RETIRO',
+                'DIRECCION_TIENDA': 'DIRECCION_TIENDA',
+                'TELEFONO_TIENDA': 'TELEFONO_TIENDA',
+                'HORARIO_TIENDA': 'HORARIO_TIENDA',
+                
+                // Información del producto
+                'PRODUCTO_NOMBRE': 'PRODUCTO_NOMBRE',
+                'PRODUCTO_SKU': 'PRODUCTO_SKU',
+                'PRODUCTO_PRECIO_UNITARIO': 'PRODUCTO_PRECIO_UNITARIO',
+                'PRODUCTO_CANTIDAD': 'PRODUCTO_CANTIDAD',
+                'PRODUCTO_SUBTOTAL': 'PRODUCTO_SUBTOTAL',
+                'PRODUCTO_TIPO': 'PRODUCTO_TIPO',
+                'PRODUCTO_COLORES': 'PRODUCTO_COLORES',
+                
+                // Información de combos
+                'PRODUCTO_COMBO_ORIGINAL': 'PRODUCTO_COMBO_ORIGINAL',
+                'PRODUCTO_COMBO_PRECIO_ORIGINAL': 'PRODUCTO_COMBO_PRECIO_ORIGINAL',
+                'PRODUCTO_COMBO_DESCUENTO_APLICADO': 'PRODUCTO_COMBO_DESCUENTO_APLICADO',
+                'PRODUCTO_COMBO_ITEMS': 'PRODUCTO_COMBO_ITEMS',
+                
+                // Totales y costos de la venta
+                'VENTA_SUBTOTAL': 'VENTA_SUBTOTAL',
+                'VENTA_COSTO_ENVIO': 'VENTA_COSTO_ENVIO',
+                'VENTA_SEGURO_IMPORTACION': 'VENTA_SEGURO_IMPORTACION',
+                'VENTA_DERECHO_ARANCELARIO': 'VENTA_DERECHO_ARANCELARIO',
+                'VENTA_FLETE_TOTAL': 'VENTA_FLETE_TOTAL',
+                'VENTA_TOTAL_FINAL': 'VENTA_TOTAL_FINAL',
+                
+                // Descuentos y promociones
+                'VENTA_DESCUENTO_PAQUETE': 'VENTA_DESCUENTO_PAQUETE',
+                'VENTA_DESCUENTO_RENOVACION': 'VENTA_DESCUENTO_RENOVACION',
+                'VENTA_DESCUENTO_CUPON': 'VENTA_DESCUENTO_CUPON',
+                'VENTA_CODIGO_CUPON': 'VENTA_CODIGO_CUPON',
+                'VENTA_DESCUENTO_PROMOCION': 'VENTA_DESCUENTO_PROMOCION',
+                'VENTA_PROMOCIONES_APLICADAS': 'VENTA_PROMOCIONES_APLICADAS',
+                
+                // Indicadores de fila
+                'PRODUCTO_NUMERO': 'PRODUCTO_NUMERO',
+                'TOTAL_PRODUCTOS_EN_VENTA': 'TOTAL_PRODUCTOS_EN_VENTA',
+                'ES_PRIMER_PRODUCTO': 'ES_PRIMER_PRODUCTO',
+                'ES_ULTIMO_PRODUCTO': 'ES_ULTIMO_PRODUCTO',
+                'ES_COMBO_ITEM': 'ES_COMBO_ITEM',
+                'COMBO_ITEM_NUMERO': 'COMBO_ITEM_NUMERO',
+                'TOTAL_ITEMS_EN_COMBO': 'TOTAL_ITEMS_EN_COMBO'
+            };
+            
+            // Filtrar solo las columnas habilitadas
+            // Usar la configuración recargada o la del estado
+            const configToUse = currentConfig || {};
+            
+            // Verificar si hay al menos un campo habilitado en la configuración
+            const hasEnabledFields = Object.values(configToUse).some(value => value === true);
+            
+            if (!hasEnabledFields) {
+                Swal.fire({
+                    title: 'Sin configuración de exportación',
+                    text: 'No se ha configurado qué campos exportar o todos los campos están deshabilitados. Por favor, configure primero los campos de exportación desde el menú de configuración.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+            
+            Object.keys(fieldMapping).forEach(excelField => {
+                const configField = fieldMapping[excelField];
 
-            // Configurar ancho de columnas optimizado
-            const columnWidths = [
-                { wch: 15 }, // ID_PEDIDO
-                { wch: 18 }, // FECHA
-                { wch: 12 }, // ESTADO
-                { wch: 25 }, // CLIENTE_NOMBRES
-                { wch: 30 }, // CLIENTE_EMAIL
-                { wch: 15 }, // CLIENTE_TELEFONO
-                { wch: 15 }, // TIPO_DOCUMENTO
-                { wch: 15 }, // NUMERO_DOCUMENTO
-                { wch: 30 }, // RAZON_SOCIAL
-                { wch: 15 }, // TIPO_COMPROBANTE
-                { wch: 15 }, // METODO_PAGO
-                { wch: 20 }, // ID_TRANSACCION
-                { wch: 15 }, // ESTADO_PAGO
-                { wch: 15 }, // TIPO_ENTREGA
-                { wch: 50 }, // DIRECCION_ENTREGA
-                { wch: 25 }, // TIENDA_RETIRO
-                { wch: 30 }, // DIRECCION_TIENDA
-                { wch: 15 }, // TELEFONO_TIENDA
-                { wch: 20 }, // HORARIO_TIENDA
-                { wch: 20 }, // REFERENCIA
-                { wch: 30 }, // COMENTARIO
-                { wch: 10 }, // UBIGEO
-                
-                // COLUMNAS DE PRODUCTO INDIVIDUAL
-                { wch: 40 }, // PRODUCTO_NOMBRE
-                { wch: 15 }, // PRODUCTO_PRECIO_UNITARIO
-                { wch: 12 }, // PRODUCTO_CANTIDAD
-                { wch: 15 }, // PRODUCTO_SUBTOTAL
-                { wch: 12 }, // PRODUCTO_TIPO
-                { wch: 20 }, // PRODUCTO_COLORES
-                { wch: 50 }, // PRODUCTO_COMBO_ITEMS
-                
-                // COLUMNAS DE TOTALES DE VENTA
-                { wch: 12 }, // VENTA_SUBTOTAL
-                { wch: 12 }, // VENTA_COSTO_ENVIO
-                { wch: 16 }, // VENTA_SEGURO_IMPORTACION
-                { wch: 18 }, // VENTA_DERECHO_ARANCELARIO
-                { wch: 12 }, // VENTA_FLETE_TOTAL
-                { wch: 15 }, // VENTA_DESCUENTO_PAQUETE
-                { wch: 18 }, // VENTA_DESCUENTO_RENOVACION
-                { wch: 15 }, // VENTA_DESCUENTO_CUPON
-                { wch: 15 }, // VENTA_CODIGO_CUPON
-                { wch: 18 }, // VENTA_DESCUENTO_PROMOCION
-                { wch: 40 }, // VENTA_PROMOCIONES_APLICADAS
-                { wch: 12 }, // VENTA_TOTAL_FINAL
-                
-                // COLUMNAS DE CONTROL
-                { wch: 10 }, // PRODUCTO_NUMERO
-                { wch: 15 }, // TOTAL_PRODUCTOS_EN_VENTA
-                { wch: 12 }, // ES_PRIMER_PRODUCTO
-                { wch: 12 }  // ES_ULTIMO_PRODUCTO
-            ];
+                if (configToUse[configField] === true) {
+                    enabledColumns.push(excelField);
+                    console.log(`Added ${excelField} to enabled columns`);
+                }
+            });
+            
+            // Verificar si hay al menos una columna habilitada
+            if (enabledColumns.length === 0) {
+                Swal.fire({
+                    title: 'Sin columnas para exportar',
+                    text: 'No hay columnas habilitadas para la exportación. Por favor, habilite al menos una columna desde la configuración de exportación.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+            
+            console.log('Columnas habilitadas para exportar:', enabledColumns);
+            
+            // Crear datos filtrados solo con las columnas habilitadas
+            const filteredExcelData = excelData.map(row => {
+                const filteredRow = {};
+                enabledColumns.forEach(column => {
+                    if (row.hasOwnProperty(column)) {
+                        filteredRow[column] = row[column];
+                    }
+                });
+                return filteredRow;
+            });
+            
+            const worksheet = XLSX.utils.json_to_sheet(filteredExcelData);
+
+            // Configurar ancho de columnas solo para las columnas habilitadas
+            const allColumnWidths = {
+                'ID_PEDIDO': { wch: 15 },
+                'FECHA': { wch: 18 },
+                'ESTADO': { wch: 12 },
+                'CLIENTE_NOMBRES': { wch: 25 },
+                'CLIENTE_EMAIL': { wch: 30 },
+                'CLIENTE_TELEFONO': { wch: 15 },
+                'TIPO_DOCUMENTO': { wch: 15 },
+                 'NUMERO_DOCUMENTO': { wch: 15 },
+                 'RAZON_SOCIAL': { wch: 30 },
+                 'TIPO_COMPROBANTE': { wch: 15 },
+                 'METODO_PAGO': { wch: 15 },
+                 'ID_TRANSACCION': { wch: 20 },
+                 'ESTADO_PAGO': { wch: 15 },
+                 'TIPO_ENTREGA': { wch: 15 },
+                 'DIRECCION_ENTREGA': { wch: 50 },
+                 'TIENDA_RETIRO': { wch: 25 },
+                 'DIRECCION_TIENDA': { wch: 30 },
+                 'TELEFONO_TIENDA': { wch: 15 },
+                 'HORARIO_TIENDA': { wch: 20 },
+                 'REFERENCIA': { wch: 20 },
+                 'COMENTARIO': { wch: 30 },
+                 'UBIGEO': { wch: 10 },
+                 'PRODUCTO_NOMBRE': { wch: 50 },
+                 'PRODUCTO_SKU': { wch: 15 },
+                 'PRODUCTO_PRECIO_UNITARIO': { wch: 18 },
+                 'PRODUCTO_CANTIDAD': { wch: 12 },
+                 'PRODUCTO_SUBTOTAL': { wch: 18 },
+                 'PRODUCTO_TIPO': { wch: 15 },
+                 'PRODUCTO_COLORES': { wch: 20 },
+                 'PRODUCTO_COMBO_ORIGINAL': { wch: 35 },
+                 'PRODUCTO_COMBO_PRECIO_ORIGINAL': { wch: 18 },
+                 'PRODUCTO_COMBO_DESCUENTO_APLICADO': { wch: 20 },
+                 'VENTA_SUBTOTAL': { wch: 12 },
+                 'VENTA_COSTO_ENVIO': { wch: 12 },
+                 'VENTA_SEGURO_IMPORTACION': { wch: 16 },
+                 'VENTA_DERECHO_ARANCELARIO': { wch: 18 },
+                 'VENTA_FLETE_TOTAL': { wch: 12 },
+                 'VENTA_DESCUENTO_PAQUETE': { wch: 15 },
+                 'VENTA_DESCUENTO_RENOVACION': { wch: 18 },
+                 'VENTA_DESCUENTO_CUPON': { wch: 15 },
+                 'VENTA_CODIGO_CUPON': { wch: 15 },
+                 'VENTA_DESCUENTO_PROMOCION': { wch: 18 },
+                 'VENTA_PROMOCIONES_APLICADAS': { wch: 40 },
+                 'VENTA_TOTAL_FINAL': { wch: 12 },
+                 'PRODUCTO_NUMERO': { wch: 12 },
+                 'TOTAL_PRODUCTOS_EN_VENTA': { wch: 18 },
+                 'ES_PRIMER_PRODUCTO': { wch: 15 },
+                 'ES_COMBO_ITEM': { wch: 12 },
+                 'COMBO_ITEM_NUMERO': { wch: 15 },
+                 'TOTAL_ITEMS_EN_COMBO': { wch: 18 }
+             };
+             
+             // Aplicar solo los anchos de las columnas habilitadas
+             const columnWidths = enabledColumns.map(column => allColumnWidths[column] || { wch: 15 });
 
             worksheet['!cols'] = columnWidths;
+            
+            // Aplicar estilos y formato al Excel
+            const range = XLSX.utils.decode_range(worksheet['!ref']);
+            
+            // Estilos para encabezados
+            for (let col = range.s.c; col <= range.e.c; col++) {
+                const headerCell = XLSX.utils.encode_cell({ r: 0, c: col });
+                if (!worksheet[headerCell]) continue;
+                
+                worksheet[headerCell].s = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "2E86AB" } },
+                    alignment: { horizontal: "center", vertical: "center" },
+                    border: {
+                        top: { style: "thin", color: { rgb: "000000" } },
+                        bottom: { style: "thin", color: { rgb: "000000" } },
+                        left: { style: "thin", color: { rgb: "000000" } },
+                        right: { style: "thin", color: { rgb: "000000" } }
+                    }
+                };
+            }
+            
+            // Estilos para filas de datos
+            for (let row = 1; row <= range.e.r; row++) {
+                for (let col = range.s.c; col <= range.e.c; col++) {
+                    const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+                    if (!worksheet[cellAddress]) continue;
+                    
+                    // Determinar si es fila de combo item
+                    const esComboItemCol = Object.keys(excelData[0] || {}).indexOf('ES_COMBO_ITEM');
+                    const isComboItem = excelData[row - 1] && excelData[row - 1]['ES_COMBO_ITEM'] === 'SI';
+                    
+                    worksheet[cellAddress].s = {
+                        font: { 
+                            color: { rgb: isComboItem ? "0066CC" : "000000" },
+                            italic: isComboItem
+                        },
+                        fill: { 
+                            fgColor: { 
+                                rgb: row % 2 === 0 
+                                    ? (isComboItem ? "E3F2FD" : "F8F9FA") 
+                                    : (isComboItem ? "BBDEFB" : "FFFFFF")
+                            }
+                        },
+                        alignment: { 
+                            horizontal: col >= 23 && col <= 25 ? "right" : "left", // Columnas de precios alineadas a la derecha
+                            vertical: "center"
+                        },
+                        border: {
+                            top: { style: "thin", color: { rgb: "E0E0E0" } },
+                            bottom: { style: "thin", color: { rgb: "E0E0E0" } },
+                            left: { style: "thin", color: { rgb: "E0E0E0" } },
+                            right: { style: "thin", color: { rgb: "E0E0E0" } }
+                        }
+                    };
+                    
+                    // Formato especial para columnas de precios
+                    const priceColumns = ['PRODUCTO_PRECIO_UNITARIO', 'PRODUCTO_SUBTOTAL', 'VENTA_SUBTOTAL', 'VENTA_TOTAL_FINAL'];
+                    const columnName = Object.keys(excelData[0] || {})[col];
+                    if (priceColumns.includes(columnName)) {
+                        worksheet[cellAddress].z = '"S/" #,##0.00';
+                    }
+                }
+            }
+            
+            // Configurar altura de filas
+            worksheet['!rows'] = [];
+            worksheet['!rows'][0] = { hpt: 25 }; // Altura del encabezado
+            for (let i = 1; i <= range.e.r; i++) {
+                worksheet['!rows'][i] = { hpt: 20 }; // Altura de filas de datos
+            }
             
             // Agregar hoja al libro
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Ventas_Facturacion');
@@ -746,6 +1302,23 @@ const Sales = ({ statuses = [] }) => {
                             stylingMode: "outlined"
                         },
                     });
+                    if (hasRootRole) {
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "preferences",
+                                text: "Configurar Exportación",
+                                hint: "Configurar campos de exportación Excel",
+                                onClick: async () => {
+                                    await loadExportConfig();
+                                    $(configModalRef.current).modal('show');
+                                },
+                                type: "normal",
+                                stylingMode: "outlined"
+                            },
+                        });
+                    }
                     container.unshift({
                         widget: "dxButton",
                         location: "after",
@@ -1458,6 +2031,109 @@ const Sales = ({ statuses = [] }) => {
                                         </article>
                                     );
                                 })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Modal de Configuración de Exportación */}
+            <Modal
+                modalRef={configModalRef}
+                title="Configurar Campos de Exportación"
+                size="lg"
+                hideFooter={true}
+            >
+                <div className="row">
+                    <div className="col-12">
+                        <p className="text-muted mb-3">
+                            Selecciona los campos que deseas incluir en la exportación de Excel:
+                        </p>
+                        <div className="row">
+                            {Object.entries(exportableFields).map(([key, label]) => (
+                                <div key={key} className="col-md-6 col-lg-4 mb-2">
+                                    <div className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id={`field_${key}`}
+                                            checked={exportConfig[key] === true}
+                                            onChange={(e) => {
+                                                setExportConfig(prev => ({
+                                                    ...prev,
+                                                    [key]: e.target.checked
+                                                }));
+                                            }}
+                                        />
+                                        <label className="form-check-label" htmlFor={`field_${key}`}>
+                                            {label}
+                                        </label>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4 d-flex justify-content-between">
+                            <div>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-primary me-2"
+                                    onClick={() => {
+                                        const allSelected = {};
+                                        Object.keys(exportableFields).forEach(key => {
+                                            allSelected[key] = true;
+                                        });
+                                        setExportConfig(allSelected);
+                                    }}
+                                >
+                                    Seleccionar Todo
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    onClick={() => {
+                                        const allDeselected = {};
+                                        Object.keys(exportableFields).forEach(key => {
+                                            allDeselected[key] = false;
+                                        });
+                                        setExportConfig(allDeselected);
+                                    }}
+                                >
+                                    Deseleccionar Todo
+                                </button>
+                            </div>
+                            <div>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary me-2"
+                                    onClick={() => $(configModalRef.current).modal('hide')}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={async () => {
+                                        try {
+                                            await saveExportConfig();
+                                            Swal.fire({
+                                                title: 'Configuración Guardada',
+                                                text: 'La configuración de exportación se ha guardado correctamente.',
+                                                icon: 'success',
+                                                timer: 2000,
+                                                showConfirmButton: false
+                                            });
+                                            $(configModalRef.current).modal('hide');
+                                        } catch (error) {
+                                            Swal.fire({
+                                                title: 'Error',
+                                                text: 'No se pudo guardar la configuración. Inténtalo de nuevo.',
+                                                icon: 'error'
+                                            });
+                                        }
+                                    }}
+                                >
+                                    Guardar Configuración
+                                </button>
                             </div>
                         </div>
                     </div>

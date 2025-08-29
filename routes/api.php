@@ -229,6 +229,8 @@ Route::middleware('auth')->group(function () {
   Route::middleware('can:Admin')->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminHomeController::class, 'dashboard']);
     Route::post('/dashboard/visibility', [AdminHomeController::class, 'updateDashboardVisibility']);
+    Route::post('/sales/export-config', [AdminSaleController::class, 'saveExportConfig']);
+    Route::get('/sales/export-config-get', [AdminSaleController::class, 'getExportConfig']);
     Route::get('/sales/{id}', [AdminSaleController::class, 'get']);
     Route::post('/sales', [AdminSaleController::class, 'save']);
     Route::post('/sales/paginate', [AdminSaleController::class, 'paginate']);

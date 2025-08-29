@@ -71,6 +71,21 @@ class SaleExportController extends Controller
                                 $comboData = is_string($detail->combo_data) 
                                     ? json_decode($detail->combo_data, true) 
                                     : $detail->combo_data;
+                                
+                                // Enriquecer combo_data con SKUs faltantes
+                                if (isset($comboData['items']) && is_array($comboData['items'])) {
+                                    foreach ($comboData['items'] as &$item) {
+                                        // Si el item no tiene SKU, obtenerlo de la base de datos
+                                        if (!isset($item['sku']) || empty($item['sku'])) {
+                                            if (isset($item['id'])) {
+                                                $itemModel = \App\Models\Item::find($item['id']);
+                                                if ($itemModel) {
+                                                    $item['sku'] = $itemModel->sku;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         } catch (\Exception $e) {
                             $comboData = null;
@@ -80,6 +95,7 @@ class SaleExportController extends Controller
                     return [
                         'id' => $detail->id,
                         'name' => $detail->name ?? 'Producto sin nombre',
+                        'sku' => $detail->item ? $detail->item->sku : '',
                         'price' => (float) ($detail->price ?? 0),
                         'quantity' => (int) ($detail->quantity ?? 1),
                         'type' => $detail->type ?? 'individual',
