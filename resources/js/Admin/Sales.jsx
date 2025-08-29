@@ -188,77 +188,84 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
     };
 
     // Definir todos los campos exportables organizados por categorías
-    const exportableFields = {
-        // === INFORMACIÓN BÁSICA DE LA VENTA ===
-        'ID_PEDIDO': '📋 ID del Pedido',
-        'FECHA': '📅 Fecha de Venta',
-        'ESTADO': '🔄 Estado de la Venta',
-        'REFERENCIA': '🔗 Referencia',
-        'COMENTARIO': '💬 Comentarios',
-        'UBIGEO': '📍 Código Ubigeo',
-        
-        // === INFORMACIÓN DEL CLIENTE ===
-        'CLIENTE_NOMBRES': '👤 Nombres del Cliente',
-        'CLIENTE_EMAIL': '📧 Email del Cliente',
-        'CLIENTE_TELEFONO': '📞 Teléfono del Cliente',
-        'TIPO_DOCUMENTO': '🆔 Tipo de Documento',
-        'NUMERO_DOCUMENTO': '🔢 Número de Documento',
-        'RAZON_SOCIAL': '🏢 Razón Social',
-        
-        // === INFORMACIÓN DE FACTURACIÓN ===
-        'TIPO_COMPROBANTE': '📄 Tipo de Comprobante',
-        'METODO_PAGO': '💳 Método de Pago',
-        'ID_TRANSACCION': '🔐 ID de Transacción',
-        'ESTADO_PAGO': '💰 Estado del Pago',
-        
-        // === INFORMACIÓN DE ENTREGA ===
-        'TIPO_ENTREGA': '🚚 Tipo de Entrega',
-        'DIRECCION_ENTREGA': '📍 Dirección de Entrega',
-        'TIENDA_RETIRO': '🏪 Tienda de Retiro',
-        'DIRECCION_TIENDA': '📍 Dirección de Tienda',
-        'TELEFONO_TIENDA': '📞 Teléfono de Tienda',
-        'HORARIO_TIENDA': '🕐 Horario de Tienda',
-        
-        // === INFORMACIÓN DEL PRODUCTO ===
-        'PRODUCTO_NOMBRE': '🛍️ Nombre del Producto',
-        'PRODUCTO_SKU': '🏷️ SKU del Producto',
-        'PRODUCTO_PRECIO_UNITARIO': '💵 Precio Unitario',
-        'PRODUCTO_CANTIDAD': '🔢 Cantidad',
-        'PRODUCTO_SUBTOTAL': '💲 Subtotal del Producto',
-        'PRODUCTO_TIPO': '📦 Tipo de Producto',
-        'PRODUCTO_COLORES': '🎨 Colores del Producto',
-        
-        // === INFORMACIÓN DE COMBOS ===
-        'PRODUCTO_COMBO_ORIGINAL': '📦 Producto Combo Original',
-        'PRODUCTO_COMBO_PRECIO_ORIGINAL': '💰 Precio Original del Combo',
-        'PRODUCTO_COMBO_DESCUENTO_APLICADO': '🏷️ Descuento Aplicado al Combo',
-        'PRODUCTO_COMBO_ITEMS': '📋 Items del Combo',
-        
-        // === TOTALES Y COSTOS DE LA VENTA ===
-        'VENTA_SUBTOTAL': '💰 Subtotal de la Venta',
-        'VENTA_COSTO_ENVIO': '🚚 Costo de Envío',
-        'VENTA_SEGURO_IMPORTACION': '🛡️ Seguro de Importación',
-        'VENTA_DERECHO_ARANCELARIO': '📊 Derecho Arancelario',
-        'VENTA_FLETE_TOTAL': '🚢 Flete Total',
-        'VENTA_TOTAL_FINAL': '💯 Total Final',
-        
-        // === DESCUENTOS Y PROMOCIONES ===
-        'VENTA_DESCUENTO_PAQUETE': '📦 Descuento por Paquete',
-        'VENTA_DESCUENTO_RENOVACION': '🔄 Descuento por Renovación',
-        'VENTA_DESCUENTO_CUPON': '🎫 Descuento por Cupón',
-        'VENTA_CODIGO_CUPON': '🎟️ Código de Cupón',
-        'VENTA_DESCUENTO_PROMOCION': '🎉 Descuento por Promoción',
-        'VENTA_PROMOCIONES_APLICADAS': '🎊 Promociones Aplicadas',
-        
-        // === INDICADORES DE FILA ===
-        'PRODUCTO_NUMERO': '🔢 Número de Producto en la Venta',
-        'TOTAL_PRODUCTOS_EN_VENTA': '📊 Total de Productos en Venta',
-        'ES_PRIMER_PRODUCTO': '🥇 Es Primer Producto',
-        'ES_ULTIMO_PRODUCTO': '🏁 Es Último Producto',
-        'ES_COMBO_ITEM': '📦 Es Item de Combo',
-        'COMBO_ITEM_NUMERO': '🔢 Número de Item en Combo',
-        'TOTAL_ITEMS_EN_COMBO': '📊 Total de Items en Combo'
+    const exportableFieldsCategories = {
+        'Información Básica de la Venta': {
+            'ID_PEDIDO': 'ID del Pedido',
+            'FECHA': 'Fecha de Venta',
+            'ESTADO': 'Estado de la Venta',
+            'REFERENCIA': 'Referencia',
+            'COMENTARIO': 'Comentarios',
+            'UBIGEO': 'Código Ubigeo'
+        },
+        'Información del Cliente': {
+            'CLIENTE_NOMBRES': 'Nombres del Cliente',
+            'CLIENTE_EMAIL': 'Email del Cliente',
+            'CLIENTE_TELEFONO': 'Teléfono del Cliente',
+            'TIPO_DOCUMENTO': 'Tipo de Documento',
+            'NUMERO_DOCUMENTO': 'Número de Documento',
+            'RAZON_SOCIAL': 'Razón Social'
+        },
+        'Información de Facturación': {
+            'TIPO_COMPROBANTE': 'Tipo de Comprobante',
+            'METODO_PAGO': 'Método de Pago',
+            'ID_TRANSACCION': 'ID de Transacción',
+            'ESTADO_PAGO': 'Estado del Pago'
+        },
+        'Información de Entrega': {
+            'TIPO_ENTREGA': 'Tipo de Entrega',
+            'DIRECCION_ENTREGA': 'Dirección de Entrega',
+            'TIENDA_RETIRO': 'Tienda de Retiro',
+            'DIRECCION_TIENDA': 'Dirección de Tienda',
+            'TELEFONO_TIENDA': 'Teléfono de Tienda',
+            'HORARIO_TIENDA': 'Horario de Tienda'
+        },
+        'Información del Producto': {
+            'PRODUCTO_NOMBRE': 'Nombre del Producto',
+            'PRODUCTO_SKU': 'SKU del Producto',
+            'PRODUCTO_PRECIO_UNITARIO': 'Precio Unitario',
+            'PRODUCTO_CANTIDAD': 'Cantidad',
+            'PRODUCTO_SUBTOTAL': 'Subtotal del Producto',
+            'PRODUCTO_TIPO': 'Tipo de Producto',
+            'PRODUCTO_COLORES': 'Colores del Producto'
+        },
+        'Información de Combos': {
+            'PRODUCTO_COMBO_ORIGINAL': 'Producto Combo Original',
+            'PRODUCTO_COMBO_PRECIO_ORIGINAL': 'Precio Original del Combo',
+            'PRODUCTO_COMBO_DESCUENTO_APLICADO': 'Descuento Aplicado al Combo',
+            'PRODUCTO_COMBO_ITEMS': 'Items del Combo'
+        },
+        'Totales y Costos de la Venta': {
+            'VENTA_SUBTOTAL': 'Subtotal de la Venta',
+            'VENTA_COSTO_ENVIO': 'Costo de Envío',
+            'VENTA_SEGURO_IMPORTACION': 'Seguro de Importación',
+            'VENTA_DERECHO_ARANCELARIO': 'Derecho Arancelario',
+            'VENTA_FLETE_TOTAL': 'Flete Total',
+            'VENTA_TOTAL_FINAL': 'Total Final'
+        },
+        'Descuentos y Promociones': {
+            'VENTA_DESCUENTO_PAQUETE': 'Descuento por Paquete',
+            'VENTA_DESCUENTO_RENOVACION': 'Descuento por Renovación',
+            'VENTA_DESCUENTO_CUPON': 'Descuento por Cupón',
+            'VENTA_CODIGO_CUPON': 'Código de Cupón',
+            'VENTA_DESCUENTO_PROMOCION': 'Descuento por Promoción',
+            'VENTA_PROMOCIONES_APLICADAS': 'Promociones Aplicadas'
+        },
+        'Indicadores de Fila': {
+            'PRODUCTO_NUMERO': 'Número de Producto en la Venta',
+            'TOTAL_PRODUCTOS_EN_VENTA': 'Total de Productos en Venta',
+            'ES_PRIMER_PRODUCTO': 'Es Primer Producto',
+            'ES_ULTIMO_PRODUCTO': 'Es Último Producto',
+            'ES_COMBO_ITEM': 'Es Item de Combo',
+            'COMBO_ITEM_NUMERO': 'Número de Item en Combo',
+            'TOTAL_ITEMS_EN_COMBO': 'Total de Items en Combo'
+        }
     };
+
+    // Crear un objeto plano para compatibilidad con el código existente
+    const exportableFields = {};
+    Object.values(exportableFieldsCategories).forEach(category => {
+        Object.assign(exportableFields, category);
+    });
 
     const showExportModal = () => {
         Swal.fire({
@@ -2046,32 +2053,47 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
             >
                 <div className="row">
                     <div className="col-12">
-                        <p className="text-muted mb-3">
-                            Selecciona los campos que deseas incluir en la exportación de Excel:
+                        <p className="text-muted mb-4">
+                            Selecciona los campos que deseas incluir en la exportación de Excel. Los campos están organizados por categorías para facilitar su selección:
                         </p>
-                        <div className="row">
-                            {Object.entries(exportableFields).map(([key, label]) => (
-                                <div key={key} className="col-md-6 col-lg-4 mb-2">
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            id={`field_${key}`}
-                                            checked={exportConfig[key] === true}
-                                            onChange={(e) => {
-                                                setExportConfig(prev => ({
-                                                    ...prev,
-                                                    [key]: e.target.checked
-                                                }));
-                                            }}
-                                        />
-                                        <label className="form-check-label" htmlFor={`field_${key}`}>
-                                            {label}
-                                        </label>
+                        
+                        {Object.entries(exportableFieldsCategories).map(([categoryName, fields]) => (
+                            <div key={categoryName} className="mb-4">
+                                <div className="card border-0 shadow-sm">
+                                    <div className="card-header bg-light py-2">
+                                        <h6 className="mb-0 text-primary fw-bold">
+                                            <i className="mdi mdi-folder-outline me-2"></i>
+                                            {categoryName}
+                                        </h6>
+                                    </div>
+                                    <div className="card-body py-3">
+                                        <div className="row">
+                                            {Object.entries(fields).map(([key, label]) => (
+                                                <div key={key} className="col-md-6 col-lg-4 mb-2">
+                                                    <div className="form-check">
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id={`field_${key}`}
+                                                            checked={exportConfig[key] === true}
+                                                            onChange={(e) => {
+                                                                setExportConfig(prev => ({
+                                                                    ...prev,
+                                                                    [key]: e.target.checked
+                                                                }));
+                                                            }}
+                                                        />
+                                                        <label className="form-check-label" htmlFor={`field_${key}`}>
+                                                            <small className="text-dark">{label}</small>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                         <div className="mt-4 d-flex justify-content-between">
                             <div>
                                 <button
@@ -2079,12 +2101,15 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     className="btn btn-outline-primary me-2"
                                     onClick={() => {
                                         const allSelected = {};
-                                        Object.keys(exportableFields).forEach(key => {
-                                            allSelected[key] = true;
+                                        Object.values(exportableFieldsCategories).forEach(category => {
+                                            Object.keys(category).forEach(key => {
+                                                allSelected[key] = true;
+                                            });
                                         });
                                         setExportConfig(allSelected);
                                     }}
                                 >
+                                    <i className="mdi mdi-check-all me-1"></i>
                                     Seleccionar Todo
                                 </button>
                                 <button
@@ -2092,12 +2117,15 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     className="btn btn-outline-secondary"
                                     onClick={() => {
                                         const allDeselected = {};
-                                        Object.keys(exportableFields).forEach(key => {
-                                            allDeselected[key] = false;
+                                        Object.values(exportableFieldsCategories).forEach(category => {
+                                            Object.keys(category).forEach(key => {
+                                                allDeselected[key] = false;
+                                            });
                                         });
                                         setExportConfig(allDeselected);
                                     }}
                                 >
+                                    <i className="mdi mdi-close-box-multiple me-1"></i>
                                     Deseleccionar Todo
                                 </button>
                             </div>
