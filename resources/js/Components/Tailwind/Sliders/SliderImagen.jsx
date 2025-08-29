@@ -47,7 +47,7 @@ const SliderImagen = ({ items, data }) => {
                     <div className="relative flex items-center justify-center">
                         <button
                             ref={prevSlideRef}
-                            className={`absolute -left-2 z-10 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white"}`}
+                            className={`absolute -left-2 z-20 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white"}`}
                             aria-label="Previous brand"
                         >
                             <svg
@@ -77,33 +77,37 @@ const SliderImagen = ({ items, data }) => {
                             } : false}
                             loop={true}
                             spaceBetween={30}
-                            slidesPerView={2}
+                            slidesPerView="auto"
                             onSwiper={(swiper) => (swiperRef.current = swiper)}
                             breakpoints={{
-                                640: { slidesPerView: 3 },
+                                640: { 
+                                    slidesPerView: "auto",
+                                    spaceBetween: 20
+                                },
                                 1024: {
-                                    slidesPerView: 5,
+                                    slidesPerView:"auto",
                                     centeredSlides: true,
+                                    spaceBetween: 0
                                 },
                             }}
-                            className="w-full !px-10 2xl:!px-4 !flex !justify-between"
+                            className="!mx-auto !w-11/12 !px-10 2xl:!px-0  relative z-10"
                         >
                             {[...items, ...items].filter((brand) => brand.image).map((brand, index) => (
-                                <SwiperSlide key={index}>
+                                <SwiperSlide key={index} className="!w-auto">
                                     <a href={`catalogo?brand=${brand?.slug}`}>
                                         <div
-                                            className={`group w-full flex items-center justify-center px-2 font-font-secondary ${imagesLoaded ? 'h-[50px] lg:h-[80px]' : 'auto'}`}
-
+                                            className={`group flex items-center justify-center px-6 font-font-secondary ${imagesLoaded ? 'h-[60px] lg:h-[100px]' : 'auto'}`}
                                         >
                                             <img
                                                 src={`/storage/images/brand/${brand.image}`}
                                                 alt={brand.name}
-                                                className={`brand-logo max-h-[50px] lg:max-h-[60px] w-auto object-contain  hover:scale-105 transition-transform cursor-pointer ${data?.class_image || "grayscale brightness-0 invert"}`}
+                                                className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image || "grayscale brightness-0 invert"}`}
                                                 onLoad={handleImagesLoad}
                                                 style={{
-
                                                     objectFit: 'contain',
-                                                    objectPosition: 'center'
+                                                    objectPosition: 'center',
+                                                    minWidth: '100px',
+                                                    maxWidth: '300px'
                                                 }}
                                             />
                                         </div>
@@ -114,7 +118,7 @@ const SliderImagen = ({ items, data }) => {
 
                         <button
                             ref={nextSlideRef}
-                            className={`absolute -right-2 z-10 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white customtext-neutral-dark"}`}
+                            className={`absolute -right-2 z-20 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white customtext-neutral-dark"}`}
                             aria-label="Next brand"
                         >
                             <svg
