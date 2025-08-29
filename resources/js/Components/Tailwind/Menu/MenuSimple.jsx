@@ -19,6 +19,42 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
         return () => document.removeEventListener("pointerdown", handleClickOutside);
     }, []);
 
+    // Prevenir scroll del body cuando el modal está abierto en desktop
+    useEffect(() => {
+        if (isMenuOpen && window.innerWidth >= 1024) {
+            // Guardar el scroll actual y el ancho de la ventana
+            const scrollY = window.scrollY;
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            
+            // Aplicar estilos para prevenir scroll
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+            
+            // Compensar el ancho del scrollbar para evitar salto del layout
+            if (scrollbarWidth > 0) {
+                document.body.style.paddingRight = `${scrollbarWidth}px`;
+            }
+            
+            return () => {
+                // Restaurar todos los estilos cuando se cierre el modal
+                document.documentElement.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.left = '';
+                document.body.style.right = '';
+                document.body.style.width = '';
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                window.scrollTo(0, scrollY);
+            };
+        }
+    }, [isMenuOpen]);
+
     useEffect(() => {
         // Obtener tags activos al cargar el componente
         const fetchTags = async () => {
@@ -91,16 +127,26 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
     }
 
     return (
-        <nav
-            className={
-                `${
-                showOnlyTagsMobile
-                        ? " block w-full relative md:block bg-secondary font-paragraph text-sm"
-                        : " relative w-full md:block bg-secondary font-paragraph text-sm"
-                }`
-            }
-            ref={menuRef}
-        >
+        <>
+            {/* Overlay que aparece cuando el modal está abierto */}
+            {isMenuOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/40 z-40"
+                    style={{ top: menuRef.current ? menuRef.current.offsetTop + menuRef.current.offsetHeight : '0' }}
+                    onClick={() => setIsMenuOpen(false)}
+                />
+            )}
+            
+            <nav
+                className={
+                    `${
+                    showOnlyTagsMobile
+                            ? " block w-full relative md:block bg-secondary font-paragraph text-sm"
+                            : " relative w-full md:block bg-secondary font-paragraph text-sm"
+                    }`
+                }
+                ref={menuRef}
+            >
             <div className="px-primary  2xl:px-0 2xl:max-w-7xl mx-auto">
                 <ul className="flex items-center gap-4 lg:gap-6 text-sm justify-between">
                     {/* Mostrar solo tags en mobile si corresponde */}
@@ -185,31 +231,33 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
                                         {isMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                     </button>
                                     {isMenuOpen && (
-                                        <div className="absolute z-50 top-12 left-0 bg-white shadow-xl border-t rounded-xl transition-all duration-500 ease-in-out h-[70dvh] overflow-y-scroll w-[calc(60vw-6rem)]">
-                                            <div className="p-8">
-                                                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8">
-                                                    {[...items].sort((a, b) => a.name.localeCompare(b.name)).map((category, index) => (
-                                                        <div key={index} className="w-full break-inside-avoid-column mb-8">
-                                                            <a
-                                                                href={`/catalogo?category=${category.slug}`}
-                                                                className="customtext-neutral-dark font-bold text-base mb-4 cursor-pointer hover:customtext-primary transition-colors duration-300 w-full inline-block border-b pb-2"
-                                                            >
-                                                                {category.name}
-                                                            </a>
-                                                            <ul className="space-y-1">
-                                                                {category.subcategories.map((item, itemIndex) => (
-                                                                    <li key={itemIndex} className="w-full">
-                                                                        <a
-                                                                            href={`/catalogo?subcategory=${item.slug}`}
-                                                                            className="customtext-neutral-dark text-sm hover:customtext-primary transition-colors duration-300 cursor-pointer w-full inline-block line-clamp-2"
-                                                                        >
-                                                                            {item.name}
-                                                                        </a>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    ))}
+                                        <div className="absolute z-50 top-12 left-0 bg-white shadow-xl border-t rounded-xl transition-all duration-500 ease-in-out h-[70dvh] w-[calc(60vw-6rem)] overflow-hidden">
+                                            <div className="h-full overflow-y-auto">
+                                                <div className="p-8">
+                                                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8">
+                                                        {[...items].sort((a, b) => a.name.localeCompare(b.name)).map((category, index) => (
+                                                            <div key={index} className="w-full break-inside-avoid-column mb-8">
+                                                                <a
+                                                                    href={`/catalogo?category=${category.slug}`}
+                                                                    className="customtext-neutral-dark font-bold text-base mb-4 cursor-pointer hover:customtext-primary transition-colors duration-300 w-full inline-block border-b pb-2"
+                                                                >
+                                                                    {category.name}
+                                                                </a>
+                                                                <ul className="space-y-1">
+                                                                    {category.subcategories.map((item, itemIndex) => (
+                                                                        <li key={itemIndex} className="w-full">
+                                                                            <a
+                                                                                href={`/catalogo?subcategory=${item.slug}`}
+                                                                                className="customtext-neutral-dark text-sm hover:customtext-primary transition-colors duration-300 cursor-pointer w-full inline-block line-clamp-2"
+                                                                            >
+                                                                                {item.name}
+                                                                            </a>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -272,6 +320,7 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
                 </ul>
             </div>
         </nav>
+        </>
     );
 };
 
