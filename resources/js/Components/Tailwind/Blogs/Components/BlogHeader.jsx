@@ -4,10 +4,12 @@ import BlogPostCard from "./BlogPostCard";
 import DateFilter from "./DateFilter";
 import { useEffect, useState } from "react";
 import PostsRest from "../../../../Actions/PostsRest";
+import BlogCategoriesRest from "../../../../Actions/Admin/BlogCategoriesRest";
 import SelectForm from "./SelectForm";
 import Global from "../../../../Utils/Global";
 
 const postsRest = new PostsRest();
+const blogCategoriesRest = new BlogCategoriesRest();
 
 export default function BlogHeader({
   data,
@@ -20,7 +22,7 @@ export default function BlogHeader({
   isFilter,
   setIsFilter,
 }) {
-  const { categories } = filteredData;
+  const [categories, setCategories] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     category_id: "",
     post_date: "",
@@ -80,6 +82,28 @@ export default function BlogHeader({
       setLoading(false);
     }
   };
+
+  // useEffect para cargar las categorías de posts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const params = {
+          filter: [
+            ["visible", "=", true],
+            ["status", "=", true]
+          ]
+        };
+        const response = await blogCategoriesRest.paginate(params);
+        if (response && response.data) {
+          setCategories(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (!initialLoad) {

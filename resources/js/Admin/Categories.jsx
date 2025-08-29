@@ -12,6 +12,7 @@ import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import Fillable from "../Utils/Fillable";
+import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 const categoriesRest = new CategoriesRest();
 
 const Categories = () => {
@@ -300,7 +301,7 @@ const Categories = () => {
             >
                 <input ref={idRef} type="hidden" />
                 <div className="row" id="categories-container">
-                    <div className="col-md-6">
+                    <div className={!Fillable.has('categories', 'banner') && !Fillable.has('categories', 'image') ? 'hidden' : 'col-md-6'}>
                         <ImageFormGroup
                             eRef={bannerRef}
                             name="banner"
@@ -319,8 +320,8 @@ const Categories = () => {
                         />
 
                     </div>
-                    <div className="col-md-6">
-                        <TextareaFormGroup
+                    <div className={!Fillable.has('categories', 'banner') && !Fillable.has('categories', 'image') ? 'col-md-12' : 'col-md-6'}>
+                        <InputFormGroup
                             eRef={nameRef}
                             label="Categoría"
                             rows={2}
