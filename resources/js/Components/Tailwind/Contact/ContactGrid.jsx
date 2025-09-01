@@ -761,10 +761,11 @@ const ContactGrid = ({ data, contacts }) => {
                                         })}
                                     />
 
-                                    {/* Marcadores de todas las tiendas */}
+                                    {/* Marcadores de todas las tiendas (excluyendo la tienda principal para evitar duplicados) */}
                                     {data?.stores_support && allStores
                                         .filter(store => store.latitude && store.longitude &&
-                                            store.latitude !== "0" && store.longitude !== "0")
+                                            store.latitude !== "0" && store.longitude !== "0" &&
+                                            store.type !== "tienda_principal")
                                         .map((store) => (
                                             <Marker
                                                 key={store.id}
