@@ -5000,7 +5000,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Brands.jsx": {
-    "file": "assets/Brands-PFhVtVgq.js",
+    "file": "assets/Brands-Bz63ArSL.js",
     "name": "Brands",
     "src": "resources/js/Components/Tailwind/Brands.jsx",
     "isDynamicEntry": true,
@@ -5012,13 +5012,26 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ],
     "dynamicImports": [
-      "resources/js/Components/Tailwind/Brands/BrandMakita.jsx"
+      "resources/js/Components/Tailwind/Brands/BrandMakita.jsx",
+      "resources/js/Components/Tailwind/Brands/BrandMultivet.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Brands/BrandMakita.jsx": {
     "file": "assets/BrandMakita--pJTheE3.js",
     "name": "BrandMakita",
     "src": "resources/js/Components/Tailwind/Brands/BrandMakita.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Brands/BrandMultivet.jsx": {
+    "file": "assets/BrandMultivet--pJTheE3.js",
+    "name": "BrandMultivet",
+    "src": "resources/js/Components/Tailwind/Brands/BrandMultivet.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -10523,7 +10536,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BAqRlOG_.js",
+    "file": "assets/System-DL0rbedI.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -2976,6 +2976,25 @@
             {
                 "id": "BrandMakita",
                 "name": "BrandMakita"
+            },
+            {
+                "id": "BrandMultivet",
+                "name": "Brand Multivet",
+                "image": "brand-carousel.png",
+                "data": [
+                    "title",
+                    "description",
+                    "footer_text"
+                ],
+                "using": {
+                    "model": "Brand",
+                    "fields": [
+                        "name",
+                        "image",
+                        "description",
+                        "slug"
+                    ]
+                }
             }
         ]
     },
