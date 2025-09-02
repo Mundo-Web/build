@@ -110,7 +110,22 @@
                         "subcategories"
                     ]
                 }
-            },{
+            },
+               {
+                "id": "MenuMultivet",
+                "name": "Menu - Multivet",
+                "image": "top-bar-simple.png",
+                "data": [
+                    "showCategories"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                }
+            },
+            {
                 "id": "MenuCategories",
                 "name": "Menu - Categorías",
                 "image": "top-bar-simple.png",
@@ -524,6 +539,43 @@
                     "class_icon_primary",
                     "class_title",
                     "class_description"
+                ],
+                "using": {
+                    "model": "Slider",
+                    "fields": [
+                        "name",
+                        "description",
+                        "bg_image",
+                        "bg_image_mobile",
+                        "button_text",
+                        "button_link",
+                        "order_index"
+                    ]
+                    
+                },
+                 "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                   
+                ]
+            },
+            {
+                "id": "SliderMultivet",
+                "name": "Slider Multivet",
+                "image": "slider-simple.png",
+                "data": [
+                    "infiniteLoop",
+                    "paginationAlignment",
+                    "showNavigation",
+                    "imageBgPosition",
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "whatsapp_info",
+                    "class_button_primary",
+                    "class_icon_primary",
+                    "class_title",
+                    "class_description",
+                    "class_overlay"
                 ],
                 "using": {
                     "model": "Slider",
