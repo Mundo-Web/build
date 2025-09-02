@@ -17,6 +17,12 @@ import MobileMenuSearchDental from "./Components/MobileMenuSearchDental";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
 import TopBarPages from "../TopBars/TopBarPages";
+import TopBarSimple from "../TopBars/TopBarSimple";
+import TopBarSocials from "../TopBars/TopBarSocials";
+import TopBarCart from "../TopBars/TopBarCart";
+import TopBarCopyright from "../TopBars/TopBarCopyright";
+import TopBarPanni from "../TopBars/TopBarPanni";
+import TopBarCopyrightSocials from "../TopBars/TopBarCopyrightSocials";
 
 const HeaderSearchDental = ({
     items,
@@ -464,9 +470,35 @@ const HeaderSearchDental = ({
         const roleNames = isUser.roles.map(r => r.name?.toLowerCase());
         isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
     }
+
+    // Función para renderizar el TopBar correcto según data.topBarType
+    const renderTopBar = () => {
+        if (!isFixed) return null;
+        
+        const topBarType = data?.topBarType || 'TopBarPages'; // default a 'TopBarPages'
+        
+        switch (topBarType) {
+            case 'TopBarSimple':
+                return <TopBarSimple data={data} />;
+            case 'TopBarSocials':
+                return <TopBarSocials items={items} data={data} />;
+            case 'TopBarCart':
+                return <TopBarCart data={data} items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarCopyright':
+                return <TopBarCopyright data={data} items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarPanni':
+                return <TopBarPanni data={data} items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarCopyrightSocials':
+                return <TopBarCopyrightSocials items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarPages':
+            default:
+                return <TopBarPages items={items} data={data} pages={pages} />;
+        }
+    };
+
     return (
         <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-white shadow-lg" : "relative bg-white"}`}>
-           {isFixed && <TopBarPages data={data} pages={pages} />} 
+           {renderTopBar()}
             <div className="px-primary  bg-white 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
