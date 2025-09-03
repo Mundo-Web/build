@@ -166,7 +166,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                             />
                             <button
                                 disabled={saving}
-                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 py-3 font-bold shadow-xl px-4 bg-primary text-white rounded-xl flex items-center justify-center min-w-[120px] ${data?.class_button || ''}`}
+                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 py-3 font-bold shadow-xl px-4 bg-primary  rounded-xl flex items-center justify-center min-w-[120px] ${data?.class_button || 'text-white'}`}
                                 aria-label="Suscribite"
                             >
                                 {saving ? (

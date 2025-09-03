@@ -185,11 +185,11 @@ const BlogSectionMultivet = ({ items = [], data }) => {
 
           {/* Navigation Controls - Solo mostrar si hay múltiples páginas */}
           {totalPages > 1 && (
-            <div className={`flex items-center justify-between ${data?.class_navigation || ''}`}>
+            <div className={`flex items-center justify-center lg:justify-between ${data?.class_navigation || ''}`}>
               <button
                 onClick={prevPage}
                 disabled={currentPage === 0}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                className={`hidden lg:flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
                   currentPage === 0
                     ? `${data?.nav_disabled_bg || 'bg-gray-200'} ${data?.nav_disabled_color || 'text-gray-400'} cursor-not-allowed`
                     : `${data?.nav_active_bg || 'bg-secondary'} ${data?.nav_active_color || 'text-white'} hover:bg-primary-600 transform hover:scale-105`
@@ -217,7 +217,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
               <button
                 onClick={nextPage}
                 disabled={currentPage === totalPages - 1}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                className={`hidden lg:flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
                   currentPage === totalPages - 1
                     ? `${data?.nav_disabled_bg || 'bg-gray-200'} ${data?.nav_disabled_color || 'text-gray-400'} cursor-not-allowed`
                     : `${data?.nav_active_bg || 'bg-secondary'} ${data?.nav_active_color || 'text-white'} hover:bg-primary-600 transform hover:scale-105`
