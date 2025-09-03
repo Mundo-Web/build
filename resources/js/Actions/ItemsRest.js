@@ -162,6 +162,48 @@ class ItemsRest extends BasicRest {
             return { status: 400, data: {} };
         }
     };
+
+    // Método para actualizar vistas de producto
+    viewUpdate = async (itemId) => {
+        try {
+            const { status, result } = await Fetch(
+                `/api/${this.path}/${itemId}/view`,
+                {
+                    method: "POST",
+                }
+            );
+            if (!status)
+                throw new Error(
+                    result?.message ??
+                        "Ocurrió un error al actualizar las vistas"
+                );
+            return result.data ?? true;
+        } catch (error) {
+            console.error('Error updating view:', error);
+            return false;
+        }
+    };
+
+    // Método para obtener productos sugeridos/relacionados
+    getSuggested = async (itemId) => {
+        try {
+            const { status, result } = await Fetch(
+                `/api/${this.path}/${itemId}/suggested`,
+                {
+                    method: "GET",
+                }
+            );
+            if (!status)
+                throw new Error(
+                    result?.message ??
+                        "Ocurrió un error al obtener productos relacionados"
+                );
+            return { data: result.data ?? [] };
+        } catch (error) {
+            console.error('Error fetching suggested products:', error);
+            return { data: [] };
+        }
+    };
 }
 
 export default ItemsRest;

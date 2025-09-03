@@ -12,6 +12,7 @@ const ProductDetailPaani = React.lazy(() => import('./ProductDetails/ProductDeta
 const ProductDetailAko = React.lazy(() => import('./ProductDetails/ProductDetailAko'))
 const ProductDetailDental = React.lazy(() => import('./ProductDetails/ProductDetailDental'))
 const ProductDetailPidelo = React.lazy(() => import('./ProductDetails/ProductDetailPidelo'))
+const ProductDetailMultivet = React.lazy(() => import('./ProductDetails/ProductDetailMultivet'))
 const ProductDetail = ({ which, item, cart, setCart,data, generals = [],favorites,setFavorites, textstatic, contacts }) => {
   
   const getProductDetail = () => {
@@ -36,6 +37,8 @@ const ProductDetail = ({ which, item, cart, setCart,data, generals = [],favorite
           return <ProductDetailDental item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} />
       case 'ProductDetailPidelo':
              return <ProductDetailPidelo item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} data={data} />
+      case 'ProductDetailMultivet':
+             return <ProductDetailMultivet item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />
           default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }

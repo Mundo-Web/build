@@ -2254,6 +2254,31 @@
                 }
             },
             {
+                "id": "ProductDetailMultivet",
+                "name": "ProductDetailMultivet - Tienda de Mascotas",
+                "data": [
+                    "link_cart",
+                    "background"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "images",
+                        "specifications"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
                 "id": "ScrapingProductDetail",
                 "name": "ScrapingProductDetail"
             }
