@@ -2995,6 +2995,55 @@
                 "using": {
                     "model": "Testimony"
                 }
+            },
+            {
+                "id": "TestimonialsMultivet",
+                "name": "Multivet",
+                "image": "testimonials-multivet.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "section_background",
+                    "testimonials_background",
+                    "testimonials_text_color",
+                    "title_color",
+                    "subtitle_color",
+                    "highlight_color",
+                    "star_color",
+                    "quote_color",
+                    "testimonial_color",
+                    "client_name_color",
+                    "client_title_color",
+                    "avatar_border",
+                    "nav_button_bg",
+                    "nav_button_color",
+                    "active_dot",
+                    "inactive_dot",
+                    "autoplay_delay",
+                    "show_stats",
+                    "stat1_number",
+                    "stat1_label",
+                    "stat2_number",
+                    "stat2_label",
+                    "stat3_number",
+                    "stat3_label",
+                    "stat4_number",
+                    "stat4_label",
+                    "stats_number_color",
+                    "stats_label_color",
+                    "class_section",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_testimonials_card",
+                    "class_testimonial_text",
+                    "class_client_name",
+                    "class_client_title",
+                    "class_stats"
+                ],
+                "using": {
+                    "model": "Testimony"
+                }
             }
         ]
     },
