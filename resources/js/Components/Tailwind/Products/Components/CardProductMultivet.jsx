@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Star, Eye, Heart, Tag } from "lucide-react";
+import { Star, Eye, Heart, Tag, ChevronRightCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) => {
@@ -56,7 +56,7 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
     // Función para ir al detalle del producto
     const goToDetail = () => {
         const slug = product?.slug || product?.id;
-        window.location.href = `/producto/${slug}`;
+        window.location.href = `/product/${slug}`;
     };
 
     // Calcular descuento si hay precio original
@@ -67,97 +67,111 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
 
     return (
         <div
-            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer"
+            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer flex flex-col h-full"
             onClick={goToDetail}
         >
             {/* Imagen del producto */}
-            <div className="relative overflow-hidden">
+            <div className="relative overflow-hidden bg-gray-50 h-64 flex items-center justify-center p-4">
                 <img
                     src={product?.image ? `/api/items/media/${product.image}` : '/assets/img/noimage/no_img.jpg'}
                     alt={product?.name || 'Producto'}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                         e.target.src = '/assets/img/noimage/no_img.jpg';
                     }}
                 />
                 
                 {/* Badges */}
-                {hasDiscount && (
-                    <div className="absolute top-4 left-4 bg-accent customtext-neutral-dark px-3 py-1 rounded-full text-sm font-bold">
-                        ¡Oferta!
-                    </div>
-                )}
-                
-                {(!product?.stock || product?.stock === 0) && (
-                    <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        Agotado
-                    </div>
-                )}
-
               
+                    <div className="absolute top-3 left-3 bg-accent text-white rounded-full text-sm font-bold shadow-lg z-10">
+                        {product?.category && (
+                        <span className="bg-accent customtext-primary bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold">
+                            {product.category.name || product.category}
+                        </span>
+                    )}
+                    </div>
+            
+                
+               
+                
+              
+
+                {/* Botón de favoritos */}
+                <p
+                    onClick={toggleFavorite}
+                    className="absolute top-3 right-3     flex items-center justify-center  transition-all duration-300  z-10"
+                >
+                    {product?.brand && (
+                        <img
+                            src={product.brand.image ? `/api/brands/media/${product.brand.image}` : '/assets/img/noimage/no_img.jpg'}
+                            alt={product.brand.name || 'Marca'}
+                            className="max-h-14 max-w-full object-contain"
+                            onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
+                            />
+                        
+                    )}
+                </p>
             </div>
 
             {/* Contenido del producto */}
-            <div className="p-6">
-                {/* Rating */}
-                {product?.rating && (
-                    <div className="flex items-center space-x-1 mb-2">
-                        {renderStars(product.rating)}
-                        <span className="text-sm customtext-neutral-dark ml-2">
-                            ({parseFloat(product.rating).toFixed(1)})
-                        </span>
-                    </div>
-                )}
+            <div className="p-5 flex-1 flex flex-col">
+              
 
                 {/* Nombre del producto */}
-                <h3 className="text-lg font-bold customtext-neutral-dark mb-2 group-hover:customtext-accent transition-colors duration-300 font-title line-clamp-2">
+                <h3 className="text-lg font-bold customtext-neutral-dark mb-2 group-hover:customtext-primary transition-colors duration-300 font-title line-clamp-2 min-h-[3.5rem]">
                     {product?.name}
                 </h3>
                 
                 {/* Descripción corta */}
                 {product?.description && (
-                    <p className="customtext-neutral-light text-sm mb-4 line-clamp-2" dangerouslySetInnerHTML={{ __html: product.description }}>
-                      
+                    <p className="customtext-neutral-light text-sm mb-3 line-clamp-2 min-h-[2.5rem]" 
+                       dangerouslySetInnerHTML={{ __html: product.description }}>
                     </p>
                 )}
 
-                {/* Precio y categoría */}
+
+               
+
+                {/* Spacer para empujar el contenido inferior hacia abajo */}
+                <div className="flex-1"></div>
+
+                {/* Precios */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="space-y-1">
-                        <div className="text-2xl font-bold customtext-primary font-title">
+                        <div className="text-xl font-bold customtext-secondary font-title">
                             {formatPrice(product?.final_price || product?.price)}
                         </div>
                         {hasDiscount && (
-                            <div className="text-sm customtext-neutral-light line-through">
-                                {formatPrice(product.price)}
+                            <div className="flex items-center space-x-2">
+                                <span className="text-sm customtext-neutral-light line-through">
+                                    {formatPrice(product.price)}
+                                </span>
+                                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-bold">
+                                    Ahorra {formatPrice(parseFloat(product.price) - parseFloat(product.final_price))}
+                                </span>
                             </div>
                         )}
                     </div>
-                    
-                    {/* Categoría */}
-                    {product?.category && (
-                        <span className="bg-gray-100 customtext-neutral-light px-3 py-1 rounded-full text-xs">
-                            {product.category.name || product.category}
-                        </span>
-                    )}
                 </div>
 
-                {/* Botón de ver detalle */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        goToDetail();
-                    }}
-                    disabled={!product?.stock || product?.stock === 0}
-                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
-                        product?.stock && product?.stock > 0
-                            ? 'bg-secondary text-white hover:bg-primary'
-                            : 'bg-gray-300 customtext-neutral-dark cursor-not-allowed'
-                    }`}
-                >
-                    <Eye className="w-5 h-5" />
-                    <span>{product?.stock && product?.stock > 0 ? 'Ver detalle' : 'Producto agotado'}</span>
-                </button>
+                {/* Botones de acción */}
+                <div className="flex space-x-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            goToDetail();
+                        }}
+                        type="button"
+                        disabled={!product?.stock && !product?.stock > 0}
+                        className="flex-1 bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      
+                        <span>Ver detalle</span>
+                          <ChevronRightCircle className="w-5 h-5" />
+                    </button>
+                    
+                  
+                </div>
             </div>
         </div>
     );
