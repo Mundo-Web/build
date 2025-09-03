@@ -5,12 +5,14 @@ import Tippy from "@tippyjs/react";
 import Global from "../../../Utils/Global";
 import AnimatedCintillo from "../Components/AnimatedCintillo";
 import tagsItemsRest from "../../../Utils/Services/tagsItemsRest";
+import useCintillos from "../../../Hooks/useCintillos";
 
 
 const TopBarPages = ({ items, data, pages = [] }) => {
   const sectionRef = useRef(null);
   const [show, setShow] = useState(true);
   const lastScroll = useRef(0);
+  const { hasActiveCintillos } = useCintillos();
 
   useEffect(() => {
 
@@ -68,6 +70,12 @@ const TopBarPages = ({ items, data, pages = [] }) => {
     };
     fetchTags();
   }, []);
+
+  // Si no hay cintillos activos y este TopBar se usa principalmente para mostrar cintillos,
+  // evaluamos si debe ocultarse o mantenerse para páginas y tags
+  if (!hasActiveCintillos && !data?.isCopyright && (!pages || pages.length === 0) && (!tags || tags.length === 0)) {
+    return null;
+  }
   return (
     <section
       ref={sectionRef}
@@ -130,7 +138,7 @@ const TopBarPages = ({ items, data, pages = [] }) => {
         </div>
         <p className="hidden md:block text-xs">{data?.isCopyright ?
           ` Copyright © ${new Date().getFullYear()} ${Global.APP_NAME}. Reservados todos los derechos.`
-          : <AnimatedCintillo />}</p>
+          : hasActiveCintillos ? <AnimatedCintillo /> : null}</p>
 
 
       </div>

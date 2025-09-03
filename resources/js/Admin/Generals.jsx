@@ -149,10 +149,22 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       .find((x) => x.correlative == "email_contact")
       ?.description?.split(",")
       ?.map((x) => x.trim()) ?? [""],
-    cintillos: generals
-      .find((x) => x.correlative == "cintillo")
-      ?.description?.split(",")
-      ?.map((x) => x.trim()) ?? [""],
+    cintillos: (() => {
+      const cintilloGeneral = generals.find((x) => x.correlative == "cintillo");
+      if (!cintilloGeneral?.description) return [];
+      
+      try {
+        // Intentar parsear como JSON primero (nuevo formato)
+        const parsed = JSON.parse(cintilloGeneral.description);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        // Si falla, usar el formato antiguo (strings separados por comas)
+        return cintilloGeneral.description
+          .split(",")
+          .map((x) => x.trim())
+          .filter(x => x.length > 0);
+      }
+    })(),
     copyright:
       generals.find((x) => x.correlative == "copyright")?.description ??
       "",
@@ -289,6 +301,21 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   });
 
   const [activeTab, setActiveTab] = useState("general");
+  const [showCintilloModal, setShowCintilloModal] = useState(false);
+  const [editingCintillo, setEditingCintillo] = useState(null);
+  const [modalCintillo, setModalCintillo] = useState({
+    text: '',
+    enabled: true,
+    schedule: {
+      monday: { enabled: true, start: '00:00', end: '23:59' },
+      tuesday: { enabled: true, start: '00:00', end: '23:59' },
+      wednesday: { enabled: true, start: '00:00', end: '23:59' },
+      thursday: { enabled: true, start: '00:00', end: '23:59' },
+      friday: { enabled: true, start: '00:00', end: '23:59' },
+      saturday: { enabled: true, start: '00:00', end: '23:59' },
+      sunday: { enabled: true, start: '00:00', end: '23:59' }
+    }
+  });
 
   // Funciones para gestión de visibilidad de campos
   const handleToggleFieldVisibility = (correlative) => {
@@ -348,10 +375,32 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   };
 
   const handleAddField = (field) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [field]: [...prevState[field], ""],
-    }));
+    if (field === 'cintillos') {
+      // Para cintillos, agregar el objeto completo con programación
+      const newCintillo = {
+        text: '',
+        enabled: true,
+        schedule: {
+          monday: { enabled: true, start: '00:00', end: '23:59' },
+          tuesday: { enabled: true, start: '00:00', end: '23:59' },
+          wednesday: { enabled: true, start: '00:00', end: '23:59' },
+          thursday: { enabled: true, start: '00:00', end: '23:59' },
+          friday: { enabled: true, start: '00:00', end: '23:59' },
+          saturday: { enabled: true, start: '00:00', end: '23:59' },
+          sunday: { enabled: true, start: '00:00', end: '23:59' }
+        }
+      };
+      setFormData((prevState) => ({
+        ...prevState,
+        [field]: [...prevState[field], newCintillo],
+      }));
+    } else {
+      // Para otros campos, mantener el comportamiento original
+      setFormData((prevState) => ({
+        ...prevState,
+        [field]: [...prevState[field], ""],
+      }));
+    }
   };
 
   const handleRemoveField = (index, field) => {
@@ -361,6 +410,152 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       ...prevState,
       [field]: list,
     }));
+  };
+
+  const openCintilloModal = (index = null) => {
+    if (index !== null) {
+      // Editando cintillo existente
+      const cintillo = formData.cintillos[index];
+      if (typeof cintillo === 'string') {
+        setModalCintillo({
+          text: cintillo,
+          enabled: true,
+          schedule: {
+            monday: { enabled: true, start: '00:00', end: '23:59' },
+            tuesday: { enabled: true, start: '00:00', end: '23:59' },
+            wednesday: { enabled: true, start: '00:00', end: '23:59' },
+            thursday: { enabled: true, start: '00:00', end: '23:59' },
+            friday: { enabled: true, start: '00:00', end: '23:59' },
+            saturday: { enabled: true, start: '00:00', end: '23:59' },
+            sunday: { enabled: true, start: '00:00', end: '23:59' }
+          }
+        });
+      } else {
+        setModalCintillo(cintillo);
+      }
+      setEditingCintillo(index);
+    } else {
+      // Nuevo cintillo
+      setModalCintillo({
+        text: '',
+        enabled: true,
+        schedule: {
+          monday: { enabled: true, start: '00:00', end: '23:59' },
+          tuesday: { enabled: true, start: '00:00', end: '23:59' },
+          wednesday: { enabled: true, start: '00:00', end: '23:59' },
+          thursday: { enabled: true, start: '00:00', end: '23:59' },
+          friday: { enabled: true, start: '00:00', end: '23:59' },
+          saturday: { enabled: true, start: '00:00', end: '23:59' },
+          sunday: { enabled: true, start: '00:00', end: '23:59' }
+        }
+      });
+      setEditingCintillo(null);
+    }
+    setShowCintilloModal(true);
+  };
+
+  const closeCintilloModal = () => {
+    setShowCintilloModal(false);
+    setEditingCintillo(null);
+    setModalCintillo({
+      text: '',
+      enabled: true,
+      schedule: {
+        monday: { enabled: true, start: '00:00', end: '23:59' },
+        tuesday: { enabled: true, start: '00:00', end: '23:59' },
+        wednesday: { enabled: true, start: '00:00', end: '23:59' },
+        thursday: { enabled: true, start: '00:00', end: '23:59' },
+        friday: { enabled: true, start: '00:00', end: '23:59' },
+        saturday: { enabled: true, start: '00:00', end: '23:59' },
+        sunday: { enabled: true, start: '00:00', end: '23:59' }
+      }
+    });
+  };
+
+  const saveCintillo = () => {
+    if (!modalCintillo.text.trim()) {
+      alert('Por favor ingresa el texto del cintillo');
+      return;
+    }
+
+    const newCintillos = [...formData.cintillos];
+    
+    if (editingCintillo !== null) {
+      // Editando cintillo existente
+      newCintillos[editingCintillo] = modalCintillo;
+    } else {
+      // Nuevo cintillo
+      newCintillos.push(modalCintillo);
+    }
+
+    setFormData({
+      ...formData,
+      cintillos: newCintillos
+    });
+
+    closeCintilloModal();
+  };
+
+  const getActiveStatus = (cintillo) => {
+    const text = typeof cintillo === 'string' ? cintillo : cintillo.text;
+    const enabled = typeof cintillo === 'string' ? true : cintillo.enabled !== false;
+    
+    if (!enabled || !text?.trim()) return { status: 'Inactivo', class: 'badge bg-secondary' };
+    
+    if (typeof cintillo === 'string') return { status: 'Activo', class: 'badge bg-success' };
+    
+    if (!cintillo.schedule) return { status: 'Activo', class: 'badge bg-success' };
+    
+    const now = new Date();
+    const currentDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()];
+    const daySchedule = cintillo.schedule[currentDay];
+    
+    if (!daySchedule || !daySchedule.enabled) return { status: 'Programado (Día no habilitado)', class: 'badge bg-warning' };
+    
+    const currentTime = now.toTimeString().slice(0, 5);
+    const start = daySchedule.start || '00:00';
+    const end = daySchedule.end || '23:59';
+    
+    const currentMinutes = parseInt(currentTime.split(':')[0]) * 60 + parseInt(currentTime.split(':')[1]);
+    const startMinutes = parseInt(start.split(':')[0]) * 60 + parseInt(start.split(':')[1]);
+    const endMinutes = parseInt(end.split(':')[0]) * 60 + parseInt(end.split(':')[1]);
+    
+    let isActiveNow;
+    if (endMinutes < startMinutes) {
+      isActiveNow = currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+    } else {
+      isActiveNow = currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+    }
+    
+    if (isActiveNow) {
+      return { status: 'Activo Ahora', class: 'badge bg-success' };
+    } else {
+      return { status: 'Programado (Fuera de horario)', class: 'badge bg-warning' };
+    }
+  };
+
+  const getScheduleSummary = (cintillo) => {
+    if (typeof cintillo === 'string') return 'Todos los días, todo el día';
+    if (!cintillo.schedule) return 'Todos los días, todo el día';
+    
+    const dayNames = {
+      monday: 'Lun',
+      tuesday: 'Mar',
+      wednesday: 'Mié',
+      thursday: 'Jue',
+      friday: 'Vie',
+      saturday: 'Sáb',
+      sunday: 'Dom'
+    };
+    
+    const enabledDays = Object.entries(cintillo.schedule)
+      .filter(([day, schedule]) => schedule.enabled)
+      .map(([day]) => dayNames[day]);
+    
+    if (enabledDays.length === 0) return 'Ningún día';
+    if (enabledDays.length === 7) return 'Todos los días';
+    
+    return enabledDays.join(', ');
   };
 
   const handleMapClick = (event) => {
@@ -406,7 +601,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       {
         correlative: "cintillo",
         name: "Cintillo",
-        description: formData.cintillos.join(","),
+        description: JSON.stringify(formData.cintillos),
       },
       {
         correlative: "copyright",
@@ -795,6 +990,18 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
             )}
             <li className="nav-item" role="presentation">
               <button
+                className={`nav-link ${activeTab === "cintillos" ? "active" : ""
+                  }`}
+                onClick={() => setActiveTab("cintillos")}
+                type="button"
+                role="tab"
+              >
+                Gestionar Cintillos
+              </button>
+            </li>
+
+            <li className="nav-item" role="presentation">
+              <button
                 className={`nav-link ${activeTab === "location" ? "active" : ""
                   }`}
                 onClick={() => setActiveTab("location")}
@@ -917,53 +1124,23 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
             >
               <div className="row">
                 <div className="col-md-6 mb-2">
-                  {formData.cintillos.map((cintillo, index) => (
-                    <div
-                      key={`cintillo-${index}`}
-                      className="mb-3"
+                  <div className="alert alert-info">
+                    <h6>
+                      <i className="fas fa-info-circle me-2"></i>
+                      Gestión de Cintillos
+                    </h6>
+                    <p className="mb-2">
+                      Los cintillos se han movido a una pestaña dedicada para una mejor organización.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setActiveTab("cintillos")}
                     >
-                      <label
-                        htmlFor={`cintillo-${index}`}
-                        className="form-label"
-                      >
-                        Cintillo {index + 1} (No usar coma)
-                      </label>
-                      <div className="input-group">
-                        <textarea
-                          className="form-control"
-                          id={`cintillo-${index}`}
-                          value={cintillo}
-                          onChange={(e) =>
-                            handleInputChange(
-                              e,
-                              index,
-                              "cintillos"
-                            )
-                          }
-                          rows="2"
-                        />
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger"
-                          onClick={() =>
-                            handleRemoveField(
-                              index,
-                              "cintillos"
-                            )
-                          }
-                        >
-                          <i className="fa fa-trash"></i>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className="btn btn-outline-primary"
-                    onClick={() => handleAddField("cintillos")}
-                  >
-                    Agregar cintillo
-                  </button>
+                      <i className="fas fa-cog me-1"></i>
+                      Ir a Gestionar Cintillos
+                    </button>
+                  </div>
                 </div>
                 <ConditionalField correlative="copyright">
                   <div className="col-md-6 mb-2">
@@ -1769,6 +1946,140 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     })
                   }
                 />
+              </div>
+            </div>
+
+            <div
+              className={`tab-pane fade ${activeTab === "cintillos" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-12">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h4 className="mb-0">
+                      <i className="fas fa-bullhorn text-primary me-2"></i>
+                      Gestión de Cintillos Programados
+                    </h4>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => openCintilloModal()}
+                    >
+                      <i className="fas fa-plus me-2"></i>Nuevo Cintillo
+                    </button>
+                  </div>
+
+                  {formData.cintillos.length === 0 ? (
+                    <div className="text-center py-5">
+                      <i className="fas fa-bullhorn text-muted" style={{ fontSize: '4rem' }}></i>
+                      <h5 className="text-muted mt-3">No hay cintillos configurados</h5>
+                      <p className="text-muted">Agrega tu primer cintillo para comenzar</p>
+                    </div>
+                  ) : (
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive">
+                          <table className="table table-hover mb-0">
+                            <thead className="table-light">
+                              <tr>
+                                <th width="5%">#</th>
+                                <th width="35%">Texto del Cintillo</th>
+                                <th width="20%">Días Programados</th>
+                                <th width="15%">Estado</th>
+                                <th width="15%">Activo</th>
+                                <th width="10%">Acciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {formData.cintillos.map((cintillo, index) => {
+                                const text = typeof cintillo === 'string' ? cintillo : cintillo.text || '';
+                                const enabled = typeof cintillo === 'string' ? true : cintillo.enabled !== false;
+                                const status = getActiveStatus(cintillo);
+                                const scheduleSummary = getScheduleSummary(cintillo);
+                                
+                                return (
+                                  <tr key={`cintillo-${index}`}>
+                                    <td className="fw-bold text-muted">{index + 1}</td>
+                                    <td>
+                                      <div className="text-truncate" style={{ maxWidth: '300px' }} title={text}>
+                                        {text || <span className="text-muted fst-italic">Sin texto</span>}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <small className="text-muted">{scheduleSummary}</small>
+                                    </td>
+                                    <td>
+                                      <span className={status.class}>{status.status}</span>
+                                    </td>
+                                    <td>
+                                      <div className="form-check form-switch">
+                                        <input
+                                          className="form-check-input"
+                                          type="checkbox"
+                                          id={`cintillo-enabled-table-${index}`}
+                                          checked={enabled}
+                                          onChange={(e) => {
+                                            const newCintillos = [...formData.cintillos];
+                                            if (typeof newCintillos[index] === 'string') {
+                                              newCintillos[index] = {
+                                                text: newCintillos[index],
+                                                enabled: e.target.checked,
+                                                schedule: {
+                                                  monday: { enabled: true, start: '00:00', end: '23:59' },
+                                                  tuesday: { enabled: true, start: '00:00', end: '23:59' },
+                                                  wednesday: { enabled: true, start: '00:00', end: '23:59' },
+                                                  thursday: { enabled: true, start: '00:00', end: '23:59' },
+                                                  friday: { enabled: true, start: '00:00', end: '23:59' },
+                                                  saturday: { enabled: true, start: '00:00', end: '23:59' },
+                                                  sunday: { enabled: true, start: '00:00', end: '23:59' }
+                                                }
+                                              };
+                                            } else {
+                                              newCintillos[index].enabled = e.target.checked;
+                                            }
+                                            setFormData({
+                                              ...formData,
+                                              cintillos: newCintillos
+                                            });
+                                          }}
+                                        />
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="btn-group btn-group-sm">
+                                        <button
+                                          type="button"
+                                          className="btn btn-outline-primary"
+                                          onClick={() => openCintilloModal(index)}
+                                          title="Editar"
+                                        >
+                                          <i className="fas fa-edit"></i>
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className="btn btn-outline-danger"
+                                          onClick={() => {
+                                            if (confirm('¿Estás seguro de que quieres eliminar este cintillo?')) {
+                                              handleRemoveField(index, "cintillos");
+                                            }
+                                          }}
+                                          title="Eliminar"
+                                        >
+                                          <i className="fas fa-trash"></i>
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
               </div>
             </div>
 
@@ -2641,6 +2952,260 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       {/* Backdrop del modal */}
       {showVisibilityModal && (
         <div className="modal-backdrop fade show"></div>
+      )}
+
+      {/* Modal para Agregar/Editar Cintillo */}
+      {showCintilloModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="fas fa-bullhorn me-2"></i>
+                  {editingCintillo !== null ? 'Editar Cintillo' : 'Nuevo Cintillo'}
+                </h5>
+                <button type="button" className="btn-close" onClick={closeCintilloModal}></button>
+              </div>
+              <div className="modal-body">
+                {/* Texto del Cintillo */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-edit me-2"></i>Texto del Cintillo
+                  </label>
+                  <textarea
+                    className="form-control"
+                    value={modalCintillo.text}
+                    onChange={(e) => setModalCintillo({ ...modalCintillo, text: e.target.value })}
+                    rows="3"
+                    placeholder="Ingresa el texto del cintillo"
+                  />
+                  <small className="text-muted">
+                    <i className="fas fa-info-circle me-1"></i>
+                    Evita usar comas en el texto para mejor compatibilidad
+                  </small>
+                </div>
+
+                {/* Estado Activo */}
+                <div className="mb-4">
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="modalCintilloEnabled"
+                      checked={modalCintillo.enabled}
+                      onChange={(e) => setModalCintillo({ ...modalCintillo, enabled: e.target.checked })}
+                    />
+                    <label className="form-check-label fw-bold" htmlFor="modalCintilloEnabled">
+                      Cintillo Activo
+                    </label>
+                  </div>
+                </div>
+
+                {/* Configuraciones Rápidas */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-magic me-2"></i>Configuraciones Rápidas
+                  </label>
+                  <div className="btn-group w-100" role="group">
+                    <button
+                      type="button"
+                      className="btn btn-outline-success"
+                      onClick={() => {
+                        setModalCintillo({
+                          ...modalCintillo,
+                          schedule: {
+                            monday: { enabled: true, start: '00:00', end: '23:59' },
+                            tuesday: { enabled: true, start: '00:00', end: '23:59' },
+                            wednesday: { enabled: true, start: '00:00', end: '23:59' },
+                            thursday: { enabled: true, start: '00:00', end: '23:59' },
+                            friday: { enabled: true, start: '00:00', end: '23:59' },
+                            saturday: { enabled: false, start: '00:00', end: '23:59' },
+                            sunday: { enabled: false, start: '00:00', end: '23:59' }
+                          }
+                        });
+                      }}
+                    >
+                      <i className="fas fa-briefcase me-1"></i>Días Laborales
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-outline-info"
+                      onClick={() => {
+                        setModalCintillo({
+                          ...modalCintillo,
+                          schedule: {
+                            monday: { enabled: false, start: '00:00', end: '23:59' },
+                            tuesday: { enabled: false, start: '00:00', end: '23:59' },
+                            wednesday: { enabled: false, start: '00:00', end: '23:59' },
+                            thursday: { enabled: false, start: '00:00', end: '23:59' },
+                            friday: { enabled: false, start: '00:00', end: '23:59' },
+                            saturday: { enabled: true, start: '00:00', end: '23:59' },
+                            sunday: { enabled: true, start: '00:00', end: '23:59' }
+                          }
+                        });
+                      }}
+                    >
+                      <i className="fas fa-calendar-weekend me-1"></i>Fines de Semana
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary"
+                      onClick={() => {
+                        setModalCintillo({
+                          ...modalCintillo,
+                          schedule: {
+                            monday: { enabled: true, start: '00:00', end: '23:59' },
+                            tuesday: { enabled: true, start: '00:00', end: '23:59' },
+                            wednesday: { enabled: true, start: '00:00', end: '23:59' },
+                            thursday: { enabled: true, start: '00:00', end: '23:59' },
+                            friday: { enabled: true, start: '00:00', end: '23:59' },
+                            saturday: { enabled: true, start: '00:00', end: '23:59' },
+                            sunday: { enabled: true, start: '00:00', end: '23:59' }
+                          }
+                        });
+                      }}
+                    >
+                      <i className="fas fa-globe me-1"></i>Todos los Días
+                    </button>
+                  </div>
+                </div>
+
+                {/* Programación Detallada */}
+                <div className="mb-3">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-calendar-alt me-2"></i>Programación Detallada
+                  </label>
+                  <div className="border rounded p-3" style={{ backgroundColor: '#f8f9fa' }}>
+                    {[
+                      { key: 'monday', label: 'Lunes', icon: 'fas fa-moon' },
+                      { key: 'tuesday', label: 'Martes', icon: 'fas fa-sun' },
+                      { key: 'wednesday', label: 'Miércoles', icon: 'fas fa-cloud' },
+                      { key: 'thursday', label: 'Jueves', icon: 'fas fa-star' },
+                      { key: 'friday', label: 'Viernes', icon: 'fas fa-heart' },
+                      { key: 'saturday', label: 'Sábado', icon: 'fas fa-home' },
+                      { key: 'sunday', label: 'Domingo', icon: 'fas fa-church' }
+                    ].map((day) => {
+                      const daySchedule = modalCintillo.schedule[day.key] || { enabled: true, start: '00:00', end: '23:59' };
+                      
+                      return (
+                        <div key={day.key} className="row mb-3 align-items-center p-2 rounded" style={{ backgroundColor: daySchedule.enabled ? '#DCFCE7' : '#f8f8f8' }}>
+                          <div className="col-md-3">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={`modal-${day.key}`}
+                                checked={daySchedule.enabled}
+                                onChange={(e) => {
+                                  setModalCintillo({
+                                    ...modalCintillo,
+                                    schedule: {
+                                      ...modalCintillo.schedule,
+                                      [day.key]: {
+                                        ...daySchedule,
+                                        enabled: e.target.checked
+                                      }
+                                    }
+                                  });
+                                }}
+                              />
+                              <label className="form-check-label fw-bold d-flex align-items-center" htmlFor={`modal-${day.key}`}>
+                                {day.label}
+                              </label>
+                            </div>
+                          </div>
+                          {daySchedule.enabled && (
+                            <>
+                              <div className="col-md-4">
+                                <div className="input-group">
+                                  <span className="input-group-text">
+                                    <i className="fas fa-clock text-success"></i>
+                                  </span>
+                                  <input
+                                    type="time"
+                                    className="form-control"
+                                    value={daySchedule.start || '00:00'}
+                                    onChange={(e) => {
+                                      setModalCintillo({
+                                        ...modalCintillo,
+                                        schedule: {
+                                          ...modalCintillo.schedule,
+                                          [day.key]: {
+                                            ...daySchedule,
+                                            start: e.target.value
+                                          }
+                                        }
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4">
+                                <div className="input-group">
+                                  <span className="input-group-text">
+                                    <i className="fas fa-clock text-danger"></i>
+                                  </span>
+                                  <input
+                                    type="time"
+                                    className="form-control"
+                                    value={daySchedule.end || '23:59'}
+                                    onChange={(e) => {
+                                      setModalCintillo({
+                                        ...modalCintillo,
+                                        schedule: {
+                                          ...modalCintillo.schedule,
+                                          [day.key]: {
+                                            ...daySchedule,
+                                            end: e.target.value
+                                          }
+                                        }
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-1">
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-primary btn-sm"
+                                  onClick={() => {
+                                    setModalCintillo({
+                                      ...modalCintillo,
+                                      schedule: {
+                                        ...modalCintillo.schedule,
+                                        [day.key]: {
+                                          enabled: true,
+                                          start: '00:00',
+                                          end: '23:59'
+                                        }
+                                      }
+                                    });
+                                  }}
+                                  title="Todo el día"
+                                >
+                                  24h
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeCintilloModal}>
+                  <i className="fas fa-times me-1"></i>Cancelar
+                </button>
+                <button type="button" className="btn btn-primary" onClick={saveCintillo}>
+                  <i className="fas fa-save me-1"></i>
+                  {editingCintillo !== null ? 'Actualizar' : 'Guardar'} Cintillo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

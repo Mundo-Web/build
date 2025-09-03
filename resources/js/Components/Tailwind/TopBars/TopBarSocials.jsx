@@ -4,12 +4,14 @@ import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import Tippy from "@tippyjs/react";
 import Global from "../../../Utils/Global";
 import AnimatedCintillo from "../Components/AnimatedCintillo";
+import useCintillos from "../../../Hooks/useCintillos";
 
 
 const TopBarSocials = ({ items, data }) => {
   const sectionRef = useRef(null);
   const [show, setShow] = useState(true);
   const lastScroll = useRef(0);
+  const { hasActiveCintillos } = useCintillos();
 
   useEffect(() => {
     
@@ -25,6 +27,12 @@ const TopBarSocials = ({ items, data }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Si no hay cintillos activos y este TopBar se usa principalmente para mostrar cintillos,
+  // podemos ocultarlo o mostrar el copyright
+  if (!hasActiveCintillos && !data?.isCopyright) {
+    return null;
+  }
  
   return (
     <section
@@ -34,7 +42,7 @@ const TopBarSocials = ({ items, data }) => {
       <div className="px-primary  mx-auto py-1.5 flex flex-wrap justify-center md:justify-between items-center gap-2 2xl:max-w-7xl 2xl:px-0">
         <p className="hidden md:block text-xs">{data?.isCopyright ? 
        ` Copyright © ${new Date().getFullYear()} ${Global.APP_NAME}. Reservados todos los derechos.`
-        : <AnimatedCintillo />}</p>
+        : hasActiveCintillos ? <AnimatedCintillo /> : null}</p>
         <p className="hidden md:block text-xs">{data?.title}</p>
         <div className="flex gap-4">
           {
