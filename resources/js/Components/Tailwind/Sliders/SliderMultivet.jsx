@@ -244,7 +244,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                   {/* Mobile Image */}
                   <motion.img
                     key={`image-mobile-${index}`}
-                    src={`/storage/images/slider/${slide?.bg_image_mobile || slide?.bg_image }`}
+                    src={`/storage/images/slider/${slide?.bg_image_mobile || slide?.bg_image || "undefined"}`}
                     alt={slide?.name}
                     loading="lazy"
                     className={`block md:hidden absolute top-0 left-0 h-full w-full object-cover ${data?.imageBgPosition || "object-center"} z-0`}
