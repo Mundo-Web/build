@@ -472,7 +472,7 @@ const HeaderSearchB = ({
                         <img
                             src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                             alt={Global.APP_NAME}
-                            className="h-14 object-contain object-center"
+                            className={`h-14 object-contain object-center ${data?.class_logo || ""}`}
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = "/assets/img/logo-bk.svg";

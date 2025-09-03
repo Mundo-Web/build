@@ -194,7 +194,8 @@
                     "link_cart",
                     "showLoginCart",
                     "mobileSearch",
-                    "backgroundColor"
+                    "backgroundColor",
+                    "class_logo"
                 ],
                 "using": {
                     "model": "Category",
