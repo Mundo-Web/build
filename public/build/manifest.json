@@ -88,6 +88,16 @@
       "_circle-check-big-CYWUGR3Z.js"
     ]
   },
+  "_CardProductMultivet-BzuuCUTM.js": {
+    "file": "assets/CardProductMultivet-BzuuCUTM.js",
+    "name": "CardProductMultivet",
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
+      "_circle-chevron-right-Cragr8lM.js"
+    ]
+  },
   "_CartItemRow-Ds6-hPyN.js": {
     "file": "assets/CartItemRow-Ds6-hPyN.js",
     "name": "CartItemRow",
@@ -6553,7 +6563,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-Bcb0gQOR.js",
+    "file": "assets/Filter-DpZ9PAGo.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -6826,7 +6836,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-Zx6UbAMe.js",
+    "file": "assets/CatalogoFiltrosDental-DlPiDRmU.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -6839,6 +6849,7 @@
       "_SelectForm-BvLefn0w.js",
       "_main-B6F2O9-U.js",
       "_CardProductBananaLab-CGOLiDfR.js",
+      "_CardProductMultivet-BzuuCUTM.js",
       "_proxy-B0QLMKEh.js",
       "_list-filter-B_9H95Vt.js",
       "_sliders-vertical-BKVsqP9q.js",
@@ -8395,7 +8406,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-Bv92f3FY.js",
+    "file": "assets/Product-D1yhVL31.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -10645,7 +10656,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Dpoys7Dq.js",
+    "file": "assets/System-DURzrLpo.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

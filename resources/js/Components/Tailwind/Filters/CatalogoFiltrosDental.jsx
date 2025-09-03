@@ -30,7 +30,13 @@ import { Loading } from "../Components/Resources/Loading";
 import { NoResults } from "../Components/Resources/NoResult";
 import SelectForm from "./Components/SelectForm";
 import { GET } from "sode-extend-react";
+
+// Importar diferentes tipos de tarjetas de productos
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
+import CardProductMultivet from "../Products/Components/CardProductMultivet";
+// import CardProductDefault from "../Products/Components/CardProductDefault";
+// import CardProductMinimal from "../Products/Components/CardProductMinimal";
+// import CardProductCompact from "../Products/Components/CardProductCompact";
 
 const itemsRest = new ItemsRest();
 
@@ -195,6 +201,72 @@ const SkeletonCard = ({ delay = 0 }) => {
 
 
 const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFavorites, favorites }) => {
+
+    // Función para renderizar la tarjeta de producto correcta basándose en el tipo
+    const renderProductCard = (product, commonProps) => {
+        const cardType = data?.type_card_product || 'default';
+        
+        // Props comunes que todas las tarjetas necesitan
+        const baseProps = {
+            product,
+            data,
+            setFavorites,
+            favorites,
+            cart,
+            setCart,
+            ...commonProps
+        };
+
+        switch (cardType) {
+            case 'multivet':
+                return (
+                    <CardProductMultivet
+                        {...baseProps}
+                    />
+                );
+            
+            case 'banana-lab':
+            case 'bananalab':
+                return (
+                    <CardProductBananaLab
+                        {...baseProps}
+                        widthClass="w-full sm:w-full lg:w-full"
+                    />
+                );
+            
+            // case 'minimal':
+            //     return (
+            //         <CardProductMinimal
+            //             {...baseProps}
+            //         />
+            //     );
+            
+            // case 'compact':
+            //     return (
+            //         <CardProductCompact
+            //             {...baseProps}
+            //         />
+            //     );
+            
+            // case 'default':
+            // default:
+            //     return (
+            //         <CardProductDefault
+            //             {...baseProps}
+            //         />
+            //     );
+            
+            default:
+                // Fallback a CardProductBananaLab si no se especifica tipo o no se reconoce
+                return (
+                    <CardProductBananaLab
+                        {...baseProps}
+                        widthClass="w-full sm:w-full lg:w-full"
+                    />
+                );
+        }
+    };
+
     // Opciones de ordenación (mover al inicio para evitar problemas de hoisting)
     const sortOptions = [
         { value: "created_at:desc", label: "Más reciente" },
@@ -2242,7 +2314,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                         transition={{ delay: 0.6 }}
                                     >
                                         <motion.button
-                                            className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
+                                            className={`w-full p-4  rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold ${data?.class_clear_button || 'bg-secondary customtext-neutral-dark hover:bg-primary hover:text-white'}`}
                                             onClick={() => {
                                                 console.log("🧹 Limpiando todos los filtros...");
                                                 console.log("📊 Estado actual antes de limpiar:", selectedFilters);
@@ -2424,15 +2496,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                     transition: { duration: 0.2 }
                                                 }}
                                             >
-                                                <CardProductBananaLab
-                                                    setFavorites={setFavorites}
-                                                    favorites={favorites}
-                                                    data={data}
-                                                    product={product}
-                                                    widthClass="w-full sm:w-full lg:w-full"
-                                                    cart={cart}
-                                                    setCart={setCart}
-                                                />
+                                                {renderProductCard(product)}
                                             </motion.div>
                                         ))
                                     ) : hasSearched && !loading && !isFiltering && showNoResults ? (
