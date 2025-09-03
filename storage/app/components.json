@@ -2569,6 +2569,57 @@
                         "category"
                     ]
                 }
+            },
+            {
+                "id": "BlogSectionMultivet",
+                "name": "BlogSectionMultivet",
+                "image": "blog-section-multivet.png",
+                "data": [
+                    "title",
+                    "subtitle", 
+                    "posts_per_page",
+                    "show_preview",
+                    "show_view_all",
+                    "view_all_text",
+                    "blog_url",
+                    "read_more_text",
+                    "prev_text",
+                    "next_text",
+                    "section_background",
+                    "title_color",
+                    "subtitle_color",
+                    "post_title_color",
+                    "post_excerpt_color",
+                    "read_more_color",
+                    "nav_active_bg",
+                    "nav_active_color",
+                    "nav_disabled_bg",
+                    "nav_disabled_color",
+                    "indicator_active",
+                    "indicator_inactive",
+                    "view_all_bg",
+                    "class_section",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_grid",
+                    "class_card",
+                    "class_preview_card",
+                    "class_post_title",
+                    "class_post_excerpt",
+                    "class_read_more",
+                    "class_navigation",
+                    "class_nav_button",
+                    "class_view_all_container",
+                    "class_view_all"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 12,
+                    "with": [
+                        "category"
+                    ]
+                }
             }
         ]
     },

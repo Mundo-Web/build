@@ -6,6 +6,8 @@ const BlogCarruselBananaLab = React.lazy(() => import("./Blogs/BlogCarruselBanan
 const BlogSectionMakita = React.lazy(() => import("./Blogs/BlogSectionMakita"));
 const BlogSectionAko = React.lazy(() => import("./Blogs/BlogSectionAko"));
 const BlogSectionDental = React.lazy(() => import("./Blogs/BlogSectionDental"));
+const BlogSectionMultivet = React.lazy(() => import("./Blogs/BlogSectionMultivet"));
+
 const Blog = ({
     data,
     items,
@@ -28,6 +30,8 @@ const Blog = ({
                     return <BlogSectionMakita data={data} items={items} />
             case "BlogSectionDental":
                 return <BlogSectionDental data={data} items={items} />
+            case "BlogSectionMultivet":
+                return <BlogSectionMultivet data={data} items={items} />
                     default:
             return <div>No hay componente {which}</div>;
         }

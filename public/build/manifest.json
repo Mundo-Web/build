@@ -731,6 +731,13 @@
       "_createLucideIcon-DfjclApS.js"
     ]
   },
+  "_clock-BLXQcN-l.js": {
+    "file": "assets/clock-BLXQcN-l.js",
+    "name": "clock",
+    "imports": [
+      "_createLucideIcon-DfjclApS.js"
+    ]
+  },
   "_cookies-Nt1ZI17y.js": {
     "file": "assets/cookies-Nt1ZI17y.js",
     "name": "cookies",
@@ -4800,7 +4807,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-BIaFdHWH.js",
+    "file": "assets/Blog-CbmJmxYK.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -4817,7 +4824,8 @@
       "resources/js/Components/Tailwind/Blogs/BlogCarruselBananaLab.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionMakita.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionAko.jsx",
-      "resources/js/Components/Tailwind/Blogs/BlogSectionDental.jsx"
+      "resources/js/Components/Tailwind/Blogs/BlogSectionDental.jsx",
+      "resources/js/Components/Tailwind/Blogs/BlogSectionMultivet.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx": {
@@ -4902,6 +4910,18 @@
     "file": "assets/BlogSectionMakita--pJTheE3.js",
     "name": "BlogSectionMakita",
     "src": "resources/js/Components/Tailwind/Blogs/BlogSectionMakita.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Blogs/BlogSectionMultivet.jsx": {
+    "file": "assets/BlogSectionMultivet--pJTheE3.js",
+    "name": "BlogSectionMultivet",
+    "src": "resources/js/Components/Tailwind/Blogs/BlogSectionMultivet.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -10240,7 +10260,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-Bv1AgJEX.js",
+    "file": "assets/Contact-CoZiE-3q.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -10253,12 +10273,13 @@
       "_Global-DWbVqTT_.js",
       "_map-pin-Cj3PUWlD.js",
       "_phone-ZNY-sPqk.js",
-      "_createLucideIcon-DfjclApS.js",
+      "_clock-BLXQcN-l.js",
       "_MessagesRest-DTq6_dvv.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_user-BZB1h7Cv.js",
       "_mail-drJGpT4k.js",
       "_message-square-3fUfiy2J.js",
+      "_createLucideIcon-DfjclApS.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_index.esm-BX8DScGS.js",
@@ -10611,7 +10632,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BpiuUGOd.js",
+    "file": "assets/System-Bz0uAiA0.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
