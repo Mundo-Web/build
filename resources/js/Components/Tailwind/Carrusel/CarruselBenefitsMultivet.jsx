@@ -37,7 +37,7 @@ const CarruselBenefitsMultivet = ({ items = [], data }) => {
       {/* Content */}
       <div className="relative z-10 h-full flex items-center justify-center">
         <div className="text-center text-white max-w-4xl mx-auto px-4">
-          <h2 className={`text-4xl md:text-5xl font-bold mb-6 font-montserrat animate-fade-in  ${data?.class_title || 'text-white'}`}>
+          <h2 className={`text-4xl font-title md:text-5xl font-bold mb-6 font-montserrat animate-fade-in  ${data?.class_title || 'text-white'}`}>
             {data?.title || 'Compromiso con la'}
            
           </h2>

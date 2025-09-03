@@ -72,7 +72,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
       if (part.startsWith('*') && part.endsWith('*')) {
         const highlightedText = part.slice(1, -1);
         return (
-          <span key={index} className="customtext-accent">
+          <span key={index} className="font-title customtext-accent !uppercase font-extrabold">
             {highlightedText}
           </span>
         );
@@ -208,7 +208,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
   }
 
   return (
-    <section className="relative h-[calc(100dvh-20dvh)] lg:h-[700px] overflow-hidden">
+    <section className="relative h-[calc(100dvh-12dvh)] lg:h-[700px] overflow-hidden">
       {/* Slides Container */}
       <div 
         className="relative w-full h-full"
@@ -218,7 +218,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
       >
         {sortedItems.map((slide, index) => (
           <div
-            key={slide.id || index}
+            key={slide?.id || index}
             className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
               index === currentSlide
                 ? 'opacity-100 scale-100'
@@ -232,8 +232,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                   {/* Desktop Image */}
                   <motion.img
                     key={`image-desktop-${index}`}
-                    src={`/storage/images/slider/${slide.bg_image || "undefined"}`}
-                    alt={slide.name}
+                    src={`/storage/images/slider/${slide?.bg_image || "undefined"}`}
+                    alt={slide?.name}
                     loading="lazy"
                     className={`hidden md:block absolute top-0 left-0 h-full w-full object-cover ${data?.imageBgPosition || "object-center"} z-0`}
                     variants={imageVariants}
@@ -244,8 +244,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                   {/* Mobile Image */}
                   <motion.img
                     key={`image-mobile-${index}`}
-                    src={`/storage/images/slider/${slide.bg_image_mobile || slide.bg_image || "undefined"}`}
-                    alt={slide.name}
+                    src={`/storage/images/slider/${slide?.bg_image_mobile || slide?.bg_image }`}
+                    alt={slide?.name}
                     loading="lazy"
                     className={`block md:hidden absolute top-0 left-0 h-full w-full object-cover ${data?.imageBgPosition || "object-center"} z-0`}
                     variants={imageVariants}
@@ -270,7 +270,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                   {/* Text Content */}
                   <AnimatePresence mode="wait">
                     <motion.div 
-                      key={`content-${currentSlide}-${slide.name}`}
+                      key={`content-${currentSlide}-${slide?.name}`}
                       className={`space-y-6 ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${
                         index === currentSlide ? 'opacity-100' : 'opacity-0'
                       }`}
@@ -281,32 +281,32 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                       {/* Title */}
                       <motion.h1 
                         variants={titleVariants}
-                        className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold leading-tight font-title ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_title}`}
+                        className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold font-title ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_title}`}
                         style={{ textShadow: "0 0 20px rgba(0, 0, 0, .25)" }}
                       >
-                        {renderTextWithHighlight(slide.name)}
+                        {renderTextWithHighlight(slide?.name)}
                       </motion.h1>
                       
                       {/* Description */}
                       <motion.p 
                         variants={descriptionVariants}
-                        className={`text-lg lg:text-2xl leading-relaxed max-w-2xl font-paragraph ${isDarkBg ? "text-gray-200" : "customtext-neutral-dark"} ${data?.class_description}`}
+                        className={`text-base lg:text-2xl leading-relaxed max-w-2xl font-paragraph ${isDarkBg ? "text-gray-200" : "customtext-neutral-dark"} ${data?.class_description}`}
                         style={{ textShadow: "0 0 20px rgba(0, 0, 0, .25)" }}
                       >
-                        {slide.description}
+                        {slide?.description}
                       </motion.p>
 
                       {/* Buttons */}
-                      {slide.button_text && slide.button_link && (
+                      {slide?.button_text && slide?.button_link && (
                         <motion.div 
                           variants={buttonsVariants}
-                          className="flex flex-col sm:flex-row gap-4 pt-4"
+                          className="flex flex-col md:flex-row gap-4 pt-4"
                         >
                           <a
-                            href={slide.button_link}
-                            className={`bg-primary border-none flex items-center justify-center gap-3 px-8 py-4 text-base rounded-md tracking-wide font-bold text-white ${data?.class_button_primary || ""} transform hover:scale-105 transition-all duration-300`}
+                            href={slide?.button_link}
+                            className={`bg-primary border-none flex items-center justify-center gap-2 py-3 lg:gap-3 lg:px-8 lg:py-4 text-base rounded-md tracking-wide font-bold text-white ${data?.class_button_primary || ""} transform hover:scale-105 transition-all duration-300`}
                           >
-                            <span>{slide.button_text}</span>
+                            <span>{slide?.button_text}</span>
                             <ArrowRight className="w-5 h-5" />
                           </a>
 
@@ -316,7 +316,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                               href={`https://wa.me/${phoneWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(messageWhatsapp || '¡Hola! Me interesa obtener más información sobre sus productos.')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white flex items-center justify-center gap-3 px-6 py-4 text-base rounded-xl tracking-wide font-bold hover:bg-white/30 transition-all duration-300 ${data?.class_button_primary || ""}`}
+                              className={`bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white flex items-center justify-center gap-2 py-3 lg:gap-3 px-6 lg:py-4 text-base rounded-xl tracking-wide font-bold hover:bg-white/30 transition-all duration-300 ${data?.class_button_primary || ""}`}
                             >
                               <MessageCircle className="w-5 h-5" />
                               <span>Contactar ahora</span>
@@ -338,13 +338,13 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
         <>
           <button
             onClick={prevSlide}
-            className="absolute top-1/2 left-4 lg:left-8 transform -translate-y-1/2 z-20 w-16 h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 hover:scale-110"
+            className="hidden lg:flex absolute top-1/2 left-4 lg:left-8 transform -translate-y-1/2 z-20 w-16 h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full  items-center justify-center text-white hover:bg-white/30 transition-all duration-300 hover:scale-110"
           >
             <ChevronLeft className="w-8 h-8" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute top-1/2 right-4 lg:right-8 transform -translate-y-1/2 z-20 w-16 h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 hover:scale-110"
+            className="hidden lg:flex absolute top-1/2 right-4 lg:right-8 transform -translate-y-1/2 z-20 w-16 h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full  items-center justify-center text-white hover:bg-white/30 transition-all duration-300 hover:scale-110"
           >
             <ChevronRight className="w-8 h-8" />
           </button>
@@ -353,7 +353,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
 
       {/* Bottom Controls */}
       {showPagination && sortedItems.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="absolute bottom-4 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div className="flex items-center space-x-6 bg-black/30 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
             {/* Dots Indicator */}
             <div className="flex space-x-3">

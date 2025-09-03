@@ -12,7 +12,7 @@ const BannerMultivet = ({ data }) => {
                 
                 {/* Contenido de texto */}
                 <div className={`flex flex-col gap-5 py-8 px-6 sm:px-8 lg:pl-12 xl:pl-16 2xl:pl-20 justify-center items-start w-full xl:w-7/12 2xl:w-8/12 text-left z-20 relative ${data?.class_content || ''}`}>
-                    <h1 className={`font-bold text-3xl sm:text-4xl lg:text-5xl xl:text-5xl 2xl:text-6xl leading-tight ${data?.title_color || 'customtext-secondary'} ${data?.title_opacity || 'text-opacity-90'} ${data?.class_title || ''}`}>
+                    <h1 className={`font-bold font-title text-3xl sm:text-4xl lg:text-5xl xl:text-5xl 2xl:text-6xl leading-tight ${data?.title_color || 'customtext-secondary'} ${data?.title_opacity || 'text-opacity-90'} ${data?.class_title || ''}`}>
                       {data?.name}
                     </h1>
 

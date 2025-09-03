@@ -67,7 +67,7 @@ const TestimonialsMultivet = ({ items = [], data }) => {
             <div className="max-w-7xl mx-auto px-primary">
                 {/* Header */}
                 <div className={`text-center mb-12 ${data?.class_header || ''}`}>
-                    <h2 className={`text-3xl md:text-5xl font-bold mb-4 font-montserrat ${data?.title_color || 'text-white'} ${data?.class_title || ''}`}>
+                    <h2 className={`text-3xl font-title md:text-5xl font-bold mb-4 font-montserrat ${data?.title_color || 'text-white'} ${data?.class_title || ''}`}>
                         {data?.title || 'Lo que dicen nuestros clientes'}
                     </h2>
                     <p className={`max-w-2xl mx-auto text-lg  ${data?.subtitle_color || 'text-gray-300'} ${data?.class_subtitle || ''}`}>
@@ -121,14 +121,14 @@ const TestimonialsMultivet = ({ items = [], data }) => {
                         <>
                             <button
                                 onClick={prevTestimonial}
-                                className={`absolute -left-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full transition-colors shadow-lg ${data?.nav_button_bg || 'bg-accent hover:bg-secondary'} ${data?.nav_button_color || 'text-primary-800'}`}
+                                className={`hidden lg:flex absolute -left-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full transition-colors shadow-lg ${data?.nav_button_bg || 'bg-accent hover:bg-secondary'} ${data?.nav_button_color || 'text-primary-800'}`}
                                 aria-label="Testimonio anterior"
                             >
                                 <ChevronLeft className="w-6 h-6" />
                             </button>
                             <button
                                 onClick={nextTestimonial}
-                                className={`absolute -right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full transition-colors shadow-lg ${data?.nav_button_bg || 'bg-accent hover:bg-secondary'} ${data?.nav_button_color || 'text-primary-800'}`}
+                                className={`hidden lg:flex absolute -right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full transition-colors shadow-lg ${data?.nav_button_bg || 'bg-accent hover:bg-secondary'} ${data?.nav_button_color || 'text-primary-800'}`}
                                 aria-label="Siguiente testimonio"
                             >
                                 <ChevronRight className="w-6 h-6" />

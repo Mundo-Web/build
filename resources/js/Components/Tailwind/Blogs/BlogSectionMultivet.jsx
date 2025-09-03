@@ -94,7 +94,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
     return (
       <section className={`py-16 ${data?.section_background || 'bg-gray-50'} ${data?.class_section || ''}`}>
         <div className="max-w-7xl mx-auto px-primary text-center">
-          <h2 className={`text-3xl md:text-4xl font-bold mb-4  ${data?.title_color || 'customtext-secondary'}`}>
+          <h2 className={`text-3xl font-title md:text-4xl font-bold mb-4  ${data?.title_color || 'customtext-secondary'}`}>
             {data?.title || 'Últimas Publicaciones del Blog'}
           </h2>
           <p className="customtext-neutral-light">No hay artículos disponibles en este momento.</p>
@@ -108,7 +108,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
       <div className="max-w-7xl mx-auto px-primary">
         {/* Header */}
         <div className={`text-center mb-12 ${data?.class_header || ''}`}>
-          <h2 className={`text-3xl md:text-5xl font-bold mb-4  ${data?.title_color || 'customtext-secondary'} ${data?.class_title || ''}`}>
+          <h2 className={`text-3xl font-title md:text-5xl font-bold mb-4  ${data?.title_color || 'customtext-secondary'} ${data?.class_title || ''}`}>
             {data?.title || 'Últimas Publicaciones del Blog'}
           </h2>
           <p className={`max-w-2xl mx-auto text-lg ${data?.subtitle_color || 'customtext-neutral-light'} ${data?.class_subtitle || ''}`}>
