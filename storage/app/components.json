@@ -10,6 +10,11 @@
                 "image": "top-bar-simple.png",
                 "generals": [
                     "cintillo"
+                ],
+                "data": [
+                    "class_content",
+                    "class_text"
+                    
                 ]
             },
             {

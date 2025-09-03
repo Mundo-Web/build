@@ -1272,7 +1272,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-BS1zncg8.js",
+    "file": "assets/About-DDSCOZkt.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3139,7 +3139,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-DHKZETx2.js",
+    "file": "assets/Blog-BoTEern2.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3183,7 +3183,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-Bgjd0A2Z.js",
+    "file": "assets/BlogArticle-CvtrFJ2o.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -4791,7 +4791,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-D8IKFOqS.js",
+    "file": "assets/Base-nPllr_qu.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -7514,7 +7514,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-CWcvMQ0D.js",
+    "file": "assets/Header-ClU5VV89.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -7868,7 +7868,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Headers/HeaderSearchDental.jsx": {
-    "file": "assets/HeaderSearchDental-CMz2-3av.js",
+    "file": "assets/HeaderSearchDental-BXlBKdm9.js",
     "name": "HeaderSearchDental",
     "src": "resources/js/Components/Tailwind/Headers/HeaderSearchDental.jsx",
     "isDynamicEntry": true,
@@ -7918,6 +7918,7 @@
       "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
       "_BasicRest-DJtN-L6Q.js",
       "_adjustTextColor-DJKJvkxA.js",
+      "resources/js/Components/Tailwind/TopBars/TopBarSimple.jsx",
       "_CreateReactScript-C2S32NoH.js",
       "_index.esm-BX8DScGS.js",
       "_index-NIGUFBhG.js",
@@ -9982,7 +9983,7 @@
     ]
   },
   "resources/js/Components/Tailwind/TopBar.jsx": {
-    "file": "assets/TopBar-BTxTGGe4.js",
+    "file": "assets/TopBar-0-oMUmUc.js",
     "name": "TopBar",
     "src": "resources/js/Components/Tailwind/TopBar.jsx",
     "isEntry": true,
@@ -10101,7 +10102,7 @@
     ]
   },
   "resources/js/Components/Tailwind/TopBars/TopBarSimple.jsx": {
-    "file": "assets/TopBarSimple--pJTheE3.js",
+    "file": "assets/TopBarSimple-DVt_TKWA.js",
     "name": "TopBarSimple",
     "src": "resources/js/Components/Tailwind/TopBars/TopBarSimple.jsx",
     "isEntry": true,
@@ -10260,7 +10261,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-Dukxvtce.js",
+    "file": "assets/Contact-BC92-un0.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -10304,7 +10305,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-_hAwFFDb.js",
+    "file": "assets/CourseDetails-CpNq8qrk.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -10339,7 +10340,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-CWMf1sMh.js",
+    "file": "assets/Courses-pLtcJsvY.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -10432,7 +10433,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-DqHSfJSk.js",
+    "file": "assets/Home-CECVisdR.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -10632,7 +10633,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-92O_xgtH.js",
+    "file": "assets/System-oytYQUD-.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

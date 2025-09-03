@@ -4,8 +4,9 @@ import { useRef } from "react";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import AnimatedCintillo from "../Components/AnimatedCintillo";
 import useCintillos from "../../../Hooks/useCintillos";
+import { data } from "jquery";
 
-const TopBarSimple = ({}) => {
+const TopBarSimple = ({data}) => {
     const divRef = useRef(null);
     const { hasActiveCintillos } = useCintillos();
 
@@ -23,9 +24,9 @@ const TopBarSimple = ({}) => {
     return (
         <div
             ref={divRef}
-            className="hidden bg-primary py-3 font-bold px-primary md:flex justify-center items-center text-sm font-font-secondary"
+            className={`hidden bg-primary py-3 font-bold px-primary md:flex justify-center items-center text-sm font-font-secondary ${data?.class_content || ""}`}
         >
-            <p>
+            <p className={` ${data?.class_text || ""}`}>
                 <AnimatedCintillo />
             </p>
         </div>
