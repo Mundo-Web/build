@@ -238,7 +238,8 @@
                     "showLoginCart",
                     "mobileSearch",
                     "backgroundColor",
-                    "topBarType"
+                    "topBarType",
+                    "class_pedido"
                 ],
                 "using": {
                     "model": "Category",
@@ -446,6 +447,28 @@
                 "name": "Beneficios Simple Swiper",
                 "data": [
                     "background"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+            {
+                "id": "CarruselBenefitsMultivet",
+                "name": "Beneficios Multivet",
+                "data": [
+                    "background",
+                    "background_image",
+                    "overlay",
+                    "title",
+                    "subtitle", 
+                    "description",
+                    "accent_color",
+                    "accent_bg",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "button_text",
+                    "show_button"
                 ],
                 "using": {
                     "model": "Indicator"
@@ -1636,6 +1659,34 @@
                 }
             },
             {
+                "id": "ProductMultivet",
+                "name": "Product Multivet",
+                "image": "products-carousel.png",
+                "data": [
+                    "title",
+                    "description",
+                    "link_catalog",
+                    "text_button",
+                    "class_section",
+                    "class_button"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
                 "id": "ProductNavigation",
                 "name": "Navegacion",
                 "image": "products-list.png",
@@ -1840,7 +1891,13 @@
         "options": [
             {
                 "id": "BannerSimple",
-                "name": "Simple"
+                "name": "Simple",
+                "data": [
+                    "overlay",
+                    "btn_secondary",
+                    "class_button"
+                    
+                ]
             },
             {
                 "id": "BannerSimpleD2",
@@ -1930,6 +1987,33 @@
             {
                 "id": "BannerSimpleSF",
                 "name": "SimpleSF"
+            },
+            {
+                "id": "BannerMultivet",
+                "name": "Banner Multivet",
+                "image": "banner-multivet.png",
+                "data": [
+                    "section_background",
+                    "container_background",
+                    "title_color",
+                    "title_opacity",
+                    "description_color",
+                    "description_opacity",
+                    "button_background",
+                    "image_position",
+                    "show_image_overlay",
+                    "show_decorations",
+                    "decoration_color",
+                    "class_section",
+                    "class_container",
+                    "class_content",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "class_image_container",
+                    "class_image",
+                    "class_overlay"
+                ]
             },
             {
                 "id": "BannerBananaLab",

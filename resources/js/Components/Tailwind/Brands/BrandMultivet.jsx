@@ -30,10 +30,10 @@ const BrandMultivet = ({ items, data }) => {
       <section className="py-12 bg-gray-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 mb-8">
         <div className="text-center">
-          <h2 className="text-2xl md:text-3xl font-bold customtext-primary mb-4 font-title">
+          <h2 className="text-2xl md:text-5xl font-bold customtext-secondary mb-4 font-title">
             {data?.title || "Marcas de Confianza"}
           </h2>
-          <p className="customtext-neutral-dark max-w-2xl mx-auto">
+          <p className="customtext-neutral-light max-w-2xl mx-auto">
             {data?.description || "Trabajamos con las mejores marcas nacionales e internacionales para garantizar productos de la más alta calidad"}
           </p>
         </div>
@@ -86,7 +86,7 @@ const BrandMultivet = ({ items, data }) => {
 
       {/* Bottom text */}
       <div className="text-center mt-8">
-        <p className="text-sm customtext-neutral-dark">
+        <p className="text-sm customtext-neutral-light">
           {data?.footer_text || "Y muchas marcas más disponibles en nuestro catálogo"}
         </p>
       </div>

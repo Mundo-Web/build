@@ -12,6 +12,7 @@ const ProductFeaturedSwiper = React.lazy(() => import("./Products/ProductFeature
 const ProductBananaLab = React.lazy(() => import("./Products/ProductBananaLab"));
 const ScrapingSimple = React.lazy(() => import("./Scraping/ScrapingSimple"));
 const ProductMakita = React.lazy(() => import("./Products/ProductMakita"));
+const ProductMultivet = React.lazy(() => import("./Products/ProductMultivet"));
 
 const Product = ({
     which,
@@ -138,6 +139,15 @@ const Product = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
+                    />
+                );
+            case "ProductMultivet":
+                return (
+                    <ProductMultivet
+                        data={data}
+                        items={items}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
                     />
                 );
 

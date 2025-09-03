@@ -15,6 +15,7 @@ const BannerBananaLab = lazy(() => import("./Banners/BannerBananaLab"));
 const BannerCTAMakita = lazy(() => import("./Banners/BannerCTAMakita"));
 const BannerContactMakita = lazy(() => import("./Banners/BannerContactMakita"));
 const BannerPidelo = lazy(() => import("./Banners/BannerPidelo"));
+const BannerMultivet = lazy(() => import("./Banners/BannerMultivet"));
 const Banner = ({ which, data, items }) => {
     const getBanner = () => {
         switch (which) {
@@ -46,7 +47,8 @@ const Banner = ({ which, data, items }) => {
                 return <BannerContactMakita data={data} />;
             case "BannerStaticSecond":
                 return <BannerStaticSecond data={data} items={items} />;
-
+            case "BannerMultivet":
+                return <BannerMultivet data={data} />;
 
             default:
                 return (

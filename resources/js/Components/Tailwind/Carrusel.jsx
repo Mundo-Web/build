@@ -18,6 +18,9 @@ const CarruselBananaLab = React.lazy(() =>
 const CarruselBenefitsSwiper = React.lazy(() =>
     import("./Carrusel/CarruselBenefitsSwiper")
 );
+const CarruselBenefitsMultivet = React.lazy(() =>
+    import("./Carrusel/CarruselBenefitsMultivet")
+);
 const Carrusel = ({ which, data, items }) => {
     const getCarrusel = () => {
         switch (which) {
@@ -33,6 +36,8 @@ const Carrusel = ({ which, data, items }) => {
                 return <CarruselBananaLab data={data} items={items} />;
             case "CarruselBenefitsSwiper":
                 return <CarruselBenefitsSwiper data={data} items={items} />;
+            case "CarruselBenefitsMultivet":
+                return <CarruselBenefitsMultivet data={data} items={items} />;
 
             default:
                 return (

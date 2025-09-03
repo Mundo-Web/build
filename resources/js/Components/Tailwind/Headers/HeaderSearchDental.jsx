@@ -781,7 +781,7 @@ const HeaderSearchDental = ({
                             {/* Desktop: botón "Haz tu Pedido" */}
                             <a
                                 aria-label="primary-button"
-                                className={`${data.class ? data.class : 'bg-primary'} hidden lg:block px-6 py-2.5 text-white font-medium rounded-3xl hover:brightness-125 transition-colors duration-300`}
+                                className={` hidden lg:block px-6 py-2.5 text-white font-medium rounded-3xl hover:brightness-125 transition-all duration-500 ${data.class_pedido || 'bg-primary'}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href={
