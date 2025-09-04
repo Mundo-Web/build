@@ -105,7 +105,7 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                         <img
                             src={product.brand.image ? `/api/brands/media/${product.brand.image}` : '/assets/img/noimage/no_img.jpg'}
                             alt={product.brand.name || 'Marca'}
-                            className="max-h-14 max-w-full object-contain"
+                            className="max-h-14 max-w-14 object-contain"
                             onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
                             />
                         

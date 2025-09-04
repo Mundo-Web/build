@@ -13,14 +13,20 @@ const BrandMultivet = ({ items, data }) => {
     );
   }
 
-  // Duplicamos las marcas para crear un loop infinito
-  const duplicatedBrands = [...items, ...items];
+  // Triplicamos las marcas para crear un loop infinito más suave
+  const duplicatedBrands = [...items, ...items, ...items];
 
-  // CSS para la animación inline
+  // CSS para la animación inline mejorada
   const scrollStyles = `
     @keyframes scroll {
       0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      100% { transform: translateX(-33.333%); }
+    }
+    .infinite-scroll {
+      animation: scroll 60s linear infinite;
+    }
+    .infinite-scroll:hover {
+      animation-play-state: paused;
     }
   `;
 
@@ -46,20 +52,13 @@ const BrandMultivet = ({ items, data }) => {
         <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-gray-50 to-transparent z-10"></div>
         
         {/* Scrolling brands */}
-        <div 
-          className="flex"
-          style={{
-            animation: 'scroll 40s linear infinite',
-            animationFillMode: 'forwards'
-          }}
-          onMouseEnter={(e) => e.target.style.animationPlayState = 'paused'}
-          onMouseLeave={(e) => e.target.style.animationPlayState = 'running'}
-        >
+        <div className="flex infinite-scroll">
           {duplicatedBrands.map((brand, index) => (
             <div
               key={`${brand.id}-${index}`}
               className="flex-shrink-0 mx-8 group"
             >
+               <a href={`/catalogo?brand=${brand?.slug}`}>
               <div className="bg-white  rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 px-8 py-3 min-w-[200px] flex items-center justify-center border border-gray-100 group-hover:border-primary/20">
                 {brand.image ? (
                   <img
@@ -79,6 +78,7 @@ const BrandMultivet = ({ items, data }) => {
                   {brand.name}
                 </span>
               </div>
+              </a>
             </div>
           ))}
         </div>

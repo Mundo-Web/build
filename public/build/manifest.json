@@ -88,8 +88,8 @@
       "_circle-check-big-CYWUGR3Z.js"
     ]
   },
-  "_CardProductMultivet-BzuuCUTM.js": {
-    "file": "assets/CardProductMultivet-BzuuCUTM.js",
+  "_CardProductMultivet-BjkR6x1G.js": {
+    "file": "assets/CardProductMultivet-BjkR6x1G.js",
     "name": "CardProductMultivet",
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -5189,7 +5189,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Brands.jsx": {
-    "file": "assets/Brands-BDN8ptiS.js",
+    "file": "assets/Brands-BjjR8L-1.js",
     "name": "Brands",
     "src": "resources/js/Components/Tailwind/Brands.jsx",
     "isDynamicEntry": true,
@@ -6696,7 +6696,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-DpDJTFzp.js",
+    "file": "assets/Filter-DUygzIkm.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -6969,7 +6969,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-D_1Q7TR-.js",
+    "file": "assets/CatalogoFiltrosDental-aAe9G1cA.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -6982,7 +6982,7 @@
       "_SelectForm-BvLefn0w.js",
       "_main-B6F2O9-U.js",
       "_CardProductBananaLab-3578Ej0H.js",
-      "_CardProductMultivet-BzuuCUTM.js",
+      "_CardProductMultivet-BjkR6x1G.js",
       "_proxy-B0QLMKEh.js",
       "_list-filter-B_9H95Vt.js",
       "_sliders-vertical-BKVsqP9q.js",
@@ -8544,7 +8544,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-ono3F4TT.js",
+    "file": "assets/Product-BqXiQr-C.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -8572,7 +8572,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-CufQgnsk.js",
+    "file": "assets/ProductDetail-CDJyEq15.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -10838,7 +10838,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-ByuUhvTm.js",
+    "file": "assets/System-DSBRBm7y.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
