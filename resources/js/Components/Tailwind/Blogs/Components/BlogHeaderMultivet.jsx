@@ -206,7 +206,7 @@ export default function BlogHeaderMultivet({
               </div>
 
               {/* Filters */}
-              <div className="flex gap-4 lg:w-auto">
+              <div className="flex flex-col lg:flex-row gap-4 lg:w-auto">
                 <div className="relative flex-1 lg:w-64 z-[9999]">
                   <SelectForm
                     options={categories}
@@ -220,7 +220,7 @@ export default function BlogHeaderMultivet({
                     }}
                     labelKey="name"
                     valueKey="id"
-                    className="border-2 border-gray-200 focus:border-primary"
+                    className="border-2 py-4 border-gray-200 focus:border-primary"
                   />
                     
                 </div>

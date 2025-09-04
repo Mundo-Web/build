@@ -92,7 +92,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
             >
                 <motion.h2 
                     variants={fadeInUp} 
-                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-title text-center font-bold  customtext-secondary   max-w-5xl mx-auto"
+                    className="text-3xl  md:text-4xl lg:text-5xl font-title text-center font-bold  customtext-secondary   max-w-5xl mx-auto"
                 >
                     <TextWithHighlight text={history?.title}  className="font-title"/>
                 </motion.h2>
@@ -144,7 +144,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
             >
                 <motion.h2 
                     variants={fadeInUp} 
-                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl  font-bold tracking-tight customtext-secondary  font-title max-w-4xl mx-auto text-center"
+                    className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl  font-bold tracking-tight customtext-secondary  font-title max-w-4xl mx-auto text-center"
                 >
                     <TextWithHighlight text={values?.title} className="font-title" />
                 </motion.h2>
@@ -192,7 +192,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                                     <h3 className="text-lg md:text-xl lg:text-2xl font-bold customtext-neutral-dark group-hover:customtext-primary transition-colors duration-300 leading-tight">
                                         {item?.name}
                                     </h3>
-                                    <p className="text-sm md:text-base lg:text-lg text-gray-600 leading-relaxed">
+                                    <p className="rounded-base md:text-base lg:text-lg text-gray-600 leading-relaxed">
                                         {item?.description}
                                     </p>
                                 </div>
@@ -255,7 +255,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                                     <h3 className="text-lg md:text-xl lg:text-2xl font-bold customtext-neutral-dark group-hover:customtext-primary transition-colors duration-300 leading-tight">
                                         {item?.name}
                                     </h3>
-                                    <p className="text-sm md:text-base lg:text-lg text-gray-600 leading-relaxed">
+                                    <p className="rounded-base md:text-base lg:text-lg text-gray-600 leading-relaxed">
                                         {item?.description}
                                     </p>
                                 </div>
@@ -300,12 +300,12 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                             {...cardHover}
                         >
                             <motion.h3 
-                                className="text-xl md:text-2xl lg:text-3xl xl:text-5xl font-bold customtext-secondary font-title mb-4 md:mb-6"
+                                className="text-3xl md:text-2xl lg:text-3xl xl:text-5xl font-bold customtext-secondary font-title mb-4 md:mb-6"
                             >
                                 <TextWithHighlight text={mision?.title} className="font-title" />
                             </motion.h3>
                             <motion.div
-                                className="customtext-neutral-dark text-sm md:text-base lg:text-lg leading-relaxed prose prose-gray max-w-none"
+                                className="customtext-neutral-light rounded-base md:text-base lg:text-lg leading-relaxed prose prose-gray max-w-none"
                                 dangerouslySetInnerHTML={{
                                     __html: mision?.description,
                                 }}
@@ -318,12 +318,12 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                             {...cardHover}
                         >
                             <motion.h3 
-                                className="text-xl md:text-2xl lg:text-3xl xl:text-5xl font-bold customtext-secondary font-title mb-4 md:mb-6"
+                                className="text-3xl md:text-2xl lg:text-3xl xl:text-5xl font-bold customtext-secondary font-title mb-4 md:mb-6"
                             >
                                 <TextWithHighlight text={vision?.title} className="font-title" />
                             </motion.h3>
                             <motion.div
-                                className="customtext-neutral-dark text-sm md:text-base lg:text-lg leading-relaxed prose prose-gray max-w-none"
+                                className="customtext-neutral-light rounded-base md:text-base lg:text-lg leading-relaxed prose prose-gray max-w-none"
                                 dangerouslySetInnerHTML={{
                                     __html: vision?.description,
                                 }}
