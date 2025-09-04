@@ -6696,7 +6696,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-Cois5rs1.js",
+    "file": "assets/Filter-DpDJTFzp.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -6969,7 +6969,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-eeSA_LPf.js",
+    "file": "assets/CatalogoFiltrosDental-D_1Q7TR-.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -6987,11 +6987,12 @@
       "_list-filter-B_9H95Vt.js",
       "_sliders-vertical-BKVsqP9q.js",
       "_filter-BEzH_gaL.js",
-      "_tag-Dgi-uTqk.js",
+      "_package-DBFPPBi1.js",
       "_chevron-down-uIVDLcM-.js",
       "_index-BZvh78jk.js",
       "_search-BQ59Robe.js",
       "_circle-check-DW_TmQ0Z.js",
+      "_tag-Dgi-uTqk.js",
       "_store-DCbpAdsr.js",
       "_layers-DAZbsfi5.js",
       "_trending-up-Bey8Qt14.js",
@@ -7014,9 +7015,8 @@
       "_General-BmbBKdsB.js",
       "_tippy-react.esm-DmkRJDEW.js",
       "_index-pSueRYGM.js",
-      "_package-DBFPPBi1.js",
-      "_createLucideIcon-DfjclApS.js",
       "_trash-2-DU7LB6-f.js",
+      "_createLucideIcon-DfjclApS.js",
       "_plus-CTIomuuF.js",
       "_eye-ScgfreHn.js",
       "_BasicRest-DJtN-L6Q.js",
@@ -10838,7 +10838,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BDEwei7x.js",
+    "file": "assets/System-CfUZmMuq.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
