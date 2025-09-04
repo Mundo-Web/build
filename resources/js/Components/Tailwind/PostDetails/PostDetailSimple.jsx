@@ -15,7 +15,7 @@ function formatDate(dateString) {
     });
 }
 
-export default function PostDetailSimple({ item }) {
+export default function PostDetailSimple({ item,data }) {
     const [copied, setCopied] = useState(false);
     const shareUrl = window.location.href;
 
@@ -54,7 +54,7 @@ export default function PostDetailSimple({ item }) {
                 </div>
 
                 {/* Title */}
-                <h1 className="font-title text-3xl md:text-4xl lg:text-5xl font-bold mb-8 max-w-5xl mx-auto text-center 2xl:max-w-6xl">
+                <h1 className={`font-title text-3xl md:text-4xl lg:text-5xl font-bold mb-8 max-w-5xl mx-auto text-center 2xl:max-w-6xl ${data?.class_title || 'customtext-neutral-dark'}`}>
                     {item?.name}
                 </h1>
 
@@ -72,7 +72,7 @@ export default function PostDetailSimple({ item }) {
 
                 {/* Content */}
                 <div
-                    className="prose prose-lg max-w-none customtext-neutral-dark font-title text-base xl:text-lg"
+                    className="prose prose-lg max-w-none customtext-neutral-light font-title text-base xl:text-lg"
                     dangerouslySetInnerHTML={{ __html: item?.description }}
                 />
 
@@ -89,7 +89,7 @@ export default function PostDetailSimple({ item }) {
                         </button>
                         <button
                             aria-label="Compartir en Twitter"
-                            className="p-2 rounded-full bg-[#03030414] hover:bg-blue-400 customtext-neutral-light hover:text-white transition"
+                            className="p-2 rounded-full bg-[#03030414] hover:bg-primary  customtext-neutral-light hover:text-white transition"
                             onClick={() => handleShare("twitter")}
                         >
                             <TwitterIcon />
@@ -97,7 +97,7 @@ export default function PostDetailSimple({ item }) {
 
                         <button
                             aria-label="Copiar enlace"
-                            className="p-2 rounded-full bg-[#03030414] hover:bg-blue-400 customtext-neutral-light hover:text-white transition"
+                            className="p-2 rounded-full bg-[#03030414] hover:bg-primary  customtext-neutral-light hover:text-white transition"
                             onClick={() => handleShare("link")}
                         >
                             <Link />

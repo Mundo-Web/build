@@ -71,14 +71,14 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
               <img
                 src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
                 alt={post?.name}
-                className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500`}
+                className={`w-full h-full aspect-[3/2] object-cover group-hover:scale-110 transition-transform duration-500`}
                 onError={(e) => {
                   e.target.src = '/assets/img/noimage/no_img.jpg';
                 }}
               />
               {post?.category && (
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
+                  <span className={`px-3 py-2 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
                     {post.category?.name}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
             />
             {post?.category ? (
               <div className="absolute top-4 left-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
+                <span className={`px-3 py-2 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
                   {post.category?.name}
                 </span>
               </div>

@@ -121,8 +121,9 @@ const BlogSectionMultivet = ({ items = [], data }) => {
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 ${data?.class_grid || ''}`}>
             {/* Main posts */}
             {currentPosts.map((post, index) => (
+               <a href={`/post/${post?.slug}`}        key={post.id} className="block h-full">
               <article
-                key={post.id}
+         
                 className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer ${data?.class_card || ''}`}
               >
                 <div className="relative overflow-hidden">
@@ -180,6 +181,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
                   </div>
                 </div>
               </article>
+              </a>
             ))}
           </div>
 

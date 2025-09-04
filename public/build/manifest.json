@@ -4880,7 +4880,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-BHccS3wv.js",
+    "file": "assets/Blog-DxDbXA8G.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -4928,7 +4928,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx": {
-    "file": "assets/BlogMultivet-BWsQyOnZ.js",
+    "file": "assets/BlogMultivet-apDrabUW.js",
     "name": "BlogMultivet",
     "src": "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx",
     "isEntry": true,
@@ -8535,7 +8535,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetail.jsx": {
-    "file": "assets/PostDetail-gF4hUUe5.js",
+    "file": "assets/PostDetail-BnlBXjD2.js",
     "name": "PostDetail",
     "src": "resources/js/Components/Tailwind/PostDetail.jsx",
     "isDynamicEntry": true,
@@ -10857,7 +10857,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BN3kdVJF.js",
+    "file": "assets/System-DpO-8Dw6.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
