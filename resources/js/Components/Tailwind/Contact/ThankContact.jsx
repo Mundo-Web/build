@@ -113,7 +113,7 @@ const ThankContact = ({ data, item }) => {
                     className="mb-8"
                 >
                     <motion.h1 
-                        className="text-4xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-primary mb-4"
+                        className="text-4xl md:text-6xl font-title lg:text-7xl font-bold text-transparent bg-clip-text bg-primary mb-4"
                         animate={{
                             backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                         }}
@@ -133,7 +133,7 @@ const ThankContact = ({ data, item }) => {
                 {/* Subtitle */}
                 <motion.p
                     variants={itemVariants}
-                    className="text-lg md:text-xl customtext-neutral-dark mb-4 max-w-2xl mx-auto leading-relaxed"
+                    className="text-lg md:text-xl  customtext-neutral-dark mb-4 max-w-2xl mx-auto leading-relaxed"
                 >
                     Hemos recibido tus datos correctamente.
                 </motion.p>
@@ -163,7 +163,7 @@ const ThankContact = ({ data, item }) => {
                         className="bg-primary text-white font-semibold py-4 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
                     >
                         <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0"
+                            className="absolute inset-0  opacity-0"
                             whileHover={{ opacity: 1 }}
                             transition={{ duration: 0.3 }}
                         />
