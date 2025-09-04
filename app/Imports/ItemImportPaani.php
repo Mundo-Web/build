@@ -19,7 +19,7 @@ use Maatwebsite\Excel\Validators\Failure;
 use Illuminate\Support\Str;
 use Throwable;
 
-class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailure
+class ItemImportPaani implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailure
 {
     use \Maatwebsite\Excel\Concerns\Importable;
     private $errors = [];
