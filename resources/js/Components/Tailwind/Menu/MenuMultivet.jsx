@@ -1,32 +1,12 @@
 import { ChevronDown, ChevronUp, PawPrint, Tag, X, ChevronLeft, ChevronRight, ChevronRightCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+
 import Global from "../../../Utils/Global";
 import tagsItemsRest from "../../../Utils/Services/tagsItemsRest";
 import BasicRest from "../../../Actions/BasicRest";
 import CardProductMultivet from "../Products/Components/CardProductMultivet";
 
-// Estilos personalizados para Swiper
-const swiperStyles = `
-    .categories-swiper .swiper-pagination-bullet {
-        background: #e5e7eb;
-        opacity: 1;
-        width: 12px;
-        height: 12px;
-        transition: all 0.3s ease;
-    }
-    .categories-swiper .swiper-pagination-bullet-active {
-        background: var(--color-primary, #3b82f6);
-        transform: scale(1.2);
-    }
-    .categories-swiper .swiper-button-disabled {
-        opacity: 0.3;
-    }
-`;
+
 
 const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -196,8 +176,7 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
 
     return (
         <>
-            {/* Estilos personalizados para Swiper */}
-            <style>{swiperStyles}</style>
+
             
             {/* Overlay de fondo */}
             {isMenuOpen && (
@@ -327,46 +306,22 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
                                                 </div>
 
                                                 <div className="p-6">
-                                                    {/* Categorías con Swiper */}
+                                                    {/* Categorías con Grid de 3 columnas y subcategorías */}
                                                     <div className="mb-8">
                                                       
                                                         
                                                         <div className="swiper-container relative ">
-                                                            <Swiper
-                                                                modules={[Navigation, Pagination, Autoplay]}
-                                                                spaceBetween={20}
-                                                                slidesPerView={1}
-                                                                navigation={{
-                                                                    nextEl: '.swiper-button-next-categories',
-                                                                    prevEl: '.swiper-button-prev-categories',
-                                                                }}
-                                                               
-                                                                autoplay={{
-                                                                    delay: 4000,
-                                                                    disableOnInteraction: false,
-                                                                }}
-                                                                loop={true}
-                                                                breakpoints={{
-                                                                    640: {
-                                                                        slidesPerView: 2,
-                                                                    },
-                                                                    768: {
-                                                                        slidesPerView: 3,
-                                                                    },
-                                                                    1024: {
-                                                                        slidesPerView: 4,
-                                                                    },
-                                                                }}
-                                                                className="categories-swiper"
-                                                            >
+                                                            {/* Grid de categorías con subcategorías */}
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                                                 {[...items].sort((a, b) => a.name.localeCompare(b.name)).map((category, index) => (
-                                                                    <SwiperSlide key={index}>
+                                                                    <div key={index} className="group">
+                                                                        {/* Categoría principal */}
                                                                         <a
                                                                             href={`/catalogo?category=${category.slug}`}
-                                                                            className="group block relative h-48 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform "
+                                                                            className="group block relative h-48 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 mb-4"
                                                                         >
                                                                             {/* Imagen de fondo */}
-                                                                            <div className="absolute group inset-0 overflow-hidden rounded-xl">
+                                                                            <div className="absolute inset-0 overflow-hidden rounded-xl">
                                                                                 {category.image ? (
                                                                                     <img
                                                                                         src={`/storage/images/category/${category.image}`}
@@ -379,9 +334,9 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
                                                                                     />
                                                                                 ) : null}
                                                                                 {/* Fallback con emoji */}
-                                                                                <div className={`w-full h-full flex  items-center justify-center text-8xl bg-gradient-to-br from-primary/20 to-secondary/20 ${category.image ? 'hidden' : 'flex'}`}>
+                                                                                <div className={`w-full h-full flex items-center justify-center text-6xl bg-gradient-to-br from-primary/20 to-secondary/20 ${category.image ? 'hidden' : 'flex'}`}>
                                                                                     {category.name.toLowerCase().includes('perro') || category.name.toLowerCase().includes('dog') ? '🐕' :
-                                                                                     category.name.toLowerCase().includes('gato') || category.name.toLowerCase().includes('cat') ? '�' :
+                                                                                     category.name.toLowerCase().includes('gato') || category.name.toLowerCase().includes('cat') ? '🐱' :
                                                                                      category.name.toLowerCase().includes('ave') || category.name.toLowerCase().includes('bird') ? '🐦' :
                                                                                      category.name.toLowerCase().includes('pez') || category.name.toLowerCase().includes('fish') ? '🐠' :
                                                                                      category.name.toLowerCase().includes('alimento') || category.name.toLowerCase().includes('food') ? '🍖' :
@@ -397,23 +352,77 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
 
                                                                             {/* Texto centrado */}
                                                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                                                <h3 className="customtext-neutral-dark text-sm bg-accent rounded-full  whitespace-pre-line  font-bold  text-center px-4 py-2 transform  transition-transform duration-300 drop-shadow-lg">
+                                                                                <h3 className="customtext-neutral-dark bg-accent rounded-full text-sm font-bold text-center px-4 py-2 transform group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
                                                                                     {category.name}
                                                                                 </h3>
                                                                             </div>
 
-                                                                       
+                                                                            
                                                                         </a>
-                                                                    </SwiperSlide>
-                                                                ))}
-                                                            </Swiper>
 
-                                                            {/* Botones de navegación personalizados */}
-                                                            <div className="swiper-button-prev-categories absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-primary rounded-full p-3 shadow-lg cursor-pointer transition-all duration-300 opacity-100">
-                                                                <ChevronLeft className="w-5 h-5" />
-                                                            </div>
-                                                            <div className="swiper-button-next-categories absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-primary rounded-full p-3 shadow-lg cursor-pointer transition-all duration-300 opacity-100">
-                                                                <ChevronRight className="w-5 h-5" />
+                                                                        {/* Subcategorías */}
+                                                                        {category.subcategories && category.subcategories.length > 0 && (
+                                                                            <div className="space-y-2">
+                                                                               
+                                                                                <div className="grid grid-cols-1 gap-2">
+                                                                                    {category.subcategories.slice(0, 3).map((subcategory, subIndex) => (
+                                                                                        <a
+                                                                                            key={subIndex}
+                                                                                            href={`/catalogo?subcategory=${subcategory.slug}`}
+                                                                                            className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                                                                                        >
+                                                                                            {/* Imagen pequeña de subcategoría */}
+                                                                                            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                                                                                                {subcategory.image ? (
+                                                                                                    <img
+                                                                                                        src={`/storage/images/sub_category/${subcategory.image}`}
+                                                                                                        alt={subcategory.name}
+                                                                                                        className="w-full h-full object-cover"
+                                                                                                        onError={(e) => {
+                                                                                                            e.target.style.display = 'none';
+                                                                                                            e.target.nextSibling.style.display = 'flex';
+                                                                                                        }}
+                                                                                                    />
+                                                                                                ) : null}
+                                                                                                <div className={`w-full h-full flex items-center justify-center text-lg bg-gradient-to-br from-primary/20 to-secondary/20 ${subcategory.image ? 'hidden' : 'flex'}`}>
+                                                                                                    {subcategory.name.toLowerCase().includes('perro') || subcategory.name.toLowerCase().includes('dog') ? '🐕' :
+                                                                                                     subcategory.name.toLowerCase().includes('gato') || subcategory.name.toLowerCase().includes('cat') ? '🐱' :
+                                                                                                     subcategory.name.toLowerCase().includes('ave') || subcategory.name.toLowerCase().includes('bird') ? '🐦' :
+                                                                                                     subcategory.name.toLowerCase().includes('pez') || subcategory.name.toLowerCase().includes('fish') ? '🐠' :
+                                                                                                     subcategory.name.toLowerCase().includes('alimento') || subcategory.name.toLowerCase().includes('food') ? '🍖' :
+                                                                                                     subcategory.name.toLowerCase().includes('juguete') || subcategory.name.toLowerCase().includes('toy') ? '🎾' :
+                                                                                                     subcategory.name.toLowerCase().includes('salud') || subcategory.name.toLowerCase().includes('health') ? '💊' :
+                                                                                                     subcategory.name.toLowerCase().includes('higiene') || subcategory.name.toLowerCase().includes('clean') ? '🧼' :
+                                                                                                     '🐾'}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            
+                                                                                            {/* Texto de subcategoría */}
+                                                                                            <div className="flex-1">
+                                                                                                <span className="text-sm font-medium customtext-neutral-dark group-hover:customtext-primary transition-colors duration-300">
+                                                                                                    {subcategory.name}
+                                                                                                </span>
+                                                                                            </div>
+
+                                                                                            {/* Icono de flecha */}
+                                                                                            <ChevronRight className="w-4 h-4 customtext-neutral opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                                                                                        </a>
+                                                                                    ))}
+                                                                                    
+                                                                                    {/* Mostrar "Ver más" si hay más de 3 subcategorías */}
+                                                                                    {category.subcategories.length > 3 && (
+                                                                                        <a
+                                                                                            href={`/catalogo?category=${category.slug}`}
+                                                                                            className="text-center p-2 text-sm customtext-primary hover:customtext-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-all duration-300"
+                                                                                        >
+                                                                                            Ver {category.subcategories.length - 3} más...
+                                                                                        </a>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
                                                             </div>
 
                                                         </div>
