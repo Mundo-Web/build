@@ -365,7 +365,7 @@ const ContactGrid = ({ data, contacts }) => {
                     transition={{ duration: 0.8, delay: 0.4 }}
                 >
                     <motion.h2
-                        className="text-3xl font-bold mb-4 customtext-neutral-dark"
+                        className={`text-3xl font-bold mb-4 ${data?.class_title || 'customtext-neutral-dark '}`}
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 0.6 }}
@@ -641,7 +641,7 @@ const ContactGrid = ({ data, contacts }) => {
             >
                 <motion.div className="mb-6">
                     <motion.h3
-                        className="text-2xl font-bold customtext-neutral-dark mb-2"
+                        className={`text-2xl font-bold  mb-2 ${data?.class_title || 'customtext-neutral-dark'}`}
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.5 }}

@@ -2427,6 +2427,7 @@
                 "name": "Grid",
                 "data": [
                     "redirect",
+                    "class_title",
                     "class_card_description",
                     "class_card_title",
                     "class_card_button",
@@ -2489,7 +2490,8 @@
                     "title",
                     "class_card_container",
                 
-                    "class_faq_answer"
+                    "class_faq_answer",
+                    "class_title"
                 ]
             },
             {

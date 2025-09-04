@@ -506,7 +506,7 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
                                             <a
                                                 href={page.path}
                                                 className={
-                                                    "font-semibold hover:customtext-primary cursor-pointer transition-all duration-300"
+                                                    "font-semibold customtext-primary hover:customtext-primary cursor-pointer transition-all duration-300"
                                                 }
                                             >
                                                 {page.name}
