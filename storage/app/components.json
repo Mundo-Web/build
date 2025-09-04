@@ -2516,6 +2516,19 @@
                 ]
             },
             {
+                "id": "BlogMultivet",
+                "name": "Multivet",
+                "image": "blog-multivet.png",
+                "data": [
+                    "title",
+                    "description",
+                    "second_title",
+                    "second_description",
+                    "bool:show_seen",
+                    "class_title"
+                ]
+            },
+            {
                 "id": "BlogCarousel",
                 "name": "Carousel",
                 "data": [

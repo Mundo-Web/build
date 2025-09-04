@@ -105,7 +105,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
 
   return (
     <section className={`py-16 ${data?.section_background || 'bg-gray-50'} ${data?.class_section || ''}`}>
-      <div className="max-w-7xl mx-auto px-primary">
+      <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
         {/* Header */}
         <div className={`text-center mb-12 ${data?.class_header || ''}`}>
           <h2 className={`text-3xl font-title md:text-5xl font-bold mb-4  ${data?.title_color || 'customtext-secondary'} ${data?.class_title || ''}`}>
@@ -155,7 +155,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
                     </div>
                   </div>
 
-                  <h3 className={`text-lg font-bold mb-3 group-hover:customtext-secondary transition-colors line-clamp-2  ${data?.post_title_color || 'customtext-primary'} ${data?.class_post_title || ''}`}>
+                  <h3 className={`text-lg font-title font-bold mb-3 group-hover:customtext-secondary transition-colors line-clamp-2  ${data?.post_title_color || 'customtext-primary'} ${data?.class_post_title || ''}`}>
                     {post.name}
                   </h3>
 

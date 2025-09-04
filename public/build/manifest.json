@@ -498,6 +498,17 @@
       "_check-D5vaIe6v.js"
     ]
   },
+  "_SelectForm-CPo74rd_.js": {
+    "file": "assets/SelectForm-CPo74rd_.js",
+    "name": "SelectForm",
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_chevron-down-uIVDLcM-.js",
+      "_search-BQ59Robe.js",
+      "_check-D5vaIe6v.js"
+    ]
+  },
   "_SelectFormGroup-D63EMIiA.js": {
     "file": "assets/SelectFormGroup-D63EMIiA.js",
     "name": "SelectFormGroup",
@@ -672,6 +683,13 @@
   "_building-2-DSFvhCB-.js": {
     "file": "assets/building-2-DSFvhCB-.js",
     "name": "building-2",
+    "imports": [
+      "_createLucideIcon-DfjclApS.js"
+    ]
+  },
+  "_calendar-BSC6xbA7.js": {
+    "file": "assets/calendar-BSC6xbA7.js",
+    "name": "calendar",
     "imports": [
       "_createLucideIcon-DfjclApS.js"
     ]
@@ -4849,7 +4867,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-BWb4SpAo.js",
+    "file": "assets/Blog-CgTg3EjL.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -4862,6 +4880,7 @@
     ],
     "dynamicImports": [
       "resources/js/Components/Tailwind/Blogs/BlogSimple.jsx",
+      "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogCarruselBananaLab.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionMakita.jsx",
@@ -4893,6 +4912,36 @@
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx": {
+    "file": "assets/BlogMultivet-BW3ejtrf.js",
+    "name": "BlogMultivet",
+    "src": "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_PostsRest-Do8-dDFY.js",
+      "_BlogCategoriesRest-C9KrGRDG.js",
+      "_SelectForm-CPo74rd_.js",
+      "_calendar-BSC6xbA7.js",
+      "_clock-BLXQcN-l.js",
+      "_user-BZB1h7Cv.js",
+      "_arrow-right-MB8dWH_Y.js",
+      "_proxy-B0QLMKEh.js",
+      "_search-BQ59Robe.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_BasicRest-DJtN-L6Q.js",
+      "_main-B6F2O9-U.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js",
+      "_chevron-down-uIVDLcM-.js",
+      "_createLucideIcon-DfjclApS.js",
+      "_check-D5vaIe6v.js"
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogSectionAko.jsx": {
@@ -4973,7 +5022,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogSimple.jsx": {
-    "file": "assets/BlogSimple-DY6CyTPY.js",
+    "file": "assets/BlogSimple-CjgzwGlB.js",
     "name": "BlogSimple",
     "src": "resources/js/Components/Tailwind/Blogs/BlogSimple.jsx",
     "isEntry": true,
@@ -4982,10 +5031,9 @@
       "_index-BOnQTV8N.js",
       "_PostsRest-Do8-dDFY.js",
       "_BlogCategoriesRest-C9KrGRDG.js",
-      "_chevron-down-uIVDLcM-.js",
-      "_search-BQ59Robe.js",
-      "_check-D5vaIe6v.js",
+      "_SelectForm-CPo74rd_.js",
       "_Global-DWbVqTT_.js",
+      "_search-BQ59Robe.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_BasicRest-DJtN-L6Q.js",
@@ -4994,7 +5042,9 @@
       "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js",
-      "_createLucideIcon-DfjclApS.js"
+      "_chevron-down-uIVDLcM-.js",
+      "_createLucideIcon-DfjclApS.js",
+      "_check-D5vaIe6v.js"
     ]
   },
   "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx": {
@@ -5034,6 +5084,26 @@
       "_index-B6ujFmsw.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderMultivet.jsx": {
+    "file": "assets/BlogHeaderMultivet-C0TPAD6K.js",
+    "name": "BlogHeaderMultivet",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderMultivet.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_PostsRest-Do8-dDFY.js",
+      "_BlogCategoriesRest-C9KrGRDG.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_BasicRest-DJtN-L6Q.js",
+      "_main-B6F2O9-U.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogList.jsx": {
     "file": "assets/BlogList--pJTheE3.js",
     "name": "BlogList",
@@ -5046,10 +5116,34 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogListMultivet.jsx": {
+    "file": "assets/BlogListMultivet--pJTheE3.js",
+    "name": "BlogListMultivet",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogListMultivet.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogPostCard.jsx": {
     "file": "assets/BlogPostCard--pJTheE3.js",
     "name": "BlogPostCard",
     "src": "resources/js/Components/Tailwind/Blogs/Components/BlogPostCard.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardMultivet.jsx": {
+    "file": "assets/BlogPostCardMultivet--pJTheE3.js",
+    "name": "BlogPostCardMultivet",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardMultivet.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -10730,7 +10824,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Cchkit1k.js",
+    "file": "assets/System-DCbiLoC8.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
