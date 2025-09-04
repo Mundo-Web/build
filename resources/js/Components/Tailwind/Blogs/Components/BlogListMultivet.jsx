@@ -103,7 +103,7 @@ export default function BlogListMultivet({ data, posts, postsLatest, loading, is
   return (
     <motion.section
       ref={listRef}
-      className={`font-title bg-gradient-to-b from-gray-50 to-white ${isFilter ? "py-16" : "py-24"}`}
+      className={`font-title bg-gradient-to-b from-gray-50 to-white ${isFilter ? "py-16 mt-4" : "py-24"}`}
       variants={containerVariants}
       initial="hidden"
       animate={listInView ? "visible" : "hidden"}

@@ -139,10 +139,16 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
                 e.target.src = '/assets/img/noimage/no_img.jpg';
               }}
             />
-            {post?.category && (
+            {post?.category ? (
               <div className="absolute top-4 left-4">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
                   {post.category?.name}
+                </span>
+              </div>
+            ) : (
+              <div className="absolute top-4 left-4">
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                  Sin categoría
                 </span>
               </div>
             )}

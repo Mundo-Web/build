@@ -43,7 +43,7 @@ export default function BlogHeaderMultivet({
       transformedFilters.push(["post_date", "=", filters.post_date]);
     }
 
-    // Búsqueda (asumiendo que se filtra por título o contenido)
+    // Búsqueda por nombre
     if (filters.name) {
       console.log("Nombre seleccionado:", filters.name);
       transformedFilters.push(["name", "contains", filters.name]);
@@ -109,7 +109,7 @@ export default function BlogHeaderMultivet({
     if (!initialLoad) {
       fetchPosts();
     } else {
-      setInitialLoad(false);
+      setInitialLoad(false); // Marcar que ya se realizó la carga inicial
     }
   }, [selectedFilters]);
 
@@ -120,15 +120,21 @@ export default function BlogHeaderMultivet({
     }));
   };
 
-  useEffect(() => {
-    console.log("BlogHeaderMultivet - posts actualizados:", posts);
-  }, [posts]);
+  const clearFilters = () => {
+    setSelectedFilters({
+      category_id: "",
+      post_date: "",
+      name: "",
+    });
+    // Actualizar isFilter inmediatamente al limpiar
+    setIsFilter(false);
+  };
 
   return (
-    <main className={`bg-gray-50 ${isFilter ? "":"min-h-screen"} font-title`}>
+    <main className={`relative bg-gray-50 ${isFilter ? "":"min-h-screen"} font-title`}>
       {/* Hero Section con estilo Multivet */}
       <section
-        className={`relative bg-gradient-to-br from-primary to-secondary overflow-hidden ${
+        className={`relative bg-gradient-to-br from-primary to-secondary overflow-visible z-10 ${
           isFilter ? "pt-16 pb-8" : "py-16"
         }`}
       >
@@ -185,9 +191,9 @@ export default function BlogHeaderMultivet({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-12 bg-white rounded-2xl shadow-xl p-6"
+            className="mt-12 bg-white rounded-2xl shadow-xl p-6 relative overflow-visible"
           >
-            <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex flex-col lg:flex-row gap-4 relative">
               {/* Search Input */}
               <div className="relative flex-1">
                 <input
@@ -201,10 +207,11 @@ export default function BlogHeaderMultivet({
 
               {/* Filters */}
               <div className="flex gap-4 lg:w-auto">
-                <div className="flex-1 lg:w-64">
+                <div className="relative flex-1 lg:w-64 z-[9999]">
                   <SelectForm
                     options={categories}
                     placeholder="Todas las categorías"
+                    value={selectedFilters.category_id}
                     onChange={(value) => {
                       setSelectedFilters((prev) => ({
                         ...prev,
@@ -213,18 +220,32 @@ export default function BlogHeaderMultivet({
                     }}
                     labelKey="name"
                     valueKey="id"
+                    className="border-2 border-gray-200 focus:border-primary"
                   />
+                    
                 </div>
                 
                 <div className="flex-1 lg:w-48">
                   <input
                     type="date"
+                    value={selectedFilters.post_date}
                     className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-0 focus:outline-0 transition-all duration-300 text-gray-700"
                     onChange={(e) => {
                       handleFilterChange("post_date", e.target.value);
                     }}
                   />
                 </div>
+
+                {/* Botón para limpiar filtros */}
+                {(selectedFilters.name || selectedFilters.category_id || selectedFilters.post_date) && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+                  >
+                    <Filter className="w-4 h-4" />
+                    Limpiar
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
