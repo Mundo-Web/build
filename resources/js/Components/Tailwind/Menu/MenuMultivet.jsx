@@ -1,8 +1,32 @@
-import { ChevronDown, ChevronUp, PawPrint, Tag, X } from "lucide-react";
+import { ChevronDown, ChevronUp, PawPrint, Tag, X, ChevronLeft, ChevronRight, ChevronRightCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import Global from "../../../Utils/Global";
 import tagsItemsRest from "../../../Utils/Services/tagsItemsRest";
 import BasicRest from "../../../Actions/BasicRest";
+import CardProductMultivet from "../Products/Components/CardProductMultivet";
+
+// Estilos personalizados para Swiper
+const swiperStyles = `
+    .categories-swiper .swiper-pagination-bullet {
+        background: #e5e7eb;
+        opacity: 1;
+        width: 12px;
+        height: 12px;
+        transition: all 0.3s ease;
+    }
+    .categories-swiper .swiper-pagination-bullet-active {
+        background: var(--color-primary, #3b82f6);
+        transform: scale(1.2);
+    }
+    .categories-swiper .swiper-button-disabled {
+        opacity: 0.3;
+    }
+`;
 
 const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -172,7 +196,10 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
 
     return (
         <>
-            {/* Overlay que aparece cuando el modal está abierto */}
+            {/* Estilos personalizados para Swiper */}
+            <style>{swiperStyles}</style>
+            
+            {/* Overlay de fondo */}
             {isMenuOpen && (
                 <div 
                     className="fixed inset-0 bg-black/40 z-40"
@@ -286,7 +313,7 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
                                                            
                                                             </div>
                                                             <div>
-                                                                <h3 className="text-2xl font-bold customtext-primary mb-1">Catálogo de Productos</h3>
+                                                                <h3 className="text-2xl font-title font-bold customtext-primary mb-1">Categorías</h3>
                                                                 <p className="customtext-neutral-dark">Encuentra todo lo que necesitas para el cuidado de tu mascota</p>
                                                             </div>
                                                         </div>
@@ -300,195 +327,129 @@ const MenuMultivet = ({ pages = [], items, data ,visible=false}) => {
                                                 </div>
 
                                                 <div className="p-6">
-                                                    {/* Categorías con imágenes */}
+                                                    {/* Categorías con Swiper */}
                                                     <div className="mb-8">
                                                       
                                                         
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                                            {[...items].sort((a, b) => a.name.localeCompare(b.name)).map((category, index) => (
-                                                                <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-all duration-300 hover:scale-105 group">
-                                                                    {/* Imagen de categoría con diseño limpio */}
-                                                                    <div className="w-full h-24 bg-gray-50 rounded-lg mb-3 overflow-hidden relative">
-                                                                        {category.image ? (
-                                                                            <img
-                                                                                src={`/storage/images/category/${category.image}`}
-                                                                                alt={category.name}
-                                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                                                                onError={(e) => {
-                                                                                    e.target.style.display = 'none';
-                                                                                    e.target.nextSibling.style.display = 'flex';
-                                                                                }}
-                                                                            />
-                                                                        ) : null}
-                                                                        <div className={`w-full h-full flex items-center justify-center text-3xl customtext-neutral-dark ${category.image ? 'hidden' : 'flex'}`}>
-                                                                            {category.name.toLowerCase().includes('perro') || category.name.toLowerCase().includes('dog') ? '🐕' :
-                                                                             category.name.toLowerCase().includes('gato') || category.name.toLowerCase().includes('cat') ? '🐱' :
-                                                                             category.name.toLowerCase().includes('ave') || category.name.toLowerCase().includes('bird') ? '🐦' :
-                                                                             category.name.toLowerCase().includes('pez') || category.name.toLowerCase().includes('fish') ? '🐠' :
-                                                                             category.name.toLowerCase().includes('alimento') || category.name.toLowerCase().includes('food') ? '🍖' :
-                                                                             category.name.toLowerCase().includes('juguete') || category.name.toLowerCase().includes('toy') ? '🎾' :
-                                                                             category.name.toLowerCase().includes('salud') || category.name.toLowerCase().includes('health') ? '💊' :
-                                                                             category.name.toLowerCase().includes('higiene') || category.name.toLowerCase().includes('clean') ? '🧼' :
-                                                                             '🐾'}
-                                                                        </div>
-                                                                    </div>
-                                                                    
-                                                                    <a
-                                                                        href={`/catalogo?category=${category.slug}`}
-                                                                        className="block customtext-primary font-bold text-base mb-2 hover:customtext-secondary transition-colors duration-300"
-                                                                    >
-                                                                        {category.name}
-                                                                    </a>
-                                                                    
-                                                                    {/* Subcategorías con diseño limpio */}
-                                                                    <div className="space-y-1">
-                                                                        {category.subcategories?.slice(0, 4).map((item, itemIndex) => (
-                                                                            <a
-                                                                                key={itemIndex}
-                                                                                href={`/catalogo?subcategory=${item.slug}`}
-                                                                                className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg transition-all duration-200 group"
-                                                                            >
-                                                                                <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                                                                                    {item.image ? (
-                                                                                        <img
-                                                                                            src={`/storage/images/subcategory/${item.image}`}
-                                                                                            alt={item.name}
-                                                                                            className="w-full h-full object-cover rounded"
-                                                                                            onError={(e) => {
-                                                                                                e.target.style.display = 'none';
-                                                                                                e.target.nextSibling.style.display = 'flex';
-                                                                                            }}
-                                                                                        />
-                                                                                    ) : null}
-                                                                                    <span className={`text-xs customtext-neutral-dark ${item.image ? 'hidden' : 'flex'}`}>
-                                                                                        {item.name.toLowerCase().includes('collar') ? '🦴' :
-                                                                                         item.name.toLowerCase().includes('correa') ? '🎗️' :
-                                                                                         item.name.toLowerCase().includes('cama') ? '🛏️' :
-                                                                                         item.name.toLowerCase().includes('bowl') || item.name.toLowerCase().includes('plato') ? '🥣' :
-                                                                                         item.name.toLowerCase().includes('shampoo') ? '🧴' :
-                                                                                         '•'}
-                                                                                    </span>
+                                                        <div className="swiper-container relative ">
+                                                            <Swiper
+                                                                modules={[Navigation, Pagination, Autoplay]}
+                                                                spaceBetween={20}
+                                                                slidesPerView={1}
+                                                                navigation={{
+                                                                    nextEl: '.swiper-button-next-categories',
+                                                                    prevEl: '.swiper-button-prev-categories',
+                                                                }}
+                                                               
+                                                                autoplay={{
+                                                                    delay: 4000,
+                                                                    disableOnInteraction: false,
+                                                                }}
+                                                                loop={true}
+                                                                breakpoints={{
+                                                                    640: {
+                                                                        slidesPerView: 2,
+                                                                    },
+                                                                    768: {
+                                                                        slidesPerView: 3,
+                                                                    },
+                                                                    1024: {
+                                                                        slidesPerView: 4,
+                                                                    },
+                                                                }}
+                                                                className="categories-swiper"
+                                                            >
+                                                                {[...items].sort((a, b) => a.name.localeCompare(b.name)).map((category, index) => (
+                                                                    <SwiperSlide key={index}>
+                                                                        <a
+                                                                            href={`/catalogo?category=${category.slug}`}
+                                                                            className="group block relative h-48 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform "
+                                                                        >
+                                                                            {/* Imagen de fondo */}
+                                                                            <div className="absolute group inset-0 overflow-hidden rounded-xl">
+                                                                                {category.image ? (
+                                                                                    <img
+                                                                                        src={`/storage/images/category/${category.image}`}
+                                                                                        alt={category.name}
+                                                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                                                        onError={(e) => {
+                                                                                            e.target.style.display = 'none';
+                                                                                            e.target.nextSibling.style.display = 'flex';
+                                                                                        }}
+                                                                                    />
+                                                                                ) : null}
+                                                                                {/* Fallback con emoji */}
+                                                                                <div className={`w-full h-full flex  items-center justify-center text-8xl bg-gradient-to-br from-primary/20 to-secondary/20 ${category.image ? 'hidden' : 'flex'}`}>
+                                                                                    {category.name.toLowerCase().includes('perro') || category.name.toLowerCase().includes('dog') ? '🐕' :
+                                                                                     category.name.toLowerCase().includes('gato') || category.name.toLowerCase().includes('cat') ? '�' :
+                                                                                     category.name.toLowerCase().includes('ave') || category.name.toLowerCase().includes('bird') ? '🐦' :
+                                                                                     category.name.toLowerCase().includes('pez') || category.name.toLowerCase().includes('fish') ? '🐠' :
+                                                                                     category.name.toLowerCase().includes('alimento') || category.name.toLowerCase().includes('food') ? '🍖' :
+                                                                                     category.name.toLowerCase().includes('juguete') || category.name.toLowerCase().includes('toy') ? '🎾' :
+                                                                                     category.name.toLowerCase().includes('salud') || category.name.toLowerCase().includes('health') ? '💊' :
+                                                                                     category.name.toLowerCase().includes('higiene') || category.name.toLowerCase().includes('clean') ? '🧼' :
+                                                                                     '🐾'}
                                                                                 </div>
-                                                                                <span className="text-sm customtext-neutral-dark hover:customtext-secondary transition-colors line-clamp-1">
-                                                                                    {item.name}
-                                                                                </span>
-                                                                            </a>
-                                                                        ))}
-                                                                        {category.subcategories?.length > 4 && (
-                                                                            <a 
-                                                                                href={`/catalogo?category=${category.slug}`}
-                                                                                className="block text-xs customtext-primary hover:customtext-secondary transition-colors pl-2 font-medium mt-2"
-                                                                            >
-                                                                                Ver {category.subcategories.length - 4} más...
-                                                                            </a>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            ))}
+                                                                            </div>
+
+                                                                            {/* Overlay con gradiente */}
+                                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent group-hover:from-black/60 transition-all duration-300"></div>
+
+                                                                            {/* Texto centrado */}
+                                                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                                                <h3 className="customtext-neutral-dark text-sm bg-accent rounded-full  whitespace-pre-line  font-bold  text-center px-4 py-2 transform  transition-transform duration-300 drop-shadow-lg">
+                                                                                    {category.name}
+                                                                                </h3>
+                                                                            </div>
+
+                                                                       
+                                                                        </a>
+                                                                    </SwiperSlide>
+                                                                ))}
+                                                            </Swiper>
+
+                                                            {/* Botones de navegación personalizados */}
+                                                            <div className="swiper-button-prev-categories absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-primary rounded-full p-3 shadow-lg cursor-pointer transition-all duration-300 opacity-100">
+                                                                <ChevronLeft className="w-5 h-5" />
+                                                            </div>
+                                                            <div className="swiper-button-next-categories absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-primary rounded-full p-3 shadow-lg cursor-pointer transition-all duration-300 opacity-100">
+                                                                <ChevronRight className="w-5 h-5" />
+                                                            </div>
+
                                                         </div>
                                                     </div>
 
                                                     {/* Productos Destacados */}
                                                     {featuredProducts.length > 0 && (
                                                         <div className="border-t border-gray-200 pt-6">
-                                                            <h4 className="text-xl font-bold customtext-primary mb-4 flex items-center gap-2">
-                                                                <span className="text-xl">⭐</span>
+                                                            <h4 className="text-2xl mb-8 font-title font-bold customtext-primary ">
+                                                           
                                                                 Productos Destacados
                                                             </h4>
-                                                      
-                                               
                                                         
-                                                        {isLoadingProducts ? (
-                                                            <div className="flex items-center justify-center py-8">
-                                                                <div className="flex items-center gap-2 customtext-neutral-dark">
-                                                                    <div className="w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full animate-spin"></div>
-                                                                    <span>Cargando productos destacados...</span>
+                                                            {isLoadingProducts ? (
+                                                                <div className="flex items-center justify-center py-8">
+                                                                    <div className="flex items-center gap-2 customtext-neutral-dark">
+                                                                        <div className="w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full animate-spin"></div>
+                                                                        <span>Cargando productos destacados...</span>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : featuredProducts.length > 0 ? (
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                                                                {featuredProducts.map((product) => (
-                                                                    <a 
-                                                                        key={product.id}
-                                                                        href={product.slug ? `/product/${product.slug}` : `/catalogo?search=${encodeURIComponent(product.name)}`}
-                                                                        className="group bg-gradient-to-br from-white via-orange-50 to-pink-50 border-2 border-orange-200 rounded-2xl p-6 hover:shadow-2xl hover:border-orange-400 transition-all duration-300 transform hover:scale-105 hover:-translate-y-2"
-                                                                    >
-                                                                        {/* Imagen del producto */}
-                                                                        <div className="w-full h-48 bg-gradient-to-br from-orange-100 via-pink-100 to-purple-100 rounded-xl mb-4 overflow-hidden relative border-2 border-orange-200">
-                                                                            {product.image ? (
-                                                                                <img
-                                                                                    src={`/api/items/media/${product.image}`}
-                                                                                    alt={product.name}
-                                                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                                                    onError={(e) => {
-                                                                                        e.target.style.display = 'none';
-                                                                                        e.target.nextSibling.style.display = 'flex';
-                                                                                    }}
-                                                                                />
-                                                                            ) : null}
-                                                                            <div className={`absolute inset-0 flex items-center justify-center text-6xl ${product.image ? 'hidden' : 'flex'}`}>
-                                                                                🎁
-                                                                            </div>
-                                                                            {/* Badges mejorados */}
-                                                                            <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
-                                                                                ⭐ ¡Favorito!
-                                                                            </div>
-                                                                            <div className="absolute top-3 left-3 bg-green-400 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
-                                                                                ✅ Garantizado
-                                                                            </div>
-                                                                        </div>
-                                                                        
-                                                                        <h5 className="font-bold customtext-primary mb-3 group-hover:text-orange-600 transition-colors text-lg leading-snug">
-                                                                            {product.name}
-                                                                        </h5>
-                                                                        
-                                                                        {/* Beneficios del producto */}
-                                                                        <div className="bg-white/80 rounded-lg p-3 mb-3 border border-orange-200">
-                                                                            <div className="flex items-center gap-2 text-xs customtext-neutral-dark mb-1">
-                                                                                <span>🐾</span>
-                                                                                <span className="font-medium">Beneficios:</span>
-                                                                            </div>
-                                                                            <p className="text-xs text-gray-700">
-                                                                                ✓ Calidad premium ✓ Seguro para mascotas ✓ Resultados garantizados
-                                                                            </p>
-                                                                        </div>
-                                                                        
-                                                                        {product.category && (
-                                                                            <p className="text-sm text-orange-600 mb-3 font-medium">
-                                                                                📂 {product.category.name}
-                                                                            </p>
-                                                                        )}
-                                                                        
-                                                                        <div className="flex items-center justify-between">
-                                                                            {product.final_price ? (
-                                                                                <div className="flex flex-col">
-                                                                                    <span className="text-lg font-bold text-pink-600">
-                                                                                        S/ {parseFloat(product.final_price).toFixed(2)}
-                                                                                    </span>
-                                                                                    {product.price && product.price !== product.final_price && (
-                                                                                        <span className="text-sm text-gray-400 line-through">
-                                                                                            S/ {parseFloat(product.price).toFixed(2)}
-                                                                                        </span>
-                                                                                    )}
-                                                                                </div>
-                                                                            ) : (
-                                                                                <span className="text-lg font-bold customtext-neutral-dark">Consultar precio</span>
-                                                                            )}
-                                                                            
-                                                                            <div className="flex items-center gap-1 text-pink-500 group-hover:translate-x-1 transition-transform">
-                                                                                <span className="text-sm font-medium">Ver más</span>
-                                                                                <span>→</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </a>
-                                                                ))}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-center py-8 customtext-neutral-dark">
-                                                                <div className="text-4xl mb-2">🎁</div>
-                                                                <p>No hay productos destacados disponibles</p>
-                                                            </div>
-                                                        )}
+                                                            ) : featuredProducts.length > 0 ? (
+                                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                                    {featuredProducts.map((product) => (
+                                                                        <CardProductMultivet
+                                                                            key={product.id}
+                                                                            product={product}
+                                                                            data={data}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="text-center py-8 customtext-neutral-dark">
+                                                                    <div className="text-4xl mb-2">🎁</div>
+                                                                    <p>No hay productos destacados disponibles</p>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
 

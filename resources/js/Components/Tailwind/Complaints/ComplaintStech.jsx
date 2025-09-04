@@ -9,7 +9,7 @@ import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { Send, X, FileText, User, MapPin, Package, AlertTriangle, Shield } from "lucide-react";
 import { toast } from "sonner";
-export default function ComplaintSimple({ generals = [] }) {
+export default function ComplaintSimple({ generals = [],data }) {
     const [messageCaptcha, setMessageCaptcha] = useState("");
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
@@ -259,10 +259,10 @@ export default function ComplaintSimple({ generals = [] }) {
             <div className="max-w-5xl mx-auto">
                 {/* Header mejorado */}
                 <div className="text-center mb-12">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-6">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-6 ${data?.class_icon || ' shadow-lg'}`}>
                         <FileText className="w-8 h-8 text-white" />
                     </div>
-                    <h1 className="text-4xl font-bold customtext-neutral-dark mb-4">
+                    <h1 className={`text-4xl font-bold  mb-4 ${data?.class_title || ' customtext-neutral-dark'}`}>
                         Libro de Reclamaciones
                     </h1>
                     <p className="text-lg customtext-neutral-light max-w-2xl mx-auto">
@@ -275,11 +275,11 @@ export default function ComplaintSimple({ generals = [] }) {
                         {/* Identificación del Consumidor */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-                                <div className="flex items-center justify-center w-12 h-12 bg-secondary rounded-full">
-                                    <User className="w-6 h-6 customtext-primary" />
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <User className="w-6 h-6 " />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold customtext-neutral-dark">
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
                                         Identificación del Consumidor
                                     </h2>
                                     <p className="customtext-neutral-light">Proporciona tus datos personales</p>
@@ -350,11 +350,11 @@ export default function ComplaintSimple({ generals = [] }) {
                         {/* Ubicación */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-                                <div className="flex items-center justify-center w-12 h-12 bg-secondary rounded-full">
-                                    <MapPin className="w-6 h-6 customtext-primary" />
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <MapPin className="w-6 h-6 " />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold customtext-neutral-dark">
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
                                         Ubicación
                                     </h2>
                                     <p className="customtext-neutral-light">Indica tu dirección actual</p>
@@ -422,11 +422,11 @@ export default function ComplaintSimple({ generals = [] }) {
                         {/* Identificación del bien contratado */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-                                <div className="flex items-center justify-center w-12 h-12 bg-secondary rounded-full">
-                                    <Package className="w-6 h-6 customtext-primary" />
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <Package className="w-6 h-6 " />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold customtext-neutral-dark">
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
                                         Identificación del bien contratado
                                     </h2>
                                     <p className="customtext-neutral-light">Detalles del producto o servicio</p>
@@ -476,11 +476,11 @@ export default function ComplaintSimple({ generals = [] }) {
                         {/* Detalle del reclamo */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-                                <div className="flex items-center justify-center w-12 h-12 bg-secondary rounded-full">
-                                    <AlertTriangle className="w-6 h-6 customtext-primary" />
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary '}`}>
+                                    <AlertTriangle className="w-6 h-6 " />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold customtext-neutral-dark">
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
                                         Detalle del reclamo
                                     </h2>
                                     <p className="customtext-neutral-light">Describe tu experiencia</p>
@@ -545,11 +545,11 @@ export default function ComplaintSimple({ generals = [] }) {
                         {/* Verificación y términos */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-                                <div className="flex items-center justify-center w-12 h-12 bg-secondary rounded-full">
-                                    <Shield className="w-6 h-6 customtext-primary" />
+                                <div className={`flex items-center  justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <Shield className="w-6 h-6 " />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold customtext-neutral-dark">
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
                                         Verificación y términos
                                     </h2>
                                     <p className="customtext-neutral-light">Confirmación final</p>
@@ -572,7 +572,7 @@ export default function ComplaintSimple({ generals = [] }) {
                                         <button
                                             type="button"
                                             onClick={() => openModal(0)}
-                                            className="customtext-primary underline hover:text-blue-800 font-medium"
+                                            className="customtext-primary underline hover:customtext-secondary font-medium"
                                         >
                                             términos y condiciones
                                         </button>{" "}
@@ -634,24 +634,24 @@ export default function ComplaintSimple({ generals = [] }) {
                 {/* Información adicional */}
                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
-                        <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FileText className="w-6 h-6 customtext-primary" />
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                            <FileText className="w-6 h-6 " />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Respuesta garantizada</h3>
                         <p className="text-sm customtext-neutral-light">Te responderemos en un máximo de 30 días calendario</p>
                     </div>
                     
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
-                        <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Shield className="w-6 h-6 customtext-primary" />
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                            <Shield className="w-6 h-6" />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Información segura</h3>
                         <p className="text-sm customtext-neutral-light">Tus datos están protegidos y son confidenciales</p>
                     </div>
                     
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
-                        <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <User className="w-6 h-6 customtext-primary" />
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                            <User className="w-6 h-6 " />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Atención personalizada</h3>
                         <p className="text-sm customtext-neutral-light">Un especialista revisará tu caso individualmente</p>

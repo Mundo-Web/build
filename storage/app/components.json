@@ -1694,7 +1694,7 @@
                         "subcategory",
                         "brand"
                     ],
-                    "limit": 12
+                    "limit": 8
                 }
             },
             {
@@ -3081,7 +3081,9 @@
                 "name": "Stech",
                 "data": [
                     "steps",
-                    "selected"
+                    "selected",
+                    "class_title",
+                    "class_icon"
                 ],
                 "generals": [
                     "terms_conditions"
