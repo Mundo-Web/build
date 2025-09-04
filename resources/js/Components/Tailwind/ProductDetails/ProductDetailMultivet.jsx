@@ -428,7 +428,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                 <img
                                     src={item.brand.image ? `/api/brands/media/${item.brand.image}` : '/assets/img/noimage/no_img.jpg'}
                                     alt={item.brand.name || 'Marca'}
-                                    className="max-h-12 sm:max-h-16 lg:max-h-20 max-w-24 lg:max-w-full object-contain"
+                                    className="max-h-12 sm:max-h-16 lg:max-h-20 max-w-24 lg:max-w-40 object-contain"
                                     onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
                                 />
                             )}
@@ -436,7 +436,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
                         {/* Título y rating */}
                         <div>
-                            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-title font-bold text-gray-900 mb-3">
+                            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-title font-bold customtext-neutral-dark mb-3">
                                 {item?.name}
                             </h1>
 
