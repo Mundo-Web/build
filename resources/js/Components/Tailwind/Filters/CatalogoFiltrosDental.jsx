@@ -1418,7 +1418,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                         className="md:w-6/12 mb-0 md:mb-0"
                         whileHover={{ scale: 1.02 }}
                     >
-                        <h2 className="text-2xl lg:text-[32px] md:text-4xl font-bold customtext-primary  lg:mb-2">
+                        <h2 className={`text-2xl lg:text-[32px] md:text-4xl font-bold customtext-primary  lg:mb-2 ${data?.class_title}`}>
                             {data?.title}
                         </h2>
 

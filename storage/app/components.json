@@ -837,13 +837,16 @@
                     "link_cart",
                     "class_button",
                     "show_price",
+                    "section_collections",
                     "section_brands",
                     "section_categories",
                     "section_subcategories",
                     "section_prices",
                     "section_stores",
                     "type_card_product",
-                    "class_clear_button"
+                    "class_clear_button",
+
+                    "class_title"
 
                 ],
                 "options": [
