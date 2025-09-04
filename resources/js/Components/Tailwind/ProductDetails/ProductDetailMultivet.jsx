@@ -428,7 +428,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                 <img
                                     src={item.brand.image ? `/api/brands/media/${item.brand.image}` : '/assets/img/noimage/no_img.jpg'}
                                     alt={item.brand.name || 'Marca'}
-                                    className="max-h-12 sm:max-h-16 lg:max-h-20 max-w-full object-contain"
+                                    className="max-h-12 sm:max-h-16 lg:max-h-20 max-w-24 lg:max-w-full object-contain"
                                     onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
                                 />
                             )}
@@ -571,7 +571,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
                 {/* Productos relacionados */}
                 {console.log('RelationsItems en render:', relationsItems)}
-                {relationsItems && relationsItems.length > 0 ? (
+                {relationsItems && relationsItems.length > 0 && (
                     <ProductMultivet
                         items={relationsItems}
                         data={{
@@ -585,11 +585,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                         setCart={setCart}
                         cart={cart}
                     />
-                ) : (
-                    <div className="mt-8 text-center">
-                        <p className="text-gray-500">No hay productos relacionados disponibles</p>
-                    </div>
-                )}
+                ) }
             </div>
 
             {/* Botón Flotante Mobile */}
