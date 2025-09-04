@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const TextWithHighlight = ({ text = "", split = false, split_coma = false, split_dos_puntos = false, color = "bg-constrast", counter = false }) => {
+const TextWithHighlight = ({ text = "", split = false, split_coma = false, split_dos_puntos = false, color = "bg-constrast", counter = false, className = "" }) => {
     // Función para procesar el texto con resaltados
     const safeText = text || "";
     const [currentNumber, setCurrentNumber] = useState(0);
@@ -47,11 +47,11 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
 
         return parts.map((part, index) =>
             part.startsWith("*") && part.endsWith("*") ? (
-                <span key={index} className={`${color} bg-clip-text text-transparent`}>
+                <span key={index} className={`${color} bg-clip-text text-transparent ${className}`}>
                     {part.slice(1, -1)}
                 </span>
             ) : (
-                <span key={index}>{part}</span>
+                <span className={`${className}`} key={index}>{part}</span>
             )
         );
     };
@@ -62,9 +62,9 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         const remainingText = words.slice(1).join(" ");
 
         return (
-            <div className="flex flex-col">
-                <span className="block">  {renderHighlightedText(firstWord)}</span>
-                <span className="block">
+            <div className={`flex flex-col ${className}`}>
+                <span className={`block ${className}`}>{renderHighlightedText(firstWord)}</span>
+                <span className={`block ${className}`}>
                     {renderHighlightedText(remainingText)}
                 </span>
             </div>
@@ -77,9 +77,9 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         const remainingText = words.slice(1).join(" ");
 
         return (
-            <div className="flex flex-col">
-                <span className="block">{renderHighlightedText(firstWord)}</span>
-                <span className="block">
+            <div className={`flex flex-col ${className}`}>
+                <span className={`block ${className}`}>{renderHighlightedText(firstWord)}</span>
+                <span className={`block ${className}`}>
                     {renderHighlightedText(remainingText)}
                 </span>
             </div>
@@ -91,16 +91,16 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         const remainingText = words.slice(1).join(" ");
 
         return (
-            <div className="flex flex-col">
-                <span className="block">{firstWord}</span>
-                <span className="block">
+            <div className={`flex flex-col ${className}`}>
+                <span className={`block ${className}`}>{firstWord}</span>
+                <span className={`block ${className}`}>
                     {renderHighlightedText(remainingText)}
                 </span>
             </div>
         );
     }
 
-    return <span>{renderHighlightedText(safeText)}</span>;
+    return <span className={className}>{renderHighlightedText(safeText)}</span>;
 };
 
 export default TextWithHighlight;

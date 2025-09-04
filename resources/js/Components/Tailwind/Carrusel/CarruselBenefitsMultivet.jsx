@@ -36,8 +36,8 @@ const CarruselBenefitsMultivet = ({ items = [], data }) => {
 
       {/* Content */}
       <div className="relative z-10 h-full flex items-center justify-center">
-        <div className="text-center text-white max-w-4xl mx-auto px-4">
-          <h2 className={`text-4xl font-title md:text-5xl font-bold mb-6 font-montserrat animate-fade-in  ${data?.class_title || 'text-white'}`}>
+        <div className="text-center text-white ">
+          <h2 className={`text-4xl max-w-4xl mx-auto px-4 font-title md:text-5xl font-bold mb-6 font-montserrat animate-fade-in  ${data?.class_title || 'text-white'}`}>
             {data?.title || 'Compromiso con la'}
            
           </h2>
@@ -47,21 +47,21 @@ const CarruselBenefitsMultivet = ({ items = [], data }) => {
           
           {/* Benefits List */}
           {items.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-8  px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
               {items.map((benefit, index) => {
                 const IconComponent = getIcon(benefit.icon);
                 return (
                   <div 
                     key={index}
-                    className="flex flex-col items-center space-y-3 animate-slide-up bg-white/10 backdrop-blur-sm rounded-lg p-4"
+                    className="flex flex-col items-center space-y-3 animate-slide-up  backdrop-blur-sm rounded-lg "
                     style={{ animationDelay: `${index * 0.2}s` }}
                   >
-                    <div className={`p-3 rounded-full ${data?.accent_bg || 'bg-primary'}`}>
+                    <div className={`p-3 rounded-full ${data?.accent_bg || 'bg-secondary'}`}>
                       {benefit.symbol ? (
                         <img
                           src={`/storage/images/indicator/${benefit.symbol}`}
                           alt={benefit.name}
-                          className="w-8 h-8 filter brightness-0 invert"
+                          className="w-9 h-9"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'block';
@@ -72,7 +72,7 @@ const CarruselBenefitsMultivet = ({ items = [], data }) => {
                         className={`w-8 h-8 ${data?.accent_color || 'text-brand-gold'} ${benefit.symbol ? 'hidden' : ''}`}
                       />
                     </div>
-                    <h3 className="font-bold text-lg customtext-primary">
+                    <h3 className="font-bold font-title text-lg customtext-primary">
                       {benefit.name}
                     </h3>
                     <p className="text-base customtext-neutral-light text-center">

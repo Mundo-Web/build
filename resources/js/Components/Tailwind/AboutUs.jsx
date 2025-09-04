@@ -4,7 +4,7 @@ const AboutSimple = React.lazy(() => import('./AboutUs/AboutSimple'))
 const AboutImage = React.lazy(() => import('./AboutUs/AboutImage'))
 const AboutAko = React.lazy(() => import('./AboutUs/AboutAko'))
 const AboutPaani = React.lazy(() => import('./AboutUs/AboutPaani'))
-
+const AboutMultivet = React.lazy(() => import('./AboutUs/AboutMultivet'))
 const AboutUs = ({ data, which, filteredData, items }) => {
     const getAboutUs = () => {
         switch (which) {
@@ -17,7 +17,8 @@ const AboutUs = ({ data, which, filteredData, items }) => {
 
             case 'AboutAko':
                 return <AboutAko data={data} filteredData={filteredData} items={items} />
-
+            case 'AboutMultivet':
+                return <AboutMultivet data={data} filteredData={filteredData} items={items} />
             case 'AboutPaani':
                 return <AboutPaani data={data} filteredData={filteredData} items={items} />
 

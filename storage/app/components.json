@@ -2775,6 +2775,19 @@
                 }
             },
             {
+                "id": "AboutMultivet",
+                "name": "AboutMultivet",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
                 "id": "AboutPaani",
                 "name": "AboutPaani",
                 "data": [
