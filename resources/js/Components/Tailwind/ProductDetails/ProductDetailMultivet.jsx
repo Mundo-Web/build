@@ -36,6 +36,8 @@ import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
 import { toast } from "sonner";
 import ItemsRest from "../../../Actions/ItemsRest";
+import ProductInfinite from "../Products/ProductInfinite";
+import ProductMultivet from "../Products/ProductMultivet";
 
 const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites, setFavorites }) => {
     const itemsRest = new ItemsRest();
@@ -180,12 +182,34 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
     const productosRelacionados = async (item) => {
         try {
-            const response = await itemsRest.getSuggested(item.id);
-            if (response?.data) {
-                setRelationsItems(response.data);
+            console.log('Buscando productos relacionados para item:', item.id);
+            
+            // Preparar la solicitud como en ProductDetailB.jsx
+            const request = {
+                id: item?.id,
+            };
+
+            // Llamar al backend para verificar el combo (usando el mismo método que ProductDetailB)
+            const response = await itemsRest.productsRelations(request);
+            console.log('Respuesta de productos relacionados:', response);
+
+            // Verificar si la respuesta es válida
+            if (!response) {
+                console.log('No se encontró respuesta de productos relacionados');
+                setRelationsItems([]);
+                return;
             }
+
+            // Actualizar el estado con los productos asociados (como en ProductDetailB)
+            const relations = response;
+            const relationsArray = Object.values(relations);
+            
+            console.log('Productos relacionados encontrados:', relationsArray);
+            setRelationsItems(relationsArray);
+            
         } catch (error) {
             console.error('Error fetching related products:', error);
+            setRelationsItems([]);
         }
     };
 
@@ -546,44 +570,24 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
 
                 {/* Productos relacionados */}
-                {relationsItems && relationsItems.length > 0 && (
-                    <div className="mt-8 lg:mt-16">
-                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 lg:mb-8 text-center">
-                            Productos relacionados
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
-                            {relationsItems.slice(0, 4).map((product, index) => (
-                                <div
-                                    key={product.id}
-                                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-2"
-                                >
-                                    <div className="aspect-square bg-gray-50 flex items-center justify-center p-2 lg:p-4">
-                                        <img
-                                            src={product?.image ? `/storage/images/item/${product.image}` : '/api/cover/thumbnail/null'}
-                                            alt={product?.name}
-                                            className="w-full h-full object-contain"
-                                            onError={(e) => {
-                                                e.target.src = '/api/cover/thumbnail/null';
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="p-3 lg:p-4">
-                                        <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem] text-sm lg:text-base">
-                                            {product?.name}
-                                        </h3>
-                                        <div className="text-sm lg:text-lg font-bold customtext-neutral-dark mb-2 lg:mb-3">
-                                            {formatPrice(product?.final_price || product?.price)}
-                                        </div>
-                                        <a
-                                            href={`/producto/${product?.slug || product?.id}`}
-                                            className="w-full bg-secondary text-white py-2 px-2 lg:px-4 rounded-lg font-semibold hover:bg-accent transition-colors text-center block text-xs lg:text-sm"
-                                        >
-                                            Ver producto
-                                        </a>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                {console.log('RelationsItems en render:', relationsItems)}
+                {relationsItems && relationsItems.length > 0 ? (
+                    <ProductMultivet
+                        items={relationsItems}
+                        data={{
+                            title: "Productos relacionados",
+                            description: "Descubre otros productos cuidadosamente seleccionados que complementan perfectamente tu compra. Nuestra selección incluye productos de alta calidad de las mejores marcas veterinarias para el cuidado integral de tu mascota.",
+                            link_catalog: "/catalogo",
+                            class_content: "",
+                            class_header: "",
+                            class_button: "bg-secondary text-white hover:bg-accent hover:customtext-primary",
+                        }}
+                        setCart={setCart}
+                        cart={cart}
+                    />
+                ) : (
+                    <div className="mt-8 text-center">
+                        <p className="text-gray-500">No hay productos relacionados disponibles</p>
                     </div>
                 )}
             </div>
