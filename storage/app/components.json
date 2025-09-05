@@ -240,6 +240,7 @@
                 "image": "header-with-search.png",
                 "data": [
                     "class",
+                    "class_text",
                     "link_cart",
                     "showLoginCart",
                     "mobileSearch",
