@@ -167,6 +167,20 @@
                         "subcategories"
                     ]
                 }
+            },
+            {
+                "id": "MenuKatya",
+                "name": "Menu - Katya",
+                "image": "top-bar-simple.png",
+                "data": [
+                    "showCategories"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                }
             }
         ]
     },
@@ -590,6 +604,7 @@
                     "imageBgPosition",
                     "overlayMobile",
                     "overlayMobileDark",
+                    "overlayDesktop",
                     "whatsapp_info",
                     "class_button_primary",
                     "class_icon_primary",

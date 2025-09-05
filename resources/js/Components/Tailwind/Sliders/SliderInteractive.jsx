@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import Global from "../../../Utils/Global";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
 
@@ -427,6 +428,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                               <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
                           )}
 
+{data?.overlayDesktop &&(
+     <div className=" absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
+)}
 
                             <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}>
                                 <AnimatePresence mode="wait">
@@ -446,7 +450,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                                 textShadow: "0 0 20px rgba(0, 0, 0, .25)",
                                             }}
                                         >
-                                            {item.name}
+                                          <TextWithHighlight text={item.name} color=""/>
                                         </motion.h2>
                                         <motion.p
                                             variants={descriptionVariants}

@@ -682,7 +682,7 @@ const HeaderSearchKatya = ({
                                             selectedCategory.slug === category.slug ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
                                         }`}
                                     >
-                                        <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="flex-shrink-0 w-8 h-8 bg-secondary p-2 rounded-full overflow-hidden">
                                             {category.image ? (
                                                 <img
                                                     src={`/api/categories/media/${category.image}`}
