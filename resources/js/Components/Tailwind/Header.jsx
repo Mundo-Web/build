@@ -20,6 +20,8 @@ const HeaderScraping = React.lazy(() =>
 );
 const HeaderMakita = React.lazy(() => import("./Headers/HeaderMakita"));
 const HeaderPidelo = React.lazy(() => import("./Headers/HeaderPidelo"));
+const HeaderSearchKatya = React.lazy(() => import("./Headers/HeaderSearchKatya"));
+
 const Header = ({
     data,
     which,
@@ -67,6 +69,18 @@ const Header = ({
             case "HeaderSearchB":
                 return (
                     <HeaderSearchB
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+               case "HeaderSearchKatya":
+                return (
+                    <HeaderSearchKatya
                         data={data}
                         items={items}
                         cart={cart}

@@ -208,6 +208,31 @@
                     "message_whatsapp"
                 ]
             },
+                  {
+                "id": "HeaderSearchKatya",
+                "name": "HeaderSearchKatya",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "class_logo"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "opening_hours",
+                    "support_phone"
+                ]
+            },
               {
                 "id": "HeaderPidelo",
                 "name": "HeaderPidelo",
