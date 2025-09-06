@@ -210,33 +210,23 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                 transition={{ duration: 0.2 }}
-                                                className="absolute top-full right-0 mt-1 bg-white text-gray-800 border border-gray-200 rounded-lg shadow-lg z-50 min-w-[250px] max-h-80 overflow-y-auto"
+                                                className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[250px] max-h-80 overflow-y-auto"
                                             >
-                                                <div className="py-2">
-                                                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-100">
-                                                        Nuestras Tiendas
-                                                    </div>
+                                                <div className="py-8">
+                                                    {console.log("Estos son todas las: ",tiendas)}
+                                                   
                                                     {tiendas.map((tienda) => (
                                                         <a
                                                             key={tienda.id}
                                                             href={`/tienda/${tienda.slug || tienda.id}`}
-                                                            className="block px-4 py-3 hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
+                                                            className="block px-4 py-4 text-white hover:bg-black/20 group hover:text-white transition-colors duration-200"
                                                         >
                                                             <div className="flex items-center gap-3">
-                                                                {tienda.image && (
-                                                                    <img
-                                                                        src={`/storage/images/stores/${tienda.image}`}
-                                                                        alt={tienda.name}
-                                                                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                                                                        onError={(e) => {
-                                                                            e.target.style.display = 'none';
-                                                                        }}
-                                                                    />
-                                                                )}
+                                                               
                                                                 <div className="flex-1 min-w-0">
-                                                                    <div className="font-medium text-sm">{tienda.name}</div>
+                                                                    <div className="font-medium text-sm group-hover:!font-semibold">{tienda.name}</div>
                                                                     {tienda.address && (
-                                                                        <div className="text-xs text-gray-500 truncate">
+                                                                        <div className="text-xs  text-white truncate">
                                                                             {tienda.address}
                                                                         </div>
                                                                     )}

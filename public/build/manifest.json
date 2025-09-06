@@ -8378,7 +8378,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-CB54KYLQ.js",
+    "file": "assets/Menu-D7iH2Cvf.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -9906,7 +9906,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-BTbiysrC.js",
+    "file": "assets/Slider-DnJS0xlB.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -9929,7 +9929,8 @@
       "resources/js/Components/Tailwind/Sliders/SliderFeaturedMakita.jsx",
       "resources/js/Components/Tailwind/Sliders/SliderTwoColumnSwiper.jsx",
       "resources/js/Components/Tailwind/Sliders/SliderPideloPe.jsx",
-      "resources/js/Components/Tailwind/Sliders/SliderMultivet.jsx"
+      "resources/js/Components/Tailwind/Sliders/SliderMultivet.jsx",
+      "resources/js/Components/Tailwind/Sliders/SliderProductBannerKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Sliders/SliderBananaLab.jsx": {
@@ -10071,6 +10072,18 @@
     ],
     "css": [
       "swiper.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Sliders/SliderProductBannerKatya.jsx": {
+    "file": "assets/SliderProductBannerKatya--pJTheE3.js",
+    "name": "SliderProductBannerKatya",
+    "src": "resources/js/Components/Tailwind/Sliders/SliderProductBannerKatya.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Sliders/SliderSearch.jsx": {
@@ -10883,7 +10896,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-8RggZPQ-.js",
+    "file": "assets/System-DBz8zF7i.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -668,6 +668,38 @@
                 ]
             },
             {
+                "id": "SliderProductBannerKatya",
+                "name": "Slider Productos con Banner - Katya",
+                "image": "slider-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "backgroundColor",
+                    "textColor",
+                    "autoPlay",
+                    "autoPlayInterval"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured"
+                        
+                    ],
+                    "fields": [
+                        "name",
+                       
+                        "banner",
+                        "slug",
+                        "featured"
+                       
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
                 "id": "SliderFeaturedMakita",
                 "name": "SliderFeaturedMakita",
                 "image": "slider-simple.png",

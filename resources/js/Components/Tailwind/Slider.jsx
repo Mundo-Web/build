@@ -20,6 +20,7 @@ const SliderTwoColumnSwiper = React.lazy(() =>
 );
 const SliderPideloPe = React.lazy(() => import("./Sliders/SliderPideloPe"));
 const SliderMultivet = React.lazy(() => import("./Sliders/SliderMultivet"));
+const SliderProductBannerKatya = React.lazy(() => import("./Sliders/SliderProductBannerKatya"));
 
 const Slider = ({ which, data, sliders ,generals=[]}) => {
     const getSlider = () => {
@@ -49,6 +50,8 @@ const Slider = ({ which, data, sliders ,generals=[]}) => {
                 return <SliderPideloPe data={data} items={sliders} />;
             case "SliderMultivet":
                 return <SliderMultivet data={data} items={sliders} generals={generals} />;
+            case "SliderProductBannerKatya":
+                return <SliderProductBannerKatya data={data} items={sliders} generals={generals} />;
             
                 default:
                 return (
