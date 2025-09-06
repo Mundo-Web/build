@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CircleUser, User } from 'lucide-react';
 
-const ProfileImage = ({ uuid, name, lastname, className }) => {
+const ProfileImage = ({ uuid, name, lastname, className,classCircleUser }) => {
     const [showImage, setShowImage] = useState(false);
     const [isValidImage, setIsValidImage] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
@@ -59,7 +59,7 @@ const ProfileImage = ({ uuid, name, lastname, className }) => {
                 />
             ) : (
                 <CircleUser
-                    className={` !w-7 !h-7 customtext-primary border-primary rounded-full ring-secondary transition-all duration-300`}
+                    className={` !w-7 !h-7  rounded-full ring-secondary transition-all duration-300 ${classCircleUser || "customtext-primary border-primary"}`}
                 />
             )}
         </>

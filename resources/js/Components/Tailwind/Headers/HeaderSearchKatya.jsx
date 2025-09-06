@@ -602,11 +602,11 @@ const HeaderSearchKatya = ({
             : [];
 
         return (
-            <div ref={dropdownRef} className="relative flex-shrink-0">
+            <div ref={dropdownRef} className="absolute right-0 flex-shrink-0">
                 <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-between min-w-[180px] max-w-[180px] text-sm py-3 px-4 font-semibold focus:ring-0 customtext-neutral-dark bg-secondary focus:outline-none border-0  text-white rounded-full hover:bg-primary hover:customtext-neutral-dark transition-colors duration-500"
+                    className="flex items-center justify-between min-w-[150px] max-w-[150px] text-sm py-4 px-4 font-semibold focus:ring-0 customtext-neutral-dark bg-secondary focus:outline-none border-0  text-white rounded-full hover:bg-primary hover:customtext-neutral-dark transition-colors duration-500"
                     aria-label="Seleccionar categoría"
                     aria-expanded={isDropdownOpen}
                 >
@@ -941,8 +941,8 @@ const HeaderSearchKatya = ({
                     )}
 
                     {/* Search Bar - Desktop */}
-                    <div className="hidden md:block relative w-full max-w-lg mx-auto" ref={searchRef}>
-                        <form onSubmit={handleFormSubmit} role="search" className="flex items-center gap-2 bg-white rounded-full border p-1">
+                    <div className="hidden md:block relative w-full max-w-md " ref={searchRef}>
+                        <form onSubmit={handleFormSubmit} role="search" className="flex items-center gap-0 bg-white rounded-full border p-1">
                             {/* Botón de búsqueda */}
                             <button
                                 type="submit"
@@ -989,14 +989,35 @@ const HeaderSearchKatya = ({
 
                     {/* Account and Cart */}
                     {data?.showLoginCart ? (
-                        <div className="hidden md:flex items-center gap-4 relative text-sm">
+                        <div className="hidden md:flex items-center  gap-8 relative text-sm">
+                             <p className={`cursor-pointer text-sm customtext-neutral-dark whitespace-pre-line hover:customtext-secondary font-normal  transition-all duration-500 `}>
+                                {(() => {
+                                    const text = generals.find((contact) => contact.correlative === "opening_hours")?.description || "";
+                                    const [first, ...rest] = text.split('\n');
+                                    return (
+                                        <>
+                                            <strong>{first}</strong>
+                                            {rest.length > 0 ? <><br />{rest.join('\n')}</> : null}
+                                        </>
+                                    );
+                                })()}
+                            </p>
+                              <p className={`cursor-pointer text-sm customtext-neutral-dark font-normal whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>  
+                                <span>Soporte 24/7</span><br />
+                              <strong>  {generals.find((contact) => contact.correlative === "support_phone")
+                            ?.description || ""}
+                            </strong>
+                            </p>
+                            
                             <div ref={menuRef}>
                                 {isUser ? (
                                     <button
                                         aria-label="user"
-                                        className="customtext-neutral-dark flex items-center gap-2 hover:customtext-primary pr-6 transition-all duration-300 relative group"
+                                        className="customtext-neutral-dark flex items-center gap-2 hover:customtext-secondary pr-6 transition-all duration-300 relative group"
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     >
+                                        <span className="hidden md:inline">{isUser.name}</span>
+
                                         <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                             {isUser.uuid ? (
                                                 <div className="relative">
@@ -1004,7 +1025,8 @@ const HeaderSearchKatya = ({
                                                         uuid={isUser.uuid}
                                                         name={isUser.name}
                                                         lastname={isUser.lastname}
-                                                        className="w-8 h-8 rounded-full object-cover border-2 border-primary ring-secondary transition-all duration-300"
+                                                        classCircleUser={"customtext-neutral-dark stroke-[1.5] border-neutral-dark "}
+                                                        className="w-8 h-8 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
                                                     />
                                                     {/* Punto indicador online animado */}
                                                     <div className="absolute -bottom-[-0.115rem] -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
@@ -1025,12 +1047,12 @@ const HeaderSearchKatya = ({
                                                 </div>
                                             )}
                                         </div>
-                                        <span className="hidden md:inline">{isUser.name}</span>
                                     </button>
                                 ) : (
                                     <a href="/iniciar-sesion" className="flex items-center gap-2 text-sm hover:customtext-primary transition-colors duration-300">
+                                         <span className="hidden md:inline">Iniciar <br/> <strong>Sesión</strong></span>
                                         <CircleUser className="customtext-primary" />
-                                        <span className="hidden md:inline">Iniciar Sesión</span>
+                                      
                                     </a>
                                 )}
 
@@ -1128,8 +1150,16 @@ const HeaderSearchKatya = ({
                             >
 
                                 <span className="hidden md:inline">Mi Carrito</span>
-                                <div className="text-white">
-                                    <ShoppingCart />
+                                <div className="customtext-neutral-dark">
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M6 6H22" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z" stroke="#0E1818" stroke-width="1.5"/>
+<path d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z" stroke="#0E1818" stroke-width="1.5"/>
+<path d="M8 20H15" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+
                                 </div>
                                 <span className="absolute -right-6 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs bg-primary text-white rounded-full">
                                     {totalCount}
