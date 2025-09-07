@@ -1748,6 +1748,7 @@
                 "image": "products-carousel.png",
                 "data": [
                     "title",
+                    "class_title",
                     "description",
                     "link_catalog",
                     "text_button",

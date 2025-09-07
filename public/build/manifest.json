@@ -4633,7 +4633,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-je7_8mPk.js",
+    "file": "assets/Banner-DymRCJnm.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -8601,7 +8601,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-MZz8IMP2.js",
+    "file": "assets/Product-DaVQE8Ym.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -8629,7 +8629,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-DKxXKSPe.js",
+    "file": "assets/ProductDetail-CW7yPtt5.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -10922,7 +10922,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Cc93gVzR.js",
+    "file": "assets/System-mMm8b59S.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

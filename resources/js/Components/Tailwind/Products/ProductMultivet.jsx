@@ -138,7 +138,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
             variants={headerVariants}
             initial="hidden"
             animate={headerInView ? "visible" : "hidden"}
-            className="text-3xl md:text-5xl font-bold customtext-secondary mb-4 font-title"
+            className={`text-3xl md:text-5xl font-bold customtext-secondary mb-4 font-title ${data?.class_title || ""}`}
           >
             {data?.title || "Productos Destacados"}
           </motion.h2>
@@ -160,8 +160,8 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
                 key={category}
                 onClick={() => setSelectedCategory(category)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${selectedCategory === category
-                    ? 'bg-secondary text-white shadow-lg'
-                    : 'bg-white customtext-neutral-light hover:bg-primary hover:text-white border border-gray-300'
+                  ? 'bg-secondary text-white shadow-lg'
+                  : 'bg-white customtext-neutral-light hover:bg-primary hover:text-white border border-gray-300'
                   }`}
               >
                 {category}
@@ -169,8 +169,8 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
             ))}
           </div>
         )}
- {data?.button_top && data?.link_catalog && (
-          <div className="text-center mt-12">
+        {data?.button_top && data?.link_catalog && (
+          <div className="text-center my-12">
             <motion.a
               href={data.link_catalog}
               className={`inline-flex items-center gap-3 px-8 py-4 bg-primary font-bold customtext-primary  rounded-lg hover:bg-secondary hover:text-white transform hover:scale-105 transition-all duration-300 ${data?.class_button || ""}`}
