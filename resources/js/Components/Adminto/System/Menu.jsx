@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import MenuItemContainer from "../../MenuItemContainer";
 import MenuItem from "../../MenuItem";
 import SystemRest from "../../../Actions/Admin/SystemRest";
@@ -6,15 +6,51 @@ import SystemRest from "../../../Actions/Admin/SystemRest";
 const systemRest = new SystemRest();
 
 const Menu = ({ components, onClick }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredComponents = components
+    .filter(component => component.options.length > 0)
+    .filter(component => {
+      if (!searchTerm) return true;
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        component.name.toLowerCase().includes(searchLower) ||
+        component.options.some(option => 
+          option.name.toLowerCase().includes(searchLower)
+        )
+      );
+    });
   return <div className="left-side-menu top-0 pt-2">
     <div data-simplebar className='h-100'>
       <div id="sidebar-menu" className='show'>
         <ul id="side-menu">
           <li className="menu-title">Lista de componentes</li>
+          <li className="px-3 py-2">
+            <div className="position-relative">
+              <input 
+                type="text" 
+                className="form-control form-control-sm" 
+                placeholder="Buscar componentes..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  backgroundColor: '#ffffff',
+                
+                  color: '#8391a2',
+                  paddingLeft: '35px'
+                }}
+              />
+              <i className="mdi mdi-magnify position-absolute" style={{
+                left: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#8391a2',
+                fontSize: '16px'
+              }}></i>
+            </div>
+          </li>
           {
-            components
-              .filter(component => component.options.length > 0)
-              .map((component, index) => (
+            filteredComponents.map((component, index) => (
                 <MenuItemContainer title={component.name} key={index} icon={component.icon}>
                   {
                     component.options.map((option, index) => (
@@ -31,9 +67,14 @@ const Menu = ({ components, onClick }) => {
                   }
                 </MenuItemContainer>
               ))
-          }
-
-          <li className="menu-title">Sistema de respaldo</li>
+            }
+          {
+            filteredComponents.length === 0 && searchTerm && (
+              <li className="px-3 py-2">
+                <small className="text-muted">No se encontraron componentes</small>
+              </li>
+            )
+          }          <li className="menu-title">Sistema de respaldo</li>
           <MenuItem icon='mdi mdi-cogs' rightBarToggle>Configuraciones</MenuItem>
           <MenuItem icon='mdi mdi-cloud-download' onClick={async () => {
             const backup = await systemRest.exportBK();

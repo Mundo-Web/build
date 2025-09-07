@@ -12,13 +12,16 @@ const Component = ({ className, system, component, onComponentClicked, onDeleteC
       </span>
       <span className='ms-1'>{system.name}</span>
     </div>
-    <div className="dropdown-menu" aria-labelledby={`dd-${system.id}`} data-popper-placement="bottom-start">
+    <div className="dropdown-menu" aria-labelledby={`dd-${system.id}`} data-popper-placement="bottom-start" data-simplebar style={{
+      maxHeight: '300px',
+      width: '100%'
+    }}>
       {
         options.length > 1 &&
         <>
           {
-            options.filter(x => x.id != system.value).map(option => (
-              <button className='dropdown-item' onClick={() => onComponentClicked({
+            options.filter(x => x.id != system.value).map((option, index) => (
+              <button key={index} className='dropdown-item' onClick={() => onComponentClicked({
                 ...system,
                 name: `${component.name} - ${option.name}`,
                 value: option.id

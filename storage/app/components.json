@@ -2012,6 +2012,19 @@
                     "class_content_right"
                 ]
             },
+             {
+                "id": "BannerPublicitarioKatya",
+                "name": "BannerPublicitarioKatya",
+                "data": [
+                    "title",
+                    "image_position",
+                    "class_content",
+                    "class_image",
+                    "class_right",
+                    "class_button",
+                    "class_content_right"
+                ]
+            },
             {
                 "id": "BannerPublicitarioPaani",
                 "name": "BannerPublicitarioPaani",

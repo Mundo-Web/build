@@ -3022,7 +3022,7 @@
     ]
   },
   "resources/js/Admin/System.jsx": {
-    "file": "assets/System-BwmXLd4L.js",
+    "file": "assets/System-Cs3XpaiU.js",
     "name": "System",
     "src": "resources/js/Admin/System.jsx",
     "isEntry": true,
@@ -4633,7 +4633,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-DZ8YdTzg.js",
+    "file": "assets/Banner-je7_8mPk.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -4660,7 +4660,8 @@
       "resources/js/Components/Tailwind/Banners/BannerCTAMakita.jsx",
       "resources/js/Components/Tailwind/Banners/BannerContactMakita.jsx",
       "resources/js/Components/Tailwind/Banners/BannerPidelo.jsx",
-      "resources/js/Components/Tailwind/Banners/BannerMultivet.jsx"
+      "resources/js/Components/Tailwind/Banners/BannerMultivet.jsx",
+      "resources/js/Components/Tailwind/Banners/BannerPublicitarioKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAd.jsx": {
@@ -4783,6 +4784,16 @@
     "file": "assets/BannerPublicitario-DYlcHizO.js",
     "name": "BannerPublicitario",
     "src": "resources/js/Components/Tailwind/Banners/BannerPublicitario.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-yBjzXJbu.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Banners/BannerPublicitarioKatya.jsx": {
+    "file": "assets/BannerPublicitarioKatya-DYlcHizO.js",
+    "name": "BannerPublicitarioKatya",
+    "src": "resources/js/Components/Tailwind/Banners/BannerPublicitarioKatya.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -10911,7 +10922,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-G6WDCzAz.js",
+    "file": "assets/System-Cc93gVzR.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
