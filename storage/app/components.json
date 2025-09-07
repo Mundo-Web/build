@@ -14,7 +14,6 @@
                 "data": [
                     "class_content",
                     "class_text"
-                    
                 ]
             },
             {
@@ -34,7 +33,7 @@
                     "cintillo"
                 ]
             },
-              {
+            {
                 "id": "TopBarPages",
                 "name": "Con páginas",
                 "image": "top-bar-socials.png",
@@ -116,7 +115,7 @@
                     ]
                 }
             },
-               {
+            {
                 "id": "MenuMultivet",
                 "name": "Menu - Multivet",
                 "image": "top-bar-simple.png",
@@ -134,7 +133,6 @@
                 "id": "MenuCategories",
                 "name": "Menu - Categorías",
                 "image": "top-bar-simple.png",
-              
                 "using": {
                     "model": "Category",
                     "with": [
@@ -198,7 +196,6 @@
                     "link_cart"
                 ]
             },
-            
             {
                 "id": "HeaderSearchB",
                 "name": "HeaderSearchB",
@@ -222,7 +219,7 @@
                     "message_whatsapp"
                 ]
             },
-                  {
+            {
                 "id": "HeaderSearchKatya",
                 "name": "HeaderSearchKatya",
                 "image": "header-with-search.png",
@@ -247,7 +244,7 @@
                     "support_phone"
                 ]
             },
-              {
+            {
                 "id": "HeaderPidelo",
                 "name": "HeaderPidelo",
                 "image": "header-with-search.png",
@@ -265,8 +262,6 @@
                         "slug",
                         "id"
                     ]
-
-                  
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -506,7 +501,7 @@
                     "background_image",
                     "overlay",
                     "title",
-                    "subtitle", 
+                    "subtitle",
                     "description",
                     "accent_color",
                     "accent_bg",
@@ -622,12 +617,10 @@
                         "button_link",
                         "order_index"
                     ]
-                    
                 },
-                 "generals": [
+                "generals": [
                     "phone_whatsapp",
                     "message_whatsapp"
-                   
                 ]
             },
             {
@@ -659,12 +652,10 @@
                         "button_link",
                         "order_index"
                     ]
-                    
                 },
-                 "generals": [
+                "generals": [
                     "phone_whatsapp",
                     "message_whatsapp"
-                   
                 ]
             },
             {
@@ -683,15 +674,12 @@
                     "model": "Item",
                     "filters": [
                         "featured"
-                        
                     ],
                     "fields": [
                         "name",
-                       
                         "banner",
                         "slug",
                         "featured"
-                       
                     ]
                 },
                 "generals": [
@@ -733,7 +721,7 @@
                     ]
                 }
             },
-              {
+            {
                 "id": "SliderPideloPe",
                 "name": "SliderPideloPe",
                 "image": "slider-simple.png",
@@ -760,7 +748,6 @@
                     "class_button",
                     "class_image",
                     "autoplay"
-                    
                 ],
                 "using": {
                     "model": "Brand",
@@ -899,7 +886,7 @@
                     }
                 ]
             },
-                   {
+            {
                 "id": "CatalogoFiltrosDental",
                 "name": "Producto Catalogo Filtro Dental",
                 "image": "products-list.png",
@@ -918,9 +905,7 @@
                     "section_stores",
                     "type_card_product",
                     "class_clear_button",
-
                     "class_title"
-
                 ],
                 "options": [
                     {
@@ -1695,7 +1680,6 @@
                     "is_short_description",
                     "class_card_subtitle",
                     "class_card_description"
-
                 ],
                 "using": {
                     "model": "Item",
@@ -1775,7 +1759,6 @@
                     "limit": 8
                 }
             },
-       
             {
                 "id": "ProductNavigation",
                 "name": "Navegacion",
@@ -1824,7 +1807,12 @@
                         "is_new",
                         "views"
                     ],
-                    "with": ["category", "subcategory", "brand", "variants"],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand",
+                        "variants"
+                    ],
                     "limit": 20
                 }
             },
@@ -1986,7 +1974,6 @@
                     "overlay",
                     "btn_secondary",
                     "class_button"
-                    
                 ]
             },
             {
@@ -2013,7 +2000,7 @@
                     "class_content_right"
                 ]
             },
-             {
+            {
                 "id": "BannerPublicitarioKatya",
                 "name": "BannerPublicitarioKatya",
                 "data": [
@@ -2117,6 +2104,18 @@
                     "class_image",
                     "class_overlay"
                 ]
+            },
+             {
+                "id": "BannerBlogSectionKatya",
+                "name": "BannerBlogSectionKatya",
+               
+                "using": {
+                    "model": "Post",
+                    "limit": 2,
+                    "with": [
+                        "category"
+                    ]
+                }
             },
             {
                 "id": "BannerBananaLab",
@@ -2256,7 +2255,6 @@
                     "model": "Item",
                     "flied": "slug"
                 },
-                
                 "generals": [
                     "phone_whatsapp",
                     "message_whatsapp"
@@ -2284,7 +2282,7 @@
                     ]
                 }
             },
-                {
+            {
                 "id": "ProductDetailPidelo",
                 "name": "ProductDetailPidelo",
                 "data": [
@@ -2455,21 +2453,21 @@
                     "title",
                     "class_button"
                 ],
-                "generals":[
+                "generals": [
                     "importation_flete",
                     "importation_seguro",
                     "importation_derecho_arancelario",
                     "importation_derecho_arancelario_descripcion"
                 ]
             },
-              {
+            {
                 "id": "CheckoutStepsPidelo",
                 "name": "StepsPidelo",
                 "data": [
                     "title",
                     "class_button"
                 ],
-                "generals":[
+                "generals": [
                     "importation_flete",
                     "importation_seguro",
                     "importation_derecho_arancelario",
@@ -2481,7 +2479,7 @@
                 "name": "StepsSF",
                 "data": [
                     "title",
-                     "class_button"
+                    "class_button"
                 ],
                 "json": {
                     "prefixes": "./prefijocelular.json"
@@ -2527,7 +2525,6 @@
                     "title_ubication",
                     "description_ubication",
                     "stores_support"
-
                 ]
             },
             {
@@ -2545,7 +2542,7 @@
                 "data": [
                     "url_catalog"
                 ],
-               "using": {
+                "using": {
                     "model": "Social"
                 }
             }
@@ -2581,7 +2578,6 @@
                 "data": [
                     "title",
                     "class_card_container",
-                
                     "class_faq_answer",
                     "class_title"
                 ]
@@ -2696,7 +2692,7 @@
                     ]
                 }
             },
-                {
+            {
                 "id": "BlogSectionDental",
                 "name": "BlogSectionDental",
                 "data": [
@@ -2719,7 +2715,7 @@
                 "image": "blog-section-multivet.png",
                 "data": [
                     "title",
-                    "subtitle", 
+                    "subtitle",
                     "posts_per_page",
                     "show_preview",
                     "show_view_all",
@@ -2981,7 +2977,6 @@
                     "class_icon",
                     "class_description",
                     "class_button"
-
                 ],
                 "using": {
                     "model": "Social",
@@ -2997,7 +2992,7 @@
                     "support_email"
                 ]
             },
-               {
+            {
                 "id": "FooterDental",
                 "name": "FooterDental",
                 "image": "footer-simple.png",
@@ -3011,7 +3006,6 @@
                     "class_icon",
                     "class_description",
                     "class_button"
-
                 ],
                 "using": {
                     "model": "Social",

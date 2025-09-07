@@ -4633,7 +4633,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-DymRCJnm.js",
+    "file": "assets/Banner-CWm4td_g.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -4661,7 +4661,8 @@
       "resources/js/Components/Tailwind/Banners/BannerContactMakita.jsx",
       "resources/js/Components/Tailwind/Banners/BannerPidelo.jsx",
       "resources/js/Components/Tailwind/Banners/BannerMultivet.jsx",
-      "resources/js/Components/Tailwind/Banners/BannerPublicitarioKatya.jsx"
+      "resources/js/Components/Tailwind/Banners/BannerPublicitarioKatya.jsx",
+      "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAd.jsx": {
@@ -4684,6 +4685,37 @@
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-yBjzXJbu.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx": {
+    "file": "assets/BannerBlogSectionKatya-B_WV7ned.js",
+    "name": "BannerBlogSectionKatya",
+    "src": "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_navigation-kKPDy6bA.js",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "_SubscriptionsRest-BjlPdOZe.js",
+      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
+      "_Global-DWbVqTT_.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_proxy-B0QLMKEh.js",
+      "_chevron-right-Cug7tVUE.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_create-element-if-not-defined-CnB0PJAE.js",
+      "_BasicRest-BqhZrBN0.js",
+      "_main-B6F2O9-U.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js",
+      "_createLucideIcon-DfjclApS.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerCTAMakita.jsx": {
@@ -4970,28 +5002,21 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogSectionAko.jsx": {
-    "file": "assets/BlogSectionAko-Dpap6obq.js",
+    "file": "assets/BlogSectionAko-DIUwJgjU.js",
     "name": "BlogSectionAko",
     "src": "resources/js/Components/Tailwind/Blogs/BlogSectionAko.jsx",
-    "isDynamicEntry": true,
+    "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
-      "_TextWithHighlight-ByFNYMgN.js",
-      "_navigation-kKPDy6bA.js",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "_proxy-B0QLMKEh.js",
-      "_SubscriptionsRest-BjlPdOZe.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_Global-DWbVqTT_.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
-      "_create-element-if-not-defined-CnB0PJAE.js",
-      "_BasicRest-BqhZrBN0.js",
-      "_main-B6F2O9-U.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js"
     ],
@@ -10922,7 +10947,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-mMm8b59S.js",
+    "file": "assets/System-aLdhG-jF.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
