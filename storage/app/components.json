@@ -1752,7 +1752,8 @@
                     "link_catalog",
                     "text_button",
                     "class_section",
-                    "class_button"
+                    "class_button",
+                    "cardType"
                 ],
                 "using": {
                     "model": "Item",
@@ -1770,6 +1771,7 @@
                     "limit": 8
                 }
             },
+       
             {
                 "id": "ProductNavigation",
                 "name": "Navegacion",

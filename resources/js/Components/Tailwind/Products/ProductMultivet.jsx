@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import CardProductMultivet from './Components/CardProductMultivet';
+import CardProductKatya from './Components/CardProductKatya';
 
 const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -17,6 +18,9 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
 
   console.log("ProductMultivet items:", items);
   console.log("ProductMultivet data:", data);
+
+  // Determinar qué tipo de card usar
+  const cardType = data?.cardType || 'multivet'; // 'multivet' o 'katya'
 
   // Obtener categorías únicas de los productos
   const categories = useMemo(() => {
@@ -181,12 +185,21 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
               variants={productVariants}
               className="flex"
             >
-              <CardProductMultivet
-                product={product}
-                data={data}
-                favorites={favorites}
-                setFavorites={setFavorites}
-              />
+              {cardType === 'katya' ? (
+                <CardProductKatya
+                  product={product}
+                  data={data}
+                  favorites={favorites}
+                  setFavorites={setFavorites}
+                />
+              ) : (
+                <CardProductMultivet
+                  product={product}
+                  data={data}
+                  favorites={favorites}
+                  setFavorites={setFavorites}
+                />
+              )}
             </motion.div>
           ))}
         </motion.div>
