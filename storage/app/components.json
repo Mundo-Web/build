@@ -1753,7 +1753,10 @@
                     "text_button",
                     "class_section",
                     "class_button",
-                    "cardType"
+                    "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom"
                 ],
                 "using": {
                     "model": "Item",

@@ -10,7 +10,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const carouselRef = useRef(null);
-  
+
   // Detectar cuando los elementos entran en el viewport
   const sectionInView = useInView(sectionRef, { once: true, threshold: 0.1 });
   const headerInView = useInView(headerRef, { once: true, threshold: 0.3 });
@@ -25,10 +25,10 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
   // Obtener categorías únicas de los productos
   const categories = useMemo(() => {
     if (!items || items.length === 0) return ['Todos'];
-    
+
     const uniqueCategories = ['Todos'];
     const categorySet = new Set();
-    
+
     items.forEach(item => {
       if (item.category) {
         const categoryName = item.category.name || item.category;
@@ -38,20 +38,20 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
         }
       }
     });
-    
+
     return uniqueCategories;
   }, [items]);
 
   // Filtrar productos por categoría
   const filteredProducts = useMemo(() => {
     if (!items || items.length === 0) return [];
-    
-    return selectedCategory === 'Todos' 
-      ? items 
+
+    return selectedCategory === 'Todos'
+      ? items
       : items.filter(product => {
-          const categoryName = product.category?.name || product.category;
-          return categoryName === selectedCategory;
-        });
+        const categoryName = product.category?.name || product.category;
+        return categoryName === selectedCategory;
+      });
   }, [items, selectedCategory]);
 
   // Variantes de animación
@@ -95,8 +95,8 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
   };
 
   const productVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 40,
       scale: 0.9
     },
@@ -115,13 +115,13 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
   if (!items || items.length === 0) {
     return (
       <div className="hidden w-full px-primary p-4 mx-auto">
-      
+
       </div>
     );
   }
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
       variants={sectionVariants}
       initial="hidden"
@@ -130,11 +130,11 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
     >
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <motion.div 
+        <motion.div
           ref={headerRef}
           className="text-center mb-12"
         >
-          <motion.h2 
+          <motion.h2
             variants={headerVariants}
             initial="hidden"
             animate={headerInView ? "visible" : "hidden"}
@@ -142,7 +142,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
           >
             {data?.title || "Productos Destacados"}
           </motion.h2>
-          <motion.p 
+          <motion.p
             variants={headerVariants}
             initial="hidden"
             animate={headerInView ? "visible" : "hidden"}
@@ -153,26 +153,39 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
         </motion.div>
 
         {/* Category filters */}
-        {categories.length > 1 && (
+        {data?.show_categories && categories.length > 1 && (
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  selectedCategory === category
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${selectedCategory === category
                     ? 'bg-secondary text-white shadow-lg'
                     : 'bg-white customtext-neutral-light hover:bg-primary hover:text-white border border-gray-300'
-                }`}
+                  }`}
               >
                 {category}
               </button>
             ))}
           </div>
         )}
+ {data?.button_top && data?.link_catalog && (
+          <div className="text-center mt-12">
+            <motion.a
+              href={data.link_catalog}
+              className={`inline-flex items-center gap-3 px-8 py-4 bg-primary font-bold customtext-primary  rounded-lg hover:bg-secondary hover:text-white transform hover:scale-105 transition-all duration-300 ${data?.class_button || ""}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {data?.text_button || "Ver todos los productos"}
+            </motion.a>
+          </div>
+        )}
+
+
 
         {/* Products grid */}
-        <motion.div 
+        <motion.div
           ref={carouselRef}
           variants={carouselVariants}
           initial="hidden"
@@ -205,7 +218,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
         </motion.div>
 
         {/* View all products button */}
-        {data?.link_catalog && (
+        {data?.button_bottom && data?.link_catalog && (
           <div className="text-center mt-12">
             <motion.a
               href={data.link_catalog}
