@@ -23,6 +23,8 @@
                 "data": [
                     "background_color",
                     "color",
+                    "class_copyright",
+                    "class_icon",
                     "isCopyright",
                     "border_color"
                 ],
@@ -30,7 +32,8 @@
                     "model": "Social"
                 },
                 "generals": [
-                    "cintillo"
+                    "cintillo",
+                    "copyright"
                 ]
             },
             {
@@ -2968,6 +2971,8 @@
                 "name": "FooterB",
                 "image": "footer-simple.png",
                 "data": [
+                    "type_button_subscriber",
+                    "sticker_book_reclamations",
                     "class_footer",
                     "logo_footer_content",
                     "logo_footer",

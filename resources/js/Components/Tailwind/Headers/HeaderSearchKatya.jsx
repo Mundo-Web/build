@@ -1150,7 +1150,7 @@ const HeaderSearchKatya = ({
                             >
 
                                 <span className="hidden md:inline">Mi Carrito</span>
-                                <div className="customtext-neutral-dark">
+                                <div className="customtext-neutral-dark ">
                                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M6 6H22" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
@@ -1161,7 +1161,7 @@ const HeaderSearchKatya = ({
 </svg>
 
                                 </div>
-                                <span className="absolute -right-6 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs bg-primary text-white rounded-full">
+                                <span className="absolute bg-secondary -right-5 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-lg">
                                     {totalCount}
                                 </span>
                             </button>
