@@ -8,6 +8,12 @@ export default {
     ],
     theme: {
         extend: {
+            screens: {
+                '3xl': '1400px', 
+            },
+            maxWidth: {
+                '1500': '1500px',
+            },
             fontFamily: {
                 "font-general": ["Lato", "serif"], //"Lato" "serif" usado para Sala Fabulosa
                 "font-primary": ["Rajdhani", "sans-serif"], // usado para Stech Peru

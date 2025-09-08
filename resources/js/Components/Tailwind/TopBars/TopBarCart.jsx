@@ -11,7 +11,7 @@ import useCintillos from "../../../Hooks/useCintillos";
 const TopBarCart = ({ data, cart, setCart, isUser, items }) => {
     const sectionRef = useRef(null);
     const { hasActiveCintillos } = useCintillos();
-
+    
     useEffect(() => {
         if (sectionRef.current) {
             adjustTextColor(sectionRef.current); // Llama a la función

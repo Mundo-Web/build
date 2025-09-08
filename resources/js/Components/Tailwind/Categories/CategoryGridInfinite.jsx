@@ -88,7 +88,7 @@ const CategoryGridInfinite = ({ data, items }) => {
                     animate={containerInView ? "visible" : "hidden"}
                     className={`${data?.class_container || "bg-white"}`}
                 >
-                   <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-12 lg:py-20">
+                   <div className="px-primary 2xl:px-0 2xl:max-w-[1500px] mx-auto py-12 lg:py-20">
                     {/* Header */}
                     {data?.title && (
                         <motion.div 
@@ -100,7 +100,7 @@ const CategoryGridInfinite = ({ data, items }) => {
                         >
                             <motion.h2 
                                 variants={titleVariants}
-                                className={`text-3xl  font-semibold tracking-normal customtext-neutral-dark max-w-2xl 2xl:max-w-6xl  ${data?.class_title || "sm:text-4xl lg:text-5xl 2xl:text-6xl"}`}
+                                className={`text-3xl font-semibold tracking-normal customtext-neutral-dark max-w-2xl xl:max-w-4xl 2xl:max-w-5xl  ${data?.class_title || "sm:text-4xl xl:text-5xl 2xl:text-6xl"}`}
                             >
                                 {data?.title}
                             </motion.h2>
@@ -110,7 +110,7 @@ const CategoryGridInfinite = ({ data, items }) => {
                                     variants={buttonVariants}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="bg-primary transition-all duration-300 text-white border-none items-center px-10 py-3 text-base rounded-full font-semibold cursor-pointer hover:opacity-90"
+                                    className="bg-accent transition-all duration-300 text-white border-none items-center px-10 py-3 text-base rounded-full font-semibold cursor-pointer hover:opacity-90"
                                 >
                                     Ver todos
                                 </motion.a>

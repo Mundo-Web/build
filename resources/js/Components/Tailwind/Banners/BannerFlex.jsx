@@ -32,9 +32,9 @@ const BannerFlex = ({ data }) => {
                     <div className="flex flex-wrap gap-4 lg:gap-8 customtext-primary font-semibold w-full py-5 md:py-0">
                         <a
                             href="/catalogo"
-                            className="bg-primary text-white text-base 2xl:text-xl tracking-normal cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"
+                            className="bg-accent text-white text-base 2xl:text-xl tracking-normal cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"
                         >
-                            Ver Productos
+                            Ver Colección
                         </a>
                         <a
                             href={data?.button_link}
