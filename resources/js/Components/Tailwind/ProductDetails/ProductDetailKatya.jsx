@@ -239,6 +239,31 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
         window.open(linkWhatsAppConsulta, '_blank');
     };
 
+    // Función para agregar al carrito (desde ProductDetailB)
+    const onAddClicked = (product) => {
+        const newCart = structuredClone(cart);
+        const index = newCart.findIndex((x) => x.id == product?.id);
+        if (index == -1) {
+            newCart.push({ ...product, quantity: quantity });
+        } else {
+            newCart[index].quantity += quantity;
+        }
+        setCart(newCart);
+
+        // Opcional: Mostrar notificación de éxito
+        // Puedes descomentar esto si tienes Swal o una librería de notificaciones
+        /*
+        Swal.fire({
+            title: "Producto agregado",
+            text: `Se agregó ${product?.name} al carrito`,
+            icon: "success",
+            timer: 1500,
+        });
+        */
+
+        console.log(`Producto ${product?.name} agregado al carrito con cantidad: ${quantity}`);
+    };
+
     // Manejar favoritos
     const toggleFavorite = () => {
         if (setFavorites && favorites) {
@@ -285,6 +310,10 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
     const discountPercentage = hasDiscount
         ? Math.round(((parseFloat(item.price) - parseFloat(item.final_price)) / parseFloat(item.price)) * 100)
         : 0;
+
+    // Verificar si el producto está en el carrito
+    const inCart = cart?.find((x) => x.id == item?.id);
+    const cartQuantity = inCart?.quantity || 0;
 
     // Preparar imágenes para galería (siguiendo estructura de ProductDetailB)
     const allImages = [
@@ -339,7 +368,7 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
                             {/* Badges */}
                             <div className="absolute top-4 right-4 space-y-2">
-                               
+
 
                                 {item?.is_new && (
                                     <div className="bg-accent customtext-primary px-3 py-2 rounded-full text-sm font-bold">
@@ -458,11 +487,11 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                                     )}
                                     <div className="text-4xl flex items-center gap-4 font-bold font-title customtext-neutral-dark">
                                         {formatPrice(item?.final_price || item?.price)}
-                                     {hasDiscount && (
-                                    <div className="bg-secondary text-white px-3 py-2 rounded-full text-base  font-medium">
-                                        -{discountPercentage}%
-                                    </div>
-                                )}
+                                        {hasDiscount && (
+                                            <div className="bg-secondary text-white px-3 py-2 rounded-full text-base  font-medium">
+                                                -{discountPercentage}%
+                                            </div>
+                                        )}
                                     </div>
 
                                 </div>
@@ -563,19 +592,33 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                             {/* Botones de acción Desktop */}
                             <div className="space-y-3 mt-6">
                                 <button
-                                    onClick={handleClickWhatsAppCotizar}
-                                    className="w-full bg-primary customtext-neutral-dark py-4 px-6 rounded-full font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500"
+                                    onClick={() => onAddClicked(item)}
+                                    className={`w-full py-4 px-6 rounded-full font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
+                                            ? 'bg-secondary text-white'
+                                            : 'bg-primary customtext-neutral-dark'
+                                        }`}
                                 >
-
-                                    <span>Agregar al carrito </span>
+                                    <span>
+                                        {inCart ? `En carrito (${cartQuantity})` : 'Agregar al carrito'}
+                                    </span>
                                     <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8.5 16H15.7632C20.2508 16 20.9333 13.1808 21.761 9.06908C21.9998 7.88311 22.1192 7.29013 21.8321 6.89507C21.545 6.5 20.9947 6.5 19.8941 6.5H6.5" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M8.5 16L5.87873 3.51493C5.65615 2.62459 4.85618 2 3.93845 2H3" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M9.38 16H8.96857C7.60522 16 6.5 17.1513 6.5 18.5714C6.5 18.8081 6.6842 19 6.91143 19H18" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M11 22C11.8284 22 12.5 21.3284 12.5 20.5C12.5 19.6716 11.8284 19 11 19C10.1716 19 9.5 19.6716 9.5 20.5C9.5 21.3284 10.1716 22 11 22Z" stroke="#0E1818" stroke-width="1.5" />
-                                        <path d="M18 22C18.8284 22 19.5 21.3284 19.5 20.5C19.5 19.6716 18.8284 19 18 19C17.1716 19 16.5 19.6716 16.5 20.5C16.5 21.3284 17.1716 22 18 22Z" stroke="#0E1818" stroke-width="1.5" />
+                                        <path d="M8.5 16H15.7632C20.2508 16 20.9333 13.1808 21.761 9.06908C21.9998 7.88311 22.1192 7.29013 21.8321 6.89507C21.545 6.5 20.9947 6.5 19.8941 6.5H6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M8.5 16L5.87873 3.51493C5.65615 2.62459 4.85618 2 3.93845 2H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M9.38 16H8.96857C7.60522 16 6.5 17.1513 6.5 18.5714C6.5 18.8081 6.6842 19 6.91143 19H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M11 22C11.8284 22 12.5 21.3284 12.5 20.5C12.5 19.6716 11.8284 19 11 19C10.1716 19 9.5 19.6716 9.5 20.5C9.5 21.3284 10.1716 22 11 22Z" stroke="currentColor" stroke-width="1.5" />
+                                        <path d="M18 22C18.8284 22 19.5 21.3284 19.5 20.5C19.5 19.6716 18.8284 19 18 19C17.1716 19 16.5 19.6716 16.5 20.5C16.5 21.3284 17.1716 22 18 22Z" stroke="currentColor" stroke-width="1.5" />
                                     </svg>
+                                </button>
 
+                                {/* Botón de WhatsApp para consultas */}
+                                <button
+                                    onClick={handleClickWhatsAppConsulta}
+                                    className="w-full bg-green-600 text-white py-4 px-6 rounded-full font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500"
+                                >
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
+                                    </svg>
+                                    <span>Consultar por WhatsApp</span>
                                 </button>
                             </div>
                         </div>
@@ -587,7 +630,7 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                 {/* Productos relacionados */}
                 {console.log('RelationsItems en render:', relationsItems)}
                 {relationsItems && relationsItems.length > 0 && (
-                    <ProductMultivet
+                    <ProductInfinite
                         items={relationsItems}
                         data={{
                             title: "Productos relacionados",
@@ -595,6 +638,20 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                             link_catalog: "/catalogo",
                             class_content: "",
                             class_header: "",
+                            type_card: "katya",
+                            swiper: {
+                                slidesPerView: 1,
+                                grid: {
+                                    fill: 'row',
+                                    rows: 1,
+                                },
+                                breakpoints: {
+                                    640: { slidesPerView: 2, spaceBetween: 15 },
+                                    768: { slidesPerView: 3, spaceBetween: 20 },
+                                    1024: { slidesPerView: 4, spaceBetween: 20 },
+                                    1280: { slidesPerView: 4, spaceBetween: 20 },
+                                }
+                            },
                             class_button: "bg-secondary text-white hover:bg-accent hover:customtext-primary",
                         }}
                         setCart={setCart}
@@ -629,13 +686,34 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                         </button>
                     </div>
 
-                    {/* Botón de Cotizar Mobile */}
+                    {/* Botón de Agregar al Carrito Mobile */}
                     <button
-                        onClick={handleClickWhatsAppCotizar}
-                        className="flex-1 bg-secondary text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95"
+                        onClick={() => onAddClicked(item)}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
+                                ? 'bg-primary customtext-neutral-dark'
+                                : 'bg-primary customtext-neutral-dark hover:bg-accent'
+                            }`}
                     >
-                        <Quote className="w-4 h-4" />
-                        <span className="text-sm">Solicitar Cotización</span>
+                        <svg width="20" height="19" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8.5 16H15.7632C20.2508 16 20.9333 13.1808 21.761 9.06908C21.9998 7.88311 22.1192 7.29013 21.8321 6.89507C21.545 6.5 20.9947 6.5 19.8941 6.5H6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M8.5 16L5.87873 3.51493C5.65615 2.62459 4.85618 2 3.93845 2H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M9.38 16H8.96857C7.60522 16 6.5 17.1513 6.5 18.5714C6.5 18.8081 6.6842 19 6.91143 19H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M11 22C11.8284 22 12.5 21.3284 12.5 20.5C12.5 19.6716 11.8284 19 11 19C10.1716 19 9.5 19.6716 9.5 20.5C9.5 21.3284 10.1716 22 11 22Z" stroke="currentColor" stroke-width="1.5" />
+                            <path d="M18 22C18.8284 22 19.5 21.3284 19.5 20.5C19.5 19.6716 18.8284 19 18 19C17.1716 19 16.5 19.6716 16.5 20.5C16.5 21.3284 17.1716 22 18 22Z" stroke="currentColor" stroke-width="1.5" />
+                        </svg>
+                        <span className="text-sm">
+                            {inCart ? `En carrito (${cartQuantity})` : 'Agregar al Carrito'}
+                        </span>
+                    </button>
+
+                    {/* Botón de WhatsApp Mobile - más pequeño */}
+                    <button
+                        onClick={handleClickWhatsAppConsulta}
+                        className="bg-green-600 text-white p-3 rounded-xl hover:bg-green-700 transition-all shadow-lg active:scale-95"
+                    >
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
+                        </svg>
                     </button>
                 </div>
             </div>

@@ -102,7 +102,7 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
                 <img
                     src={product?.image ? `/api/items/media/${product.image}` : '/assets/img/noimage/no_img.jpg'}
                     alt={product?.name || 'Producto'}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full aspect-square object-contain group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                         e.target.src = '/assets/img/noimage/no_img.jpg';
                     }}
