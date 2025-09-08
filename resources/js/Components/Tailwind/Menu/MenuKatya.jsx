@@ -92,7 +92,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
     return (
         <nav
             ref={menuRef}
-            className="relative w-full bg-secondary text-white font-medium text-sm"
+            className="hidden lg:block relative w-full bg-secondary text-white font-medium text-sm"
             style={{
                 background: data?.backgroundColor || 'bg-secondary'
             }}

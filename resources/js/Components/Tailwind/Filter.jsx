@@ -11,7 +11,7 @@ const CatalagoFiltrosAko = React.lazy(() => import('./Filters/CatalagoFiltrosAko
 const CatalagoFiltrosPaani = React.lazy(() => import('./Filters/CatalagoFiltrosPaani'))
 //const Filter = ({ which, items, data, category, brands, subcategory, cart, setCart, prices }) => {
 const CatalogoFiltrosDental = React.lazy(() => import('./Filters/CatalogoFiltrosDental'))
-
+const CatalogoFiltrosKatya = React.lazy(() => import('./Filters/CatalogoFiltrosKatya'))
   const Filter = ({ which, items, data, cart, setCart, filteredData,setFavorites,favorites }) => {
   const getFilter = () => {
     switch (which) {
@@ -38,6 +38,8 @@ const CatalogoFiltrosDental = React.lazy(() => import('./Filters/CatalogoFiltros
         return <CatalagoFiltrosPaani data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} />
       case 'CatalogoFiltrosDental':
         return <CatalogoFiltrosDental data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
+  case 'CatalogoFiltrosKatya':
+        return <CatalogoFiltrosKatya data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
 
       default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
