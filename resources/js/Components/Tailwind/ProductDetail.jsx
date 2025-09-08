@@ -13,8 +13,9 @@ const ProductDetailAko = React.lazy(() => import('./ProductDetails/ProductDetail
 const ProductDetailDental = React.lazy(() => import('./ProductDetails/ProductDetailDental'))
 const ProductDetailPidelo = React.lazy(() => import('./ProductDetails/ProductDetailPidelo'))
 const ProductDetailMultivet = React.lazy(() => import('./ProductDetails/ProductDetailMultivet'))
-const ProductDetail = ({ which, item, cart, setCart,data, generals = [],favorites,setFavorites, textstatic, contacts }) => {
-  
+const ProductDetailKatya = React.lazy(() => import('./ProductDetails/ProductDetailKatya'))
+const ProductDetail = ({ which, item, cart, setCart, data, generals = [], favorites, setFavorites, textstatic, contacts }) => {
+
   const getProductDetail = () => {
     switch (which) {
       case 'ProductDetailSimple':
@@ -26,20 +27,23 @@ const ProductDetail = ({ which, item, cart, setCart,data, generals = [],favorite
       case 'ProductDetailSF':
         return <ProductDetailSF item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} />
       case 'ProductDetailBananaLab':
-          return <ProductDetailBananaLab item={item} cart={cart} setCart={setCart} />
+        return <ProductDetailBananaLab item={item} cart={cart} setCart={setCart} />
       case 'ProductDetailKuchara':
-          return <ProductDetailKuchara item={item} cart={cart} setCart={setCart} />
+        return <ProductDetailKuchara item={item} cart={cart} setCart={setCart} />
       case 'ProductDetailPaani':
-          return <ProductDetailPaani item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} />
+        return <ProductDetailPaani item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} />
       case 'ProductDetailAko':
-          return <ProductDetailAko item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} />
+        return <ProductDetailAko item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} />
       case 'ProductDetailDental':
-          return <ProductDetailDental item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} />
+        return <ProductDetailDental item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} />
       case 'ProductDetailPidelo':
-             return <ProductDetailPidelo item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} data={data} />
+        return <ProductDetailPidelo item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} data={data} />
       case 'ProductDetailMultivet':
-             return <ProductDetailMultivet item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />
-          default:
+        return <ProductDetailMultivet item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />
+
+      case 'ProductDetailKatya':
+        return <ProductDetailKatya item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />;
+      default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }
   }

@@ -1349,6 +1349,13 @@
       "_createLucideIcon-DfjclApS.js"
     ]
   },
+  "_zoom-out-DUAqyJbD.js": {
+    "file": "assets/zoom-out-DUAqyJbD.js",
+    "name": "zoom-out",
+    "imports": [
+      "_createLucideIcon-DfjclApS.js"
+    ]
+  },
   "resources/css/app.css": {
     "file": "app.css",
     "src": "resources/css/app.css",
@@ -8745,7 +8752,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-DsVb9Guj.js",
+    "file": "assets/ProductDetail-BHZUrJvg.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -8767,7 +8774,8 @@
       "resources/js/Components/Tailwind/ProductDetails/ProductDetailAko.jsx",
       "resources/js/Components/Tailwind/ProductDetails/ProductDetailDental.jsx",
       "resources/js/Components/Tailwind/ProductDetails/ProductDetailPidelo.jsx",
-      "resources/js/Components/Tailwind/ProductDetails/ProductDetailMultivet.jsx"
+      "resources/js/Components/Tailwind/ProductDetails/ProductDetailMultivet.jsx",
+      "resources/js/Components/Tailwind/ProductDetails/ProductDetailKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ComboSuggestions.jsx": {
@@ -8999,6 +9007,48 @@
       "tippy.css"
     ]
   },
+  "resources/js/Components/Tailwind/ProductDetails/ProductDetailKatya.jsx": {
+    "file": "assets/ProductDetailKatya-D15SNboE.js",
+    "name": "ProductDetailKatya",
+    "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailKatya.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/ProductMakita.jsx",
+      "resources/js/Components/Tailwind/Products/ProductNavigation.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
+      "_ItemsRest-DvgvOR-1.js",
+      "_BasicRest-BqhZrBN0.js",
+      "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
+      "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
+      "_index-Chjiymov.js",
+      "_CartItemRow-Ds6-hPyN.js",
+      "_Number2Currency-B5ZenVq9.js",
+      "_General-BmbBKdsB.js",
+      "_tippy-react.esm-DmkRJDEW.js",
+      "_proxy-B0QLMKEh.js",
+      "_package-DBFPPBi1.js",
+      "_createLucideIcon-DfjclApS.js",
+      "_trash-2-DU7LB6-f.js",
+      "_plus-CTIomuuF.js",
+      "_index-BZvh78jk.js",
+      "_eye-ScgfreHn.js"
+    ],
+    "css": [
+      "swiper.css",
+      "free-mode.css"
+    ]
+  },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailKuchara.jsx": {
     "file": "assets/ProductDetailKuchara-DUTks1QV.js",
     "name": "ProductDetailKuchara",
@@ -9018,7 +9068,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailMultivet.jsx": {
-    "file": "assets/ProductDetailMultivet-D15SNboE.js",
+    "file": "assets/ProductDetailMultivet-B_GXZ45S.js",
     "name": "ProductDetailMultivet",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailMultivet.jsx",
     "isEntry": true,
@@ -9027,6 +9077,7 @@
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "resources/js/Components/Tailwind/ProductDetails/ProductDetailKatya.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_main-B6F2O9-U.js",
       "resources/js/Components/Tailwind/Products/ProductMakita.jsx",
@@ -11038,7 +11089,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B2h-VCae.js",
+    "file": "assets/System-ChtwVEx8.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
