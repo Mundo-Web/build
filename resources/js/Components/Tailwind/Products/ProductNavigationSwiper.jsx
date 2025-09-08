@@ -35,7 +35,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                         </h2>
                         <a
                             href={data?.link_catalog}
-                            className="bg-primary transition-all duration-300 text-white border-none items-center px-10 py-3 text-base rounded-full font-semibold cursor-pointer hover:opacity-90"
+                            className="bg-accent transition-all duration-300 text-white border-none items-center px-10 py-3 text-base rounded-full font-semibold cursor-pointer hover:opacity-90"
                         >
                             Ver todos
                         </a>

@@ -18,7 +18,7 @@ const BannerSimpleSF = ({ data }) => {
                     </p>
                     {data?.button_link && data?.button_text && (
                         <div className="flex flex-col">
-                            <a href={data?.button_link} className="w-auto bg-primary px-6 py-3 2xl:py-4 2xl:px-8 rounded-3xl text-white font-font-general leading-none text-base 2xl:text-xl">
+                            <a href={data?.button_link} className="w-auto bg-accent px-6 py-3 2xl:py-4 2xl:px-8 rounded-3xl text-white font-font-general leading-none text-base 2xl:text-xl">
                                 {data?.button_text}
                             </a>
                         </div>

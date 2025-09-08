@@ -553,7 +553,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 disabled={selectedVariant?.stock <= 0}
                                 className={`w-full font-font-general text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
                                     selectedVariant?.stock > 0
-                                        ? "bg-primary text-white hover:opacity-90"
+                                        ? "bg-accent text-white hover:opacity-90"
                                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                 }`}
                             >

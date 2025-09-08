@@ -35,7 +35,7 @@ const PaginationCollection = ({
       spaceBetween: 40,
     },
     1280: {
-      slidesPerView: 6,
+      slidesPerView: 5,
       spaceBetween: 40,
     },
     1550: {
@@ -66,6 +66,12 @@ const PaginationCollection = ({
               nextEl: navigationNextRef.current,
             }}
             loop={true}
+            onInit={(swiper) => {
+              swiper.params.navigation.prevEl = navigationPrevRef.current;
+              swiper.params.navigation.nextEl = navigationNextRef.current;
+              swiper.navigation.init();
+              swiper.navigation.update();
+            }}
             pagination={{
               clickable: true,
               renderBullet: (index, className) => {
@@ -117,14 +123,14 @@ const PaginationCollection = ({
           {/* Botones de navegación */}
           <button
             ref={navigationPrevRef}
-            className="absolute -left-3 sm:-left-10 top-1/2 z-10 -translate-y-1/2 bg-primary rounded-full p-2 text-white hover:bg-primary hover:bg-opacity-10"
+            className="absolute -left-3 sm:-left-10 top-1/2 z-10 -translate-y-1/2 bg-accent rounded-full p-2 text-white hover:bg-primary hover:bg-opacity-10"
             aria-label="Anterior"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             ref={navigationNextRef}
-            className="absolute -right-3 sm:-right-10 top-1/2 z-10 -translate-y-1/2 bg-primary rounded-full p-2 text-white shadow-md hover:bg-primary"
+            className="absolute -right-3 sm:-right-10 top-1/2 z-10 -translate-y-1/2 bg-accent rounded-full p-2 text-white shadow-md hover:bg-primary"
             aria-label="Siguiente"
           >
             <ChevronRight className="w-6 h-6" />
