@@ -45,7 +45,7 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
     // Función para ir al detalle del producto
     const goToDetail = () => {
         const slug = product?.slug || product?.id;
-        window.location.href = `/item/${slug}`;
+        window.location.href = `/product/${slug}`;
     };
 
     // Función para agregar al carrito

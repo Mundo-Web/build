@@ -88,8 +88,8 @@
       "_circle-check-big-CYWUGR3Z.js"
     ]
   },
-  "_CardProductKatya-BojvePfn.js": {
-    "file": "assets/CardProductKatya-BojvePfn.js",
+  "_CardProductKatya-B4yVSWS1.js": {
+    "file": "assets/CardProductKatya-B4yVSWS1.js",
     "name": "CardProductKatya",
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -6756,7 +6756,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-CyhfH8lV.js",
+    "file": "assets/Filter-CixQeEMb.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -7100,7 +7100,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx": {
-    "file": "assets/CatalogoFiltrosKatya-DH_0isC1.js",
+    "file": "assets/CatalogoFiltrosKatya-DdE46yrO.js",
     "name": "CatalogoFiltrosKatya",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
     "isDynamicEntry": true,
@@ -7114,7 +7114,7 @@
       "_main-B6F2O9-U.js",
       "_CardProductBananaLab-DtpLeyTN.js",
       "_CardProductMultivet-DEJJ6aW6.js",
-      "_CardProductKatya-BojvePfn.js",
+      "_CardProductKatya-B4yVSWS1.js",
       "_General-BmbBKdsB.js",
       "_proxy-B0QLMKEh.js",
       "_list-filter-B_9H95Vt.js",
@@ -8717,7 +8717,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-BWZdOa0D.js",
+    "file": "assets/Product-CxsiE3rN.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -8745,7 +8745,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-DZD2iHx9.js",
+    "file": "assets/ProductDetail-DsVb9Guj.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -11038,7 +11038,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-FuUYTdrj.js",
+    "file": "assets/System-B2h-VCae.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
