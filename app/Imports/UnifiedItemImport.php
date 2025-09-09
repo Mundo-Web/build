@@ -10,6 +10,8 @@ use App\Models\Brand;
 use App\Models\ItemSpecification;
 use App\Models\ItemImage;
 use App\Models\Store;
+use App\Models\Tag;
+use App\Models\DiscountRule;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +73,16 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             'agrupador' => ['agrupador'],
             'tienda' => ['tienda', 'store', 'store_id', 'Tienda'],
             'peso' => ['peso', 'weight','Peso'],
+            // Nuevos campos para estado del producto
+            'es_nuevo' => ['es_nuevo', 'is_new', 'nuevo', 'new', 'Es nuevo'],
+            'en_oferta' => ['en_oferta', 'offering', 'oferta', 'offer', 'En oferta'],
+            'recomendado' => ['recomendado', 'recommended', 'recomendar', 'Recomendado'],
+            'destacado' => ['destacado', 'featured', 'destacar', 'Destacado'],
+            'visible' => ['visible', 'activo', 'active', 'Visible'],
+            'estado' => ['estado', 'status', 'Estado'],
+            // Nuevos campos para promociones y reglas
+            'regla_descuento' => ['regla_descuento', 'regla_de_descuento', 'discount_rule', 'Regla de descuento'],
+            'promociones' => ['promociones', 'tags', 'etiquetas', 'Promociones'],
             'especificaciones_principales' => [
                 'especificaciones_principales_separadas_por_comas',
                 'especificaciones_principales_separadas_por_coma',
@@ -276,6 +288,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'stock' => $this->getNumericValue($row, 'stock', 10),
                 'weight' => $this->getNumericValue($row, 'peso', 0),
                 'pdf' => $this->getPdfFile($sku),
+                // Nuevos campos booleanos
+                'is_new' => $this->getBooleanValue($row, 'es_nuevo', false),
+                'offering' => $this->getBooleanValue($row, 'en_oferta', false),
+                'recommended' => $this->getBooleanValue($row, 'recomendado', false),
+                'featured' => $this->getBooleanValue($row, 'destacado', false),
+                'visible' => $this->getBooleanValue($row, 'visible', true),
+                'status' => $this->getBooleanValue($row, 'estado', true),
             ];
             
             // Debug: verificar datos antes de crear el item
@@ -302,6 +321,12 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 
                 // 9️⃣ Guardar imágenes de galería
                 $this->saveGalleryImages($item, $row, 'sku');
+                
+                // 🔟 Asociar regla de descuento si existe
+                $this->associateDiscountRule($item, $row);
+                
+                // 1️⃣1️⃣ Asociar promociones/tags si existen
+                $this->associatePromotions($item, $row);
             } else {
                 throw new Exception("No se pudo crear el producto con SKU: {$sku}");
             }
@@ -344,6 +369,35 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $cleanValue = preg_replace('/[^\d.-]/', '', $value);
         
         return is_numeric($cleanValue) ? (float)$cleanValue : $default;
+    }
+
+    /**
+     * Obtener valor booleano de un campo
+     */
+    private function getBooleanValue(array $row, string $fieldKey, $default = false): bool
+    {
+        $value = $this->getFieldValue($row, $fieldKey);
+        
+        if (is_null($value) || $value === '') {
+            return $default;
+        }
+        
+        $value = strtolower(trim($value));
+        
+        // Valores que se consideran true
+        $trueValues = ['1', 'true', 'verdadero', 'si', 'sí', 'yes', 'y', 'activo', 'active'];
+        // Valores que se consideran false
+        $falseValues = ['0', 'false', 'falso', 'no', 'n', 'inactivo', 'inactive'];
+        
+        if (in_array($value, $trueValues)) {
+            return true;
+        }
+        
+        if (in_array($value, $falseValues)) {
+            return false;
+        }
+        
+        return $default;
     }
 
     /**
@@ -875,5 +929,128 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         }
         
         return null;
+    }
+
+    /**
+     * Asociar regla de descuento al producto
+     */
+    private function associateDiscountRule(Item $item, array $row): void
+    {
+        if (!$this->hasField($row, 'regla_descuento')) {
+            return;
+        }
+
+        $discountRuleName = $this->getFieldValue($row, 'regla_descuento');
+        if (empty($discountRuleName)) {
+            return;
+        }
+
+        // Buscar la regla de descuento por nombre
+        $discountRule = DiscountRule::where('name', 'like', "%{$discountRuleName}%")
+                                   ->orWhere('description', 'like', "%{$discountRuleName}%")
+                                   ->first();
+
+        if (!$discountRule) {
+            // Crear nueva regla de descuento si no existe
+            $discountRule = DiscountRule::create([
+                'name' => $discountRuleName,
+                'description' => "Regla creada automáticamente desde Excel: {$discountRuleName}",
+                'active' => true,
+                'rule_type' => 'cart_discount', // Tipo por defecto
+                'priority' => 1,
+                'starts_at' => now(),
+                'ends_at' => now()->addMonths(12), // Válida por 1 año por defecto
+                'conditions' => [
+                    'min_amount' => 0
+                ],
+                'actions' => [
+                    'discount_type' => 'percentage',
+                    'discount_value' => 10 // 10% por defecto
+                ]
+            ]);
+        }
+
+        // Crear un tag especial para asociar la regla de descuento
+        $ruleTagName = "Regla: {$discountRule->name}";
+        $ruleTag = Tag::firstOrCreate(
+            ['name' => $ruleTagName],
+            [
+                'description' => "Tag automático para regla de descuento: {$discountRule->name}",
+                'tag_type' => 'discount_rule',
+                'status' => true,
+                'visible' => false, // No visible en el front, solo para organización
+                'promotional_status' => 'permanent'
+            ]
+        );
+
+        // Asociar el tag al producto
+        try {
+            if (!$item->tags()->where('tag_id', $ruleTag->id)->exists()) {
+                $item->tags()->attach($ruleTag->id);
+            }
+            
+            Log::info("Regla de descuento asociada exitosamente", [
+                'item_id' => $item->id,
+                'item_sku' => $item->sku,
+                'discount_rule_id' => $discountRule->id,
+                'discount_rule_name' => $discountRule->name,
+                'tag_id' => $ruleTag->id
+            ]);
+        } catch (Exception $e) {
+            Log::error("Error al asociar regla de descuento: " . $e->getMessage(), [
+                'item_id' => $item->id,
+                'discount_rule_id' => $discountRule->id,
+                'discount_rule_name' => $discountRuleName
+            ]);
+        }
+    }
+
+    /**
+     * Asociar promociones/tags al producto
+     */
+    private function associatePromotions(Item $item, array $row): void
+    {
+        if (!$this->hasField($row, 'promociones')) {
+            return;
+        }
+
+        $promotions = $this->getFieldValue($row, 'promociones');
+        if (empty($promotions)) {
+            return;
+        }
+
+        // Separar múltiples promociones por coma
+        $promotionsList = explode(',', $promotions);
+        
+        foreach ($promotionsList as $promotionName) {
+            $promotionName = trim($promotionName);
+            if (empty($promotionName)) {
+                continue;
+            }
+
+            // Buscar o crear el tag
+            $tag = Tag::firstOrCreate(
+                ['name' => $promotionName],
+                [
+                    'slug' => Str::slug($promotionName),
+                    'tag_type' => 'item', // Especificar que es para items
+                    'status' => true,
+                ]
+            );
+
+            // Asociar el tag al producto usando la tabla pivot item_tags
+            try {
+                // Verificar si ya está asociado para evitar duplicados
+                if (!$item->tags()->where('tag_id', $tag->id)->exists()) {
+                    $item->tags()->attach($tag->id);
+                }
+            } catch (Exception $e) {
+                Log::error("Error al asociar tag: " . $e->getMessage(), [
+                    'item_id' => $item->id,
+                    'tag_id' => $tag->id,
+                    'tag_name' => $promotionName
+                ]);
+            }
+        }
     }
 }

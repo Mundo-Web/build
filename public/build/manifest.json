@@ -11029,7 +11029,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-BsoopPnm.js",
+    "file": "assets/BusinessIWorkCard-C7XAeMzt.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -11037,10 +11037,11 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_BasicRest-BqhZrBN0.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js"
     ]
