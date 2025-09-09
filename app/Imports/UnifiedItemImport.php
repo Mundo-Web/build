@@ -951,56 +951,229 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                                    ->first();
 
         if (!$discountRule) {
-            // Crear nueva regla de descuento si no existe
+            // Crear nueva regla de descuento basada en el nombre para inferir el tipo
+            $ruleType = $this->inferRuleTypeFromName($discountRuleName);
+            $defaultConfig = $this->getDefaultRuleConfig($ruleType, $item);
+            
             $discountRule = DiscountRule::create([
                 'name' => $discountRuleName,
                 'description' => "Regla creada automáticamente desde Excel: {$discountRuleName}",
                 'active' => true,
-                'rule_type' => 'cart_discount', // Tipo por defecto
+                'rule_type' => $ruleType,
                 'priority' => 1,
                 'starts_at' => now(),
-                'ends_at' => now()->addMonths(12), // Válida por 1 año por defecto
-                'conditions' => [
-                    'min_amount' => 0
-                ],
-                'actions' => [
-                    'discount_type' => 'percentage',
-                    'discount_value' => 10 // 10% por defecto
-                ]
+                'ends_at' => now()->addMonths(12),
+                'conditions' => $defaultConfig['conditions'],
+                'actions' => $defaultConfig['actions']
+            ]);
+            
+            Log::info("Nueva regla de descuento creada", [
+                'rule_name' => $discountRuleName,
+                'rule_type' => $ruleType,
+                'rule_id' => $discountRule->id
             ]);
         }
 
-        // Crear un tag especial para asociar la regla de descuento
-        $ruleTagName = "Regla: {$discountRule->name}";
-        $ruleTag = Tag::firstOrCreate(
-            ['name' => $ruleTagName],
-            [
-                'description' => "Tag automático para regla de descuento: {$discountRule->name}",
-                'tag_type' => 'discount_rule',
-                'status' => true,
-                'visible' => false, // No visible en el front, solo para organización
-                'promotional_status' => 'permanent'
-            ]
-        );
+        // Solo asociar a productos específicos si el tipo de regla lo permite
+        if ($this->canRuleBeAssociatedToProducts($discountRule->rule_type)) {
+            $this->associateRuleToProduct($discountRule, $item);
+        } else {
+            // Para reglas globales (como cart_discount), solo crear un tag informativo
+            $this->createInformationalTag($discountRule, $item);
+        }
+    }
 
-        // Asociar el tag al producto
+    /**
+     * Inferir el tipo de regla basado en el nombre
+     */
+    private function inferRuleTypeFromName(string $ruleName): string
+    {
+        $ruleName = strtolower($ruleName);
+        
+        // Patrones para identificar tipos de reglas
+        $patterns = [
+            'quantity_discount' => ['cantidad', 'volumen', 'mayorista', 'bulk'],
+            'buy_x_get_y' => ['compra', 'lleva', '2x1', '3x2', 'buy', 'get'],
+            'category_discount' => ['categoria', 'category', 'gaming', 'tech', 'beauty', 'hogar'],
+            'bundle_discount' => ['paquete', 'bundle', 'combo', 'set'],
+            'cart_discount' => ['carrito', 'cart', 'total', 'black friday', 'cyber monday', 'descuento']
+        ];
+
+        foreach ($patterns as $type => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (strpos($ruleName, $keyword) !== false) {
+                    return $type;
+                }
+            }
+        }
+
+        // Por defecto, usar quantity_discount para productos específicos
+        return 'quantity_discount';
+    }
+
+    /**
+     * Obtener configuración por defecto según el tipo de regla
+     */
+    private function getDefaultRuleConfig(string $ruleType, Item $item): array
+    {
+        switch ($ruleType) {
+            case 'quantity_discount':
+                return [
+                    'conditions' => [
+                        'min_quantity' => 2,
+                        'product_ids' => [$item->id],
+                        'category_ids' => []
+                    ],
+                    'actions' => [
+                        'discount_type' => 'percentage',
+                        'discount_value' => 10
+                    ]
+                ];
+
+            case 'buy_x_get_y':
+                return [
+                    'conditions' => [
+                        'buy_quantity' => 2,
+                        'product_ids' => [$item->id]
+                    ],
+                    'actions' => [
+                        'get_quantity' => 1,
+                        'discount_type' => 'fixed',
+                        'discount_value' => 0
+                    ]
+                ];
+
+            case 'category_discount':
+                return [
+                    'conditions' => [
+                        'category_ids' => [$item->category_id],
+                        'min_quantity' => 1
+                    ],
+                    'actions' => [
+                        'discount_type' => 'percentage',
+                        'discount_value' => 15
+                    ]
+                ];
+
+            case 'bundle_discount':
+                return [
+                    'conditions' => [
+                        'required_products' => [$item->id],
+                        'min_quantity_each' => 1
+                    ],
+                    'actions' => [
+                        'discount_type' => 'percentage',
+                        'discount_value' => 25
+                    ]
+                ];
+
+            case 'cart_discount':
+            default:
+                return [
+                    'conditions' => [
+                        'min_amount' => 100,
+                        'currency' => 'PEN'
+                    ],
+                    'actions' => [
+                        'discount_type' => 'percentage',
+                        'discount_value' => 10
+                    ]
+                ];
+        }
+    }
+
+    /**
+     * Verificar si el tipo de regla puede ser asociado a productos específicos
+     */
+    private function canRuleBeAssociatedToProducts(string $ruleType): bool
+    {
+        $productSpecificRules = [
+            'quantity_discount',  // Descuento por cantidad de productos específicos
+            'buy_x_get_y',       // Compra X lleva Y de productos específicos
+            'bundle_discount'     // Descuento por paquete de productos específicos
+        ];
+
+        return in_array($ruleType, $productSpecificRules);
+    }
+
+    /**
+     * Asociar regla a producto específico (actualizar conditions)
+     */
+    private function associateRuleToProduct(DiscountRule $discountRule, Item $item): void
+    {
         try {
+            $conditions = $discountRule->conditions ?? [];
+            
+            // Agregar el producto a las condiciones según el tipo de regla
+            switch ($discountRule->rule_type) {
+                case 'quantity_discount':
+                case 'buy_x_get_y':
+                    $productIds = $conditions['product_ids'] ?? [];
+                    if (!in_array($item->id, $productIds)) {
+                        $productIds[] = $item->id;
+                        $conditions['product_ids'] = $productIds;
+                    }
+                    break;
+                    
+                case 'bundle_discount':
+                    $requiredProducts = $conditions['required_products'] ?? [];
+                    if (!in_array($item->id, $requiredProducts)) {
+                        $requiredProducts[] = $item->id;
+                        $conditions['required_products'] = $requiredProducts;
+                    }
+                    break;
+            }
+            
+            // Actualizar las condiciones de la regla
+            $discountRule->update(['conditions' => $conditions]);
+            
+            // Crear tag informativo para el producto
+            $this->createInformationalTag($discountRule, $item);
+            
+            Log::info("Producto asociado a regla de descuento", [
+                'item_id' => $item->id,
+                'item_sku' => $item->sku,
+                'discount_rule_id' => $discountRule->id,
+                'rule_type' => $discountRule->rule_type,
+                'updated_conditions' => $conditions
+            ]);
+            
+        } catch (Exception $e) {
+            Log::error("Error al asociar producto a regla de descuento: " . $e->getMessage(), [
+                'item_id' => $item->id,
+                'discount_rule_id' => $discountRule->id,
+                'rule_type' => $discountRule->rule_type
+            ]);
+        }
+    }
+
+    /**
+     * Crear tag informativo para identificar productos con reglas
+     */
+    private function createInformationalTag(DiscountRule $discountRule, Item $item): void
+    {
+        try {
+            $ruleTagName = "Regla: {$discountRule->name}";
+            $ruleTag = Tag::firstOrCreate(
+                ['name' => $ruleTagName],
+                [
+                    'description' => "Tag automático para regla de descuento: {$discountRule->name} (Tipo: {$discountRule->rule_type})",
+                    'tag_type' => 'discount_rule',
+                    'status' => true,
+                    'visible' => false, // No visible en el front, solo para organización
+                    'promotional_status' => 'permanent'
+                ]
+            );
+
+            // Asociar el tag al producto para facilitar búsquedas y reportes
             if (!$item->tags()->where('tag_id', $ruleTag->id)->exists()) {
                 $item->tags()->attach($ruleTag->id);
             }
             
-            Log::info("Regla de descuento asociada exitosamente", [
-                'item_id' => $item->id,
-                'item_sku' => $item->sku,
-                'discount_rule_id' => $discountRule->id,
-                'discount_rule_name' => $discountRule->name,
-                'tag_id' => $ruleTag->id
-            ]);
         } catch (Exception $e) {
-            Log::error("Error al asociar regla de descuento: " . $e->getMessage(), [
+            Log::error("Error al crear tag informativo: " . $e->getMessage(), [
                 'item_id' => $item->id,
-                'discount_rule_id' => $discountRule->id,
-                'discount_rule_name' => $discountRuleName
+                'discount_rule_id' => $discountRule->id
             ]);
         }
     }
