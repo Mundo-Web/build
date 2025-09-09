@@ -111,20 +111,17 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     }
 
     /**
-     * Truncar tablas de forma segura
+     * Preparar tablas de forma segura (solo limpiar items y sus dependencias directas)
      */
     private function truncateTables(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         
-        // Orden de truncate respetando dependencias
+        // Solo limpiar tablas de items y sus dependencias directas
+        // Las tablas de categorías, marcas, etc. se mantienen para reutilizar
         ItemImage::truncate();
         ItemSpecification::truncate();
         Item::truncate();
-        SubCategory::truncate();
-        Collection::truncate();
-        Category::truncate();
-        Brand::truncate();
         
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
