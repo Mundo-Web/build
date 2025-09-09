@@ -942,14 +942,19 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             return;
         }
 
-        // Buscar la regla de descuento por nombre
-        $discountRule = DiscountRule::where('name', 'like', "%{$discountRuleName}%")
-                                   ->orWhere('description', 'like', "%{$discountRuleName}%")
-                                   ->first();
+        // Buscar la regla de descuento por nombre exacto primero, luego con LIKE
+        $discountRule = DiscountRule::where('name', $discountRuleName)->first();
+        
+        if (!$discountRule) {
+            $discountRule = DiscountRule::where('name', 'like', "%{$discountRuleName}%")
+                                       ->orWhere('description', 'like', "%{$discountRuleName}%")
+                                       ->first();
+        }
 
         if (!$discountRule) {
-            // Crear nueva regla de descuento basada en el nombre para inferir el tipo
-            $ruleType = $this->inferRuleTypeFromName($discountRuleName);
+            // Solo crear nueva regla si no existe ninguna coincidencia
+            // Usar un tipo por defecto más seguro
+            $ruleType = 'quantity_discount'; // Tipo por defecto más común para productos
             $defaultConfig = $this->getDefaultRuleConfig($ruleType, $item);
             
             $discountRule = DiscountRule::create([
@@ -969,6 +974,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'rule_type' => $ruleType,
                 'rule_id' => $discountRule->id
             ]);
+        } else {
+            // Si la regla existe, usar su tipo real de la base de datos
+            Log::info("Regla de descuento encontrada", [
+                'rule_name' => $discountRule->name,
+                'rule_type' => $discountRule->rule_type,
+                'rule_id' => $discountRule->id
+            ]);
         }
 
         // Solo asociar a productos específicos si el tipo de regla lo permite
@@ -978,34 +990,6 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             // Para reglas globales (como cart_discount), solo crear un tag informativo
             $this->createInformationalTag($discountRule, $item);
         }
-    }
-
-    /**
-     * Inferir el tipo de regla basado en el nombre
-     */
-    private function inferRuleTypeFromName(string $ruleName): string
-    {
-        $ruleName = strtolower($ruleName);
-        
-        // Patrones para identificar tipos de reglas
-        $patterns = [
-            'quantity_discount' => ['cantidad', 'volumen', 'mayorista', 'bulk'],
-            'buy_x_get_y' => ['compra', 'lleva', '2x1', '3x2', 'buy', 'get'],
-            'category_discount' => ['categoria', 'category', 'gaming', 'tech', 'beauty', 'hogar'],
-            'bundle_discount' => ['paquete', 'bundle', 'combo', 'set'],
-            'cart_discount' => ['carrito', 'cart', 'total', 'black friday', 'cyber monday', 'descuento']
-        ];
-
-        foreach ($patterns as $type => $keywords) {
-            foreach ($keywords as $keyword) {
-                if (strpos($ruleName, $keyword) !== false) {
-                    return $type;
-                }
-            }
-        }
-
-        // Por defecto, usar quantity_discount para productos específicos
-        return 'quantity_discount';
     }
 
     /**
