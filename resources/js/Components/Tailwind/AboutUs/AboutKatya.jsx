@@ -143,7 +143,7 @@ const HomeSeccionNosotros = ({ data, strengths, button_about = true }) => {
                 >
                     {/* Columna izquierda - Imagen */}
                     <motion.div
-                        className="order-1 lg:order-none lg:w-1/2 relative"
+                        className="order-0 lg:order-none lg:w-1/2 relative"
                         variants={leftSideVariants}
                     >
                         {/* Imagen principal con efectos espectaculares */}
