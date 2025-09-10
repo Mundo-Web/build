@@ -2997,6 +2997,20 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+           
+            {
+                "id": "AboutKatya",
+                "name": "AboutKatya",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
             }
         ]
     },

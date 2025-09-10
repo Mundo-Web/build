@@ -4176,7 +4176,7 @@
     ]
   },
   "resources/js/Components/Tailwind/AboutUs.jsx": {
-    "file": "assets/AboutUs-BZkf-Aco.js",
+    "file": "assets/AboutUs-C9VYOY64.js",
     "name": "AboutUs",
     "src": "resources/js/Components/Tailwind/AboutUs.jsx",
     "isDynamicEntry": true,
@@ -4192,7 +4192,8 @@
       "resources/js/Components/Tailwind/AboutUs/AboutImage.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutPaani.jsx",
-      "resources/js/Components/Tailwind/AboutUs/AboutMultivet.jsx"
+      "resources/js/Components/Tailwind/AboutUs/AboutMultivet.jsx",
+      "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx": {
@@ -4211,6 +4212,18 @@
     "file": "assets/AboutImage--pJTheE3.js",
     "name": "AboutImage",
     "src": "resources/js/Components/Tailwind/AboutUs/AboutImage.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx": {
+    "file": "assets/AboutKatya--pJTheE3.js",
+    "name": "AboutKatya",
+    "src": "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -11091,7 +11104,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Bv4lR5dD.js",
+    "file": "assets/System-Cb08AQLS.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
