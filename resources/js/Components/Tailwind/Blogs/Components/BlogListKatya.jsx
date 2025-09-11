@@ -159,7 +159,7 @@ const BlogListKatya = ({
     return (
         <motion.section
             ref={listRef}
-            className={`font-title bg-gradient-to-b from-gray-50 to-white ${isFilter ? "py-16 mt-4" : "py-24"}`}
+            className={`font-title bg-gradient-to-b from-gray-50 to-white ${isFilter ? "py-8 mt-4" : "py-8"}`}
             variants={containerVariants}
             initial="hidden"
             animate={listInView ? "visible" : "hidden"}
@@ -169,30 +169,24 @@ const BlogListKatya = ({
                     <motion.div variants={containerVariants}>
                         {/* Header Section con estilo Multivet */}
                         <motion.div 
-                            className="text-center mb-16"
+                            className="text-start mb-16"
                             variants={containerVariants}
                         >
                             <motion.h2 
-                                className="text-4xl md:text-5xl font-bold mb-6 font-title customtext-secondary leading-tight"
+                                  className={`font-title text-3xl md:text-5xl 2xl:text-6xl font-semibold tracking-tight customtext-neutral-dark`}
                                 variants={titleVariants}
                             >
-                                {data?.second_title ? (
-                                    <span dangerouslySetInnerHTML={{ __html: data.second_title }} />
-                                ) : (
-                                    <>
-                                        Últimas <span className="text-primary font-title">Publicaciones</span>
-                                    </>
-                                )}
+                               Todas nuestas noticias
                             </motion.h2>
                             
-                            {data?.second_description && (
+                          
                                 <motion.p 
-                                    className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed"
+                                    className="text-lg text-gray-600  leading-relaxed"
                                     variants={descriptionVariants}
                                 >
-                                    {data.second_description}
+                                 Explora el archivo completo de publicaciones y mantente al día con cada actualización. Encuentra todas las noticias en un solo lugar, organizadas para que no te pierdas de nada.
                                 </motion.p>
-                            )}
+                           
                         </motion.div>
 
                         {/* Filtros y Controles */}
@@ -208,16 +202,16 @@ const BlogListKatya = ({
                                 >
                                     {/* Tab "Todas" */}
                                     <motion.button
-                                        className={`px-6 py-3 rounded-full transition-all duration-300 font-medium text-sm ${
+                                        className={`px-6 py-2 border-b font-semibold transition-all duration-300  text-base ${
                                             activeCategory === 'all'
-                                                ? 'bg-primary text-white shadow-lg'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                ? 'bg-transparent customtext-secondary border-secondary border-b-2'
+                                                : 'bg-gray-100 customtext-neutral-light hover:bg-gray-200'
                                         }`}
                                         onClick={() => setActiveCategory('all')}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
-                                        Todas ({filteredData?.posts?.length || postsLatest?.length || 0})
+                                        Todas 
                                     </motion.button>
 
                                     {/* Tabs de Categorías */}
@@ -228,16 +222,18 @@ const BlogListKatya = ({
                                         return (
                                             <motion.button
                                                 key={category.id}
-                                                className={`px-6 py-3 rounded-full transition-all duration-300 font-medium text-sm ${
-                                                    activeCategory === category.name
-                                                        ? 'bg-primary text-white shadow-lg'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                               
+
+                                                  className={`px-6 py-2 border-b font-semibold transition-all duration-300  text-base ${
+                                           activeCategory === category.name
+                                                ? 'bg-transparent customtext-secondary border-secondary border-b-2'
+                                                : ' customtext-neutral-light hover:bg-gray-200'
+                                        }`}
                                                 onClick={() => setActiveCategory(category.name)}
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                             >
-                                                {category.name} ({categoryCount})
+                                                {category.name}
                                             </motion.button>
                                         );
                                     })}
@@ -247,19 +243,19 @@ const BlogListKatya = ({
                             {/* Dropdown de Ordenamiento */}
                             <motion.div className="relative">
                                 <motion.button
-                                    className="flex items-center gap-3 px-6 py-3 bg-white border border-gray-200 rounded-lg hover:border-primary transition-colors duration-300 min-w-[200px] justify-between"
+                                    className="flex items-center gap-3 px-6 py-3 bg-white border border-secondary rounded-full hover:border-primary transition-colors duration-300 min-w-[200px] justify-between"
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <Filter className="w-4 h-4 text-gray-600" />
-                                        <span className="text-sm font-medium text-gray-700">
+                                    
+                                        <span className="text-sm font-bold customtext-secondary">
                                             {sortOptions.find(opt => opt.value === sortOption)?.label}
                                         </span>
                                     </div>
                                     <ChevronDown 
-                                        className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${
+                                        className={`w-4 h-4 customtext-secondary transition-transform duration-200 ${
                                             isDropdownOpen ? 'rotate-180' : ''
                                         }`} 
                                     />
@@ -278,7 +274,7 @@ const BlogListKatya = ({
                                                 <motion.button
                                                     key={option.value}
                                                     className={`w-full px-4 py-3 text-left text-sm hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
-                                                        sortOption === option.value ? 'bg-primary text-white' : 'text-gray-700'
+                                                        sortOption === option.value ? 'bg-secondary text-white' : 'customtext-neutral-light'
                                                     }`}
                                                     onClick={() => {
                                                         setSortOption(option.value);
@@ -350,7 +346,7 @@ const BlogListKatya = ({
                                     className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
                                         currentPage === 1
                                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-white border border-gray-200 text-gray-700 hover:border-primary hover:text-primary shadow-sm hover:shadow-md'
+                                            : 'bg-white border border-gray-200 customtext-neutral-light hover:border-primary hover:text-primary shadow-sm hover:shadow-md'
                                     }`}
                                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
@@ -371,7 +367,7 @@ const BlogListKatya = ({
                                             className={`w-12 h-12 rounded-lg font-medium transition-all duration-300 ${
                                                 isActive
                                                     ? 'bg-primary text-white shadow-lg'
-                                                    : 'bg-white border border-gray-200 text-gray-700 hover:border-primary hover:text-primary shadow-sm hover:shadow-md'
+                                                    : 'bg-white border border-gray-200 customtext-neutral-light hover:border-primary hover:text-primary shadow-sm hover:shadow-md'
                                             }`}
                                             onClick={() => setCurrentPage(pageNumber)}
                                             whileHover={{ scale: 1.1 }}
@@ -387,7 +383,7 @@ const BlogListKatya = ({
                                     className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
                                         currentPage === totalPages
                                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-white border border-gray-200 text-gray-700 hover:border-primary hover:text-primary shadow-sm hover:shadow-md'
+                                            : 'bg-white border border-gray-200 customtext-neutral-light hover:border-primary hover:text-primary shadow-sm hover:shadow-md'
                                     }`}
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}
