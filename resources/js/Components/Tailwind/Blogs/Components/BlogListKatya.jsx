@@ -159,7 +159,7 @@ const BlogListKatya = ({
     return (
         <motion.section
             ref={listRef}
-            className={`font-title bg-gradient-to-b from-gray-50 to-white ${isFilter ? "py-8 mt-4" : "py-8"}`}
+            className={`font-title bg-[#F2F2F2] ${isFilter ? "py-8 mt-4" : "py-8"}`}
             variants={containerVariants}
             initial="hidden"
             animate={listInView ? "visible" : "hidden"}
@@ -173,7 +173,7 @@ const BlogListKatya = ({
                             variants={containerVariants}
                         >
                             <motion.h2 
-                                  className={`font-title text-3xl md:text-5xl 2xl:text-6xl font-semibold tracking-tight customtext-neutral-dark`}
+                                  className={`font-title text-4xl md:text-5xl 2xl:text-6xl font-semibold tracking-tight customtext-neutral-dark`}
                                 variants={titleVariants}
                             >
                                Todas nuestas noticias
@@ -181,7 +181,7 @@ const BlogListKatya = ({
                             
                           
                                 <motion.p 
-                                    className="text-lg text-gray-600  leading-relaxed"
+                                    className="text-sm lg:text-lg customtext-neutral-dark  leading-relaxed"
                                     variants={descriptionVariants}
                                 >
                                  Explora el archivo completo de publicaciones y mantente al día con cada actualización. Encuentra todas las noticias en un solo lugar, organizadas para que no te pierdas de nada.
@@ -293,7 +293,7 @@ const BlogListKatya = ({
 
                         {/* Grid de posts con estilo Multivet EXACTO */}
                         <motion.div 
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10"
+                            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-10"
                             variants={gridVariants}
                         >
                             {Array.isArray(currentPosts) && currentPosts.length > 0 ? (

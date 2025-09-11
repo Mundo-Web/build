@@ -61,8 +61,8 @@ export default function BlogPostCardKatya({ data, flex = false, post, featured =
     return (
       <article className="group relative font-title h-full">
         <a href={`/post/${post?.slug}`} className="block h-full">
-          <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 group cursor-pointer h-full flex border border-gray-100">
-            <div className="relative overflow-hidden w-2/5">
+          <div className="  overflow-hidden transition-all duration-500 transform hover:-translate-y-1 group cursor-pointer h-full flex border border-gray-100">
+            <div className="relative overflow-hidden rounded-xl w-2/5">
               <img
                 src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
                 alt={post?.title || post?.name}
@@ -111,12 +111,12 @@ export default function BlogPostCardKatya({ data, flex = false, post, featured =
   return (
     <article className={`group relative font-title ${featured ? "h-full" : ""}`}>
       <a href={`/post/${post?.slug}`} className="block h-full">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer h-full border border-gray-100">
+        <div className=" rounded-xl overflow-hidden transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer h-full border border-gray-100">
           <div className="relative rounded-xl overflow-hidden">
             <img
               src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
               alt={post?.title || post?.name}
-              className={`w-full object-cover group-hover:scale-105 transition-transform duration-500 ${featured ? "h-80 aspect-[4/3]" : "h-48"}`}
+              className={`w-full object-cover group-hover:scale-105 transition-transform duration-500 ${featured ? "h-80 aspect-[4/3]" : "aspect-square lg:h-80"}`}
               onError={(e) => {
                 e.target.src = '/assets/img/noimage/no_img.jpg';
               }}
@@ -129,21 +129,21 @@ export default function BlogPostCardKatya({ data, flex = false, post, featured =
            
           </div>
 
-          <div className="p-6">
+          <div className="py-6">
            
 
  {post?.category && (
               <div className="">
-                <span className={`customtext-secondary text-sm  font-semibold  `}>
+                <span className={`customtext-secondary text-sm  font-bold  `}>
                   {post.category?.name}
                 </span>
               </div>
             )}
-            <h3 className={`font-bold mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-tight text-2xl`}>
+            <h3 className={`font-bold mb-3 group-hover:text-primary transition-colors line-clamp-3 lg:line-clamp-2 leading-tight text-lg lg:text-2xl`}>
               {post?.title || post?.name}
             </h3>
 
-            <p className="text-base customtext-neutral-dark mb-4 line-clamp-2 ">
+            <p className="text-sm lg:text-base customtext-neutral-dark mb-4 line-clamp-4 lg:line-clamp-2 ">
               {extractText(post?.extract || post?.description)}
             </p>
 
