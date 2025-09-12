@@ -2727,6 +2727,19 @@
                 ]
             },
             {
+                "id": "BlogKatya",
+                "name": "Katya",
+                "image": "blog-katya.png",
+                "data": [
+                    "title",
+                    "description",
+                    "second_title",
+                    "second_description",
+                    "bool:show_seen",
+                    "class_title"
+                ]
+            },
+            {
                 "id": "BlogCarousel",
                 "name": "Carousel",
                 "data": [
@@ -2988,6 +3001,20 @@
             {
                 "id": "AboutPaani",
                 "name": "AboutPaani",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+           
+            {
+                "id": "AboutKatya",
+                "name": "AboutKatya",
                 "data": [
                     "url_imagen",
                     "title",

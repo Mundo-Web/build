@@ -5,6 +5,7 @@ const AboutImage = React.lazy(() => import('./AboutUs/AboutImage'))
 const AboutAko = React.lazy(() => import('./AboutUs/AboutAko'))
 const AboutPaani = React.lazy(() => import('./AboutUs/AboutPaani'))
 const AboutMultivet = React.lazy(() => import('./AboutUs/AboutMultivet'))
+const AboutKatya = React.lazy(() => import('./AboutUs/AboutKatya'))
 const AboutUs = ({ data, which, filteredData, items }) => {
     const getAboutUs = () => {
         switch (which) {
@@ -21,6 +22,8 @@ const AboutUs = ({ data, which, filteredData, items }) => {
                 return <AboutMultivet data={data} filteredData={filteredData} items={items} />
             case 'AboutPaani':
                 return <AboutPaani data={data} filteredData={filteredData} items={items} />
+            case 'AboutKatya':
+                return <AboutKatya data={data} filteredData={filteredData} items={items} />
 
             default:
                 return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>

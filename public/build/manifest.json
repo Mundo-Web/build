@@ -4185,7 +4185,7 @@
     ]
   },
   "resources/js/Components/Tailwind/AboutUs.jsx": {
-    "file": "assets/AboutUs-BZkf-Aco.js",
+    "file": "assets/AboutUs-BExNG82j.js",
     "name": "AboutUs",
     "src": "resources/js/Components/Tailwind/AboutUs.jsx",
     "isDynamicEntry": true,
@@ -4201,7 +4201,8 @@
       "resources/js/Components/Tailwind/AboutUs/AboutImage.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutPaani.jsx",
-      "resources/js/Components/Tailwind/AboutUs/AboutMultivet.jsx"
+      "resources/js/Components/Tailwind/AboutUs/AboutMultivet.jsx",
+      "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx": {
@@ -4220,6 +4221,18 @@
     "file": "assets/AboutImage--pJTheE3.js",
     "name": "AboutImage",
     "src": "resources/js/Components/Tailwind/AboutUs/AboutImage.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx": {
+    "file": "assets/AboutKatya--pJTheE3.js",
+    "name": "AboutKatya",
+    "src": "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -4963,7 +4976,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-BGY_0o0t.js",
+    "file": "assets/Blog-D4Bgrk5D.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -4982,7 +4995,8 @@
       "resources/js/Components/Tailwind/Blogs/BlogSectionMakita.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionAko.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionDental.jsx",
-      "resources/js/Components/Tailwind/Blogs/BlogSectionMultivet.jsx"
+      "resources/js/Components/Tailwind/Blogs/BlogSectionMultivet.jsx",
+      "resources/js/Components/Tailwind/Blogs/BlogKatya.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx": {
@@ -5006,6 +5020,18 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Blogs/BlogKatya.jsx": {
+    "file": "assets/BlogKatya--pJTheE3.js",
+    "name": "BlogKatya",
+    "src": "resources/js/Components/Tailwind/Blogs/BlogKatya.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
     ]
@@ -5174,6 +5200,18 @@
       "_index-B6ujFmsw.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderKatya.jsx": {
+    "file": "assets/BlogHeaderKatya--pJTheE3.js",
+    "name": "BlogHeaderKatya",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderKatya.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderMultivet.jsx": {
     "file": "assets/BlogHeaderMultivet-C1n6TG5I.js",
     "name": "BlogHeaderMultivet",
@@ -5206,6 +5244,18 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogListKatya.jsx": {
+    "file": "assets/BlogListKatya--pJTheE3.js",
+    "name": "BlogListKatya",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogListKatya.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogListMultivet.jsx": {
     "file": "assets/BlogListMultivet--pJTheE3.js",
     "name": "BlogListMultivet",
@@ -5222,6 +5272,18 @@
     "file": "assets/BlogPostCard--pJTheE3.js",
     "name": "BlogPostCard",
     "src": "resources/js/Components/Tailwind/Blogs/Components/BlogPostCard.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardKatya.jsx": {
+    "file": "assets/BlogPostCardKatya--pJTheE3.js",
+    "name": "BlogPostCardKatya",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardKatya.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -11104,7 +11166,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CKCbREEo.js",
+    "file": "assets/System-Y0d8xc0M.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
