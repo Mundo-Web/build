@@ -361,8 +361,6 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
         <>
             <div className="px-primary mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
                 <div className="bg-white rounded-xl p-4 md:p-8">
-
-                    <h1 className="customtext-neutral-dark text-xl  lg:text-2xl font-bold leading-[1.0] mb-8 text-wrap">{item?.name}</h1>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {/* Left Column - Image Gallery */}
                         <div className="flex flex-row gap-4">
@@ -411,8 +409,8 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                         <div className="flex flex-col gap-6">
                             {/* Product Header */}
                             <div className="font-paragraph">
-                                {/* <span className="customtext-neutral-dark text-sm">{item?.brand?.name}</span> */}
-
+                                <span className="customtext-neutral-dark text-sm">{item?.brand?.name}</span>
+<h1 className="customtext-neutral-dark text-xl  lg:text-2xl font-bold leading-[1.0] mb-6 text-wrap">{item?.name}</h1>
                                 <p className="customtext-neutral-dark text-sm line-clamp-5 lg:line-clamp-none lg:text-base mt-0 opacity-80" dangerouslySetInnerHTML={{ __html: item?.description }}></p>
                             </div>
 
