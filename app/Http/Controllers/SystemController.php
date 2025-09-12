@@ -96,7 +96,7 @@ class SystemController extends BasicController
             $systems = System::where('page_id', $page['id'])->get();
         }
 
-        $generals = [];
+        $generals = ['currency'];
         $jsons = [];
         foreach ($systems as $key => $system) {
             if ($system->component == 'content') continue;

@@ -80,7 +80,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
     //         timer: 1500,
     //     });
     // };
-      // Comprar: agrega al carrito y redirige al cart, sin abrir modal
+    // Comprar: agrega al carrito y redirige al cart, sin abrir modal
     const onBuyClicked = (product) => {
         const variantToAdd = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
         const newCart = structuredClone(cart);
@@ -98,7 +98,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
         window.location.href = '/cart';
     };
     const onAddClicked = (product) => {
-  
+
 
         const variantToAdd = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
         const newCart = structuredClone(cart);
@@ -361,6 +361,8 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
         <>
             <div className="px-primary mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
                 <div className="bg-white rounded-xl p-4 md:p-8">
+
+                    <h1 className="customtext-neutral-dark text-xl  lg:text-2xl font-bold leading-[1.0] mb-8 text-wrap">{item?.name}</h1>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {/* Left Column - Image Gallery */}
                         <div className="flex flex-row gap-4">
@@ -409,10 +411,9 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                         <div className="flex flex-col gap-6">
                             {/* Product Header */}
                             <div className="font-paragraph">
-                                <span className="customtext-neutral-dark text-sm">{item?.brand?.name}</span>
-                                <h1 className="customtext-neutral-dark text-xl  lg:text-6xl font-bold mt-2 leading-[1.0]">{item?.name}</h1>
+                                {/* <span className="customtext-neutral-dark text-sm">{item?.brand?.name}</span> */}
 
-                                <p className="customtext-neutral-dark text-sm line-clamp-5 lg:line-clamp-none lg:text-base mt-4 opacity-80" dangerouslySetInnerHTML={{ __html: item?.description }}></p>
+                                <p className="customtext-neutral-dark text-sm line-clamp-5 lg:line-clamp-none lg:text-base mt-0 opacity-80" dangerouslySetInnerHTML={{ __html: item?.description }}></p>
                             </div>
 
                             {/* Quantity and Color Selectors - 50/50 Layout */}
@@ -540,13 +541,13 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
 
                             {/* Product Details */}
                             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                               
+
                                 {/* Availability */}
                                 <div className="flex gap-4 items-center justify-start ">
                                     <span className="customtext-neutral-dark text-sm font-medium">Disponibilidad</span>
                                     <span className={`px-3  py-1 rounded-full text-xs font-semibold ${selectedVariant?.stock > 0
-                                            ? ` customtext-neutral-dark ${data?.class_badge || "bg-primary"}`
-                                            : `bg-secondary customtext-neutral-dark`
+                                        ? ` customtext-neutral-dark ${data?.class_badge || "bg-primary"}`
+                                        : `bg-secondary customtext-neutral-dark`
                                         }`}>
                                         {selectedVariant?.stock > 0 ? "En stock" : "Agotado"}
                                     </span>
@@ -656,17 +657,17 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                 <div className="flex flex-row flex-wrap gap-2 items-center justify-center">
                                     <img src="/assets/img/banks/mastercard.png" alt="Mastercard" className="h-6" />
                                     <img src="/assets/img/banks/bitpay.png" alt="Bitpay" className="h-6" />
-                                    
+
                                     <img src="/assets/img/banks/visa.png" alt="Visa" className="h-6" />
                                     <img src="/assets/img/banks/americanexpress.png" alt="Amex" className="h-6" />
                                     <img src="/assets/img/banks/discover.png" alt="Discover" className="h-6" />
                                     <img src="/assets/img/banks/sofort.png" alt="Sofort" className="h-6" />
                                     <img src="/assets/img/banks/gpay.png" alt="Google Pay" className="h-6" />
                                     <img src="/assets/img/banks/applepay.png" alt="Apple Pay" className="h-6" />
-                                    
+
                                     <img src="/assets/img/banks/paypal.png" alt="Paypal" className="h-6" />
                                     <img src="/assets/img/banks/maestro.png" alt="Maestro" className="h-6" />
-                                
+
                                 </div>
 
                                 <button
