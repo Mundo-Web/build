@@ -359,7 +359,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
     }, []);
     return (
         <>
-            <div className="px-primary mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
+            <div className="px-primary mx-auto pb-4 md:pb-6 xl:pb-8 bg-white max-w-7xl">
                 <div className="bg-white rounded-xl p-4 md:p-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {/* Left Column - Image Gallery */}
