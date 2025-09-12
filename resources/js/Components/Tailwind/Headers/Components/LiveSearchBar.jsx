@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import SearchProductPreview from "../../../../Actions/SearchProductPreview";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const LiveSearchBar = ({ search, setSearch }) => {
   const [filtered, setFiltered] = useState([]);
@@ -103,11 +104,11 @@ const LiveSearchBar = ({ search, setSearch }) => {
                     {/* Precio */}
                     <div className="text-right text-sm min-w-[80px] customtext-neutral-dark">
                       <p className="text-primary font-semibold">
-                        S/ {discount > 0 ? discount.toFixed(2) : price.toFixed(2)}
+                        {CurrencySymbol()} {discount > 0 ? discount.toFixed(2) : price.toFixed(2)}
                       </p>
                       {discount > 0 && (
                         <p className="text-xs text-gray-500 line-through">
-                          S/ {price.toFixed(2)}
+                          {CurrencySymbol()} {price.toFixed(2)}
                         </p>
                       )}
                     </div>

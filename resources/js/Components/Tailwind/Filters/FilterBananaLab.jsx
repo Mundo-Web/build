@@ -13,6 +13,7 @@ import { Loading } from "../Components/Resources/Loading";
 import { NoResults } from "../Components/Resources/NoResult";
 import SelectForm from "./Components/SelectForm";
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 
@@ -517,7 +518,7 @@ const FilterBananaLab = ({ items, data, filteredData, cart, setCart }) => {
                                                         checked={isChecked}
                                                     />
                                                     <span className={`${isChecked ? "font-medium text-primary" : "text-gray-600"}`}>
-                                                        {`S/ ${range.min} - S/ ${range.max}`}
+                                                        {`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}
                                                     </span>
                                                 </motion.label>
                                             );

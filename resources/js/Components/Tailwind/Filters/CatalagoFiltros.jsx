@@ -29,6 +29,7 @@ import { Loading } from "../Components/Resources/Loading";
 import { NoResults } from "../Components/Resources/NoResult";
 import SelectForm from "./Components/SelectForm";
 import { GET } from "sode-extend-react";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 
@@ -223,14 +224,14 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
     // Rangos de precios estáticos
     const staticPriceRanges = [
-        { min: 0, max: 50, label: "Hasta s/ 50" },
-        { min: 50, max: 100, label: "S/ 50 - s/ 100" },
-        { min: 100, max: 250, label: "S/ 100 - s/ 250" },
-        { min: 250, max: 500, label: "S/ 250 - s/ 500" },
-        { min: 500, max: 1000, label: "S/ 500 - s/ 1.000" },
-        { min: 1000, max: 2000, label: "S/ 1.000 - s/ 2.000" },
-        { min: 2000, max: 5000, label: "S/ 2.000 - s/ 5.000" },
-        { min: 5000, max: 999999, label: "Desde s/ 5.000" }
+        { min: 0, max: 50, label: `Hasta ${CurrencySymbol()} 50` },
+        { min: 50, max: 100, label: `${CurrencySymbol()} 50 - ${CurrencySymbol()} 100` },
+        { min: 100, max: 250, label: `${CurrencySymbol()} 100 - ${CurrencySymbol()} 250` },
+        { min: 250, max: 500, label: `${CurrencySymbol()} 250 - ${CurrencySymbol()} 500` },
+        { min: 500, max: 1000, label: `${CurrencySymbol()} 500 - ${CurrencySymbol()} 1.000` },
+        { min: 1000, max: 2000, label: `${CurrencySymbol()} 1.000 - ${CurrencySymbol()} 2.000` },
+        { min: 2000, max: 5000, label: `${CurrencySymbol()} 2.000 - ${CurrencySymbol()} 5.000` },
+        { min: 5000, max: 999999, label: `Desde ${CurrencySymbol()} 5.000` }
     ];
 
     const [sections, setSections] = useState(() => {
@@ -1049,7 +1050,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         console.log("🔄 useEffect detectó cambio en selectedFilters:");
         console.log("📊 Filtros actuales:", selectedFilters);
         console.log("🚀 Ejecutando fetchProducts...");
-        
+
         fetchProducts(1, hasSearched); // true si ya había búsqueda, false si es inicial
     }, [selectedFilters]); // Eliminar hasSearched como dependencia
 
@@ -2037,7 +2038,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                     >
                                                                         <TrendingUp className="h-3 w-3" />
                                                                         <span>
-                                                                            {staticRange?.label || `S/ ${priceRange.min} - S/ ${priceRange.max}`}
+                                                                            {staticRange?.label || `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
                                                                         </span>
                                                                         <motion.div
                                                                             className="ml-1 rounded-full p-0.5 transition-colors duration-200"
@@ -2067,12 +2068,12 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                             onClick={() => {
                                                 console.log("🧹 Limpiando todos los filtros...");
                                                 console.log("📊 Estado actual antes de limpiar:", selectedFilters);
-                                                
+
                                                 // Limpiar cada filtro individualmente usando setSelectedFilters con función
                                                 // Esto simula el comportamiento de handleFilterChange que funciona correctamente
                                                 setSelectedFilters((prev) => {
                                                     console.log("🔄 Estado previo en setSelectedFilters:", prev);
-                                                    
+
                                                     const cleanFilters = {
                                                         collection_id: [],
                                                         category_id: [],
@@ -2088,13 +2089,13 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                             },
                                                         ],
                                                     };
-                                                    
+
                                                     console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
                                                     return cleanFilters;
                                                 });
-                                                
+
                                                 setFilterSequence([]);
-                                                
+
                                                 console.log("✅ Filtros limpiados correctamente - useEffect debería detectar el cambio");
                                             }}
                                             whileHover={{ scale: 1.02, y: -2 }}
@@ -2275,11 +2276,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                         onClick={() => {
                                                             console.log("🧹 Limpiando filtros desde mensaje 'sin resultados'...");
                                                             console.log("📊 Estado actual antes de limpiar:", selectedFilters);
-                                                            
+
                                                             // Limpiar usando setSelectedFilters con función (como handleFilterChange)
                                                             setSelectedFilters((prev) => {
                                                                 console.log("🔄 Estado previo en setSelectedFilters:", prev);
-                                                                
+
                                                                 const cleanFilters = {
                                                                     collection_id: [],
                                                                     category_id: [],
@@ -2295,13 +2296,13 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                         },
                                                                     ],
                                                                 };
-                                                                
+
                                                                 console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
                                                                 return cleanFilters;
                                                             });
-                                                            
+
                                                             setFilterSequence([]);
-                                                            
+
                                                             console.log("✅ Filtros limpiados correctamente desde 'sin resultados'");
                                                         }}
                                                         whileHover={{ scale: 1.05, y: -2 }}
@@ -2333,8 +2334,8 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         <nav className="flex items-center gap-x-2 min-w-max">
                                             <motion.button
                                                 className={`p-3 inline-flex items-center gap-2 rounded-xl transition-all duration-300 ${pagination.currentPage === 1
-                                                        ? "opacity-50 cursor-not-allowed bg-gray-100"
-                                                        : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
+                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                                    : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
                                                     }`}
                                                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                                                 disabled={pagination.currentPage === 1}
@@ -2370,8 +2371,8 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
                                             <motion.button
                                                 className={`p-3 inline-flex items-center gap-2 rounded-xl transition-all duration-300 ${pagination.currentPage === pagination.totalPages
-                                                        ? "opacity-50 cursor-not-allowed bg-gray-100"
-                                                        : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
+                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                                    : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
                                                     }`}
                                                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                                                 disabled={pagination.currentPage === pagination.totalPages}
@@ -2510,9 +2511,9 @@ const Tooltip = ({ children, text, position = "top" }) => {
                     >
                         {text}
                         <div className={`absolute w-0 h-0 border-l-4 border-r-4 border-transparent ${position === 'top' ? 'border-t-4 border-t-gray-900 top-full left-1/2 -translate-x-1/2' :
-                                position === 'bottom' ? 'border-b-4 border-b-gray-900 bottom-full left-1/2 -translate-x-1/2' :
-                                    position === 'left' ? 'border-l-4 border-l-gray-900 left-full top-1/2 -translate-y-1/2' :
-                                        'border-r-4 border-r-gray-900 right-full top-1/2 -translate-y-1/2'
+                            position === 'bottom' ? 'border-b-4 border-b-gray-900 bottom-full left-1/2 -translate-x-1/2' :
+                                position === 'left' ? 'border-l-4 border-l-gray-900 left-full top-1/2 -translate-y-1/2' :
+                                    'border-r-4 border-r-gray-900 right-full top-1/2 -translate-y-1/2'
                             }`} />
                     </motion.div>
                 )}

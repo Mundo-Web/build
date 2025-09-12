@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { CombosCartRest } from '../Actions/CombosCartRest';
 import ComboProductCard from '../Components/Tailwind/ComboProductCard';
+import { CurrencySymbol } from '../Utils/Number2Currency';
 
 const ComboCartTest = () => {
     const [combos, setCombos] = useState([]);
@@ -26,12 +27,12 @@ const ComboCartTest = () => {
     };
 
     const addToCart = (combo) => {
-        const existingItem = cart.find(item => 
+        const existingItem = cart.find(item =>
             item.id === combo.id && item.type === combo.type
         );
 
         if (existingItem) {
-            setCart(cart.map(item => 
+            setCart(cart.map(item =>
                 (item.id === combo.id && item.type === combo.type)
                     ? { ...item, quantity: item.quantity + 1 }
                     : item
@@ -51,7 +52,7 @@ const ComboCartTest = () => {
             return;
         }
 
-        setCart(cart.map(item => 
+        setCart(cart.map(item =>
             (item.id === comboId && item.type === 'combo')
                 ? { ...item, quantity: newQuantity }
                 : item
@@ -75,7 +76,7 @@ const ComboCartTest = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8">Prueba de Combos en Carrito</h1>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Lista de Combos */}
                 <div className="lg:col-span-2">
@@ -103,7 +104,7 @@ const ComboCartTest = () => {
                         <h2 className="text-xl font-semibold mb-4">
                             Carrito ({cart.length})
                         </h2>
-                        
+
                         {cart.length === 0 ? (
                             <p className="text-gray-500 text-center">Carrito vacío</p>
                         ) : (
@@ -120,7 +121,7 @@ const ComboCartTest = () => {
                                                     ×
                                                 </button>
                                             </div>
-                                            
+
                                             <div className="flex justify-between items-center">
                                                 <div className="flex items-center space-x-2">
                                                     <button
@@ -138,10 +139,10 @@ const ComboCartTest = () => {
                                                     </button>
                                                 </div>
                                                 <span className="font-medium">
-                                                    S/. {(item.price * item.quantity).toFixed(2)}
+                                                    {CurrencySymbol()} {(item.price * item.quantity).toFixed(2)}
                                                 </span>
                                             </div>
-                                            
+
                                             {item.combo_items && (
                                                 <div className="mt-2 text-xs text-gray-500">
                                                     Incluye: {item.combo_items.map(ci => ci.name).join(', ')}
@@ -150,14 +151,14 @@ const ComboCartTest = () => {
                                         </div>
                                     ))}
                                 </div>
-                                
+
                                 <div className="border-t pt-4">
                                     <div className="flex justify-between items-center font-semibold">
                                         <span>Total:</span>
-                                        <span>S/. {getTotalPrice().toFixed(2)}</span>
+                                        <span>{CurrencySymbol()} {getTotalPrice().toFixed(2)}</span>
                                     </div>
-                                    
-                                    <button 
+
+                                    <button
                                         className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                                         onClick={() => {
                                             console.log('Procesando compra:', cart);
@@ -172,7 +173,7 @@ const ComboCartTest = () => {
                     </div>
                 </div>
             </div>
-            
+
             {/* Debug Info */}
             <div className="mt-8 p-4 bg-gray-100 rounded-lg">
                 <h3 className="font-semibold mb-2">Debug - Estado del Carrito:</h3>

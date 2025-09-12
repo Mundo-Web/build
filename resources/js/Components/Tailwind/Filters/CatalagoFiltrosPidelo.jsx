@@ -17,6 +17,7 @@ import SelectForm from "./Components/SelectForm";
 import ProductCardScraping from "../Scraping/Components/ProductCardScraping";
 import { set } from "sode-extend-react/sources/cookies";
 import ScrapRest from "../../../Actions/Scraping/ScrapRest";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 
@@ -497,7 +498,7 @@ const CatalagoFiltrosPidelo = ({
                                                         .max === range.max
                                                 }
                                             />
-                                            <span>{`S/ ${range.min} - S/ ${range.max}`}</span>
+                                            <span>{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
                                         </label>
                                     ))}
                                 </div>

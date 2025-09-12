@@ -23,6 +23,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import ProductNavigationSwiper from "../Products/ProductNavigationSwiper";
 import em from "../../../Utils/em";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 
 export default function ProductDetailSF({ item, data, setCart, cart, textstatic, contacts}) {
@@ -409,12 +410,12 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 <p className="text-base 2xl:text-lg customtext-neutral-dark opacity-70 font-medium">
                                     Precio:{" "}
                                     <span className="line-through">
-                                        S/ {selectedVariant?.price}
+                                        {CurrencySymbol()} {selectedVariant?.price}
                                     </span>
                                 </p>
                                 <div className="flex flex-row items-center gap-4 relative">
                                     <span className="text-[40px] font-bold customtext-neutral-dark">
-                                        S/ {selectedVariant?.final_price}
+                                        {CurrencySymbol()} {selectedVariant?.final_price}
                                     </span>
                                     <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl text-base">
                                         -{calculateDiscount(selectedVariant?.price, selectedVariant?.final_price)}%

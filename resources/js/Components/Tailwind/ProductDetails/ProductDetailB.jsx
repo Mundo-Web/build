@@ -35,6 +35,7 @@ import "swiper/css/grid";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 
 
@@ -514,10 +515,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         <div className="flex justify-between items-start">
                             <div>
                                 <div className="text-3xl font-bold customtext-primary">
-                                    S/ {item?.final_price}
+                                    {CurrencySymbol()} {item?.final_price}
                                       {item?.discount > 0 && item?.price > item?.final_price &&(
                                     <span className="ml-2 text-sm line-through text-gray-400">
-                                        S/ {item?.price}
+                                        {CurrencySymbol()} {item?.price}
                                     </span>)}
                                 </div>
                                 <div className="text-xs customtext-neutral-light mt-1">SKU: {item?.sku}</div>
@@ -657,7 +658,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         </span>
                                                     </div>
                                                     <p className="font-bold text-gray-700 text-sm">
-                                                        S/ {parseFloat(comboItem.price).toFixed(2)}
+                                                        {CurrencySymbol()} {parseFloat(comboItem.price).toFixed(2)}
                                                     </p>
                                                 </div>
                                             ))}
@@ -667,7 +668,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {combo.discount > 0 && (
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className="text-xs customtext-primary line-through">
-                                                            S/ {parseFloat(combo.price).toFixed(2)}
+                                                            {CurrencySymbol()} {parseFloat(combo.price).toFixed(2)}
                                                         </span>
                                                         <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
                                                             -{combo.discount_percent}%
@@ -678,7 +679,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
                                                 </span>
                                                 <p className="font-bold mb-2 customtext-primary text-2xl ">
-                                                    S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                    {CurrencySymbol()} {parseFloat(combo.final_price || combo.price).toFixed(2)}
                                                 </p>
                                                 <button
                                                     onClick={() => addComboToCart(combo)}
@@ -986,12 +987,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     <p className="text-sm customtext-neutral-light mb-1">
                                         Precio:{" "}
                                         <span className="line-through line-clamp-1">
-                                            S/ {item?.price}
+                                            {CurrencySymbol()} {item?.price}
                                         </span>
                                     </p>
                                     <div className="flex items-center gap-4 ">
                                         <span className="text-[40px] font-bold line-clamp-1">
-                                            S/ {item?.final_price}
+                                            {CurrencySymbol()} {item?.final_price}
                                         </span>
                                         <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
                                             -
@@ -1154,7 +1155,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             </span>
                                                         </div>
                                                         <p className="font-bold text-gray-700 text-sm">
-                                                            S/ {parseFloat(comboItem.price).toFixed(2)}
+                                                            {CurrencySymbol()} {parseFloat(comboItem.price).toFixed(2)}
                                                         </p>
                                                     </div>
                                                 ))}
@@ -1164,7 +1165,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     {combo.discount > 0 && (
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <span className="text-xs customtext-primary line-through">
-                                                                S/ {parseFloat(combo.price).toFixed(2)}
+                                                                {CurrencySymbol()} {parseFloat(combo.price).toFixed(2)}
                                                             </span>
                                                             <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
                                                                 -{combo.discount_percent}%
@@ -1175,7 +1176,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
                                                     </span>
                                                     <p className="font-bold mb-2 customtext-primary text-lg">
-                                                        S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                        {CurrencySymbol()} {parseFloat(combo.final_price || combo.price).toFixed(2)}
                                                     </p>
                                                     <button
                                                         onClick={() => addComboToCart(combo)}
@@ -1236,8 +1237,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     </p>
                                                 </div>
                                                 <p className="font-bold customtext-neutral-dark">
-                                                    S/{" "}
-                                                    {parseFloat(
+                                                    {CurrencySymbol()} {parseFloat(
                                                         product?.final_price
                                                     ).toFixed(2)}
                                                 </p>
@@ -1250,7 +1250,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             </span>
 
                                             <p className="font-bold mb-2 customtext-neutral-dark">
-                                                S/ {total.toFixed(2)}
+                                                {CurrencySymbol()} {total.toFixed(2)}
                                             </p>
                                             <button
                                                 onClick={() => addAssociatedItems()}
@@ -1425,13 +1425,13 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     <p className="text-sm customtext-neutral-light mb-1">
                                         Precio:{" "}
                                         <span className="line-through">
-                                            S/ {item?.price}
+                                            {CurrencySymbol()} {item?.price}
                                         </span>
                                     </p>)}
                                 
                                       <div className="flex items-center gap-4 relative ">
                                         <span className="text-[36px] font-bold ">
-                                            S/ {item?.final_price}
+                                            {CurrencySymbol()} {item?.final_price}
                                         </span>
                                           {item?.discount > 0 && item?.price > item?.final_price &&(
                                         <span className=" absolute text-sm -top-8 right-0 bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
@@ -1536,7 +1536,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             {combo.discount > 0 && (
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className="text-sm customtext-primary line-through">
-                                                                        S/ {parseFloat(combo.price).toFixed(2)}
+                                                                        {CurrencySymbol()} {parseFloat(combo.price).toFixed(2)}
                                                                     </span>
                                                                     <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
                                                                         -{combo.discount_percent}%
@@ -1547,7 +1547,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
                                                             </span>
                                                             <p className="font-bold mb-2 customtext-primary text-xl">
-                                                                S/ {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                                {CurrencySymbol()} {parseFloat(combo.final_price || combo.price).toFixed(2)}
                                                             </p>
                                                             <button
                                                                 onClick={() => addComboToCart(combo)}
@@ -1571,7 +1571,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 </span>
                                                             </div>
                                                             <p className="font-bold text-gray-700">
-                                                                S/ {parseFloat(comboItem.price).toFixed(2)}
+                                                                {CurrencySymbol()} {parseFloat(comboItem.price).toFixed(2)}
                                                             </p>
                                                         </div>
                                                     ))}

@@ -7,6 +7,7 @@ import CartModal from "../../Components/CartModal";
 import { toast, Toaster } from "sonner";
 import CartModalBananaLab from "../../Components/CartModalBananaLab";
 import Tippy from "@tippyjs/react";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardProductBananaLab = ({
     data,
@@ -206,11 +207,11 @@ const CardProductBananaLab = ({
 
                             <div className="flex flex-col lg:flex-row  items-center gap-4 items-baseline mt-1">
                                 <span className="customtext-neutral-dark text-[20px] md:text-2xl font-bold">
-                                    S/ {product?.final_price}
+                                    {CurrencySymbol()} {product?.final_price}
                                 </span>
                                 {Number(product?.discount) > 0 && Number(product?.final_price) < Number(product?.price) && (
                                     <span className="text-base lg:text-base customtext-neutral-light line-through font-semibold">
-                                        S/ {product?.price}
+                                        {CurrencySymbol()} {product?.price}
                                     </span>
                                 )}
                                 {/*  <p className="text-[10px] lg:text-xs customtext-neutral-dark mt-1">

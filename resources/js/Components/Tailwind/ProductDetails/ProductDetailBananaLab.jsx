@@ -25,6 +25,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import ProductNavigation from "../Products/ProductNavigation";
 import ProductBananaLab from "../Products/ProductBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
     const itemsRest = new ItemsRest();
@@ -336,7 +337,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                             <p className="text-sm 2xl:text-base customtext-neutral-light">
                                 Precio:{" "}
                                 <span className="line-through">
-                                    S/ {item?.price}
+                                    {CurrencySymbol()} {item?.price}
                                 </span>
                             </p>
                             <div className="flex flex-row items-center gap-4 relative">
@@ -344,7 +345,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                                     className="text-[40px] font-bold customtext-neutral-dark"
                                     whileHover={{ scale: 1.05 }}
                                 >
-                                    S/ {item?.final_price}
+                                    {CurrencySymbol()} {item?.final_price}
                                 </motion.span>
                                 <motion.span 
                                     className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl text-base"

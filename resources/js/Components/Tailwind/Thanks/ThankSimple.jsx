@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { Local } from "sode-extend-react";
 import General from "../../../Utils/General";
 
@@ -100,8 +100,8 @@ const ThankSimple = ({ data, item }) => {
                   </div>
                 </div>
                 <div className="col-span-2 text-center">{item?.quantity}</div>
-                <div className="col-span-2 text-center">S/ {Number2Currency(item?.price)}</div>
-                <div className="col-span-2 text-center">S/ {Number2Currency(item?.price * item?.quantity)}</div>
+                <div className="col-span-2 text-center">{CurrencySymbol()} {Number2Currency(item?.price)}</div>
+                <div className="col-span-2 text-center">{CurrencySymbol()} {Number2Currency(item?.price * item?.quantity)}</div>
               </div>
             </div>
           ))}

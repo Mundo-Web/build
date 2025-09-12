@@ -27,6 +27,7 @@ import em from "../../../Utils/em";
 import Global from "../../../Utils/Global";
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
 import ProductBananaLab from "../Products/ProductBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 
 export default function ProductDetailPidelo({ item, data, setCart, cart, textstatic, contacts }) {
@@ -610,11 +611,11 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                             <div className="bg-[#F7F9FB] rounded-xl p-6 flex flex-col gap-4 shadow-md">
                                 {selectedVariant?.discount > 0 && selectedVariant?.price > selectedVariant?.final_price && (
                                     <div className="text-sm text-gray-600">
-                                        Precio: <span className="line-through">S/ {selectedVariant?.price}</span>
+                                        Precio: <span className="line-through">{CurrencySymbol()} {selectedVariant?.price}</span>
                                         <br />
-                                        Ahorras: S/ {selectedVariant?.price - selectedVariant?.final_price} ({calculateDiscount(selectedVariant?.price, selectedVariant?.final_price)}%)
+                                        Ahorras: {CurrencySymbol()} {selectedVariant?.price - selectedVariant?.final_price} ({calculateDiscount(selectedVariant?.price, selectedVariant?.final_price)}%)
                                     </div>)}
-                                <div className="text-4xl font-bold customtext-neutral-dark">S/ {selectedVariant?.final_price}</div>
+                                <div className="text-4xl font-bold customtext-neutral-dark">{CurrencySymbol()} {selectedVariant?.final_price}</div>
 
 
 

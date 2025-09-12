@@ -9,6 +9,7 @@ import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { Send, X, FileText, User, MapPin, Package, AlertTriangle, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 export default function ComplaintSimple({ generals = [],data }) {
     const [messageCaptcha, setMessageCaptcha] = useState("");
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
@@ -451,7 +452,7 @@ export default function ComplaintSimple({ generals = [],data }) {
                                     <div className="space-y-2">
                                         <InputForm
                                             type="number"
-                                            label="Monto reclamado (S/)"
+                                            label={`Monto reclamado (${CurrencySymbol()})`}
                                             name="monto_reclamado"
                                             value={formData.monto_reclamado}
                                             onChange={handleChange}

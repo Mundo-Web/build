@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Eye, Heart, Tag, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -156,7 +157,7 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
                         {/* Precio principal */}
                         <div className="text-left">
                             <div className="text-3xl font-bold customtext-secondary">
-                                S/ {finalPrice > 0 ? finalPrice.toFixed(2) : productPrice.toFixed(2)}
+                                {CurrencySymbol()} {finalPrice > 0 ? finalPrice.toFixed(2) : productPrice.toFixed(2)}
                             </div>
 
                         </div>

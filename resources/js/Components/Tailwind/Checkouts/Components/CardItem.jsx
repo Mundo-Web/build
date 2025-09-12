@@ -1,5 +1,6 @@
 import { Minus, Plus, PlusCircle, Trash2, Package } from "lucide-react";
 import AnimatedGiftBox from "./AnimatedGiftBox";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardItem = ({ setCart, hasPromotion, onPromotionClick, categorias, ...item  }) => {
     
@@ -122,13 +123,13 @@ const CardItem = ({ setCart, hasPromotion, onPromotionClick, categorias, ...item
                     <div className="text-right">
                         {/* Mostrar descuento para combos si aplica */}
                         {isCombo && item.discount > 0 && (
-                            <div className="text-xs text-gray-500 line-through">S/ {Number(originalPrice * item?.quantity).toFixed(2)}</div>
+                            <div className="text-xs text-gray-500 line-through">{CurrencySymbol()} {Number(originalPrice * item?.quantity).toFixed(2)}</div>
                         )}
                         {/* Para items normales */}
                         {!isCombo && item?.discount > 0 && item?.price > item?.final_price && (
-                            <div className="text-xs text-gray-500 line-through">S/ {Number(originalPrice * item?.quantity).toFixed(2)}</div>
+                            <div className="text-xs text-gray-500 line-through">{CurrencySymbol()} {Number(originalPrice * item?.quantity).toFixed(2)}</div>
                         )}
-                        <div className="font-bold text-lg">S/ {Number(itemPrice * item?.quantity).toFixed(2)}</div>
+                        <div className="font-bold text-lg">{CurrencySymbol()} {Number(itemPrice * item?.quantity).toFixed(2)}</div>
                         {isCombo && item.discount > 0 && (
                             <div className="text-xs text-red-500">-{item.discount_percent}% OFF</div>
                         )}

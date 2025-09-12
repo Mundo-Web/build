@@ -29,6 +29,7 @@ import "swiper/css/grid";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ProductNavigationSwiperPaani from "../Products/ProductNavigationSwiperPaani";
 import ProductBananaLab from "../Products/ProductBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 
 
@@ -260,9 +261,9 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         <div className="flex justify-between items-start">
                             <div>
                                 <div className="text-3xl font-bold customtext-primary">
-                                    S/ {formatPrice(item?.final_price)}
+                                    {CurrencySymbol()} {formatPrice(item?.final_price)}
                                     <span className="ml-2 text-sm line-through text-gray-400">
-                                        S/ {formatPrice(item?.price)}
+                                        {CurrencySymbol()} {formatPrice(item?.price)}
                                     </span>
                                 </div>
                                 <div className="text-xs text-gray-500 mt-1">SKU: {item?.sku}</div>
@@ -434,13 +435,13 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                         <p className="text-sm customtext-primary mb-1">
                                             Precio:{" "}
                                             <span className="line-through line-clamp-1">
-                                                S/ {formatPrice(item?.price)}
+                                                {CurrencySymbol()} {formatPrice(item?.price)}
                                             </span>
                                         </p>
                                     )}
                                     <div className="flex items-center gap-4 ">
                                         <span className="text-[40px] font-bold line-clamp-1">
-                                            S/ {formatPrice(item?.final_price)}
+                                            {CurrencySymbol()} {formatPrice(item?.final_price)}
                                         </span>
                                         {item?.discount > 0 && item?.discount < item?.price && (
                                             <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
@@ -582,13 +583,13 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 <p className="text-sm customtext-primary mb-1 font-bold">
                                                     Precio:{" "}
                                                     <span className="line-through">
-                                                        S/ {formatPrice(item?.price)}
+                                                        {CurrencySymbol()} {formatPrice(item?.price)}
                                                     </span>
                                                 </p>
                                             )}
                                             <div className="flex items-center gap-4 relative customtext-neutral-dark font-extrabold">
                                                 <span className="text-[40px] font-bold ">
-                                                    S/ {formatPrice(item?.final_price)}
+                                                    {CurrencySymbol()} {formatPrice(item?.final_price)}
                                                 </span>
 
                                             </div>

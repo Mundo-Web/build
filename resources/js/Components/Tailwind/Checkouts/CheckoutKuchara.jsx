@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import Number2Currency from "../../../Utils/Number2Currency"
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency"
 import { ShoppingBag, Gift } from "lucide-react"
 import { renderToString } from "react-dom/server"
 import LaravelSession from "../../../Utils/LaravelSession"
@@ -719,9 +719,9 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
                         <div className="leading-none text-end">
                           {
                             item.discount_percent > 0 &&
-                            <small className="line-through text-xs text-gray-500">S/ {Number2Currency(item.price)}</small>
+                            <small className="line-through text-xs text-gray-500">{CurrencySymbol()} {Number2Currency(item.price)}</small>
                           }
-                          <span className="font-medium block">S/ {Number2Currency(item.final_price)}</span>
+                          <span className="font-medium block">{CurrencySymbol()} {Number2Currency(item.final_price)}</span>
                         </div>
                       </div>
                     </div>
@@ -737,27 +737,27 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
                       shippingPrice === 0 ? 'Gratis' :
                         shippingPrice === null ? 'No disponible' :
                           shippingPrice === 'destination' ? 'Pago en destino' :
-                            `S/ ${Number2Currency(shippingPrice)}`
+                            `{CurrencySymbol()} ${Number2Currency(shippingPrice)}`
                     )}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <p>Subtotal</p>
-                  <span>S/. {Number2Currency(igv > 0 ? finalPrice * (1 - igv) : finalPrice)}</span>
+                  <span>{CurrencySymbol()} {Number2Currency(igv > 0 ? finalPrice * (1 - igv) : finalPrice)}</span>
                 </div>
 
                 {
                   igv > 0 &&
                   <div className="flex justify-between items-center">
                     <p>IGV ({(igv * 100).toFixed(2)}%)</p>
-                    <span>S/. {Number2Currency(finalPrice * igv)}</span>
+                    <span>{CurrencySymbol()} {Number2Currency(finalPrice * igv)}</span>
                   </div>
                 }
 
                 <div className="flex justify-between items-center font-semibold text-lg pt-2 border-t border-gray-200">
                   <p>Total</p>
-                  <span>S/ {Number2Currency(finalPrice)}</span>
+                  <span>{CurrencySymbol()} {Number2Currency(finalPrice)}</span>
                 </div>
 
                 <button
@@ -766,7 +766,7 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
                     : 'bg-primary'
                     }`}
                 >
-                  Pagar (S/. {Number2Currency(totalPrice + (typeof shippingPrice === 'number' ? shippingPrice : 0))})
+                  Pagar ({CurrencySymbol()} {Number2Currency(totalPrice + (typeof shippingPrice === 'number' ? shippingPrice : 0))})
                 </button>
               </div>
 
@@ -778,12 +778,12 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
 
                 <div className="flex justify-between items-center">
                   <p>Subtotal</p>
-                  <span>S/{Number2Currency(totalPrice)}</span>
+                  <span>{CurrencySymbol()} {Number2Currency(totalPrice)}</span>
                 </div>
 
                 <div className="flex justify-between items-center font-semibold text-lg pt-2 border-t border-gray-200">
                   <p>Total</p>
-                  <span>S/{Number2Currency(totalPrice)}</span>
+                  <span>{CurrencySymbol()} {Number2Currency(totalPrice)}</span>
                 </div>
 
                 <button className="text-white bg-primary w-full px-4 py-3 rounded-full cursor-pointer inline-block text-center font-medium mt-4">

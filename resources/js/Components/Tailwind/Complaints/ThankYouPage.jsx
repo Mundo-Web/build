@@ -1,4 +1,5 @@
 import { CheckCircle, FileText, User, MapPin, Package, Calendar, Hash, MessageSquare, Mail, Phone, Printer, ArrowLeft } from 'lucide-react';
+import { CurrencySymbol } from '../../../Utils/Number2Currency';
 
 export default function ThankYouPage({ complaintData, onBackToForm }) {
     const formatDate = (dateString) => {
@@ -189,7 +190,7 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                                         </div>
                                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                             <label className="text-sm font-medium customtext-neutral-light block mb-1">Monto Reclamado</label>
-                                            <p className="text-lg font-semibold customtext-neutral-dark">S/ {complaintData.monto_reclamado || '0.00'}</p>
+                                            <p className="text-lg font-semibold customtext-neutral-dark">{CurrencySymbol()} {complaintData.monto_reclamado || '0.00'}</p>
                                         </div>
                                     </div>
                                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">

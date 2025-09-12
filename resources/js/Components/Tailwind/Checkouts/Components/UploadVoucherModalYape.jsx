@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import ReactModal from "react-modal";
 import Global from "../../../../Utils/Global";
 import Tippy from "@tippyjs/react";
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import VoucherUpload from './VoucherUpload';
 import General from "../../../../Utils/General";
 import SalesRest from "../../../../Actions/SalesRest";
@@ -256,13 +256,13 @@ export default function UploadVoucherModalYape({
                                 Subtotal
                             </span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(subTotal)}
+                                {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">IGV</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(igv)}
+                                {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
                         {coupon && (
@@ -288,12 +288,11 @@ export default function UploadVoucherModalYape({
                                             </Tippy>{" "}
                                             ({coupon.type === 'percentage' 
                                                 ? `${coupon.value}%`
-                                                    : `S/ ${Number2Currency(coupon.value)}`})
+                                                    : `${CurrencySymbol()} ${Number2Currency(coupon.value)}`})
                                         </small>
                                     </span>
                                     <span>
-                                        S/ -
-                                        {Number2Currency(
+                                        {CurrencySymbol()} -{Number2Currency(
                                             descuentofinal
                                         )}
                                     </span>
@@ -304,20 +303,20 @@ export default function UploadVoucherModalYape({
                                    
                                     <div className="flex justify-between items-center text-sm font-bold text-green-600 mt-1 pt-1 border-t">
                                         <span>Total descuentos automáticos:</span>
-                                        <span>S/ -{Number2Currency(autoDiscountTotal)}</span>
+                                        <span>{CurrencySymbol()} -{Number2Currency(autoDiscountTotal)}</span>
                                     </div>
                                 </div>
                             )}
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">Envío</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(envio)}
+                                {CurrencySymbol()} {Number2Currency(envio)}
                             </span>
                         </div>
                         <div className="py-1 border-y">
                             <div className="flex justify-between font-bold text-lg 2xl:text-xl items-center">
                                 <span>Total</span>
-                                <span>S/ {Number2Currency(totalFinal)}</span>
+                                <span>{CurrencySymbol()} {Number2Currency(totalFinal)}</span>
                             </div>
                         </div>
                     </div>

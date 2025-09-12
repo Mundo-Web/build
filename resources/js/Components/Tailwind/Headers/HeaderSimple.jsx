@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Global from "../../../Utils/Global";
 import ItemsRest from "../../../Actions/ItemsRest";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 
 const itemsRest = new ItemsRest()
@@ -194,7 +194,7 @@ const HeaderSimple = ({ data, cart, setCart, pages, generals }) => {
                   <div className="w-[calc(100%-60px)]">
                     <h3 className="font-bold truncate w-full">{result.name}</h3>
                     <h3 className="text-nowrap text-sm font-bold">
-                      S/ {Number2Currency(result.final_price)}
+                      {CurrencySymbol()} {Number2Currency(result.final_price)}
                       {result?.discount_percent > 0 && <span className="ms-1 line-through text-gray-500 font-normal text-xs">{result.price}</span>}
                     </h3>
                     <p className="text-sm text-gray-600">{result.summary}</p>

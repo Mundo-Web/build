@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { Minus, Plus, Trash2, Package } from "lucide-react";
 import Tippy from "@tippyjs/react";
 
@@ -86,7 +86,7 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                 {isCombo && item?.discount > 0 && (
                     <div className="text-sm text-gray-500 mb-2">
                         <span className="line-through mr-2">
-                            S/ {Number2Currency(item.price)}
+                            {CurrencySymbol()} {Number2Currency(item.price)}
                         </span>
                         <span className="text-red-500">
                             -{Number(item.discount_percent).toFixed(0)}%
@@ -120,7 +120,7 @@ const CartItemRow = ({ setCart, index, ...item }) => {
                     </div>
                     
                     <span className="font-semibold text-gray-900">
-                        S/. {Number2Currency(finalPrice * item.quantity)}
+                        {CurrencySymbol()} {Number2Currency(finalPrice * item.quantity)}
                     </span>
                 </div>
             </div>

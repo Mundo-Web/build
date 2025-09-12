@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { CurrencySymbol } from '../Utils/Number2Currency';
 
 const API_BASE_URL = '/api';
 
@@ -105,7 +106,7 @@ export default class DiscountRulesRest {
             free_items: discount.free_items || [],
             formatted_amount: discount.discount_type === 'percentage' 
                 ? `${discount.discount_amount}%` 
-                : `S/ ${parseFloat(discount.discount_amount || 0).toFixed(2)}`
+                : `${CurrencySymbol()} ${parseFloat(discount.discount_amount || 0).toFixed(2)}`
         }));
     }
 

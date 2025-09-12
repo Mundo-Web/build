@@ -16,6 +16,7 @@ import Logout from "../../../Actions/Logout";
 import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const HeaderSearchPaani = ({
     items,
@@ -440,7 +441,7 @@ const HeaderSearchPaani = ({
                                         )}
                                         {suggestion.final_price && (
                                             <div className="text-sm font-semibold customtext-primary">
-                                                S/ {parseFloat(suggestion.final_price).toFixed(2)}
+                                                {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
                                         )}
                                     </div>

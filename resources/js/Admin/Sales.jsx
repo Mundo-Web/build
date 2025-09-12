@@ -8,7 +8,7 @@ import ReactAppend from "../Utils/ReactAppend";
 import Swal from "sweetalert2";
 import SalesRest from "../Actions/Admin/SalesRest";
 import Global from "../Utils/Global";
-import Number2Currency from "../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 import Modal from "../Components/Adminto/Modal";
 import Tippy from "@tippyjs/react";
 import SaleStatusesRest from "../Actions/Admin/SaleStatusesRest";
@@ -1012,7 +1012,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                     const priceColumns = ['PRODUCTO_PRECIO_UNITARIO', 'PRODUCTO_SUBTOTAL', 'VENTA_SUBTOTAL', 'VENTA_TOTAL_FINAL'];
                     const columnName = Object.keys(excelData[0] || {})[col];
                     if (priceColumns.includes(columnName)) {
-                        worksheet[cellAddress].z = '"S/" #,##0.00';
+                        worksheet[cellAddress].z = `${CurrencySymbol()} #,##0.00`;
                     }
                 }
             }
@@ -1413,7 +1413,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                         dataType: "number",
                         cellTemplate: (container, { data }) => {
                            
-                            container.text(`S/. ${Number2Currency(data?.amount)}`);
+                            container.text(`${CurrencySymbol()} ${Number2Currency(data?.amount)}`);
                         },
                     },
                     {
@@ -1588,7 +1588,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                                         {saleLoaded?.coupon_code}
                                                     </span>
                                                     <small className="text-success d-block">
-                                                        Descuento: S/ {Number2Currency(saleLoaded?.coupon_discount || 0)}
+                                                        Descuento: {CurrencySymbol()} {Number2Currency(saleLoaded?.coupon_discount || 0)}
                                                     </small>
                                                 </td>
                                             </tr>
@@ -1615,7 +1615,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                                                             {promo.description || 'Descuento por promoción especial'}
                                                                         </small>
                                                                         <small className="text-success d-block">
-                                                                            Descuento: S/ {Number2Currency(promo.discount_amount || promo.amount || 0)}
+                                                                            Descuento: {CurrencySymbol()} {Number2Currency(promo.discount_amount || promo.amount || 0)}
                                                                         </small>
                                                                         {promo.free_items && promo.free_items.length > 0 && (
                                                                             <small className="text-info d-block">
@@ -1634,7 +1634,8 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                                     {saleLoaded?.promotion_discount > 0 && (
                                                         <div className="mt-2 pt-2 border-top">
                                                             <strong className="text-primary">
-                                                                Total descuentos automáticos: S/ {Number2Currency(saleLoaded?.promotion_discount || 0)}
+                                                                Total descuentos automáticos: {' '}
+                                                                {CurrencySymbol()} {Number2Currency(saleLoaded?.promotion_discount || 0)}
                                                             </strong>
                                                         </div>
                                                     )}
@@ -1754,8 +1755,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                                         </td>
                                                         <td align="right">
                                                             <span className="text-nowrap">
-                                                                S/{" "}
-                                                                {Number2Currency(
+                                                                {CurrencySymbol()} {Number2Currency(
                                                                     detail.price
                                                                 )}
                                                             </span>
@@ -1765,8 +1765,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                                         </td>
                                                         <td align="right">
                                                             <span className="text-nowrap">
-                                                                S/{" "}
-                                                                {Number2Currency(
+                                                                {CurrencySymbol()} {Number2Currency(
                                                                     totalPrice
                                                                 )}
                                                             </span>
@@ -1788,8 +1787,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 <div className="d-flex justify-content-between">
                                     <b>Subtotal:</b>
                                     <span>
-                                        S/{" "}
-                                        {Number2Currency(
+                                        {CurrencySymbol()} {Number2Currency(
                                             saleLoaded?.details?.reduce((sum, detail) => sum + (detail.price * detail.quantity), 0) || 0
                                         )}
                                     </span>
@@ -1797,8 +1795,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 <div className="d-flex justify-content-between">
                                     <b>Envío:</b>
                                     <span>
-                                        S/{" "}
-                                        {Number2Currency(saleLoaded?.delivery)}
+                                        {CurrencySymbol()} {Number2Currency(saleLoaded?.delivery)}
                                     </span>
                                 </div>
                                 
@@ -1809,8 +1806,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Seguro de Importación:</b>
                                                 <span>
-                                                    S/{" "}
-                                                    {Number2Currency(saleLoaded?.seguro_importacion_total)}
+                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.seguro_importacion_total)}
                                                 </span>
                                             </div>
                                         )}
@@ -1819,8 +1815,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Derecho Arancelario:</b>
                                                 <span>
-                                                    S/{" "}
-                                                    {Number2Currency(saleLoaded?.derecho_arancelario_total)}
+                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.derecho_arancelario_total)}
                                                 </span>
                                             </div>
                                         )}
@@ -1829,8 +1824,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Flete:</b>
                                                 <span>
-                                                    S/{" "}
-                                                    {Number2Currency(saleLoaded?.flete_total)}
+                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.flete_total)}
                                                 </span>
                                             </div>
                                         )}
@@ -1842,8 +1836,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <div className="d-flex justify-content-between text-primary">
                                         <b>Descuentos automáticos:</b>
                                         <span>
-                                            - S/{" "}
-                                            {Number2Currency(saleLoaded?.promotion_discount)}
+                                            - {CurrencySymbol()} {Number2Currency(saleLoaded?.promotion_discount)}
                                         </span>
                                     </div>
                                 )}
@@ -1852,8 +1845,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <div className="d-flex justify-content-between text-success">
                                         <b>Descuento por cupón:</b>
                                         <span>
-                                            - S/{" "}
-                                            {Number2Currency(saleLoaded?.coupon_discount)}
+                                            - {CurrencySymbol()} {Number2Currency(saleLoaded?.coupon_discount)}
                                         </span>
                                     </div>
                                 )}
@@ -1863,8 +1855,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <div className="d-flex justify-content-between text-info">
                                         <b>Descuento por paquete:</b>
                                         <span>
-                                            - S/{" "}
-                                            {Number2Currency(saleLoaded?.bundle_discount)}
+                                            - {CurrencySymbol()} {Number2Currency(saleLoaded?.bundle_discount)}
                                         </span>
                                     </div>
                                 )}
@@ -1873,8 +1864,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <div className="d-flex justify-content-between text-warning">
                                         <b>Descuento por renovación:</b>
                                         <span>
-                                            - S/{" "}
-                                            {Number2Currency(saleLoaded?.renewal_discount)}
+                                            - {CurrencySymbol()} {Number2Currency(saleLoaded?.renewal_discount)}
                                         </span>
                                     </div>
                                 )}
@@ -1884,7 +1874,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <b>Total:</b>
                                     <span>
                                         <strong>
-                                            S/ {Number2Currency(totalAmount)}
+                                            {CurrencySymbol()} {Number2Currency(totalAmount)}
                                         </strong>
                                     </span>
                                 </div>
@@ -1901,7 +1891,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     {saleLoaded?.coupon_discount > 0 && ` - ${Number2Currency(saleLoaded?.coupon_discount)} (cupón)`}
                                     {saleLoaded?.bundle_discount > 0 && ` - ${Number2Currency(saleLoaded?.bundle_discount)} (paquete)`}
                                     {saleLoaded?.renewal_discount > 0 && ` - ${Number2Currency(saleLoaded?.renewal_discount)} (renovación)`}
-                                    = S/ {Number2Currency(totalAmount)}
+                                    = {CurrencySymbol()} {Number2Currency(totalAmount)}
                                 </small>
                             </div>
                         </div>

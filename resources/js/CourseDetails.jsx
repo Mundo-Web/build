@@ -5,7 +5,7 @@ import { JSON } from "sode-extend-react";
 import Base from "./Components/Tailwind/Base";
 import CreateReactScript from "./Utils/CreateReactScript";
 import HtmlContent from "./Utils/HtmlContent";
-import Number2Currency from "./Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "./Utils/Number2Currency";
 
 const CourseDetails = ({ course }) => {
   const content = []
@@ -127,7 +127,7 @@ const CourseDetails = ({ course }) => {
       <div className="sticky top-2 h-max rounded bg-slate-100 w-full px-6 max-md:px-5">
         <div className="flex gap-10 justify-between items-center pt-8 pb-6 w-full font-medium leading-none uppercase border-b border-solid border-b-[#CFD8E8]">
           <div className="self-stretch my-auto text-2xl not-italic tracking-wide text-[#2B384F]">
-            S/.{Number2Currency(course.price)}
+            {CurrencySymbol()} {Number2Currency(course.price)}
           </div>
           <div className="flex gap-2.5 justify-center items-center self-stretch px-3 py-2 my-auto text-sm not-italic whitespace-nowrap rounded-3xl bg-[#FFF0FA] text-[#FF27B9]">
             OFERTA

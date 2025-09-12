@@ -20,6 +20,7 @@ import ProductCardSimple from "../Products/Components/ProductCardSimple";
 import ProductCardColors from "../Products/Components/ProductCardColors";
 import { GET } from "sode-extend-react";
 import Modal from "react-modal";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 
@@ -586,7 +587,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
                                         <div className="w-3 h-3 rounded-full bg-primary"></div>
                                     )}
                                 </div>
-                                <span className="text-sm lg:text-base">{`S/ ${range.min} - S/ ${range.max}`}</span>
+                                <span className="text-sm lg:text-base">{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
                             </label>
                         })}
                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CombosCartRest } from '../../Actions/CombosCartRest';
+import { CurrencySymbol } from '../../Utils/Number2Currency';
 
 
 const ComboProductCard = ({ combo, onAddToCart, cart = [], showAddButton = true }) => {
@@ -76,11 +77,11 @@ const ComboProductCard = ({ combo, onAddToCart, cart = [], showAddButton = true 
                             <div className="flex items-center gap-2 mb-3">
                                 {combo.discount > 0 && (
                                     <span className="text-sm line-through text-gray-500">
-                                        S/.{combo.price}
+                                        {CurrencySymbol()} {combo.price}
                                     </span>
                                 )}
                                 <span className="text-lg font-bold text-green-600">
-                                    S/.{combo.final_price}
+                                    {CurrencySymbol()} {combo.final_price}
                                 </span>
                                 {combo.discount > 0 && (
                                     <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">

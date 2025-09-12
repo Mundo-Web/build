@@ -17,6 +17,7 @@ import SelectForm from "./Components/SelectForm";
 import ProductCard from "../Components/ProductCard";
 import ProductCardSimple from "../Products/Components/ProductCardSimple";
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 const itemsRest = new ItemsRest();
 
 const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
@@ -376,7 +377,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
                           selectedFilters.price.max === range.max
                         }
                       />
-                      <span>{`S/ ${range.min} - S/ ${range.max}`}</span>
+                      <span>{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
                     </label>
                   ))}
                 </div>
@@ -484,7 +485,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
                         selectedFilters.price.max === range.max
                       }
                     />
-                    <span>{`S/ ${range.min} - S/ ${range.max}`}</span>
+                    <span>{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
                   </label>
                 ))}
               </div>

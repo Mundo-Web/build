@@ -37,6 +37,7 @@ import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
 import CardProductMultivet from "../Products/Components/CardProductMultivet";
 import CardProductKatya from "../Products/Components/CardProductKatya";
 import General from "../../../Utils/General";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 // import CardProductDefault from "../Products/Components/CardProductDefault";
 // import CardProductMinimal from "../Products/Components/CardProductMinimal";
 // import CardProductCompact from "../Products/Components/CardProductCompact";
@@ -318,14 +319,14 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
 
     // Rangos de precios estáticos
     const staticPriceRanges = [
-        { min: 0, max: 50, label: "Hasta s/ 50" },
-        { min: 50, max: 100, label: "S/ 50 - s/ 100" },
-        { min: 100, max: 250, label: "S/ 100 - s/ 250" },
-        { min: 250, max: 500, label: "S/ 250 - s/ 500" },
-        { min: 500, max: 1000, label: "S/ 500 - s/ 1.000" },
-        { min: 1000, max: 2000, label: "S/ 1.000 - s/ 2.000" },
-        { min: 2000, max: 5000, label: "S/ 2.000 - s/ 5.000" },
-        { min: 5000, max: 999999, label: "Desde s/ 5.000" }
+        { min: 0, max: 50, label: `Hasta ${CurrencySymbol()} 50` },
+        { min: 50, max: 100, label: `${CurrencySymbol()} 50 - ${CurrencySymbol()} 100` },
+        { min: 100, max: 250, label: `${CurrencySymbol()} 100 - ${CurrencySymbol()} 250` },
+        { min: 250, max: 500, label: `${CurrencySymbol()} 250 - ${CurrencySymbol()} 500` },
+        { min: 500, max: 1000, label: `${CurrencySymbol()} 500 - ${CurrencySymbol()} 1.000` },
+        { min: 1000, max: 2000, label: `${CurrencySymbol()} 1.000 - ${CurrencySymbol()} 2.000` },
+        { min: 2000, max: 5000, label: `${CurrencySymbol()} 2.000 - ${CurrencySymbol()} 5.000` },
+        { min: 5000, max: 999999, label: `Desde ${CurrencySymbol()} 5.000` }
     ];
 
     const [sections, setSections] = useState(() => {

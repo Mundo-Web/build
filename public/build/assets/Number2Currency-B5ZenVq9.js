@@ -1,1 +1,0 @@
-import{G as e}from"./General-BmbBKdsB.js";const t=(r,n="en-US")=>(Number(r)||0).toLocaleString(n,{maximumFractionDigits:2,minimumFractionDigits:2}),u=()=>(e.get("currency")||"pen")==="usd"?"$":"S/";export{u as C,t as N};

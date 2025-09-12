@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, X, ArrowRight, Heart, Share2, Edit } from "lucide-react";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 // Animaciones configuradas
 const animations = {
@@ -229,11 +230,11 @@ const CardBanana = ({ producto, onClick }) => {
           <div>
             {producto.descuento > 0 && (
               <span className="text-xs text-gray-400 line-through mr-2">
-                S/ {(producto.precio).toFixed(2)}
+                {CurrencySymbol()} {(producto.precio).toFixed(2)}
               </span>
             )}
             <span className="font-bold text-primary">
-              S/ {(producto.precio * (1 - producto.descuento/100)).toFixed(2)}
+              {CurrencySymbol()} {(producto.precio * (1 - producto.descuento/100)).toFixed(2)}
             </span>
           </div>
         </div> */}
@@ -308,7 +309,7 @@ const ProductoModal = ({ producto, onClose }) => {
               {producto.descuento > 0 && (
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm text-gray-500 line-through">
-                    S/ {producto.precio.toFixed(2)}
+                    {CurrencySymbol()} {producto.precio.toFixed(2)}
                   </span>
                   <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
                     -{producto.descuento}%
@@ -316,7 +317,7 @@ const ProductoModal = ({ producto, onClose }) => {
                 </div>
               )}
               <p className="text-3xl font-bold text-primary">
-                S/ {(producto.precio * (1 - producto.descuento/100)).toFixed(2)}
+                {CurrencySymbol()} {(producto.precio * (1 - producto.descuento/100)).toFixed(2)}
               </p>
             </div>
 

@@ -8,7 +8,7 @@ import ReactAppend from "../Utils/ReactAppend";
 import Swal from "sweetalert2";
 import SalesRest from "../Actions/Customer/SalesRest";
 import Global from "../Utils/Global";
-import Number2Currency from "../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 import Modal from "../Components/Adminto/Modal";
 import Tippy from "@tippyjs/react";
 import SaleStatusesRest from "../Actions/Admin/SaleStatusesRest";
@@ -179,15 +179,15 @@ const Sales = ({ statuses = [] }) => {
                             const coupon_discount =
                                 Number(data.coupon_discount) || 0;
                             container.text(
-                                `S/. ${Number2Currency(
+                                `${CurrencySymbol()} ${Number2Currency(
                                     amount +
-                                        delivery +
-                                        seguro_importacion +
-                                        derecho_arancelario +
-                                        flete -
-                                        bundle_discount -
-                                        renewal_discount -
-                                        coupon_discount
+                                    delivery +
+                                    seguro_importacion +
+                                    derecho_arancelario +
+                                    flete -
+                                    bundle_discount -
+                                    renewal_discount -
+                                    coupon_discount
                                 )}`
                             );
                         },
@@ -243,29 +243,29 @@ const Sales = ({ statuses = [] }) => {
                                         </tr>
                                         {saleLoaded?.delivery_type ==
                                             "express" && (
-                                            <tr>
-                                                <th>Dirección:</th>
-                                                <td>
-                                                    {saleLoaded?.address}{" "}
-                                                    {saleLoaded?.number}
-                                                    <small className="text-muted d-block">
-                                                        {saleLoaded?.province ??
-                                                            saleLoaded?.district}
-                                                        ,{" "}
-                                                        {saleLoaded?.department}
-                                                        , {saleLoaded?.country}{" "}
-                                                        {saleLoaded?.zip_code && (
-                                                            <>
-                                                                -{" "}
-                                                                {
-                                                                    saleLoaded?.zip_code
-                                                                }
-                                                            </>
-                                                        )}
-                                                    </small>
-                                                </td>
-                                            </tr>
-                                        )}
+                                                <tr>
+                                                    <th>Dirección:</th>
+                                                    <td>
+                                                        {saleLoaded?.address}{" "}
+                                                        {saleLoaded?.number}
+                                                        <small className="text-muted d-block">
+                                                            {saleLoaded?.province ??
+                                                                saleLoaded?.district}
+                                                            ,{" "}
+                                                            {saleLoaded?.department}
+                                                            , {saleLoaded?.country}{" "}
+                                                            {saleLoaded?.zip_code && (
+                                                                <>
+                                                                    -{" "}
+                                                                    {
+                                                                        saleLoaded?.zip_code
+                                                                    }
+                                                                </>
+                                                            )}
+                                                        </small>
+                                                    </td>
+                                                </tr>
+                                            )}
                                         {saleLoaded?.reference && (
                                             <tr>
                                                 <th>Referencia:</th>
@@ -336,40 +336,39 @@ const Sales = ({ statuses = [] }) => {
                                                 return (
                                                     <tr key={index}>
                                                         <td>
-                                            <div>
-                                                <strong>{detail.name}</strong>
-                                                
-                                                {/* Verificar si es combo por diferentes campos */}
-                                                {(detail.type === 'combo' || detail.combo_id) && (
-                                                    <div className="mt-1">
-                                                        <small className="text-muted d-block">
-                                                            <span className="badge bg-info me-1">COMBO</span>
-                                                            Contiene:
-                                                        </small>
-                                                        
-                                                        {/* Verificar diferentes estructuras de combo_data */}
-                                                        {detail.combo_data && detail.combo_data.items && detail.combo_data.items.length > 0 ? (
-                                                            <small className="text-muted">
-                                                                {detail.combo_data.items.map((item, idx) => (
-                                                                    <span key={idx}>
-                                                                        {item.quantity}x {item.name}
-                                                                        {idx < detail.combo_data.items.length - 1 ? ', ' : ''}
-                                                                    </span>
-                                                                ))}
-                                                            </small>
-                                                        ) : (
-                                                            <small className="text-muted text-warning">
-                                                                📋 Información de combo no disponible
-                                                            </small>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </td>
+                                                            <div>
+                                                                <strong>{detail.name}</strong>
+
+                                                                {/* Verificar si es combo por diferentes campos */}
+                                                                {(detail.type === 'combo' || detail.combo_id) && (
+                                                                    <div className="mt-1">
+                                                                        <small className="text-muted d-block">
+                                                                            <span className="badge bg-info me-1">COMBO</span>
+                                                                            Contiene:
+                                                                        </small>
+
+                                                                        {/* Verificar diferentes estructuras de combo_data */}
+                                                                        {detail.combo_data && detail.combo_data.items && detail.combo_data.items.length > 0 ? (
+                                                                            <small className="text-muted">
+                                                                                {detail.combo_data.items.map((item, idx) => (
+                                                                                    <span key={idx}>
+                                                                                        {item.quantity}x {item.name}
+                                                                                        {idx < detail.combo_data.items.length - 1 ? ', ' : ''}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </small>
+                                                                        ) : (
+                                                                            <small className="text-muted text-warning">
+                                                                                📋 Información de combo no disponible
+                                                                            </small>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </td>
                                                         <td align="right">
                                                             <span className="text-nowrap">
-                                                                S/{" "}
-                                                                {Number2Currency(
+                                                                {CurrencySymbol()} {Number2Currency(
                                                                     detail.price
                                                                 )}
                                                             </span>
@@ -379,8 +378,7 @@ const Sales = ({ statuses = [] }) => {
                                                         </td>
                                                         <td align="right">
                                                             <span className="text-nowrap">
-                                                                S/{" "}
-                                                                {Number2Currency(
+                                                                {CurrencySymbol()} {Number2Currency(
                                                                     totalPrice
                                                                 )}
                                                             </span>
@@ -402,8 +400,7 @@ const Sales = ({ statuses = [] }) => {
                                 <div className="d-flex justify-content-between">
                                     <b>Subtotal:</b>
                                     <span>
-                                        S/{" "}
-                                        {Number2Currency(
+                                        {CurrencySymbol()} {Number2Currency(
                                             saleLoaded?.amount * 1
                                         )}
                                     </span>
@@ -411,11 +408,10 @@ const Sales = ({ statuses = [] }) => {
                                 <div className="d-flex justify-content-between">
                                     <b>Envío:</b>
                                     <span>
-                                        S/{" "}
-                                        {Number2Currency(saleLoaded?.delivery)}
+                                        {CurrencySymbol()} {Number2Currency(saleLoaded?.delivery)}
                                     </span>
                                 </div>
-                                
+
                                 {/* Mostrar costos de importación si existen */}
                                 {(saleLoaded?.seguro_importacion_total > 0 || saleLoaded?.derecho_arancelario_total > 0 || saleLoaded?.flete_total > 0) && (
                                     <>
@@ -423,28 +419,25 @@ const Sales = ({ statuses = [] }) => {
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Seguro de Importación:</b>
                                                 <span>
-                                                    S/{" "}
-                                                    {Number2Currency(saleLoaded?.seguro_importacion_total)}
+                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.seguro_importacion_total)}
                                                 </span>
                                             </div>
                                         )}
-                                        
+
                                         {saleLoaded?.derecho_arancelario_total > 0 && (
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Derecho Arancelario:</b>
                                                 <span>
-                                                    S/{" "}
-                                                    {Number2Currency(saleLoaded?.derecho_arancelario_total)}
+                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.derecho_arancelario_total)}
                                                 </span>
                                             </div>
                                         )}
-                                        
+
                                         {saleLoaded?.flete_total > 0 && (
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Flete:</b>
                                                 <span>
-                                                    S/{" "}
-                                                    {Number2Currency(saleLoaded?.flete_total)}
+                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.flete_total)}
                                                 </span>
                                             </div>
                                         )}
@@ -455,7 +448,7 @@ const Sales = ({ statuses = [] }) => {
                                     <b>Total:</b>
                                     <span>
                                         <strong>
-                                            S/ {Number2Currency(totalAmount)}
+                                            {CurrencySymbol()} {Number2Currency(totalAmount)}
                                         </strong>
                                     </span>
                                 </div>

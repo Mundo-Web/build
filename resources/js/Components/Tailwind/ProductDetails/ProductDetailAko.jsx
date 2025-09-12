@@ -24,6 +24,7 @@ import "tippy.js/dist/tippy.css";
 import ProductNavigationSwiper from "../Products/ProductNavigationSwiper";
 import em from "../../../Utils/em";
 import ProductNavigationSwiperSimple from "../Products/ProductNavigationSwiperSimple";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 export default function ProductDetailAko({ item, data, setCart, cart, textstatic, contacts}) {
     
@@ -396,12 +397,12 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                             <p className="text-base 2xl:text-lg customtext-neutral-dark font-medium">
                                                 Precio:{" "}
                                                 <span className="line-through font-normal">
-                                                    S/ {item?.price}
+                                                    {CurrencySymbol()} {item?.price}
                                                 </span>
                                             </p>
                                             <div className="flex flex-row items-center gap-4 relative">
                                                 <span className="text-3xl md:text-4xl 2xl:text-5xl font-semibold customtext-neutral-dark">
-                                                    S/ {item?.final_price}
+                                                    {CurrencySymbol()} {item?.final_price}
                                                 </span>
                                                 <span className="bg-[#F93232] text-white font-semibold px-3 py-2 rounded-xl text-base">
                                                     -{Number(item?.discount_percent).toFixed(1)}%
@@ -410,7 +411,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                         </>
                                     ) : (
                                         <span className="text-3xl md:text-4xl 2xl:text-5xl font-semibold customtext-neutral-dark">
-                                            S/ {item?.price}
+                                            {CurrencySymbol()} {item?.price}
                                         </span>
                                     )}
                             </div>

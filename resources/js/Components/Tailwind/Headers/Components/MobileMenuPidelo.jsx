@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, X, ChevronRight, ChevronLeft, Home, ShoppingCart, User, Menu, Check, ChevronDown } from "lucide-react";
 import MenuSimple from "../../Menu/MenuSimple";
 import { motion, AnimatePresence } from "framer-motion";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 export default function MobileMenuPidelo({ 
     search, 
@@ -180,7 +181,7 @@ export default function MobileMenuPidelo({
                                         )}
                                         {suggestion.final_price && (
                                             <div className="text-sm font-semibold text-primary">
-                                                S/ {parseFloat(suggestion.final_price).toFixed(2)}
+                                                {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
                                         )}
                                     </div>

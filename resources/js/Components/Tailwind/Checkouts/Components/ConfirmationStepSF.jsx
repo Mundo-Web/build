@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import { recoveryOrderData } from "../../../../Actions/recoveryOrderData";
 import ButtonPrimary from "./ButtonPrimary";
 import { Local } from "sode-extend-react";
@@ -155,7 +155,7 @@ export default function ConfirmationStepSF({
                                             )}
                                             <p className="text-sm customtext-neutral-light">
                                                 Cantidad: <span className="customtext-neutral-dark">{parseInt(item.quantity)}</span> -
-                                                Precio: <span className="customtext-neutral-dark"> S/ {Number2Currency(item.price)}</span>
+                                                Precio: <span className="customtext-neutral-dark"> {CurrencySymbol()} {Number2Currency(item.price)}</span>
                                                 {item.is_free && (
                                                     <span className="ml-1 text-green-600 font-semibold">(Promoción)</span>
                                                 )}
@@ -211,15 +211,15 @@ export default function ConfirmationStepSF({
                         <div className="space-y-4 mt-6">
                             <div className="flex justify-between">
                                 <span className="customtext-neutral-dark">Subtotal</span>
-                                <span className="font-semibold">S/ {Number2Currency(subTotal)}</span>
+                                <span className="font-semibold">{CurrencySymbol()} {Number2Currency(subTotal)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="customtext-neutral-dark">IGV</span>
-                                <span className="font-semibold">S/ {Number2Currency(igv)}</span>
+                                <span className="font-semibold">{CurrencySymbol()} {Number2Currency(igv)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="customtext-neutral-dark">Envío</span>
-                                <span className="font-semibold">S/ {Number2Currency(order.delivery)}</span>
+                                <span className="font-semibold">{CurrencySymbol()} {Number2Currency(order.delivery)}</span>
                             </div>
                             {order.coupon_id && (
                                 <div className="mb-2 mt-2 flex justify-between items-center border-b pb-2 text-sm font-bold">
@@ -227,7 +227,7 @@ export default function ConfirmationStepSF({
                                         Cupón aplicado{" "}
                                     </span>
                                     <span>
-                                        S/ -
+                                        {CurrencySymbol()} -
                                         {Number2Currency(
                                             order.coupon_discount
                                         )}
@@ -248,20 +248,20 @@ export default function ConfirmationStepSF({
                                                 </small>
                                             </span>
                                             <span className="font-semibold text-green-600">
-                                                S/ -{Number2Currency(discount.discount_amount || discount.amount || 0)}
+                                                {CurrencySymbol()} -{Number2Currency(discount.discount_amount || discount.amount || 0)}
                                             </span>
                                         </div>
                                     ))}
                                     <div className="flex justify-between items-center text-sm font-bold text-green-600 mt-1 pt-1 border-t">
                                         <span>Total descuentos automáticos:</span>
-                                        <span>S/ -{Number2Currency(order.automatic_discount_total || 0)}</span>
+                                        <span>{CurrencySymbol()} -{Number2Currency(order.automatic_discount_total || 0)}</span>
                                     </div>
                                 </div>
                             )}
                             <div className="py-3 border-y-2 mt-6">
                                 <div className="flex justify-between font-bold text-[20px] items-center">
                                     <span>Total</span>
-                                    <span>S/ {Number2Currency(totalFinal)}</span>
+                                    <span>{CurrencySymbol()} {Number2Currency(totalFinal)}</span>
                                 </div>
                             </div>
                         </div>

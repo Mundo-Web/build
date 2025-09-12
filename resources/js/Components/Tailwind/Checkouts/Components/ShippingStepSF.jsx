@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useRef } from "react";
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import ubigeoData from "../../../../../../storage/app/utils/ubigeo.json";
 import DeliveryPricesRest from "../../../../Actions/DeliveryPricesRest";
 import { processCulqiPayment } from "../../../../Actions/culqiPayment";
@@ -401,7 +401,7 @@ export default function ShippingStepSF({
                 options.push({
                     type: "free",
                     price: 0,
-                    description: `Compra mayor a S/ ${hasShippingFree}`,
+                    description: `Compra mayor a ${CurrencySymbol()} ${hasShippingFree}`,
                     deliveryType: "Envío gratuito",
                 });
             } else if (response.data.is_free) { // Si no aplica envío gratuito por monto, verifica otras opciones
@@ -1085,7 +1085,7 @@ export default function ShippingStepSF({
             // Mostrar información sobre el cupón antes de validar
             if (couponCode.toUpperCase() === 'TEST50' && subTotal < 100) {
                 toast.warning("Información importante", {
-                    description: `El cupón TEST50 requiere un monto mínimo de S/ 100.00. Tu carrito actual: S/ ${Number2Currency(subTotal)}`,
+                    description: `El cupón TEST50 requiere un monto mínimo de ${CurrencySymbol()} 100.00. Tu carrito actual: ${CurrencySymbol()} ${Number2Currency(subTotal)}`,
                     icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
                     duration: 5000,
                     position: "bottom-center",
@@ -1127,7 +1127,7 @@ export default function ShippingStepSF({
                 if (setParentCouponDiscount) setParentCouponDiscount(roundedDiscount);
                 
                 toast.success("Cupón aplicado", {
-                    description: `Descuento de S/ ${Number2Currency(roundedDiscount)} aplicado`,
+                    description: `Descuento de ${CurrencySymbol()} ${Number2Currency(roundedDiscount)} aplicado`,
                     icon: <CheckCircleIcon className="h-5 w-5 text-green-500" />,
                     duration: 3000,
                     position: "bottom-center",
@@ -1139,7 +1139,7 @@ export default function ShippingStepSF({
                 // Mejorar el mensaje de error para casos específicos
                 let toastMessage = errorMessage;
                 if (errorMessage.includes("monto mínimo")) {
-                    toastMessage = `${errorMessage} Tu carrito actual: S/ ${Number2Currency(subTotal)}`;
+                    toastMessage = `${errorMessage} Tu carrito actual: ${CurrencySymbol()} ${Number2Currency(subTotal)}`;
                 }
                 
                 toast.error("Cupón inválido", {
@@ -1971,7 +1971,7 @@ export default function ShippingStepSF({
                                             <p className="text-xs customtext-neutral-light">
                                                 Descuento: {appliedCoupon.type === 'percentage' 
                                                     ? `${appliedCoupon.value}%`
-                                                    : `S/ ${Number2Currency(appliedCoupon.value)}`}
+                                                    : `${CurrencySymbol()} ${Number2Currency(appliedCoupon.value)}`}
                                             </p>
                                         </div>
                                     </div>
@@ -2001,13 +2001,13 @@ export default function ShippingStepSF({
                                 Subtotal
                             </span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(subTotal)}
+                                {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between">
                             <span className="customtext-neutral-dark">IGV</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(igv)}
+                                {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
                         
@@ -2016,7 +2016,7 @@ export default function ShippingStepSF({
                             <div className="flex justify-between text-green-600">
                                 <span>Descuentos automáticos</span>
                                 <span className="font-semibold">
-                                    -S/ {Number2Currency(autoDiscountTotal)}
+                                    -{CurrencySymbol()} {Number2Currency(autoDiscountTotal)}
                                 </span>
                             </div>
                         )}
@@ -2025,7 +2025,7 @@ export default function ShippingStepSF({
                             <div className="flex justify-between text-blue-600">
                                 <span>Descuento cupón ({appliedCoupon.code})</span>
                                 <span className="font-semibold">
-                                    -S/ {Number2Currency(calculatedCouponDiscount)}
+                                    -{CurrencySymbol()} {Number2Currency(calculatedCouponDiscount)}
                                 </span>
                             </div>
                         )}
@@ -2033,16 +2033,16 @@ export default function ShippingStepSF({
                             <span className="customtext-neutral-dark">Envío</span>
                             <span className="font-semibold">
                                 {hasShippingFree != null && subFinal >= hasShippingFree ? (
-                                    <span className="customtext-neutral-dark">Gratis (Compra mayor a S/{hasShippingFree})</span>
+                                    <span className="customtext-neutral-dark">Gratis (Compra mayor a {CurrencySymbol()} {hasShippingFree})</span>
                                 ) : (
-                                    `S/ ${Number2Currency(envio)}`
+                                    `${CurrencySymbol()} ${Number2Currency(envio)}`
                                 )}
                             </span>
                         </div>
                         <div className="py-3 border-y-2 mt-6">
                             <div className="flex justify-between font-bold text-[20px] items-center">
                                 <span>Total</span>
-                                <span>S/ {Number2Currency(appliedCoupon ? finalTotalWithCoupon : totalFinal)}</span>
+                                <span>{CurrencySymbol()} {Number2Currency(appliedCoupon ? finalTotalWithCoupon : totalFinal)}</span>
                             </div>
                         </div>
                         <div className="space-y-2 pt-4">

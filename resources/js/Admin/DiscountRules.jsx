@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import DiscountRulesRest from '../Actions/Admin/DiscountRulesRest';
 import { renderToString } from 'react-dom/server';
 import SetSelectValue from '../Utils/SetSelectValue';
+import { CurrencySymbol } from '../Utils/Number2Currency';
 
 const discountRulesRest = new DiscountRulesRest();
 
@@ -325,7 +326,7 @@ const DiscountRules = ({ }) => {
     if (rule.rule_type === 'quantity_discount' && conditions.min_quantity && actions.discount_value) {
       description = `Compra ${conditions.min_quantity}+ items → ${actions.discount_value}${actions.discount_type === 'percentage' ? '%' : ' soles'} desc.`
     } else if (rule.rule_type === 'cart_discount' && conditions.min_amount && actions.discount_value) {
-      description = `Compras desde S/${conditions.min_amount} → ${actions.discount_value}${actions.discount_type === 'percentage' ? '%' : ' soles'} desc.`
+      description = `Compras desde ${CurrencySymbol()} ${conditions.min_amount} → ${actions.discount_value}${actions.discount_type === 'percentage' ? '%' : ' soles'} desc.`
     } else if (rule.rule_type === 'buy_x_get_y' && conditions.buy_quantity && actions.get_quantity) {
       description = `Compra ${conditions.buy_quantity} lleva ${actions.get_quantity} gratis`
     }
@@ -525,7 +526,7 @@ const DiscountRules = ({ }) => {
               min="0"
               step="0.01"
               required
-              prefix="S/ "
+              prefix={CurrencySymbol()}
               specification="El carrito debe alcanzar este monto mínimo"
             />
           </>
@@ -718,7 +719,7 @@ const DiscountRules = ({ }) => {
               specification="Seleccione si el descuento es porcentaje o monto fijo"
             >
               <option value="percentage">Porcentaje (%)</option>
-              <option value="fixed">Monto fijo (S/)</option>
+              <option value="fixed">Monto fijo ({CurrencySymbol()})</option>
             </SelectFormGroup>
             
             <InputFormGroup 
@@ -729,7 +730,7 @@ const DiscountRules = ({ }) => {
               step={actions.discount_type === 'percentage' ? '1' : '0.01'}
               max={actions.discount_type === 'percentage' ? '100' : undefined}
               required
-              prefix={actions.discount_type === 'fixed' ? 'S/ ' : ''}
+              prefix={actions.discount_type === 'fixed' ? CurrencySymbol() : ''}
               suffix={actions.discount_type === 'percentage' ? '%' : ''}
               specification={
                 actions.discount_type === 'percentage' 
@@ -744,7 +745,7 @@ const DiscountRules = ({ }) => {
               type="number"
               min="0"
               step="0.01"
-              prefix="S/ "
+              prefix={CurrencySymbol()}
               specification="Límite máximo del descuento aplicado"
             />
           </>
@@ -785,7 +786,7 @@ const DiscountRules = ({ }) => {
               dropdownParent={"#conditions-actions-form"}
             >
               <option value="percentage">Porcentaje (%)</option>
-              <option value="fixed">Monto fijo (S/)</option>
+              <option value="fixed">Monto fijo ({CurrencySymbol()})</option>
             </SelectFormGroup>
             
             <InputFormGroup 
@@ -796,7 +797,7 @@ const DiscountRules = ({ }) => {
               step={actions.discount_type === 'percentage' ? '1' : '0.01'}
               max={actions.discount_type === 'percentage' ? '100' : undefined}
               required
-              prefix={actions.discount_type === 'fixed' ? 'S/ ' : ''}
+              prefix={actions.discount_type === 'fixed' ? CurrencySymbol() : ''}
               suffix={actions.discount_type === 'percentage' ? '%' : ''}
               specification="Descuento aplicado al conjunto completo de productos"
             />
@@ -833,7 +834,7 @@ const DiscountRules = ({ }) => {
     const discountText = currentActions.discount_type === 'percentage' 
       ? `${currentActions.discount_value || 0}% de descuento`
       : currentActions.discount_type === 'fixed' 
-        ? `S/ ${currentActions.discount_value || 0} de descuento`
+        ? `${CurrencySymbol()} ${currentActions.discount_value || 0} de descuento`
         : `${currentActions.get_quantity || 1} producto(s) gratis`;
     
     switch (selectedRuleType) {
@@ -847,7 +848,7 @@ const DiscountRules = ({ }) => {
         return `Al comprar ${currentConditions.min_quantity || 2} o más productos${categoryText}, obtén ${discountText} ${productText}`;
         
       case 'cart_discount':
-        return `En compras desde S/ ${currentConditions.min_amount || 100}, obtén ${discountText}`;
+        return `En compras desde ${CurrencySymbol()} ${currentConditions.min_amount || 100}, obtén ${discountText}`;
         
       case 'buy_x_get_y':
         return `Compra ${currentConditions.buy_quantity || 2} productos de los seleccionados y lleva ${currentActions.get_quantity || 1} gratis`;

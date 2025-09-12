@@ -10,7 +10,14 @@ const Number2Currency = (number, currency = 'en-US') => {
 
 export const CurrencySymbol = () => {
   const currency = General.get('currency') || 'pen';
-  return currency === 'usd' ? '$' : 'S/';
+  switch (currency) {
+    case 'usd':
+      return '$';
+    case 'pen':
+      return 'S/';
+    default:
+      return 'S/';
+  }
 }
 
 export default Number2Currency

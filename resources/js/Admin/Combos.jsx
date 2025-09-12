@@ -15,7 +15,7 @@ import SelectAPIFormGroup from '../Components/Adminto/form/SelectAPIFormGroup';
 import SelectFormGroup from '../Components/Adminto/form/SelectFormGroup';
 import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
-import Number2Currency from '../Utils/Number2Currency';
+import Number2Currency, { CurrencySymbol } from '../Utils/Number2Currency';
 import ReactAppend from '../Utils/ReactAppend';
 import SetSelectValue from '../Utils/SetSelectValue';
 import ItemsGalleryRest from '../Actions/Admin/ItemsGalleryRest';
@@ -314,8 +314,9 @@ const Combos = ({ items }) => {
           cellTemplate: (container, { data }) => {
 
             container.html(renderToString(<>
-              {data.discount > 0 && <small className='d-block text-muted' style={{ textDecoration: 'line-through' }}>S/.{Number2Currency(data.price)}</small>}
-              <span>S/.{Number2Currency(data.discount > 0 ? data.discount : data.price)}</span>
+              {data.discount > 0 && <small className='d-block text-muted' style={{ textDecoration: 'line-through' }}>
+                {CurrencySymbol()} {Number2Currency(data.price)}</small>}
+              <span>{CurrencySymbol()} {Number2Currency(data.discount > 0 ? data.discount : data.price)}</span>
             </>))
           }
         },
@@ -401,7 +402,7 @@ const Combos = ({ items }) => {
                           <div class="card-body">
                             <h5 class="card-title">{product?.name} </h5>
                             <p class="card-text small line-clamp-2">{product?.summary} </p>
-                            <p class="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
+                            <p class="card-text"><strong>Precio: {CurrencySymbol()} {product?.final_price}</strong></p>
                             <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
                           </div>
                         </div>

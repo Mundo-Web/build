@@ -563,12 +563,11 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                         "line-through",
                                                 }}
                                             >
-                                                S/.{Number2Currency(data.price)}
+                                                {CurrencySymbol()} {Number2Currency(data.price)}
                                             </small>
                                         )}
                                         <span>
-                                            S/.
-                                            {Number2Currency(
+                                            {CurrencySymbol()} {Number2Currency(
                                                 data.discount > 0
                                                     ? data.discount
                                                     : data.price

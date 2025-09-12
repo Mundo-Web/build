@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactModal from "react-modal";
 import CartItemRow from "./CartItemRow";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { ShoppingBag, X, ArrowRight, ShoppingCart } from "lucide-react";
 import { Local } from "sode-extend-react";
 import CartItemRowBananaLab from "./CartItemRowBananaLab";
@@ -198,7 +198,7 @@ const CartModalBananaLab = ({ data, cart, setCart, modalOpen, setModalOpen }) =>
                                 <div className="flex justify-between items-center mb-6">
                                     <span className="text-gray-700 font-medium">Subtotal</span>
                                     <span className="text-gray-900 font-bold text-xl">
-                                        S/. {Number2Currency(totalPrice)}
+                                        {CurrencySymbol()} {Number2Currency(totalPrice)}
                                     </span>
                                 </div>
                                 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShoppingCart } from 'lucide-react'; // Icono para la cesta
 import Swal from 'sweetalert2';
+import { CurrencySymbol } from '../../../../Utils/Number2Currency';
 
 const ProductCardSimple = ({ product, widthClass = "xl:w-1/5", setCart, cart }) => {
     const onAddClicked = (product) => {
@@ -61,11 +62,11 @@ const ProductCardSimple = ({ product, widthClass = "xl:w-1/5", setCart, cart }) 
                     {/* Precio */}
                     <div className="flex items-baseline gap-4 mt-4">
                         <span className=" text-2xl font-bold">
-                            S/ {product.final_price}
+                            {CurrencySymbol()} {product.final_price}
                         </span>
                         {product.discount != null && !isNaN(product.discount) && (
                             <span className="text-base font-bold line-through opacity-60">
-                                S/ {product.price}
+                                {CurrencySymbol()} {product.price}
                             </span>
                         )}
 

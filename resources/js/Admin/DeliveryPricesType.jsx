@@ -15,7 +15,7 @@ import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import SwitchFormGroup from "../Components/Adminto/form/SwitchFormGroup";
 import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
-import Number2Currency from "../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 
 const deliverypricesRest = new DeliveryPricesRest();
 const deliverypricesTypeRest = new TypesDeliveryRest();
@@ -450,8 +450,8 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                                 Delivery Gratis (Condicional)
                                             </span>
                                             <small className="text-muted">
-                                                Normal: S/ {Number2Currency(data.price)} | 
-                                                Express: S/ {Number2Currency(data.express_price)}
+                                                Normal: {CurrencySymbol()} {Number2Currency(data.price)} | 
+                                                Express: {CurrencySymbol()} {Number2Currency(data.express_price)}
                                             </small>
                                             <small className="text-primary">
                                                 + Retiro en Tienda
@@ -468,7 +468,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                             </span>
                                             <br/>
                                             <small className="text-muted">
-                                                S/ {Number2Currency(data.agency_price)}
+                                                {CurrencySymbol()} {Number2Currency(data.agency_price)}
                                             </small>
                                         </div>
                                     )
@@ -490,7 +490,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                             </span>
                                             <br/>
                                             <small className="text-muted">
-                                                S/ {Number2Currency(data.price)}
+                                                {CurrencySymbol()} {Number2Currency(data.price)}
                                             </small>
                                         </div>
                                     )

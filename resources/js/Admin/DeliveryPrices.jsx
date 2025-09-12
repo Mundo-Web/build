@@ -13,7 +13,7 @@ import InputFormGroup from '../Components/Adminto/form/InputFormGroup';
 import SelectFormGroup from '../Components/Adminto/form/SelectFormGroup';
 import SwitchFormGroup from '../Components/Adminto/form/SwitchFormGroup';
 import TextareaFormGroup from '../Components/Adminto/form/TextareaFormGroup';
-import Number2Currency from '../Utils/Number2Currency';
+import Number2Currency, { CurrencySymbol } from '../Utils/Number2Currency';
 
 const deliverypricesRest = new DeliveryPricesRest();
 
@@ -178,7 +178,7 @@ const DeliveryPrices = ({ ubigeo = [] }) => {
                         if (data.price === null) {
                             container.html(renderToString(<span className='text-muted'>Pago en destino</span>))
                         } else if (data.price > 0) {
-                            container.html(renderToString(<span>S/. {Number2Currency(data.price)}</span>))
+                            container.html(renderToString(<span>{CurrencySymbol()} {Number2Currency(data.price)}</span>))
                         } else {
                             container.text('Gratis')
                         }

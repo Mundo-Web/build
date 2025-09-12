@@ -9,6 +9,7 @@ import ConfirmationStepSF from "./Components/ConfirmationStepSF";
 import Global from "../../../Utils/Global";
 import { Local } from "sode-extend-react";
 import ProductNavigationSwiper from "../Products/ProductNavigationSwiper";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos, items, contacts, data, generals = [] }) {
    
@@ -240,7 +241,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         </h1>
 
                         <p className="customtext-primary  font-normal text-base xl:text-lg 2xl:text-xl">
-                        Llévate tus regalos favoritos y obtén envío gratis en compras mayores a S/100.
+                        Llévate tus regalos favoritos y obtén envío gratis en compras mayores a {CurrencySymbol()} 100.
                         </p>
 
                         <div className="flex flex-col">

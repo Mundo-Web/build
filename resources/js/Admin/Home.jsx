@@ -8,6 +8,7 @@ import Chart from 'react-apexcharts';
 import { Toaster, toast } from 'sonner';
 import HomeRest from '../Actions/Admin/HomeRest';
 import Tippy from '@tippyjs/react';
+import { CurrencySymbol } from '../Utils/Number2Currency';
 
 const homeRest = new HomeRest();
 
@@ -169,12 +170,12 @@ const Home = ({ session, totalProducts, totalStock, salesToday, salesMonth, sale
                     <i className="fas fa-dollar-sign text-success fs-4"></i>
                   </div>
                   <div className="text-end">
-                    <div className="fs-2 fw-bold text-dark mb-0">S/ {formatIncome(incomeToday) || '0'}</div>
+                    <div className="fs-2 fw-bold text-dark mb-0">{CurrencySymbol()} {formatIncome(incomeToday) || '0'}</div>
                     <div className="text-muted small">Ingresos Hoy</div>
                   </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-between">
-                  <span className="text-muted small">Este mes: S/ {formatIncome(incomeMonth) || '0'}</span>
+                  <span className="text-muted small">Este mes: {CurrencySymbol()} {formatIncome(incomeMonth) || '0'}</span>
                   <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
                     <i className="fas fa-arrow-up me-1"></i>+32%
                   </div>
@@ -363,7 +364,7 @@ const Home = ({ session, totalProducts, totalStock, salesToday, salesMonth, sale
                             {
                               opposite: true,
                               title: {
-                                text: 'Ventas (S/)',
+                                text: `Ventas (${CurrencySymbol()})`,
                                 style: { color: '#10b981', fontSize: '12px', fontWeight: 600 }
                               },
                               labels: { style: { colors: '#10b981', fontSize: '11px' } },
@@ -397,7 +398,7 @@ const Home = ({ session, totalProducts, totalStock, salesToday, salesMonth, sale
                                 formatter: val => `${val} pedidos`
                               },
                               {
-                                formatter: val => `S/ ${Number(val).toFixed(2)}`
+                                formatter: val => `${CurrencySymbol()} ${Number(val).toFixed(2)}`
                               }
                             ]
                           },
@@ -1304,7 +1305,7 @@ const Home = ({ session, totalProducts, totalStock, salesToday, salesMonth, sale
                           </td>
                           <td className="px-4 py-3 border-0">
                             <span className="badge rounded-pill px-3 py-2 fw-semibold" style={{ background: '#d1fae5', color: '#059669', fontSize: '12px' }}>
-                              S/ {Number(product.price).toFixed(2)}
+                              {CurrencySymbol()} {Number(product.price).toFixed(2)}
                             </span>
                           </td>
                           <td className="px-4 py-3 border-0">
@@ -1542,7 +1543,7 @@ const Home = ({ session, totalProducts, totalStock, salesToday, salesMonth, sale
                           </td>
                           <td className="px-4 py-3 border-0">
                             <span className="badge rounded-pill px-3 py-2 fw-semibold" style={{ background: '#dbeafe', color: '#2563eb', fontSize: '12px' }}>
-                              S/ {formatIncome(rule.total_discount)}
+                              {CurrencySymbol()} {formatIncome(rule.total_discount)}
                             </span>
                           </td>
                         </tr>
@@ -1698,7 +1699,7 @@ const Home = ({ session, totalProducts, totalStock, salesToday, salesMonth, sale
                           </td>
                           <td className="px-4 py-3 border-0">
                             <span className="badge rounded-pill px-3 py-2 fw-semibold" style={{ background: '#dcfce7', color: '#16a34a', fontSize: '12px' }}>
-                              S/ {formatIncome(client.total_spent)}
+                              {CurrencySymbol()} {formatIncome(client.total_spent)}
                             </span>
                           </td>
                         </tr>

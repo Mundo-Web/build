@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, Gift, Sparkles } from "lucide-react";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 export default function PromotionModal({ 
     isOpen, 
@@ -101,7 +102,7 @@ export default function PromotionModal({
                                         ¡GRATIS!
                                     </p>
                                     <p className="text-xs text-gray-500 line-through">
-                                        S/ {Number(suggestion.value || 0).toFixed(2)}
+                                        {CurrencySymbol()} {Number(suggestion.value || 0).toFixed(2)}
                                     </p>
                                 </div>
                             </div>

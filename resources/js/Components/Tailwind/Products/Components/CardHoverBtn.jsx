@@ -7,6 +7,7 @@ import ItemsRest from "../../../../Actions/ItemsRest";
 import CartModal from "../../Components/CartModal";
 import { Local } from "sode-extend-react";
 import Global from "../../../../Utils/Global";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 const CardHoverBtn = ({
@@ -259,7 +260,7 @@ const CardHoverBtn = ({
                                     </span>
                                     {product.discount != null && !isNaN(product.discount) && (
                                         <span className="text-xs customtext-neutral-light font-semibold1 line-through">
-                                            S/ {product.price}
+                                            {CurrencySymbol()} {product.price}
                                         </span>
                                     )}
                                 </div>
@@ -269,11 +270,11 @@ const CardHoverBtn = ({
                                     {product.discount != null &&
                                         !isNaN(product.discount) && (
                                             <span className="text-xs customtext-neutral-light font-semibold1 line-through">
-                                                S/ {product.price}
+                                                {CurrencySymbol()} {product.price}
                                             </span>
                                         )}
                                     <span className="customtext-neutral-dark text-[20px] md:text-2xl font-bold">
-                                        S/ {product.final_price}
+                                        {CurrencySymbol()} {product.final_price}
                                     </span>
                                 </>
                             )}

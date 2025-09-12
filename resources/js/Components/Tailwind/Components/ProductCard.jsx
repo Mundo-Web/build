@@ -1,5 +1,5 @@
 import React from "react"
-import Number2Currency from "../../../Utils/Number2Currency"
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency"
 import Tippy from "@tippyjs/react"
 import Swal from "sweetalert2"
 
@@ -67,8 +67,8 @@ const ProductCard = ({ data, cart, item, setCart }) => {
     }
     <div className="flex justify-between items-end">
       <div className="h-[52px] flex flex-col items-start justify-end">
-        <span className="text-sm block opacity-80 line-through">{item?.discount > 0 ? <>S/. {Number2Currency(item?.price)}</> : ''}</span>
-        <span className="text-2xl font-bold customtext-primary">S/. {Number2Currency(finalPrice)}</span>
+        <span className="text-sm block opacity-80 line-through">{item?.discount > 0 ? <>{CurrencySymbol()} {Number2Currency(item?.price)}</> : ''}</span>
+        <span className="text-2xl font-bold customtext-primary">{CurrencySymbol()} {Number2Currency(finalPrice)}</span>
       </div>
       <Tippy content='Agregar al carrito'>
         <button className="bg-primary text-white text-lg px-3 py-1 rounded disabled:cursor-not-allowed disabled:opacity-80" disabled={inCart} onClick={() => onAddClicked(item)}>

@@ -17,6 +17,7 @@ import Logout from "../../../Actions/Logout";
 import MobileMenuPidelo from "./Components/MobileMenuPidelo";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const HeaderPidelo = ({
     items,
@@ -529,7 +530,7 @@ const HeaderPidelo = ({
                                         )}
                                         {suggestion.final_price && (
                                             <div className="text-sm font-semibold customtext-primary">
-                                                S/ {parseFloat(suggestion.final_price).toFixed(2)}
+                                                {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
                                         )}
                                     </div>

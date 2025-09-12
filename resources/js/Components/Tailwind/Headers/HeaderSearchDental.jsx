@@ -23,6 +23,7 @@ import TopBarCart from "../TopBars/TopBarCart";
 import TopBarCopyright from "../TopBars/TopBarCopyright";
 import TopBarPanni from "../TopBars/TopBarPanni";
 import TopBarCopyrightSocials from "../TopBars/TopBarCopyrightSocials";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const HeaderSearchDental = ({
     items,
@@ -447,7 +448,7 @@ const HeaderSearchDental = ({
                                         )}
                                         {suggestion.final_price && (
                                             <div className="text-sm font-semibold customtext-primary">
-                                                S/ {parseFloat(suggestion.final_price).toFixed(2)}
+                                                {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
                                         )}
                                     </div>

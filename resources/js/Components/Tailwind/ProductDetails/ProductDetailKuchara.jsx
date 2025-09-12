@@ -1,7 +1,7 @@
 import Swal from "sweetalert2"
 import html2string from "../../../Utils/html2string"
 import HtmlContent from "../../../Utils/HtmlContent"
-import Number2Currency from "../../../Utils/Number2Currency"
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency"
 import { useRef, useState } from "react"
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Add this with other imports at the top
@@ -111,9 +111,9 @@ const ProductDetailKuchara = ({ item, cart, setCart }) => {
 
             <div className="flex items-baseline gap-3 mt-2">
               {item?.discount && (
-                <span className="text-gray-500 line-through text-lg">S/ {Number2Currency(item.price)}</span>
+                <span className="text-gray-500 line-through text-lg">{CurrencySymbol()} {Number2Currency(item.price)}</span>
               )}
-              <span className="font-bold text-3xl">S/ {Number2Currency(item?.final_price)}</span>
+              <span className="font-bold text-3xl">{CurrencySymbol()} {Number2Currency(item?.final_price)}</span>
               {item?.discount && (
                 <span className="bg-red-500 text-white text-sm px-2 py-1 rounded-md">
                   -{Math.round(((item.price - item.final_price) / item.price) * 100)}%
@@ -191,10 +191,10 @@ const ProductDetailKuchara = ({ item, cart, setCart }) => {
           {/* Información de envío */}
           {/* <div className="mt-2 bg-green-50 p-3 rounded-md flex items-center gap-2">
             <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white">
-              <span>S/</span>
+              <span>{CurrencySymbol()}</span>
             </div>
             <span className="text-green-700">
-              Agrega S/100.00 para <strong>ENVÍO GRATIS</strong>
+              Agrega {CurrencySymbol()} 100.00 para <strong>ENVÍO GRATIS</strong>
             </span>
           </div> */}
 

@@ -16,6 +16,7 @@ import ItemsRest from "../../../Actions/ItemsRest";
 import Swal from "sweetalert2";
 import { Notify } from "sode-extend-react";
 import { usePage } from "@inertiajs/react";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 export default function ScrapingProductDetail({ item, setCart, cart }) {
 
@@ -309,12 +310,12 @@ export default function ScrapingProductDetail({ item, setCart, cart }) {
                                 <p className="text-sm customtext-neutral-light mb-1">
                                     Precio:{" "}
                                     <span className="line-through">
-                                        S/ {item?.price}
+                                        {CurrencySymbol()} {item?.price}
                                     </span>
                                 </p>
                                 <div className="flex items-center gap-4 ">
                                     <span className="text-[40px] font-bold">
-                                        S/ {item?.final_price}
+                                        {CurrencySymbol()} {item?.final_price}
                                     </span>
                                     <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
                                         -
@@ -390,7 +391,7 @@ export default function ScrapingProductDetail({ item, setCart, cart }) {
                                     </span>
 
                                     <p className="font-bold mb-2 customtext-neutral-dark">
-                                        S/ {total.toFixed(2)}
+                                        {CurrencySymbol()} {total.toFixed(2)}
                                     </p>
                                     <button onClick={() => addAssociatedItems()} className="bg-primary text-xs font-semibold text-white w-full py-3 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md">
                                         Agregar al carrito
@@ -413,8 +414,7 @@ export default function ScrapingProductDetail({ item, setCart, cart }) {
                                         </p>
                                     </div>
                                     <p className="font-bold customtext-neutral-dark">
-                                        S/{" "}
-                                        {parseFloat(
+                                        {CurrencySymbol()} {parseFloat(
                                             product.final_price
                                         ).toFixed(2)}
                                     </p>

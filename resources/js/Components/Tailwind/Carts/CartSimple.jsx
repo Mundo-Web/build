@@ -1,5 +1,5 @@
 import React from "react";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import CartItemRow from "../Components/CartItemRow";
 
 const CartSimple = ({ data, cart, setCart }) => {
@@ -55,15 +55,15 @@ const CartSimple = ({ data, cart, setCart }) => {
           <div className="flex flex-col gap-5">
             <div className="flex justify-between items-center">
               <p className="font-normal">SubTotal</p>
-              <span>S/. {Number2Currency(subTotal)}</span>
+              <span>{CurrencySymbol()} {Number2Currency(subTotal)}</span>
             </div>
             <div className="flex justify-between items-center">
               <p className="font-normal">IGV (18%)</p>
-              <span>S/. {Number2Currency(totalPrice - subTotal)}</span>
+              <span>{CurrencySymbol()} {Number2Currency(totalPrice - subTotal)}</span>
             </div>
             <div className="flex justify-between items-center">
               <p className="font-semibold text-[20px]">Total</p>
-              <span className="font-semibold text-[20px]">S/. {Number2Currency(totalPrice)}</span>
+              <span className="font-semibold text-[20px]">{CurrencySymbol()} {Number2Currency(totalPrice)}</span>
             </div>
             <button href={data?.url_checkout} className="text-white bg-primary w-full px-4 py-2 rounded-full cursor-pointer inline-block text-center">Siguiente</button>
           </div>
