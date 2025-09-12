@@ -28,7 +28,6 @@ const HeaderPidelo = ({
     pages,
     generals = [],
 }) => {
-    console.log("Tiendas",items);
 
     // Estado para tienda seleccionada y lista de tiendas
     const [selectedStore, setSelectedStore] = useState("");
@@ -546,7 +545,6 @@ const HeaderPidelo = ({
             </motion.div>
         );
     };
-    console.log(isUser);
     // Determinar si el usuario es cliente (no admin ni superadmin, usando roles array)
     let isCustomer = false;
     if (isUser && Array.isArray(isUser.roles)) {

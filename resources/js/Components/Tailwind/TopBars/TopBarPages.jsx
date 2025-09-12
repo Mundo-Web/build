@@ -36,9 +36,7 @@ const TopBarPages = ({ items, data, pages = [] }) => {
     // Obtener tags activos al cargar el componente
     const fetchTags = async () => {
       try {
-        console.log('Fetching active tags...');
         const response = await tagsItemsRest.getTags();
-        console.log('Tags response:', response);
         if (response?.data) {
           // Filtrar y ordenar tags: promocionales activos primero, luego permanentes
           const activeTags = response.data.filter(tag =>
@@ -52,16 +50,13 @@ const TopBarPages = ({ items, data, pages = [] }) => {
           });
 
           setTags(activeTags);
-          console.log('Active tags set:', activeTags);
 
           // Log para debug: mostrar información promocional
           const promotionalCount = activeTags.filter(t => t.promotional_status === 'active').length;
           const permanentCount = activeTags.filter(t => t.promotional_status === 'permanent').length;
-          console.log(`🎯 Tags cargados: ${promotionalCount} promocionales activos, ${permanentCount} permanentes`);
 
           if (promotionalCount > 0) {
             const activePromotions = activeTags.filter(t => t.promotional_status === 'active');
-            console.log('🎉 Promociones activas:', activePromotions.map(t => `${t.name} (${t.start_date} - ${t.end_date})`));
           }
         }
       } catch (error) {
@@ -103,38 +98,38 @@ const TopBarPages = ({ items, data, pages = [] }) => {
             )
           }
           {/* Botones de Tags - Ahora al final */}
-         <ul>
-           {tags.length > 0 && (
-            <div className="flex items-center gap-4 lg:gap-4 text-sm">
-              {tags.map((tag, index) => (
-                <li key={tag.id} className="">
-                  <a
-                    href={`/catalogo?tag=${tag.id}`}
-                    className={
-                      `font-medium rounded-full py-1 px-2 hover:brightness-105 cursor-pointer transition-all duration-300 relative flex items-center gap-2`
-                    }
-                    style={{
-                      backgroundColor: tag.background_color || '#3b82f6',
-                      color: tag.text_color || '#ffffff',
-                    }}
-                    title={tag.description || tag.name}
-                  >
-                    {tag.icon && (
-                      <img
-                        src={`/storage/images/tag/${tag.icon}`}
-                        alt={tag.name}
-                        className="w-4 h-4"
-                        onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
-                      />
-                    )}
+          <ul>
+            {tags.length > 0 && (
+              <div className="flex items-center gap-4 lg:gap-4 text-sm">
+                {tags.map((tag, index) => (
+                  <li key={tag.id} className="">
+                    <a
+                      href={`/catalogo?tag=${tag.id}`}
+                      className={
+                        `font-medium rounded-full py-1 px-2 hover:brightness-105 cursor-pointer transition-all duration-300 relative flex items-center gap-2`
+                      }
+                      style={{
+                        backgroundColor: tag.background_color || '#3b82f6',
+                        color: tag.text_color || '#ffffff',
+                      }}
+                      title={tag.description || tag.name}
+                    >
+                      {tag.icon && (
+                        <img
+                          src={`/storage/images/tag/${tag.icon}`}
+                          alt={tag.name}
+                          className="w-4 h-4"
+                          onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
+                        />
+                      )}
 
-                    {tag.name}
-                  </a>
-                </li>
-              ))}
-            </div>
-          )}
-         </ul>
+                      {tag.name}
+                    </a>
+                  </li>
+                ))}
+              </div>
+            )}
+          </ul>
         </div>
         <p className="hidden md:block text-xs">{data?.isCopyright ?
           ` Copyright © ${new Date().getFullYear()} ${Global.APP_NAME}. Reservados todos los derechos.`

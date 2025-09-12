@@ -59,9 +59,7 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
         // Obtener tags activos al cargar el componente
         const fetchTags = async () => {
             try {
-                console.log('Fetching active tags...');
                 const response = await tagsItemsRest.getTags();
-                console.log('Tags response:', response);
                 if (response?.data) {
                     // Filtrar y ordenar tags: promocionales activos primero, luego permanentes
                     const activeTags = response.data.filter(tag => 
@@ -75,16 +73,13 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
                     });
                     
                     setTags(activeTags);
-                    console.log('Active tags set:', activeTags);
                     
                     // Log para debug: mostrar información promocional
                     const promotionalCount = activeTags.filter(t => t.promotional_status === 'active').length;
                     const permanentCount = activeTags.filter(t => t.promotional_status === 'permanent').length;
-                    console.log(`🎯 Tags cargados: ${promotionalCount} promocionales activos, ${permanentCount} permanentes`);
                     
                     if (promotionalCount > 0) {
                         const activePromotions = activeTags.filter(t => t.promotional_status === 'active');
-                        console.log('🎉 Promociones activas:', activePromotions.map(t => `${t.name} (${t.start_date} - ${t.end_date})`));
                     }
                 }
             } catch (error) {
@@ -115,11 +110,6 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
     const shouldShowMenu = isMobile ? (visible && tags.length > 0) : true;
     // Mostrar solo tags en mobile si existen Y visible es true
     const showOnlyTagsMobile = tags.length > 0 && isMobile && visible;
-
-    console.log("items", data)
-    console.log("tags", tags)
-    console.log("isMobile", isMobile)
-    console.log("shouldShowMenu", shouldShowMenu)
 
     // Si no debe mostrar el menú, retornar null (oculto)
     if (!shouldShowMenu) {

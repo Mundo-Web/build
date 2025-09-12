@@ -233,12 +233,6 @@ const System = ({
         const regularItems = cart.filter(x => x.type !== 'combo');
         const combos = cart.filter(x => x.type === 'combo');
         
-        console.log('🔍 System.jsx verifyStock:', {
-            totalItems: cart.length,
-            regularItems: regularItems.length,
-            combos: combos.length
-        });
-        
         if (regularItems.length > 0) {
             itemsRest.verifyStock(regularItems.map((x) => x.id)).then((items) => {
                 const verifiedRegularItems = items.map((item) => {

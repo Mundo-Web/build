@@ -179,9 +179,7 @@ const MenuCategories = ({ pages = [], items, data ,visible=false}) => {
         // Obtener tags activos al cargar el componente
         const fetchTags = async () => {
             try {
-                console.log('Fetching active tags...');
                 const response = await tagsItemsRest.getTags();
-                console.log('Tags response:', response);
                 if (response?.data) {
                     // Filtrar y ordenar tags: promocionales activos primero, luego permanentes
                     const activeTags = response.data.filter(tag => 
@@ -195,16 +193,13 @@ const MenuCategories = ({ pages = [], items, data ,visible=false}) => {
                     });
                     
                     setTags(activeTags);
-                    console.log('Active tags set:', activeTags);
                     
                     // Log para debug: mostrar información promocional
                     const promotionalCount = activeTags.filter(t => t.promotional_status === 'active').length;
                     const permanentCount = activeTags.filter(t => t.promotional_status === 'permanent').length;
-                    console.log(`🎯 Tags cargados: ${promotionalCount} promocionales activos, ${permanentCount} permanentes`);
                     
                     if (promotionalCount > 0) {
                         const activePromotions = activeTags.filter(t => t.promotional_status === 'active');
-                        console.log('🎉 Promociones activas:', activePromotions.map(t => `${t.name} (${t.start_date} - ${t.end_date})`));
                     }
                 }
             } catch (error) {

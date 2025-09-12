@@ -464,7 +464,6 @@ const HeaderSearchDental = ({
             </motion.div>
         );
     };
-    console.log(isUser);
     // Determinar si el usuario es cliente (no admin ni superadmin, usando roles array)
     let isCustomer = false;
     if (isUser && Array.isArray(isUser.roles)) {

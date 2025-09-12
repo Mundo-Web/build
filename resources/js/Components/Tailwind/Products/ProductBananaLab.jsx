@@ -118,6 +118,8 @@ const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites})
         setCurrentSlide((prev) => (prev > 0 ? prev - 1 : prev));
     };
 
+    if (items.length === 0) return null;
+
     return (
         <motion.section 
             ref={sectionRef}
@@ -161,23 +163,28 @@ const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites})
                     animate={carouselInView ? "visible" : "hidden"}
                     className="relative"
                 >
-                    {/* Previous button */}
-
                     {/* Products container */}
-                    <motion.div className="hidden md:block overflow-hidden py-0">
+                    <motion.div className="overflow-hidden py-0">
                         <motion.div
-                            className="flex   items-center transition-all duration-300   ease-in-out lg:h-[460px] lg:max-h-[460px]  xl:h-[400px] xl:max-h-[420px] 2xl:h-[460px] 2xl:max-h-[460px] lg:mt-4 lg:mb-10 lg:gap-0"
+                            className="flex items-center transition-all duration-300 ease-in-out"
                             style={{
-                                transform: `translateX(-${
-                                    currentSlide * (100 / slidesPerView)
-                                }%)`,
+                                transform: `translateX(-${currentSlide * (100 / slidesPerView)}%)`,
                             }}
                         >
                             {items.map((product, index) => (
                                 <motion.div
                                     key={index}
                                     variants={productVariants}
-                                    className="w-auto lg:w-1/4 xl:w-1/3 2xl:w-1/4 px-2"
+                                    className={`
+                                        px-2
+                                        xs:w-[90%] 
+                                        sm:w-[45%] 
+                                        md:w-[23%]
+                                        lg:w-[16%]
+                                    `}
+                                    style={{
+                                        flex: '0 0 auto'
+                                    }}
                                 >
                                     <CardProductBananaLab
                                         product={product}
@@ -191,33 +198,24 @@ const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites})
                             ))}
                         </motion.div>
                     </motion.div>
-                    <motion.div className="overflow-hidden py-4 md:hidden">
-                        <motion.div
-                            className="flex items-center  gap-y-2 transition-all duration-300 ease-in-out flex-wrap flex-shrink "
-                            style={{
-                                transform: `translateX(-${
-                                    currentSlide * (100 / slidesPerView)
-                                }%)`,
-                            }}
+
+                    {/* Navigation buttons */}
+                    <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-4">
+                        <button 
+                            onClick={prevSlide}
+                            disabled={currentSlide === 0}
+                            className="p-2 rounded-full bg-white shadow-md disabled:opacity-50"
                         >
-                            {items.map((product, index) => (
-                                <motion.div
-                                    key={index}
-                                    variants={productVariants}
-                                    className="w-full"
-                                >
-                                    <CardProductBananaLab
-                                        product={product}
-                                        setCart={setCart}
-                                        cart={cart}
-                                        data={data}
-                                        setFavorites={setFavorites}
-                                        favorites={favorites}
-                                    />
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    </motion.div>
+                            <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button 
+                            onClick={nextSlide}
+                            disabled={currentSlide >= maxSlide}
+                            className="p-2 rounded-full bg-white shadow-md disabled:opacity-50"
+                        >
+                            <ChevronRight className="w-6 h-6" />
+                        </button>
+                    </div>
                 </motion.div>
             </div>
         </motion.section>
