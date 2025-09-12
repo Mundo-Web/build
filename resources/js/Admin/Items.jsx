@@ -15,7 +15,7 @@ import SelectAPIFormGroup from "../Components/Adminto/form/SelectAPIFormGroup";
 import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
-import Number2Currency from "../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 import ReactAppend from "../Utils/ReactAppend";
 import SetSelectValue from "../Utils/SetSelectValue";
 import ItemsGalleryRest from "../Actions/Admin/ItemsGalleryRest";
