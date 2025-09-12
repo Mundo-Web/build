@@ -55,7 +55,7 @@ class SystemController extends BasicController
             $props['page'] = ['name' => 'Template base'];
             $this->reactData = $props['page'];
             $this->reactData['colors'] = SystemColor::all();
-            $generals = [];
+            $generals = ['currency'];
             foreach ($props['systems'] as $system) {
                 if ($system->component == 'content') continue;
                 $parent = collect($components)->firstWhere('id', $system->component);
