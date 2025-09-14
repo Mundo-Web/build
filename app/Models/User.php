@@ -19,6 +19,24 @@ class User extends Authenticatable
     use HasPermissions;
 
     /**
+     * The database connection name for the model.
+     * Uses shared connection only if MULTI_DB_ENABLED is true
+     *
+     * @var string|null
+     */
+    protected $connection;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+        // Solo usar conexión compartida si está habilitada la funcionalidad multi-DB
+        if (env('MULTI_DB_ENABLED', false)) {
+            $this->connection = 'mysql_shared_users';
+        }
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

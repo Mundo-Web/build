@@ -125,7 +125,28 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
-    ],
+    ] + (env('MULTI_DB_ENABLED', false) ? [
+        // Conexión para usuarios y autenticación compartida (solo si está habilitado)
+        'mysql_shared_users' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_SHARED', '127.0.0.1'),
+            'port' => env('DB_PORT_SHARED', '3306'),
+            'database' => env('DB_DATABASE_SHARED', 'katya_users_shared'),
+            'username' => env('DB_USERNAME_SHARED', 'root'),
+            'password' => env('DB_PASSWORD_SHARED', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => false,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+    ] : []),
 
     /*
     |--------------------------------------------------------------------------
