@@ -160,35 +160,37 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                             const hasSubcategories = subcategories.length > 0;
 
                                                             return (
-                                                                <div 
-                                                                    key={category.id} 
+                                                                <div
+                                                                    key={category.id}
                                                                     className="relative"
                                                                 >
                                                                     {hasSubcategories ? (
                                                                         <div className="flex items-center">
                                                                             <a
                                                                                 href={`/catalogo?category=${category.slug}`}
-                                                                                className="flex-1 px-4 py-3 text-sm hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
+                                                                                className="flex-1 flex gap-2 px-4 py-3 text-sm hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
                                                                             >
+                                                                            
                                                                                 {category.name}
                                                                             </a>
-                                                                            <button
+                                                                            {/*  <button
                                                                                 onClick={() => setActiveMobileCategory(activeMobileCategory === category.id ? null : category.id)}
                                                                                 className="px-3 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                                                                             >
                                                                                 <ChevronRight className={`w-4 h-4 transition-transform ${activeMobileCategory === category.id ? 'rotate-90' : ''}`} />
-                                                                            </button>
+                                                                            </button> */}
                                                                         </div>
                                                                     ) : (
                                                                         <a
                                                                             href={`/catalogo?category=${category.slug}`}
                                                                             className="block px-4 py-3 text-sm hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
                                                                         >
+                                                                          
                                                                             {category.name}
                                                                         </a>
                                                                     )}
 
-                
+
                                                                 </div>
                                                             );
                                                         })}
@@ -211,9 +213,9 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         {(() => {
                                                             const activeCategory = sortedCategories.find(cat => cat.id === activeMobileCategory);
                                                             const subcategories = getSubcategories(activeCategory);
-                                                            
+
                                                             if (!subcategories || subcategories.length === 0) return null;
-                                                            
+
                                                             return (
                                                                 <div className="py-2">
                                                                     {/* Título con nombre de la categoría */}
@@ -221,7 +223,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                                         <h3 className="text-sm font-semibold text-gray-800">{activeCategory?.name}</h3>
                                                                         <p className="text-xs text-gray-500">Subcategorías</p>
                                                                     </div>
-                                                                    
+
                                                                     {/* Lista de subcategorías */}
                                                                     {subcategories.map((subcategory, index) => (
                                                                         <a
