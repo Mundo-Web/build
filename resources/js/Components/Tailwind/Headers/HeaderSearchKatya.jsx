@@ -739,7 +739,7 @@ const HeaderSearchKatya = ({
                         <img
                             src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                             alt={Global.APP_NAME}
-                            className={` lg:h-14 object-contain object-center ${data?.class_logo || ""}`}
+                            className={`min-h-10 max-h-10 lg:max-h-max lg:h-14 object-contain object-center ${data?.class_logo || ""}`}
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = "/assets/img/logo-bk.svg";
@@ -748,7 +748,7 @@ const HeaderSearchKatya = ({
                     </a>
 
                     {data?.showLoginCart && (
-                        <div className="flex gap-2 justify-end lg:hidden">
+                        <div className="flex gap-3 justify-end lg:hidden">
                             <div className="flex items-center">
                              <button onClick={() => setSearchView(!searchView)} >
                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -774,7 +774,7 @@ const HeaderSearchKatya = ({
                                                         name={isUser.name}
                                                         lastname={isUser.lastname}
                                                         classCircleUser={"customtext-neutral-dark stroke-[1.5] border-neutral-dark "}
-                                                        className="w-8 h-8 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
+                                                        className="w-6 h-6 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
                                                     />
                                                         <div className="relative" style={{ display: 'none' }}>
                                                             <CircleUser
@@ -925,7 +925,7 @@ const HeaderSearchKatya = ({
                                     </svg>
 
                                 </div>
-                                <span className="absolute bg-secondary -right-2 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-lg">
+                                <span className="absolute bg-secondary -right-2 -top-3 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-md">
                                     {totalCount}
                                 </span>
                             </button>
@@ -933,7 +933,7 @@ const HeaderSearchKatya = ({
                                 aria-label="Menú"
                                 onClick={() => setOpenMenu(!openMenu)}
 
-                                className="flex md:hidden items-center justify-center bg-primary rounded-lg w-auto h-auto p-2 customtext-neutral-dark fill-neutral-dark transition-all duration-300 "
+                                className="flex md:hidden items-center justify-center bg-primary rounded-lg w-auto h-auto  customtext-neutral-dark fill-neutral-dark transition-all duration-300 "
                             >
                                 {!openMenu ? (
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
