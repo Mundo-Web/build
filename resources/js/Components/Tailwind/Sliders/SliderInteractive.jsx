@@ -7,7 +7,10 @@ import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
 
-  const imageVariants = {
+  // Verificar si las animaciones están habilitadas
+  const hasAnimation = data?.animation_slider === "true" || data?.animation_slider === "si" || data?.animation_slider === true;
+
+  const imageVariants = hasAnimation ? {
         initial: {
             scale: 1,
             opacity: 1
@@ -18,7 +21,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             opacity: 1,
             transition: {
                 duration: 20,
-             
+
                   repeat: Infinity,
             repeatType: "loop"
             }
@@ -31,19 +34,40 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 ease: "easeInOut"
             }
         }
+    } : {
+           initial: {
+            scale: 1,
+            opacity: 1
+        },
+        animate: {
+            scale: [1, 1, 1],
+           
+            opacity: 1,
+            transition: {
+                duration: 20,
+
+     
+            }
+        },
+        exit: {
+            scale: 1,
+            opacity: 0.8,
+            transition: {
+                duration: 0.3,
+                ease: "easeInOut"
+            }
+        }
     };
-
-
 
     // Variantes de animación para los textos
     const titleVariants = {
-        initial: { 
-            opacity: 0, 
+        initial: {
+            opacity: 0,
             y: 60,
             scale: 0.8
         },
-        animate: { 
-            opacity: 1, 
+        animate: {
+            opacity: 1,
             y: 0,
             scale: 1,
             transition: {
@@ -52,16 +76,16 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 ease: "easeOut"
             }
         },
-        exit: { 
-            opacity: 0, 
+        exit: {
+            opacity: 0,
             y: -30,
             scale: 0.9,
-            transition: { 
+            transition: {
                 duration: 0.4,
                 ease: "easeInOut"
             }
         }
-    };
+    }
 
     const descriptionVariants = {
         initial: { 
@@ -89,9 +113,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 ease: "easeInOut"
             }
         }
-    };
+    }
 
-    const buttonsVariants = {
+    const buttonsVariants =  {
         initial: { 
             opacity: 0, 
             y: 40,
@@ -116,7 +140,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 ease: "easeInOut"
             }
         }
-    };
+    }
 
     const containerVariants = {
         initial: {},
@@ -366,9 +390,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     }, [currentIndex, duplicatedItems]);
 
     return (
-        <div className="relative w-full mx-auto">
+        <div className={`relative w-full mx-auto ${data?.class_slider || ""}`}>
             <div
-                className="overflow-hidden relative cursor-grab ease"
+                className={`overflow-hidden relative cursor-grab ease ${data?.class_slider || ""}`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -379,7 +403,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             >
                 <div
                     ref={sliderRef}
-                    className="flex"
+                    className={`flex ${data?.class_slider || ""}`}
                     style={{
                         transform: `translateX(-${currentIndex * 100}%)`,
                         transition: 'transform 0.5s ease-in-out'
@@ -388,7 +412,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                     {duplicatedItems.map((item, index) => (
                         <div
                             key={`slide-${index}`}
-                            className="w-full h-[calc(100dvh-20dvh)] lg:h-auto  flex-shrink-0 relative"
+                            className={`w-full h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative ${data?.class_slider || ""}`}
                         >
                            <AnimatePresence>
                                 {currentIndex === index && (
@@ -432,7 +456,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
      <div className=" absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
 )}
 
-                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}>
+                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider || ""}`}>
                                 <AnimatePresence mode="wait">
                                     <motion.div 
                                         key={`content-${currentIndex}-${item.name}`}

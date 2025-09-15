@@ -598,6 +598,7 @@
                 "name": "Interactivo Loop Nav Pag",
                 "image": "slider-simple.png",
                 "data": [
+                    "class_slider",
                     "infiniteLoop",
                     "paginationAlignment",
                     "showNavigation",
@@ -609,7 +610,8 @@
                     "class_button_primary",
                     "class_icon_primary",
                     "class_title",
-                    "class_description"
+                    "class_description",
+                    "animation_slider"
                 ],
                 "using": {
                     "model": "Slider",
