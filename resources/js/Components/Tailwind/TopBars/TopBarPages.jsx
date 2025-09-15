@@ -87,7 +87,7 @@ const TopBarPages = ({ items, data, pages = [] }) => {
                   key={index}
                   href={page.path}
                   className={
-                    "font-medium text-xs hover:customtext-secondary cursor-pointer transition-all duration-300"
+                    "font-medium text-sm hover:customtext-secondary cursor-pointer transition-all duration-300"
                   }
                 >
                   {page.name}
