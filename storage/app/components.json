@@ -44,7 +44,9 @@
                     "background_color",
                     "color",
                     "isCopyright",
-                    "border_color"
+                    "border_color",
+                    "pages_mobile",
+                    "cintillo_mobile"
                 ],
                 "using": {
                     "model": "Social"
