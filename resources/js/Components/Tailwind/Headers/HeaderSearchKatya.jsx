@@ -17,6 +17,7 @@ import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
 import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
+import MobileMenuKatya from "./Components/MobileMenuKatya";
 
 const HeaderSearchKatya = ({
     items,
@@ -68,6 +69,7 @@ const HeaderSearchKatya = ({
 
     const totalCount = cart.reduce((acc, item) => Number(acc) + Number(item.quantity), 0);
 
+    const [searchView, setSearchView] = useState(false);
     // Función para verificar si estamos en rutas donde no queremos mostrar la búsqueda móvil
     // Usando window.location directamente para máxima compatibilidad
     const shouldHideMobileSearch = () => {
@@ -737,35 +739,46 @@ const HeaderSearchKatya = ({
                         <img
                             src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                             alt={Global.APP_NAME}
-                            className={`h-14 object-contain object-center ${data?.class_logo || ""}`}
+                            className={` lg:h-14 object-contain object-center ${data?.class_logo || ""}`}
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = "/assets/img/logo-bk.svg";
                             }}
                         />
                     </a>
+
                     {data?.showLoginCart && (
-                        <div className="flex gap-8 lg:hidden">
+                        <div className="flex gap-2 justify-end lg:hidden">
+                            <div className="flex items-center">
+                             <button onClick={() => setSearchView(!searchView)} >
+                                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 17L21 21" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                             </button>
+
+                            </div>
                             <div className={`${searchMobile ? "hidden" : "flex"} items-center gap-4`}>
                                 {isUser ? (
                                     <div ref={menuRef} className="relative">
                                         <button
                                             aria-label="user"
-                                            className="flex items-center gap-2 hover:customtext-primary transition-all duration-300 relative group"
+                                            className="flex items-center customtext-neutral-dark gap-2 hover:customtext-primary transition-all duration-300 relative group"
                                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                                         >
                                             <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                                 {isUser.uuid ? (
                                                     <div className="relative">
-                                                        <ProfileImage
-                                                            uuid={isUser.uuid}
-                                                            name={isUser.name}
-                                                            lastname={isUser.lastname}
-                                                            className="!w-6 !h-6 rounded-full object-cover border-2 border-primary ring-secondary transition-all duration-300"
-                                                        />
+                                                         <ProfileImage
+                                                        uuid={isUser.uuid}
+                                                        name={isUser.name}
+                                                        lastname={isUser.lastname}
+                                                        classCircleUser={"customtext-neutral-dark stroke-[1.5] border-neutral-dark "}
+                                                        className="w-8 h-8 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
+                                                    />
                                                         <div className="relative" style={{ display: 'none' }}>
                                                             <CircleUser
-                                                                className="customtext-primary  border-primary rounded-full   ring-secondary transition-all duration-300"
+                                                                className="customtext-neutral-dark  border-neutral-dark rounded-full   ring-neutral-dark transition-all duration-300"
                                                                 width="1.5rem"
                                                             />
                                                         </div>
@@ -778,7 +791,7 @@ const HeaderSearchKatya = ({
                                                 ) : (
                                                     <div className="relative">
                                                         <CircleUser
-                                                            className="customtext-primary border-2 border-primary rounded-full  ring-secondary  transition-all duration-300"
+                                                            className="customtext-neutral-dark border-2 border-neutral-dark rounded-full  ring-neutral-dark  transition-all duration-300"
                                                             width="1.5rem"
                                                         />
                                                         {/* Punto indicador online animado */}
@@ -878,58 +891,57 @@ const HeaderSearchKatya = ({
                                         </AnimatePresence>
                                     </div>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="flex items-center">
-                                        <CircleUser className="customtext-primary" width="1.5rem" />
+                                    <a href="/iniciar-sesion" className="flex items-center customtext-neutral-dark hover:customtext-primary transition-all duration-300">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+
                                     </a>
                                 )}
 
-                                <button
-                                    aria-label=""
-                                    onClick={() => setModalOpen(true)}
-                                    className="flex items-center relative"
-                                >
-                                    <ShoppingCart className="customtext-primary" width="1.5rem" />
-                                    <span className="absolute -right-2 -top-2 inline-flex items-center justify-center w-4 h-4 bg-primary text-white rounded-full text-[8px]">
-                                        {totalCount}
-                                    </span>
-                                </button>
+
+
                             </div>
+                            <button
+                                aria-label="cart"
+                                onClick={() => setModalOpen(true)}
+                                className="flex min-w-max items-center gap-2 font-medium text-sm relative hover:customtext-secondary transition-colors duration-300"
+                            >
+
+                                <div className=" text-sm leading-4 text-end inline">
+                                    <span className="block" >Carrito</span>
+
+                                    <strong>{`S/ ${Number2Currency(totalCount)}`}</strong>
+                                </div>
+                                <div >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M6 6H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z" stroke="currentColor" stroke-width="1.5" />
+                                        <path d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z" stroke="currentColor" stroke-width="1.5" />
+                                        <path d="M8 20H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    </svg>
+
+                                </div>
+                                <span className="absolute bg-secondary -right-2 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-lg">
+                                    {totalCount}
+                                </span>
+                            </button>
                             <button
                                 aria-label="Menú"
                                 onClick={() => setOpenMenu(!openMenu)}
 
-                                className="flex md:hidden items-center justify-center bg-primary rounded-lg w-auto h-auto p-2 text-white fill-white transition-all duration-300 "
+                                className="flex md:hidden items-center justify-center bg-primary rounded-lg w-auto h-auto p-2 customtext-neutral-dark fill-neutral-dark transition-all duration-300 "
                             >
                                 {!openMenu ? (
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                    >
-                                        <path
-                                            d="M10 5H20"
-                                            stroke="white"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <path
-                                            d="M4 12H20"
-                                            stroke="white"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <path
-                                            d="M4 19H14"
-                                            stroke="white"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 5H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M4 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M4 19H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
+
                                 ) : (
                                     <XIcon />
                                 )}
@@ -1150,11 +1162,11 @@ const HeaderSearchKatya = ({
                                 className="flex items-center gap-2 font-medium text-sm relative hover:customtext-secondary transition-colors duration-300"
                             >
 
-                               <div className="hidden text-sm leading-4 text-end md:inline">
-                                 <span className="block" >Mi Carrito</span>
-                                 {/*AQUI CON UN STRONG APARSCA CUANTO TENEMOS EN EL CARRITO OSEA EL TOTAL, SE PUEDE? */}
-                                 <strong>{`S/ ${Number2Currency(totalCount)}`}</strong>
-                               </div>
+                                <div className="hidden text-sm leading-4 text-end md:inline">
+                                    <span className="block" >Mi Carrito</span>
+
+                                    <strong>{`S/ ${Number2Currency(totalCount)}`}</strong>
+                                </div>
                                 <div >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -1294,14 +1306,14 @@ const HeaderSearchKatya = ({
                 </div>
 
                 {/* NUEVA SECCIÓN MÓVIL*/}
-                {data?.mobileSearch && !shouldHideMobileSearch() && (
+                {searchView && !shouldHideMobileSearch() && (
                     <div className="block md:hidden mt-6 space-y-4">
                         <div className="w-full relative">
                             <form onSubmit={handleMobileSearch} role="search" className="relative w-full">
                                 <input
                                     type="search"
                                     name="search"
-                                    placeholder="Buscar productos..."
+                                    placeholder="Buscar"
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onKeyDown={handleKeyDown}
@@ -1310,7 +1322,7 @@ const HeaderSearchKatya = ({
                                             fetchSearchSuggestions(search);
                                         }
                                     }}
-                                    className="w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50"
+                                    className="w-full pr-14 py-3 font-medium text-sm pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50"
                                     enterKeyHint="search"
                                     inputMode="search"
                                     autoComplete="off"
@@ -1319,7 +1331,7 @@ const HeaderSearchKatya = ({
                                 />
                                 <button
                                     type="submit"
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-secondary text-white rounded-lg hover:bg-primary/90 transition-colors"
                                     aria-label="Buscar"
                                 >
                                     <Search size={18} />
@@ -1348,7 +1360,7 @@ const HeaderSearchKatya = ({
                         transition={{ duration: 0.2 }}
                         className="lg:hidden bg-transparent text-textWhite shadow-lg w-full min-h-screen absolute z-10 top-20"
                     >
-                        <MobileMenu
+                        <MobileMenuKatya
                             search={search}
                             setSearch={setSearch}
                             pages={pages}
