@@ -168,9 +168,20 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                                         <div className="flex items-center">
                                                                             <a
                                                                                 href={`/catalogo?category=${category.slug}`}
-                                                                                className="flex-1 flex gap-2 px-4 py-3 text-sm hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
+                                                                                className="flex-1 flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-50  transition-colors duration-200"
                                                                             >
-                                                                            
+                                                                                {/* Icono opcional basado en la categoría */}
+                                                                                {category.image && (
+                                                                                    <div className="rounded-full min-w-6 max-w-6 min-h-6 max-h-6 overflow-hidden   flex items-center justify-center bg-secondary">
+
+                                                                                        <img
+                                                                                            src={`/storage/images/category/${category.image}`}
+                                                                                            alt={category.name}
+                                                                                            className="w-4 h-4 filter brightness-0 invert"
+                                                                                            onError={(e) => (e.target.style.display = 'none')}
+                                                                                        />
+                                                                                    </div>
+                                                                                )}
                                                                                 {category.name}
                                                                             </a>
                                                                             {/*  <button
@@ -185,7 +196,18 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                                             href={`/catalogo?category=${category.slug}`}
                                                                             className="block px-4 py-3 text-sm hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
                                                                         >
-                                                                          
+                                                                            {/* Icono opcional basado en la categoría */}
+                                                                          {category.image && (
+                                                                                    <div className="rounded-full min-w-6 max-w-6 min-h-6 max-h-6 overflow-hidden   flex items-center justify-center bg-secondary">
+
+                                                                                        <img
+                                                                                            src={`/storage/images/category/${category.image}`}
+                                                                                            alt={category.name}
+                                                                                            className="w-4 h-4 filter brightness-0 invert"
+                                                                                            onError={(e) => (e.target.style.display = 'none')}
+                                                                                        />
+                                                                                    </div>
+                                                                                )}
                                                                             {category.name}
                                                                         </a>
                                                                     )}
@@ -270,7 +292,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         transition={{ duration: 0.2 }}
                                                         className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[250px] max-h-80 overflow-y-auto"
                                                     >
-                                                        <div className="py-8">
+                                                        <div className="py-2">
                                                             {tiendas.map((tienda) => (
                                                                 <a
                                                                     key={tienda.id}
