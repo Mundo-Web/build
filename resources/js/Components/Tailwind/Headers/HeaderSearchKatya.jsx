@@ -106,7 +106,7 @@ const HeaderSearchKatya = ({
             // 1. Primero buscar en la categoría específica
             // 2. Si no hay resultados, buscar en todas las categorías
             let searchResults = [];
-            
+
             if (selectedCategory.slug) {
                 const category = items?.find(cat => cat.slug === selectedCategory.slug);
                 if (category) {
@@ -246,7 +246,7 @@ const HeaderSearchKatya = ({
             if (menuRef.current && !menuRef.current.contains(event.target)) {
                 setIsMenuOpen(false);
             }
-            
+
             // Manejo para dropdown de categorías
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsDropdownOpen(false);
@@ -334,7 +334,7 @@ const HeaderSearchKatya = ({
             if (searchTimeoutRef.current) {
                 clearTimeout(searchTimeoutRef.current);
             }
-            
+
             searchTimeoutRef.current = setTimeout(() => {
                 fetchSearchSuggestions(search);
             }, 100); // Delay más corto para cambios de categoría
@@ -394,22 +394,22 @@ const HeaderSearchKatya = ({
     const handleFormSubmit = (event) => {
         event.preventDefault();
         clearSuggestions();
-        
+
         const formData = new FormData(event.target);
         const searchTerm = formData.get('search')?.trim() || search.trim();
         const categorySlug = selectedCategory.slug;
-        
+
         if (searchTerm || categorySlug) {
             let url = '/catalogo?';
             const params = new URLSearchParams();
-            
+
             if (searchTerm) {
                 params.append('search', searchTerm);
             }
             if (categorySlug) {
                 params.append('category', categorySlug);
             }
-            
+
             window.location.href = `/catalogo?${params.toString()}`;
         }
         return false; // Prevenir comportamiento por defecto adicional
@@ -482,12 +482,12 @@ const HeaderSearchKatya = ({
     // --- SUGERENCIAS DE BÚSQUEDA ---
     const SearchSuggestions = ({ suggestions, isLoading, onSelect, selectedIndex }) => {
         if (!showSuggestions) return null;
-        
+
         // Verificar si las sugerencias incluyen productos de la categoría seleccionada
         const categoryId = selectedCategory.slug ? items?.find(cat => cat.slug === selectedCategory.slug)?.id : null;
         const hasMatchingCategory = suggestions.some(s => s.category_id === categoryId);
         const hasOtherCategories = suggestions.some(s => s.category_id !== categoryId);
-        
+
         return (
             <motion.div
                 ref={suggestionsRef}
@@ -515,11 +515,11 @@ const HeaderSearchKatya = ({
                                 </p>
                             </div>
                         )}
-                        
+
                         <ul className="py-2">
                             {suggestions.map((suggestion, index) => {
                                 const isFromSelectedCategory = categoryId && suggestion.category_id === categoryId;
-                                
+
                                 return (
                                     <li
                                         key={suggestion.id}
@@ -532,9 +532,8 @@ const HeaderSearchKatya = ({
                                                 e.stopPropagation();
                                                 setTimeout(() => onSelect(suggestion), 0);
                                             }}
-                                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${
-                                                index === selectedIndex ? 'bg-primary/10 border-l-4 border-primary' : ''
-                                            } ${isFromSelectedCategory ? 'bg-green-50' : ''}`}
+                                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${index === selectedIndex ? 'bg-primary/10 border-l-4 border-primary' : ''
+                                                } ${isFromSelectedCategory ? 'bg-green-50' : ''}`}
                                             type="button"
                                         >
                                             <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
@@ -548,20 +547,20 @@ const HeaderSearchKatya = ({
                                                         }}
                                                     />
                                                 ) : (
-                                                   <img
-                    src={suggestion?.image ? `/api/items/media/${suggestion.image}` : '/assets/img/noimage/no_img.jpg'}
-                    alt={suggestion?.name || 'Producto'}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                        e.target.src = '/assets/img/noimage/no_img.jpg';
-                    }}
-                />
+                                                    <img
+                                                        src={suggestion?.image ? `/api/items/media/${suggestion.image}` : '/assets/img/noimage/no_img.jpg'}
+                                                        alt={suggestion?.name || 'Producto'}
+                                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                                        onError={(e) => {
+                                                            e.target.src = '/assets/img/noimage/no_img.jpg';
+                                                        }}
+                                                    />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="font-medium customtext-neutral-dark truncate flex items-center gap-2">
                                                     {suggestion.name}
-                                                   
+
                                                 </div>
                                                 {suggestion.category && (
                                                     <div className="text-sm customtext-neutral-dark truncate">
@@ -598,7 +597,7 @@ const HeaderSearchKatya = ({
 
     // --- DROPDOWN PERSONALIZADO DE CATEGORÍAS ---
     const CategoryDropdown = () => {
-        const sortedCategories = items && items.length > 0 
+        const sortedCategories = items && items.length > 0
             ? [...items].sort((a, b) => a.name.localeCompare(b.name))
             : [];
 
@@ -607,15 +606,15 @@ const HeaderSearchKatya = ({
                 <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-between min-w-[150px] max-w-[150px] text-sm py-4 px-4 font-semibold focus:ring-0 customtext-neutral-dark bg-secondary focus:outline-none border-0  text-white rounded-full hover:bg-primary hover:customtext-neutral-dark transition-colors duration-500"
+                    className="flex items-center justify-between min-w-[150px] max-w-[150px] text-sm py-3.5 px-4 font-semibold focus:ring-0 customtext-neutral-dark bg-secondary focus:outline-none border-0  text-white rounded-full hover:bg-primary hover:customtext-neutral-dark transition-colors duration-500"
                     aria-label="Seleccionar categoría"
                     aria-expanded={isDropdownOpen}
                 >
                     <span className="truncate">{selectedCategory.name}</span>
-                    <svg 
+                    <svg
                         className={`w-4 h-4 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
-                        fill="none" 
-                        stroke="currentColor" 
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -637,7 +636,7 @@ const HeaderSearchKatya = ({
                                     onClick={() => {
                                         setSelectedCategory({ slug: "", name: "Categorías" });
                                         setIsDropdownOpen(false);
-                                        
+
                                         // Si hay una búsqueda activa, actualizar inmediatamente las sugerencias
                                         if (search.trim().length >= 2) {
                                             setTimeout(() => {
@@ -645,9 +644,8 @@ const HeaderSearchKatya = ({
                                             }, 150);
                                         }
                                     }}
-                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${
-                                        selectedCategory.slug === "" ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
-                                    }`}
+                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${selectedCategory.slug === "" ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
+                                        }`}
                                 >
                                     <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -663,7 +661,7 @@ const HeaderSearchKatya = ({
                                         </div>
                                     )}
                                 </button>
-                                
+
                                 {sortedCategories.map((category) => (
                                     <button
                                         key={category.id}
@@ -671,7 +669,7 @@ const HeaderSearchKatya = ({
                                         onClick={() => {
                                             setSelectedCategory({ slug: category.slug, name: category.name });
                                             setIsDropdownOpen(false);
-                                            
+
                                             // Si hay una búsqueda activa, actualizar inmediatamente las sugerencias
                                             if (search.trim().length >= 2) {
                                                 setTimeout(() => {
@@ -679,9 +677,8 @@ const HeaderSearchKatya = ({
                                                 }, 150);
                                             }
                                         }}
-                                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${
-                                            selectedCategory.slug === category.slug ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
-                                        }`}
+                                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${selectedCategory.slug === category.slug ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
+                                            }`}
                                     >
                                         <div className="flex-shrink-0 w-8 h-8 bg-secondary p-2 rounded-full overflow-hidden">
                                             {category.image ? (
@@ -941,23 +938,23 @@ const HeaderSearchKatya = ({
                     )}
 
                     {/* Search Bar - Desktop */}
-                    <div className="hidden md:block relative w-full max-w-md " ref={searchRef}>
-                        <form onSubmit={handleFormSubmit} role="search" className="flex items-center gap-0 bg-white rounded-full border p-1">
+                    <div className="hidden md:block relative w-full max-w-sm " ref={searchRef}>
+                        <form onSubmit={handleFormSubmit} role="search" className="flex items-center gap-0 bg-white rounded-full border ">
                             {/* Botón de búsqueda */}
                             <button
                                 type="submit"
-                                className={`p-3  customtext-neutral-light rounded-full  hover:scale-105 transition-all duration-300 flex-shrink-0`}
+                                className={`pl-3  customtext-neutral-dark rounded-full  hover:scale-105 transition-all duration-300 flex-shrink-0`}
                                 aria-label="Buscar"
                             >
                                 <Search size={20} />
                             </button>
-                            
+
                             {/* Input de búsqueda */}
                             <input
                                 ref={desktopSearchInputRef}
                                 type="search"
                                 name="search"
-                                placeholder="Estoy buscando..."
+                                placeholder="Buscar"
                                 value={search}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 onKeyDown={handleKeyDown}
@@ -966,14 +963,14 @@ const HeaderSearchKatya = ({
                                         fetchSearchSuggestions(search);
                                     }
                                 }}
-                                className="flex-1 py-3 px-4 font-normal focus:ring-0 customtext-neutral-dark placeholder:customtext-neutral-dark focus:outline-none bg-transparent border-0"
+                                className="flex-1 py-3 pl-2 pr-4 font-medium text-sm focus:ring-0 customtext-neutral-dark placeholder:text-gray-500 focus:outline-none bg-transparent border-0"
                                 enterKeyHint="search"
                                 inputMode="search"
                                 autoComplete="on"
                                 role="searchbox"
                                 aria-label="Estoy buscando..."
                             />
-                            
+
                             {/* Dropdown personalizado de categorías */}
                             <CategoryDropdown />
                         </form>
@@ -990,7 +987,7 @@ const HeaderSearchKatya = ({
                     {/* Account and Cart */}
                     {data?.showLoginCart ? (
                         <div className="hidden md:flex items-center  gap-8 relative text-sm">
-                             <p className={`cursor-pointer text-sm customtext-neutral-dark whitespace-pre-line hover:customtext-secondary font-normal  transition-all duration-500 `}>
+                            <p className={`cursor-pointer leading-4 text-sm customtext-neutral-dark whitespace-pre-line hover:customtext-secondary font-medium  transition-all duration-500 `}>
                                 {(() => {
                                     const text = generals.find((contact) => contact.correlative === "opening_hours")?.description || "";
                                     const [first, ...rest] = text.split('\n');
@@ -1002,13 +999,13 @@ const HeaderSearchKatya = ({
                                     );
                                 })()}
                             </p>
-                              <p className={`cursor-pointer text-sm customtext-neutral-dark font-normal whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>  
+                            <p className={`cursor-pointer leading-4  text-end text-sm customtext-neutral-dark font-medium whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>
                                 <span>Soporte 24/7</span><br />
-                              <strong>  {generals.find((contact) => contact.correlative === "support_phone")
-                            ?.description || ""}
-                            </strong>
+                                <strong>  {generals.find((contact) => contact.correlative === "support_phone")
+                                    ?.description || ""}
+                                </strong>
                             </p>
-                            
+
                             <div ref={menuRef}>
                                 {isUser ? (
                                     <button
@@ -1049,10 +1046,14 @@ const HeaderSearchKatya = ({
                                         </div>
                                     </button>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="flex items-center gap-2 text-sm hover:customtext-primary transition-colors duration-300">
-                                         <span className="hidden md:inline">Iniciar <br/> <strong>Sesión</strong></span>
-                                        <CircleUser className="customtext-primary" />
-                                      
+                                    <a href="/iniciar-sesion" className="flex customtext-neutral-dark font-medium leading-4 items-center gap-2 text-sm hover:customtext-secondary transition-colors duration-300">
+                                        <span className="hidden md:inline">Iniciar <br /> <strong>Sesión</strong></span>
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+
+
                                     </a>
                                 )}
 
@@ -1146,19 +1147,19 @@ const HeaderSearchKatya = ({
                             <button
                                 aria-label="cart"
                                 onClick={() => setModalOpen(true)}
-                                className="flex items-center gap-2 text-sm relative hover:customtext-secondary transition-colors duration-300"
+                                className="flex items-center gap-2 font-medium text-sm relative hover:customtext-secondary transition-colors duration-300"
                             >
 
                                 <span className="hidden md:inline">Mi Carrito</span>
-                                <div className="customtext-neutral-dark ">
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M6 6H22" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z" stroke="#0E1818" stroke-width="1.5"/>
-<path d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z" stroke="#0E1818" stroke-width="1.5"/>
-<path d="M8 20H15" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round"/>
-</svg>
+                                <div >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M6 6H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z" stroke="currentColor" stroke-width="1.5" />
+                                        <path d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z" stroke="currentColor" stroke-width="1.5" />
+                                        <path d="M8 20H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    </svg>
 
                                 </div>
                                 <span className="absolute bg-secondary -right-5 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-lg">
@@ -1181,11 +1182,11 @@ const HeaderSearchKatya = ({
                                     );
                                 })()}
                             </p>
-                              <p className={`cursor-pointer text-sm customtext-neutral-dark font-normal whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>  
+                            <p className={`cursor-pointer text-sm customtext-neutral-dark font-normal whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>
                                 <span>Soporte 24/7</span><br />
-                              <strong>  {generals.find((contact) => contact.correlative === "support_phone")
-                            ?.description || ""}
-                            </strong>
+                                <strong>  {generals.find((contact) => contact.correlative === "support_phone")
+                                    ?.description || ""}
+                                </strong>
                             </p>
                             <a
                                 aria-label="primary-button"
