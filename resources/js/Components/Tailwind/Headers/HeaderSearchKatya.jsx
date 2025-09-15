@@ -16,7 +16,7 @@ import Logout from "../../../Actions/Logout";
 import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
-import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const HeaderSearchKatya = ({
     items,
@@ -1150,7 +1150,11 @@ const HeaderSearchKatya = ({
                                 className="flex items-center gap-2 font-medium text-sm relative hover:customtext-secondary transition-colors duration-300"
                             >
 
-                                <span className="hidden md:inline">Mi Carrito</span>
+                               <div className="hidden text-sm leading-4 text-end md:inline">
+                                 <span className="block" >Mi Carrito</span>
+                                 {/*AQUI CON UN STRONG APARSCA CUANTO TENEMOS EN EL CARRITO OSEA EL TOTAL, SE PUEDE? */}
+                                 <strong>{`S/ ${Number2Currency(totalCount)}`}</strong>
+                               </div>
                                 <div >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
