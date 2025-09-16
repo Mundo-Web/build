@@ -95,11 +95,11 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                     {/* Lado izquierdo: Título, descripción y swiper */}
                     <div className="col-span-1 lg:col-span-2 space-y-8">
                         {/* Título y descripción */}
-                        <motion.div variants={itemVariants} className="space-y-4 flex justify-between items-center">
-                            <h2 className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-semibold tracking-normal max-w-lg  text-white leading-tight font-title">
+                        <motion.div variants={itemVariants} className="space-y-4 flex flex-col lg:flex-row justify-between lg:items-center">
+                            <h2 className="text-4xl  lg:text-4xl 2xl:text-5xl font-bold tracking-normal max-w-lg  text-white leading-tight font-title">
                                 Nuestro Blog
                             </h2>
-                            <a href="/blog" className="text-sm lg:text-lg font-bold  hover:opacity-80 transition-opacity text-white self-center">
+                            <a href="/blog" className="text-lg lg:text-lg font-bold  hover:opacity-80 transition-opacity text-white lg:self-center">
                                 Más publicaciones
                                 <ChevronRight className="inline-block ml-1 h-6 w-6" />
                             </a>

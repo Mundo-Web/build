@@ -67,7 +67,7 @@ const FooterB = ({ pages, generals, data }) => {
                         <div className={` -ml-8 md:ml-0 h-14 aspect-[13/4] ${data?.logo_footer_content || ''}`}>
                             {data?.logo_footer ?
 
-                                <img src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className="h-20 lg:h-24 object-contain" onError={(e) => {
+                                <img src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className={`h-20 lg:h-24 object-contain ${data?.class_logo_footer || ''}`} onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = '/assets/img/logo-bk.svg';
                                 }} /> :
@@ -100,7 +100,7 @@ const FooterB = ({ pages, generals, data }) => {
                                             {page.name}
                                         </a>
 
-                                        {index !== pages.filter(p => p.menuable).length + 2 && (
+                                        {index !== pages.filter(p => p.menuable).length + 3 && (
                                             <span className=" ml-2 lg:hidden">|</span>
                                         )}
                                     </li>
