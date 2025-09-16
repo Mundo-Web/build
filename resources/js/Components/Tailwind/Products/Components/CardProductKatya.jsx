@@ -77,7 +77,7 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
     const isSuperAhorro = (calculatedDiscountPercent >= 20) || (product?.offering === true && hasDiscount);
 
     return (
-        <div className="bg-white group rounded-3xl shadow-lg border-2 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-full relative max-w-sm mx-auto"
+        <div className="bg-white group rounded-2xl  lg:rounded-3xl shadow-lg border-2 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-full relative max-w-sm mx-auto"
             onClick={goToDetail}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -86,7 +86,7 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
             {isSuperAhorro && (
                 <div className="absolute top-0 right-0 z-20">
                     <div
-                        className="customtext-secondary bg-primary text-base font-bold px-6 py-2 rounded-bl-3xl rounded-tr-3xl"
+                        className="customtext-secondary bg-primary text-base font-bold px-6 py-2 rounded-bl-2xl lg:rounded-bl-3xl rounded-tr-3xl"
 
                     >
                         SuperAhorro
@@ -96,14 +96,14 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
 
             {/* Imagen del producto */}
             <div
-                className="relative bg-gray-50 flex items-center justify-center p-8 h-80 "
+                className="relative bg-gray-50 flex items-center justify-center p-2 lg:p-8 h-48 lg:h-80 "
 
 
             >
                 <img
                     src={product?.image ? `/api/items/media/${product.image}` : '/assets/img/noimage/no_img.jpg'}
                     alt={product?.name || 'Producto'}
-                    className="w-full h-full aspect-square object-contain group-hover:scale-105 transition-transform duration-500"
+                    className="lg:w-full h-full lg:aspect-square object-contain lg:object-contain group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                         e.target.src = '/assets/img/noimage/no_img.jpg';
                     }}
@@ -124,7 +124,7 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
             </div>
 
             {/* Contenido del producto */}
-            <div className="p-6 flex-1 flex flex-col">
+            <div className="p-4 lg:p-6 flex-1 flex flex-col">
                 {/* Marca */}
                 <div className="mb-3">
                     <span className="text-sm font-bold customtext-neutral-light uppercase line-clamp-1 tracking-wide">
@@ -133,12 +133,12 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
                 </div>
 
                 {/* Nombre del producto */}
-                <h3 className="text-2xl font-bold line-clamp-2 customtext-neutral-dark mb-2 leading-tight">
+                <h3 className="text-lg lg:text-2xl font-bold line-clamp-2 customtext-neutral-dark mb-2 leading-tight">
                     {product?.name || 'Filete de tilapia 5-7 Aro'}
                 </h3>
 
                 {/* Descripción/Presentación */}
-                <div className="customtext-neutral-dark line-clamp-2 text-lg mb-6">
+                <div className="customtext-neutral-dark line-clamp-2 text-sm lg:text-lg mb-6">
                     {product?.description ? (
                         <div dangerouslySetInnerHTML={{ __html: product.description.substring(0, 100) + '...' }} />
                     ) : (

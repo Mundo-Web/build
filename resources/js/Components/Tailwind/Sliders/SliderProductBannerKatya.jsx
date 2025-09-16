@@ -26,19 +26,20 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
 
     return (
         <section className="relative w-full py-8 md:py-12 bg-accent">
-            <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
-                <div className="relative">
+            <div className="px-primary overflow-hidden 2xl:px-0 2xl:max-w-7xl mx-auto">
+                <div className="relative ">
                     {productsWithBanner.length > 0 && (
                         <Swiper
                             modules={[EffectCoverflow]}
                             ref={swiperRef}
-                            loop={productsWithBanner.length > 1}
-                          
+                            loop={productsWithBanner.length > 3}
+                            initialSlide={1}
+                            watchSlidesProgress={true}
                             breakpoints={{
                                 // Mobile (Vista 1.3)
                                 320: {
-                                    slidesPerView: 1.3,
-                                    spaceBetween: 10,
+                                    slidesPerView: 1.1,
+                                    spaceBetween: 15,
                                     centeredSlides: true,
                                     effect: "coverflow",
                                     coverflowEffect: {
@@ -47,7 +48,7 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
                                         depth: 100,
                                         modifier: 1,
                                         slideShadows: false,
-                                    }
+                                    },
                                 },
                                 // Tablet
                                 768: {
@@ -64,7 +65,7 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
                                     effect: "slide",
                                 }
                             }}
-                            className="w-full"
+                            className="w-full overflow-visible"
                         >
                             {productsWithBanner.map((product, index) => (
                                 <SwiperSlide
@@ -89,17 +90,7 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
                 </div>
             </div>
 
-            <style jsx="true">{`
-                /* Estilo para los slides en modo mobile (vista 1.3) */
-                .swiper-slide-product-banner {
-                    transition: all 0.4s cubic-bezier(.4,0,.2,1);
-                }
-                
-                /* Estilo para el slide activo */
-                .swiper-slide-active {
-                    z-index: 20;
-                }
-            `}</style>
+        
         </section>
     );
 };

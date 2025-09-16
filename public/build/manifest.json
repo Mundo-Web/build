@@ -89,8 +89,8 @@
       "_circle-check-big-CYWUGR3Z.js"
     ]
   },
-  "_CardProductKatya-uOSswYz0.js": {
-    "file": "assets/CardProductKatya-uOSswYz0.js",
+  "_CardProductKatya-BV44qiXE.js": {
+    "file": "assets/CardProductKatya-BV44qiXE.js",
     "name": "CardProductKatya",
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -6834,7 +6834,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-NsaXBCfL.js",
+    "file": "assets/Filter-BDOxc4VZ.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -7178,7 +7178,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx": {
-    "file": "assets/CatalogoFiltrosKatya-BDpcaRNZ.js",
+    "file": "assets/CatalogoFiltrosKatya-9S-z2WAx.js",
     "name": "CatalogoFiltrosKatya",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
     "isDynamicEntry": true,
@@ -7192,7 +7192,7 @@
       "_main-B6F2O9-U.js",
       "_CardProductBananaLab-CGgMn4uK.js",
       "_CardProductMultivet-DEJJ6aW6.js",
-      "_CardProductKatya-uOSswYz0.js",
+      "_CardProductKatya-BV44qiXE.js",
       "_General-BmbBKdsB.js",
       "_Number2Currency-D9Rjvh76.js",
       "_proxy-B0QLMKEh.js",
@@ -8814,7 +8814,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-EX8MwaiA.js",
+    "file": "assets/Product-rOUmQyyp.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -8842,7 +8842,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-C_mx97VW.js",
+    "file": "assets/ProductDetail-CoY1mJ2w.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -8936,7 +8936,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailB.jsx": {
-    "file": "assets/ProductDetailB-Bm6DI2Pd.js",
+    "file": "assets/ProductDetailB-DEkEEbUf.js",
     "name": "ProductDetailB",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailB.jsx",
     "isDynamicEntry": true,
@@ -8982,7 +8982,7 @@
       "_grid-BZ4EKnFQ.js",
       "resources/js/Components/Tailwind/Products/ProductNavigation.jsx",
       "_eye-ScgfreHn.js",
-      "_CardProductKatya-uOSswYz0.js",
+      "_CardProductKatya-BV44qiXE.js",
       "_adjustTextColor-DJKJvkxA.js",
       "_tag-Dgi-uTqk.js",
       "_create-element-if-not-defined-DUWlnlug.js",
@@ -10198,7 +10198,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-D1HSZukC.js",
+    "file": "assets/Slider-CrNYq5l5.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -11193,7 +11193,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Crf_R4qO.js",
+    "file": "assets/System-CFdPMEwd.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
