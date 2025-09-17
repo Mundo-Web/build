@@ -444,7 +444,8 @@
                 "data": [
                     "background",
                     "class_container",
-                    "class_content_swiper"
+                    "class_content_swiper",
+                    "class_divisor"
                 ],
                 "using": {
                     "model": "Indicator"

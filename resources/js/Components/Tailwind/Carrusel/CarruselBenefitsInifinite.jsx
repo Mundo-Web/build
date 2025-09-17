@@ -30,14 +30,8 @@ const CarruselBenefitsInifinite = ({ items=[], data }) => {
         >
           {items.map((benefit, index) => (
             <SwiperSlide key={index}>
-              <div
-                className={`flex items-center gap-2  lg:gap-4 justify-start relative ${data?.class_content_swiper || ''}
-                ${
-                  index !== items.length - 1
-                    ? "lg:before:absolute lg:before:-right-2 lg:before:top-1/2 lg:before:-translate-y-1/2  lg:before:w-[2px] lg:before:min-h-14  lg:before:max-h-14 lg:before:bg-white"
-                    : ""
-                }`}
-              >
+              <div className={`flex items-center gap-2 lg:gap-4 justify-start relative ${data?.class_content_swiper || ''}`}>
+                {/* Contenido del benefit */}
                 <div className="relative min-w-8 min-h-8 lg:w-16 lg:h-16 flex items-center justify-center">
                   <div className="relative z-10 text-3xl lg:p-3">
                     <img
@@ -56,6 +50,11 @@ const CarruselBenefitsInifinite = ({ items=[], data }) => {
                   </h3>
                   <p className="text-[8px] lg:text-sm">{benefit.description}</p>
                 </div>
+                
+                {/* Divisor - solo mostrar si no es el último elemento y en desktop */}
+                {index !== items.length - 1 && (
+                  <div className={`hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 w-[2px] h-14 bg-white ${data?.class_divisor || ''}`}></div>
+                )}
               </div>
             </SwiperSlide>
           ))}
