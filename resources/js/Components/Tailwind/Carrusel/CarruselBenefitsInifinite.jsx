@@ -19,6 +19,8 @@ const CarruselBenefitsInifinite = ({ items=[], data }) => {
           slidesPerView={2}
           spaceBetween={32}
           loop={true}
+          autoHeight={false}
+          watchSlidesProgress={true}
           breakpoints={{
             768: {
               slidesPerView: 4,
@@ -29,22 +31,22 @@ const CarruselBenefitsInifinite = ({ items=[], data }) => {
           className="w-full"
         >
           {items.map((benefit, index) => (
-            <SwiperSlide key={index}>
-              <div className={`flex items-center gap-2 lg:gap-4 justify-start relative ${data?.class_content_swiper || ''}`}>
+            <SwiperSlide key={index} className="!h-auto">
+              <div className={`flex items-start gap-2 lg:gap-4 justify-start relative min-h-full ${data?.class_content_swiper || ''}`}>
                 {/* Contenido del benefit */}
-                <div className="relative min-w-8 min-h-8 lg:w-16 lg:h-16 flex items-center justify-center">
-                  <div className="relative z-10 text-3xl lg:p-3">
+                <div className="relative flex items-center justify-center flex-shrink-0">
+                  <div className="relative z-10 text-3xl ">
                     <img
                     alt={benefit.name}
                       src={`/storage/images/indicator/${benefit.symbol}`}
-                      className="w-full h-auto aspect-square min-h-14 min-w-14 object-contain"
+                      className="aspect-square min-h-14 min-w-14 max-w-14 max-h-14 object-contain"
                       onError={(e) => {
                         e.target.src = "/api/cover/thumbnail/null"
                       }}
                     />
                   </div>
                 </div>
-                <div className="w-[calc(100%-3.5rem)] lg:w-[calc(100%-3.5rem)]">
+                <div className="flex-1 flex flex-col justify-center min-w-[calc(100%_-_5.5rem)] ">
                   <h3 className="font-bold text-xs lg:text-lg ">
                     {benefit.name}
                   </h3>
@@ -53,7 +55,7 @@ const CarruselBenefitsInifinite = ({ items=[], data }) => {
                 
                 {/* Divisor - solo mostrar si no es el último elemento y en desktop */}
                 {index !== items.length - 1 && (
-                  <div className={`hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 w-[2px] h-14 bg-white ${data?.class_divisor || ''}`}></div>
+                  <div className={`hidden lg:block min-w-[2px] max-w-[2px] self-stretch bg-white mx-2 ${data?.class_divisor || ''}`}></div>
                 )}
               </div>
             </SwiperSlide>
