@@ -443,7 +443,8 @@
                 "name": "Beneficios",
                 "data": [
                     "background",
-                    "class_container"
+                    "class_container",
+                    "class_content_swiper"
                 ],
                 "using": {
                     "model": "Indicator"
