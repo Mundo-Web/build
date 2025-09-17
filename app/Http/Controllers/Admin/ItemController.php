@@ -21,6 +21,8 @@ use SoDe\Extend\Text;
 use Exception;
 use App\Models\ItemSpecification;
 use App\Models\Store;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class ItemController extends BasicController
 {
@@ -56,7 +58,7 @@ class ItemController extends BasicController
     }
     public function save(Request $request): HttpResponse|ResponseFactory
     {
-        \Log::info('ItemController save method called - Custom save executing');
+        Log::info('ItemController save method called - Custom save executing');
         DB::beginTransaction();
         try {
             // Validar los datos recibidos
@@ -215,7 +217,7 @@ class ItemController extends BasicController
             // Actualizar el orden de las imágenes existentes
             if ($request->has('gallery_order')) {
                 $galleryOrder = json_decode($request->input('gallery_order'), true);
-                \Log::info('Gallery order received:', ['gallery_order' => $galleryOrder]);
+                Log::info('Gallery order received:', ['gallery_order' => $galleryOrder]);
                 
                 foreach ($galleryOrder as $index => $imageData) {
                     if (isset($imageData['id']) && $imageData['type'] === 'existing') {
@@ -247,6 +249,9 @@ class ItemController extends BasicController
                     $image->update(['order' => $index + 1]);
                 }
             }
+
+            // Generar slug como en BasicController
+            $this->generateSlug($item);
 
             // Llamar al método afterSave para procesar tags y otros elementos
             $isNew = !$request->has('id') || empty($request->input('id'));
@@ -304,6 +309,35 @@ class ItemController extends BasicController
     }
 
 
+
+    protected function generateSlug($item)
+    {
+        $table = (new $this->model)->getTable();
+        if (Schema::hasColumn($table, 'slug')) {
+            // Generar el slug base usando el nombre del producto
+            $slugBase = $item->name;
+            // Si existe el campo 'color' y tiene valor, añadirlo al slug
+            if (Schema::hasColumn($table, 'color') && !empty($item->color)) {
+                $slugBase .= '-' . $item->color;
+            }
+
+            if (Schema::hasColumn($table, 'size') && !empty($item->size)) {
+                $slugBase .= '-' . $item->size;
+            }
+
+            $slug = Str::slug($slugBase);
+            // Verificar si el slug ya existe para otro registro
+            $slugExists = $this->model::where('slug', $slug)
+                ->where('id', '<>', $item->id)
+                ->exists();
+            // Si existe, añadir un identificador único corto
+            if ($slugExists) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+            // Actualizar el slug
+            $item->update(['slug' => $slug]);
+        }
+    }
 
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
     {
