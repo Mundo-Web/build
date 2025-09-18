@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { Toaster, toast } from "sonner";
 
@@ -19,27 +19,30 @@ const generalsRest = new GeneralsRest();
 const galleryRest = new GalleryRest();
 
 const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole }) => {
+  // Debug: Verificar si generals está cambiando constantemente
+  useEffect(() => {
+    console.log('Generals component rendered, generals length:', generals?.length);
+  });
+
   // Función para verificar si el usuario tiene rol Root
-  const hasRootRole = () => {
+  const hasRootRole = useCallback(() => {
     // Usar el valor del backend si está disponible, sino usar el método original
     if (typeof backendRootRole !== 'undefined') {
       return backendRootRole;
     }
     return session?.roles?.some(role => role.name === 'Root') || false;
-  };
+  }, [backendRootRole, session]);
 
-  // Filtrar generals según el rol del usuario
-  const getVisibleGenerals = () => {
+  // Memoizar generals para evitar re-renders constantes
+  const visibleGenerals = useMemo(() => {
     // El backend ya filtra según el rol, usamos directamente los generals recibidos
     return generals;
-  };
+  }, [generals]);
 
-  const visibleGenerals = getVisibleGenerals();
-
-  // Función para verificar si un campo debe mostrarse
-  const shouldShowField = (correlative) => {
-    return generals.some(general => general.correlative === correlative);
-  };
+  // Función memoizada para verificar si un campo debe mostrarse
+  const shouldShowField = useCallback((correlative) => {
+    return visibleGenerals.some(general => general.correlative === correlative);
+  }, [visibleGenerals]);
 
 
 
@@ -58,32 +61,47 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
   };
 
-  // Función para verificar si un tab debe mostrarse
-  const shouldShowTab = (tabName) => {
+  // Función memoizada para verificar si un tab debe mostrarse
+  const shouldShowTab = useCallback((tabName) => {
     const correlatives = tabCorrelatives[tabName];
     if (!correlatives) return true; // Si no está mapeado, siempre mostrar
     // Mostrar tab si al menos uno de sus campos está disponible
     return correlatives.some(correlative => shouldShowField(correlative));
-  };
+  }, [shouldShowField]);
 
-  // Componente helper para renderizar campos condicionalmente
-  const ConditionalField = ({ correlative, children, fallback = null }) => {
-    // TODOS los campos ahora verifican si deben mostrarse (incluso Root)
-    return shouldShowField(correlative) ? children : fallback;
-  };
+  // Componente ConditionalField memoizado usando useMemo
+  const ConditionalField = useMemo(() => {
+    return ({ correlative, children, fallback = null }) => {
+      return shouldShowField(correlative) ? children : fallback;
+    };
+  }, [shouldShowField]);
+
+  // Crear una referencia estable a la función shouldShowField
+  const shouldShowFieldRef = useCallback((correlative) => {
+    return shouldShowField(correlative);
+  }, [shouldShowField]);
 
   const location =
     generals.find((x) => x.correlative == "location")?.description ?? "0,0";
 
-  // First add these to your formData state
-  // Filtrar solo los generales que son plantillas de email (excluyendo correo de soporte)
-  const emailTemplates = generals.filter(g => g.correlative.endsWith('_email') && g.correlative !== 'support_email' && g.correlative !== 'coorporative_email');
+  // Memoizar plantillas de email para evitar re-renders
+  const emailTemplates = useMemo(() => {
+    return generals.filter(g => g.correlative.endsWith('_email') && g.correlative !== 'support_email' && g.correlative !== 'coorporative_email');
+  }, [generals]);
+  
   const [showPreview, setShowPreview] = useState(false);
-  const [selectedEmailCorrelative, setSelectedEmailCorrelative] = useState(emailTemplates[0]?.correlative || "");
+  const [selectedEmailCorrelative, setSelectedEmailCorrelative] = useState("");
   const [templateVariables, setTemplateVariables] = useState({});
   const [loadingVars, setLoadingVars] = useState(false);
   const [varsError, setVarsError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Inicializar selectedEmailCorrelative cuando emailTemplates esté disponible
+  useEffect(() => {
+    if (emailTemplates.length > 0 && !selectedEmailCorrelative) {
+      setSelectedEmailCorrelative(emailTemplates[0].correlative);
+    }
+  }, [emailTemplates, selectedEmailCorrelative]);
 
   // Estados para gestión de visibilidad de campos
   const [showVisibilityModal, setShowVisibilityModal] = useState(false);
@@ -137,7 +155,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     }
   }, [allGenerals]);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     email_templates: Object.fromEntries(
       emailTemplates.map(t => [t.correlative, t.description ?? ""])
     ),
@@ -298,7 +316,105 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     googleOauthEnabled:
       generals.find((x) => x.correlative == "google_oauth_enabled")
         ?.description ?? "false",
-  });
+  }));
+
+  // Funciones memoizadas para evitar re-renders y pérdida de foco
+  const handleEmailTemplateChange = useCallback((content) => {
+    setFormData(prev => ({
+      ...prev,
+      email_templates: {
+        ...prev.email_templates,
+        [selectedEmailCorrelative]: content
+      }
+    }));
+  }, [selectedEmailCorrelative]);
+
+  const handleFieldChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  const handleCheckboxChange = useCallback((field, checked) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: String(checked)
+    }));
+  }, []);
+
+  const handleNestedFieldChange = useCallback((field, subField, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: {
+        ...prev[field],
+        [subField]: value
+      }
+    }));
+  }, []);
+
+  // Handlers específicos para cada campo para evitar recreación de funciones
+  const handleCopyrightChange = useCallback((e) => {
+    handleFieldChange('copyright', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleAddressChange = useCallback((e) => {
+    handleFieldChange('address', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleOpeningHoursChange = useCallback((e) => {
+    handleFieldChange('openingHours', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleSupportPhoneChange = useCallback((e) => {
+    handleFieldChange('supportPhone', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleCoorporativeEmailChange = useCallback((e) => {
+    handleFieldChange('coorporativeEmail', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleSupportEmailChange = useCallback((e) => {
+    handleFieldChange('supportEmail', e.target.value);
+  }, [handleFieldChange]);
+
+  const handlePhoneWhatsappChange = useCallback((e) => {
+    handleFieldChange('phoneWhatsapp', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleMessageWhatsappChange = useCallback((e) => {
+    handleFieldChange('messageWhatsapp', e.target.value);
+  }, [handleFieldChange]);
+
+  // Handlers para checkboxes
+  const handleCheckoutCulqiChange = useCallback((e) => {
+    handleCheckboxChange('checkout_culqi', e.target.checked);
+  }, [handleCheckboxChange]);
+
+  const handleCheckoutMercadopagoChange = useCallback((e) => {
+    handleCheckboxChange('checkout_mercadopago', e.target.checked);
+  }, [handleCheckboxChange]);
+
+  const handleCheckoutDwalletChange = useCallback((e) => {
+    handleCheckboxChange('checkout_dwallet', e.target.checked);
+  }, [handleCheckboxChange]);
+
+  const handleCheckoutTransferChange = useCallback((e) => {
+    handleCheckboxChange('checkout_transfer', e.target.checked);
+  }, [handleCheckboxChange]);
+
+  // Handlers para campos específicos de pago
+  const handleCulqiNameChange = useCallback((e) => {
+    handleFieldChange('checkout_culqi_name', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleCulqiPublicKeyChange = useCallback((e) => {
+    handleFieldChange('checkout_culqi_public_key', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleCulqiPrivateKeyChange = useCallback((e) => {
+    handleFieldChange('checkout_culqi_private_key', e.target.value);
+  }, [handleFieldChange]);
 
   const [activeTab, setActiveTab] = useState("general");
   const [showCintilloModal, setShowCintilloModal] = useState(false);
@@ -1108,13 +1224,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     </>
                   }
                   value={formData.email_templates[selectedEmailCorrelative] || ""}
-                  onChange={content => setFormData({
-                    ...formData,
-                    email_templates: {
-                      ...formData.email_templates,
-                      [selectedEmailCorrelative]: content
-                    }
-                  })}
+                  onChange={handleEmailTemplateChange}
                 />
               </div>
             </div>
@@ -1151,17 +1261,12 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       className="form-control"
                       id="copyright"
                       value={formData.copyright}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          copyright: e.target.value,
-                        })
-                      }
+                      onChange={handleCopyrightChange}
                     ></textarea>
                   </div>
                 </ConditionalField>
               </div>
-              <ConditionalField correlative="address">
+              {shouldShowField("address") && (
                 <div className="mb-2">
                   <label htmlFor="address" className="form-label">
                     Dirección
@@ -1170,26 +1275,16 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     className="form-control"
                     id="address"
                     value={formData.address}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: e.target.value,
-                      })
-                    }
+                    onChange={handleAddressChange}
                     required
                   ></textarea>
                 </div>
-              </ConditionalField>
+              )}
               <ConditionalField correlative="opening_hours">
                 <div className="mb-2">
                   <TextareaFormGroup
                     label="Horarios de atencion"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        openingHours: e.target.value,
-                      })
-                    }
+                    onChange={handleOpeningHoursChange}
                     value={formData.openingHours}
                     required
                   />
@@ -1341,19 +1436,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     htmlFor="coorporativeEmail"
                     className="form-label"
                   >
-                    Correo corporativo
+                    Correo corporativo (aquí llegaran los emails  salientes)
                   </label>
                   <input
                     type="email"
                     className="form-control"
                     id="coorporativeEmail"
                     value={formData.coorporativeEmail}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        coorporativeEmail: e.target.value,
-                      })
-                    }
+                    onChange={handleCoorporativeEmailChange}
                   />
                 </div>
               </ConditionalField>
@@ -1370,12 +1460,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     className="form-control"
                     id="supportEmail"
                     value={formData.supportEmail}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        supportEmail: e.target.value,
-                      })
-                    }
+                    onChange={handleSupportEmailChange}
                     required
                   />
                 </div>
@@ -1395,12 +1480,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                         className="form-control"
                         id="phoneWhatsapp"
                         value={formData.phoneWhatsapp}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            phoneWhatsapp: e.target.value,
-                          })
-                        }
+                        onChange={handlePhoneWhatsappChange}
                         required
                       />
                     </div>
@@ -1418,12 +1498,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                         className="form-control"
                         id="messageWhatsapp"
                         value={formData.messageWhatsapp}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            messageWhatsapp: e.target.value,
-                          })
-                        }
+                        onChange={handleMessageWhatsappChange}
                         required
                       />
                     </div>
@@ -1471,7 +1546,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                               className="form-check-input"
                               id="checkout-culqi"
                               checked={formData.checkout_culqi == 'true'}
-                              onChange={(e) => setFormData({ ...formData, checkout_culqi: String(e.target.checked) })}
+                              onChange={handleCheckoutCulqiChange}
                             />
                             <label className="form-check-label form-label" htmlFor="checkout-culqi">
                               Habilitar pago con Culqi
@@ -1487,10 +1562,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                             type="text"
                             className="form-control"
                             value={formData.checkout_culqi_name}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              checkout_culqi_name: e.target.value
-                            })}
+                            onChange={handleCulqiNameChange}
                           />
                         </div>
                       </ConditionalField>
@@ -1500,10 +1572,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           type="text"
                           className="form-control"
                           value={formData.checkout_culqi_public_key}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            checkout_culqi_public_key: e.target.value
-                          })}
+                          onChange={handleCulqiPublicKeyChange}
                         />
                       </div>
                       <div className="mb-2">
@@ -1512,10 +1581,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           type="password"
                           className="form-control"
                           value={formData.checkout_culqi_private_key}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            checkout_culqi_private_key: e.target.value
-                          })}
+                          onChange={handleCulqiPrivateKeyChange}
                         />
                       </div>
                     </div>
@@ -1529,7 +1595,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                             className="form-check-input"
                             id="checkout-mercadopago"
                             checked={formData.checkout_mercadopago == 'true'}
-                            onChange={(e) => setFormData({ ...formData, checkout_mercadopago: String(e.target.checked) })}
+                            onChange={handleCheckoutMercadopagoChange}
                           />
                           <label className="form-check-label form-label" htmlFor="checkout-mercadopago">
                             Habilitar pago con Mercado Pago

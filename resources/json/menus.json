@@ -23,6 +23,7 @@
       { "label": "Sucursales", "href": "/admin/stores", "icon": "mdi mdi-office-building-marker" },
       { "label": "Costos de envío", "href": "/admin/prices", "icon": "mdi mdi-moped" },
       { "label": "Mensajes", "href": "/admin/messages", "icon": "mdi mdi-message-text" },
+      { "label": "Reclamos", "href": "/admin/complaints", "icon": "mdi mdi-alert-circle-outline" },
       { "label": "Suscripciones", "href": "/admin/subscriptions", "icon": "mdi mdi-email-multiple" }
     ]
   },

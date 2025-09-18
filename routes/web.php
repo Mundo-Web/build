@@ -43,6 +43,7 @@ use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesCont
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\RepositoryController as AdminRepositoryController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
+use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
@@ -124,6 +125,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/prices', [AdminDeliveryPriceController::class, 'reactView'])->name('Admin/DeliveryPricesType.jsx');
     Route::get('/stores', [AdminStoreController::class, 'reactView'])->name('Admin/Stores.jsx');
     Route::get('/messages', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Messages.jsx');
+    Route::get('/complaints', [AdminComplaintController::class, 'reactView'])->name('Admin/Complaints.jsx');
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Subscriptions.jsx');
 
     Route::get('/posts', [AdminPostController::class, 'reactView'])->name('Admin/Posts.jsx');

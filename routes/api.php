@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AboutusController as AdminAboutusController;
 use App\Http\Controllers\Admin\IndicatorController as AdminIndicatorController;
 use App\Http\Controllers\Admin\MessageController as AdminMessageController;
+use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
@@ -299,6 +300,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/messages/status', [AdminMessageController::class, 'status']);
     Route::patch('/messages/{field}', [AdminMessageController::class, 'boolean']);
     Route::delete('/messages/{id}', [AdminMessageController::class, 'delete']);
+
+    Route::post('/complaints', [AdminComplaintController::class, 'save']);
+    Route::post('/complaints/paginate', [AdminComplaintController::class, 'paginate']);
+    Route::patch('/complaints/status', [AdminComplaintController::class, 'status']);
+    Route::patch('/complaints/{field}', [AdminComplaintController::class, 'boolean']);
+    Route::delete('/complaints/{id}', [AdminComplaintController::class, 'delete']);
 
     Route::post('/subscriptions/paginate', [AdminSubscriptionController::class, 'paginate']);
     Route::patch('/subscriptions/status', [AdminSubscriptionController::class, 'status']);
