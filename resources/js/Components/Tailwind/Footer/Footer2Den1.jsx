@@ -114,9 +114,9 @@ const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
 
         {/* Logo Column */}
         <div className="max-w-xs">
-          <div className="h-14 ">
+          <div className="h-auto ">
             <img src="/assets/resources/logo-footer.png" alt="Sala Fabulosa"
-              className=" object-cover  h-14 w-auto" onError={(e) => {
+              className=" object-cover  h-28 w-auto" onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/assets/img/logo-bk.svg';
               }} />
@@ -179,18 +179,32 @@ const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
           </div>
         </div>
 
-        {/* Menu Column */}
+        {/* Menu Column - Tienda Principal */}
         <div className="flex flex-col">
-          {/* <div className="flex flex-col gap-2">
-            <h3 className="text-white font-bold text-lg 2xl:text-xl">
-              Ubícanos
-            </h3>
-            <ul className="space-y-2 text-white text-sm 2xl:text-base">
-              <li>{getContact("address")}</li>
-              <li>Teléfono: {getContact("phone_contact")}</li>
-              <li>Correo: {getContact("email_contact")}</li>
-            </ul>
-          </div> */}
+          {stores?.filter(store => store.type === "tienda_principal").map(store => (
+            <div key={store.id} className="flex flex-col gap-2">
+              <h3 className="text-white font-bold text-lg 2xl:text-xl">
+                {store?.name || "Ubícanos"}
+              </h3>
+              <ul className="space-y-2 text-white text-sm 2xl:text-base">
+                {/* Mostrar dirección solo si existe */}
+                {store?.address && <li>{store.address}</li>}
+                
+                {/* Mostrar horario solo si existe business_hours */}
+                {store?.business_hours?.length > 0 && (
+                  <li className="whitespace-pre-line">
+                    {formatStoreHours(store.business_hours)}
+                  </li>
+                )}
+                
+                {/* Mostrar teléfono solo si existe */}
+                {store?.phone && <li>Teléfono: {store.phone}</li>}
+                
+                {/* Mostrar correo solo si existe */}
+                {store?.email && <li>Correo: {store.email}</li>}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Policies Column */}
@@ -253,9 +267,9 @@ const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
             <form onSubmit={onEmailSubmit} className="max-w-sm">
               <div className="relative customtext-primary">
                 <input ref={emailRef} type="email" placeholder="Ingresa tu e-mail"
-                  className="w-full bg-transparent text-white font-medium py-4 pl-2 border-2 border-white rounded-xl focus:ring-0 focus:outline-none placeholder:text-white placeholder:opacity-65" />
+                  className="w-full bg-transparent text-white font-medium py-4 pl-4 border-2 border-white rounded-full focus:ring-0 focus:outline-none placeholder:text-white " />
                 <button
-                  className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-secondary customtext-neutral-dark rounded-lg"
+                  className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-semibold px-5 bg-accent text-white rounded-full"
                   aria-label="Suscribite">
                   Suscribirme
                 </button>
@@ -263,7 +277,7 @@ const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
             </form>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col justify-end items-end gap-2">
             <h3 className="text-white font-bold text-lg 2xl:text-xl">
               Nuestras redes
             </h3>
@@ -280,7 +294,7 @@ const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
 
         <div className="flex flex-col"></div>
         
-        {stores?.map(store => (      
+        {stores?.filter(store => store.type !== "tienda_principal").map(store => (      
           <div className="flex flex-col">
             <div className="flex flex-col gap-2">
               {store?.name && (

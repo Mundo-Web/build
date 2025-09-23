@@ -12,7 +12,7 @@ const TopBarCopyright = ({ data }) => {
   });
 
   return <div className={`${data?.background || "bg-white customtext-neutral-light"}  text-sm font-medium py-3  text-center px-primary flex justify-center items-center font-title`}>
-    <p>{content}</p>
+    <p>{content}   <span className="italic ">  Powered by  <a href="https://www.mundoweb.pe" target="_blank" rel="noopener noreferrer">MundoWeb</a></span></p>
   </div>
 }
 
