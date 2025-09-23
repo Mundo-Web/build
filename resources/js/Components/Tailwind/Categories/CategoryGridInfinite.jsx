@@ -88,7 +88,7 @@ const CategoryGridInfinite = ({ data, items }) => {
                     animate={containerInView ? "visible" : "hidden"}
                     className={`${data?.class_container || "bg-white"}`}
                 >
-                   <div className="px-primary 2xl:px-0 2xl:max-w-[1500px] mx-auto py-12 lg:py-20">
+                   <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-12 lg:py-10">
                     {/* Header */}
                     {data?.title && (
                         <motion.div 
