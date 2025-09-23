@@ -172,6 +172,7 @@ const Header = ({
                         isUser={isUser}
                         headerPosts={headerPosts}
                         contacts={contacts}
+                        generals={generals}
                     />
                 );
             case "HeaderScraping":

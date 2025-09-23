@@ -367,12 +367,15 @@
                 ]
             },
             {
-                "id": "Header - Sala Fabulosa",
+                "id": "HeaderSearchMenuSF",
                 "name": "Con busqueda y menu SF",
                 "image": "header-with-search.png",
                 "data": [
                     "class",
                     "link_cart"
+                ],
+                   "generals": [
+                    "cintillo"
                 ]
             },
             {
