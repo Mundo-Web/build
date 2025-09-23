@@ -1376,7 +1376,7 @@ export default function ShippingStepSF({
                 <div className="lg:col-span-3">
                     {/* Formulario */}
                     <form
-                        className="space-y-6 bg-[#f9f9f9] py-6 px-4 sm:px-6 rounded-2xl font-font-general"
+                        className="space-y-6 bg-[#f9f9f9] py-6 px-4 sm:px-6 rounded-2xl font-paragraph"
                         onSubmit={(e) => e.preventDefault()}
                     >
                         <div className="sectionInformation space-y-3.5">
@@ -1875,7 +1875,7 @@ export default function ShippingStepSF({
                     </form>
                 </div>
                 {/* Resumen de compra */}
-                <div className="bg-[#F7F9FB] rounded-xl shadow-lg p-6 col-span-2 h-max font-font-general">
+                <div className="bg-[#F7F9FB] rounded-xl shadow-lg p-6 col-span-2 h-max font-paragraph">
                     <h3 className="text-2xl font-bold pb-6 customtext-neutral-dark">Resumen de compra</h3>
 
                     <div className="space-y-6 border-b-2 pb-6">

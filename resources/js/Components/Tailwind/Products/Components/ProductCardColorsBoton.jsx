@@ -65,7 +65,7 @@ const ProductCardColorsBoton = ({ product, setCart, cart, textcolor = "", fondo 
     return (
         <div
             key={product.id}
-            className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 hover:scale-105 flex-shrink-0 font-font-general customtext-primary cursor-pointer relative`}
+            className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 hover:scale-105 flex-shrink-0 font-paragraph customtext-primary cursor-pointer relative`}
         >
             <div
                 className={`p-0 ${fondo !== "" ? fondo : 'bg-white'} rounded-xl lg:rounded-2xl`}

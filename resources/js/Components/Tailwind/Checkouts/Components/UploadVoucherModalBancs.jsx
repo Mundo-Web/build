@@ -168,11 +168,11 @@ export default function UploadVoucherModalBancs({
         <ReactModal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-font-general"
+            className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-paragraph"
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
             ariaHideApp={false}
         >
-            <div className="py-6 px-10 flex flex-col gap-3 max-h-[90vh] md:max-h-[95vh] overflow-y-auto font-font-general">
+            <div className="py-6 px-10 flex flex-col gap-3 max-h-[90vh] md:max-h-[95vh] overflow-y-auto font-paragraph">
 
                 <div className="flex justify-center items-center z-40">
                     <a href="/" className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function UploadVoucherModalBancs({
                 </div>       
               
                 {/* Resumen de compra */}
-                <div className="bg-[#EAE8E6] rounded-xl shadow-lg p-6 col-span-2 h-max font-font-general">
+                <div className="bg-[#EAE8E6] rounded-xl shadow-lg p-6 col-span-2 h-max font-paragraph">
                     <h3 className="text-xl 2xl:text-2xl font-semibold pb-6 customtext-neutral-dark">Detalle de compras</h3>
 
                     <div className="space-y-6 border-b-2 pb-6">

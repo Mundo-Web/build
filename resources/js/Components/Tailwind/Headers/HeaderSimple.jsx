@@ -76,7 +76,7 @@ const HeaderSimple = ({ data, cart, setCart, pages, generals }) => {
           </a>
 
           {/* Desktop Navigation Menu */}
-          <nav className="hidden lg:flex items-center space-x-8 font-font-general">
+          <nav className="hidden lg:flex items-center space-x-8 font-paragraph">
             {pages
               .filter((x) => x.menuable)
               .map((page, index) => (

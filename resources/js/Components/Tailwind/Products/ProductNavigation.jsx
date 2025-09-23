@@ -53,7 +53,7 @@ const ProductNavigation = ({ items, data, setCart, cart }) => {
 
     return (
         <section className="pt-10 lg:pt-16">
-            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl font-font-general">
+            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl font-paragraph">
                 {/* Header */}
                 {data?.title && (
                     <div className="flex flex-wrap gap-4 justify-between items-center pb-4 ">

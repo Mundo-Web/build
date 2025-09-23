@@ -35,7 +35,7 @@ const CartItemRowBananaLab = ({ setCart, ...item }) => {
 
   return (
     <motion.tr 
-      className="border-b border-gray-100 font-font-general hover:bg-gray-50 transition-colors"
+      className="border-b border-gray-100 font-paragraph hover:bg-gray-50 transition-colors"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 50 }}

@@ -11,7 +11,7 @@ const CategoryCardWithBanner = ({
 }) => {
     return (
         <section
-            className={`relative font-font-general text-white w-full h-full p-[3%]`}
+            className={`relative font-paragraph text-white w-full h-full p-[3%]`}
             style={{
                 aspectRatio,
                 backgroundImage: `url(/storage/images/category/${category?.banner})`,

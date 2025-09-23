@@ -43,7 +43,7 @@ const TopBarCart = ({ data, cart, setCart, isUser, items }) => {
     return (
         <section
             ref={sectionRef}
-            className="font-semibold text-lg bg-primary text-white font-font-general"
+            className="font-semibold text-lg bg-primary text-white font-paragraph"
         >
             <div className="px-[5%] 2xl:max-w-7xl 2xl:px-0 mx-auto replace-max-w-here  py-2 flex flex-wrap justify-end md:justify-between items-center gap-2">
                 {/* Solo mostrar el párrafo del cintillo si hay cintillos activos */}
@@ -87,7 +87,7 @@ const TopBarCart = ({ data, cart, setCart, isUser, items }) => {
                         </a>
                     )}
                     {isMenuOpen && (
-                        <div className="fixed sm:absolute font-font-general customtext-primary z-50 top-10 md:top-5 left-1/2 right-0 bg-white shadow-xl border-t rounded-xl transition-all duration-300 ease-in-out w-40 sm:w-40 sm:mt-2 sm:left-auto sm:right-auto">
+                        <div className="fixed sm:absolute font-paragraph customtext-primary z-50 top-10 md:top-5 left-1/2 right-0 bg-white shadow-xl border-t rounded-xl transition-all duration-300 ease-in-out w-40 sm:w-40 sm:mt-2 sm:left-auto sm:right-auto">
                             <div className="p-4">
                                 <ul className="space-y-2">
                                     <li>

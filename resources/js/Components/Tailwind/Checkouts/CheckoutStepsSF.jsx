@@ -245,7 +245,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         </p>
 
                         <div className="flex flex-col">
-                            <a className="w-auto bg-primary px-6 py-3 2xl:py-4 2xl:px-8 rounded-3xl text-white font-font-general leading-none text-base 2xl:text-xl">
+                            <a className="w-auto bg-primary px-6 py-3 2xl:py-4 2xl:px-8 rounded-3xl text-white font-paragraph leading-none text-base 2xl:text-xl">
                                 Seguir comprando
                             </a>
                         </div>

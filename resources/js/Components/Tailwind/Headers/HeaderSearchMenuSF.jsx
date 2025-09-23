@@ -60,7 +60,7 @@ const HeaderSearchMenuSF = ({
 
 
   return (
-    <header id="main-header" className="sticky top-0 w-full z-20 bg-white font-font-general">
+    <header id="main-header" className="sticky top-0 w-full z-20 bg-white font-paragraph">
 
       <TopBarCart
         data={data}
@@ -92,7 +92,7 @@ const HeaderSearchMenuSF = ({
             {/* Logo */}
             <div className="flex justify-center items-center z-40">
               <a href="/" className="flex items-center gap-2">
-                <img src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className="h-16 object-contain object-center" onError={(e) => {
+                <img src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className="h-20 object-contain object-center" onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = '/assets/img/logo-bk.svg';
                 }} />

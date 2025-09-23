@@ -67,7 +67,7 @@ const ClientSatisfactionScraping = ({ items, data }) => {
 
 
     return (
-        <section className="py-20 font-font-general bg-secondary">
+        <section className="py-20 font-paragraph bg-secondary">
             <div className="w-full px-primary mx-auto">
                 <h1 className="text-[40px]  font-bold text-center mb-4">Clientes satisfechos</h1>
                 <p className="text-center customtext-neutral-light mb-8 max-w-3xl mx-auto">

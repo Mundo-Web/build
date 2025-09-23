@@ -95,13 +95,13 @@ export default function MobileMenuSF({ search, setSearch, pages, items, headerPo
         <div className="w-full fixed top-[120px] h-screen customtext-neutral-dark mx-auto bg-white">
             <div className="bg-white z-50 w-full">
                 
-                <div className="p-5 w-full flex flex-col gap-3 font-font-general">
+                <div className="p-5 w-full flex flex-col gap-3 font-paragraph">
                     <div className="relative mb-2">
                         <LiveSearchBar search={search} setSearch={setSearch} />
                     </div>
                     
                     <ul
-                        className={`bg-white flex font-font-general font-semibold text-lg`}
+                        className={`bg-white flex font-paragraph font-semibold text-lg`}
                     >
                         <div className="flex-col lg:flex-row order-2 lg:order-1 lg:w-full lg:justify-center">
                             {pages.map(

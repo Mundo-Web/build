@@ -1645,7 +1645,10 @@
                 "data": [
                     "title",
                     "centrado",
-                    "path"
+                    "path",
+                    "shownavigation",
+                    "showPagination",
+                    "paginationAlignment"
                 ],
                 "using": {
                     "model": "Collection",

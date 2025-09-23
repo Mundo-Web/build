@@ -343,7 +343,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
 
                             {/* SKU and Availability */}
 
-                            {/* <div className="flex flex-wrap customtext-neutral-light items-center gap-y-2  gap-x-8 text-sm font-font-general">
+                            {/* <div className="flex flex-wrap customtext-neutral-light items-center gap-y-2  gap-x-8 text-sm font-paragraph">
                                 <span className="customtext-neutral-light text-sm 2xl:text-base">
                                     SKU:{" "}
                                     <span className="customtext-neutral-dark font-bold">
@@ -510,11 +510,11 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                         onAddClicked(item);
                                         setModalOpen(!modalOpen);
                                     }}
-                                    className="w-full font-font-general text-base 2xl:text-lg bg-primary text-white py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-3"
+                                    className="w-full font-paragraph text-base 2xl:text-lg bg-primary text-white py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-3"
                                 >
                                     Agregar al carrito
                                 </button>
-                                <button className="w-full font-font-general text-base 2xl:text-lg customtext-neutral-dark border border-neutral-dark py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-4">
+                                <button className="w-full font-paragraph text-base 2xl:text-lg customtext-neutral-dark border border-neutral-dark py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-4">
                                     Comprar
                                 </button>
                             </div> */}
@@ -525,7 +525,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                             {/* {item?.specifications?.length > 0 && (
                                 <div className="flex-1 w-full">
                                     <div className="bg-[#F7F9FB] rounded-xl p-6">
-                                        <h3 className="font-semibold text-lg xl:text-xl 2xl:text-2xl mb-4 customtext-neutral-dark font-font-general">
+                                        <h3 className="font-semibold text-lg xl:text-xl 2xl:text-2xl mb-4 customtext-neutral-dark font-paragraph">
                                             Especificaciones principales
                                         </h3>
                                         <ul
@@ -550,7 +550,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                             )}
                                         </ul>
                                         <button
-                                            className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-font-general pb-2 border-b border-neutral-dark"
+                                            className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-paragraph pb-2 border-b border-neutral-dark"
                                             onClick={() =>
                                                 setExpanded(
                                                     !expandedSpecificationMain

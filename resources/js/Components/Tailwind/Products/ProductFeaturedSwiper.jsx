@@ -21,7 +21,7 @@ const ProductFeaturedSwiper = ({ items, data, setCart, cart, contacts }) => {
 
     return (
         <section className="py-0">
-            <div className="w-full font-font-general">
+            <div className="w-full font-paragraph">
                 {/* Swiper Carousel */}
                 <div className="relative">
                     <Swiper

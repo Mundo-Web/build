@@ -81,10 +81,10 @@ export default function LoginSimpleD2() {
                 <div className="flex items-center justify-center px-5 py-8 sm:p-8">
                     <div className="mx-auto w-full max-w-md space-y-6">
                         <div className="space-y-2">
-                            <h5 className="font-bold font-font-general text-base lg:text-lg 2xl:text-xl customtext-primary">Hola</h5>
-                            <h1 className="font-semibold font-font-general tracking-tight text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl customtext-primary">Bienvenido de nuevo</h1>
+                            <h5 className="font-bold font-paragraph text-base lg:text-lg 2xl:text-xl customtext-primary">Hola</h5>
+                            <h1 className="font-semibold font-paragraph tracking-tight text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl customtext-primary">Bienvenido de nuevo</h1>
                         </div>
-                        <form className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 gap-x-3 font-font-general" onSubmit={onLoginSubmit}>
+                        <form className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 gap-x-3 font-paragraph" onSubmit={onLoginSubmit}>
                             <div className="lg:col-span-2">
                                 <InputFormSF
                                     label="Correo electronico"
@@ -115,7 +115,7 @@ export default function LoginSimpleD2() {
                                     />
                                     <label
                                         htmlFor="remember"
-                                        className="text-sm customtext-neutral-dark font-medium font-font-general"
+                                        className="text-sm customtext-neutral-dark font-medium font-paragraph"
                                     >
                                         Guardar mis datos
                                     </label>
@@ -123,7 +123,7 @@ export default function LoginSimpleD2() {
                                 <a
                                     href="/forgot-password"
                                     className="text-sm flex gap-2
-                                    items-center justify-center font-font-general customtext-primary font-semibold  fill-primary"
+                                    items-center justify-center font-paragraph customtext-primary font-semibold  fill-primary"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -178,7 +178,7 @@ export default function LoginSimpleD2() {
                                     <div className="text-sm text-center customtext-neutral-dark">
                                         <a
                                             href="/crear-cuenta"
-                                            className="text-muted font-medium font-font-general"
+                                            className="text-muted font-medium font-paragraph"
                                         >¿Eres nuevo?
                                             <span className="border-b border-[#F93232] text-[#F93232]"> Registrate </span> 
                                             {/* o

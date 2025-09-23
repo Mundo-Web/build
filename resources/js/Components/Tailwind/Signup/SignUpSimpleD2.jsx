@@ -73,14 +73,14 @@ export default function SignUpSimpleD2() {
                 <div className="flex items-center justify-center p-8 ">
                     <div className="mx-auto w-full max-w-md space-y-6">
                         <div className="space-y-2">
-                            <h5 className="font-bold font-font-general text-base lg:text-lg 2xl:text-xl customtext-primary">
+                            <h5 className="font-bold font-paragraph text-base lg:text-lg 2xl:text-xl customtext-primary">
                                 Vamos a crear!
                             </h5>
-                            <h1 className="font-semibold font-font-general tracking-tight text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl customtext-primary">
+                            <h1 className="font-semibold font-paragraph tracking-tight text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl customtext-primary">
                                 Crear una nueva cuenta
                             </h1>
                         </div>
-                        <form className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 gap-x-3 font-font-general" onSubmit={onSignUpSubmit}>
+                        <form className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 gap-x-3 font-paragraph" onSubmit={onSignUpSubmit}>
                             <div className="space-y-1.5">
                                 <label
                                     className="block text-sm 2xl:text-base customtext-neutral-dark tracking-tight opacity-65"

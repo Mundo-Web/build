@@ -186,7 +186,7 @@ export default function ComplaintSimple({ generals }) {
     const openModal = (index) => setModalOpen(index);
     const closeModal = () => setModalOpen(null);
     return (
-        <div className=" w-full px-primary mx-auto pt-8 pb-16 font-font-general">
+        <div className=" w-full px-primary mx-auto pt-8 pb-16 font-paragraph">
             <div className="max-w-7xl mx-auto  bg-white shadow-lg rounded-2xl customtext-neutral-dark p-8">
                 <h1 className="text-2xl font-bold mb-10 text-center uppercase">
                     Libro de Reclamaciones

@@ -53,7 +53,7 @@ const ProductCardScraping = ({
         <div
             onClick={() => handleClickGoTo(product?.name)}
             key={product?.id}
-            className={`group font-font-general w-full transition-transform duration-300 hover:scale-105  sm:w-1/3 ${widthClass} flex-shrink-0 font-font-general customtext-primary cursor-pointer`}
+            className={`group font-paragraph w-full transition-transform duration-300 hover:scale-105  sm:w-1/3 ${widthClass} flex-shrink-0 font-paragraph customtext-primary cursor-pointer`}
         >
             <div className=" px-4">
                 <div className="bg-white rounded-3xl">

@@ -292,7 +292,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                         {/* Brand and Title */}
                         <motion.div 
                             variants={slideUp}
-                            className="font-font-general"
+                            className="font-paragraph"
                         >
                             {item?.brand && (
                                 <p className="customtext-neutral-light text-sm 2xl:text-lg">
@@ -313,7 +313,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                         {/* SKU and Availability */}
                         <motion.div 
                             variants={slideUp}
-                            className="flex flex-wrap customtext-neutral-light items-center gap-y-2 gap-x-8 text-sm font-font-general"
+                            className="flex flex-wrap customtext-neutral-light items-center gap-y-2 gap-x-8 text-sm font-paragraph"
                         >
                             <span className="customtext-neutral-light text-sm 2xl:text-base">
                                 SKU:{" "}
@@ -332,7 +332,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                         {/* Price Section */}
                         <motion.div 
                             variants={slideUp}
-                            className="flex flex-col w-full xl:w-1/2 !font-font-general max-w-xl mt-5"
+                            className="flex flex-col w-full xl:w-1/2 !font-paragraph max-w-xl mt-5"
                         >
                             <p className="text-sm 2xl:text-base customtext-neutral-light">
                                 Precio:{" "}
@@ -481,7 +481,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                                     className="w-12 h-12 object-contain"
                                     loading="lazy"
                                 />
-                                <div className="customtext-neutral-dark font-font-general text-base 2xl:text-xl font-semibold">
+                                <div className="customtext-neutral-dark font-paragraph text-base 2xl:text-xl font-semibold">
                                     <p>
                                         ¿Tienes dudas sobre este producto? Haz{" "}
                                         <span className="underline">
@@ -498,7 +498,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
 
             <motion.div 
                 variants={slideUp}
-                className="grid gap-10 lg:gap-20 md:grid-cols-2 bg-white rounded-xl p-4 sm:p-8 font-font-general"
+                className="grid gap-10 lg:gap-20 md:grid-cols-2 bg-white rounded-xl p-4 sm:p-8 font-paragraph"
             >
                 {/* Specifications Section */}
                 {item?.specifications?.length > 0 && (
@@ -533,7 +533,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                 )}
 
                 {/* Additional Information Section */}
-                <motion.div variants={slideUp} className="font-font-general">
+                <motion.div variants={slideUp} className="font-paragraph">
                     {item?.description?.replace(/<[^>]+>/g, '') && (
                         <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
                             Información adicional

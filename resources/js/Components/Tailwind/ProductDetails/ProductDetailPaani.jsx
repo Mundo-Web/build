@@ -674,7 +674,7 @@ const ProductDetailPaani = ({ item, data, setCart, cart, generals, favorites, se
                                         className="w-12 h-12 object-contain"
                                         loading="lazy"
                                     />
-                                    <div className="customtext-neutral-dark cursor-pointer font-font-general text-base 2xl:text-lg font-semibold">
+                                    <div className="customtext-neutral-dark cursor-pointer font-paragraph text-base 2xl:text-lg font-semibold">
                                         <p>
                                             ¿Tienes dudas sobre este producto?
                                             Haz{" "}

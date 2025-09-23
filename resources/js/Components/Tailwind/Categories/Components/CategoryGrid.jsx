@@ -84,7 +84,7 @@ export default function CategoryGrid({
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <a href={`/catalogo?category=${category.slug}`}>
-                                    <section className="group font-font-general text-white w-full h-[200px] sm:h-full">
+                                    <section className="group font-paragraph text-white w-full h-[200px] sm:h-full">
                                         <div className="flex gap-4 h-full">
                                             <div className="relative w-full h-full overflow-hidden rounded-2xl">
                                                 <motion.img
@@ -140,7 +140,7 @@ export default function CategoryGrid({
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <a href={`/catalogo?category=${category.slug}`}>
-                                    <section className="group font-font-general text-white w-full h-[200px] sm:h-full sm:max-h-[320px] 2xl:h-[350px]">
+                                    <section className="group font-paragraph text-white w-full h-[200px] sm:h-full sm:max-h-[320px] 2xl:h-[350px]">
                                         <div className="flex gap-4 h-full">
                                             <div className="relative w-full h-full overflow-hidden rounded-2xl">
                                                 <motion.img
@@ -196,7 +196,7 @@ export default function CategoryGrid({
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <a href={`/catalogo?category=${category.slug}`}>
-                                    <section className="group font-font-general text-white w-full h-[200px] sm:h-full sm:min-h-[300px] 2xl:min-h-[300px] 2xl:max-h-[300px]">
+                                    <section className="group font-paragraph text-white w-full h-[200px] sm:h-full sm:min-h-[300px] 2xl:min-h-[300px] 2xl:max-h-[300px]">
                                         <div className="flex gap-4 h-full">
                                             <div className="relative w-full h-full overflow-hidden rounded-2xl">
                                                 <motion.img
@@ -273,7 +273,7 @@ export default function CategoryGrid({
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <a href={`/catalogo?category=${category.slug}`}>
-                                        <section className="group font-font-general text-white w-full h-[200px] sm:h-full max-h-[400px]">
+                                        <section className="group font-paragraph text-white w-full h-[200px] sm:h-full max-h-[400px]">
                                             <div className="flex gap-4 h-full">
                                                 <div className="relative w-full h-full overflow-hidden rounded-2xl">
                                                     <motion.img
@@ -338,7 +338,7 @@ export default function CategoryGrid({
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <a href={`/catalogo?category=${category.slug}`}>
-                                        <section className="group font-font-general text-white w-full h-[200px] sm:h-full max-h-[400px]">
+                                        <section className="group font-paragraph text-white w-full h-[200px] sm:h-full max-h-[400px]">
                                             <div className="flex gap-4 h-full">
                                                 <div className="relative w-full h-full overflow-hidden rounded-2xl">
                                                     <motion.img
@@ -403,7 +403,7 @@ export default function CategoryGrid({
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <a href={`/catalogo?category=${category.slug}`}>
-                                        <section className="group font-font-general text-white w-full h-[200px] sm:h-full max-h-[400px]">
+                                        <section className="group font-paragraph text-white w-full h-[200px] sm:h-full max-h-[400px]">
                                             <div className="flex gap-4 h-full">
                                                 <div className="relative w-full h-full overflow-hidden rounded-2xl">
                                                     <motion.img

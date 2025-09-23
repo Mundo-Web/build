@@ -60,32 +60,32 @@ const ContactSimple = ({ data, contacts }) => {
     <div className="px-[5%] replace-max-w-here w-full mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32 2xl:gap-44">
         <div className="flex flex-col gap-5 aos-init aos-animate" data-aos="fade-up" data-aos-offset="150">
-          <h2 className="font-font-general font-bold text-3xl lg:text-4xl xl:text-[43px] leading-none customtext-primary">Escríbenos si tienes alguna duda o consulta</h2>
-          <p className="customtext-primary text-opacity-20 font-font-general font-normal text-base">Renueva tus espacios con estilo: Fundas exclusivas para cada temporada.</p>
+          <h2 className="font-paragraph font-bold text-3xl lg:text-4xl xl:text-[43px] leading-none customtext-primary">Escríbenos si tienes alguna duda o consulta</h2>
+          <p className="customtext-primary text-opacity-20 font-paragraph font-normal text-base">Renueva tus espacios con estilo: Fundas exclusivas para cada temporada.</p>
 
           <form onSubmit={onSubmit} className="flex flex-col gap-5 aos-init aos-animate" data-aos="fade-up" data-aos-offset="150">
             <div className="w-full flex flex-col gap-2">
-              <label htmlFor="full_name" className="font-normal text-sm leading-none text-[#311609A3] font-font-general">Nombre Completo</label>
-              <input ref={nameRef} required type="text" id="full_name" name="full_name" placeholder="Nombres y Apellidos" className="border-[#3116093D] font-font-general p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}/>
+              <label htmlFor="full_name" className="font-normal text-sm leading-none text-[#311609A3] font-paragraph">Nombre Completo</label>
+              <input ref={nameRef} required type="text" id="full_name" name="full_name" placeholder="Nombres y Apellidos" className="border-[#3116093D] font-paragraph p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}/>
             </div>
 
             <div className="w-full flex flex-col gap-2">
-            <label htmlFor="telefono" className="font-normal text-sm leading-none text-[#311609A3] font-font-general">Teléfono</label>
-              <input ref={phoneRef} required type="tel" id="telefono" name="phone" placeholder="Teléfono" maxlength="9" className="border-[#3116093D] font-font-general p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}/>
+            <label htmlFor="telefono" className="font-normal text-sm leading-none text-[#311609A3] font-paragraph">Teléfono</label>
+              <input ref={phoneRef} required type="tel" id="telefono" name="phone" placeholder="Teléfono" maxlength="9" className="border-[#3116093D] font-paragraph p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}/>
             </div>
 
             <div className="w-full flex flex-col gap-2">
-            <label htmlFor="email" className="font-normal text-sm leading-none text-[#311609A3] font-font-general">Correo electrónico</label>
-              <input ref={emailRef} required type="email" id="email" name="email" placeholder="E-mail" className="border-[#3116093D] font-font-general p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}/>
+            <label htmlFor="email" className="font-normal text-sm leading-none text-[#311609A3] font-paragraph">Correo electrónico</label>
+              <input ref={emailRef} required type="email" id="email" name="email" placeholder="E-mail" className="border-[#3116093D] font-paragraph p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}/>
             </div>
 
             <div className="w-full flex flex-col gap-2">
-            <label htmlFor="message" className="font-normal text-sm leading-none text-[#311609A3] font-font-general">Mensaje</label>
-              <textarea ref={descriptionRef} required type="text" id="message" name="message" placeholder="Mensaje" className="border-[#3116093D] font-font-general p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}></textarea>
+            <label htmlFor="message" className="font-normal text-sm leading-none text-[#311609A3] font-paragraph">Mensaje</label>
+              <textarea ref={descriptionRef} required type="text" id="message" name="message" placeholder="Mensaje" className="border-[#3116093D] font-paragraph p-3 border rounded-2xl w-full focus:outline-none focus:border-[#3116093D] text-base py-3 focus:ring-transparent focus:ring-0" disabled={sending}></textarea>
             </div>
 
             <div className="flex justify-center items-center pt-3">
-              <button type="submit" className="font-font-general text-text16 md:text-text18 text-white py-4 px-10 bg-primary w-full text-center rounded-3xl hover:opacity-75 md:duration-300 disabled:opacity-75" disabled={sending}>
+              <button type="submit" className="font-paragraph text-text16 md:text-text18 text-white py-4 px-10 bg-primary w-full text-center rounded-3xl hover:opacity-75 md:duration-300 disabled:opacity-75" disabled={sending}>
                 Enviar Solicitud
               </button>
             </div>
@@ -95,7 +95,7 @@ const ContactSimple = ({ data, contacts }) => {
 
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-5 aos-init aos-animate" data-aos="fade-up" data-aos-offset="150">
-            <h2 className="font-font-general font-bold text-3xl  leading-none customtext-primary">Datos de contacto</h2>
+            <h2 className="font-paragraph font-bold text-3xl  leading-none customtext-primary">Datos de contacto</h2>
           </div>
 
           <div className="flex flex-col gap-5">
@@ -106,9 +106,9 @@ const ContactSimple = ({ data, contacts }) => {
                 </svg>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-font-general">Dirección
+                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-paragraph">Dirección
                 </p>
-                <p className="customtext-primary text-opacity-20 font-font-general font-normal text-base">
+                <p className="customtext-primary text-opacity-20 font-paragraph font-normal text-base">
                   {getContact("address")}
                 </p>
               </div>
@@ -121,9 +121,9 @@ const ContactSimple = ({ data, contacts }) => {
               </svg>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-font-general">Número
+                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-paragraph">Número
                   de Teléfono</p>
-                <p className="customtext-primary text-opacity-20 font-font-general font-normal text-base">
+                <p className="customtext-primary text-opacity-20 font-paragraph font-normal text-base">
                   {getContact("phone_contact")}
                 </p>
               </div>
@@ -136,9 +136,9 @@ const ContactSimple = ({ data, contacts }) => {
               </svg>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-font-general">Correo
+                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-paragraph">Correo
                   Electrónico</p>
-                <p className="customtext-primary text-opacity-20 font-font-general font-normal text-base">
+                <p className="customtext-primary text-opacity-20 font-paragraph font-normal text-base">
                   {getContact("email_contact")}</p>
               </div>
             </div>
@@ -150,9 +150,9 @@ const ContactSimple = ({ data, contacts }) => {
               </svg>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-font-general">Horario
+                <p className="font-poppins font-semibold text-lg  leading-none customtext-primary font-paragraph">Horario
                   de Atención</p>
-                <p className="customtext-primary text-opacity-20 font-font-general font-normal text-base">
+                <p className="customtext-primary text-opacity-20 font-paragraph font-normal text-base">
                   {getContact("opening_hours")}
                 </p>
               </div>

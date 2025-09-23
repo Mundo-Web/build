@@ -25,8 +25,8 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
     }, []);
     
     return (
-        <section className="pt-12 lg:pt-20">
-            <div className="px-primary w-full font-font-general">
+        <section className="py-12 lg:py-20">
+            <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto w-full font-paragraph">
                 {/* Header */}
                 {data?.title && (
                     <div className="flex flex-wrap gap-4 justify-between items-center pb-4">
@@ -89,7 +89,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                     {/* Navigation buttons */}
                     <button
                         ref={prevRef}
-                        className="absolute top-1/2 -left-4 z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-secondary rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2"
+                        className="absolute shadow-xl top-1/2 -left-8 z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-secondary rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2"
                         aria-label="Productos anteriores"
                     >
                         <ArrowLeft width={"2rem"} className="customtext-primary" />
@@ -97,7 +97,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
 
                     <button
                         ref={nextRef}
-                        className="absolute top-1/2 -right-4 z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-secondary rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2"
+                        className="absolute top-1/2 -right-8 shadow-xl z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-secondary rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2"
                         aria-label="Siguientes productos"
                     >
                         <ArrowRight width={"2rem"} className="customtext-primary" />

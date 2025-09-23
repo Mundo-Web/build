@@ -35,7 +35,7 @@ const HeaderSearchMenu = ({
 
   return (
     <header className="w-full">
-      <div className="px-primary mx-auto py-4 font-font-general customtext-primary text-base font-semibold">
+      <div className="px-primary mx-auto py-4 font-paragraph customtext-primary text-base font-semibold">
         <div className="flex items-center justify-between gap-4 ">
 
           {/* Logo */}

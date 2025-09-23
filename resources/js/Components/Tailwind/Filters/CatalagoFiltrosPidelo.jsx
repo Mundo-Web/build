@@ -24,7 +24,7 @@ const itemsRest = new ItemsRest();
 const SkeletonCard = () => {
     return (
         <div
-            className={`group font-font-general animate-pulse w-full transition-transform duration-300 hover:scale-105  sm:w-1/3 flex-shrink-0 font-font-general customtext-primary cursor-pointer`}
+            className={`group font-paragraph animate-pulse w-full transition-transform duration-300 hover:scale-105  sm:w-1/3 flex-shrink-0 font-paragraph customtext-primary cursor-pointer`}
         >
             <div className=" px-4">
                 <div className="bg-white rounded-3xl">
@@ -318,7 +318,7 @@ const CatalagoFiltrosPidelo = ({
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
-        <section className="py-12 bg-[#F7F9FB] font-font-general">
+        <section className="py-12 bg-[#F7F9FB] font-paragraph">
             <div className="mx-auto px-primary">
                 <div className="flex justify-between items-center mb-8 pb-4 border-b-2">
                     <h2 className="text-4xl font-bold w-6/12">

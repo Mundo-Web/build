@@ -43,7 +43,7 @@ export default function ConfirmationStepSF({
     if (loading) {
         return (
             <div className="mx-auto">
-                <div className="bg-white rounded-lg shadow p-6 font-font-general text-center">
+                <div className="bg-white rounded-lg shadow p-6 font-paragraph text-center">
                     <p>Cargando detalles de la orden...</p>
                 </div>
             </div>
@@ -53,7 +53,7 @@ export default function ConfirmationStepSF({
     if (error) {
         return (
             <div className="mx-auto">
-                <div className="bg-white rounded-lg shadow p-6 font-font-general text-center text-red-500">
+                <div className="bg-white rounded-lg shadow p-6 font-paragraph text-center text-red-500">
                     <p>Error al cargar la orden: {error}</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@ export default function ConfirmationStepSF({
     if (!order) {
         return (
             <div className="mx-auto">
-                <div className="bg-white rounded-lg shadow p-6 font-font-general text-center">
+                <div className="bg-white rounded-lg shadow p-6 font-paragraph text-center">
                     <p>No se encontraron datos de la orden</p>
                 </div>
             </div>
@@ -115,7 +115,7 @@ export default function ConfirmationStepSF({
     console.log(order.delivery, "order.coupon_discount");
     return (
         <div className="mx-auto">
-            <div className="bg-white rounded-lg shadow p-6 font-font-general">
+            <div className="bg-white rounded-lg shadow p-6 font-paragraph">
                 <div className="text-center space-y-2">
                     <h2 className="text-base xl:text-xl customtext-neutral-light">Gracias por tu compra 🎉</h2>
                     <p className="customtext-neutral-dark text-2xl xl:text-5xl font-semibold">Tu orden ha sido recibida</p>

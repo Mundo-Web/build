@@ -27,7 +27,7 @@ const ProductCardSimple = ({ product, widthClass = "xl:w-1/5", setCart, cart }) 
     return (
         <div
             key={product.id}
-            className={`group w-full transition-transform duration-300 hover:scale-105 sm:w-1/2 lg:w-1/3  ${widthClass} flex-shrink-0 font-font-general customtext-primary cursor-pointer`}
+            className={`group w-full transition-transform duration-300 hover:scale-105 sm:w-1/2 lg:w-1/3  ${widthClass} flex-shrink-0 font-paragraph customtext-primary cursor-pointer`}
         >   <a href={`/item/${product.slug}`}>
             <div
                 className="bg-white p-4"

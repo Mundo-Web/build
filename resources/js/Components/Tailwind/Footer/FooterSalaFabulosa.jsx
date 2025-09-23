@@ -54,7 +54,7 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
     emailRef.current.value = null;
   };
   return (
-    <footer className="bg-primary text-white py-12 !font-font-general text-sm px-[5%]">
+    <footer className="bg-primary text-white py-12 !font-paragraph text-sm px-[5%]">
       <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5">
 
         {/* Logo Column */}

@@ -68,7 +68,7 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
     return (
         <div
             key={product.id}
-            className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 hover:scale-105 flex-shrink-0 font-font-general customtext-primary cursor-pointer`}
+            className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 group flex-shrink-0 font-paragraph customtext-primary cursor-pointer`}
         >
             <div
                 className={`p-0 ${fondo !== "" ? fondo : 'bg-white'} rounded-xl lg:rounded-2xl`}
@@ -86,7 +86,7 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
                                 src={`/storage/images/item/${product.image}`}
                                 onError={e => e.target.src = '/assets/img/noimage/no_img.jpg'}
                                 alt={product.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 loading='lazy'
                             />
                         </div>

@@ -34,7 +34,7 @@ const CardItemSF = ({ setCart, ...item }) => {
     return (
         <>  
             {/* Versión para desktop (tabla) */}
-            <tr key={item.id} className="hidden md:table-row border-b bg-gray-50 font-font-general">
+            <tr key={item.id} className="hidden md:table-row border-b bg-gray-50 font-paragraph">
                 {/* Columna Producto */}
                 <td className="px-4 py-3">
                     <div className="flex items-center">
@@ -99,7 +99,7 @@ const CardItemSF = ({ setCart, ...item }) => {
             </tr>
 
             {/* Versión para mobile (tarjeta) */}
-            <div className="md:hidden bg-gray-50  rounded-lg shadow p-4 mb-4 w-full font-font-general">
+            <div className="md:hidden bg-gray-50  rounded-lg shadow p-4 mb-4 w-full font-paragraph">
                 <div className="flex items-start gap-4 relative">
                     <img
                         src={`/storage/images/item/${item.image}`}

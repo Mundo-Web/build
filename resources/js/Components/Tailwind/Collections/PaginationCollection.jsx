@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -10,11 +10,18 @@ import './css/PaginationCollection.css';
 const PaginationCollection = ({
   items,
   data,
-  showPagination = true,
-  alignmentClassPagination = "center",
 }) => {
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [totalSlides, setTotalSlides] = useState(0);
+
+  // Validar configuraciones desde data
+  const validAlignments = ["center", "left", "right"];
+  const showPagination = data?.showPagination === "true" || data?.showPagination === "si" || data?.showPagination === true;
+  const alignmentClassPagination = validAlignments.includes(data?.paginationAlignment) 
+    ? data?.paginationAlignment 
+    : "center";
 
   // Configuración responsive para slidesPerView
   const breakpoints = {
@@ -52,7 +59,7 @@ const PaginationCollection = ({
   }
 
   return (
-    <section className="px-[3%] font-font-general pt-12 lg:pt-16">
+    <section className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto font-paragraph pt-12 lg:pt-16">
       <div className="w-full px-primary">
         <h2 className={`${data?.centrado ? data.centrado : 'text-left'} text-3xl sm:text-4xl lg:text-[42px] 2xl:text-5xl font-semibold tracking-normal customtext-neutral-dark max-w-5xl 2xl:max-w-6xl !leading-tight`}>
           {data?.title}
@@ -71,17 +78,23 @@ const PaginationCollection = ({
               swiper.params.navigation.nextEl = navigationNextRef.current;
               swiper.navigation.init();
               swiper.navigation.update();
+              // Calcular el número total de slides basado en breakpoints y items
+              const calculateTotalSlides = () => {
+                const windowWidth = window.innerWidth;
+                let slidesPerView = 2; // default
+                
+                if (windowWidth >= 1550) slidesPerView = 6;
+                else if (windowWidth >= 1280) slidesPerView = 5;
+                else if (windowWidth >= 1024) slidesPerView = 4;
+                else if (windowWidth >= 768) slidesPerView = 3;
+                else if (windowWidth >= 640) slidesPerView = 2;
+                
+                return Math.ceil(items.length / slidesPerView);
+              };
+              setTotalSlides(calculateTotalSlides());
             }}
-            pagination={{
-              clickable: true,
-              renderBullet: (index, className) => {
-                return `
-                  <div class="${className} inline-flex mx-1 cursor-pointer">
-                    <div class="w-4 h-4 bg-gray-300 rounded-full transition-all duration-200 ease-in-out hover:bg-secondary"></div>
-                  </div>
-                `;
-              },
-              el: showPagination ? ".custom-pagination" : null,
+            onSlideChange={(swiper) => {
+              setCurrentSlide(swiper.realIndex);
             }}
             breakpoints={breakpoints}
             onBeforeInit={(swiper) => {
@@ -110,7 +123,7 @@ const PaginationCollection = ({
                           loading="lazy"
                         />
                       </div>
-                      <h3 className="text-center font-semibold text-base lg:text-lg 2xl:text-2xl customtext-neutral-dark font-font-general">
+                      <h3 className="text-center font-semibold text-base lg:text-lg 2xl:text-2xl customtext-neutral-dark font-paragraph">
                         {collection.name}
                       </h3>
                     </div>
@@ -121,24 +134,58 @@ const PaginationCollection = ({
           </Swiper>
 
           {/* Botones de navegación */}
-          <button
-            ref={navigationPrevRef}
-            className="absolute -left-3 sm:-left-10 top-1/2 z-10 -translate-y-1/2 bg-accent rounded-full p-2 text-white hover:bg-primary hover:bg-opacity-10"
-            aria-label="Anterior"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            ref={navigationNextRef}
-            className="absolute -right-3 sm:-right-10 top-1/2 z-10 -translate-y-1/2 bg-accent rounded-full p-2 text-white shadow-md hover:bg-primary"
-            aria-label="Siguiente"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+          {data?.shownavigation && (
+            <>
+              <button
+                ref={navigationPrevRef}
+                className="absolute -left-3 sm:-left-10 top-1/2 z-10 -translate-y-1/2 bg-accent rounded-full p-2 text-white hover:bg-primary hover:bg-opacity-10"
+                aria-label="Anterior"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                ref={navigationNextRef}
+                className="absolute -right-3 sm:-right-10 top-1/2 z-10 -translate-y-1/2 bg-accent rounded-full p-2 text-white shadow-md hover:bg-primary"
+                aria-label="Siguiente"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
 
           {/* Añadir el contenedor de paginación */}
         </div>
-        <div className="w-full custom-pagination relative flex justify-center mt-8 lg:mt-12 gap-2"></div>
+        
+        {/* Paginación personalizada */}
+        {showPagination  && (
+          <div className="w-full relative flex justify-center mt-8 lg:mt-12 gap-2">
+            <div className={`flex gap-2 ${
+              alignmentClassPagination === "left" 
+                ? "justify-start" 
+                : alignmentClassPagination === "right" 
+                ? "justify-end" 
+                : "justify-center"
+            }`}>
+              {Array.from({ length: totalSlides }, (_, index) => (
+                <div
+                  key={`pagination-dot-${index}`}
+                  className={`inline-flex mx-1 w-3 h-3 rounded-full cursor-pointer transition-all duration-200 ${
+                    currentSlide === index
+                      ? "bg-white h-5 w-5 border-2 border-accent"
+                      : "bg-gray-300 hover:bg-secondary"
+                  }`}
+                  onClick={() => {
+                    // Aquí puedes agregar lógica para ir a un slide específico si es necesario
+                  }}
+                >
+                  {currentSlide === index && (
+                    <div className="w-3 h-3 bg-accent rounded-full m-auto"></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
 

@@ -9,16 +9,16 @@ const BannerSimpleSF = ({ data }) => {
         <section className="px-[5%] xl:px-[8%] bg-white py-12 xl:py-16">
             <div className="flex flex-col md:flex-row justify-start items-center bg-gradient-to-br from-[#F2F2F2] to-[#91502D1A] w-full rounded-3xl relative">
                 <div className="flex flex-col gap-5 py-8 px-8 lg:pl-16 xl:pl-20  justify-start items-start w-full max-w-xl 2xl:max-w-3xl text-white text-left">
-                    <h1 className="customtext-neutral-dark text-opacity-20 font-font-general font-bold text-4xl xl:text-5xl 2xl:text-6xl">
+                    <h1 className="customtext-neutral-dark text-opacity-20 font-paragraph font-bold text-4xl xl:text-5xl 2xl:text-6xl">
                         <TextWithHighlight_Second text={data?.name} />
                     </h1>
 
-                    <p className="customtext-neutral-dark opacity-70 font-font-general font-normal text-base xl:text-lg 2xl:text-xl">
+                    <p className="customtext-neutral-dark opacity-70 font-paragraph font-normal text-base xl:text-lg 2xl:text-xl">
                         {data?.description}
                     </p>
                     {data?.button_link && data?.button_text && (
                         <div className="flex flex-col">
-                            <a href={data?.button_link} className="w-auto bg-accent px-6 py-3 2xl:py-4 2xl:px-8 rounded-3xl text-white font-font-general leading-none text-base 2xl:text-xl">
+                            <a href={data?.button_link} className="w-auto bg-accent px-6 py-3 2xl:py-4 2xl:px-8 rounded-3xl text-white font-paragraph leading-none text-base 2xl:text-xl">
                                 {data?.button_text}
                             </a>
                         </div>

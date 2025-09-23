@@ -375,7 +375,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                         <div className="flex flex-col gap-3">
                             
                             {/* Brand and Title */}
-                            <div className="font-font-general">
+                            <div className="font-paragraph">
                                 {item?.brand && (
                                     <p className="customtext-neutral-light text-sm 2xl:text-lg">
                                         Marca:{" "}
@@ -390,7 +390,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             </div>
 
                             {/* SKU and Availability */}
-                            <div className="flex flex-wrap customtext-neutral-light items-center gap-y-2 gap-x-8 text-sm font-font-general">
+                            <div className="flex flex-wrap customtext-neutral-light items-center gap-y-2 gap-x-8 text-sm font-paragraph">
                                 <span className="customtext-neutral-dark text-base 2xl:text-lg">
                                     SKU:{" "}
                                     <span className="customtext-neutral-dark font-bold">
@@ -406,7 +406,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             </div>
 
                             {/* Price Section */}
-                            <div className="flex flex-col w-full xl:w-1/2 font-font-general max-w-xl mt-5">
+                            <div className="flex flex-col w-full xl:w-1/2 font-paragraph max-w-xl mt-5">
                                 <p className="text-base 2xl:text-lg customtext-neutral-dark opacity-70 font-medium">
                                     Precio:{" "}
                                     <span className="line-through">
@@ -424,7 +424,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             </div>
                             
                             {item?.summary && (
-                                <div className="flex flex-col customtext-neutral-dark font-font-general text-base 2xl:text-lg my-3">
+                                <div className="flex flex-col customtext-neutral-dark font-paragraph text-base 2xl:text-lg my-3">
                                     <p>{item?.summary}</p>       
                                 </div>
                             )}
@@ -552,7 +552,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                     onAddClicked(item);
                                 }}
                                 disabled={selectedVariant?.stock <= 0}
-                                className={`w-full font-font-general text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
+                                className={`w-full font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
                                     selectedVariant?.stock > 0
                                         ? "bg-accent text-white hover:opacity-90"
                                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -565,7 +565,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             {item?.specifications?.length > 0 && (
                                 <div className="flex-1 w-full mt-5 2xl:mt-8">
                                     <div className="bg-[#F7F9FB] rounded-xl p-6">
-                                        <h3 className="font-semibold text-lg xl:text-xl 2xl:text-2xl mb-4 customtext-neutral-dark font-font-general">
+                                        <h3 className="font-semibold text-lg xl:text-xl 2xl:text-2xl mb-4 customtext-neutral-dark font-paragraph">
                                             Especificaciones principales
                                         </h3>
                                         <ul
@@ -590,7 +590,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                             )}
                                         </ul>
                                         <button
-                                            className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-font-general pb-2 border-b border-neutral-dark"
+                                            className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-paragraph pb-2 border-b border-neutral-dark"
                                             onClick={() =>
                                                 setExpanded(
                                                     !expandedSpecificationMain
@@ -626,7 +626,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                             className="w-12 h-12 object-contain"
                                             loading="lazy"
                                         />
-                                        <div className="customtext-neutral-dark font-font-general text-base  2xl:text-xl font-semibold">
+                                        <div className="customtext-neutral-dark font-paragraph text-base  2xl:text-xl font-semibold">
                                             <p>
                                                 ¿Tienes dudas sobre este producto? 
                                                 Haz 
@@ -643,7 +643,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                     </div>
                 </div>
 
-                <div className="grid gap-10 lg:gap-20 md:grid-cols-2 bg-white rounded-xl p-4 sm:p-8 font-font-general">
+                <div className="grid gap-10 lg:gap-20 md:grid-cols-2 bg-white rounded-xl p-4 sm:p-8 font-paragraph">
                     {/* Specifications Section */}
                     {item?.specifications?.length > 0 && (
                         <div>
@@ -676,7 +676,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                     )}
 
                     {/* Additional Information Section */}
-                        <div className="font-font-general">
+                        <div className="font-paragraph">
                             {item?.description?.replace(/<[^>]+>/g, '') && (
                                 <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
                                     Información adicional
