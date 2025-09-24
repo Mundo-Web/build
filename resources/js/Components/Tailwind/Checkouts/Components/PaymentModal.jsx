@@ -38,7 +38,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
             ariaHideApp={false}
         >
-            <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:h-[85vh] lg:min-h-[85vh]   lg:max-h-[85vh]  ">
                 {/* Imagen decorativa - lado izquierdo */}
                 <div className="hidden md:block bg-[#f8f5f2] h-full">
                      <img

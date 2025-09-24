@@ -139,7 +139,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                             />
                         </div>
                         <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep > 1 ? `customtext-primary font-medium` : "customtext-neutral-dark"}`}>
-                            <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep > 1 ? "bg-primary text-white border-transparent" : "bg-primary text-white border-primary"}`}>2</span>
+                            <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep > 1 ? "bg-primary text-white border-transparent" : "bg-white customtext-primary  border-primary"}`}>2</span>
                             <span className="text-[10px] md:text-sm text-center">Envío</span>
                         </div>
                         <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
