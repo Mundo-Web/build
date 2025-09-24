@@ -28,7 +28,7 @@ class SaleController extends BasicController
         $hasRootRole = $user && $user->roles && $user->roles->contains('name', 'Root');
         
         return [
-            'statuses' => SaleStatus::all(),
+            'statuses' => SaleStatus::where('status', true)->get(),
             'hasRootRole' => $hasRootRole,
         ];
     }
