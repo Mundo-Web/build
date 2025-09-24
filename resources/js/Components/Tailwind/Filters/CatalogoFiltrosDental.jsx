@@ -36,6 +36,7 @@ import { GET } from "sode-extend-react";
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
 import CardProductMultivet from "../Products/Components/CardProductMultivet";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import ProductCardColors from "../Products/Components/ProductCardColors";
 // import CardProductDefault from "../Products/Components/CardProductDefault";
 // import CardProductMinimal from "../Products/Components/CardProductMinimal";
 // import CardProductCompact from "../Products/Components/CardProductCompact";
@@ -226,6 +227,12 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                         {...baseProps}
                     />
                 );
+            case 'sala-fabulosa':
+                return (
+                    <ProductCardColors
+                        {...baseProps}
+                    />
+                );
             
             case 'banana-lab':
             case 'bananalab':
@@ -236,27 +243,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                     />
                 );
             
-            // case 'minimal':
-            //     return (
-            //         <CardProductMinimal
-            //             {...baseProps}
-            //         />
-            //     );
-            
-            // case 'compact':
-            //     return (
-            //         <CardProductCompact
-            //             {...baseProps}
-            //         />
-            //     );
-            
-            // case 'default':
-            // default:
-            //     return (
-            //         <CardProductDefault
-            //             {...baseProps}
-            //         />
-            //     );
+          
             
             default:
                 // Fallback a CardProductBananaLab si no se especifica tipo o no se reconoce

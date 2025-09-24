@@ -180,7 +180,8 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
                         )}
 
                         {/* Precio */}
-                        <div className="flex items-baseline gap-4 mt-2">
+                     {product.finalPrice && product.finalPrice>0(
+                           <div className="flex items-baseline gap-4 mt-2">
                             <span className="text-lg sm:text-xl md:text-2xl font-semibold">
                                 {CurrencySymbol()} {product.final_price}
                             </span>
@@ -190,6 +191,7 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
                                 </span>
                             )}
                         </div>
+                     )}
                     </a>
                 </div>
             </div >

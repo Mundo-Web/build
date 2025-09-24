@@ -190,9 +190,7 @@ export default function UploadVoucherModalBancs({
                 <p className="customtext-primary mb-1 text-sm 2xl:text-base text-center">Estás a un paso de completar tu compra, realiza la transferencia/depósito a nuestras cuentas.</p>
                 
                 <div className="p-4 rounded-3xl bg-[#EAE8E6] flex flex-col gap-3 items-center">
-                    <div className="flex flex-col gap-1 text-center customtext-primary font-semibold">
-                        <h2>SALA FABULOSA</h2>      
-                    </div> 
+                   
                     
                     <div className="flex flex-col gap-3 w-full">
                         <BancDropdown contacts={contacts} />
@@ -394,7 +392,7 @@ export default function UploadVoucherModalBancs({
                                 ? "Procesando..." 
                                 : voucher 
                                     ? "Confirmar pago" 
-                                    : "Subir comprobante"}
+                                    : "Subir la captura el pago "}
                         </button>
                         
                         <button
