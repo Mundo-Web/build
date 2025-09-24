@@ -94,7 +94,7 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             if (preg_match('/^https?:\\/\\//i', $imgPath)) {
                 $imgUrl = $imgPath;
             } elseif ($imgPath) {
-                $imgUrl = url('storage/images/item/' . ltrim($imgPath, '/'));
+                $imgUrl = url('storage/images/item/' . rawurlencode(ltrim($imgPath, '/')));
             }
             $precio_unitario = isset($detail->price) ? number_format($detail->price, 2) : '';
             $cantidad = $detail->quantity ?? 1;
@@ -106,7 +106,7 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
                 'precio_unitario' => $precio_unitario,
                 'precio_total'    => $precio_total,
                 'categoria'       => $detail->item->category->name ?? '',
-                'imagen'          =>  url(Storage::url("images/item/" . $detail->item->image ?? '')),
+                'imagen'          => url('storage/images/item/' . rawurlencode($detail->item->image ?? '')),
             ];
         }
         
