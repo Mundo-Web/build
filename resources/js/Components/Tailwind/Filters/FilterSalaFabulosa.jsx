@@ -293,17 +293,17 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
             if (prev.includes(type) && isActivating) {
                 return prev;
             }
-            
+
             // Si el tipo no existe y se está activando, lo añadimos al final
             if (!prev.includes(type) && isActivating) {
                 return [...prev, type];
             }
-            
+
             // Si se está desactivando y es el último filtro de ese tipo, lo removemos
             if (!isActivating) {
                 // Verificamos si después de esta acción no quedarán más filtros de este tipo
                 let willHaveNoFiltersOfThisType = false;
-                
+
                 if (type === "price") {
                     // Para price, si value es null, no quedarán filtros
                     willHaveNoFiltersOfThisType = !value;
@@ -313,11 +313,11 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
                     const newValues = currentValues.filter(item => item !== value);
                     willHaveNoFiltersOfThisType = newValues.length === 0;
                 }
-                
+
                 // Solo removemos de la secuencia si no quedarán más filtros de este tipo
                 return willHaveNoFiltersOfThisType ? prev.filter(item => item !== type) : prev;
             }
-            
+
             return prev;
         });
         setSelectedFilters((prev) => {
@@ -417,7 +417,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
             </div>
 
             <p className="customtext-primary text-2xl font-bold pb-4 mb-4 border-b lg:block hidden">
-                Combina como desees tu sala
+                Combina como desees
             </p>
 
             {/* <div className="mb-4">
@@ -440,62 +440,64 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
             )}
 
             {/* Colecciones */}
-            <div className="mt-2 mb-4">
-                <button
-                    onClick={() => toggleSection("collection")}
-                    className="flex items-center justify-between w-full mb-2 p-2 lg:p-0"
-                >
-                    <span className="font-medium">Colecciones</span>
-                    <ChevronUp
-                        className={`h-5 w-5 transform transition-transform ${sections.collection ? "" : "-rotate-180"
-                            }`}
-                    />
-                </button>
+            {sections.collection && filteredCollections?.length > 0 && (
+                <div className="mt-2 mb-4">
+                    <button
+                        onClick={() => toggleSection("collection")}
+                        className="flex items-center justify-between w-full mb-2 p-2 lg:p-0"
+                    >
+                        <span className="font-semibold text-lg">Colecciones</span>
+                        <ChevronUp
+                            className={`h-5 w-5 transform transition-transform ${sections.collection ? "" : "-rotate-180"
+                                }`}
+                        />
+                    </button>
 
-                {sections.collection && (
-                    <div className="space-y-4">
-                        <div className="relative hidden md:flex">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Buscar"
-                                className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-0 focus:outline-0"
-                                value={searchCollection}
-                                onChange={(e) => setSearchCollection(e.target.value)}
-                            />
+                    {sections.collection && (
+                        <div className="space-y-4">
+                            <div className="relative hidden md:flex">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar"
+                                    className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-0 focus:outline-0"
+                                    value={searchCollection}
+                                    onChange={(e) => setSearchCollection(e.target.value)}
+                                />
+                            </div>
+                            <div className="max-h-[200px] xl:max-h-none overflow-y-auto space-y-1 md:space-y-2">
+                                {filteredCollections?.map((collection) => {
+                                    const isChecked = selectedFilters.collection_id?.includes(collection.slug);
+                                    return (
+                                        <div
+                                            key={collection.id}
+                                            className={`group flex items-center gap-3 p-2 rounded-lg ${isChecked
+                                                ? "bg-secondary"
+                                                : "hover:bg-gray-50"
+                                                }`}
+                                        >
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    className="h-4 w-4 rounded border-gray-300 accent-primary form-checkbox focus:ring-0 customtext-neutral-dark"
+                                                    onChange={() => handleFilterChange("collection_id", collection.slug)}
+                                                    checked={isChecked}
+                                                />
+                                                <img
+                                                    src={`/storage/images/collection/${collection.image}`}
+                                                    onError={(e) => e.target.src = "assets/img/noimage/no_imagen_circular.png"}
+                                                    className="w-8 h-8 rounded-full object-cover"
+                                                    alt={collection.name}
+                                                />
+                                                <span className="text-sm lg:text-base">{collection.name}</span></label>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
-                        <div className="max-h-[200px] xl:max-h-none overflow-y-auto space-y-1 md:space-y-2">
-                            {filteredCollections?.map((collection) => {
-                                const isChecked = selectedFilters.collection_id?.includes(collection.slug);
-                                return (
-                                    <div
-                                        key={collection.id}
-                                        className={`group flex items-center gap-3 p-2 rounded-lg ${isChecked
-                                            ? "bg-secondary"
-                                            : "hover:bg-gray-50"
-                                            }`}
-                                    >
-                                        <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                className="h-4 w-4 rounded border-gray-300 accent-primary form-checkbox focus:ring-0 customtext-neutral-dark"
-                                                onChange={() => handleFilterChange("collection_id", collection.slug)}
-                                                checked={isChecked}
-                                            />
-                                            <img
-                                                src={`/storage/images/collection/${collection.image}`}
-                                                onError={(e) => e.target.src = "assets/img/noimage/no_imagen_circular.png"}
-                                                className="w-8 h-8 rounded-full object-cover"
-                                                alt={collection.name}
-                                            />
-                                            <span className="text-sm lg:text-base">{collection.name}</span></label>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
 
             {/* Categorías */}
             <div className="mb-4">
@@ -503,7 +505,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
                     onClick={() => toggleSection("categoria")}
                     className="flex items-center justify-between w-full mb-2 p-2 lg:p-0"
                 >
-                    <span className="font-medium">Categorías</span>
+                    <span className="font-semibold text-lg">Categorías</span>
                     <ChevronUp
                         className={`h-5 w-5 transform transition-transform ${sections.categoria ? "" : "-rotate-180"
                             }`}
@@ -555,45 +557,46 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
             </div>
 
             {/* Precio */}
-            <div className="mb-4">
-                <button
-                    onClick={() => toggleSection("precio")}
-                    className="flex items-center justify-between w-full mb-2 p-2 lg:p-0"
-                >
-                    <span className="font-medium">Precio</span>
-                    <ChevronUp
-                        className={`h-5 w-5 transform transition-transform ${sections.precio ? "" : "-rotate-180"
-                            }`}
-                    />
-                </button>
-                {sections.precio && (
-                    <div className="max-h-[200px] xl:max-h-none overflow-y-auto space-y-1 md:space-y-2">
-                        {priceRanges.map((range) => {
-                            const isSelected = selectedFilters.price?.min === range.min &&
-                                selectedFilters.price?.max === range.max
-                            return <label
-                                key={`${range.min}-${range.max}`}
-                                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
-                                onClick={() => {
-                                    if (isSelected) {
-                                        handleFilterChange("price", null)
-                                    } else {
-                                        handleFilterChange("price", range)
-                                    }
-                                }}
-                            >
-                                <div className={`w-[18px] h-[18px] rounded-full border ${isSelected ? 'border-primary' : 'border-gray-300'} flex items-center justify-center`}>
-                                    {isSelected && (
-                                        <div className="w-3 h-3 rounded-full bg-primary"></div>
-                                    )}
-                                </div>
-                                <span className="text-sm lg:text-base">{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
-                            </label>
-                        })}
-                    </div>
-                )}
-            </div>
-
+            {sections.precio && priceRanges?.length > 0 && (
+                <div className="mb-4">
+                    <button
+                        onClick={() => toggleSection("precio")}
+                        className="flex items-center justify-between w-full mb-2 p-2 lg:p-0"
+                    >
+                        <span className="font-semibold text-lg">Precio</span>
+                        <ChevronUp
+                            className={`h-5 w-5 transform transition-transform ${sections.precio ? "" : "-rotate-180"
+                                }`}
+                        />
+                    </button>
+                    {sections.precio && (
+                        <div className="max-h-[200px] xl:max-h-none overflow-y-auto space-y-1 md:space-y-2">
+                            {priceRanges.map((range) => {
+                                const isSelected = selectedFilters.price?.min === range.min &&
+                                    selectedFilters.price?.max === range.max
+                                return <label
+                                    key={`${range.min}-${range.max}`}
+                                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
+                                    onClick={() => {
+                                        if (isSelected) {
+                                            handleFilterChange("price", null)
+                                        } else {
+                                            handleFilterChange("price", range)
+                                        }
+                                    }}
+                                >
+                                    <div className={`w-[18px] h-[18px] rounded-full border ${isSelected ? 'border-primary' : 'border-gray-300'} flex items-center justify-center`}>
+                                        {isSelected && (
+                                            <div className="w-3 h-3 rounded-full bg-primary"></div>
+                                        )}
+                                    </div>
+                                    <span className="text-sm lg:text-base">{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
+                                </label>
+                            })}
+                        </div>
+                    )}
+                </div>
+            )}
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 h-20 flex items-center lg:hidden">
                 <button
                     className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-dark transition-colors"
@@ -634,7 +637,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
                 <div className="mx-auto px-primary">
 
                     <p className="customtext-primary text-3xl font-bold mb-2 xl:hidden">
-                        Combina como desees tu sala
+                        Combina como desees
                     </p>
 
                     <div className="relative flex flex-col xl:flex-row gap-10">
