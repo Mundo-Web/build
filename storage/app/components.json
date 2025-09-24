@@ -919,6 +919,7 @@
                     "section_prices",
                     "section_stores",
                     "type_card_product",
+                    "class_product_card_container",
                     "class_clear_button",
                     "class_title"
                 ],
