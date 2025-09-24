@@ -392,7 +392,7 @@ export default function UploadVoucherModalBancs({
                                 ? "Procesando..." 
                                 : voucher 
                                     ? "Confirmar pago" 
-                                    : "Subir la captura el pago "}
+                                    : "Subir la captura del pago"}
                         </button>
                         
                         <button
