@@ -634,7 +634,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
             </Modal>
 
             <section className="py-6 font-paragraph customtext-primary">
-                <div className="mx-auto px-primary">
+                <div className="mx-auto px-primary 2xl:max-w-7xl 2xl:px-0">
 
                     <p className="customtext-primary text-3xl font-bold mb-2 xl:hidden">
                         Combina como desees

@@ -57,7 +57,7 @@ const ContactSimple = ({ data, contacts }) => {
   }
 
   return <div className="bg-white">
-    <div className="px-[5%] replace-max-w-here w-full mx-auto py-8">
+    <div className="px-[5%] 2xl:max-w-7xl 2xl:px-0 w-full mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32 2xl:gap-44">
         <div className="flex flex-col gap-5 aos-init aos-animate" data-aos="fade-up" data-aos-offset="150">
           <h2 className="font-paragraph font-bold text-3xl lg:text-4xl xl:text-[43px] leading-none customtext-primary">Escríbenos si tienes alguna duda o consulta</h2>
