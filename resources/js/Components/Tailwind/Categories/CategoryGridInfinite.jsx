@@ -124,7 +124,7 @@ const CategoryGridInfinite = ({ data, items }) => {
                         variants={gridVariants}
                         initial="hidden"
                         animate={gridInView ? "visible" : "hidden"}
-                        className="mt-6" 
+                        className="mt-6 relative overflow-hidden" 
                         id="sectioncategory"
                     >
                         <CategoryGrid categories={items} />
