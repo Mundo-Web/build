@@ -371,10 +371,13 @@
                 "name": "Con busqueda y menu SF",
                 "image": "header-with-search.png",
                 "data": [
+                    "class_content",
+                    "class_text",
                     "class",
-                    "link_cart"
+                    "link_cart",
+                    "type_topbar"
                 ],
-                   "generals": [
+                "generals": [
                     "cintillo"
                 ]
             },
@@ -975,7 +978,7 @@
                     }
                 ]
             },
-              {
+            {
                 "id": "CatalogoFiltrosKatya",
                 "name": "Producto Catalogo Filtro Katya",
                 "image": "products-list.png",
@@ -2197,10 +2200,9 @@
                     "class_overlay"
                 ]
             },
-             {
+            {
                 "id": "BannerBlogSectionKatya",
                 "name": "BannerBlogSectionKatya",
-               
                 "using": {
                     "model": "Post",
                     "limit": 2,
@@ -2463,7 +2465,7 @@
                     "message_whatsapp"
                 ]
             },
-                 {
+            {
                 "id": "ProductDetailKatya",
                 "name": "ProductDetailKatya",
                 "data": [
@@ -3023,7 +3025,6 @@
                     "model": "Aboutus"
                 }
             },
-           
             {
                 "id": "AboutKatya",
                 "name": "AboutKatya",

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Global from "../../../Utils/Global";
 import { Search } from "lucide-react";
 import MobileMenuSF from "./Components/MobileMenuSF";
-import TopBarCart from "../TopBars/TopBarCart";
+import TopBar from "../TopBar";
 import LiveSearchBar from "./Components/LiveSearchBar";
 
 const HeaderSearchMenuSF = ({
@@ -62,12 +62,14 @@ const HeaderSearchMenuSF = ({
   return (
     <header id="main-header" className="sticky top-0 w-full z-20 bg-white font-paragraph">
 
-      <TopBarCart
+      <TopBar
         data={data}
+        which={data?.type_topbar || "TopBarCart"}
         items={generals}
         cart={cart}
         setCart={setCart}
         isUser={isUser}
+        pages={pages}
       />
 
       <div className="left-0 right-0">
