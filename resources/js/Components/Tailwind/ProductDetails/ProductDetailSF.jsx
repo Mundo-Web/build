@@ -291,33 +291,16 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
     };
     return (
         <>
-            <div className="px-primary mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
-                <div className="bg-white rounded-xl p-4 md:p-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20 2xl:gap-32">
+            <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
+                <div className="bg-white rounded-xl py-4 md:py-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20 2xl:gap-16">
                         {/* Left Column - Images and Delivery Options */}
                         <div className="space-y-6">
                             {/* Product Images */}
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col lg:flex-row gap-6">
 
-                                {/* Main Image */}
-                                <div className="flex-1">
-                                    <img
-                                        src={
-                                            selectedImage.type === "main"
-                                                ? `/storage/images/item/${selectedImage.url}`
-                                                : `/storage/images/item/${selectedImage.url}`
-                                        }
-                                        onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
-                                        }
-                                        alt="Product main"
-                                        className="w-full h-auto object-contain"
-                                    />
-                                </div>
-
-                                {/* Thumbnails */}
-                                <div className="flex flex-row gap-2">
+                                {/* Thumbnails - Desktop: left side, Mobile: bottom */}
+                                <div className="flex flex-row lg:flex-col gap-2 order-2 lg:order-1 lg:w-20">
                                     <button
                                         onClick={() =>
                                             setSelectedImage({
@@ -325,7 +308,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                                 type: "main",
                                             })
                                         }
-                                        className={`w-16 h-16  rounded-lg p-1 border-2 ${
+                                        className={`rounded-xl p-1 border-2 flex-shrink-0 ${
                                             selectedImage.url === item?.image
                                                 ? "border-primary "
                                                 : "border-gray-200"
@@ -334,7 +317,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                         <img
                                             src={`/storage/images/item/${item?.image}`}
                                             alt="Main Thumbnail"
-                                            className="w-full h-full object-cover"
+                                            className="w-16 lg:w-20  aspect-[3/4] rounded-lg object-cover"
                                             onError={(e) =>
                                                 (e.target.src =
                                                     "/api/cover/thumbnail/null")
@@ -350,7 +333,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                                     type: "gallery",
                                                 })
                                             }
-                                            className={`w-16 h-16 border-2 rounded-lg p-1 ${
+                                            className={`w-16 h-16 lg:w-20 lg:h-20 border-2 rounded-lg p-1 flex-shrink-0 ${
                                                 selectedImage.url === image.url
                                                     ? "border-primary"
                                                     : "border-gray-200"
@@ -367,6 +350,23 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                             />
                                         </button>
                                     ))}
+                                </div>
+
+                                {/* Main Image */}
+                                <div className="flex-1 order-1 lg:order-2">
+                                    <img
+                                        src={
+                                            selectedImage.type === "main"
+                                                ? `/storage/images/item/${selectedImage.url}`
+                                                : `/storage/images/item/${selectedImage.url}`
+                                        }
+                                        onError={(e) =>
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
+                                        }
+                                        alt="Product main"
+                                        className="w-full h-auto rounded-xl object-contain"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -406,22 +406,24 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             </div>
 
                             {/* Price Section */}
-                            <div className="flex flex-col w-full xl:w-1/2 font-paragraph max-w-xl mt-5">
-                                <p className="text-base 2xl:text-lg customtext-neutral-dark opacity-70 font-medium">
-                                    Precio:{" "}
-                                    <span className="line-through">
-                                        {CurrencySymbol()} {selectedVariant?.price}
-                                    </span>
-                                </p>
-                                <div className="flex flex-row items-center gap-4 relative">
-                                    <span className="text-[40px] font-bold customtext-neutral-dark">
-                                        {CurrencySymbol()} {selectedVariant?.final_price}
-                                    </span>
-                                    <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl text-base">
-                                        -{calculateDiscount(selectedVariant?.price, selectedVariant?.final_price)}%
-                                    </span>
+                            {(selectedVariant?.price > 0 || selectedVariant?.final_price > 0) && (
+                                <div className="flex flex-col w-full xl:w-1/2 font-paragraph max-w-xl mt-5">
+                                    <p className="text-base 2xl:text-lg customtext-neutral-dark opacity-70 font-medium">
+                                        Precio:{" "}
+                                        <span className="line-through">
+                                            {CurrencySymbol()} {selectedVariant?.price}
+                                        </span>
+                                    </p>
+                                    <div className="flex flex-row items-center gap-4 relative">
+                                        <span className="text-[40px] font-bold customtext-neutral-dark">
+                                            {CurrencySymbol()} {selectedVariant?.final_price}
+                                        </span>
+                                        <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl text-base">
+                                            -{calculateDiscount(selectedVariant?.price, selectedVariant?.final_price)}%
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             
                             {item?.summary && (
                                 <div className="flex flex-col customtext-neutral-dark font-paragraph text-base 2xl:text-lg my-3">
@@ -429,54 +431,32 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 </div>
                             )}
 
-                            {variationsItems.length > 0 && (
-                                <div className="variants-color flex flex-col gap-3">
-                                    <h3 className="w-full block opacity-85 customtext-neutral-dark text-base 2xl:text-lg">
+                            {variationsItems.length > 1 && (
+                                <div className="variants-color flex flex-col gap-4">
+                                    <h3 className="w-full block font-medium customtext-neutral-dark text-base 2xl:text-lg">
                                         Colores
                                     </h3>
 
                                     <div className="flex gap-3 items-center justify-start w-full flex-wrap">
-                                        {/* Variante actual (principal) */}
-                                        
-                                        {/* <Tippy content={item.color}>
-                                            <a
-                                                className={`variant-option rounded-full object-fit-cover  ${
-                                                    !variationsItems.some(
-                                                        (v) => v.slug === item.slug
-                                                    )
-                                                        ? "active p-[2px] border-[1.5px] border-neutral-dark"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <img
-                                                    className="color-box rounded-full h-9 w-9 object-fit-cover "
-                                                    src={`/storage/images/item/${item.texture || item.image}`}
-                                                    onError={(e) =>
-                                                        (e.target.src =
-                                                            "/api/cover/thumbnail/null")
-                                                    }
-                                                />
-                                            </a>
-                                        </Tippy>     */}
-                                        
-                                        {/* Otras variantes */}
-
                                         {variationsItems.map((variant) => (
-                                            <Tippy content={variant.color}>
-                                            <a
-                                                key={variant.slug}
-                                                href={`/item/${variant.slug}`}
-                                                className={`variant-option rounded-full object-fit-cover ${
-                                                    variant.color  === item.color 
-                                                    ? "active p-[2px] border-[1.5px] border-neutral-dark"
-                                                    : ""
-                                                }`}
-                                            >
-                                                <img
-                                                    className="color-box rounded-full h-9 w-9 object-fit-cover "
-                                                    src={`/storage/images/item/${variant.texture || variant.image}`}
-                                                />
-                                            </a>
+                                            <Tippy key={variant.slug} content={variant.color}>
+                                                <a
+                                                    href={`/item/${variant.slug}`}
+                                                    className={`variant-option rounded-full object-fit-cover transition-all duration-200 hover:scale-105 ${
+                                                        variant.color === item.color 
+                                                        ? "active p-[2px] border-[2px] border-primary shadow-lg"
+                                                        : "p-[2px] border-[2px] border-gray-200 hover:border-gray-400"
+                                                    }`}
+                                                >
+                                                    <img
+                                                        className="color-box rounded-full h-10 w-10 lg:h-12 lg:w-12 object-cover"
+                                                        src={`/storage/images/item/${variant.texture || variant.image}`}
+                                                        onError={(e) =>
+                                                            (e.target.src = "/api/cover/thumbnail/null")
+                                                        }
+                                                        alt={`Color ${variant.color}`}
+                                                    />
+                                                </a>
                                             </Tippy>
                                         ))}
                                     </div>
@@ -484,38 +464,24 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             )}
 
                             {sizesItems.length > 0 && (
-                                <div className="variants-color flex flex-col gap-3">
-                                    <h3 className="w-full block opacity-85 customtext-neutral-dark text-base 2xl:text-lg">
+                                <div className="variants-color flex flex-col gap-4">
+                                    <h3 className="w-full block font-medium customtext-neutral-dark text-base 2xl:text-lg">
                                         Tallas
                                     </h3>
 
                                     <div className="flex gap-3 items-center justify-start w-full flex-wrap">
-                                        
-                                        {/* <a
-                                            className={`variant-option rounded-full object-fit-cover  ${
-                                                !sizesItems.some(
-                                                    (v) => v.slug === item.slug
-                                                )
-                                                    ? "active p-[2px] border-[1.5px] border-neutral-dark"
-                                                    : ""
-                                            }`}
-                                        >
-                                            {item.size}
-                                        </a> */}
-                                        
-                                        {/* Otras variantes */}
-                                        
                                         {sizesItems.map((variant) => (
                                             <button
                                                 key={variant.slug}
                                                 onClick={() => handleSizeChange(variant.slug)}
-                                                className={`variant-option rounded-md min-w-9 px-2 w-auto h-9 flex flex-col justify-center items-center text-center bg-slate-200 ${
+                                                className={`relative min-w-12 h-12 px-3 flex items-center justify-center text-center font-medium rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                                                     selectedSize === variant.slug
-                                                    ? "active p-[2px] border-[1.5px] border-neutral-dark"
-                                                    : ""
+                                                        ? "border-primary bg-primary text-white shadow-lg transform scale-105"
+                                                        : "border-gray-200 bg-white customtext-neutral-dark hover:border-gray-300 hover:bg-gray-50"
                                                 }`}
                                             >
                                                 {variant.size}
+                                               
                                             </button>
                                         ))}
                                     </div>
@@ -523,43 +489,83 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                             )}
 
                             {/* Quantity */}
-                            <div className="flex flex-col mt-8">
-                                <div className="flex items-center gap-4 mb-2">
-                                    <div className="flex items-center space-x-4 customtext-neutral-dark text-base 2xl:text-lg">
-                                        <span className="opacity-85">
-                                            Cantidad
-                                        </span>
-                                        <div className="relative flex items-center border rounded-md px-2 py-1">
-                                            <input
-                                                type="number"
-                                                value={quantity}
-                                                onChange={handleChange}
-                                                min="1"
-                                                max="10"
-                                                className="w-10 py-1 customtext-neutral-dark text-center bg-transparent outline-none appearance-none"
-                                            />
-                                        </div>
-                                        {/* <span className="opacity-85">
-                                            Máximo 10 unidades.
-                                        </span> */}
+                            <div className="flex items-center mt-8 gap-4">
+                                <h3 className="font-medium customtext-neutral-dark text-base 2xl:text-lg">
+                                    Cantidad
+                                </h3>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden bg-white">
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                            disabled={quantity <= 1}
+                                            className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                        >
+                                            <svg className="w-4 h-4 customtext-neutral-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                                            </svg>
+                                        </button>
+                                        <input
+                                            type="number"
+                                            value={quantity}
+                                            onChange={handleChange}
+                                            min="1"
+                                            max="10"
+                                            className="w-16 h-12 customtext-neutral-dark text-center bg-white outline-none appearance-none font-medium text-lg border-none"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                            disabled={quantity >= 10}
+                                            className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                        >
+                                            <svg className="w-4 h-4 customtext-neutral-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            </svg>
+                                        </button>
                                     </div>
+                                    <span className="text-sm customtext-neutral-light">
+                                        Máximo 10 unidades
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Add to Cart */}
-                            <button
-                                onClick={() => {
-                                    onAddClicked(item);
-                                }}
-                                disabled={selectedVariant?.stock <= 0}
-                                className={`w-full font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
-                                    selectedVariant?.stock > 0
-                                        ? "bg-accent text-white hover:opacity-90"
-                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                }`}
+                            {/* Add to Cart - Conditional based on data?.button_buy */}
+                            {data?.button_buy && (
+                                <button
+                                    onClick={() => {
+                                        onAddClicked(item);
+                                    }}
+                                    disabled={selectedVariant?.stock <= 0}
+                                    className={`w-full font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
+                                        selectedVariant?.stock > 0
+                                            ? "bg-accent text-white hover:opacity-90 hover:shadow-lg transform hover:scale-[1.02]"
+                                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    }`}
+                                >
+                                    {selectedVariant?.stock > 0 ? "Agregar al carrito" : "Producto agotado"}
+                                </button>
+                            )}
+
+                            {/* WhatsApp Consultation Button */}
+                              {data?.button_consultation && (
+                            <a
+                                href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
+                                    `Hola, deseo cotizar el siguiente producto:\n\n` +
+                                    `📦 Producto: ${item?.name}\n` +
+                                    `🔢 SKU: ${item?.sku}\n` +
+                                    `${item?.color ? `🎨 Color: ${item?.color}\n` : ''}` +
+                                    `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ''}` +
+                                    `📊 Cantidad: ${quantity}\n\n` +
+                                    `¿Podrían enviarme más información y el precio?`
+                                )}`}
+                                target="_blank"
+                                className="w-full font-paragraph py-3 text-base 2xl:text-lg font-semibold rounded-3xl transition-all duration-300 mt-3 bg-primary text-white hover:bg-primary hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2"
                             >
-                                {selectedVariant?.stock > 0 ? "Agregar al carrito" : "Producto agotado"}
-                            </button>
+                             
+                                Cotizar este producto
+                            </a>
+                                )}
 
                             {/* Specifications */}
                             {item?.specifications?.length > 0 && (
@@ -581,9 +587,9 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                                     spec.type === "principal" && (
                                                         <li
                                                             key={index}
-                                                            className="gap-2 customtext-primary opacity-85 flex flex-row items-center"
+                                                            className="gap-2 customtext-primary opacity-85 flex flex-row items-start"
                                                         >   
-                                                            <CircleCheckIcon className="customtext-primary w-4 h-4" />
+                                                            <CircleCheckIcon className="customtext-primary mt-1 min-w-4 min-h-4 max-w-4 max-h-4" />
                                                             {spec.description}
                                                         </li>
                                                     )
@@ -645,7 +651,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
                 <div className="grid gap-10 lg:gap-20 md:grid-cols-2 bg-white rounded-xl p-4 sm:p-8 font-paragraph">
                     {/* Specifications Section */}
-                    {item?.specifications?.length > 0 && (
+                    {item?.specifications?.length > 0 && item.specifications.some(spec => spec.type === "general") && (
                         <div>
                             <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
                                 Especificaciones
@@ -676,6 +682,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                     )}
 
                     {/* Additional Information Section */}
+                    {data?.show_additional_info && (
                         <div className="font-paragraph">
                             {item?.description?.replace(/<[^>]+>/g, '') && (
                                 <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
@@ -721,6 +728,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 
                             </div>
                         </div>
+                    )}
                     
                 </div>
             </div>
