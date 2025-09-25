@@ -377,6 +377,12 @@
                     "link_cart",
                     "type_topbar"
                 ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
                 "generals": [
                     "cintillo"
                 ]
