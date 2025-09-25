@@ -2363,7 +2363,6 @@
                     "button_buy",
                     "button_consultation",
                     "show_additional_info"
-
                 ],
                 "using": {
                     "model": "Item",

@@ -34,6 +34,11 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
         type: "main",
     });
 
+    // Debug: verificar que lleguen los datos
+    console.log("DEBUG - data:", data);
+    console.log("DEBUG - button_consultation:", data?.button_consultation);
+    console.log("DEBUG - button_buy:", data?.button_buy);
+
   
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState(item?.slug);
@@ -530,14 +535,14 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 </div>
                             </div>
 
-                            {/* Add to Cart - Conditional based on data?.button_buy */}
+                            {/* Add to Cart - Conditional based on data?.button_buy - Desktop only */}
                             {data?.button_buy && (
                                 <button
                                     onClick={() => {
                                         onAddClicked(item);
                                     }}
                                     disabled={selectedVariant?.stock <= 0}
-                                    className={`w-full font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
+                                    className={`hidden lg:block w-full font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${
                                         selectedVariant?.stock > 0
                                             ? "bg-accent text-white hover:opacity-90 hover:shadow-lg transform hover:scale-[1.02]"
                                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -547,25 +552,24 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 </button>
                             )}
 
-                            {/* WhatsApp Consultation Button */}
-                              {data?.button_consultation && (
-                            <a
-                                href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
-                                    `Hola, deseo cotizar el siguiente producto:\n\n` +
-                                    `📦 Producto: ${item?.name}\n` +
-                                    `🔢 SKU: ${item?.sku}\n` +
-                                    `${item?.color ? `🎨 Color: ${item?.color}\n` : ''}` +
-                                    `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ''}` +
-                                    `📊 Cantidad: ${quantity}\n\n` +
-                                    `¿Podrían enviarme más información y el precio?`
-                                )}`}
-                                target="_blank"
-                                className="w-full font-paragraph py-3 text-base 2xl:text-lg font-semibold rounded-3xl transition-all duration-300 mt-3 bg-primary text-white hover:bg-primary hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2"
-                            >
-                             
-                                Cotizar este producto
-                            </a>
-                                )}
+                            {/* WhatsApp Consultation Button - Desktop only */}
+                            {data?.button_consultation && (
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
+                                        `Hola, deseo cotizar el siguiente producto:\n\n` +
+                                        `📦 Producto: ${item?.name}\n` +
+                                        `🔢 SKU: ${item?.sku}\n` +
+                                        `${item?.color ? `🎨 Color: ${item?.color}\n` : ''}` +
+                                        `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ''}` +
+                                        `📊 Cantidad: ${quantity}\n\n` +
+                                        `¿Podrían enviarme más información y el precio?`
+                                    )}`}
+                                    target="_blank"
+                                    className="hidden lg:flex w-full font-paragraph py-3 text-base 2xl:text-lg font-semibold rounded-3xl transition-all duration-300 mt-3 bg-primary text-white hover:bg-primary hover:shadow-lg transform hover:scale-[1.02] items-center justify-center gap-2"
+                                >
+                                    Cotizar este producto
+                                </a>
+                            )}
 
                             {/* Specifications */}
                             {item?.specifications?.length > 0 && (
@@ -732,6 +736,53 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                     
                 </div>
             </div>
+
+            {/* Mobile Footer - Fixed Action Buttons */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 shadow-lg">
+                <div className="flex gap-3">
+                    {/* Add to Cart Button - Mobile */}
+                    {data?.button_buy && (
+                        <button
+                            onClick={() => {
+                                onAddClicked(item);
+                            }}
+                            disabled={selectedVariant?.stock <= 0}
+                            className={`flex-1 font-paragraph text-sm py-3 font-semibold rounded-2xl transition-all duration-300 ${
+                                selectedVariant?.stock > 0
+                                    ? "bg-accent text-white hover:opacity-90"
+                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            }`}
+                        >
+                            {selectedVariant?.stock > 0 ? "Agregar al carrito" : "Producto agotado"}
+                        </button>
+                    )}
+
+                    {/* WhatsApp Consultation Button - Mobile */}
+                    {data?.button_consultation && (
+                        <a
+                            href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
+                                `Hola, deseo cotizar el siguiente producto:\n\n` +
+                                `📦 Producto: ${item?.name}\n` +
+                                `🔢 SKU: ${item?.sku}\n` +
+                                `${item?.color ? `🎨 Color: ${item?.color}\n` : ''}` +
+                                `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ''}` +
+                                `📊 Cantidad: ${quantity}\n\n` +
+                                `¿Podrían enviarme más información y el precio?`
+                            )}`}
+                            target="_blank"
+                            className={`font-paragraph text-base py-3 font-semibold rounded-xl transition-all duration-300 bg-primary text-white hover:opacity-90 flex items-center justify-center gap-2 ${
+                                data?.button_buy ? "flex-1" : "w-full"
+                            }`}
+                        >
+                         
+                          Cotizar este producto
+                        </a>
+                    )}
+                </div>
+            </div>
+
+            {/* Mobile Padding Bottom - to prevent content from being hidden behind fixed footer */}
+            <div className="lg:hidden h-20"></div>
 
             {/* Productos relacionados */}
             {relationsItems.length > 0 && (
