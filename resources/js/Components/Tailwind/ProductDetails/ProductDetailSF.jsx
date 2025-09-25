@@ -591,10 +591,10 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                                     spec.type === "principal" && (
                                                         <li
                                                             key={index}
-                                                            className="gap-2 customtext-primary opacity-85 flex flex-row items-start"
+                                                            className="gap-2  customtext-primary opacity-85 flex flex-row items-start"
                                                         >   
                                                             <CircleCheckIcon className="customtext-primary mt-1 min-w-4 min-h-4 max-w-4 max-h-4" />
-                                                            {spec.description}
+                                                           <span className="first-letter:uppercase"> {spec?.description?.toLowerCase()}</span>
                                                         </li>
                                                     )
                                             )}
