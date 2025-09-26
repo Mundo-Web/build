@@ -8,8 +8,11 @@ use App\Models\SaleDetail;
 use App\Models\SaleStatus;
 use App\Models\User;
 use App\Models\General;
+use App\Notifications\PurchaseSummaryNotification;
+use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\Client\Preference\PreferenceClient;
@@ -276,6 +279,21 @@ class MercadoPagoController extends Controller
             // Actualizar stock (solo si el pago es aprobado)
             foreach ($saleDetails as $detail) {
                 Item::where('id', $detail->item_id)->decrement('stock', $detail->quantity);
+            }
+
+            // Enviar correo de resumen de compra al cliente y administrador
+            try {
+                Log::info('MercadoPagoController - Preparando notificación de email');
+                
+                // Usar el helper para enviar tanto al cliente como al administrador
+                NotificationHelper::sendToClientAndAdmin($sale, new PurchaseSummaryNotification($sale, $saleDetails));
+
+                Log::info('MercadoPagoController - Email enviado exitosamente al cliente y administrador');
+            } catch (\Exception $emailException) {
+                Log::warning('MercadoPagoController - Error enviando email (no crítico)', [
+                    'error' => $emailException->getMessage()
+                ]);
+                // No retornamos error aquí porque el pago ya se procesó exitosamente
             }
 
             return redirect('/cart?code=' . $sale->code);

@@ -16,9 +16,11 @@ use App\Models\SaleDetail;
 use App\Models\User;
 use App\Models\General;
 use App\Notifications\PurchaseSummaryNotification;
+use App\Helpers\NotificationHelper;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use SoDe\Extend\JSON;
 use SoDe\Extend\Trace;
 use SoDe\Extend\Math;
@@ -561,10 +563,19 @@ class SaleController extends BasicController
             }
         }
 
-        // Enviar notificación de resumen de compra
-        $saleJpa = Sale::with('details')->find($jpa->id);
-        $details = $saleJpa->details ?? SaleDetail::where('sale_id', $saleJpa->id)->get();
-        $saleJpa->notify(new PurchaseSummaryNotification($saleJpa, $details));
+        // Enviar correo de resumen de compra al cliente y administrador
+        try {
+            $saleJpa = Sale::with('details')->find($jpa->id);
+            $details = $saleJpa->details ?? SaleDetail::where('sale_id', $saleJpa->id)->get();
+            
+            // Usar el helper para enviar tanto al cliente como al administrador
+            NotificationHelper::sendToClientAndAdmin($saleJpa, new PurchaseSummaryNotification($saleJpa, $details));
+        } catch (\Exception $emailException) {
+            // No interrumpir el flujo si hay error en el email
+            Log::warning('SaleController - Error enviando email (no crítico)', [
+                'error' => $emailException->getMessage()
+            ]);
+        }
 
         return $jpa;
     }
