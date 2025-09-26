@@ -32,6 +32,8 @@ const Sliders = () => {
   const bgVideoRef = useRef()
   const buttonTextRef = useRef()
   const buttonLinkRef = useRef()
+  const titleColorRef = useRef()
+  const descriptionColorRef = useRef()
   const secondarybtnTextRef = useRef()
   const secondarybtnUrlRef = useRef()
 
@@ -57,6 +59,8 @@ const Sliders = () => {
     bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
     buttonTextRef.current.value = data?.button_text ?? ''
     buttonLinkRef.current.value = data?.button_link ?? ''
+    titleColorRef.current.value = data?.title_color ?? '#000000'
+    descriptionColorRef.current.value = data?.description_color ?? '#000000'
 
     $(modalRef.current).modal('show')
   }
@@ -70,6 +74,8 @@ const Sliders = () => {
       description: descriptionRef.current.value,
       button_text: buttonTextRef.current.value,
       button_link: buttonLinkRef.current.value,
+      title_color: titleColorRef.current.value,
+      description_color: descriptionColorRef.current.value,
       bg_type: activeTab,
       bg_video: activeTab == 'video' ? iframeSrc : null
     }
@@ -357,7 +363,27 @@ const Sliders = () => {
           </div>
         </div>
         <TextareaFormGroup eRef={nameRef} label='Titulo' col='col-12' rows={2} required />
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
+        <div className='col-sm-6'>
+          <label className='form-label'>Color del título</label>
+          <input 
+            ref={titleColorRef} 
+            type='color' 
+            className='form-control form-control-color' 
+            defaultValue='#000000'
+            title='Seleccionar color del título'
+          />
+        </div>
+        <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} col='col-12' />
+        <div className='col-sm-6'>
+          <label className='form-label'>Color de la descripción</label>
+          <input 
+            ref={descriptionColorRef} 
+            type='color' 
+            className='form-control form-control-color' 
+            defaultValue='#000000'
+            title='Seleccionar color de la descripción'
+          />
+        </div>
         <InputFormGroup eRef={buttonTextRef} label='Texto botón primario' col='col-sm-6' required />
         <InputFormGroup eRef={buttonLinkRef} label='URL botón primario' col='col-sm-6' required />
       </div>

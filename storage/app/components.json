@@ -636,7 +636,9 @@
                         "bg_image_mobile",
                         "button_text",
                         "button_link",
-                        "order_index"
+                        "order_index",
+                        "title_color",
+                        "description_color"
                     ]
                 },
                 "generals": [

@@ -7,6 +7,7 @@ import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
 
+    console.log("data slider",data)
   // Verificar si las animaciones están habilitadas
   const hasAnimation = data?.animation_slider === "true" || data?.animation_slider === "si" || data?.animation_slider === true;
 
@@ -381,6 +382,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         };
     };
 
+
     // Cada vez que cambia el slide, revisa si la imagen es oscura
     useEffect(() => {
         const currentItem = duplicatedItems[currentIndex];
@@ -469,8 +471,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                        <div>
                                          <motion.h2
                                             variants={titleVariants}
-                                            className={`${Global.APP_CORRELATIVE==="stechperu" ?"w-9/12  md:w-full md:max-w-md " :"w-full  md:w-full md:max-w-lg "} font-title text-[40px] leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_title}`}
+                                            className={`${Global.APP_CORRELATIVE==="stechperu" ?"w-9/12  md:w-full md:max-w-md " :"w-full  md:w-full md:max-w-lg "} font-title text-[40px] leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${data?.class_title}`}
                                             style={{
+                                                color: item.title_color || (isDarkBg ? "#FFFFFF" : "#000000"),
                                                 textShadow: "0 0 20px rgba(0, 0, 0, .25)",
                                             }}
                                         >
@@ -478,8 +481,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                         </motion.h2>
                                         <motion.p
                                             variants={descriptionVariants}
-                                            className={`${Global.APP_CORRELATIVE==="stechperu" ?"w-8/12" :"w-full"} md:w-full md:max-w-md text-lg leading-tight font-paragraph ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_description}`}
+                                            className={`${Global.APP_CORRELATIVE==="stechperu" ?"w-8/12" :"w-full"} md:w-full md:max-w-md text-lg leading-tight font-paragraph ${data?.class_description}`}
                                             style={{
+                                                color: item.description_color || (isDarkBg ? "#FFFFFF" : "#000000"),
                                                 textShadow: "0 0 20px rgba(0, 0, 0, .25)",
                                             }}
                                         >
