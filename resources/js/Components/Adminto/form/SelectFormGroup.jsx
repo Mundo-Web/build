@@ -13,18 +13,26 @@ const SelectFormGroup = ({ id, col, className, value, label, eRef, required = fa
   if (!id) id = `select-${crypto.randomUUID()}`
 
   useEffect(() => {
-    $(eRef.current).select2({
+    const $element = $(eRef.current);
+    
+    // Initialize Select2
+    $element.select2({
       dropdownParent,
       templateResult,
       templateSelection,
       tags,
       minimumResultsForSearch
-    })
-    $(eRef.current).on('change', onChange)
+    });
+    
+    $element.on('change', onChange);
 
     return () => {
-      $(eRef.current).off('change', onChange)
-      $(eRef.current).select2('destroy')
+      $element.off('change', onChange);
+      
+      // Check if Select2 is initialized before destroying
+      if ($element.hasClass('select2-hidden-accessible')) {
+        $element.select2('destroy');
+      }
     }
   }, [...changeWith, value, disabled])
 

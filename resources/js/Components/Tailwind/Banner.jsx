@@ -23,12 +23,12 @@ const Banner = ({ which, data, items }) => {
     const getBanner = () => {
         switch (which) {
             case "BannerSimple":
-                return <BannerPidelo data={data} />;
+                return <BannerSimple data={data} />;
             case "BannerAd":
                 return <BannerAd data={data} />;
             case "BannerPublicitario":
                 return <BannerPublicitario data={data} />;
-                case "BannerPublicitarioKatya":
+            case "BannerPublicitarioKatya":
                 return <BannerPublicitarioKatya data={data} />;
             case "BannerPublicitarioPaani":
                 return <BannerPublicitarioPaani data={data} />;
@@ -52,10 +52,12 @@ const Banner = ({ which, data, items }) => {
                 return <BannerContactMakita data={data} />;
             case "BannerStaticSecond":
                 return <BannerStaticSecond data={data} items={items} />;
+            case "BannerPidelo":
+                return <BannerPidelo data={data} />;
             case "BannerMultivet":
                 return <BannerMultivet data={data} />;
             case "BannerBlogSectionKatya":
-                return <BannerBlogSectionKatya data={data} items={items} />
+                return <BannerBlogSectionKatya data={data} items={items} />;
 
             default:
                 return (

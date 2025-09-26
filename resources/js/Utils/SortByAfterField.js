@@ -10,13 +10,26 @@ const SortByAfterField = (components) => {
   const missingReferences = new Set();
 
   // Función recursiva para agregar un componente y sus dependencias
-  function addComponent(component) {
+  function addComponent(component, processingChain = new Set()) {
     if (processedIds.has(component.id)) return; // Evitar duplicados
+
+    // 🚨 CRÍTICO: Detectar referencias circulares ANTES de la recursión
+    if (processingChain.has(component.id)) {
+      console.warn(`🔄 Circular reference detected in component chain:`, 
+        Array.from(processingChain), '→', component.id);
+      // Agregar el componente problemático sin procesar su dependencia
+      ordered.push(component);
+      processedIds.add(component.id);
+      return;
+    }
 
     if (component.after_component) {
       const dependency = componentMap[component.after_component];
       if (dependency) {
-        addComponent(dependency); // Agregar la dependencia primero
+        // Agregar este componente a la cadena de procesamiento
+        const newProcessingChain = new Set(processingChain);
+        newProcessingChain.add(component.id);
+        addComponent(dependency, newProcessingChain); // Agregar la dependencia primero
       } else {
         // Si la referencia no existe, marcarlo para procesarlo al final
         missingReferences.add(component);
