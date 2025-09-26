@@ -464,7 +464,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                         initial="initial"
                                         animate="animate"
                                         exit="exit"
-                                        className={`${Global.APP_CORRELATIVE === "stechperu" ?"py-10":"py-20"} flex flex-col gap-5 lg:gap-10 h-full lg:h-auto  lg:py-0 items-start justify-between lg:justify-normal lg:items-start`}
+                                        className={`${Global.APP_CORRELATIVE === "stechperu" ?"py-10":"py-20"} flex flex-col gap-5 lg:gap-10 h-full lg:h-auto  lg:py-0 items-start justify-between lg:justify-normal lg:items-start w-full`}
                                     >
                                         <div>
                                             <motion.h2
@@ -491,7 +491,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                         {item.button_text && item.button_link && (
                                             <motion.div
                                                 variants={buttonsVariants}
-                                                className={`flex flex-row gap-5 md:gap-10 justify-center w-full  ${Global.APP_CORRELATIVE === "stechperu" ? "items-center":"items-start"}`}
+                                                className={`flex flex-row gap-5 md:gap-10  w-full  ${Global.APP_CORRELATIVE === "stechperu" ? "justify-center lg:justify-start items-center lg:items-start":"items-start"}`}
                                             >
                                                 <a
                                                     href={item.button_link}

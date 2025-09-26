@@ -389,49 +389,87 @@ export default function ShippingStepSF({
 
         setLoading(true);
         try {
+            // Calcular el total del carrito para la lógica condicional
+            const cartTotal = cart.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
+            
+            console.log('🛒 ShippingStepSF - Cart total calculado:', cartTotal);
+            console.log('🛒 ShippingStepSF - Cart items:', cart.map(item => ({
+                name: item.name,
+                price: item.final_price,
+                quantity: item.quantity,
+                total: item.final_price * item.quantity
+            })));
+            console.log('💰 ShippingStepSF - Comparación de totales:');
+            console.log('   - Cart total (solo productos):', cartTotal);
+            console.log('   - SubTotal prop:', subTotal);
+            console.log('   - IGV prop:', igv);
+            console.log('   - Total con IGV:', subTotal + igv);
+            console.log('   - Total final prop:', totalFinal);
+            
             const response = await DeliveryPricesRest.getShippingCost({
                 ubigeo: data.reniec || data.inei,
+                cart_total: cartTotal, // Enviar el total del carrito
             });
 
+            console.log('📦 ShippingStepSF - Respuesta del backend:', response.data);
+            console.log('✅ ShippingStepSF - Califica para envío gratis?', response.data.qualifies_free_shipping);
+            console.log('💰 ShippingStepSF - Umbral requerido:', response.data.free_shipping_threshold);
+            console.log('🔍 ShippingStepSF - is_free:', response.data.is_free);
+            console.log('🔍 ShippingStepSF - Descripción standard:', response.data.standard?.description);
+            console.log('🔍 ShippingStepSF - Tipo standard:', response.data.standard?.type);
+
             const options = [];
-            
-            const isFreeShipping = subFinal >= hasShippingFree;
-            
-            if (isFreeShipping) {
+
+            // 1. ENVÍO GRATIS: SOLO para zonas con is_free=true Y que califiquen por monto
+            if (response.data.is_free && response.data.qualifies_free_shipping) {
+                console.log('✅ ShippingStepSF - Es zona is_free=true Y califica por monto - Agregando envío GRATIS');
                 options.push({
                     type: "free",
                     price: 0,
-                    description: `Compra mayor a ${CurrencySymbol()} ${hasShippingFree}`,
-                    deliveryType: "Envío gratuito",
-                });
-            } else if (response.data.is_free) { // Si no aplica envío gratuito por monto, verifica otras opciones
-                options.push({
-                    type: "free",
-                    price: 0,
-                    description: response.data.standard.description,
-                    deliveryType: response.data.standard.type,
-                    characteristics: response.data.standard.characteristics,
-                });
-            } else if (response.data.is_agency) {
-                options.push({
-                    type: "agency",
-                    price: 0,
-                    description: response.data.agency.description,
-                    deliveryType: response.data.agency.type,
-                    characteristics: response.data.agency.characteristics,
-                });
-            } else {
-                options.push({
-                    type: "standard",
-                    price: response.data.standard.price,
                     description: response.data.standard.description,
                     deliveryType: response.data.standard.type,
                     characteristics: response.data.standard.characteristics,
                 });
             }
 
-            // Solo muestra opción express si no es envío gratuito por monto
-            if (response.data.express?.price > 0 && response.data.is_free && !isFreeShipping) {
+            // 2. ENVÍO NORMAL: Si existe standard, siempre agregarlo (excepto para zonas is_free que califican para gratis)
+            if (response.data.standard) {
+                // Solo agregar envío normal si NO es zona gratis que califica, o si es zona gratis que NO califica
+                if (!response.data.is_free || (response.data.is_free && !response.data.qualifies_free_shipping)) {
+                    console.log('📦 ShippingStepSF - Agregando envío NORMAL');
+                    
+                    // Limpiar cualquier mención de "envío gratis" en la descripción si NO es zona is_free
+                    let cleanDescription = response.data.standard.description;
+                    if (!response.data.is_free) {
+                        // Para zonas que NO son is_free, remover cualquier mención de envío gratis
+                        cleanDescription = cleanDescription
+                            .replace(/envío gratis.*?/gi, '')
+                            .replace(/envio gratis.*?/gi, '')
+                            .replace(/gratis.*?compras.*?/gi, '')
+                            .replace(/mayor.*?200.*?/gi, '')
+                            .replace(/200.*?mayor.*?/gi, '')
+                            .replace(/\s+/g, ' ') // Limpiar espacios extras
+                            .trim();
+                        
+                        // Si queda vacío, usar una descripción por defecto
+                        if (!cleanDescription) {
+                            cleanDescription = "Delivery a domicilio";
+                        }
+                    }
+                    
+                    options.push({
+                        type: "standard",
+                        price: response.data.standard.price,
+                        description: cleanDescription,
+                        deliveryType: response.data.standard.type,
+                        characteristics: response.data.standard.characteristics,
+                    });
+                }
+            }
+
+            // 3. ENVÍO EXPRESS: Si existe express, siempre agregarlo
+            if (response.data.express && response.data.express.price > 0) {
+                console.log('⚡ ShippingStepSF - Agregando envío EXPRESS');
                 options.push({
                     type: "express",
                     price: response.data.express.price,
@@ -441,17 +479,32 @@ export default function ShippingStepSF({
                 });
             }
 
+            // 4. ENVÍO AGENCIA: Si existe agency, agregarlo
+            if (response.data.is_agency && response.data.agency) {
+                console.log('🏢 ShippingStepSF - Agregando envío por AGENCIA');
+                options.push({
+                    type: "agency",
+                    price: response.data.agency.price || 0,
+                    description: response.data.agency.description,
+                    deliveryType: response.data.agency.type,
+                    characteristics: response.data.agency.characteristics,
+                });
+            }
+
             if (options.length === 0) {
                 throw new Error("No hay opciones de envío disponibles");
             }
 
             setShippingOptions(options);
-            setSelectedOption(options[0].type);
-            setEnvio(options[0].price);
+            setSelectedOption(options[0]?.type || null);
+            setEnvio(options[0]?.price || 0);
+            
+            console.log('📋 ShippingStepSF - Opciones finales de envío:', options);
+            console.log('🚚 ShippingStepSF - Precio de envío seleccionado:', options[0]?.price || 0);
            
         } catch (error) {
             console.error("Error al obtener precios de envío:", error);
-            toast.success('Sin cobertura', {
+            toast.error('Sin cobertura', {
                 description: `No realizamos envíos a esta ubicación`,
                 icon: <CircleX className="h-5 w-5 text-red-500" />,
                 duration: 3000,
