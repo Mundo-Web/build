@@ -305,7 +305,11 @@ class ItemController extends BasicController
     {
         return $model::select(['items.*'])
             ->with(['category','tags' ,'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features'])
-            ->leftJoin('categories AS category', 'category.id', 'items.category_id');
+            ->leftJoin('categories AS category', 'category.id', 'items.category_id')
+            ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
+            ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
+            ->leftJoin('stores AS store', 'store.id', 'items.store_id')
+            ->leftJoin('sub_categories AS subcategory', 'subcategory.id', 'items.subcategory_id');
     }
 
 
