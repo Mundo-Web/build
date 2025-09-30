@@ -1079,6 +1079,72 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         name: "Llave privada de Culqi",
         description: formData.checkout_culqi_private_key || "",
       },
+      // Campos SEO
+      {
+        correlative: "site_title",
+        name: "Título del Sitio",
+        description: formData.siteTitle || "",
+      },
+      {
+        correlative: "site_description",
+        name: "Descripción del Sitio",
+        description: formData.siteDescription || "",
+      },
+      {
+        correlative: "site_keywords",
+        name: "Palabras Clave",
+        description: formData.siteKeywords || "",
+      },
+      {
+        correlative: "og_title",
+        name: "Título Open Graph",
+        description: formData.ogTitle || "",
+      },
+      {
+        correlative: "og_description",
+        name: "Descripción Open Graph",
+        description: formData.ogDescription || "",
+      },
+      {
+        correlative: "og_image",
+        name: "Imagen Open Graph",
+        description: formData.ogImage || "",
+      },
+      {
+        correlative: "og_url",
+        name: "URL Open Graph",
+        description: formData.ogUrl || "",
+      },
+      {
+        correlative: "twitter_title",
+        name: "Título Twitter",
+        description: formData.twitterTitle || "",
+      },
+      {
+        correlative: "twitter_description",
+        name: "Descripción Twitter",
+        description: formData.twitterDescription || "",
+      },
+      {
+        correlative: "twitter_image",
+        name: "Imagen Twitter",
+        description: formData.twitterImage || "",
+      },
+      {
+        correlative: "twitter_card",
+        name: "Tipo Twitter Card",
+        description: formData.twitterCard || "summary_large_image",
+      },
+      {
+        correlative: "favicon",
+        name: "Favicon",
+        description: formData.favicon || "",
+      },
+      {
+        correlative: "canonical_url",
+        name: "URL Canónica",
+        description: formData.canonicalUrl || "",
+      },
     ];
 
     try {
