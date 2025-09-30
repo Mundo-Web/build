@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Combo;
+use App\Models\General;
 use App\Models\Item;
 use App\Models\ItemTag;
 use App\Models\Store;
@@ -168,9 +169,14 @@ class ItemController extends BasicController
             ->where('items.visible', true)
             ->get();
         $details = WebDetail::where('page', 'courses')->get();
+        
+        // Get all generals including SEO data
+        $generals = General::where('status', true)->get()->keyBy('correlative');
+        
         return [
             'categories' => $categories,
-            'details' => $details
+            'details' => $details,
+            'generals' => $generals,
         ];
     }
     /*aqui agregar el codigo*/

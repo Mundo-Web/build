@@ -56,6 +56,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy'],
     'location': ['location'],
     'shippingfree': ['shipping_free', 'igv_checkout', 'currency'],
+    'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'],
 
     'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts'],
     'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
@@ -143,17 +144,48 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Inicializar estado de visibilidad de campos
   useEffect(() => {
-    if (hasRootRole() && allGenerals && allGenerals.length > 0) {
+    if (hasRootRole()) {
       const visibility = {};
-      allGenerals.forEach(general => {
-        if (general && general.correlative) {
-          visibility[general.correlative] = general.status === 1 || general.status === '1';
+      
+      // Inicializar desde allGenerals existentes
+      if (allGenerals && allGenerals.length > 0) {
+        allGenerals.forEach(general => {
+          if (general && general.correlative) {
+            visibility[general.correlative] = general.status === 1 || general.status === '1';
+          }
+        });
+      }
+      
+      // Agregar campos SEO que siempre deben estar disponibles (por defecto habilitados)
+      const seoFields = ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'];
+      seoFields.forEach(field => {
+        // Si no existe en allGenerals, habilitarlo por defecto
+        if (!(field in visibility)) {
+          visibility[field] = true;
         }
       });
+      
       console.log('Initialized field visibility:', visibility);
       setFieldVisibility(visibility);
     }
-  }, [allGenerals]);
+  }, [allGenerals, hasRootRole]);
+
+  // Función para verificar si un campo SEO debe mostrarse
+  const shouldShowSeoField = useCallback((correlative) => {
+    // Para usuarios Root, siempre mostrar todos los campos
+    if (hasRootRole()) return true;
+    
+    // Para usuarios Admin, verificar el estado de visibilidad
+    // Si el campo no existe en fieldVisibility, asumir que está habilitado (campos nuevos)
+    return fieldVisibility[correlative] !== false;
+  }, [hasRootRole, fieldVisibility]);
+
+  // Componente ConditionalSeoField para campos SEO
+  const ConditionalSeoField = useMemo(() => {
+    return ({ correlative, children, fallback = null }) => {
+      return shouldShowSeoField(correlative) ? children : fallback;
+    };
+  }, [shouldShowSeoField]);
 
   const [formData, setFormData] = useState(() => ({
     email_templates: Object.fromEntries(
@@ -316,6 +348,47 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     googleOauthEnabled:
       generals.find((x) => x.correlative == "google_oauth_enabled")
         ?.description ?? "false",
+    
+    // Campos SEO
+    siteTitle:
+      generals.find((x) => x.correlative == "site_title")
+        ?.description ?? "",
+    siteDescription:
+      generals.find((x) => x.correlative == "site_description")
+        ?.description ?? "",
+    siteKeywords:
+      generals.find((x) => x.correlative == "site_keywords")
+        ?.description ?? "",
+    ogTitle:
+      generals.find((x) => x.correlative == "og_title")
+        ?.description ?? "",
+    ogDescription:
+      generals.find((x) => x.correlative == "og_description")
+        ?.description ?? "",
+    ogImage:
+      generals.find((x) => x.correlative == "og_image")
+        ?.description ?? "",
+    ogUrl:
+      generals.find((x) => x.correlative == "og_url")
+        ?.description ?? "",
+    twitterTitle:
+      generals.find((x) => x.correlative == "twitter_title")
+        ?.description ?? "",
+    twitterDescription:
+      generals.find((x) => x.correlative == "twitter_description")
+        ?.description ?? "",
+    twitterImage:
+      generals.find((x) => x.correlative == "twitter_image")
+        ?.description ?? "",
+    twitterCard:
+      generals.find((x) => x.correlative == "twitter_card")
+        ?.description ?? "summary_large_image",
+    favicon:
+      generals.find((x) => x.correlative == "favicon")
+        ?.description ?? "",
+    canonicalUrl:
+      generals.find((x) => x.correlative == "canonical_url")
+        ?.description ?? "",
   }));
 
   // Funciones memoizadas para evitar re-renders y pérdida de foco
@@ -1150,6 +1223,17 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 </button>
               </li>
             )}
+
+            <li className="nav-item" role="presentation">
+              <button
+                className={`nav-link ${activeTab === "seo" ? "active" : ""}`}
+                onClick={() => setActiveTab("seo")}
+                type="button"
+                role="tab"
+              >
+                SEO & Meta Tags
+              </button>
+            </li>
 
             {shouldShowTab('pixels') && (
               <li className="nav-item" role="presentation">
@@ -2373,6 +2457,277 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
             </div>
 
             <div
+              className={`tab-pane fade ${activeTab === "seo" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-12">
+                  <h5 className="mb-4">
+                    <i className="fas fa-search me-2 text-primary"></i>
+                    Configuración SEO y Meta Tags
+                  </h5>
+                  <p className="text-muted mb-4">
+                    Configure los meta tags para optimizar su sitio web para motores de búsqueda y redes sociales.
+                  </p>
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6">
+                  <h6 className="mb-3">
+                    <i className="fas fa-globe me-2"></i>Meta Tags Básicos
+                  </h6>
+                  
+                  <ConditionalSeoField correlative="site_title">
+                    <div className="mb-3">
+                      <label className="form-label">Título del Sitio</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Mi Sitio Web - Descripción breve"
+                        value={formData.siteTitle}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          siteTitle: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Título principal que aparece en la pestaña del navegador</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="site_description">
+                    <div className="mb-3">
+                      <label className="form-label">Descripción del Sitio</label>
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        placeholder="Descripción breve del sitio web para SEO..."
+                        value={formData.siteDescription}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          siteDescription: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Descripción que aparece en los resultados de búsqueda (máx. 160 caracteres)</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="site_keywords">
+                    <div className="mb-3">
+                      <label className="form-label">Palabras Clave</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="palabra1, palabra2, palabra3"
+                        value={formData.siteKeywords}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          siteKeywords: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Palabras clave separadas por comas</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="canonical_url">
+                    <div className="mb-3">
+                      <label className="form-label">URL Canónica</label>
+                      <input
+                        type="url"
+                        className="form-control"
+                        placeholder="https://midominio.com"
+                        value={formData.canonicalUrl}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          canonicalUrl: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">URL principal del sitio para evitar contenido duplicado</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="favicon">
+                    <div className="mb-3">
+                      <label className="form-label">Favicon</label>
+                      <input
+                        type="url"
+                        className="form-control"
+                        placeholder="/favicon.ico o URL completa"
+                        value={formData.favicon}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          favicon: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Ruta o URL del icono del sitio (favicon)</small>
+                    </div>
+                  </ConditionalSeoField>
+                </div>
+
+                <div className="col-md-6">
+                  <h6 className="mb-3">
+                    <i className="fab fa-facebook me-2"></i>Open Graph (Facebook/LinkedIn)
+                  </h6>
+
+                  <ConditionalSeoField correlative="og_title">
+                    <div className="mb-3">
+                      <label className="form-label">Título Open Graph</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Título para compartir en redes sociales"
+                        value={formData.ogTitle}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          ogTitle: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Título que aparece al compartir en Facebook/LinkedIn</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="og_description">
+                    <div className="mb-3">
+                      <label className="form-label">Descripción Open Graph</label>
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        placeholder="Descripción atractiva para redes sociales..."
+                        value={formData.ogDescription}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          ogDescription: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Descripción al compartir en redes sociales</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="og_image">
+                    <div className="mb-3">
+                      <label className="form-label">Imagen Open Graph</label>
+                      <input
+                        type="url"
+                        className="form-control"
+                        placeholder="https://midominio.com/imagen-compartir.jpg"
+                        value={formData.ogImage}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          ogImage: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">URL de la imagen para compartir (recomendado: 1200x630px)</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="og_url">
+                    <div className="mb-3">
+                      <label className="form-label">URL Open Graph</label>
+                      <input
+                        type="url"
+                        className="form-control"
+                        placeholder="https://midominio.com"
+                        value={formData.ogUrl}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          ogUrl: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">URL que se mostrará al compartir</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <h6 className="mb-3 mt-4">
+                    <i className="fab fa-twitter me-2"></i>Twitter Cards
+                  </h6>
+
+                  <ConditionalSeoField correlative="twitter_card">
+                    <div className="mb-3">
+                      <label className="form-label">Tipo de Twitter Card</label>
+                      <select
+                        className="form-control"
+                        value={formData.twitterCard}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          twitterCard: e.target.value
+                        })}
+                      >
+                        <option value="summary">Summary</option>
+                        <option value="summary_large_image">Summary Large Image</option>
+                        <option value="app">App</option>
+                        <option value="player">Player</option>
+                      </select>
+                      <small className="text-muted">Tipo de tarjeta para Twitter</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="twitter_title">
+                    <div className="mb-3">
+                      <label className="form-label">Título Twitter</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Título para Twitter"
+                        value={formData.twitterTitle}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          twitterTitle: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Título específico para Twitter</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="twitter_description">
+                    <div className="mb-3">
+                      <label className="form-label">Descripción Twitter</label>
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        placeholder="Descripción para Twitter..."
+                        value={formData.twitterDescription}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          twitterDescription: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Descripción específica para Twitter</small>
+                    </div>
+                  </ConditionalSeoField>
+
+                  <ConditionalSeoField correlative="twitter_image">
+                    <div className="mb-3">
+                      <label className="form-label">Imagen Twitter</label>
+                      <input
+                        type="url"
+                        className="form-control"
+                        placeholder="https://midominio.com/imagen-twitter.jpg"
+                        value={formData.twitterImage}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          twitterImage: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">URL de la imagen para Twitter Cards</small>
+                    </div>
+                  </ConditionalSeoField>
+                </div>
+              </div>
+
+              <div className="alert alert-info mt-4">
+                <h6>
+                  <i className="fas fa-lightbulb me-2"></i>Consejos para SEO
+                </h6>
+                <ul className="mb-0">
+                  <li><strong>Título:</strong> Mantenga entre 50-60 caracteres para mejor visualización</li>
+                  <li><strong>Descripción:</strong> Use entre 150-160 caracteres para aparecer completa en búsquedas</li>
+                  <li><strong>Imágenes:</strong> Use imágenes de alta calidad (1200x630px para Open Graph)</li>
+                  <li><strong>Palabras clave:</strong> Use términos relevantes que sus usuarios buscarían</li>
+                </ul>
+              </div>
+            </div>
+
+            <div
               className={`tab-pane fade ${activeTab === "pixels" ? "show active" : ""}`}
               role="tabpanel"
             >
@@ -2903,6 +3258,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       'policies': 'Políticas & Términos',
                       'location': 'Ubicación & Mapa',
                       'shippingfree': 'Envío & Facturación',
+                      'seo': 'SEO & Meta Tags',
                       'corporate': 'Datos Corporativos',
                       'pixels': 'Analítica & Pixels',
                       'oauth': 'OAuth & Autenticación'
@@ -2945,6 +3301,46 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       </div>
                     );
                   })}
+
+                  {/* Sección SEO - Campos especiales que siempre deben aparecer */}
+                  <div className="mb-4">
+                    <div className="d-flex align-items-center mb-3">
+                      <h4 className="text-primary mb-0 me-2">SEO & Meta Tags</h4>
+                    </div>
+                    <div className="row">
+                      {[
+                        { correlative: 'site_title', name: 'Título del Sitio' },
+                        { correlative: 'site_description', name: 'Descripción del Sitio' },
+                        { correlative: 'site_keywords', name: 'Palabras Clave' },
+                        { correlative: 'og_title', name: 'Título Open Graph' },
+                        { correlative: 'og_description', name: 'Descripción Open Graph' },
+                        { correlative: 'og_image', name: 'Imagen Open Graph' },
+                        { correlative: 'og_url', name: 'URL Open Graph' },
+                        { correlative: 'twitter_title', name: 'Título Twitter' },
+                        { correlative: 'twitter_description', name: 'Descripción Twitter' },
+                        { correlative: 'twitter_image', name: 'Imagen Twitter' },
+                        { correlative: 'twitter_card', name: 'Tipo Twitter Card' },
+                        { correlative: 'favicon', name: 'Favicon' },
+                        { correlative: 'canonical_url', name: 'URL Canónica' }
+                      ].map((field) => (
+                        <div key={field.correlative} className="col-md-6 mb-2">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={`field-${field.correlative}`}
+                              checked={fieldVisibility[field.correlative] || false}
+                              onChange={() => handleToggleFieldVisibility(field.correlative)}
+                            />
+                            <label className="form-check-label" htmlFor={`field-${field.correlative}`}>
+                              <strong>{field.name}</strong>
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <hr className="my-3" />
+                  </div>
 
                   {/* Campos que no pertenecen a ninguna categoría */}
                   {(() => {

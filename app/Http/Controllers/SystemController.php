@@ -96,7 +96,24 @@ class SystemController extends BasicController
             $systems = System::where('page_id', $page['id'])->get();
         }
 
-        $generals = ['currency'];
+        // Include all SEO generals by default plus currency
+        $generals = [
+            'currency',
+            'site_title',
+            'site_description', 
+            'site_keywords',
+            'og_title',
+            'og_description',
+            'og_image',
+            'og_url',
+            'twitter_title',
+            'twitter_description',
+            'twitter_image',
+            'twitter_card',
+            'favicon',
+            'canonical_url'
+        ];
+        
         $jsons = [];
         foreach ($systems as $key => $system) {
             if ($system->component == 'content') continue;

@@ -10,18 +10,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?php echo e($data['name'] ?? 'Página'); ?> | <?php echo e(env('APP_NAME')); ?></title>
+    <?php
+        // Obtener datos SEO de generals
+        $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? env('APP_NAME');
+        $siteDescription = $generals->where('correlative', 'site_description')->first()?->description ?? '';
+        $siteKeywords = $generals->where('correlative', 'site_keywords')->first()?->description ?? '';
+        $ogTitle = $generals->where('correlative', 'og_title')->first()?->description ?? ($data['name'] ?? $siteTitle);
+        $ogDescription = $generals->where('correlative', 'og_description')->first()?->description ?? ($data['description'] ?? $siteDescription);
+        $ogImage = $generals->where('correlative', 'og_image')->first()?->description ?? '';
+        $ogUrl = $generals->where('correlative', 'og_url')->first()?->description ?? url()->current();
+        $twitterTitle = $generals->where('correlative', 'twitter_title')->first()?->description ?? $ogTitle;
+        $twitterDescription = $generals->where('correlative', 'twitter_description')->first()?->description ?? $ogDescription;
+        $twitterImage = $generals->where('correlative', 'twitter_image')->first()?->description ?? $ogImage;
+        $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
+        $favicon = $generals->where('correlative', 'favicon')->first()?->description ?? '/assets/resources/icon.png';
+        $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
+    ?>
 
-    <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e(uniqid()); ?>" type="image/png">
+    <title><?php echo e($data['name'] ?? $ogTitle ?? $siteTitle); ?></title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="<?php echo e($favicon); ?>?v=<?php echo e(uniqid()); ?>" type="image/png">
     
-    <?php if(isset($data['description'])): ?>
-        <meta name="description" content="<?php echo e($data['description']); ?>">
+    <!-- Meta básicas -->
+    <meta name="description" content="<?php echo e($data['description'] ?? $ogDescription ?? $siteDescription); ?>">
+    <?php if($siteKeywords || (isset($data['keywords']) && $data['keywords'])): ?>
+        <meta name="keywords" content="<?php echo e(isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords); ?>">
     <?php endif; ?>
-    <?php if(isset($data['keywords'])): ?>
-        <meta name="keywords" content="<?php echo e(implode(', ', $data['keywords'])); ?>">
-    <?php endif; ?>
-
     <meta name="author" content="Powered by Mundo Web">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<?php echo e($canonicalUrl); ?>">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo e($ogUrl); ?>">
+    <meta property="og:title" content="<?php echo e($ogTitle); ?>">
+    <meta property="og:description" content="<?php echo e($ogDescription); ?>">
+    <?php if($ogImage): ?>
+        <meta property="og:image" content="<?php echo e($ogImage); ?>">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+    <?php endif; ?>
+    <meta property="og:site_name" content="<?php echo e($siteTitle); ?>">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="<?php echo e($twitterCard); ?>">
+    <meta property="twitter:url" content="<?php echo e($ogUrl); ?>">
+    <meta property="twitter:title" content="<?php echo e($twitterTitle); ?>">
+    <meta property="twitter:description" content="<?php echo e($twitterDescription); ?>">
+    <?php if($twitterImage): ?>
+        <meta property="twitter:image" content="<?php echo e($twitterImage); ?>">
+    <?php endif; ?>
 
     <!-- Carga diferida de select2 CSS -->
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">

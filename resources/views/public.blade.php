@@ -10,18 +10,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $data['name'] ?? 'Página' }} | {{ env('APP_NAME') }}</title>
+    @php
+        // Obtener datos SEO de generals
+        $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? env('APP_NAME');
+        $siteDescription = $generals->where('correlative', 'site_description')->first()?->description ?? '';
+        $siteKeywords = $generals->where('correlative', 'site_keywords')->first()?->description ?? '';
+        $ogTitle = $generals->where('correlative', 'og_title')->first()?->description ?? ($data['name'] ?? $siteTitle);
+        $ogDescription = $generals->where('correlative', 'og_description')->first()?->description ?? ($data['description'] ?? $siteDescription);
+        $ogImage = $generals->where('correlative', 'og_image')->first()?->description ?? '';
+        $ogUrl = $generals->where('correlative', 'og_url')->first()?->description ?? url()->current();
+        $twitterTitle = $generals->where('correlative', 'twitter_title')->first()?->description ?? $ogTitle;
+        $twitterDescription = $generals->where('correlative', 'twitter_description')->first()?->description ?? $ogDescription;
+        $twitterImage = $generals->where('correlative', 'twitter_image')->first()?->description ?? $ogImage;
+        $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
+        $favicon = $generals->where('correlative', 'favicon')->first()?->description ?? '/assets/resources/icon.png';
+        $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
+    @endphp
 
-    <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ uniqid() }}" type="image/png">
+    <title>{{ $data['name'] ?? $ogTitle ?? $siteTitle }}</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ $favicon }}?v={{ uniqid() }}" type="image/png">
     
-    @isset($data['description'])
-        <meta name="description" content="{{ $data['description'] }}">
-    @endisset
-    @isset($data['keywords'])
-        <meta name="keywords" content="{{ implode(', ', $data['keywords']) }}">
-    @endisset
-
+    <!-- Meta básicas -->
+    <meta name="description" content="{{ $data['description'] ?? $ogDescription ?? $siteDescription }}">
+    @if($siteKeywords || (isset($data['keywords']) && $data['keywords']))
+        <meta name="keywords" content="{{ isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords }}">
+    @endif
     <meta name="author" content="Powered by Mundo Web">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ $ogUrl }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    @if($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+    @endif
+    <meta property="og:site_name" content="{{ $siteTitle }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="{{ $twitterCard }}">
+    <meta property="twitter:url" content="{{ $ogUrl }}">
+    <meta property="twitter:title" content="{{ $twitterTitle }}">
+    <meta property="twitter:description" content="{{ $twitterDescription }}">
+    @if($twitterImage)
+        <meta property="twitter:image" content="{{ $twitterImage }}">
+    @endif
 
     <!-- Carga diferida de select2 CSS -->
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
