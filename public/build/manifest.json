@@ -6699,7 +6699,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-DvK9uGfV.js",
+    "file": "assets/Contact-Bo0Vghjs.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -6714,6 +6714,7 @@
       "resources/js/Components/Tailwind/Contact/ContactSimple.jsx",
       "resources/js/Components/Tailwind/Contact/ContactGrid.jsx",
       "resources/js/Components/Tailwind/Contact/ContactAko.jsx",
+      "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
       "resources/js/Components/Tailwind/Contact/ThankContact.jsx"
     ]
   },
@@ -6771,6 +6772,30 @@
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Contact/ContactKatya.jsx": {
+    "file": "assets/ContactKatya-C0QOBBNH.js",
+    "name": "ContactKatya",
+    "src": "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
+      "_MessagesRest-DWJsUWx3.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_proxy-B0QLMKEh.js",
+      "_index-BZvh78jk.js",
+      "_phone-ZNY-sPqk.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_BasicRest-BqhZrBN0.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js",
+      "_createLucideIcon-DfjclApS.js"
     ]
   },
   "resources/js/Components/Tailwind/Contact/ContactSimple.jsx": {
@@ -7836,26 +7861,21 @@
     ]
   },
   "resources/js/Components/Tailwind/ForgotPassword/ForgotBananaLab.jsx": {
-    "file": "assets/ForgotBananaLab-TsY79w4E.js",
+    "file": "assets/ForgotBananaLab-CQacIz1l.js",
     "name": "ForgotBananaLab",
     "src": "resources/js/Components/Tailwind/ForgotPassword/ForgotBananaLab.jsx",
-    "isDynamicEntry": true,
+    "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_AuthClientRest-B5wxYfU-.js",
-      "_index-BOnQTV8N.js",
-      "_JSEncrypt-rkywx8Xm.js",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_main-B6F2O9-U.js",
-      "_Global-DWbVqTT_.js",
-      "_proxy-B0QLMKEh.js",
-      "_index-BZvh78jk.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
       "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js",
-      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js"
+      "_index-B6ujFmsw.js"
     ]
   },
   "resources/js/Components/Tailwind/ForgotPassword/ForgotPasswordSimple.jsx": {
@@ -8629,7 +8649,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-DZvHPuAE.js",
+    "file": "assets/Menu-BDjaYFt9.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -11219,7 +11239,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BICLa_6_.js",
+    "file": "assets/System-BmS8LdFq.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -493,7 +493,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                         <div className="relative">
                                             <button
                                                 onClick={handleStoresToggle}
-                                                className="flex items-center flex-col  px-4 py-3  hover:bg-white/10 transition-all duration-300 whitespace-nowrap"
+                                                className={`flex text-xs items-center flex-col  px-4 ${selectedStore ? 'py-0' : 'py-3'}  transition-all duration-300 whitespace-nowrap`}
                                             >
                                               <span className="flex w-full items-end justify-end gap-2">
                                                 <span className="text-white/60">Tiendas</span>
@@ -504,7 +504,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                               </span>
                                                 {selectedStore && (
                                                     <>
-                                                        <span className="">{selectedStore.name}</span>
+                                                        <span className="font-bold">{selectedStore.name}</span>
                                                        
                                                     </>
                                                 )}
@@ -518,7 +518,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                         transition={{ duration: 0.2 }}
-                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800 rounded-2xl shadow-lg z-20 min-w-[300px] max-w-[300px] max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30 scrollbar-thumb-rounded-full"
+                                                        className="absolute top-full right-0 mt-2 bg-secondary text-gray-800 rounded-2xl shadow-lg z-20 min-w-[300px] max-w-[300px] max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30 scrollbar-thumb-rounded-full"
                                                         style={{
                                                             scrollbarWidth: 'thin',
                                                             scrollbarColor: 'rgba(255, 255, 255, 0.2) transparent'

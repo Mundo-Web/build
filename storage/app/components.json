@@ -2659,6 +2659,27 @@
                 ]
             },
             {
+                "id": "ContactKatya",
+                "name": "Katya",
+                "data": [
+                    "redirect",
+                    "class_title",
+                    "class_card_description",
+                    "class_card_title",
+                    "class_card_button",
+                    "class_card_container",
+                    "title_ubication",
+                    "description_ubication",
+                    "stores_support"
+                ],
+                "generals": [
+                    "email_contact",
+                    "address",
+                    "phone_contact",
+                    "location"
+                ]
+            },
+            {
                 "id": "ContactAko",
                 "name": "ContactAko",
                 "data": [
