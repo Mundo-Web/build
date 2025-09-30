@@ -180,49 +180,69 @@ const nameRef = useRef()
 
     const request = {
       name: nameRef.current.value + ' ' + lastnameRef.current.value,
-      subject: phoneRef.current.value,
+      phone: phoneRef.current.value,
       email: emailRef.current.value,
-      description: descriptionRef.current.value,
+      message: descriptionRef.current.value,
      
     }
 
-    const result = await messagesRest.save(request);
-    setSending(false)
+    console.log('ContactKatya - Enviando datos:', request);
 
-    if (!result) {
-      // Mostrar error personalizado ya que las notificaciones automáticas están deshabilitadas
+    try {
+      const result = await messagesRest.save(request);
+      setSending(false)
+
+      if (!result) {
+        // Mostrar error personalizado ya que las notificaciones automáticas están deshabilitadas
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
+          confirmButtonText: 'Entendido'
+        })
+        return
+      }
+
+      // Mostrar éxito personalizado
+      Swal.fire({
+        icon: 'success',
+        title: 'Mensaje enviado',
+        text: 'Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto contigo pronto!',
+        showConfirmButton: false,
+        timer: 3000
+      })
+
+      // Verificar si hay redirección en data (como ContactGrid)
+      if (data?.redirect) {
+        setTimeout(() => {
+          window.location.href = data.redirect;
+        }, 3000);
+      }
+      // También verificar si viene en result
+      else if (result.redirect) {
+        setTimeout(() => {
+          window.location.href = result.redirect;
+        }, 3000);
+      }
+
+      // Limpiar los campos del formulario
+      clearForm()
+    } catch (error) {
+      console.error('ContactKatya - Error al enviar:', error);
+      setSending(false);
+      
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
         confirmButtonText: 'Entendido'
-      })
-      return
+      });
     }
-
-    // Mostrar éxito personalizado
-    Swal.fire({
-      icon: 'success',
-      title: 'Mensaje enviado',
-      text: 'Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto contigo pronto!',
-      showConfirmButton: false,
-      timer: 3000
-    })
-
-    // Verificar si hay redirección (usar result en lugar de data)
-    if (result.redirect) {
-      location.href = result.redirect
-    }
-
-    // Limpiar los campos del formulario
-    clearForm()
   }
 
 
 
 
-
-const [aboutuses, setAboutuses] = useState([]);
 
   
    

@@ -144,7 +144,7 @@ const Messages = () => {
       {
         dataLoaded?.subject &&
       <p>
-        <b>Asunto</b>:
+        <b>Teléfono</b>:
         <span className='ms-1'>{dataLoaded?.subject}</span>
       </p>
       }
