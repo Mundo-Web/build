@@ -1076,7 +1076,7 @@ const HeaderSearchKatya = ({
                                             animate="visible"
                                             exit="exit"
                                             variants={menuVariants}
-                                            className="absolute z-50 top-full left-0 bg-white shadow-xl border-t rounded-xl w-48 mt-2"
+                                            className="absolute z-50 top-full right-10 bg-white shadow-xl border-t rounded-xl w-48 mt-2"
                                         >
                                             <div className="p-4">
                                                 <ul className="space-y-4">
@@ -1095,7 +1095,7 @@ const HeaderSearchKatya = ({
                                                                                 item.onClick();
                                                                             }, 150);
                                                                         }}
-                                                                        className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                        className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                     >
                                                                         {item.icon}
                                                                         <span>{item.label}</span>
@@ -1107,7 +1107,7 @@ const HeaderSearchKatya = ({
                                                                             e.stopPropagation();
                                                                             setIsMenuOpen(false);
                                                                         }}
-                                                                        className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                        className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                     >
                                                                         {item.icon}
                                                                         <span>{item.label}</span>
@@ -1124,7 +1124,7 @@ const HeaderSearchKatya = ({
                                                                         e.stopPropagation();
                                                                         setIsMenuOpen(false);
                                                                     }}
-                                                                    className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                    className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                 >
                                                                     <Home size={16} />
                                                                     <span>Dashboard</span>
@@ -1141,7 +1141,7 @@ const HeaderSearchKatya = ({
                                                                             Logout();
                                                                         }, 150);
                                                                     }}
-                                                                    className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                    className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                 >
                                                                     <DoorClosed size={16} />
                                                                     <span>Cerrar Sesión</span>
