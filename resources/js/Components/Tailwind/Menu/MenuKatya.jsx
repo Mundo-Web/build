@@ -7,13 +7,14 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [storesDropdownOpen, setStoresDropdownOpen] = useState(false);
     const [stores, setStores] = useState([]);
+    const [ubigeos, setUbigeos] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState(null);
 
     const menuRef = useRef(null);
     const dropdownTimeoutRef = useRef(null);
 
-    // Fetch stores on component mount
+    // Fetch stores and ubigeos on component mount
     useEffect(() => {
         const fetchStores = async () => {
             try {
@@ -29,11 +30,32 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
             }
         };
 
+        const fetchUbigeos = async () => {
+            try {
+                const response = await fetch('/ubigeo.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        setUbigeos(data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching ubigeos:', error);
+            }
+        };
+
         fetchStores();
+        fetchUbigeos();
     }, []);
 
     // Filtrar solo las tiendas del tipo "tienda"
     const tiendas = stores?.filter(store => store.type === 'tienda' && store.status === true) || [];
+
+    // Función helper para obtener información de ubicación
+    const getUbigeoInfo = (ubigeoCode) => {
+        if (!ubigeoCode || !ubigeos.length) return null;
+        return ubigeos.find(u => u.reniec == ubigeoCode);
+    };
 
     // Manejar clics fuera del dropdown
     useEffect(() => {
@@ -290,7 +312,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                         transition={{ duration: 0.2 }}
-                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[250px] max-h-80 overflow-y-auto"
+                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[300px] max-w-[300px] max-h-80 overflow-y-auto"
                                                     >
                                                         <div className="py-2">
                                                             {tiendas.map((tienda) => (
@@ -302,12 +324,20 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                                     <div className="flex items-center gap-3">
 
                                                                         <div className="flex-1 min-w-0">
-                                                                            <div className="font-medium text-sm group-hover:!font-semibold">{tienda.name}</div>
+                                                                            <div className="font-bold text-base ">{tienda.name}</div>
                                                                             {tienda.address && (
-                                                                                <div className="text-xs  text-white truncate">
+                                                                                <div className="text-xs  text-white line-clamp-2">
                                                                                     {tienda.address}
                                                                                 </div>
                                                                             )}
+                                                                            {(() => {
+                                                                                const ubicacion = getUbigeoInfo(tienda.ubigeo);
+                                                                                return ubicacion ? (
+                                                                                    <div className="text-xs font-bold uppercase text-white mt-2">
+                                                                                        {ubicacion.departamento}
+                                                                                    </div>
+                                                                                ) : null;
+                                                                            })()}
                                                                         </div>
                                                                     </div>
                                                                 </a>
@@ -428,7 +458,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                         transition={{ duration: 0.2 }}
-                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[250px] max-h-80 overflow-y-auto"
+                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[300px] max-w-[300px] max-h-80 overflow-y-auto"
                                                     >
                                                         <div className="py-8">
                                                             {tiendas.map((tienda) => (
@@ -440,12 +470,20 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                                     <div className="flex items-center gap-3">
 
                                                                         <div className="flex-1 min-w-0">
-                                                                            <div className="font-medium text-sm group-hover:!font-semibold">{tienda.name}</div>
+                                                                            <div className="font-bold text-base ">{tienda.name}</div>
                                                                             {tienda.address && (
-                                                                                <div className="text-xs  text-white truncate">
+                                                                                <div className="text-xs font-medium  text-white  line-clamp-2">
                                                                                     {tienda.address}
                                                                                 </div>
                                                                             )}
+                                                                            {(() => {
+                                                                                const ubicacion = getUbigeoInfo(tienda.ubigeo);
+                                                                                return ubicacion ? (
+                                                                                    <div className="text-xs font-bold uppercase text-white mt-2">
+                                                                                        {ubicacion.departamento}
+                                                                                    </div>
+                                                                                ) : null;
+                                                                            })()}
                                                                         </div>
                                                                     </div>
                                                                 </a>
