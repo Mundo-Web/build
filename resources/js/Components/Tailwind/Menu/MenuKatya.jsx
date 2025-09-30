@@ -8,6 +8,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
     const [storesDropdownOpen, setStoresDropdownOpen] = useState(false);
     const [stores, setStores] = useState([]);
     const [ubigeos, setUbigeos] = useState([]);
+    const [selectedStore, setSelectedStore] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState(null);
 
@@ -21,7 +22,10 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                 const response = await fetch('/api/stores');
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('📍 MenuKatya - Response completa del API:', data);
                     if (data && Array.isArray(data.data)) {
+                        console.log('📍 MenuKatya - Stores recibidas:', data.data);
+                        console.log('📍 MenuKatya - Tipos de tiendas:', data.data.map(s => ({ name: s.name, type: s.type, status: s.status })));
                         setStores(data.data);
                     }
                 }
@@ -48,8 +52,39 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
         fetchUbigeos();
     }, []);
 
-    // Filtrar solo las tiendas del tipo "tienda"
-    const tiendas = stores?.filter(store => store.type === 'tienda' && store.status === true) || [];
+    // Filtrar tiendas de tipo "tienda" y "tienda_principal"
+    const tiendas = stores?.filter(store => {
+        const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
+        const isActive = store.status === true || store.status === 1; // Considerando ambos formatos
+        console.log('📍 MenuKatya - Filtrando tienda:', {
+            name: store.name,
+            type: store.type,
+            status: store.status,
+            isCorrectType,
+            isActive,
+            passes: isCorrectType && isActive
+        });
+        return isCorrectType && isActive;
+    }) || [];
+    
+    console.log('📍 MenuKatya - Tiendas filtradas:', tiendas.map(t => ({ name: t.name, type: t.type })));
+    console.log('📍 MenuKatya - Total tiendas filtradas:', tiendas.length);
+
+    // Establecer tienda_principal como seleccionada por defecto
+    useEffect(() => {
+        if (tiendas.length > 0 && !selectedStore) {
+            console.log('📍 MenuKatya - Seleccionando tienda por defecto, tiendas disponibles:', tiendas);
+            const tiendaPrincipal = tiendas.find(store => store.type === 'tienda_principal');
+            console.log('📍 MenuKatya - Tienda principal encontrada:', tiendaPrincipal);
+            if (tiendaPrincipal) {
+                console.log('📍 MenuKatya - Seleccionando tienda principal:', tiendaPrincipal.name);
+                setSelectedStore(tiendaPrincipal);
+            } else {
+                console.log('📍 MenuKatya - No hay tienda principal, seleccionando primera tienda:', tiendas[0]?.name);
+                setSelectedStore(tiendas[0]);
+            }
+        }
+    }, [tiendas, selectedStore]);
 
     // Función helper para obtener información de ubicación
     const getUbigeoInfo = (ubigeoCode) => {
@@ -103,6 +138,18 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
         setActiveDropdown(null);
         setMobileMenuOpen(false);
         setActiveMobileCategory(null);
+    };
+
+    // Función para manejar selección de tienda
+    const handleStoreSelection = (tienda, e) => {
+        if (tienda.link) {
+            e.preventDefault();
+            window.location.href = tienda.link;
+        } else {
+            // Comportamiento normal del enlace
+        }
+        setSelectedStore(tienda);
+        setStoresDropdownOpen(false);
     };
 
     // Función para manejar menú móvil
@@ -442,13 +489,21 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                         <div className="relative">
                                             <button
                                                 onClick={handleStoresToggle}
-                                                className="flex items-center gap-2 px-4 py-3 hover:bg-white/10 transition-all duration-300 whitespace-nowrap"
+                                                className="flex items-center flex-col  px-4 py-3  hover:bg-white/10 transition-all duration-300 whitespace-nowrap"
                                             >
-                                                Tiendas
+                                              <span className="flex w-full items-end justify-end gap-2">
+                                                <span className="text-white/60">Tiendas</span>
                                                 <ChevronDown
                                                     className={`w-3 h-3 transition-transform duration-200 ${storesDropdownOpen ? 'rotate-180' : ''
                                                         }`}
                                                 />
+                                              </span>
+                                                {selectedStore && (
+                                                    <>
+                                                        <span className="">{selectedStore.name}</span>
+                                                       
+                                                    </>
+                                                )}
                                             </button>
 
                                             {/* Dropdown de tiendas */}
@@ -465,15 +520,20 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                             {tiendas.map((tienda) => (
                                                                 <a
                                                                     key={tienda.id}
-                                                                    href={`/tienda/${tienda.slug || tienda.id}`}
-                                                                    className="block px-4 py-4 text-white hover:bg-black/20 group hover:text-white transition-colors duration-200"
+                                                                    href={tienda.link || `/tienda/${tienda.slug || tienda.id}`}
+                                                                    className={`block px-4 py-4 text-white hover:bg-black/20 group hover:text-white transition-colors duration-200 ${
+                                                                        selectedStore?.id === tienda.id ? 'bg-black/20' : ''
+                                                                    }`}
+                                                                    onClick={(e) => handleStoreSelection(tienda, e)}
                                                                 >
                                                                     <div className="flex items-center gap-3">
-
                                                                         <div className="flex-1 min-w-0">
-                                                                            <div className="font-bold text-base ">{tienda.name}</div>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <div className="font-bold text-base">{tienda.name}</div>
+                                                                               
+                                                                            </div>
                                                                             {tienda.address && (
-                                                                                <div className="text-xs font-medium  text-white  line-clamp-2">
+                                                                                <div className="text-xs font-medium text-white line-clamp-2">
                                                                                     {tienda.address}
                                                                                 </div>
                                                                             )}

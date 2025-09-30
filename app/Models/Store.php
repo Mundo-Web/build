@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class Store extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
@@ -30,7 +30,8 @@ class Store extends Model
         'capacity',
         'type',
         'slug',
-        'gallery'
+        'gallery',
+        'link'
     ];
 
     protected $casts = [

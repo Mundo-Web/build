@@ -2929,7 +2929,7 @@
     ]
   },
   "resources/js/Admin/Stores.jsx": {
-    "file": "assets/Stores-BDKD4ur6.js",
+    "file": "assets/Stores-DFnlBOgW.js",
     "name": "Stores",
     "src": "resources/js/Admin/Stores.jsx",
     "isEntry": true,
@@ -2951,6 +2951,7 @@
       "_DxButton-DV0H-ZcL.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_Global-DWbVqTT_.js",
+      "_ReactAppend-Vm5G2nof.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_index-B6ujFmsw.js",
@@ -8628,7 +8629,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-Ct3Epzj3.js",
+    "file": "assets/Menu-Th0QC55P.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -11218,7 +11219,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-C63ZoPIa.js",
+    "file": "assets/System-6jDSz0uL.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

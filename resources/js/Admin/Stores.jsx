@@ -16,13 +16,15 @@ import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import DxButton from "../Components/dx/DxButton";
 import Swal from "sweetalert2";
 import Global from "../Utils/Global";
+import Fillable from "../Utils/Fillable";
+import ReactAppend from "../Utils/ReactAppend";
 
 const storesRest = new StoresRest();
 
 const Stores = ({ ubigeos = [] }) => {
     const gridRef = useRef();
     const modalRef = useRef();
-    
+
     // Form elements ref
     const idRef = useRef();
     const nameRef = useRef();
@@ -34,21 +36,22 @@ const Stores = ({ ubigeos = [] }) => {
     const latitudeRef = useRef();
     const longitudeRef = useRef();
     const imageRef = useRef();
- 
+
     const business_hoursRef = useRef();
     const managerRef = useRef();
     const capacityRef = useRef();
     const typeRef = useRef();
+    const linkRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
-    
+
     // Estados para el mapa de Google
     const [mapCenter, setMapCenter] = useState({
         lat: -12.046374,
         lng: -77.042793
     }); // Lima por defecto
     const [markerPosition, setMarkerPosition] = useState(null);
-    
+
     // Estados para horarios de atención
     const [businessHours, setBusinessHours] = useState([
         { day: "Lunes", open: "09:00", close: "18:00", closed: false },
@@ -91,13 +94,13 @@ const Stores = ({ ubigeos = [] }) => {
         // Verificar si ya existe una tienda principal al abrir el modal
         if (!data?.id) {
             // Si es una nueva tienda, verificar si ya existe una principal
-            storesRest.paginate({ 
+            storesRest.paginate({
                 filter: JSON.stringify({ type: 'tienda_principal' })
             }).then(response => {
                 console.log('Verificando tiendas principales existentes:', response);
                 const hasMainStore = response?.data && Array.isArray(response.data) && response.data.length > 0;
                 const typeSelect = $(typeRef.current);
-                
+
                 // Si ya existe una tienda principal, deshabilitar esa opción
                 if (hasMainStore) {
                     console.log('Se encontraron tiendas principales:', response.data);
@@ -106,23 +109,23 @@ const Stores = ({ ubigeos = [] }) => {
                     console.log('No se encontraron tiendas principales');
                     typeSelect.find('option[value="tienda_principal"]').prop('disabled', false);
                 }
-                
+
                 typeSelect.val(data?.type ?? "tienda").trigger("change");
             }).catch(error => {
                 console.error('Error al verificar tiendas principales:', error);
             });
         } else {
             // Si es edición, verificar si hay otra tienda principal diferente a la actual
-            storesRest.paginate({ 
+            storesRest.paginate({
                 filter: JSON.stringify({ type: 'tienda_principal' })
             }).then(response => {
                 console.log('Verificando tiendas principales para edición:', response);
                 const typeSelect = $(typeRef.current);
-                
+
                 if (response?.data && Array.isArray(response.data) && response.data.length > 0) {
                     // Verificar si hay otra tienda principal diferente a la actual
                     const otherMainStore = response.data.find(store => store.id !== data.id);
-                    
+
                     if (otherMainStore) {
                         console.log('Existe otra tienda principal:', otherMainStore);
                         // Si la tienda actual NO es principal, deshabilitar la opción
@@ -139,7 +142,7 @@ const Stores = ({ ubigeos = [] }) => {
                     console.log('No hay tiendas principales');
                     typeSelect.find('option[value="tienda_principal"]').prop('disabled', false);
                 }
-                
+
                 typeSelect.val(data?.type ?? "tienda").trigger("change");
             }).catch(error => {
                 console.error('Error al verificar tiendas principales:', error);
@@ -147,12 +150,12 @@ const Stores = ({ ubigeos = [] }) => {
             });
         }
 
-      
+
         // Cargar horarios de atención si existen
         if (data?.business_hours) {
             try {
-                const hours = typeof data.business_hours === 'string' 
-                    ? JSON.parse(data.business_hours) 
+                const hours = typeof data.business_hours === 'string'
+                    ? JSON.parse(data.business_hours)
                     : data.business_hours;
                 setBusinessHours(hours);
             } catch (e) {
@@ -197,9 +200,9 @@ const Stores = ({ ubigeos = [] }) => {
         if (typeRef.current.value === 'tienda_principal') {
             try {
                 const currentId = idRef.current.value; // ID del registro actual (si es edición)
-                
+
                 // Verificar si ya existe una tienda principal
-                const response = await storesRest.paginate({ 
+                const response = await storesRest.paginate({
                     filter: JSON.stringify({ type: 'tienda_principal' })
                 });
                 console.log('Respuesta de validación tienda principal:', response);
@@ -243,15 +246,15 @@ const Stores = ({ ubigeos = [] }) => {
         // Validar y procesar coordenadas antes de enviar
         const latitudeValue = latitudeRef.current.value.trim();
         const longitudeValue = longitudeRef.current.value.trim();
-        
+
         let latitude = null;
         let longitude = null;
-        
+
         // Procesar latitud si existe
         if (latitudeValue) {
             latitude = parseFloat(latitudeValue);
             console.log("Latitud procesada:", latitude, "desde:", latitudeValue);
-            
+
             // Validación de coordenadas para Perú
             if (latitude < -18.5 || latitude > -0.1) {
                 Swal.fire({
@@ -300,7 +303,7 @@ const Stores = ({ ubigeos = [] }) => {
                 });
                 return;
             }
-            
+
             // Truncar a 8 decimales para cumplir con la BD
             longitude = Math.round(longitude * 100000000) / 100000000;
             console.log("Longitud truncada:", longitude);
@@ -334,6 +337,7 @@ const Stores = ({ ubigeos = [] }) => {
         formData.append("manager", managerRef.current.value);
         formData.append("capacity", capacityRef.current.value);
         formData.append("type", typeRef.current.value);
+        formData.append("link", linkRef.current.value);
      
         formData.append("business_hours", JSON.stringify(businessHours));
 
@@ -359,7 +363,9 @@ const Stores = ({ ubigeos = [] }) => {
         if (!result) return;
 
         // Reset delete flag after successful save
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (Fillable.has('stores', 'image') && imageRef.resetDeleteFlag) {
+            imageRef.resetDeleteFlag();
+        }
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -375,10 +381,10 @@ const Stores = ({ ubigeos = [] }) => {
             cancelButtonText: "Cancelar",
         });
         if (!isConfirmed) return;
-        
+
         const result = await storesRest.delete(id);
         if (!result) return;
-        
+
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
@@ -392,12 +398,12 @@ const Stores = ({ ubigeos = [] }) => {
     const handleMapClick = (event) => {
         const lat = event.latLng.lat();
         const lng = event.latLng.lng();
-        
+
         console.log("Coordenadas seleccionadas:", { lat, lng });
-        
+
         // Actualizar la posición del marcador
         setMarkerPosition({ lat, lng });
-        
+
         // Actualizar los campos de latitud y longitud
         if (latitudeRef.current) {
             latitudeRef.current.value = lat.toFixed(8);
@@ -405,7 +411,7 @@ const Stores = ({ ubigeos = [] }) => {
         if (longitudeRef.current) {
             longitudeRef.current.value = lng.toFixed(8);
         }
-        
+
         // Mostrar notificación
         Swal.fire({
             title: "Ubicación seleccionada",
@@ -422,7 +428,7 @@ const Stores = ({ ubigeos = [] }) => {
     const handleCoordinateChange = () => {
         const lat = parseFloat(latitudeRef.current?.value);
         const lng = parseFloat(longitudeRef.current?.value);
-        
+
         if (!isNaN(lat) && !isNaN(lng)) {
             const newPosition = { lat, lng };
             setMapCenter(newPosition);
@@ -433,31 +439,31 @@ const Stores = ({ ubigeos = [] }) => {
     // Función para validar formato de coordenadas según restricciones de base de datos
     const isValidCoordinate = (value, totalDigits, decimalPlaces) => {
         if (value === null || value === undefined || isNaN(value)) return false;
-        
+
         const valueStr = Math.abs(value).toString();
         const parts = valueStr.split('.');
         const integerPart = parts[0];
         const decimalPart = parts[1] || '';
-        
+
         console.log(`Validando coordenada: ${value}`);
         console.log(`Parte entera: ${integerPart} (${integerPart.length} dígitos)`);
         console.log(`Parte decimal: ${decimalPart} (${decimalPart.length} dígitos)`);
         console.log(`Total permitido: ${totalDigits}, decimales permitidos: ${decimalPlaces}`);
-        
+
         // Para coordenadas geográficas, ser más flexible con los decimales
         // Truncar los decimales si exceden el límite permitido
         if (decimalPart.length > decimalPlaces) {
             console.log(`Advertencia: Truncando decimales de ${decimalPart.length} a ${decimalPlaces} dígitos`);
             // No retornar false, sino permitir el truncamiento automático
         }
-        
+
         // Verificar que no exceda los dígitos enteros permitidos
         const maxIntegerDigits = totalDigits - decimalPlaces;
         if (integerPart.length > maxIntegerDigits) {
             console.log(`Error: Excede dígitos enteros permitidos (${integerPart.length} > ${maxIntegerDigits})`);
             return false;
         }
-        
+
         console.log("Coordenada válida (se truncará automáticamente si es necesario)");
         return true;
     };
@@ -514,33 +520,30 @@ const Stores = ({ ubigeos = [] }) => {
                         caption: "ID",
                         visible: false,
                     },
-                    {
+                     Fillable.has('stores', 'image') && {
                         dataField: "image",
                         caption: "Imagen",
-                        width: "80px",
+                        width: "90px",
+                        allowFiltering: false,
                         cellTemplate: (container, { data }) => {
-                            if (data.image) {
-                                container.html(
-                                    renderToString(
-                                        <img 
-                                            src={`/storage/images/store/${data.image}`}
-                                            alt={data.name}
-                                            className="img-thumbnail"
-                                            style={{width: "50px", height: "50px", objectFit: "cover"}}
-                                        />
-                                    )
-                                );
-                            } else {
-                                container.html(
-                                    renderToString(
-                                        <div className="bg-light d-flex align-items-center justify-content-center" style={{width: "50px", height: "50px"}}>
-                                            <i className="fas fa-store text-muted"></i>
-                                        </div>
-                                    )
-                                );
-                            }
+                            ReactAppend(
+                                container,
+                                <img
+                                    src={`/storage/images/store/${data.image}`}
+                                    style={{
+                                        width: "80px",
+                                        height: "48px",
+                                        objectFit: "cover",
+                                        objectPosition: "center",
+                                        borderRadius: "4px",
+                                    }}
+                                    onError={(e) =>
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
+                                    }
+                                />
+                            );
                         },
-                        allowExporting: false,
                     },
                     {
                         dataField: "name",
@@ -580,55 +583,35 @@ const Stores = ({ ubigeos = [] }) => {
                         caption: "Dirección",
                         width: "250px",
                     },
-                    {
+                    Fillable.has('stores', 'phone') && {
                         dataField: "phone",
                         caption: "Teléfono",
                         width: "120px",
                     },
-                    {
+                    Fillable.has('stores', 'email') && {
                         dataField: "email",
                         caption: "Email",
                         width: "180px",
                     },
-                    {
-                        dataField: "manager",
-                        caption: "Encargado",
-                        width: "150px",
-                    },
-                    {
-                        dataField: "ubigeo",
-                        caption: "Ubicación",
-                        width: "150px",
+                  
+                    Fillable.has('stores', 'link') && {
+                        dataField: "link",
+                        caption: "Enlace",
+                      
                         cellTemplate: (container, { data }) => {
-                            const ubicacion = ubigeos.find(u => u.reniec == data.ubigeo);
-                            if (ubicacion) {
+                            if (data.link) {
                                 container.html(
-                                    renderToString(
-                                        <div>
-                                            <small className="d-block">{ubicacion.distrito}</small>
-                                            <small className="text-muted">{ubicacion.provincia}, {ubicacion.departamento}</small>
-                                        </div>
-                                    )
+                                    `<a href="${data.link}" target="_blank" class="text-primary">
+                                        ${data.link.length > 30 ? data.link.substring(0, 30) + '...' : data.link}
+                                    </a>`
                                 );
                             } else {
-                                container.text(data.ubigeo || "Sin ubicación");
+                                container.text('Sin enlace');
                             }
                         },
                     },
-                    {
-                        dataField: "status",
-                        caption: "Estado",
-                        width: "100px",
-                        cellTemplate: (container, { data }) => {
-                            container.html(
-                                renderToString(
-                                    <span className={`badge ${data.status ? 'bg-success' : 'bg-danger'}`}>
-                                        {data.status ? 'Activa' : 'Inactiva'}
-                                    </span>
-                                )
-                            );
-                        },
-                    },
+                  
+              
                     {
                         caption: "Acciones",
                         width: "100px",
@@ -654,7 +637,7 @@ const Stores = ({ ubigeos = [] }) => {
                         allowFiltering: false,
                         allowExporting: false,
                     },
-                ]}
+                ].filter(Boolean)}
             />
 
             <Modal
@@ -689,14 +672,16 @@ const Stores = ({ ubigeos = [] }) => {
                             <option value="otro">Otro</option>
                         </SelectFormGroup>
                     </div>
-                    <div className="col-md-6">
-                        <InputFormGroup
-                            eRef={managerRef}
-                            label="Encargado"
-                            col="col-12"
-                        />
-                    </div>
-                    
+                    {Fillable.has('stores', 'manager') && (
+                        <div className="col-md-6">
+                            <InputFormGroup
+                                eRef={managerRef}
+                                label="Encargado"
+                                col="col-12"
+                            />
+                        </div>
+                    )}
+
                     <div className="col-12">
                         <InputFormGroup
                             eRef={addressRef}
@@ -724,22 +709,26 @@ const Stores = ({ ubigeos = [] }) => {
                         </SelectFormGroup>
                     </div>
 
-                    <div className="col-md-6">
-                        <InputFormGroup
-                            eRef={phoneRef}
-                            label="Teléfono"
-                            col="col-12"
-                            type="tel"
-                        />
-                    </div>
-                    <div className="col-md-6">
-                        <InputFormGroup
-                            eRef={emailRef}
-                            label="Email"
-                            col="col-12"
-                            type="email"
-                        />
-                    </div>
+                    {Fillable.has('stores', 'phone') && (
+                        <div className="col-md-6">
+                            <InputFormGroup
+                                eRef={phoneRef}
+                                label="Teléfono"
+                                col="col-12"
+                                type="tel"
+                            />
+                        </div>
+                    )}
+                    {Fillable.has('stores', 'email') && (
+                        <div className="col-md-6">
+                            <InputFormGroup
+                                eRef={emailRef}
+                                label="Email"
+                                col="col-12"
+                                type="email"
+                            />
+                        </div>
+                    )}
 
                     <div className="col-12">
                         <div className="card">
@@ -750,7 +739,7 @@ const Stores = ({ ubigeos = [] }) => {
                                 </h5>
                             </div>
                             <div className="card-body">
-                               
+
 
                                 {/* Mapa de Google */}
                                 <div className="mb-3">
@@ -796,7 +785,7 @@ const Stores = ({ ubigeos = [] }) => {
                                             placeholder="Ej: -12.042626777544823"
                                             onChange={handleCoordinateChange}
                                         />
-                                      
+
                                     </div>
                                     <div className="col-md-6">
                                         <InputFormGroup
@@ -810,7 +799,7 @@ const Stores = ({ ubigeos = [] }) => {
                                             placeholder="Ej: -77.04753389161506"
                                             onChange={handleCoordinateChange}
                                         />
-                                      
+
                                     </div>
                                 </div>
 
@@ -818,7 +807,7 @@ const Stores = ({ ubigeos = [] }) => {
                                 <div className="row mt-3">
                                     <div className="col-12">
                                         <div className="d-flex gap-2 flex-wrap">
-                                            
+
                                             <button
                                                 type="button"
                                                 className="btn btn-outline-secondary btn-sm"
@@ -838,100 +827,121 @@ const Stores = ({ ubigeos = [] }) => {
                         </div>
                     </div>
 
-                    <div className="col-md-6">
-                        <InputFormGroup
-                            eRef={capacityRef}
-                            label="Capacidad de atención (personas/día)"
-                            col="col-12"
-                            type="number"
-                            placeholder="Ej: 50"
-                        />
-                    </div>
+                    {Fillable.has('stores', 'capacity') && (
+                        <div className="col-md-6">
+                            <InputFormGroup
+                                eRef={capacityRef}
+                                label="Capacidad de atención (personas/día)"
+                                col="col-12"
+                                type="number"
+                                placeholder="Ej: 50"
+                            />
+                        </div>
+                    )}
 
-                 
+                    {Fillable.has('stores', 'link') && (
+                        <div className="col-12">
+                            <InputFormGroup
+                                eRef={linkRef}
+                                label="Enlace personalizado (opcional)"
+                                col="col-12"
+                                type="url"
+                                placeholder="https://ejemplo.com"
+                            />
+                            <small className="text-muted">
+                                Si se especifica, al hacer clic en la tienda redirigirá a este enlace en lugar del perfil de la tienda.
+                            </small>
+                        </div>
+                    )}
 
-                    <div className="col-12">
-                        <ImageFormGroup
-                            eRef={imageRef}
-                            name="image"
-                            label="Imagen de la tienda"
-                            col="col-12"
-                            accept="image/*"
-                        />
-                    </div>
+                    {Fillable.has('stores', 'image') && (
+                        <div className="col-12">
+                            <ImageFormGroup
+                                eRef={imageRef}
+                                name="image"
+                                label="Imagen de la tienda"
+                                col="col-12"
+                                accept="image/*"
+                            />
+                        </div>
+                    )}
 
-                    <div className="col-12">
-                        <TextareaFormGroup
-                            eRef={descriptionRef}
-                            label="Descripción"
-                            rows={3}
-                        />
-                    </div>
+                    {Fillable.has('stores', 'description') && (
+                        <div className="col-12">
+                            <TextareaFormGroup
+                                eRef={descriptionRef}
+                                label="Descripción"
+                                rows={3}
+                            />
+                        </div>
+                    )}
 
                     {/* Horarios de atención */}
-                    <div className="col-12">
-                        <div className="mb-3">
-                            <label className="form-label">Horarios de atención</label>
-                            <div className="table-responsive">
-                                <table className="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Día</th>
-                                            <th>Apertura</th>
-                                            <th>Cierre</th>
-                                            <th>Cerrado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {businessHours.map((schedule, index) => (
-                                            <tr key={index}>
-                                                <td className="align-middle">
-                                                    <strong>{schedule.day}</strong>
-                                                </td>
-                                                <td>
-                                                    <input
-                                                        type="time"
-                                                        className="form-control form-control-sm"
-                                                        value={schedule.open}
-                                                        onChange={(e) =>
-                                                            updateBusinessHours(index, "open", e.target.value)
-                                                        }
-                                                        disabled={schedule.closed}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <input
-                                                        type="time"
-                                                        className="form-control form-control-sm"
-                                                        value={schedule.close}
-                                                        onChange={(e) =>
-                                                            updateBusinessHours(index, "close", e.target.value)
-                                                        }
-                                                        disabled={schedule.closed}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <div className="form-check">
-                                                        <input
-                                                            type="checkbox"
-                                                            className="form-check-input"
-                                                            checked={schedule.closed}
-                                                            onChange={(e) =>
-                                                                updateBusinessHours(index, "closed", e.target.checked)
-                                                            }
-                                                        />
-                                                        <label className="form-check-label">
-                                                            Cerrado
-                                                        </label>
-                                                    </div>
-                                                </td>
+                    {Fillable.has('stores', 'business_hours') && (
+                        <div className="col-12">
+                            <div className="mb-3">
+                                <label className="form-label">Horarios de atención</label>
+                                <div className="table-responsive">
+                                    <table className="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Día</th>
+                                                <th>Apertura</th>
+                                                <th>Cierre</th>
+                                                <th>Cerrado</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {businessHours.map((schedule, index) => (
+                                                <tr key={index}>
+                                                    <td className="align-middle">
+                                                        <strong>{schedule.day}</strong>
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="time"
+                                                            className="form-control form-control-sm"
+                                                            value={schedule.open}
+                                                            onChange={(e) =>
+                                                                updateBusinessHours(index, "open", e.target.value)
+                                                            }
+                                                            disabled={schedule.closed}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="time"
+                                                            className="form-control form-control-sm"
+                                                            value={schedule.close}
+                                                            onChange={(e) =>
+                                                                updateBusinessHours(index, "close", e.target.value)
+                                                            }
+                                                            disabled={schedule.closed}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <div className="form-check">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                checked={schedule.closed}
+                                                                onChange={(e) =>
+                                                                    updateBusinessHours(index, "closed", e.target.checked)
+                                                                }
+                                                            />
+                                                            <label className="form-check-label">
+                                                                Cerrado
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </Modal>
         </>
