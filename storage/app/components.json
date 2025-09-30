@@ -185,8 +185,8 @@
                     ],
                     "filters": [
                         "featured"
-                    ]
-              
+                    ],
+                    "limit": 5
                 }
             }
         ]
