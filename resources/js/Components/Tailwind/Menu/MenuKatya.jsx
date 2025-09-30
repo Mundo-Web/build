@@ -365,7 +365,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                             {tiendas.map((tienda) => (
                                                                 <a
                                                                     key={tienda.id}
-                                                                    href={`/tienda/${tienda.slug || tienda.id}`}
+                                                                          href={tienda.link || `/tienda/${tienda.slug || tienda.id}`}
                                                                     className="block px-4 py-4 text-white hover:bg-black/20 group hover:text-white transition-colors duration-200"
                                                                 >
                                                                     <div className="flex items-center gap-3">

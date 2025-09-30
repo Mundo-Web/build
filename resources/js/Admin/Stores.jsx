@@ -78,13 +78,15 @@ const Stores = ({ ubigeos = [] }) => {
         longitudeRef.current.value = data?.longitude ?? "";
         managerRef.current.value = data?.manager ?? "";
         capacityRef.current.value = data?.capacity ?? "";
+        linkRef.current.value = data?.link ?? "";
 
         // Reset delete flag when opening modal
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
-
-        // Limpiar el input de imagen
-        if (imageRef.current) {
-           imageRef.image.src = data?.image ? `/storage/images/store/${data.image}` : '';
+        if (Fillable.has('stores', 'image')) {
+            if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+            // Limpiar el input de imagen
+            if (imageRef.current) {
+               imageRef.image.src = data?.image ? `/storage/images/store/${data.image}` : '';
+            }
         }
 
         $(ubigeoRef.current)
@@ -338,17 +340,17 @@ const Stores = ({ ubigeos = [] }) => {
         formData.append("capacity", capacityRef.current.value);
         formData.append("type", typeRef.current.value);
         formData.append("link", linkRef.current.value);
-     
         formData.append("business_hours", JSON.stringify(businessHours));
 
-        // Agregar imagen si existe
-        if (imageRef.current && imageRef.current.files[0]) {
-            formData.append("image", imageRef.current.files[0]);
-        }
-
-        // Check for image deletion flag
-        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
+        // Agregar imagen si existe y está habilitada
+        if (Fillable.has('stores', 'image')) {
+            if (imageRef.current && imageRef.current.files[0]) {
+                formData.append("image", imageRef.current.files[0]);
+            }
+            // Check for image deletion flag
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
         }
 
         // Debug: Mostrar los datos que se van a enviar
