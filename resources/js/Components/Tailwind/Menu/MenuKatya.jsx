@@ -218,7 +218,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                     transition={{ duration: 0.2 }}
-                                                    className="absolute top-full left-0 mt-1 bg-white text-gray-800 border border-gray-200 rounded-lg shadow-lg z-50 w-full max-w-md max-h-96 overflow-y-auto"
+                                                    className="absolute top-full left-0 mt-1 bg-white text-gray-800 border border-gray-200 rounded-lg shadow-lg z-20 w-full max-w-md max-h-96 overflow-y-auto"
                                                 >
                                                     <div className="py-2">
 
@@ -359,7 +359,11 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                         transition={{ duration: 0.2 }}
-                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[300px] max-w-[300px] max-h-80 overflow-y-auto"
+                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800 rounded-2xl shadow-lg z-20 min-w-[300px] max-w-[300px] max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30 scrollbar-thumb-rounded-full"
+                                                        style={{
+                                                            scrollbarWidth: 'thin',
+                                                            scrollbarColor: 'rgba(255, 255, 255, 0.2) transparent'
+                                                        }}
                                                     >
                                                         <div className="py-2">
                                                             {tiendas.map((tienda) => (
@@ -461,7 +465,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                                 transition={{ duration: 0.2 }}
-                                                                className="absolute top-full left-0 mt-1 bg-white text-gray-800 border border-gray-200 rounded-lg shadow-lg z-50 min-w-[200px] max-h-80 overflow-y-auto"
+                                                                className="absolute top-full left-0 mt-1 bg-white text-gray-800 border border-gray-200 rounded-lg shadow-lg z-20 min-w-[200px] max-h-80 overflow-y-auto"
                                                                 onMouseEnter={handleDropdownHover}
                                                                 onMouseLeave={handleCategoryLeave}
                                                             >
@@ -514,14 +518,18 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                         transition={{ duration: 0.2 }}
-                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800  rounded-2xl shadow-lg z-50 min-w-[300px] max-w-[300px] max-h-80 overflow-y-auto"
+                                                        className="absolute top-full right-0 mt-1 bg-secondary text-gray-800 rounded-2xl shadow-lg z-20 min-w-[300px] max-w-[300px] max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30 scrollbar-thumb-rounded-full"
+                                                        style={{
+                                                            scrollbarWidth: 'thin',
+                                                            scrollbarColor: 'rgba(255, 255, 255, 0.2) transparent'
+                                                        }}
                                                     >
                                                         <div className="py-8">
                                                             {tiendas.map((tienda) => (
                                                                 <a
                                                                     key={tienda.id}
                                                                     href={tienda.link || `/tienda/${tienda.slug || tienda.id}`}
-                                                                    className={`block px-4 py-4 text-white hover:bg-black/20 group hover:text-white transition-colors duration-200 ${
+                                                                    className={`block px-4 py-4 text-white hover:bg-black/10 group hover:text-white transition-colors duration-200 ${
                                                                         selectedStore?.id === tienda.id ? 'bg-black/20' : ''
                                                                     }`}
                                                                     onClick={(e) => handleStoreSelection(tienda, e)}
