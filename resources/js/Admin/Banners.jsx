@@ -1,6 +1,13 @@
 import BaseAdminto from "@Adminto/Base";
 import TextareaFormGroup from "@Adminto/form/TextareaFormGroup";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+    Suspense,
+    lazy,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import Swal from "sweetalert2";
@@ -16,9 +23,47 @@ import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import SortByAfterField from "../Utils/SortByAfterField";
+import { resolveSystemAsset } from "../Components/Tailwind/Banners/bannerUtils";
 
 const bannersRest = new BannersRest();
 const systemRest = new SystemRest();
+
+const PREVIEW_VIEWPORT_WIDTH = 1600;
+const PREVIEW_VIEWPORT_HEIGHT = 900;
+const PREVIEW_MIN_HEIGHT = 360;
+const PREVIEW_MAX_HEIGHT = 900;
+const SCALE_EPSILON = 0.001;
+const HEIGHT_EPSILON = 0.5;
+
+const TailwindBanner = lazy(() => import("../Components/Tailwind/Banner"));
+
+const getDefaultPreviewData = () => ({
+    name: "",
+    description: "",
+    button_text: "",
+    button_link: "",
+    contenedor: "relativo",
+    type: "BannerSimple",
+    background: "",
+    image: "",
+    items: [],
+});
+
+const buildPreviewData = (data = {}) => {
+    const defaults = getDefaultPreviewData();
+    return {
+        ...data,
+        name: data?.name ?? defaults.name,
+        description: data?.description ?? defaults.description,
+        button_text: data?.button_text ?? defaults.button_text,
+        button_link: data?.button_link ?? defaults.button_link,
+        contenedor: data?.contenedor ?? defaults.contenedor,
+        type: data?.type || defaults.type,
+        background: data?.background ?? defaults.background,
+        image: data?.image ?? defaults.image,
+        items: Array.isArray(data?.items) ? data.items : defaults.items,
+    };
+};
 
 const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const gridRef = useRef();
@@ -43,6 +88,368 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const [selectedPageId, setSelectedPageId] = useState("");
     const [editingSnapshot, setEditingSnapshot] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [previewData, setPreviewData] = useState(() => getDefaultPreviewData());
+    const objectUrlRef = useRef({ background: null, image: null });
+    const previewStageRef = useRef(null);
+    const previewContentRef = useRef(null);
+    const previewIframeRef = useRef(null);
+    const iframeRootRef = useRef(null);
+    const iframeDocRef = useRef(null);
+    const previewScaleRef = useRef(1);
+    const [previewScale, setPreviewScale] = useState(1);
+    const [previewHeight, setPreviewHeight] = useState(PREVIEW_MIN_HEIGHT);
+    const [isIframeReady, setIsIframeReady] = useState(false);
+    const previewType = previewData.type || "BannerSimple";
+
+    const updatePreviewScale = useCallback(() => {
+        const stage = previewStageRef.current;
+        const iframe = previewIframeRef.current;
+        const content = previewContentRef.current;
+        const doc = iframeDocRef.current;
+
+        if (!stage || !iframe || !content || !doc) return;
+
+        const stageWidth = stage.clientWidth || PREVIEW_VIEWPORT_WIDTH;
+        const docElement = doc.documentElement;
+
+        const contentWidth = Math.max(
+            PREVIEW_VIEWPORT_WIDTH,
+            content.scrollWidth || 0,
+            content.offsetWidth || 0,
+            docElement?.scrollWidth || 0,
+            doc.body?.scrollWidth || 0
+        );
+
+        const contentHeight = Math.max(
+            PREVIEW_VIEWPORT_HEIGHT,
+            content.scrollHeight || 0,
+            content.offsetHeight || 0,
+            docElement?.scrollHeight || 0,
+            doc.body?.scrollHeight || 0
+        );
+
+        const widthScale = stageWidth / contentWidth;
+        const heightScale = PREVIEW_MAX_HEIGHT / contentHeight;
+        const safeScale = Math.min(widthScale, heightScale, 1);
+
+        const scaledHeight = contentHeight * safeScale;
+        const desiredHeight = Math.max(
+            Math.min(scaledHeight, PREVIEW_MAX_HEIGHT),
+            PREVIEW_MIN_HEIGHT
+        );
+
+        if (Math.abs(previewScaleRef.current - safeScale) > SCALE_EPSILON) {
+            previewScaleRef.current = safeScale;
+            setPreviewScale(safeScale);
+        } else {
+            previewScaleRef.current = safeScale;
+        }
+
+        setPreviewHeight((prev) =>
+            Math.abs(prev - desiredHeight) < HEIGHT_EPSILON ? prev : desiredHeight
+        );
+
+        iframe.style.height = `${contentHeight}px`;
+    }, []);
+
+    const getTailwindHrefCandidates = useCallback(() => {
+        const urls = ["/build/app.css"];
+        if (typeof document !== "undefined") {
+            const viteClient = document.querySelector("script[src*='@vite/client']");
+            if (viteClient?.src) {
+                const baseUrl = viteClient.src.replace(/@vite\/client.*$/, "");
+                urls.push(`${baseUrl}resources/css/app.css`);
+            }
+        }
+        return urls;
+    }, []);
+
+    const injectTailwindIntoDocument = useCallback(
+        (doc) => {
+            if (!doc) return;
+            const head = doc.head || doc.getElementsByTagName("head")[0];
+            if (!head) return;
+
+            const marker = head.querySelector("link[data-banner-preview='tailwind']");
+            if (marker) return;
+
+            const candidates = getTailwindHrefCandidates();
+
+            const tryInject = (urls) => {
+                const [current, ...rest] = urls;
+                if (!current) {
+                    console.warn("[Banners] No se pudo cargar los estilos Tailwind para la vista previa del banner.");
+                    return;
+                }
+
+                const link = doc.createElement("link");
+                link.rel = "stylesheet";
+                link.href = current;
+                link.dataset.bannerPreview = "tailwind";
+                link.onload = () => {
+                    requestAnimationFrame(() => updatePreviewScale());
+                };
+                link.onerror = () => {
+                    link.remove();
+                    tryInject(rest);
+                };
+                head.appendChild(link);
+            };
+
+            tryInject(candidates);
+        },
+        [getTailwindHrefCandidates, updatePreviewScale]
+    );
+
+    const initializeIframeDocument = useCallback(() => {
+        const iframe = previewIframeRef.current;
+        if (!iframe) return;
+
+        setIsIframeReady(false);
+
+        if (iframeRootRef.current) {
+            try {
+                iframeRootRef.current.unmount();
+            } catch (error) {
+                console.error("[Banners] Error unmounting previous iframe root", error);
+            }
+            iframeRootRef.current = null;
+        }
+
+        const doc = iframe.contentDocument;
+        if (!doc) {
+            setTimeout(() => initializeIframeDocument(), 0);
+            return;
+        }
+
+        doc.open();
+        doc.write("<!DOCTYPE html><html><head><base target='_blank' /></head><body></body></html>");
+        doc.close();
+
+        doc.documentElement.style.fontSize = "16px";
+        doc.documentElement.style.background = "transparent";
+        doc.body.style.margin = "0";
+        doc.body.style.padding = "0";
+        doc.body.style.background = "transparent";
+
+        injectTailwindIntoDocument(doc);
+
+        const rootContainer = doc.createElement("div");
+        rootContainer.id = "banner-preview-root";
+        rootContainer.style.width = `${PREVIEW_VIEWPORT_WIDTH}px`;
+        rootContainer.style.minHeight = `${PREVIEW_VIEWPORT_HEIGHT}px`;
+        rootContainer.style.boxSizing = "border-box";
+        rootContainer.style.margin = "0 auto";
+
+        doc.body.appendChild(rootContainer);
+
+        iframeDocRef.current = doc;
+        previewContentRef.current = rootContainer;
+        iframeRootRef.current = createRoot(rootContainer);
+        previewScaleRef.current = 1;
+        setPreviewScale(1);
+        setPreviewHeight(PREVIEW_MIN_HEIGHT);
+        setIsIframeReady(true);
+    }, [injectTailwindIntoDocument]);
+
+    const renderPreviewIntoIframe = useCallback(() => {
+        const root = iframeRootRef.current;
+        const doc = iframeDocRef.current;
+        if (!root || !doc) return;
+
+        root.render(
+            <div style={{ minHeight: `${PREVIEW_VIEWPORT_HEIGHT}px` }}>
+                <Suspense
+                    fallback={
+                        <div
+                            className="d-flex align-items-center justify-content-center text-muted small"
+                            style={{ minHeight: `${PREVIEW_VIEWPORT_HEIGHT}px` }}
+                        >
+                            Cargando vista previa...
+                        </div>
+                    }
+                >
+                    <TailwindBanner
+                        key={previewType}
+                        which={previewType}
+                        data={previewData}
+                        items={previewData.items || []}
+                    />
+                </Suspense>
+            </div>
+        );
+    }, [previewData, previewType]);
+
+    useEffect(() => {
+        if (!isIframeReady) return;
+        renderPreviewIntoIframe();
+        const raf = requestAnimationFrame(updatePreviewScale);
+        return () => cancelAnimationFrame(raf);
+    }, [isIframeReady, renderPreviewIntoIframe, updatePreviewScale]);
+
+    useEffect(() => {
+        return () => {
+            if (iframeRootRef.current) {
+                iframeRootRef.current.unmount();
+            }
+            iframeRootRef.current = null;
+            iframeDocRef.current = null;
+            previewContentRef.current = null;
+        };
+    }, []);
+
+    const releaseObjectUrls = useCallback(() => {
+        Object.entries(objectUrlRef.current).forEach(([, url]) => {
+            if (
+                url &&
+                typeof url === "string" &&
+                url.startsWith("blob:") &&
+                typeof URL !== "undefined" &&
+                typeof URL.revokeObjectURL === "function"
+            ) {
+                URL.revokeObjectURL(url);
+            }
+        });
+        objectUrlRef.current = { background: null, image: null };
+    }, []);
+
+    const resetPreviewData = useCallback(
+        (data = {}) => {
+            releaseObjectUrls();
+            setPreviewData(buildPreviewData(data));
+        },
+        [releaseObjectUrls]
+    );
+
+    const handlePreviewFieldChange = useCallback((field, value) => {
+        setPreviewData((prev) => ({ ...prev, [field]: value }));
+    }, []);
+
+    const handleImageChange = useCallback(
+        (field) => (event) => {
+            const file = event?.target?.files?.[0];
+            const previousUrl = objectUrlRef.current[field];
+
+            if (file) {
+                const createUrl = (() => {
+                    if (typeof window !== "undefined" && window.File && typeof window.File.toURL === "function") {
+                        return window.File.toURL;
+                    }
+                    if (typeof URL !== "undefined" && typeof URL.createObjectURL === "function") {
+                        return (blob) => URL.createObjectURL(blob);
+                    }
+                    return null;
+                })();
+
+                if (!createUrl) {
+                    objectUrlRef.current[field] = null;
+                    setPreviewData((prev) => ({ ...prev, [field]: "" }));
+                    return;
+                }
+
+                const nextUrl = createUrl(file);
+
+                if (
+                    previousUrl &&
+                    previousUrl.startsWith("blob:") &&
+                    typeof URL !== "undefined" &&
+                    typeof URL.revokeObjectURL === "function"
+                ) {
+                    URL.revokeObjectURL(previousUrl);
+                }
+
+                objectUrlRef.current[field] = nextUrl;
+                setPreviewData((prev) => ({ ...prev, [field]: nextUrl }));
+                return;
+            }
+
+            if (
+                previousUrl &&
+                previousUrl.startsWith("blob:") &&
+                typeof URL !== "undefined" &&
+                typeof URL.revokeObjectURL === "function"
+            ) {
+                URL.revokeObjectURL(previousUrl);
+            }
+
+            objectUrlRef.current[field] = null;
+            setPreviewData((prev) => ({ ...prev, [field]: "" }));
+        },
+        []
+    );
+
+    const onBannerTypeChange = useCallback(
+        (event) => {
+            const element = event?.target ?? bannerTypeRef.current;
+            if (!element) return;
+
+            const rawValue = $(element).val();
+            const normalized = Array.isArray(rawValue) ? rawValue[0] : rawValue;
+            handlePreviewFieldChange("type", normalized || "BannerSimple");
+        },
+        [handlePreviewFieldChange]
+    );
+
+    const handleAbsoluteChange = useCallback(
+        (event) => {
+            handlePreviewFieldChange("contenedor", event.target.checked ? "absoluto" : "relativo");
+        },
+        [handlePreviewFieldChange]
+    );
+
+    useEffect(() => {
+        const modalElement = modalRef.current;
+        if (!modalElement) return;
+
+        const $modal = $(modalElement);
+        const handleHidden = () => {
+            releaseObjectUrls();
+            setPreviewData(getDefaultPreviewData());
+            setEditingSnapshot(null);
+            setIsEditing(false);
+            if (iframeRootRef.current) {
+                try {
+                    iframeRootRef.current.unmount();
+                } catch (error) {
+                    console.error("[Banners] Error unmounting iframe root on modal hide", error);
+                }
+                iframeRootRef.current = null;
+            }
+            iframeDocRef.current = null;
+            previewContentRef.current = null;
+            previewScaleRef.current = 1;
+            setPreviewScale(1);
+            setPreviewHeight(PREVIEW_MIN_HEIGHT);
+            setIsIframeReady(false);
+        };
+
+        $modal.on("hidden.bs.modal", handleHidden);
+
+        return () => {
+            $modal.off("hidden.bs.modal", handleHidden);
+        };
+    }, [releaseObjectUrls]);
+
+    useEffect(() => () => releaseObjectUrls(), [releaseObjectUrls]);
+
+    useEffect(() => {
+        const raf = requestAnimationFrame(updatePreviewScale);
+        return () => cancelAnimationFrame(raf);
+    }, [previewType, previewData, updatePreviewScale]);
+
+    useEffect(() => {
+        const handleResize = () => updatePreviewScale();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [updatePreviewScale]);
+
+    useEffect(() => {
+        if (typeof ResizeObserver === "undefined") return;
+        const observer = new ResizeObserver(() => updatePreviewScale());
+        if (previewStageRef.current) observer.observe(previewStageRef.current);
+        if (previewContentRef.current) observer.observe(previewContentRef.current);
+        return () => observer.disconnect();
+    }, [updatePreviewScale, isIframeReady]);
 
     const refreshGrid = () => {
         if (!gridRef.current) return;
@@ -160,6 +567,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     }, [selectedPageId, systems]); // Agregar systems como dependencia
 
     const onModalOpen = (banner) => {
+        initializeIframeDocument();
+
         if (banner?.id) {
             setIsEditing(true);
             setEditingSnapshot({
@@ -173,26 +582,35 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         }
 
         const bannerData = banner?.data || {};
+        const previewSnapshot = buildPreviewData(bannerData);
+
+        resetPreviewData(previewSnapshot);
 
         idRef.current.value = banner?.id ?? "";
-        nameRef.current.value = bannerData.name ?? "";
-        descriptionRef.current.value = bannerData.description ?? "";
+        nameRef.current.value = previewSnapshot.name;
+        descriptionRef.current.value = previewSnapshot.description;
         
-        // Establecer imágenes siguiendo el patrón de Categories.jsx
-        backgroundRef.image.src = bannerData.background ? `/storage/images/system/${bannerData.background}` : '';
+        const backgroundUrl = resolveSystemAsset(previewSnapshot.background);
+        const imageUrl = resolveSystemAsset(previewSnapshot.image);
+
+        if (backgroundRef.image) {
+            backgroundRef.image.src = backgroundUrl || '';
+        }
         backgroundRef.current.value = null;
-        imageRef.image.src = bannerData.image ? `/storage/images/system/${bannerData.image}` : '';
+        if (imageRef.image) {
+            imageRef.image.src = imageUrl || '';
+        }
         imageRef.current.value = null;
 
         // Reset delete flags using the same pattern as Categories.jsx
         if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
         if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
-        buttonTextRef.current.value = bannerData.button_text ?? "";
-        buttonLinkRef.current.value = bannerData.button_link ?? "";
+        buttonTextRef.current.value = previewSnapshot.button_text;
+        buttonLinkRef.current.value = previewSnapshot.button_link;
 
         if (absoluteRef.current) {
-            absoluteRef.current.checked = bannerData.contenedor === 'absoluto';
+            absoluteRef.current.checked = previewSnapshot.contenedor === 'absoluto';
         }
 
         // Nuevos campos
@@ -210,7 +628,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             $(afterComponentRef.current).val(afterValue).trigger('change');
         }, 100);
         
-        $(bannerTypeRef.current).val(bannerData.type || 'BannerSimple').trigger('change');
+        $(bannerTypeRef.current).val(previewSnapshot.type || 'BannerSimple').trigger('change');
 
         $(modalRef.current).modal("show");
     };
@@ -449,7 +867,6 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                 renderToString(
                                     <>
                                         <div className="d-flex align-items-center">
-                                            <i className={`${bannerType?.icon || 'mdi mdi-image'} me-2`}></i>
                                             <div>
                                                 <b className="d-block">{data?.name}</b>
                                                 <small className="text-muted d-block">
@@ -579,18 +996,75 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                 modalRef={modalRef}
                 title={isEditing ? "Editar banner" : "Agregar banner"}
                 onSubmit={onModalSubmit}
-                size="lg"
+                size="xl"
             >
                 <input ref={idRef} type="hidden" />
-                
-                <div className="row" id="banner-container">
-                    <div className="col-12">
+                <div className="row g-3" id="banner-container">
+                    <div className="col-12 col-lg-5 order-1 order-lg-2">
+                        <div className="card shadow-sm border-0 h-100">
+                            <div className="card-header bg-white border-0 pb-0">
+                                <h6 className="mb-1 fw-semibold">Vista previa</h6>
+                                <small className="text-muted">
+                                    Se actualiza automáticamente con los cambios.
+                                </small>
+                            </div>
+                            <div className="card-body">
+                                <div
+                                    ref={previewStageRef}
+                                    className="banner-preview-stage border rounded bg-light p-3"
+                                    style={{
+                                        minHeight: PREVIEW_MIN_HEIGHT,
+                                        height: previewHeight,
+                                        maxHeight: PREVIEW_MAX_HEIGHT,
+                                        overflow: "hidden",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "flex-start",
+                                        transition: "height 150ms ease, min-height 150ms ease, max-height 150ms ease",
+                                    }}
+                                >
+                                    <div
+                                        className="banner-preview-frame position-relative"
+                                        style={{
+                                            width: `${PREVIEW_VIEWPORT_WIDTH}px`,
+                                            minWidth: `${PREVIEW_VIEWPORT_WIDTH}px`,
+                                            maxWidth: `${PREVIEW_VIEWPORT_WIDTH}px`,
+                                            transform: `scale(${previewScale})`,
+                                            transformOrigin: "top center",
+                                            transition: "transform 150ms ease, width 150ms ease",
+                                        }}
+                                    >
+                                        <iframe
+                                            ref={previewIframeRef}
+                                            title="Vista previa del banner"
+                                            style={{
+                                                width: `${PREVIEW_VIEWPORT_WIDTH}px`,
+                                                height: `${PREVIEW_VIEWPORT_HEIGHT}px`,
+                                                border: "0",
+                                                pointerEvents: "none",
+                                                backgroundColor: "transparent",
+                                                display: "block",
+                                            }}
+                                            scrolling="no"
+                                        />
+                                        {!isIframeReady && (
+                                            <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-muted small bg-white bg-opacity-75">
+                                                Cargando vista previa...
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-lg-7 order-2 order-lg-1">
                         <div className="row">
                             <div className="col-md-6">
                                 <SelectFormGroup 
                                     eRef={bannerTypeRef} 
                                     label="Tipo de Banner"
                                     dropdownParent={"#banner-container"}
+                                    onChange={onBannerTypeChange}
                                 >
                                     {bannerTypes.map(type => (
                                         <option key={type.id} value={type.id}>
@@ -620,7 +1094,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             eRef={afterComponentRef} 
                             label="Posición (después de)"
                             dropdownParent="#banner-container"
-                            changeWith={[selectedPageId]} // Use changeWith instead of key
+                            changeWith={[selectedPageId]}
                         >
                             <option value="">Al inicio</option>
                             {availableComponents.map(component => (
@@ -634,6 +1108,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             eRef={backgroundRef} 
                             name="background" 
                             label="Fondo"
+                            onChange={handleImageChange("background")}
                         />
                         
                         <div className="row">
@@ -643,6 +1118,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     name="image"
                                     label="Imagen"
                                     aspect={1}
+                                    onChange={handleImageChange("image")}
                                 />
                             </div>
                             <div className="col-sm-6">
@@ -650,15 +1126,18 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     eRef={nameRef}
                                     label="Titulo"
                                     rows={2}
+                                    onChange={(event) => handlePreviewFieldChange("name", event.target.value)}
                                 />
                                 <TextareaFormGroup
                                     eRef={descriptionRef}
                                     label="Descripción"
                                     rows={2}
+                                    onChange={(event) => handlePreviewFieldChange("description", event.target.value)}
                                 />
                                 <InputFormGroup
                                     eRef={buttonTextRef}
                                     label="Texto botón"
+                                    onChange={(event) => handlePreviewFieldChange("button_text", event.target.value)}
                                 />
                             </div>
                         </div>
@@ -666,6 +1145,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                         <InputFormGroup 
                             eRef={buttonLinkRef} 
                             label="URL botón"
+                            onChange={(event) => handlePreviewFieldChange("button_link", event.target.value)}
                         />
                         
                         <div className="form-group row">
@@ -677,6 +1157,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                         className="custom-control-input" 
                                         id="absoluteSwitch"
                                         ref={absoluteRef}
+                                        onChange={handleAbsoluteChange}
                                     />
                                     <label className="custom-control-label" htmlFor="absoluteSwitch">
                                         Imagen absoluta

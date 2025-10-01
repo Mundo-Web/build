@@ -1,12 +1,15 @@
 import { Tag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Global from "../../../Utils/Global";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerPublicitarioKatya = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
+    const imageUrl = resolveSystemAsset(data?.image);
     return (
         <div className={`${data?.class_content || ''} overflow-hidden`}
             style={{
-                backgroundImage: `url(/storage/images/system/${data?.background})`,
+                backgroundImage: `url(${backgroundUrl})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -41,7 +44,7 @@ const BannerPublicitarioKatya = ({ data }) => {
                                     initial={{ scale: 1.5, rotate: -10 }}
                                     animate={{ scale: 1.5, rotate: 0 }}
                                     transition={{ duration: 1, type: "spring" }}
-                                    src={`/storage/images/system/${data?.image}`}
+                                    src={imageUrl}
                                     className="absolute top-28 left-10"
                                     alt={data?.name}
                                 />

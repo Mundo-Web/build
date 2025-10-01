@@ -4,7 +4,7 @@ import BaseAdminto from '@Adminto/Base';
 import CreateReactScript from '../Utils/CreateReactScript';
 import GalleryRest from '../Actions/Admin/GalleryRest';
 import GalleryConfigRest from '../Actions/Admin/GalleryConfigRest';
-import ImageFormGroup from '../Components/Adminto/Form/ImageFormGroup';
+
 import slugify from '../Utils/slugify';
 import { toast, Toaster } from 'sonner';
 
@@ -32,7 +32,7 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Ref para el ImageFormGroup
+
   const imageFormRef = useRef();
 
   // Verificar si estamos en entorno local/desarrollo

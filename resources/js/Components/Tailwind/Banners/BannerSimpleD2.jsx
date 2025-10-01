@@ -1,14 +1,16 @@
 import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
 import TextWithHighlightD2en1 from "../../../Utils/TextWithHighlightD2en1";
 
 const BannerSimpleD2 = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
     return (
         <section>
             <div className="px-primary replace-max-w-here w-full mx-auto py-[5%] md:py-[1.5%]">
                 <div
                     className="w-full aspect-[5/2] rounded-2xl flex flex-col gap-5 items-center justify-center bg-white shadow-lg text-center"
                     style={{
-                        backgroundImage: `url('/storage/images/system/${data?.background}')`,
+                        backgroundImage: `url(${backgroundUrl})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
@@ -21,7 +23,6 @@ const BannerSimpleD2 = ({ data }) => {
                     <p className="text-white italic text-base md:text-lg lg:text-xl 2xl:text-2xl font-paragraph">{data?.description}</p>
                     
                     <div className="flex flex-wrap justify-center items-center gap-4 lg:gap-8 customtext-primary font-semibold w-full py-5 max-w-lg 2xl:max-w-xl mx-auto">
-
                         {data?.button_link && data?.button_text && (
                             <a
                                 className="bg-primary text-white text-base 2xl:text-xl tracking-normal cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"

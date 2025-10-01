@@ -162,39 +162,69 @@ const Menu = ({ session, hasRole }) => {
                   <MenuItem href="/admin/profile" icon="mdi mdi-account-box">Mi perfil</MenuItem>
                   <MenuItem href="/admin/account" icon="mdi mdi-account-key">Mi cuenta</MenuItem> */}
 
-                  {menus.map((section, i) => (
-                    <React.Fragment key={i}>
-                      <li className="menu-title">{section.title}</li>
-                      {section.items.map((item, idx) =>
-                        item.children ? (
-                          <MenuItemContainer key={idx} title={item.label} icon={item.icon}>
-                            {item.children.map((child, childIdx) => CanAccess[child.href] && <MenuItem key={childIdx} href={child.href} icon={child.icon}>
-                              {child.label}
-                            </MenuItem>)}
-                          </MenuItemContainer>
-                        ) : item.role ? (
-                          hasRole(item.role) && CanAccess[item.href] && <MenuItem
-                            key={idx}
-                            href={item.href}
-                            icon={item.icon}
-                            target={item.target}
-                          >
-                            {item.label}
-                            {item.target && (
-                              <i className="mdi mdi-arrow-top-right ms-1"></i>
-                            )}
-                          </MenuItem>
-                        ) : <>
-                          {
-                            CanAccess[item.href] &&
-                            <MenuItem key={idx} href={item.href} icon={item.icon}>
+                  {menus.map((section) => {
+                    const sectionKey = section.id || section.title || JSON.stringify(section);
+                    return (
+                      <React.Fragment key={sectionKey}>
+                        <li className="menu-title">{section.title}</li>
+                        {section.items.map((item) => {
+                          const itemKey = item.id || item.href || `${sectionKey}-${item.label}`;
+
+                          if (item.children) {
+                            return (
+                              <MenuItemContainer
+                                key={itemKey}
+                                title={item.label}
+                                icon={item.icon}
+                              >
+                                {item.children
+                                  .filter((child) => CanAccess[child.href])
+                                  .map((child) => (
+                                    <MenuItem
+                                      key={child.id || child.href || `${itemKey}-${child.label}`}
+                                      href={child.href}
+                                      icon={child.icon}
+                                    >
+                                      {child.label}
+                                    </MenuItem>
+                                  ))}
+                              </MenuItemContainer>
+                            );
+                          }
+
+                          if (item.role) {
+                            if (!hasRole(item.role) || !CanAccess[item.href]) {
+                              return null;
+                            }
+
+                            return (
+                              <MenuItem
+                                key={itemKey}
+                                href={item.href}
+                                icon={item.icon}
+                                target={item.target}
+                              >
+                                {item.label}
+                                {item.target && (
+                                  <i className="mdi mdi-arrow-top-right ms-1"></i>
+                                )}
+                              </MenuItem>
+                            );
+                          }
+
+                          if (!CanAccess[item.href]) {
+                            return null;
+                          }
+
+                          return (
+                            <MenuItem key={itemKey} href={item.href} icon={item.icon}>
                               {item.label}
                             </MenuItem>
-                          }
-                        </>
-                      )}
-                    </React.Fragment>
-                  ))}
+                          );
+                        })}
+                      </React.Fragment>
+                    );
+                  })}
                 </>
               )}
             </ul>

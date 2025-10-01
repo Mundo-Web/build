@@ -1,8 +1,11 @@
 import { Tag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Global from "../../../Utils/Global";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerPublicitarioPaani = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
+    const imageUrl = resolveSystemAsset(data?.image);
 
     return (
         <AnimatePresence>
@@ -19,7 +22,7 @@ const BannerPublicitarioPaani = ({ data }) => {
                     transition={{ duration: 0.8, delay: 0.3 }}
                     className="relative rounded-3xl md:rounded-2xl h-[600px] md:h-[500px] overflow-hidden shadow-xl"
                     style={{
-                        backgroundImage: `linear-gradient(90deg,rgba(0,0,0,0.45),rgba(0,0,0,0.15)), url(/storage/images/system/${data?.background})`,
+                        backgroundImage: `linear-gradient(90deg,rgba(0,0,0,0.45),rgba(0,0,0,0.15)), url(${backgroundUrl})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
@@ -110,7 +113,7 @@ const BannerPublicitarioPaani = ({ data }) => {
                                 initial={{ scale: 0.95, rotate: -8 }}
                                 animate={{ scale: 1, rotate: 0 }}
                                 transition={{ duration: 1, type: "spring" }}
-                                src={`/storage/images/system/${data?.image}`}
+                                src={imageUrl}
                                 className="w-full h-full object-contain sm:object-cover object-center bg-[radial-gradient(circle,_#0075A7_0%,_#003D52_40%,_transparent_50%)]"
                                 alt={data?.name}
                             />
