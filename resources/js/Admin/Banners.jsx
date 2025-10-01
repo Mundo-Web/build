@@ -41,6 +41,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const [systems, setSystems] = useState(systemsFromProps);
     const [availableComponents, setAvailableComponents] = useState([]);
     const [selectedPageId, setSelectedPageId] = useState("");
+    const [editingSnapshot, setEditingSnapshot] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Tipos de banners disponibles - basados en components.json
     const bannerTypes = [
@@ -64,14 +66,64 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         { id: 'BannerBlogSectionKatya', name: 'Banner Blog Section Katya', icon: 'mdi mdi-post' }
     ];
 
+    const normalizePageId = (value) => value === undefined || value === null || value === '' ? null : value;
+
+    // Replica la lógica de System.jsx para recalcular la cadena after_component de una página.
+    const computeOrderUpdates = ({ pageId, baseSystems = [], insertedSystem = null }) => {
+        const normalizedPageId = normalizePageId(pageId);
+        const workingList = SortByAfterField(baseSystems.map(item => ({ ...item })));
+
+        let desiredOrder = workingList;
+
+        if (insertedSystem) {
+            const systemClone = { ...insertedSystem, page_id: normalizedPageId };
+            const afterId = systemClone.after_component ?? null;
+            if (!afterId) {
+                desiredOrder = [systemClone, ...desiredOrder];
+            } else {
+                const index = desiredOrder.findIndex(item => item.id === afterId);
+                if (index === -1) {
+                    desiredOrder = [...desiredOrder, systemClone];
+                } else {
+                    desiredOrder = [
+                        ...desiredOrder.slice(0, index + 1),
+                        systemClone,
+                        ...desiredOrder.slice(index + 1)
+                    ];
+                }
+            }
+        }
+
+        const updates = {};
+        const ordered = desiredOrder.map((item, index) => {
+            const expectedAfter = index === 0 ? null : desiredOrder[index - 1].id;
+            const normalizedExpected = expectedAfter ?? null;
+            const normalizedCurrent = item.after_component ?? null;
+            const needsUpdate = normalizedCurrent !== normalizedExpected;
+
+            if (needsUpdate) {
+                updates[item.id] = normalizedExpected;
+            }
+
+            return {
+                ...item,
+                page_id: normalizedPageId,
+                after_component: normalizedExpected
+            };
+        });
+
+        return { ordered, updates };
+    };
+
     // EXACTAMENTE como System.jsx - usar los datos que ya tenemos
     const loadPageComponents = (pageId) => {
         // System.jsx línea 263: SortByAfterField(systems).filter(x => x.page_id == null)
         // System.jsx línea 306: SortByAfterField(systems).filter(x => x.page_id == page.id)
         
         // Filtrar primero y luego ordenar con SortByAfterField como hace System.jsx
+        const normalizedPageId = normalizePageId(pageId);
         const filteredSystems = systems.filter(s => 
-            s.page_id === (pageId || null)
+            normalizePageId(s.page_id) === normalizedPageId
         );
         
         // ORDENAR igual que System.jsx para que el select muestre en orden correcto
@@ -100,8 +152,17 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     }, [selectedPageId, systems]); // Agregar systems como dependencia
 
     const onModalOpen = (banner) => {
-        if (banner?.id) setIsEditing(true);
-        else setIsEditing(false);
+        if (banner?.id) {
+            setIsEditing(true);
+            setEditingSnapshot({
+                id: banner.id,
+                page_id: normalizePageId(banner.page_id),
+                after_component: banner.after_component ?? null
+            });
+        } else {
+            setIsEditing(false);
+            setEditingSnapshot(null);
+        }
 
         const bannerData = banner?.data || {};
 
@@ -148,159 +209,140 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
     const onModalSubmit = async (e) => {
         e.preventDefault();
+        if (isSaving) return;
 
-        const bannerId = idRef.current.value;
-        const pageId = $(pageIdRef.current).val();
-        const afterComponent = $(afterComponentRef.current).val() || null;
-        const bannerType = $(bannerTypeRef.current).val();
+        setIsSaving(true);
+        try {
+            const bannerId = idRef.current.value;
+            const pageId = $(pageIdRef.current).val();
+            const normalizedPageId = normalizePageId(pageId);
+            const afterComponent = $(afterComponentRef.current).val() || null;
+            const bannerType = $(bannerTypeRef.current).val();
 
-        // Preparar los datos del sistema - EXACTAMENTE como System.jsx
-        const systemData = {
-            name: `Banner - ${nameRef.current.value}`,
-            component: 'banner',
-            value: bannerType,
-            page_id: pageId || null,
-            after_component: afterComponent,
-            visible: true
-        };
+            const systemData = {
+                name: `Banner - ${nameRef.current.value}`,
+                component: 'banner',
+                value: bannerType,
+                page_id: normalizedPageId,
+                after_component: afterComponent,
+                visible: true
+            };
 
-        // Si está editando, incluir el ID
-        if (bannerId) {
-            systemData.id = bannerId;
-        }
-
-        // 1. PRIMERO guardar el sistema (como hace System.jsx)
-        const systemResult = await systemRest.save(systemData);
-        if (!systemResult) return;
-
-       
-
-        // 2. SEGUNDO guardar los datos del banner
-        const request = {
-            id: systemResult.id,
-            name: nameRef.current.value,
-            description: descriptionRef.current.value,
-            button_text: buttonTextRef.current.value,
-            button_link: buttonLinkRef.current.value,
-            contenedor: absoluteRef.current?.checked ? 'absoluto' : 'relativo',
-            type: bannerType
-        };
-
-        const formData = new FormData();
-        for (const key in request) {
-            formData.append(key, request[key]);
-        }
-
-        const background = backgroundRef.current.files[0];
-        if (background) {
-            formData.append("background", background);
-        }
-        const image = imageRef.current.files[0];
-        if (image) {
-            formData.append("image", image);
-        }
-
-        // Check for image deletion flags using the same pattern as Categories.jsx
-        if (backgroundRef.getDeleteFlag && backgroundRef.getDeleteFlag()) {
-            formData.append('background_delete', 'DELETE');
-        }
-        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
-        }
-
-        const bannerResult = await bannersRest.save(formData);
-        if (!bannerResult) return;
-
-        // Reset delete flags after successful save
-        if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
-
-
-        // 3. TERCERO - CALCULAR Y ACTUALIZAR EL ORDEN DE TODOS LOS COMPONENTES AFECTADOS
-        // Esto es CRÍTICO - System.jsx hace esto automáticamente con drag & drop
-        
-        const targetPageId = systemResult.page_id;
-        const newBannerId = systemResult.id;
-        const newAfterComponent = systemResult.after_component;
-        
-        // Obtener todos los sistemas de la página actual
-        const currentPageSystems = systems.filter(s => s.page_id === targetPageId);
-        
-        // Si el banner se está insertando en una posición específica, necesitamos reordenar
-        if (newAfterComponent || (!isEditing && newAfterComponent === null)) {
-       
-            
-            // Crear una lista simulada como si fuera el resultado del drag & drop
-            let reorderedSystems = [...currentPageSystems];
-            
-            // Remover el banner actual si está editando
-            if (isEditing) {
-                reorderedSystems = reorderedSystems.filter(s => s.id !== newBannerId);
+            if (bannerId) {
+                systemData.id = bannerId;
             }
-            
-            // Insertar el banner en la nueva posición
-            const newBannerTemp = { ...systemResult, data: bannerResult.data };
-            
-            if (newAfterComponent === null) {
-                // Insertar al inicio
-                reorderedSystems.unshift(newBannerTemp);
-            } else {
-                // Insertar después del componente especificado
-                const afterIndex = reorderedSystems.findIndex(s => s.id == newAfterComponent); // Usar == para comparar int y string
-                if (afterIndex !== -1) {
-                    reorderedSystems.splice(afterIndex + 1, 0, newBannerTemp);
-                } else {
-                    reorderedSystems.push(newBannerTemp);
-                }
+
+            const systemResult = await systemRest.save(systemData);
+            if (!systemResult) return;
+
+            const bannerData = {
+                name: nameRef.current.value,
+                description: descriptionRef.current.value,
+                button_text: buttonTextRef.current.value,
+                button_link: buttonLinkRef.current.value,
+                contenedor: absoluteRef.current?.checked ? 'absoluto' : 'relativo',
+                type: bannerType
+            };
+
+            const formData = new FormData();
+            formData.append('id', systemResult.id);
+            Object.entries(bannerData).forEach(([key, value]) => formData.append(key, value));
+
+            const background = backgroundRef.current.files[0];
+            if (background) {
+                formData.append("background", background);
             }
-            
-            // Calcular los nuevos after_component para todos
-            const updates = {};
-            reorderedSystems.forEach((system, index) => {
-                const newAfter = index === 0 ? null : reorderedSystems[index - 1].id;
-                if (system.after_component !== newAfter) {
-                    updates[system.id] = newAfter;
+            const image = imageRef.current.files[0];
+            if (image) {
+                formData.append("image", image);
+            }
+
+            if (backgroundRef.getDeleteFlag && backgroundRef.getDeleteFlag()) {
+                formData.append('background_delete', 'DELETE');
+            }
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
+
+            const bannerResult = await bannersRest.save(formData);
+            if (!bannerResult) return;
+
+            if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
+            if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
+            let finalSystem = {
+                ...systemResult,
+                page_id: normalizedPageId,
+                after_component: afterComponent ?? null,
+                data: {
+                    ...(systemResult.data || {}),
+                    ...bannerData
                 }
+            };
+
+            const previousPageId = normalizePageId(editingSnapshot?.page_id);
+            const currentPageId = normalizePageId(finalSystem.page_id);
+
+            const updatesPayload = {};
+
+            if (editingSnapshot?.id && previousPageId !== currentPageId) {
+                const oldPageSystems = systems
+                    .filter(s => normalizePageId(s.page_id) === previousPageId && s.id !== finalSystem.id)
+                    .map(s => ({ ...s }));
+
+                const { updates: oldUpdates } = computeOrderUpdates({
+                    pageId: previousPageId,
+                    baseSystems: oldPageSystems
+                });
+
+                Object.assign(updatesPayload, oldUpdates);
+            }
+
+            const newPageSystems = systems
+                .filter(s => normalizePageId(s.page_id) === currentPageId && s.id !== finalSystem.id)
+                .map(s => ({ ...s }));
+
+            const { ordered: newOrder, updates: newUpdates } = computeOrderUpdates({
+                pageId: currentPageId,
+                baseSystems: newPageSystems,
+                insertedSystem: finalSystem
             });
-            
-            
-            // Enviar las actualizaciones al backend como hace System.jsx
-            if (Object.keys(updates).length > 0) {
-                const orderResult = await systemRest.updateOrder(updates);
-                if (!orderResult) {
-                    return;
-                }
+
+            Object.assign(updatesPayload, newUpdates);
+
+            const updatedFinalSystem = newOrder.find(item => item.id === finalSystem.id);
+            if (updatedFinalSystem) {
+                finalSystem = {
+                    ...finalSystem,
+                    after_component: updatedFinalSystem.after_component ?? null
+                };
             }
+
+            if (Object.keys(updatesPayload).length > 0) {
+                const orderResult = await systemRest.updateOrder(updatesPayload);
+                if (!orderResult) return;
+            }
+
+            setSystems(old => {
+                const withoutCurrent = old.filter(item => item.id !== finalSystem.id);
+                const updated = withoutCurrent.map(item => {
+                    if (Object.prototype.hasOwnProperty.call(updatesPayload, item.id)) {
+                        return { ...item, after_component: updatesPayload[item.id] ?? null };
+                    }
+                    return item;
+                });
+
+                return [...updated, finalSystem];
+            });
+
+            setSelectedPageId(currentPageId ?? '');
+
+            $(modalRef.current).modal("hide");
+            setEditingSnapshot(null);
+            setIsEditing(false);
+        } finally {
+            setIsSaving(false);
         }
-
-        // 4. CUARTO - Actualizar el estado final con todos los cambios
-        const finalSystem = {
-            ...systemResult,
-            data: bannerResult.data
-        };
-
-        setSystems(old => {
-            const exists = old.some(x => x.id === finalSystem.id);
-          
-            
-            let newSystems;
-            if (exists) {
-                newSystems = old.map(x => x.id === finalSystem.id ? finalSystem : x);
-            } else {
-                newSystems = [...old, finalSystem];
-            }
-            
-            return newSystems;
-        });
-
-        $(modalRef.current).modal("hide");
-        
-        
-        // FORZAR RECARGA para que System.jsx vea los cambios
-        // Esto es temporal hasta encontrar por qué no se refleja automáticamente
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
     };
 
 
@@ -556,7 +598,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     dropdownParent={"#banner-container"}
                                 >
                                     <option value="">Base Template</option>
-                                    {pages.filter(page => page.menuable).map(page => (
+                                    {pages.map(page => (
                                         <option key={page.id} value={page.id}>
                                             {page.name}
                                         </option>
