@@ -682,7 +682,7 @@ export default function ShippingStepSF({
                 number: formData?.number || "",
                 comment: formData?.comment || "",
                 reference: formData?.reference || "",
-                amount: totalFinal || 0,
+                amount: finalTotalWithCoupon || 0,
                 delivery: envio,
                 delivery_type: deliveryType, // Agregar delivery_type
                 cart: cart,
@@ -693,9 +693,11 @@ export default function ShippingStepSF({
                 // Agregar descuentos automáticos
                 automatic_discounts: autoDiscounts,
                 automatic_discount_total: autoDiscountTotal,
+                applied_promotions: autoDiscounts,
+                promotion_discount: autoDiscountTotal || 0,
                 coupon_id: coupon ? coupon.id : null,
                 coupon_discount: descuentofinal || 0,
-                total_amount: totalFinal || 0,
+                total_amount: finalTotalWithCoupon || 0,
             };
            
             const response = await processMercadoPagoPayment(request)
@@ -947,7 +949,7 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: totalPrice || 0,
+                    amount: finalTotalWithCoupon || 0,
                     delivery: envio,
                     delivery_type: deliveryType, // Agregar delivery_type
                     cart: cart,
@@ -962,6 +964,8 @@ export default function ShippingStepSF({
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
                     automatic_discount_total: autoDiscountTotal,
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: autoDiscountTotal || 0,
                     total_amount: finalTotalWithCoupon || 0,
                 };
                 
@@ -1030,7 +1034,7 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: totalPrice || 0,
+                    amount: finalTotalWithCoupon || 0,
                     delivery: envio,
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
@@ -1049,6 +1053,8 @@ export default function ShippingStepSF({
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
                     automatic_discount_total: autoDiscountTotal,
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: autoDiscountTotal || 0,
                     total_amount: finalTotalWithCoupon || 0,
                 };
 
@@ -1077,7 +1083,7 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: totalPrice || 0,
+                    amount: finalTotalWithCoupon || 0,
                     delivery: envio,
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
@@ -1096,6 +1102,8 @@ export default function ShippingStepSF({
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
                     automatic_discount_total: autoDiscountTotal,
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: autoDiscountTotal || 0,
                     total_amount: finalTotalWithCoupon || 0,
                 };
                 setPaymentRequest(request);

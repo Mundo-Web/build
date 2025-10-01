@@ -10,7 +10,7 @@ import { Toaster } from 'sonner';
 const fillableRest = new FillableRest()
 const booleanLimitRest = new BooleanLimitRest()
 
-const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar, masterDetail, filterValue, exportable, exportableName, customizeCell = () => { }, onRefresh = () => { }, rowDragging, sorting }) => {
+const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar, masterDetail, filterValue, exportable, exportableName, customizeCell = () => { }, onRefresh = () => { }, rowDragging, sorting, withRelations }) => {
   const modalRef = useRef()
   const booleanLimitModalRef = useRef()
   const [saving, setSaving] = useState(false)
@@ -101,6 +101,7 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
           const data = await rest.paginate({
             ...params,
             requireTotalCount: true,
+            ...(withRelations && { with: withRelations }),
             // _token: $('[name="csrf_token"]').attr('content')
           })
           onRefresh(data)

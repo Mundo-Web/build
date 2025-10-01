@@ -584,8 +584,8 @@
       "_BasicRest-BML1C-ua.js"
     ]
   },
-  "_Table-BoAJpQpW.js": {
-    "file": "assets/Table-BoAJpQpW.js",
+  "_Table-DQO6Uric.js": {
+    "file": "assets/Table-DQO6Uric.js",
     "name": "Table",
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -1429,7 +1429,7 @@
     ]
   },
   "resources/js/Admin/About.jsx": {
-    "file": "assets/About-CcdkB8yG.js",
+    "file": "assets/About-DaT7HC0E.js",
     "name": "About",
     "src": "resources/js/Admin/About.jsx",
     "isEntry": true,
@@ -1444,7 +1444,7 @@
       "_WebDetailsRest-DsgeLSDz.js",
       "_BasicEditing-TVz-VY9q.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
@@ -1514,7 +1514,7 @@
     ]
   },
   "resources/js/Admin/Ads.jsx": {
-    "file": "assets/Ads-BjaQh7s7.js",
+    "file": "assets/Ads-CUvluEpm.js",
     "name": "Ads",
     "src": "resources/js/Admin/Ads.jsx",
     "isEntry": true,
@@ -1524,7 +1524,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_ReactAppend-Vm5G2nof.js",
       "_DxButton-DV0H-ZcL.js",
@@ -1559,7 +1559,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-BWJthHq4.js",
+    "file": "assets/Banners-D6hkmxLH.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -1578,7 +1578,7 @@
       "_SwitchFormGroup-DXN0cwVk.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_CreateReactScript-BSTb2hiI.js",
@@ -1612,7 +1612,7 @@
     ]
   },
   "resources/js/Admin/BlogCategories.jsx": {
-    "file": "assets/BlogCategories-2OsThI4i.js",
+    "file": "assets/BlogCategories-cZ_2s6LV.js",
     "name": "BlogCategories",
     "src": "resources/js/Admin/BlogCategories.jsx",
     "isEntry": true,
@@ -1628,7 +1628,7 @@
       "_ImageFormGroup-DkVgPNU5.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -1657,7 +1657,7 @@
     ]
   },
   "resources/js/Admin/Brands.jsx": {
-    "file": "assets/Brands-8j8RG9T_.js",
+    "file": "assets/Brands-CdBJsSLH.js",
     "name": "Brands",
     "src": "resources/js/Admin/Brands.jsx",
     "isEntry": true,
@@ -1673,7 +1673,7 @@
       "_InputFormGroup-iZIO11ZN.js",
       "_ImageFormGroup-DkVgPNU5.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -1701,7 +1701,7 @@
     ]
   },
   "resources/js/Admin/Categories.jsx": {
-    "file": "assets/Categories-CNlc92LB.js",
+    "file": "assets/Categories-C3ZqMOko.js",
     "name": "Categories",
     "src": "resources/js/Admin/Categories.jsx",
     "isEntry": true,
@@ -1716,7 +1716,7 @@
       "_BasicRest-BML1C-ua.js",
       "_ImageFormGroup-DkVgPNU5.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -1745,7 +1745,7 @@
     ]
   },
   "resources/js/Admin/Certifications.jsx": {
-    "file": "assets/Certifications-CxQMEIqO.js",
+    "file": "assets/Certifications-B1MtBuTQ.js",
     "name": "Certifications",
     "src": "resources/js/Admin/Certifications.jsx",
     "isEntry": true,
@@ -1761,7 +1761,7 @@
       "_BasicEditing-TVz-VY9q.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -1794,7 +1794,7 @@
     ]
   },
   "resources/js/Admin/Clients.jsx": {
-    "file": "assets/Clients-D8_RMIQu.js",
+    "file": "assets/Clients-7R2UKGPQ.js",
     "name": "Clients",
     "src": "resources/js/Admin/Clients.jsx",
     "isEntry": true,
@@ -1804,7 +1804,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_ReactAppend-Vm5G2nof.js",
       "_DxButton-DV0H-ZcL.js",
       "_SwitchFormGroup-DXN0cwVk.js",
@@ -1836,7 +1836,7 @@
     ]
   },
   "resources/js/Admin/Collections.jsx": {
-    "file": "assets/Collections-auOV9Kzb.js",
+    "file": "assets/Collections-B8UmvPjy.js",
     "name": "Collections",
     "src": "resources/js/Admin/Collections.jsx",
     "isEntry": true,
@@ -1852,7 +1852,7 @@
       "_ImageFormGroup-DkVgPNU5.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -1880,7 +1880,7 @@
     ]
   },
   "resources/js/Admin/Combos.jsx": {
-    "file": "assets/Combos-AOXzgET3.js",
+    "file": "assets/Combos-DYqL1lDr.js",
     "name": "Combos",
     "src": "resources/js/Admin/Combos.jsx",
     "isEntry": true,
@@ -1893,7 +1893,7 @@
       "_server.browser-Bf4gQIc7.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_ImageFormGroup-DkVgPNU5.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectAPIFormGroup-BZe8H0Ph.js",
@@ -1926,7 +1926,7 @@
     ]
   },
   "resources/js/Admin/Complaints.jsx": {
-    "file": "assets/Complaints-B0Ai1uIc.js",
+    "file": "assets/Complaints-FYf34K1P.js",
     "name": "Complaints",
     "src": "resources/js/Admin/Complaints.jsx",
     "isEntry": true,
@@ -1936,7 +1936,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_ReactAppend-Vm5G2nof.js",
       "_BasicRest-BML1C-ua.js",
@@ -1988,7 +1988,7 @@
     ]
   },
   "resources/js/Admin/Coupons.jsx": {
-    "file": "assets/Coupons-mdpykJ7h.js",
+    "file": "assets/Coupons-DMjA4Vxk.js",
     "name": "Coupons",
     "src": "resources/js/Admin/Coupons.jsx",
     "isEntry": true,
@@ -2005,7 +2005,7 @@
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_main-B6F2O9-U.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_DxButton-DV0H-ZcL.js",
@@ -2034,7 +2034,7 @@
     ]
   },
   "resources/js/Admin/DeliveryPrices.jsx": {
-    "file": "assets/DeliveryPrices-CwFIAQtR.js",
+    "file": "assets/DeliveryPrices-COEc99sU.js",
     "name": "DeliveryPrices",
     "src": "resources/js/Admin/DeliveryPrices.jsx",
     "isEntry": true,
@@ -2049,7 +2049,7 @@
       "_Base-DV9pDpsw.js",
       "_DxButton-CsjWvhyj.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_SwitchFormGroup-DXN0cwVk.js",
@@ -2080,7 +2080,7 @@
     ]
   },
   "resources/js/Admin/DeliveryPricesType.jsx": {
-    "file": "assets/DeliveryPricesType-CdknvTMW.js",
+    "file": "assets/DeliveryPricesType-BV-XM-eh.js",
     "name": "DeliveryPricesType",
     "src": "resources/js/Admin/DeliveryPricesType.jsx",
     "isEntry": true,
@@ -2098,7 +2098,7 @@
       "_Base-DV9pDpsw.js",
       "_DxButton-CsjWvhyj.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_SwitchFormGroup-DXN0cwVk.js",
@@ -2127,7 +2127,7 @@
     ]
   },
   "resources/js/Admin/DeliveryTypes.jsx": {
-    "file": "assets/DeliveryTypes-BsdMIo9c.js",
+    "file": "assets/DeliveryTypes-DWthXem4.js",
     "name": "DeliveryTypes",
     "src": "resources/js/Admin/DeliveryTypes.jsx",
     "isEntry": true,
@@ -2141,7 +2141,7 @@
       "_Base-DV9pDpsw.js",
       "_DxButton-CsjWvhyj.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_TextareaFormGroup-CliirJM1.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
@@ -2167,7 +2167,7 @@
     ]
   },
   "resources/js/Admin/DeliveryZones.jsx": {
-    "file": "assets/DeliveryZones-DodP5yJ4.js",
+    "file": "assets/DeliveryZones-BymzzI5v.js",
     "name": "DeliveryZones",
     "src": "resources/js/Admin/DeliveryZones.jsx",
     "isEntry": true,
@@ -2181,7 +2181,7 @@
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_Number2Currency-D9Rjvh76.js",
@@ -2209,7 +2209,7 @@
     ]
   },
   "resources/js/Admin/DiscountRules.jsx": {
-    "file": "assets/DiscountRules-DxHiNRt1.js",
+    "file": "assets/DiscountRules-D17nIT3v.js",
     "name": "DiscountRules",
     "src": "resources/js/Admin/DiscountRules.jsx",
     "isEntry": true,
@@ -2219,7 +2219,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_ReactAppend-Vm5G2nof.js",
       "_DxButton-DV0H-ZcL.js",
@@ -2257,7 +2257,7 @@
     ]
   },
   "resources/js/Admin/Faqs.jsx": {
-    "file": "assets/Faqs-xbzABTda.js",
+    "file": "assets/Faqs-BQLqZGJO.js",
     "name": "Faqs",
     "src": "resources/js/Admin/Faqs.jsx",
     "isEntry": true,
@@ -2271,7 +2271,7 @@
       "_Modal-BYL-UsqM.js",
       "_DxButton-DV0H-ZcL.js",
       "_InputFormGroup-iZIO11ZN.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_BasicRest-BML1C-ua.js",
       "_index-yBjzXJbu.js",
@@ -2416,7 +2416,7 @@
     ]
   },
   "resources/js/Admin/Indicators.jsx": {
-    "file": "assets/Indicators-DVWozxmw.js",
+    "file": "assets/Indicators-JcHXOkAa.js",
     "name": "Indicators",
     "src": "resources/js/Admin/Indicators.jsx",
     "isEntry": true,
@@ -2432,7 +2432,7 @@
       "_Modal-BYL-UsqM.js",
       "_DxButton-DV0H-ZcL.js",
       "_InputFormGroup-iZIO11ZN.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
       "_ImageFormGroup-DkVgPNU5.js",
@@ -2460,7 +2460,7 @@
     ]
   },
   "resources/js/Admin/Items.jsx": {
-    "file": "assets/Items-D-wVYJ_n.js",
+    "file": "assets/Items-DyXCihVG.js",
     "name": "Items",
     "src": "resources/js/Admin/Items.jsx",
     "isEntry": true,
@@ -2475,7 +2475,7 @@
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_ItemsRest-pSN9Z_la.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_ImageFormGroup-DkVgPNU5.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_QuillFormGroup-ShbNmC_h.js",
@@ -2546,7 +2546,7 @@
     ]
   },
   "resources/js/Admin/Messages.jsx": {
-    "file": "assets/Messages-BeRGdbGT.js",
+    "file": "assets/Messages-Ceo9evzj.js",
     "name": "Messages",
     "src": "resources/js/Admin/Messages.jsx",
     "isEntry": true,
@@ -2556,7 +2556,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_ReactAppend-Vm5G2nof.js",
       "_BasicRest-BML1C-ua.js",
@@ -2586,7 +2586,7 @@
     ]
   },
   "resources/js/Admin/Partners.jsx": {
-    "file": "assets/Partners-z394QbLF.js",
+    "file": "assets/Partners-CilwQXKY.js",
     "name": "Partners",
     "src": "resources/js/Admin/Partners.jsx",
     "isEntry": true,
@@ -2602,7 +2602,7 @@
       "_BasicEditing-TVz-VY9q.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -2635,7 +2635,7 @@
     ]
   },
   "resources/js/Admin/PostTags.jsx": {
-    "file": "assets/PostTags-OfxJS8rb.js",
+    "file": "assets/PostTags-B77VqMJR.js",
     "name": "PostTags",
     "src": "resources/js/Admin/PostTags.jsx",
     "isEntry": true,
@@ -2650,7 +2650,7 @@
       "_BasicRest-BML1C-ua.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -2678,7 +2678,7 @@
     ]
   },
   "resources/js/Admin/Posts.jsx": {
-    "file": "assets/Posts-BuZWkSpE.js",
+    "file": "assets/Posts-D3UkhwsX.js",
     "name": "Posts",
     "src": "resources/js/Admin/Posts.jsx",
     "isEntry": true,
@@ -2695,7 +2695,7 @@
       "_QuillFormGroup-ShbNmC_h.js",
       "_SelectAPIFormGroup-BZe8H0Ph.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_html2string-CfCixsO3.js",
@@ -2802,7 +2802,7 @@
     ]
   },
   "resources/js/Admin/Sales.jsx": {
-    "file": "assets/Sales-DZxCARIO.js",
+    "file": "assets/Sales-DI2rXA1S.js",
     "name": "Sales",
     "src": "resources/js/Admin/Sales.jsx",
     "isEntry": true,
@@ -2812,7 +2812,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_ReactAppend-Vm5G2nof.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
@@ -2846,7 +2846,7 @@
     ]
   },
   "resources/js/Admin/Sliders.jsx": {
-    "file": "assets/Sliders-PmcPtkFn.js",
+    "file": "assets/Sliders-C-aM98JD.js",
     "name": "Sliders",
     "src": "resources/js/Admin/Sliders.jsx",
     "isEntry": true,
@@ -2863,7 +2863,7 @@
       "_ImageFormGroup-DkVgPNU5.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -2891,7 +2891,7 @@
     ]
   },
   "resources/js/Admin/Socials.jsx": {
-    "file": "assets/Socials-CmOMWME0.js",
+    "file": "assets/Socials-Dp6dKjsr.js",
     "name": "Socials",
     "src": "resources/js/Admin/Socials.jsx",
     "isEntry": true,
@@ -2908,7 +2908,7 @@
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_BasicRest-BML1C-ua.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -2937,7 +2937,7 @@
     ]
   },
   "resources/js/Admin/Statuses.jsx": {
-    "file": "assets/Statuses-eKbZtguS.js",
+    "file": "assets/Statuses-BiCuWztE.js",
     "name": "Statuses",
     "src": "resources/js/Admin/Statuses.jsx",
     "isEntry": true,
@@ -2953,7 +2953,7 @@
       "_server.browser-Bf4gQIc7.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -2982,7 +2982,7 @@
     ]
   },
   "resources/js/Admin/Stores.jsx": {
-    "file": "assets/Stores-BZM6RQ-_.js",
+    "file": "assets/Stores-CVt1Op6z.js",
     "name": "Stores",
     "src": "resources/js/Admin/Stores.jsx",
     "isEntry": true,
@@ -2995,7 +2995,7 @@
       "_StoresRest-Bb6TODpG.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_Base-DV9pDpsw.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_Modal-BYL-UsqM.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_TextareaFormGroup-CliirJM1.js",
@@ -3029,7 +3029,7 @@
     ]
   },
   "resources/js/Admin/Strengths.jsx": {
-    "file": "assets/Strengths-GbtqfUIU.js",
+    "file": "assets/Strengths-H0mt2RId.js",
     "name": "Strengths",
     "src": "resources/js/Admin/Strengths.jsx",
     "isEntry": true,
@@ -3045,7 +3045,7 @@
       "_BasicEditing-TVz-VY9q.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -3078,7 +3078,7 @@
     ]
   },
   "resources/js/Admin/SubCategories.jsx": {
-    "file": "assets/SubCategories-DtTIvdz2.js",
+    "file": "assets/SubCategories-FjJK8cum.js",
     "name": "SubCategories",
     "src": "resources/js/Admin/SubCategories.jsx",
     "isEntry": true,
@@ -3095,7 +3095,7 @@
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectAPIFormGroup-BZe8H0Ph.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -3124,7 +3124,7 @@
     ]
   },
   "resources/js/Admin/Subscriptions.jsx": {
-    "file": "assets/Subscriptions-Cz7BsVx-.js",
+    "file": "assets/Subscriptions-DF73D84r.js",
     "name": "Subscriptions",
     "src": "resources/js/Admin/Subscriptions.jsx",
     "isEntry": true,
@@ -3134,7 +3134,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_BasicRest-BML1C-ua.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -3207,7 +3207,7 @@
     ]
   },
   "resources/js/Admin/Tags.jsx": {
-    "file": "assets/Tags-BL557ICR.js",
+    "file": "assets/Tags-D-DnbBhE.js",
     "name": "Tags",
     "src": "resources/js/Admin/Tags.jsx",
     "isEntry": true,
@@ -3222,7 +3222,7 @@
       "_BasicRest-BML1C-ua.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -3250,7 +3250,7 @@
     ]
   },
   "resources/js/Admin/Testimonies.jsx": {
-    "file": "assets/Testimonies-Cu7IciHe.js",
+    "file": "assets/Testimonies-Ck9dXRAB.js",
     "name": "Testimonies",
     "src": "resources/js/Admin/Testimonies.jsx",
     "isEntry": true,
@@ -3269,7 +3269,7 @@
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_Modal-BYL-UsqM.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_CreateReactScript-BSTb2hiI.js",
       "_ReactAppend-Vm5G2nof.js",
@@ -3301,7 +3301,7 @@
     ]
   },
   "resources/js/Admin/Users.jsx": {
-    "file": "assets/Users-DI1SwlUP.js",
+    "file": "assets/Users-B-sCS3UY.js",
     "name": "Users",
     "src": "resources/js/Admin/Users.jsx",
     "isEntry": true,
@@ -3311,7 +3311,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_ReactAppend-Vm5G2nof.js",
       "_DxButton-DV0H-ZcL.js",
@@ -5899,7 +5899,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkout.jsx": {
-    "file": "assets/Checkout-CxLTyQq0.js",
+    "file": "assets/Checkout-DeYm15sh.js",
     "name": "Checkout",
     "src": "resources/js/Components/Tailwind/Checkout.jsx",
     "isDynamicEntry": true,
@@ -6064,7 +6064,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkouts/CheckoutStepsSF.jsx": {
-    "file": "assets/CheckoutStepsSF-B3E9oRg7.js",
+    "file": "assets/CheckoutStepsSF-CW4b43fe.js",
     "name": "CheckoutStepsSF",
     "src": "resources/js/Components/Tailwind/Checkouts/CheckoutStepsSF.jsx",
     "isDynamicEntry": true,
@@ -11139,7 +11139,7 @@
     ]
   },
   "resources/js/Customer/Sales.jsx": {
-    "file": "assets/Sales-SLYbFySj.js",
+    "file": "assets/Sales-HZa5U-YR.js",
     "name": "Sales",
     "src": "resources/js/Customer/Sales.jsx",
     "isEntry": true,
@@ -11149,7 +11149,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-DV9pDpsw.js",
       "_CreateReactScript-BSTb2hiI.js",
-      "_Table-BoAJpQpW.js",
+      "_Table-DQO6Uric.js",
       "_DxButton-DV0H-ZcL.js",
       "_ReactAppend-Vm5G2nof.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
@@ -11392,7 +11392,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DLOKRR16.js",
+    "file": "assets/System-C9vBIIzU.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

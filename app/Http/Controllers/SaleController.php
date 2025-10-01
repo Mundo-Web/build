@@ -32,6 +32,19 @@ class SaleController extends BasicController
     public $imageFields = ['payment_proof'];
 
     /**
+     * Configurar relaciones antes de listar
+     */
+    protected function beforeIndex($request)
+    {
+        return [
+            'filter' => function ($query) {
+                // Cargar details, status y store para cálculos y visualización
+                $query->with(['details', 'status', 'store']);
+            }
+        ];
+    }
+
+    /**
      * Limpiar número de teléfono removiendo el prefijo si está presente
      */
     private static function cleanPhoneNumber($phoneNumber, $prefix = '51') {

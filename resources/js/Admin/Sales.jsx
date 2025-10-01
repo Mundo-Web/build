@@ -1296,6 +1296,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                 gridRef={gridRef}
                 title="Pedidos"
                 rest={salesRest}
+                withRelations="details,status,store"
                 toolBar={(container) => {
                     container.unshift({
                         widget: "dxButton",
@@ -1411,9 +1412,54 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                         dataField: "amount",
                         caption: "Total",
                         dataType: "number",
+                        calculateCellValue: (data) => {
+                            // Si no hay detalles cargados, usar el campo amount directamente
+                            if (!data?.details || data.details.length === 0) {
+                                console.log('⚠️ No hay detalles cargados para sale ID:', data.id, '- Usando amount:', data.amount);
+                                return Number(data?.amount || 0);
+                            }
+                            
+                            // Calcular subtotal real desde los detalles
+                            const subtotalReal = data.details.reduce((sum, detail) => 
+                                sum + (detail.price * detail.quantity), 0);
+                            
+                            // Calcular total con todos los cargos y descuentos
+                            const totalAmount = subtotalReal + 
+                                Number(data?.delivery || 0) + 
+                                Number(data?.seguro_importacion_total || 0) + 
+                                Number(data?.derecho_arancelario_total || 0) + 
+                                Number(data?.flete_total || 0) - 
+                                Number(data?.promotion_discount || 0) - 
+                                Number(data?.coupon_discount || 0) - 
+                                Number(data?.bundle_discount || 0) - 
+                                Number(data?.renewal_discount || 0);
+                            
+                            console.log('✅ Total calculado para sale ID:', data.id, '- Subtotal:', subtotalReal, '+ Delivery:', data.delivery, '= Total:', totalAmount);
+                            return totalAmount;
+                        },
                         cellTemplate: (container, { data }) => {
-                           
-                            container.text(`${CurrencySymbol()} ${Number2Currency(data?.amount)}`);
+                            // Si no hay detalles cargados, usar el campo amount directamente
+                            if (!data?.details || data.details.length === 0) {
+                                container.text(`${CurrencySymbol()} ${Number2Currency(data?.amount || 0)}`);
+                                return;
+                            }
+                            
+                            // Calcular subtotal real desde los detalles
+                            const subtotalReal = data.details.reduce((sum, detail) => 
+                                sum + (detail.price * detail.quantity), 0);
+                            
+                            // Calcular total con todos los cargos y descuentos
+                            const totalAmount = subtotalReal + 
+                                Number(data?.delivery || 0) + 
+                                Number(data?.seguro_importacion_total || 0) + 
+                                Number(data?.derecho_arancelario_total || 0) + 
+                                Number(data?.flete_total || 0) - 
+                                Number(data?.promotion_discount || 0) - 
+                                Number(data?.coupon_discount || 0) - 
+                                Number(data?.bundle_discount || 0) - 
+                                Number(data?.renewal_discount || 0);
+                            
+                            container.text(`${CurrencySymbol()} ${Number2Currency(totalAmount)}`);
                         },
                     },
                     {

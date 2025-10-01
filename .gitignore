@@ -34,6 +34,7 @@ composer.lock
 /public/assets/resources/reset.png
 /public/assets/resources/payments.png
 /public/assets/resources/subscribe.png
+/public/assets/resources/qr-digital-wallet.png
 /vite.config.js.timestamp*
 /storage/app/*_backup.sql
 /public/sitemap.xml

@@ -9,6 +9,7 @@ use App\Mail\RawHtmlMail;
 use App\Models\General;
 use App\Models\SaleStatus;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseSummaryNotification extends Notification implements ShouldQueue
 {
@@ -51,6 +52,15 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             'cupon_codigo'   => 'Código del cupón aplicado',
             'cupon_descuento' => 'Monto del descuento del cupón',
             'cupon_aplicado' => 'Indica si se aplicó un cupón (true/false)',
+            
+            // Variables de promociones/descuentos automáticos
+            'promocion_descuento' => 'Monto total de descuentos automáticos/promociones',
+            'promocion_aplicada'  => 'Indica si se aplicaron promociones (true/false)',
+            
+            // Variables del comprobante de pago
+            'comprobante_pago' => 'URL del comprobante de pago subido (Yape/Transferencia)',
+            'tiene_comprobante' => 'Indica si el cliente subió comprobante (true/false)',
+            'metodo_pago'      => 'Método de pago usado (tarjeta, yape, transferencia, etc.)',
 
             'productos'      => 'Bloque repetible de productos: {{#productos}}...{{/productos}}. Variables: nombre, cantidad, sku, precio_unitario, precio_total, categoria, imagen',
         ];
@@ -67,24 +77,49 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
     {
         $template = \App\Models\General::where('correlative', 'purchase_summary_email')->first();
         
-        // Calcular valores monetarios
-        // amount ya es el total final (con IGV, envío y descuento de cupón aplicado)
-        $totalAmount = $this->sale->amount ?? 0;
+        // Calcular valores monetarios correctamente desde los detalles de venta
         $deliveryCost = $this->sale->delivery ?? 0;
         $couponDiscount = $this->sale->coupon_discount ?? 0;
+        $promotionDiscount = $this->sale->promotion_discount ?? 0;
         
-        // Para mostrar el desglose correcto, necesitamos calcular el subtotal ORIGINAL
-        // (antes del descuento del cupón) para que coincida con lo que se muestra en web
+        // Calcular el subtotal REAL sumando los productos (price * quantity)
+        // Estos precios YA incluyen IGV porque vienen del carrito
+        $subtotalProductos = 0;
+        foreach ($this->details as $detail) {
+            $subtotalProductos += ($detail->price * $detail->quantity);
+        }
         
-        // Paso 1: Obtener el total sin envío
-        $totalSinEnvio = $totalAmount - $deliveryCost;
+        // Log para debug
+        Log::info('PurchaseSummaryNotification - Cálculo de correo:', [
+            'sale_id' => $this->sale->id,
+            'sale_amount' => $this->sale->amount,
+            'subtotal_productos_raw' => $subtotalProductos,
+            'coupon_discount' => $couponDiscount,
+            'promotion_discount' => $promotionDiscount,
+            'delivery_cost' => $deliveryCost,
+            'details_count' => count($this->details)
+        ]);
         
-        // Paso 2: Agregar el descuento del cupón para obtener el total original (antes del cupón)
-        $totalOriginalSinEnvio = $totalSinEnvio + $couponDiscount;
+        // Aplicar descuentos (cupón y promociones) al subtotal de productos
+        $subtotalConDescuentos = $subtotalProductos - $couponDiscount - $promotionDiscount;
         
-        // Paso 3: Separar subtotal e IGV del total original
-        $subtotalAmount = $totalOriginalSinEnvio / 1.18;  // Subtotal sin IGV
-        $igvAmount = $totalOriginalSinEnvio - $subtotalAmount;  // IGV del subtotal
+        // Separar el subtotal (sin IGV) y el IGV (18%)
+        // $subtotalConDescuentos ya incluye el IGV, entonces:
+        $subtotalAmount = $subtotalConDescuentos / 1.18;  // Subtotal sin IGV (base imponible)
+        $igvAmount = $subtotalConDescuentos - $subtotalAmount;  // IGV (18%)
+        
+        // Total final = subtotal con descuentos + envío
+        $totalAmount = $subtotalConDescuentos + $deliveryCost;
+        
+        // Log de valores finales
+        Log::info('PurchaseSummaryNotification - Valores calculados:', [
+            'subtotal_sin_igv' => $subtotalAmount,
+            'igv' => $igvAmount,
+            'subtotal_con_igv' => $subtotalConDescuentos,
+            'envio' => $deliveryCost,
+            'total_calculado' => $totalAmount,
+            'total_esperado' => $this->sale->amount
+        ]);
         
         // Armar array de productos para bloque repetible (con más detalles)
         $productos = [];
@@ -135,6 +170,17 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
                 'cupon_codigo'    => $this->sale->coupon_code ?? '',
                 'cupon_descuento' => number_format($couponDiscount, 2),
                 'cupon_aplicado'  => !empty($this->sale->coupon_code),
+                
+                // Variables de descuentos automáticos/promociones
+                'promocion_descuento' => number_format($promotionDiscount, 2),
+                'promocion_aplicada'  => $promotionDiscount > 0,
+                
+                // Comprobante de pago (para Yape/Transferencia)
+                'comprobante_pago' => !empty($this->sale->payment_proof) 
+                    ? url('storage/images/sale/' . rawurlencode($this->sale->payment_proof))
+                    : '',
+                'tiene_comprobante' => !empty($this->sale->payment_proof),
+                'metodo_pago' => $this->sale->payment_method ?? '',
                 
                 'productos'      => $productos,
             ])
