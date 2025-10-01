@@ -44,6 +44,14 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const [editingSnapshot, setEditingSnapshot] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
 
+    const refreshGrid = () => {
+        if (!gridRef.current) return;
+        const grid = $(gridRef.current);
+        if (typeof grid.dxDataGrid !== 'function') return;
+        const instance = grid.dxDataGrid('instance');
+        instance?.refresh();
+    };
+
     // Tipos de banners disponibles - basados en components.json
     const bannerTypes = [
         { id: 'BannerSimple', name: 'Banner Simple', icon: 'mdi mdi-image-size-select-large' },
@@ -336,6 +344,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             });
 
             setSelectedPageId(currentPageId ?? '');
+            refreshGrid();
 
             $(modalRef.current).modal("hide");
             setEditingSnapshot(null);
