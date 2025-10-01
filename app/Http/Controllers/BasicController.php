@@ -136,6 +136,16 @@ class BasicController extends Controller
       return;
     }
 
+    try {
+      $reflection = new \ReflectionClass($modelClass);
+    } catch (\ReflectionException $exception) {
+      return;
+    }
+
+    if (!$reflection->isInstantiable()) {
+      return;
+    }
+
     $modelInstance = new $modelClass;
     if (!$modelInstance instanceof Model) {
       return;
