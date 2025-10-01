@@ -68,6 +68,7 @@ const HeaderSearchKatya = ({
     const suggestionRefs = useRef([]);
 
     const totalCount = cart.reduce((acc, item) => Number(acc) + Number(item.quantity), 0);
+    const totalPrice = cart.reduce((acc, item) => acc + (item.final_price * item.quantity), 0);
 
     const [searchView, setSearchView] = useState(false);
     // Función para verificar si estamos en rutas donde no queremos mostrar la búsqueda móvil
@@ -912,7 +913,7 @@ const HeaderSearchKatya = ({
                                 <div className=" text-sm leading-4 text-end inline">
                                     <span className="block" >Carrito</span>
 
-                                    <strong>{`S/ ${Number2Currency(totalCount)}`}</strong>
+                                    <strong>{`S/ ${Number2Currency(totalPrice)}`}</strong>
                                 </div>
                                 <div >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1165,7 +1166,7 @@ const HeaderSearchKatya = ({
                                 <div className="hidden text-sm leading-4 text-end md:inline">
                                     <span className="block" >Mi Carrito</span>
 
-                                    <strong>{`S/ ${Number2Currency(totalCount)}`}</strong>
+                                    <strong>{`S/ ${Number2Currency(totalPrice)}`}</strong>
                                 </div>
                                 <div >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
