@@ -2612,22 +2612,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     </div>
                   </ConditionalSeoField>
 
-                  <ConditionalSeoField correlative="favicon">
-                    <div className="mb-3">
-                      <label className="form-label">Favicon</label>
-                      <input
-                        type="url"
-                        className="form-control"
-                        placeholder="/favicon.ico o URL completa"
-                        value={formData.favicon}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          favicon: e.target.value
-                        })}
-                      />
-                      <small className="text-muted">Ruta o URL del icono del sitio (favicon)</small>
-                    </div>
-                  </ConditionalSeoField>
+                
                 </div>
 
                 <div className="col-md-6">

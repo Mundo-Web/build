@@ -23,15 +23,14 @@
         $twitterDescription = $generals->where('correlative', 'twitter_description')->first()?->description ?? $ogDescription;
         $twitterImage = $generals->where('correlative', 'twitter_image')->first()?->description ?? $ogImage;
         $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
-        $favicon = $generals->where('correlative', 'favicon')->first()?->description ?? '/assets/resources/icon.png';
         $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
     ?>
 
     <title><?php echo e($data['name'] ?? $ogTitle ?? $siteTitle); ?></title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="<?php echo e($favicon); ?>?v=<?php echo e(uniqid()); ?>" type="image/png">
-    
+      <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e(uniqid()); ?>" type="image/png">
+
     <!-- Meta básicas -->
     <meta name="description" content="<?php echo e($data['description'] ?? $ogDescription ?? $siteDescription); ?>">
     <?php if($siteKeywords || (isset($data['keywords']) && $data['keywords'])): ?>
