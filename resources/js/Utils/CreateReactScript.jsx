@@ -7,6 +7,7 @@ import General from './General';
 import LaravelSession from './LaravelSession';
 import Fillable from './Fillable';
 import CanAccess from './CanAccess';
+import BooleanLimit from './BooleanLimit';
 
 let roles = [];
 export const hasRole = (...rolesIn) => {
@@ -30,6 +31,8 @@ const CreateReactScript = (render) => {
         if (!properties.fillable[key]) continue
         Fillable.set(key, properties.fillable[key])
       }
+
+      BooleanLimit.hydrate(properties.boolean_limits ?? {})
 
       for (const menu of (properties.can_access ?? [])) {
         CanAccess[menu.menu] = menu.can_access == 1

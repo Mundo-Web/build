@@ -484,6 +484,8 @@ Route::middleware('auth')->group(function () {
 
       Route::post('/role-has-menus', [RoleHasMenuController::class, 'save']);
 
+  Route::post('/boolean-limits', [AdminGeneralController::class, 'saveBooleanLimits']);
+
       Route::get('/system/fetch-remote-changes', [AdminSystemController::class, 'fetchRemoteChanges']);
       Route::get('/system/has-remote-changes', [AdminSystemController::class, 'hasRemoteChanges']);
 

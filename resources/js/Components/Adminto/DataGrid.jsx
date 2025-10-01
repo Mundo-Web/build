@@ -3,14 +3,77 @@ import Fillable from '../../Utils/Fillable';
 import { hasRole } from '../../Utils/CreateReactScript';
 import Modal from './Modal';
 import FillableRest from '../../Actions/Admin/FillableRest';
+import BooleanLimit from '../../Utils/BooleanLimit';
+import BooleanLimitRest from '../../Actions/Admin/BooleanLimitRest';
 import { Toaster } from 'sonner';
 
 const fillableRest = new FillableRest()
+const booleanLimitRest = new BooleanLimitRest()
 
 const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar, masterDetail, filterValue, exportable, exportableName, customizeCell = () => { }, onRefresh = () => { }, rowDragging, sorting }) => {
   const modalRef = useRef()
+  const booleanLimitModalRef = useRef()
   const [saving, setSaving] = useState(false)
   const [activeModel, setActiveModel] = useState(Fillable.models[0] ?? null)
+  const [savingBooleanLimits, setSavingBooleanLimits] = useState(false)
+  const [booleanLimitForm, setBooleanLimitForm] = useState([])
+
+  const openBooleanLimitModal = () => {
+    if (!activeModel) return
+    const limits = BooleanLimit.list(activeModel)
+    if (!limits.length) return
+    setBooleanLimitForm(limits.map(limit => ({
+      field: limit.field,
+      label: limit.label ?? limit.field,
+      max: typeof limit.max === 'number' ? limit.max : '',
+      message: limit.message ?? '',
+      general_key: limit.general_key,
+      model: activeModel,
+    })))
+    $(booleanLimitModalRef.current).modal('show')
+  }
+
+  const onBooleanLimitFieldChange = (index, updates) => {
+    setBooleanLimitForm(current => current.map((item, idx) => idx === index ? ({ ...item, ...updates }) : item))
+  }
+
+  const onBooleanLimitSubmit = async (e) => {
+    e.preventDefault()
+    if (!booleanLimitForm.length) {
+      $(booleanLimitModalRef.current).modal('hide')
+      return
+    }
+
+    const payload = booleanLimitForm
+      .filter(item => item.general_key)
+      .map(item => ({
+        model: item.model ?? activeModel,
+        field: item.field,
+        general_key: item.general_key,
+        max: Number(item.max === '' ? 0 : item.max),
+        message: item.message?.trim() ?? null,
+        label: item.label,
+      }))
+
+    setSavingBooleanLimits(true)
+    const result = await booleanLimitRest.save(payload)
+    setSavingBooleanLimits(false)
+    if (!result) return
+
+    if (result?.limits?.length) {
+      BooleanLimit.bulkUpdate(activeModel, result.limits)
+      setBooleanLimitForm(result.limits.map(({ field, limit }) => ({
+        field,
+        label: limit.label ?? field,
+        max: typeof limit.max === 'number' ? limit.max : '',
+        message: limit.message ?? '',
+        general_key: limit.general_key ?? payload.find(item => item.field === field)?.general_key,
+        model: activeModel,
+      })))
+    }
+
+    $(booleanLimitModalRef.current).modal('hide')
+  }
 
   const onModalSubmit = async (e) => {
     e.preventDefault();
@@ -46,6 +109,17 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
       },
       onToolbarPreparing: (e) => {
         const { items } = e.toolbarOptions;
+        hasRole('Root') && BooleanLimit.list(activeModel).length > 0 && items.unshift({
+          widget: 'dxButton',
+          location: 'before',
+          options: {
+            icon: 'mdi mdi-shield-account',
+            hint: 'Configurar límites',
+            text: 'Límites',
+            onClick: openBooleanLimitModal
+          }
+        })
+
         hasRole('Root') && Fillable.models.length > 0 && items.unshift({
           widget: 'dxButton',
           location: 'before',
@@ -203,6 +277,36 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
           </div>)
         }
       </div>
+    </Modal>
+    <Modal modalRef={booleanLimitModalRef} title='Configurar límites' onSubmit={onBooleanLimitSubmit} loading={savingBooleanLimits}
+      onClose={() => setBooleanLimitForm([])}>
+      {
+        !booleanLimitForm.length && <p className='text-muted mb-0'>No hay límites configurados para este módulo.</p>
+      }
+      {
+        booleanLimitForm.map((item, index) => (
+          <div key={item.field} className='row g-2 align-items-center mb-3'>
+            <div className='col-md-12'>
+              <label className='form-label mb-0'>{item.label}</label>
+             
+            </div>
+            <div className='col-md-3'>
+              <input type='number' min='0' className='form-control'
+                value={item.max === '' ? '' : item.max}
+                onChange={e => {
+                  const value = e.target.value
+                  onBooleanLimitFieldChange(index, { max: value === '' ? '' : Number(value) })
+                }} />
+            </div>
+            <div className='col-md-9'>
+              <input type='text' className='form-control'
+                value={item.message ?? ''}
+                onChange={e => onBooleanLimitFieldChange(index, { message: e.target.value })}
+                placeholder='Mensaje personalizado (opcional)' />
+            </div>
+          </div>
+        ))
+      }
     </Modal>
   </>)
 }

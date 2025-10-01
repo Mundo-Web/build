@@ -41,6 +41,8 @@ class BasicController extends Controller
   public $reactData = null;
   public $with4get = [];
   public $manageFillable = null;
+  public $booleanLimits = [];
+  public $manageBooleanLimits = [];
   public $defaultOrderBy = null; // Campo por defecto para ordenamiento (ej: 'order_index')
 
   public function get(Request $request, string $id)
@@ -94,6 +96,307 @@ class BasicController extends Controller
   public function setReactViewProperties(Request $request)
   {
     return [];
+  }
+
+  protected function resolveBooleanLimits(): array
+  {
+    $payload = [];
+
+    $this->addBooleanLimitPayload($payload, $this->model, $this->booleanLimits);
+
+    if (
+      is_array($this->manageBooleanLimits)
+      && !empty($this->manageBooleanLimits)
+    ) {
+      foreach ($this->manageBooleanLimits as $key => $config) {
+        $modelClass = null;
+        $modelConfig = [];
+
+        if (is_int($key)) {
+          $modelClass = $config;
+        } else {
+          $modelClass = $key;
+          $modelConfig = is_array($config) ? $config : [];
+        }
+
+        if (!\is_string($modelClass) || !class_exists($modelClass)) {
+          continue;
+        }
+
+        $this->addBooleanLimitPayload($payload, $modelClass, $modelConfig);
+      }
+    }
+
+    return $payload;
+  }
+
+  protected function addBooleanLimitPayload(array &$payload, ?string $modelClass, array $config): void
+  {
+    if (!$modelClass || !class_exists($modelClass)) {
+      return;
+    }
+
+    $modelInstance = new $modelClass;
+    if (!$modelInstance instanceof Model) {
+      return;
+    }
+
+    $table = $modelInstance->getTable();
+    $fieldsConfig = $this->extractBooleanLimitConfig($config, $table);
+
+    if (empty($fieldsConfig)) {
+      return;
+    }
+
+    foreach ($fieldsConfig as $field => $definition) {
+      $normalized = $this->normalizeBooleanLimitConfig($field, $definition, $table);
+      if (!$normalized) {
+        continue;
+      }
+
+      $active = $this->countBooleanLimitActive($field, $normalized, $modelClass);
+      $normalized['active'] = $active;
+      $normalized['remaining'] = max(0, $normalized['max'] - $active);
+      unset($normalized['filters'], $normalized['scopes']);
+
+      $payload[$table][$field] = $normalized;
+    }
+  }
+
+  protected function extractBooleanLimitConfig(?array $config, string $table): array
+  {
+    if (!is_array($config) || empty($config)) {
+      return [];
+    }
+
+    if (isset($config[$table]) && is_array($config[$table])) {
+      return $config[$table];
+    }
+
+    return $config;
+  }
+
+  protected function normalizeBooleanLimitConfig(string $field, mixed $config, ?string $table = null): ?array
+  {
+    if (is_null($config)) {
+      return null;
+    }
+
+    if (!is_array($config)) {
+      $config = ['max' => $config];
+    }
+
+    $generalKey = $config['general']
+      ?? $config['general_key']
+      ?? $config['correlative']
+      ?? null;
+
+    if (!$generalKey && $table) {
+      $generalKey = sprintf('boolean_limit.%s.%s', $table, $field);
+    }
+
+    $generalOverride = $this->getBooleanLimitGeneralConfig($generalKey);
+    if ($generalOverride) {
+      $config = array_merge($config, $generalOverride);
+    }
+
+    $max = $config['max'] ?? $config['limit'] ?? null;
+    if ($max === null) {
+      return null;
+    }
+
+    $max = (int) $max;
+    if ($max <= 0) {
+      return null;
+    }
+
+    $label = $config['label'] ?? Str::lower(str_replace('_', ' ', $field));
+
+    $messageTemplate = $config['message'] ?? null;
+    if ($messageTemplate) {
+      $message = str_replace(':max', (string) $max, $messageTemplate);
+    } else {
+      $message = "Solo se permiten {$max} {$label}.";
+    }
+
+  $this->ensureBooleanLimitGeneralRecord($generalKey, $max, $label, $config);
+
+    $filters = [];
+    if (!empty($config['filters']) && is_array($config['filters'])) {
+      $filters = $config['filters'];
+    }
+
+    $scopes = [];
+    if (!empty($config['scope'])) {
+      $scopes = is_array($config['scope']) ? $config['scope'] : [$config['scope']];
+    }
+    if (!empty($config['scopes']) && is_array($config['scopes'])) {
+      $scopes = array_merge($scopes, $config['scopes']);
+    }
+    $scopes = array_values(array_filter(array_unique($scopes)));
+
+    return [
+      'max' => $max,
+      'label' => $label,
+      'message' => $message,
+      'filters' => $filters,
+      'scopes' => $scopes,
+      'general_key' => $generalKey,
+    ];
+  }
+
+  protected function getBooleanLimitGeneralConfig(?string $generalKey): ?array
+  {
+    if (!$generalKey) {
+      return null;
+    }
+
+    $raw = General::where('correlative', $generalKey)->value('description');
+    if ($raw === null) {
+      return null;
+    }
+
+    $raw = trim((string) $raw);
+    if ($raw === '') {
+      return null;
+    }
+
+    $decoded = json_decode($raw, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+      $normalized = [];
+      if (isset($decoded['max']) || isset($decoded['limit'])) {
+        $normalized['max'] = (int) ($decoded['max'] ?? $decoded['limit']);
+      }
+      if (isset($decoded['message'])) {
+        $normalized['message'] = (string) $decoded['message'];
+      }
+      if (isset($decoded['label'])) {
+        $normalized['label'] = (string) $decoded['label'];
+      }
+      if (isset($decoded['filters']) && is_array($decoded['filters'])) {
+        $normalized['filters'] = $decoded['filters'];
+      }
+      if (isset($decoded['scopes'])) {
+        $normalized['scopes'] = is_array($decoded['scopes']) ? $decoded['scopes'] : [$decoded['scopes']];
+      }
+
+      return $normalized;
+    }
+
+    if (is_numeric($raw)) {
+      return ['max' => (int) $raw];
+    }
+
+    return null;
+  }
+
+  protected function ensureBooleanLimitGeneralRecord(?string $generalKey, int $max, string $label, array $config): void
+  {
+    if (!$generalKey) {
+      return;
+    }
+
+    if (isset($config['auto_register']) && $config['auto_register'] === false) {
+      return;
+    }
+
+    $exists = General::where('correlative', $generalKey)->exists();
+    if ($exists) {
+      return;
+    }
+
+    $name = isset($config['name'])
+      ? (string) $config['name']
+      : sprintf('Límite %s', Str::title($label));
+
+    $messageTemplate = $config['message'] ?? 'Solo se permiten :max ' . $label . '.';
+    $resolvedMessage = str_replace(':max', (string) $max, $messageTemplate);
+
+    $payload = ['max' => $max];
+    if (!empty($label)) {
+      $payload['label'] = $label;
+    }
+    if ($resolvedMessage) {
+      $payload['message'] = $resolvedMessage;
+    }
+
+    $dataType = $config['data_type'] ?? 'json';
+
+    try {
+      General::create([
+        'name' => $name,
+        'data_type' => $dataType,
+        'correlative' => $generalKey,
+        'description' => $dataType === 'json' ? json_encode($payload) : (string) $max,
+        'status' => $config['status'] ?? 1,
+      ]);
+    } catch (\Throwable $th) {
+      // Evitar fallos por condiciones de carrera
+    }
+  }
+
+  protected function countBooleanLimitActive(string $field, array $config, ?string $modelClass = null): int
+  {
+    $modelClass ??= $this->model;
+    if (!$modelClass || !class_exists($modelClass)) {
+      return 0;
+    }
+
+    /** @var Model $modelInstance */
+    $modelInstance = new $modelClass;
+    $query = $modelInstance->newQuery()->where($field, true);
+    $query = $this->applyBooleanLimitConditions($query, $config);
+
+    return (int) $query->count();
+  }
+
+  protected function applyBooleanLimitConditions(Builder $query, array $config): Builder
+  {
+    if (!empty($config['filters'])) {
+      foreach ($config['filters'] as $column => $value) {
+        if (is_array($value)) {
+          $query->whereIn($column, $value);
+        } else {
+          $query->where($column, $value);
+        }
+      }
+    }
+
+    if (!empty($config['scopes'])) {
+      foreach ($config['scopes'] as $scope) {
+        if (!is_string($scope) || $scope === '') {
+          continue;
+        }
+
+        $method = Str::camel($scope);
+        $scopeMethod = 'scope' . Str::studly($method);
+        $model = $query->getModel();
+
+        if (method_exists($model, $scopeMethod)) {
+          $query->{$method}();
+        }
+      }
+    }
+
+    return $query;
+  }
+
+  protected function getBooleanLimitConfigForField(string $field): ?array
+  {
+    $modelClass = $this->model;
+    if (!$modelClass || !class_exists($modelClass)) {
+      return null;
+    }
+
+    $modelInstance = new $modelClass;
+    $table = $modelInstance->getTable();
+    $config = $this->extractBooleanLimitConfig($this->booleanLimits, $table);
+
+    if (!isset($config[$field])) {
+      return null;
+    }
+
+    return $this->normalizeBooleanLimitConfig($field, $config[$field], $table);
   }
 
   public function reactView(Request $request)
@@ -150,7 +453,8 @@ class BasicController extends Controller
         'API_KEY_TINYMCE' => env('API_KEY_TINYMCE',"xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
       ],
       'can_access' => $menus,
-      'fillable' => $fillable
+      'fillable' => $fillable,
+      'boolean_limits' => $this->resolveBooleanLimits()
     ];
     $reactViewProperties = $this->setReactViewProperties($request);
     if (\is_array($reactViewProperties)) {
@@ -288,12 +592,7 @@ class BasicController extends Controller
 
       $body = $this->beforeSave($request);
 
-      // Debug logging
-      \Log::info('BasicController save - All request data:', $request->all());
-      \Log::info('BasicController save - Body after beforeSave:', $body);
-      \Log::info('BasicController save - ID check: ' . (isset($body['id']) ? 'ID existe: ' . $body['id'] : 'ID no existe'));
-      \Log::info('BasicController save - Image fields:', $this->imageFields);
-
+    
       $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
       if ($snake_case === "item_image") {
         $snake_case = 'item';
@@ -302,10 +601,8 @@ class BasicController extends Controller
       foreach ($this->imageFields as $field) {
         // Check if image should be deleted (when hidden field contains 'DELETE')
         $deleteFlag = $request->input($field . '_delete');
-        \Log::info("BasicController save - Checking delete flag for field: {$field}, value: " . ($deleteFlag ?? 'null'));
         
         if ($deleteFlag === 'DELETE') {
-          \Log::info("BasicController save - Deleting image for field: {$field}");
           // Find existing record to delete old image file
           if (isset($body['id'])) {
             $existingRecord = $this->model::find($body['id']);
@@ -315,13 +612,11 @@ class BasicController extends Controller
                 $oldFilename = "{$oldFilename}.enc";
               }
               $oldPath = "images/{$snake_case}/{$oldFilename}";
-              \Log::info("BasicController save - Deleting file: {$oldPath}");
               Storage::delete($oldPath);
             }
           }
           // Set field to null in database
           $body[$field] = null;
-          \Log::info("BasicController save - Set {$field} to null in body");
           continue;
         }
 
@@ -351,9 +646,7 @@ class BasicController extends Controller
 
       $jpa = $this->model::find(isset($body['id']) ? $body['id'] : null);
 
-      // Debug logging
-      \Log::info('BasicController save - Model find result: ' . ($jpa ? 'Encontrado ID: ' . $jpa->id : 'No encontrado'));
-
+    
       if (!$jpa) {
         $body['slug'] = Crypto::randomUUID();
         
@@ -366,11 +659,9 @@ class BasicController extends Controller
         
         $jpa = $this->model::create($body);
         $isNew = true;
-        \Log::info('BasicController save - Creando nuevo registro con ID: ' . $jpa->id);
       } else {
         $jpa->update($body);
         $isNew = false;
-        \Log::info('BasicController save - Actualizando registro existente ID: ' . $jpa->id);
       }
 
       $table = (new $this->model)->getTable();
@@ -448,16 +739,80 @@ class BasicController extends Controller
   {
     $response = new Response();
     try {
-      $data = [];
-      $data[$request->field] = $request->value;
+      $modelClass = $this->model;
+      if (!$modelClass || !class_exists($modelClass)) {
+        throw new Exception('Modelo no configurado para la operación.');
+      }
 
-      $this->model::where('id', $request->id)
-        ->update($data);
+      $field = (string) $request->field;
+      if ($field === '') {
+        throw new Exception('Campo no proporcionado.');
+      }
+
+      $value = filter_var($request->value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+      if ($value === null) {
+        throw new Exception('Valor booleano inválido.');
+      }
+
+      /** @var Model $record */
+      $record = $modelClass::findOrFail($request->id);
+      $previousValue = (bool) $record->{$field};
+
+      $limitConfig = $this->getBooleanLimitConfigForField($field);
+      $tableName = (new $modelClass)->getTable();
+
+      if ($value && !$previousValue && $limitConfig) {
+        $active = $this->countBooleanLimitActive($field, $limitConfig);
+        if ($active >= $limitConfig['max']) {
+          $response->status = 422;
+          $response->message = $limitConfig['message'];
+
+          $limitState = $limitConfig;
+          $limitState['active'] = $active;
+          $limitState['remaining'] = max(0, $limitConfig['max'] - $active);
+          unset($limitState['filters'], $limitState['scopes']);
+
+          $response->data = [
+            'table' => $tableName,
+            'field' => $field,
+            'limit' => $limitState,
+          ];
+
+          return response(
+            $response->toArray(),
+            $response->status
+          );
+        }
+      }
+
+      if ($previousValue !== $value) {
+        $record->{$field} = $value;
+        $record->save();
+      }
 
       $response->status = 200;
       $response->message = 'Operacion correcta';
+
+      if ($limitConfig) {
+        $active = $this->countBooleanLimitActive($field, $limitConfig);
+
+        $limitState = $limitConfig;
+        $limitState['active'] = $active;
+        $limitState['remaining'] = max(0, $limitConfig['max'] - $active);
+        unset($limitState['filters'], $limitState['scopes']);
+
+        $response->data = [
+          'table' => $tableName,
+          'field' => $field,
+          'limit' => $limitState,
+          'previous' => $previousValue,
+          'value' => (bool) $value,
+        ];
+      }
     } catch (\Throwable $th) {
-      $response->status = 400;
+      if (!$response->status || $response->status === 500) {
+        $response->status = 400;
+      }
       $response->message = $th->getMessage();
     } finally {
       return response(

@@ -9,15 +9,17 @@ import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
-import CreateReactScript from "../Utils/CreateReactScript";
+import CreateReactScript, { hasRole } from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import Fillable from "../Utils/Fillable";
+import BooleanLimit from "../Utils/BooleanLimit";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 const categoriesRest = new CategoriesRest();
 
 const Categories = () => {
     const gridRef = useRef();
     const modalRef = useRef();
+    const modelKey = "categories";
 
     // Form elements ref
     const idRef = useRef();
@@ -97,13 +99,46 @@ const Categories = () => {
         $(modalRef.current).modal("hide");
     };
 
-    const onFeaturedChange = async ({ id, value }) => {
+    const onFeaturedChange = async ({ id, value, previous }) => {
+        if (value && BooleanLimit.shouldBlock(modelKey, "featured", previous)) {
+            const limitInfo = BooleanLimit.get(modelKey, "featured");
+            const message =
+                limitInfo?.message ??
+                "Se alcanzó el límite de categorías destacadas.";
+
+            let text = message;
+            if (limitInfo) {
+                text += ` Actualmente hay ${limitInfo.active ?? 0} de ${limitInfo.max ?? 0} categorías activas.`;
+                if (hasRole("Root") && limitInfo.general_key) {
+                    text += ` Puedes ajustar el límite en Generales usando la clave ${limitInfo.general_key}.`;
+                }
+            }
+            Swal.fire({
+                icon: "warning",
+                title: "Límite alcanzado",
+                text,
+            });
+            return;
+        }
+
         const result = await categoriesRest.boolean({
             id,
             field: "featured",
             value,
         });
         if (!result) return;
+
+        if (BooleanLimit.has(modelKey, "featured")) {
+            if (typeof result === "object" && result?.limit) {
+                BooleanLimit.updateFromServer(modelKey, result);
+            } else {
+                BooleanLimit.applyChange(modelKey, "featured", {
+                    previous,
+                    next: value,
+                });
+            }
+        }
+
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
@@ -117,7 +152,7 @@ const Categories = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
-    const onDeleteClicked = async (id) => {
+    const onDeleteClicked = async (row) => {
         const { isConfirmed } = await Swal.fire({
             title: "Eliminar registro",
             text: "¿Estas seguro de eliminar este registro?",
@@ -127,8 +162,14 @@ const Categories = () => {
             cancelButtonText: "Cancelar",
         });
         if (!isConfirmed) return;
-        const result = await categoriesRest.delete(id);
+        const result = await categoriesRest.delete(row.id);
         if (!result) return;
+        if (BooleanLimit.has(modelKey, "featured") && row.featured) {
+            BooleanLimit.applyChange(modelKey, "featured", {
+                previous: true,
+                next: false,
+            });
+        }
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
@@ -234,14 +275,29 @@ const Categories = () => {
                         dataType: "boolean",
                         cellTemplate: (container, { data }) => {
                             $(container).empty();
+                            const isFeatured = data.featured == 1;
+                            const hasLimit = BooleanLimit.has(modelKey, "featured");
+                            const isBlocked = hasLimit && BooleanLimit.shouldBlock(modelKey, "featured", isFeatured);
+                            const limitMessage = isBlocked
+                                ? BooleanLimit.getMessage(modelKey, "featured")
+                                : null;
+
+                            if (limitMessage) {
+                                $(container).attr("title", limitMessage);
+                            } else {
+                                $(container).removeAttr("title");
+                            }
+
                             ReactAppend(
                                 container,
                                 <SwitchFormGroup
-                                    checked={data.featured == 1}
+                                    checked={isFeatured}
+                                    disabled={isBlocked}
                                     onChange={() =>
                                         onFeaturedChange({
                                             id: data.id,
-                                            value: !data.featured,
+                                            value: !isFeatured,
+                                            previous: isFeatured,
                                         })
                                     }
                                 />
@@ -285,7 +341,7 @@ const Categories = () => {
                                     className: "btn btn-xs btn-soft-danger",
                                     title: "Eliminar",
                                     icon: "fa fa-trash",
-                                    onClick: () => onDeleteClicked(data.id),
+                                    onClick: () => onDeleteClicked(data),
                                 })
                             );
                         },

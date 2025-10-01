@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use SoDe\Extend\Response;
 
 class GeneralController extends BasicController
@@ -118,6 +119,90 @@ class GeneralController extends BasicController
                 'updated_count' => $updatedCount
             ];
         });
+        return response($response->toArray(), $response->status);
+    }
+
+    public function saveBooleanLimits(Request $request): HttpResponse|ResponseFactory
+    {
+        $response = Response::simpleTryCatch(function (Response $response) use ($request) {
+            $user = $request->user();
+
+            if (!$user || !$user->hasRole('Root')) {
+                throw new \Exception('No autorizado para administrar límites.');
+            }
+
+            $limits = $request->input('limits', []);
+
+            if (!is_array($limits)) {
+                throw new \InvalidArgumentException('Formato de límites inválido.');
+            }
+
+            $updated = [];
+
+            foreach ($limits as $index => $limit) {
+                if (!is_array($limit)) {
+                    continue;
+                }
+
+                $field = $limit['field'] ?? null;
+                $model = $limit['model'] ?? null;
+                $generalKey = $limit['general_key'] ?? $limit['correlative'] ?? null;
+
+                if (!$generalKey) {
+                    continue;
+                }
+
+                $rawMax = $limit['max'] ?? null;
+                $max = is_numeric($rawMax) ? (int) $rawMax : null;
+
+                if ($max === null || $max < 0) {
+                    continue;
+                }
+
+                $label = $limit['label'] ?? $field ?? $generalKey;
+                $message = $limit['message'] ?? null;
+
+                $payload = ['max' => $max];
+                if (!is_null($message) && $message !== '') {
+                    $payload['message'] = (string) $message;
+                }
+                if (!empty($limit['label'])) {
+                    $payload['label'] = (string) $label;
+                }
+
+                $description = json_encode($payload);
+
+                $general = General::updateOrCreate(
+                    ['correlative' => $generalKey],
+                    [
+                        'name' => $limit['name'] ?? sprintf('Límite %s', Str::title($label)),
+                        'data_type' => $limit['data_type'] ?? 'json',
+                        'description' => $description,
+                        'status' => $limit['status'] ?? 1,
+                    ]
+                );
+
+                $messageTemplate = $message ?? 'Solo se permiten :max ' . $label . '.';
+
+                $updated[] = [
+                    'model' => $model,
+                    'field' => $field,
+                    'limit' => [
+                        'max' => $max,
+                        'label' => $label,
+                        'message' => str_replace(':max', (string) $max, $messageTemplate),
+                        'general_key' => $general->correlative,
+                    ],
+                ];
+            }
+
+            $response->message = 'Límites actualizados correctamente';
+
+            return [
+                'limits' => $updated,
+            ];
+        });
+
         return response($response->toArray(), $response->status);
     }
 }

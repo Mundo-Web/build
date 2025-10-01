@@ -1,14 +1,26 @@
 import { Cookies, Fetch } from "sode-extend-react";
 import { toast } from "sonner";
+import BooleanLimit from "../Utils/BooleanLimit";
 
 class BasicRest {
     is_use_notify = true;
     path = null;
     hasFiles = false;
     controller = null;
+    booleanLimitKey = null;
     constructor() {
         this.controller = new AbortController();
     }
+
+    resolveBooleanLimitKey = () => {
+        if (this.booleanLimitKey) return this.booleanLimitKey;
+        if (!this.path) return null;
+        const segments = this.path.split("/").filter(Boolean);
+        if (segments.length === 0) return null;
+        const lastSegment = segments[segments.length - 1];
+        if (!lastSegment) return null;
+        return lastSegment.replace(/-/g, "_");
+    };
 
     simpleGet = async (url, params, notify = true) => {
         try {
@@ -148,6 +160,10 @@ class BasicRest {
                     body: JSON.stringify({ id, field, value }),
                 }
             );
+            const limitKey = this.resolveBooleanLimitKey();
+            if (limitKey && result?.data?.limit) {
+                BooleanLimit.updateFromServer(limitKey, result.data);
+            }
             if (!fetchStatus)
                 throw new Error(
                     result?.message ?? "Ocurrio un error inesperado"
@@ -161,7 +177,7 @@ class BasicRest {
                 richColors: true
             });
 
-            return true;
+            return result?.data ?? true;
         } catch (error) {
             toast.error("¡Error!", {
                 description: error.message,
