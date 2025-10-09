@@ -217,7 +217,8 @@
                     "backgroundColor",
                     "class_logo",
                     "input_search_placeholder",
-                    "input_search_label"
+                    "input_search_label",
+                    "input_search_class"
                 ],
                 "using": {
                     "model": "Category",
