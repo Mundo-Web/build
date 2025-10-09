@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
@@ -34,6 +35,9 @@ class User extends Authenticatable
         // Y si estamos en contexto admin (no en relaciones de ventas)
         if (env('MULTI_DB_ENABLED', false) && $this->shouldUseSharedConnection()) {
             $this->connection = 'mysql_shared_users';
+        } else {
+            // Forzar conexión principal si multi-DB está deshabilitado o si es contexto de ventas
+            $this->connection = config('database.default');
         }
     }
 
@@ -47,6 +51,7 @@ class User extends Authenticatable
         $request = request();
         if ($request) {
             $path = $request->path();
+            $method = $request->method();
             
             // Rutas que deben usar la DB principal (no compartida)
             $mainDbRoutes = [
@@ -62,12 +67,33 @@ class User extends Authenticatable
             
             foreach ($mainDbRoutes as $route) {
                 if (str_contains($path, $route)) {
+                    Log::info("🔵 User usando DB principal por ruta: {$path}");
                     return false; // Usar DB principal
+                }
+            }
+            
+            // Si es un POST/PUT a la API, probablemente es una operación de venta
+            if (in_array($method, ['POST', 'PUT']) && str_contains($path, 'api/')) {
+                Log::info("🔵 User usando DB principal por método API: {$method} {$path}");
+                return false; // Usar DB principal
+            }
+        }
+        
+        // Verificar si estamos en un contexto de relación con Sale
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+        foreach ($backtrace as $trace) {
+            if (isset($trace['class'])) {
+                // Si Sale está consultando User, usar DB principal
+                if (str_contains($trace['class'], 'Sale') || 
+                    str_contains($trace['class'], 'Order')) {
+                    Log::info("🔵 User usando DB principal por relación con: {$trace['class']}");
+                    return false;
                 }
             }
         }
         
         // En otros casos (admin, autenticación), usar DB compartida
+        Log::info("🟢 User usando DB compartida");
         return true;
     }
 
