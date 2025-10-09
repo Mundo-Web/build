@@ -43,56 +43,36 @@ class User extends Authenticatable
 
     /**
      * Determina si debe usar la conexión compartida
-     * Retorna false cuando se está consultando desde relaciones de Sale/Order
+     * Por defecto usa DB compartida (para auth, admin, etc)
+     * Solo usa DB principal cuando Sale/Order lo necesite (pero eso se maneja en Sale->user())
      */
     protected function shouldUseSharedConnection(): bool
     {
-        // Si estamos en una llamada API de checkout/ventas, usar DB principal
-        $request = request();
-        if ($request) {
-            $path = $request->path();
-            $method = $request->method();
-            
-            // Rutas que deben usar la DB principal (no compartida)
-            $mainDbRoutes = [
-                'api/sales',
-                'api/orders',
-                'checkout',
-                'process-payment',
-                'culqi',
-                'mercadopago',
-                'yape',
-                'transferencia',
-            ];
-            
-            foreach ($mainDbRoutes as $route) {
-                if (str_contains($path, $route)) {
-                    Log::info("🔵 User usando DB principal por ruta: {$path}");
-                    return false; // Usar DB principal
-                }
-            }
-            
-            // Si es un POST/PUT a la API, probablemente es una operación de venta
-            if (in_array($method, ['POST', 'PUT']) && str_contains($path, 'api/')) {
-                Log::info("🔵 User usando DB principal por método API: {$method} {$path}");
-                return false; // Usar DB principal
-            }
-        }
-        
-        // Verificar si estamos en un contexto de relación con Sale
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+        // Verificar si estamos en un contexto de CREACIÓN de venta (no consulta)
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
         foreach ($backtrace as $trace) {
-            if (isset($trace['class'])) {
-                // Si Sale está consultando User, usar DB principal
-                if (str_contains($trace['class'], 'Sale') || 
-                    str_contains($trace['class'], 'Order')) {
-                    Log::info("🔵 User usando DB principal por relación con: {$trace['class']}");
+            if (isset($trace['class']) && isset($trace['function'])) {
+                // Si SaleController está creando/guardando una venta
+                if (str_contains($trace['class'], 'SaleController') && 
+                    in_array($trace['function'], ['store', 'create', 'update'])) {
+                    Log::info("🔵 User usando DB principal por creación de venta en: {$trace['class']}::{$trace['function']}");
+                    return false;
+                }
+                
+                // Si SaleStatusTrace está guardando (registra user_id)
+                if (str_contains($trace['class'], 'SaleStatusTrace') && 
+                    in_array($trace['function'], ['save', 'create'])) {
+                    Log::info("🔵 User usando DB principal por creación de trace en: {$trace['class']}::{$trace['function']}");
                     return false;
                 }
             }
         }
         
-        // En otros casos (admin, autenticación), usar DB compartida
+        // En TODOS los demás casos usar DB compartida:
+        // - Autenticación (login, register)
+        // - Admin panel (/admin/*)
+        // - Customer panel (/customer/*)
+        // - API de consulta
         Log::info("🟢 User usando DB compartida");
         return true;
     }

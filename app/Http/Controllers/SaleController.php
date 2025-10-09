@@ -21,6 +21,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use SoDe\Extend\JSON;
 use SoDe\Extend\Trace;
 use SoDe\Extend\Math;
@@ -30,6 +31,58 @@ class SaleController extends BasicController
 {
     public $model = Sale::class;
     public $imageFields = ['payment_proof'];
+
+    /**
+     * Sincroniza el usuario autenticado de la DB compartida a la DB principal
+     * Solo si MULTI_DB_ENABLED está habilitado
+     */
+    private static function syncAuthUserToMainDb()
+    {
+        if (!env('MULTI_DB_ENABLED', false)) {
+            return Auth::check() ? Auth::user()->id : null;
+        }
+        
+        if (!Auth::check()) {
+            return null;
+        }
+        
+        $userId = Auth::user()->id;
+        
+        // Obtener usuario de la DB compartida
+        $sharedUser = DB::connection('mysql_shared_users')
+            ->table('users')
+            ->where('id', $userId)
+            ->first();
+        
+        if (!$sharedUser) {
+            return $userId;
+        }
+        
+        // Sincronizar a la DB principal
+        DB::connection(config('database.default'))
+            ->table('users')
+            ->updateOrInsert(
+                ['id' => $sharedUser->id],
+                [
+                    'name' => $sharedUser->name,
+                    'lastname' => $sharedUser->lastname,
+                    'email' => $sharedUser->email,
+                    'email_verified_at' => $sharedUser->email_verified_at,
+                    'password' => $sharedUser->password,
+                    'remember_token' => $sharedUser->remember_token,
+                    'created_at' => $sharedUser->created_at,
+                    'updated_at' => $sharedUser->updated_at,
+                    'relative_id' => $sharedUser->relative_id ?? null,
+                    'phone' => $sharedUser->phone ?? null,
+                    'phone_prefix' => $sharedUser->phone_prefix ?? null,
+                    'document' => $sharedUser->document ?? null,
+                    'document_type' => $sharedUser->document_type ?? null,
+                    'is_new' => $sharedUser->is_new ?? 1,
+                ]
+            );
+        
+        return $userId;
+    }
 
     /**
      * Configurar relaciones antes de listar
@@ -132,7 +185,10 @@ class SaleController extends BasicController
             // Sale info - Campos básicos
             $saleJpa->code = Trace::getId();
             $saleJpa->user_formula_id = $sale['user_formula_id'];
-            $saleJpa->user_id = Auth::check() ? Auth::user()->id : null;
+            
+            // Sincronizar usuario de DB compartida a DB principal si MULTI_DB está habilitado
+            $saleJpa->user_id = self::syncAuthUserToMainDb();
+            
             $saleJpa->name = $sale['name'];
             $saleJpa->lastname = $sale['lastname'];
             $saleJpa->fullname = $sale['fullname'] ?? (($sale['name'] ?? '') . ' ' . ($sale['lastname'] ?? ''));
