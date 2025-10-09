@@ -93,6 +93,13 @@ class Sale extends Model
 
     public function tracking()
     {
+        $usersTable = 'users';
+        
+        // Si MULTI_DB está habilitado, usar la tabla de usuarios de la DB compartida
+        if (env('MULTI_DB_ENABLED', false)) {
+            $usersTable = env('DB_DATABASE_SHARED', 'katya_users_shared') . '.users';
+        }
+        
         return $this->hasManyThrough(SaleStatus::class, SaleStatusTrace::class, 'sale_id', 'id', 'id', 'status_id')
             ->select([
                 'sale_statuses.id',
@@ -101,15 +108,22 @@ class Sale extends Model
                 'sale_statuses.color',
                 'sale_statuses.icon',
                 'sale_status_traces.created_at',
-                'users.id as user_id',
-                'users.name as user_name',
-                'users.lastname as user_lastname',
-            ])->join('users', 'users.id', 'sale_status_traces.user_id');
+                $usersTable . '.id as user_id',
+                $usersTable . '.name as user_name',
+                $usersTable . '.lastname as user_lastname',
+            ])->join($usersTable, $usersTable . '.id', 'sale_status_traces.user_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        $relation = $this->belongsTo(User::class);
+        
+        // Si MULTI_DB está habilitado, buscar en la DB compartida
+        if (env('MULTI_DB_ENABLED', false)) {
+            $relation->getRelated()->setConnection('mysql_shared_users');
+        }
+        
+        return $relation;
     }
 
     public function coupon()
