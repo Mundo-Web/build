@@ -31,9 +31,44 @@ class User extends Authenticatable
         parent::__construct($attributes);
         
         // Solo usar conexión compartida si está habilitada la funcionalidad multi-DB
-        if (env('MULTI_DB_ENABLED', false)) {
+        // Y si estamos en contexto admin (no en relaciones de ventas)
+        if (env('MULTI_DB_ENABLED', false) && $this->shouldUseSharedConnection()) {
             $this->connection = 'mysql_shared_users';
         }
+    }
+
+    /**
+     * Determina si debe usar la conexión compartida
+     * Retorna false cuando se está consultando desde relaciones de Sale/Order
+     */
+    protected function shouldUseSharedConnection(): bool
+    {
+        // Si estamos en una llamada API de checkout/ventas, usar DB principal
+        $request = request();
+        if ($request) {
+            $path = $request->path();
+            
+            // Rutas que deben usar la DB principal (no compartida)
+            $mainDbRoutes = [
+                'api/sales',
+                'api/orders',
+                'checkout',
+                'process-payment',
+                'culqi',
+                'mercadopago',
+                'yape',
+                'transferencia',
+            ];
+            
+            foreach ($mainDbRoutes as $route) {
+                if (str_contains($path, $route)) {
+                    return false; // Usar DB principal
+                }
+            }
+        }
+        
+        // En otros casos (admin, autenticación), usar DB compartida
+        return true;
     }
 
     /**
