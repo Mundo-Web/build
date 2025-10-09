@@ -679,7 +679,7 @@ const HeaderSearchB = ({
                                 ref={desktopSearchInputRef}
                                 type="search"
                                 name="search"
-                                placeholder="Estoy buscando..."
+                                placeholder={`${data?.input_search_placeholder || 'Estoy buscando...'}`}
                                 value={search}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 onKeyDown={handleKeyDown}
@@ -688,12 +688,12 @@ const HeaderSearchB = ({
                                         fetchSearchSuggestions(search);
                                     }
                                 }}
-                                className="w-full pr-14 py-4 pl-4 border rounded-full font-normal focus:ring-0 customtext-neutral-dark placeholder:customtext-neutral-dark focus:outline-none bg-white"
+                                className={`w-full pr-14 py-4 pl-4 border rounded-full font-normal focus:ring-0 customtext-neutral-dark placeholder:customtext-neutral-dark focus:outline-none bg-white ${data?.input_search_class}`}
                                 enterKeyHint="search"
                                 inputMode="search"
                                 autoComplete="on"
                                 role="searchbox"
-                                aria-label="Estoy buscando..."
+                                aria-label={`${data?.input_search_placeholder || 'Estoy buscando...'}`}
                             />
                             <button
                                 type="submit"
@@ -881,7 +881,7 @@ const HeaderSearchB = ({
                             <div className="md:hidden relative w-full max-w-xl mx-auto">
                                 {!searchMobile ? (
                                     <button
-                                        aria-label="Buscar productos"
+                                        aria-label={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                         onClick={() => {
                                             setSearchMobile(true);
                                             // Pequeño delay para asegurar que el input se renderice antes del focus
@@ -902,7 +902,7 @@ const HeaderSearchB = ({
                                                 ref={mobileSearchInputRef}
                                                 type="search"
                                                 name="search"
-                                                placeholder="Buscar productos"
+                                                placeholder={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                                 value={search}
                                                 onChange={(e) => handleSearchChange(e.target.value)}
                                                 onKeyDown={handleKeyDown}
@@ -917,7 +917,7 @@ const HeaderSearchB = ({
                                                 inputMode="search"
                                                 autoComplete="off"
                                                 role="searchbox"
-                                                aria-label="Buscar productos"
+                                                aria-label={`${data?.input_search_label || 'Buscar productos'}`}
                                                 onBlur={() => {
                                                     // Solo cerrar si no hay búsqueda activa y no hay sugerencias
                                                     setTimeout(() => {
@@ -973,7 +973,7 @@ const HeaderSearchB = ({
                                 <input
                                     type="search"
                                     name="search"
-                                    placeholder="Buscar productos..."
+                                    placeholder={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onKeyDown={handleKeyDown}
@@ -982,12 +982,12 @@ const HeaderSearchB = ({
                                             fetchSearchSuggestions(search);
                                         }
                                     }}
-                                    className="w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50"
+                                    className={`w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50`}
                                     enterKeyHint="search"
                                     inputMode="search"
                                     autoComplete="off"
                                     role="searchbox"
-                                    aria-label="Buscar productos"
+                                    aria-label={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                 />
                                 <button
                                     type="submit"
@@ -1026,6 +1026,7 @@ const HeaderSearchB = ({
                             pages={pages}
                             items={items}
                             onClose={() => setOpenMenu(!openMenu)}
+                            data={data}
                         />
                     </motion.div>
                 )}

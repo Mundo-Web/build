@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, X, ChevronRight, ChevronLeft, Home, ShoppingCart, User, Menu } from "lucide-react";
 import MenuSimple from "../../Menu/MenuSimple";
 
-export default function MobileMenu({ search, setSearch, pages, items, onClose }) {
+export default function MobileMenu({ search, setSearch, pages, items, onClose,data }) {
     const [menuLevel, setMenuLevel] = useState("main");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
@@ -222,7 +222,7 @@ export default function MobileMenu({ search, setSearch, pages, items, onClose })
                                     ref={searchInputRef}
                                     type="search"
                                     name="search"
-                                    placeholder="Buscar productos"
+                                    placeholder={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     onKeyDown={handleKeyDown}
@@ -231,7 +231,7 @@ export default function MobileMenu({ search, setSearch, pages, items, onClose })
                                     inputMode="search"
                                     autoComplete="off"
                                     role="searchbox"
-                                    aria-label="Buscar productos"
+                                    aria-label={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                 />
                                 <button
                                     type="submit"

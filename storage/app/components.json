@@ -215,7 +215,9 @@
                     "showLoginCart",
                     "mobileSearch",
                     "backgroundColor",
-                    "class_logo"
+                    "class_logo",
+                    "input_search_placeholder",
+                    "input_search_label"
                 ],
                 "using": {
                     "model": "Category",
