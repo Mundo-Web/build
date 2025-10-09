@@ -13,6 +13,7 @@ class SaleStatusObserver
 {
     /**
      * Sincroniza el usuario autenticado a la DB principal si MULTI_DB está habilitado
+     * Detecta automáticamente qué columnas existen en la tabla users
      */
     protected function syncAuthUserToMainDb()
     {
@@ -35,27 +36,46 @@ class SaleStatusObserver
             return $userId;
         }
         
+        // Obtener las columnas que existen en la tabla users de la DB principal
+        $mainConnection = config('database.default');
+        $dbName = config("database.connections.{$mainConnection}.database");
+        $columns = DB::connection($mainConnection)
+            ->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS 
+                      WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'", [$dbName]);
+        
+        $availableColumns = array_map(fn($col) => $col->COLUMN_NAME, $columns);
+        
+        // Mapeo de todos los campos posibles
+        $allFields = [
+            'name' => $sharedUser->name,
+            'lastname' => $sharedUser->lastname,
+            'email' => $sharedUser->email,
+            'email_verified_at' => $sharedUser->email_verified_at,
+            'password' => $sharedUser->password,
+            'remember_token' => $sharedUser->remember_token,
+            'created_at' => $sharedUser->created_at,
+            'updated_at' => $sharedUser->updated_at,
+            'relative_id' => $sharedUser->relative_id ?? null,
+            'phone' => $sharedUser->phone ?? null,
+            'phone_prefix' => $sharedUser->phone_prefix ?? null,
+            'document' => $sharedUser->document ?? null,
+            'document_type' => $sharedUser->document_type ?? null,
+            'is_new' => $sharedUser->is_new ?? 1,
+        ];
+        
+        // Filtrar solo los campos que existen en la tabla
+        $fieldsToSync = array_filter(
+            $allFields,
+            fn($key) => in_array($key, $availableColumns),
+            ARRAY_FILTER_USE_KEY
+        );
+        
         // Sincronizar a la DB principal
-        DB::connection(config('database.default'))
+        DB::connection($mainConnection)
             ->table('users')
             ->updateOrInsert(
                 ['id' => $sharedUser->id],
-                [
-                    'name' => $sharedUser->name,
-                    'lastname' => $sharedUser->lastname,
-                    'email' => $sharedUser->email,
-                    'email_verified_at' => $sharedUser->email_verified_at,
-                    'password' => $sharedUser->password,
-                    'remember_token' => $sharedUser->remember_token,
-                    'created_at' => $sharedUser->created_at,
-                    'updated_at' => $sharedUser->updated_at,
-                    'relative_id' => $sharedUser->relative_id ?? null,
-                    'phone' => $sharedUser->phone ?? null,
-                    'phone_prefix' => $sharedUser->phone_prefix ?? null,
-                    'document' => $sharedUser->document ?? null,
-                    'document_type' => $sharedUser->document_type ?? null,
-                    'is_new' => $sharedUser->is_new ?? 1,
-                ]
+                $fieldsToSync
             );
         
         return $userId;

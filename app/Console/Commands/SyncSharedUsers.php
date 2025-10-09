@@ -74,6 +74,64 @@ class SyncSharedUsers extends Command
     }
 
     /**
+     * Obtiene las columnas disponibles en la tabla users de una conexión
+     */
+    protected function getAvailableColumns(string $connection): array
+    {
+        $dbName = config("database.connections.{$connection}.database");
+        $columns = DB::connection($connection)
+            ->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS 
+                      WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'", [$dbName]);
+        
+        return array_map(fn($col) => $col->COLUMN_NAME, $columns);
+    }
+
+    /**
+     * Filtra los datos del usuario para incluir solo columnas que existen en la tabla destino
+     */
+    protected function filterUserData(object $user, array $availableColumns): array
+    {
+        $allFields = [
+            'uuid' => $user->uuid ?? null,
+            'name' => $user->name,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'email_verified_at' => $user->email_verified_at,
+            'password' => $user->password,
+            'remember_token' => $user->remember_token ?? null,
+            'dni' => $user->dni ?? null,
+            'phone' => $user->phone ?? null,
+            'phone_prefix' => $user->phone_prefix ?? null,
+            'status' => $user->status ?? 1,
+            'department' => $user->department ?? null,
+            'province' => $user->province ?? null,
+            'district' => $user->district ?? null,
+            'ubigeo' => $user->ubigeo ?? null,
+            'address' => $user->address ?? null,
+            'number' => $user->number ?? null,
+            'address_number' => $user->address_number ?? null,
+            'reference' => $user->reference ?? null,
+            'alternate_phone' => $user->alternate_phone ?? null,
+            'document_type' => $user->document_type ?? null,
+            'document_number' => $user->document_number ?? null,
+            'document' => $user->document ?? null,
+            'google_id' => $user->google_id ?? null,
+            'relative_id' => $user->relative_id ?? null,
+            'is_new' => $user->is_new ?? 1,
+            'zip_code' => $user->zip_code ?? null,
+            'created_at' => $user->created_at ?? now(),
+            'updated_at' => $user->updated_at ?? now(),
+        ];
+
+        // Filtrar solo los campos que existen en la tabla
+        return array_filter(
+            $allFields,
+            fn($key) => in_array($key, $availableColumns),
+            ARRAY_FILTER_USE_KEY
+        );
+    }
+
+    /**
      * Sincroniza usuarios de la DB compartida a la DB principal
      */
     protected function syncFromSharedToMain()
@@ -85,6 +143,7 @@ class SyncSharedUsers extends Command
             ->get();
 
         $mainConnection = DB::connection(config('database.default'));
+        $availableColumns = $this->getAvailableColumns(config('database.default'));
         
         $inserted = 0;
         $updated = 0;
@@ -96,47 +155,18 @@ class SyncSharedUsers extends Command
                     ->where('id', $user->id)
                     ->exists();
 
-                $userData = [
-                    'uuid' => $user->uuid,
-                    'name' => $user->name,
-                    'lastname' => $user->lastname,
-                    'email' => $user->email,
-                    'email_verified_at' => $user->email_verified_at,
-                    'password' => $user->password,
-                    'dni' => $user->dni,
-                    'phone' => $user->phone,
-                    'phone_prefix' => $user->phone_prefix,
-                    'status' => $user->status,
-                    'department' => $user->department,
-                    'province' => $user->province,
-                    'district' => $user->district,
-                    'ubigeo' => $user->ubigeo,
-                    'address' => $user->address,
-                    'number' => $user->number,
-                    'reference' => $user->reference,
-                    'alternate_phone' => $user->alternate_phone,
-                    'document_type' => $user->document_type,
-                    'document_number' => $user->document_number,
-                    'google_id' => $user->google_id,
-                    'updated_at' => now(),
-                ];
+                // Filtrar datos según columnas disponibles
+                $userData = $this->filterUserData($user, $availableColumns);
+                
+                // Usar updateOrInsert para evitar duplicados
+                $mainConnection->table('users')->updateOrInsert(
+                    ['id' => $user->id],
+                    $userData
+                );
                 
                 if ($exists) {
-                    // Actualizar usuario existente
-                    $mainConnection->table('users')
-                        ->where('id', $user->id)
-                        ->update($userData);
                     $updated++;
                 } else {
-                    // Usar updateOrInsert para evitar duplicados por email
-                    $mainConnection->table('users')->updateOrInsert(
-                        ['email' => $user->email], // Buscar por email primero
-                        array_merge($userData, [
-                            'id' => $user->id,
-                            'remember_token' => $user->remember_token,
-                            'created_at' => $user->created_at,
-                        ])
-                    );
                     $inserted++;
                 }
             } catch (\Exception $e) {
@@ -163,6 +193,7 @@ class SyncSharedUsers extends Command
         $mainUsers = $mainConnection->table('users')->get();
 
         $sharedConnection = DB::connection('mysql_shared_users');
+        $availableColumns = $this->getAvailableColumns('mysql_shared_users');
         
         $inserted = 0;
         $updated = 0;
@@ -174,47 +205,18 @@ class SyncSharedUsers extends Command
                     ->where('id', $user->id)
                     ->exists();
 
-                $userData = [
-                    'uuid' => $user->uuid,
-                    'name' => $user->name,
-                    'lastname' => $user->lastname,
-                    'email' => $user->email,
-                    'email_verified_at' => $user->email_verified_at,
-                    'password' => $user->password,
-                    'dni' => $user->dni,
-                    'phone' => $user->phone,
-                    'phone_prefix' => $user->phone_prefix,
-                    'status' => $user->status,
-                    'department' => $user->department,
-                    'province' => $user->province,
-                    'district' => $user->district,
-                    'ubigeo' => $user->ubigeo,
-                    'address' => $user->address,
-                    'number' => $user->number,
-                    'reference' => $user->reference,
-                    'alternate_phone' => $user->alternate_phone,
-                    'document_type' => $user->document_type,
-                    'document_number' => $user->document_number,
-                    'google_id' => $user->google_id,
-                    'updated_at' => now(),
-                ];
+                // Filtrar datos según columnas disponibles
+                $userData = $this->filterUserData($user, $availableColumns);
 
+                // Usar updateOrInsert para evitar duplicados
+                $sharedConnection->table('users')->updateOrInsert(
+                    ['id' => $user->id],
+                    $userData
+                );
+                
                 if ($exists) {
-                    // Actualizar usuario existente
-                    $sharedConnection->table('users')
-                        ->where('id', $user->id)
-                        ->update($userData);
                     $updated++;
                 } else {
-                    // Usar updateOrInsert para evitar duplicados por email
-                    $sharedConnection->table('users')->updateOrInsert(
-                        ['email' => $user->email], // Buscar por email primero
-                        array_merge($userData, [
-                            'id' => $user->id,
-                            'remember_token' => $user->remember_token,
-                            'created_at' => $user->created_at,
-                        ])
-                    );
                     $inserted++;
                 }
             } catch (\Exception $e) {

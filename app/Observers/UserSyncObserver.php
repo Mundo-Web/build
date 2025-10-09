@@ -58,6 +58,7 @@ class UserSyncObserver
 
     /**
      * Sincroniza el usuario a la otra base de datos
+     * Detecta automáticamente qué columnas existen en la tabla users de destino
      */
     protected function syncUserToOtherDb(User $user, string $action): void
     {
@@ -68,34 +69,6 @@ class UserSyncObserver
             ? config('database.default') 
             : 'mysql_shared_users';
 
-        $userData = [
-            'id' => $user->id,
-            'uuid' => $user->uuid,
-            'name' => $user->name,
-            'lastname' => $user->lastname,
-            'email' => $user->email,
-            'email_verified_at' => $user->email_verified_at,
-            'password' => $user->password,
-            'remember_token' => $user->remember_token,
-            'dni' => $user->dni,
-            'phone' => $user->phone,
-            'phone_prefix' => $user->phone_prefix,
-            'status' => $user->status,
-            'department' => $user->department,
-            'province' => $user->province,
-            'district' => $user->district,
-            'ubigeo' => $user->ubigeo,
-            'address' => $user->address,
-            'number' => $user->number,
-            'reference' => $user->reference,
-            'alternate_phone' => $user->alternate_phone,
-            'document_type' => $user->document_type,
-            'document_number' => $user->document_number,
-            'google_id' => $user->google_id,
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at,
-        ];
-
         if ($action === 'deleted') {
             // Eliminar en la otra DB
             DB::connection($targetConnection)
@@ -104,16 +77,66 @@ class UserSyncObserver
                 ->delete();
             
             Log::info("Usuario {$user->id} eliminado de {$targetConnection}");
-        } else {
-            // Insertar o actualizar en la otra DB
-            DB::connection($targetConnection)
-                ->table('users')
-                ->updateOrInsert(
-                    ['id' => $user->id],
-                    $userData
-                );
-            
-            Log::info("Usuario {$user->id} sincronizado a {$targetConnection} ({$action})");
+            return;
         }
+
+        // Obtener las columnas que existen en la tabla users de la DB destino
+        $dbName = config("database.connections.{$targetConnection}.database");
+        $columns = DB::connection($targetConnection)
+            ->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS 
+                      WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'", [$dbName]);
+        
+        $availableColumns = array_map(fn($col) => $col->COLUMN_NAME, $columns);
+
+        // Mapeo de todos los campos posibles
+        $allFields = [
+            'id' => $user->id,
+            'uuid' => $user->uuid ?? null,
+            'name' => $user->name,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'email_verified_at' => $user->email_verified_at,
+            'password' => $user->password,
+            'remember_token' => $user->remember_token,
+            'dni' => $user->dni ?? null,
+            'phone' => $user->phone,
+            'phone_prefix' => $user->phone_prefix,
+            'status' => $user->status ?? 1,
+            'department' => $user->department ?? null,
+            'province' => $user->province ?? null,
+            'district' => $user->district ?? null,
+            'ubigeo' => $user->ubigeo ?? null,
+            'address' => $user->address ?? null,
+            'number' => $user->number ?? null,
+            'address_number' => $user->address_number ?? null,
+            'reference' => $user->reference ?? null,
+            'alternate_phone' => $user->alternate_phone ?? null,
+            'document_type' => $user->document_type ?? null,
+            'document_number' => $user->document_number ?? null,
+            'document' => $user->document ?? null,
+            'google_id' => $user->google_id ?? null,
+            'relative_id' => $user->relative_id ?? null,
+            'is_new' => $user->is_new ?? 1,
+            'zip_code' => $user->zip_code ?? null,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ];
+
+        // Filtrar solo los campos que existen en la tabla destino
+        $fieldsToSync = array_filter(
+            $allFields,
+            fn($key) => in_array($key, $availableColumns),
+            ARRAY_FILTER_USE_KEY
+        );
+
+        // Insertar o actualizar en la otra DB
+        DB::connection($targetConnection)
+            ->table('users')
+            ->updateOrInsert(
+                ['id' => $user->id],
+                $fieldsToSync
+            );
+        
+        Log::info("Usuario {$user->id} sincronizado a {$targetConnection} ({$action})");
     }
 }
