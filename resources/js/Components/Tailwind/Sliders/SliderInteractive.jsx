@@ -412,7 +412,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                     {duplicatedItems.map((item, index) => (
                         <div
                             key={`slide-${index}`}
-                            className={`w-full h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative ${data?.class_slider || ""}`}
+                            className={`w-full min-h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative ${data?.class_slider || ""}`}
+                   
                         >
                             <AnimatePresence>
                                 {currentIndex === index && (
@@ -428,6 +429,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             initial="initial"
                                             animate="animate"
                                             exit="exit"
+                                            onClick={(e)=> window.location = item?.button_link}
                                         />
                                         {/* Mobile Image */}
                                         <motion.img
@@ -440,11 +442,14 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             initial="initial"
                                             animate="animate"
                                             exit="exit"
+                                            onClick={(e)=> window.location = item?.button_link}
+
                                         />
                                     </>
                                 )}
                             </AnimatePresence>
 
+                         {data?.only_image && (<>
                             {data?.overlayMobile && (
                                 <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
                             )}
@@ -535,6 +540,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                     </motion.div>
                                 </AnimatePresence>
                             </div>
+                         </>)}
                         </div>
                     ))}
                 </div>

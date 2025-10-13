@@ -98,6 +98,21 @@
                     "email_contact",
                     "cintillo"
                 ]
+            },
+            {
+                "id": "TopBarAddress",
+                "name": "Con dirección y WhatsApp",
+                "image": "top-bar-address.png",
+                "generals": [
+                    "address",
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ],
+                "data": [
+                    "class_content",
+                    "class_address",
+                    "class_button"
+                ]
             }
         ]
     },
@@ -432,6 +447,19 @@
                     "message_whatsapp",
                     "email_contact"
                 ]
+            },
+            {
+                "id": "HeaderHuaillys",
+                "name": "Header - Huaillys",
+                "image": "header-huaillys.png",
+                "data": [
+                    "class",
+                    "class_logo",
+                    "class_menu",
+                    "class_link",
+                    "class_link_mobile"
+                ],
+                "generals": []
             }
         ]
     },
@@ -632,7 +660,8 @@
                     "class_icon_primary",
                     "class_title",
                     "class_description",
-                    "animation_slider"
+                    "animation_slider",
+                    "only_image"
                 ],
                 "using": {
                     "model": "Slider",
@@ -1690,6 +1719,27 @@
                 "using": {
                     "model": "Indicator"
                 }
+            },
+            {
+                "id": "IndicatorHuaillys",
+                "name": "Indicator - Huaillys",
+                "image": "indicator-huaillys.png",
+                "data": [
+                    "class",
+                    "class_chicken",
+                    "class_icon",
+                    "class_title",
+                    "class_description",
+                    "class_whatsapp_text",
+                    "class_whatsapp_number",
+                    "class_whatsapp_subtitle"
+                ],
+                "using": {
+                    "model": "Indicator"
+                },
+                "generals": [
+                    "phone_whatsapp"
+                ]
             }
         ]
     },
