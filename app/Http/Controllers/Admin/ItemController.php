@@ -74,11 +74,11 @@ class ItemController extends BasicController
                 'description' => 'nullable|string',
                 'weight' => 'nullable|numeric',
                
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
            
                 'gallery' => 'nullable|array',
-                'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'gallery_ids' => 'nullable|array',
                 'gallery_ids.*' => 'nullable|string',
                 'deleted_images' => 'nullable|array',

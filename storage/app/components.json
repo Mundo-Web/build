@@ -2066,6 +2066,30 @@
                 }
             },
             {
+                "id": "ProductFeaturedVerticalSlider",
+                "name": "Producto Destacado con Slider Vertical",
+                "image": "products-featured-vertical.png",
+                "data": [
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 10
+                }
+            },
+            {
                 "id": "ProductBananaLab",
                 "name": "ProductBananaLab",
                 "image": "products-list.png",

@@ -9010,7 +9010,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DLcf-WSo.js",
+    "file": "assets/Product-CTdKh9He.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -9031,6 +9031,7 @@
       "resources/js/Components/Tailwind/Products/ProductNavigationSwiperSimple.jsx",
       "resources/js/Components/Tailwind/Products/ProductNavigationSwiperPaani.jsx",
       "resources/js/Components/Tailwind/Products/ProductFeaturedSwiper.jsx",
+      "resources/js/Components/Tailwind/Products/ProductFeaturedVerticalSlider.jsx",
       "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx",
       "resources/js/Components/Tailwind/Scraping/ScrapingSimple.jsx",
       "resources/js/Components/Tailwind/Products/ProductMakita.jsx",
@@ -9833,6 +9834,18 @@
     "css": [
       "swiper.css",
       "tippy.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Products/ProductFeaturedVerticalSlider.jsx": {
+    "file": "assets/ProductFeaturedVerticalSlider--pJTheE3.js",
+    "name": "ProductFeaturedVerticalSlider",
+    "src": "resources/js/Components/Tailwind/Products/ProductFeaturedVerticalSlider.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductInfinite.jsx": {
@@ -11430,7 +11443,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DNsrH9j9.js",
+    "file": "assets/System-BcRVZz48.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
