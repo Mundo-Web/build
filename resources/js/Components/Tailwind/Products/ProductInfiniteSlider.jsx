@@ -34,7 +34,7 @@ const ProductInfiniteSlider = ({ items, data, cart, setCart }) => {
     };
 
     return (
-        <section className="py-8 lg:py-12 font-paragraph bg-secondary">
+        <section className="py-8 lg:py-20 font-paragraph bg-secondary">
             <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <div className="flex mb-4 w-full justify-between items-center">
                     {/* Título */}
@@ -132,12 +132,13 @@ const ProductInfiniteSlider = ({ items, data, cart, setCart }) => {
                                         {/* Precios */}
                                         <div className="mb-4">
                                             {parseFloat(product.discount) > 0 ? (
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm customtext-neutral-dark transition-colors duration-300 line-through mb-1">
-                                                        S/. {parseFloat(product.price).toFixed(2)}
-                                                    </span>
-                                                    <span className="text-xl lg:text-2xl font-bold customtext-neutral-dark  transition-colors duration-300">
+                                                <div className="flex gap-2  items-end font-bold">
+                                                  
+                                                    <span className="text-xl lg:text-4xl font-title font-normal  customtext-neutral-dark  transition-colors duration-300">
                                                         S/. {parseFloat(product.discount).toFixed(2)}
+                                                    </span>
+                                                      <span className="text-sm customtext-neutral-dark transition-colors duration-300 line-through mb-1">
+                                                        S/. {parseFloat(product.price).toFixed(2)}
                                                     </span>
                                                 </div>
                                             ) : (

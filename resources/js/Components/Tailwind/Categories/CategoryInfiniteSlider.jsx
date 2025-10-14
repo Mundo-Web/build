@@ -18,7 +18,7 @@ const CategoryInfiniteSlider = ({ items, data }) => {
     };
 
     return (
-        <section className="py-8 lg:py-12 font-paragraph bg-scondary">
+        <section className="py-8 lg:py-20 font-paragraph bg-scondary">
             <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <div className="flex mb-8 w-full justify-between items-center">
 
@@ -74,7 +74,7 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                         {items.map((category, index) => (
                             <SwiperSlide key={category.id}>
                                 <div 
-                                    className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full"
+                                    className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full my-4"
                                     onClick={() => handleCategoryClick(category)}
                                 >
                                     {/* Imagen de la categoría */}
