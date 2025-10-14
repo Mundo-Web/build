@@ -5889,7 +5889,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Category.jsx": {
-    "file": "assets/Category-9VC6_DVb.js",
+    "file": "assets/Category-ClVtQXL7.js",
     "name": "Category",
     "src": "resources/js/Components/Tailwind/Category.jsx",
     "isDynamicEntry": true,
@@ -9027,7 +9027,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DRuXutJ1.js",
+    "file": "assets/Product-mPvehO_y.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -9052,7 +9052,8 @@
       "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx",
       "resources/js/Components/Tailwind/Scraping/ScrapingSimple.jsx",
       "resources/js/Components/Tailwind/Products/ProductMakita.jsx",
-      "resources/js/Components/Tailwind/Products/ProductMultivet.jsx"
+      "resources/js/Components/Tailwind/Products/ProductMultivet.jsx",
+      "resources/js/Components/Tailwind/Products/ProductInfiniteSlider.jsx"
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
@@ -9902,6 +9903,23 @@
       "_plus-CTIomuuF.js",
       "_index-BZvh78jk.js",
       "_eye-ScgfreHn.js"
+    ],
+    "css": [
+      "swiper.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Products/ProductInfiniteSlider.jsx": {
+    "file": "assets/ProductInfiniteSlider-BWktTS0w.js",
+    "name": "ProductInfiniteSlider",
+    "src": "resources/js/Components/Tailwind/Products/ProductInfiniteSlider.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ],
     "css": [
       "swiper.css"
@@ -11461,7 +11479,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CmPQdD_4.js",
+    "file": "assets/System-CVneLcxh.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

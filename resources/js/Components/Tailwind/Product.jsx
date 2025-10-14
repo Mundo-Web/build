@@ -14,6 +14,7 @@ const ProductBananaLab = React.lazy(() => import("./Products/ProductBananaLab"))
 const ScrapingSimple = React.lazy(() => import("./Scraping/ScrapingSimple"));
 const ProductMakita = React.lazy(() => import("./Products/ProductMakita"));
 const ProductMultivet = React.lazy(() => import("./Products/ProductMultivet"));
+const ProductInfiniteSlider = React.lazy(() => import("./Products/ProductInfiniteSlider"));
 
 const Product = ({
     which,
@@ -158,6 +159,15 @@ const Product = ({
                         items={items}
                         favorites={favorites}
                         setFavorites={setFavorites}
+                    />
+                );
+            case "ProductInfiniteSlider":
+                return (
+                    <ProductInfiniteSlider
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
                     />
                 );
 

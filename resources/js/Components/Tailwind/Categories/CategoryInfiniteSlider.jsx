@@ -35,10 +35,11 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                         )}
                     </div>
                 )}
-
+ {data?.link_catalog && (
                 <a href={data?.link_catalog} className="text-base bg-primary rounded-lg cursor-pointer text-white px-6 py-3 font-paragraph font-semibold  hover:underline">
                     {data?.link_text || 'Ver toda la carta'}
                 </a>
+ )}
                 </div>
 
                 {/* Swiper Slider */}
