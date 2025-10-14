@@ -64,12 +64,15 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
     const visibleProducts = sliderProducts.slice(currentIndex, currentIndex + itemsPerSlide);
 
     return (
-        <section className="py-8 lg:py-12 font-paragraph bg-secondary">
+        <section className="py-8 lg:py-20 font-paragraph bg-secondary">
             <div className="w-full px-[5%] 2xl:px-0  2xl:max-w-7xl mx-auto ">
                 {/* Contenedor principal */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
                     {/* Producto destacado (izquierda) */}
-                    <motion.div
+                  <a href={ `/product/${featuredProduct.slug}` }>
+
+                      <motion.div
+                 
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6 }}
@@ -87,30 +90,34 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                             />
                             
                             {/* Overlay oscuro */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                             
                             {/* Contenido sobre la imagen */}
-                            <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 text-white">
-                                <h3 className="text-2xl font-paragraph lg:text-3xl font-bold mb-3 leading-tight">
+                            <div className="absolute flex bottom-0 left-0 right-0 p-6 lg:p-8 text-white">
+                               <div className="w-8/12">
+                                 <h3 className="text-2xl font-paragraph lg:text-3xl font-bold mb-3 leading-tight">
                                     {featuredProduct.name}
                                 </h3>
                                 {featuredProduct.summary && (
-                                    <p className="text-sm font-paragraph lg:text-base text-white mb-4 line-clamp-3">
+                                    <p className="text-sm font-paragraph lg:text-base text-white  line-clamp-3">
                                         {featuredProduct.summary}
                                     </p>
                                 )}
+                               </div>
                               
 
 
-                                <div className="flex items-end font-paragraph justify-between">
-                                    <div className="flex flex-col">
+                                <div className="flex w-4/12 items-end font-paragraph justify-between">
+                                    <div className="flex flex-col justify-end items-end w-full">
                                         {parseFloat(featuredProduct.discount) > 0 ? (
                                             <>
-                                                <span className="text-sm text-white line-through mb-1">
+                                            <span className="text-sm text-white line-through mb-1">
                                                     S/ {parseFloat(featuredProduct.price).toFixed(2)}
                                                 </span>
-                                                <span className="text-3xl lg:text-4xl font-bold text-white">
-                                                    S/ {parseFloat(featuredProduct.discount).toFixed(2)}
+                                               
+                                                <span className="text-3xl lg:text-5xl font-title text-white">
+                                                   
+                                                    S/ {parseFloat(featuredProduct.discount).toFixed(2)}  
                                                 </span>
                                             </>
                                         ) : (
@@ -130,6 +137,7 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                             )}
                         </div>
                     </motion.div>
+                  </a>
 
                     {/* Slider vertical (derecha) */}
                     {sliderProducts.length > 0 && (
@@ -138,7 +146,7 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                             {(data?.title || data?.description) && (
                                 <div className="mb-6">
                                     {data?.title && (
-                                        <h2 className="text-3xl  customtext-neutral-dark lg:text-5xl font-bold  font-title mb-3 uppercase tracking-wide">
+                                        <h2 className="text-3xl  customtext-neutral-dark lg:text-5xl   font-title mb-3 uppercase tracking-wide">
                                             {data.title}
                                         </h2>
                                     )}
@@ -200,22 +208,22 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                                                                     <span className="text-xs customtext-neutral-dark line-through mb-0.5">
                                                                         S/ {parseFloat(product.price).toFixed(2)}
                                                                     </span>
-                                                                    <span className="text-xl lg:text-2xl font-bold customtext-neutral-dark">
+                                                                    <span className="text-xl font-title lg:text-4xl  customtext-neutral-dark">
                                                                         S/ {parseFloat(product.discount).toFixed(2)}
                                                                     </span>
                                                                 </>
                                                             ) : (
-                                                                <span className="text-xl lg:text-2xl font-bold customtext-neutral-dark">
+                                                                <span className="text-xl lg:text-2xl font-title customtext-neutral-dark">
                                                                     S/ {parseFloat(product.price).toFixed(2)}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <button
-                                                            onClick={() => onAddToCart(product)}
+                                                        <a
+                                                           href={`/product/${product.slug}`}
                                                             className="bg-accent  text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-xs lg:text-sm font-bold transition-colors shadow-md whitespace-nowrap"
                                                         >
                                                             Ordena aquí
-                                                        </button>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
