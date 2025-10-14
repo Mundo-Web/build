@@ -197,6 +197,9 @@
                 background-color: <?php echo e($color->description); ?>;
 
             }
+            .hover\:border-<?php echo e($color->name); ?>:hover{
+                border-color: <?php echo e($color->description); ?>;
+            }
 
             .placeholder\:customtext-<?php echo e($color->name); ?>::placeholder {
                 color: <?php echo e($color->description); ?>;

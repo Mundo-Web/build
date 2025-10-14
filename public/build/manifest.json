@@ -1380,7 +1380,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-CG4VdHrE.js",
+    "file": "assets/About-CH5X58AA.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3345,7 +3345,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-D1VEZwZK.js",
+    "file": "assets/Blog-CMCXHW8u.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3390,7 +3390,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-B_BXdGWo.js",
+    "file": "assets/BlogArticle-Dh-J35gi.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5082,7 +5082,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-DdRi3Kks.js",
+    "file": "assets/Base-BCICEBxV.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -8098,7 +8098,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-BCSH_If8.js",
+    "file": "assets/Header-Be0FSXOZ.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -11167,7 +11167,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-BdPOlVSW.js",
+    "file": "assets/Contact-B178IkqR.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -11212,7 +11212,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-DiLvw7_i.js",
+    "file": "assets/CourseDetails-DV_swP1_.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -11248,7 +11248,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-CvpILvcU.js",
+    "file": "assets/Courses-DARlXAjq.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -11343,7 +11343,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-DzwdxFN-.js",
+    "file": "assets/Home-KhiiaKwx.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -11548,7 +11548,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B3wabRVt.js",
+    "file": "assets/System-CjM0e0e6.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -462,7 +462,7 @@
                     "class_link",
                     "class_link_mobile"
                 ],
-                "generals": []
+                "generals": ["address"]
             }
         ]
     },

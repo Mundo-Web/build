@@ -196,6 +196,9 @@
                 background-color: {{ $color->description }};
 
             }
+            .hover\:border-{{ $color->name }}:hover{
+                border-color: {{ $color->description }};
+            }
 
             .placeholder\:customtext-{{ $color->name }}::placeholder {
                 color: {{ $color->description }};

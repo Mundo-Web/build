@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Global from "../../../Utils/Global";
 import { ChevronRight } from "lucide-react";
+import TopBarAddress from "../TopBars/TopBarAddress";
 
 const HeaderHuaillys = ({ data, pages, generals }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -10,7 +11,7 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
     useEffect(() => {
         const handleScroll = () => {
             const scrollPosition = window.scrollY;
-            setIsFixed(scrollPosition > 100);
+            setIsFixed(scrollPosition > 10);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -24,11 +25,14 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
                     ? 'fixed top-0 left-0 right-0 shadow-2xl backdrop-blur-sm bg-secondary/95' 
                     : 'relative'
             } ${data?.class || ""}`}>
+                {/* TopBar Address */}
+                <TopBarAddress data={data?.topbar || {}} />
+                
                 <header className="px-[5%] w-full 2xl:px-0 2xl:max-w-7xl mx-auto flex py-4 justify-between items-center">
                     {/* Logo Section - Izquierda en mobile y desktop */}
                     <a href="/" className="flex-shrink-0 lg:mr-auto">
                         <img
-                            className={`h-12 md:h-16 aspect-[13/4] object-contain object-left w-auto ${data?.class_logo || ""}`}
+                            className={`h-12 md:h-20  object-contain object-left w-auto ${data?.class_logo || ""}`}
                             src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                             alt={Global.APP_NAME}
                             onError={(e) => {
@@ -42,15 +46,23 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
                     <nav className={`hidden lg:flex items-center space-x-6 xl:space-x-8 font-title ${data?.class_menu || ""}`}>
                         {pages
                             .filter((x) => x.menuable)
-                            .map((page, index) => (
-                                <a
-                                    key={index}
-                                    href={page.pseudo_path || page.path}
-                                    className={`hover:customtext-neutral-dark font-title transition-colors duration-200 text-sm md:text-base lg:text-3xl font-medium uppercase tracking-wide ${data?.class_link || ""}`}
-                                >
-                                    {page.name}
-                                </a>
-                            ))}
+                            .map((page, index) => {
+                                const isActive = window.location.pathname === (page.pseudo_path || page.path) || 
+                                               (window.location.pathname === '/' && (page.pseudo_path || page.path) === '/');
+                                return (
+                                    <a
+                                        key={index}
+                                        href={page.pseudo_path || page.path}
+                                        className={`hover:customtext-neutral-dark font-title transition-all duration-200 text-sm md:text-base lg:text-2xl font-medium uppercase tracking-wide pb-1 border-b-2 hover:border-accent ${
+                                            isActive 
+                                                ? 'border-accent customtext-accent' 
+                                                : 'border-transparent'
+                                        } ${data?.class_link || ""}`}
+                                    >
+                                        {page.name}
+                                    </a>
+                                );
+                            })}
                     </nav>
 
                     {/* Mobile Menu Button - Lado derecho en responsive */}
@@ -116,8 +128,8 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
                 </div>
             </section>
 
-            {/* Espaciador cuando el header es fixed */}
-            {isFixed && <div className="h-20 md:h-24"></div>}
+            {/* Espaciador cuando el header es fixed - incluye TopBar + Header */}
+            {isFixed && <div className="h-28 md:h-32"></div>}
 
             {/* Animación CSS */}
             <style>{`
