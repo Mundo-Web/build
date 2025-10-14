@@ -3672,5 +3672,27 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "subscription",
+        "icon": "mdi mdi-email-newsletter",
+        "name": "Suscripciones",
+        "options": [
+            {
+                "id": "SubscriptionSimple",
+                "name": "Suscripción Simple",
+                "image": "subscription-simple.png",
+                "data": [
+                    "title",
+                    "description",
+                    "background_image",
+                    "placeholder",
+                    "button_text",
+                    "button_color",
+                    "default_name",
+                    "privacy_note"
+                ]
+            }
+        ]
     }
 ]

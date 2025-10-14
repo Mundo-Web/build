@@ -10728,6 +10728,39 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Subscription.jsx": {
+    "file": "assets/Subscription-D4E0IAeF.js",
+    "name": "Subscription",
+    "src": "resources/js/Components/Tailwind/Subscription.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-BfFHrpNk.js",
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Components/Tailwind/Subscriptions/SubscriptionSimple.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Subscriptions/SubscriptionSimple.jsx": {
+    "file": "assets/SubscriptionSimple-CigmEA4j.js",
+    "name": "SubscriptionSimple",
+    "src": "resources/js/Components/Tailwind/Subscriptions/SubscriptionSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_main-B6F2O9-U.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
     "file": "assets/Testimonials-2za9ugSR.js",
     "name": "Testimonials",
@@ -11479,7 +11512,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CVneLcxh.js",
+    "file": "assets/System-DLc887I-.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
@@ -11546,6 +11579,7 @@
       "resources/js/Components/Tailwind/Testimonials.jsx",
       "resources/js/Components/Tailwind/Brands.jsx",
       "resources/js/Components/Tailwind/Partner.jsx",
+      "resources/js/Components/Tailwind/Subscription.jsx",
       "resources/js/Components/Tailwind/Agradecimientos.jsx",
       "resources/js/Components/Tailwind/AboutUs.jsx",
       "resources/js/Components/Tailwind/Ad.jsx",
@@ -11583,6 +11617,7 @@
       "resources/js/Components/Tailwind/Signup.jsx",
       "resources/js/Components/Tailwind/Slider.jsx",
       "resources/js/Components/Tailwind/Step.jsx",
+      "resources/js/Components/Tailwind/Subscription.jsx",
       "resources/js/Components/Tailwind/Testimonials.jsx",
       "resources/js/Components/Tailwind/Thank.jsx",
       "resources/js/Components/Tailwind/TopBar.jsx",

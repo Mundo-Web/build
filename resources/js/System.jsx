@@ -46,6 +46,7 @@ const Ad = React.lazy(() => import("./Components/Tailwind/Ad"));
 const Testimonials = React.lazy(() => import("./Components/Tailwind/Testimonials"));
 const Brands = React.lazy(() => import("./Components/Tailwind/Brands"));
 const Partner = React.lazy(() => import("./Components/Tailwind/Partner"));
+const Subscription = React.lazy(() => import("./Components/Tailwind/Subscription"));
 const Agradecimientos = React.lazy(() => import("./Components/Tailwind/Agradecimientos"));
 
 // Componente de carga para usar con Suspense
@@ -386,6 +387,8 @@ const System = ({
                 return <Brands which={value} data={data} items={getItems(itemsId)} />
             case "partner":
                 return <Partner which={value} data={data} items={getItems(itemsId)} />
+            case "subscription":
+                return <Subscription which={value} data={data} />
             case "agradecimientos":
                 return <Agradecimientos which={value} data={data} items={getItems(itemsId)} contacts={contacts} />
             default:
