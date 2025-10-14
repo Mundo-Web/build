@@ -1380,7 +1380,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-BjyWM9v2.js",
+    "file": "assets/About-CTt87qBf.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3345,7 +3345,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-BQ6iHWYM.js",
+    "file": "assets/Blog-BjXYMxCF.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3390,7 +3390,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-CYpEyDc2.js",
+    "file": "assets/BlogArticle-CoXkBaVa.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5082,7 +5082,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-CdNmllT_.js",
+    "file": "assets/Base-BD7aN8Aa.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -8045,7 +8045,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-BJRshUam.js",
+    "file": "assets/Header-CDUtx2iq.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -8070,7 +8070,8 @@
       "resources/js/Components/Tailwind/Scraping/Components/HeaderScraping.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderMakita.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderPidelo.jsx",
-      "resources/js/Components/Tailwind/Headers/HeaderSearchKatya.jsx"
+      "resources/js/Components/Tailwind/Headers/HeaderSearchKatya.jsx",
+      "resources/js/Components/Tailwind/Headers/HeaderHuaillys.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Headers/Components/LiveSearchBar.jsx": {
@@ -8230,6 +8231,18 @@
     "file": "assets/HeaderContact--pJTheE3.js",
     "name": "HeaderContact",
     "src": "resources/js/Components/Tailwind/Headers/HeaderContact.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Headers/HeaderHuaillys.jsx": {
+    "file": "assets/HeaderHuaillys--pJTheE3.js",
+    "name": "HeaderHuaillys",
+    "src": "resources/js/Components/Tailwind/Headers/HeaderHuaillys.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -8536,7 +8549,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Headers/HeaderSearchMenuSF.jsx": {
-    "file": "assets/HeaderSearchMenuSF-BeZDTckC.js",
+    "file": "assets/HeaderSearchMenuSF-DyN-fXGj.js",
     "name": "HeaderSearchMenuSF",
     "src": "resources/js/Components/Tailwind/Headers/HeaderSearchMenuSF.jsx",
     "isDynamicEntry": true,
@@ -8648,7 +8661,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Indicator.jsx": {
-    "file": "assets/Indicator-Cnye4tau.js",
+    "file": "assets/Indicator-Csv4_eW3.js",
     "name": "Indicator",
     "src": "resources/js/Components/Tailwind/Indicator.jsx",
     "isDynamicEntry": true,
@@ -8660,7 +8673,20 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ],
     "dynamicImports": [
-      "resources/js/Components/Tailwind/Indicators/IndicatorSimple.jsx"
+      "resources/js/Components/Tailwind/Indicators/IndicatorSimple.jsx",
+      "resources/js/Components/Tailwind/Indicators/IndicatorHuaillys.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Indicators/IndicatorHuaillys.jsx": {
+    "file": "assets/IndicatorHuaillys--pJTheE3.js",
+    "name": "IndicatorHuaillys",
+    "src": "resources/js/Components/Tailwind/Indicators/IndicatorHuaillys.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Indicators/IndicatorSimple.jsx": {
@@ -8984,7 +9010,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DLcf-WSo.js",
+    "file": "assets/Product-DRuXutJ1.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -9005,6 +9031,7 @@
       "resources/js/Components/Tailwind/Products/ProductNavigationSwiperSimple.jsx",
       "resources/js/Components/Tailwind/Products/ProductNavigationSwiperPaani.jsx",
       "resources/js/Components/Tailwind/Products/ProductFeaturedSwiper.jsx",
+      "resources/js/Components/Tailwind/Products/ProductFeaturedVerticalSlider.jsx",
       "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx",
       "resources/js/Components/Tailwind/Scraping/ScrapingSimple.jsx",
       "resources/js/Components/Tailwind/Products/ProductMakita.jsx",
@@ -9809,6 +9836,18 @@
       "tippy.css"
     ]
   },
+  "resources/js/Components/Tailwind/Products/ProductFeaturedVerticalSlider.jsx": {
+    "file": "assets/ProductFeaturedVerticalSlider--pJTheE3.js",
+    "name": "ProductFeaturedVerticalSlider",
+    "src": "resources/js/Components/Tailwind/Products/ProductFeaturedVerticalSlider.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Products/ProductInfinite.jsx": {
     "file": "assets/ProductInfinite-BIgA5s-A.js",
     "name": "ProductInfinite",
@@ -10386,7 +10425,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-CcJIogqC.js",
+    "file": "assets/Slider-BK8blPBp.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -10731,7 +10770,7 @@
     ]
   },
   "resources/js/Components/Tailwind/TopBar.jsx": {
-    "file": "assets/TopBar-3UFPEd6e.js",
+    "file": "assets/TopBar-Cz48X1ol.js",
     "name": "TopBar",
     "src": "resources/js/Components/Tailwind/TopBar.jsx",
     "isEntry": true,
@@ -10749,7 +10788,20 @@
       "resources/js/Components/Tailwind/TopBars/TopBarCopyright.jsx",
       "resources/js/Components/Tailwind/TopBars/TopBarPanni.jsx",
       "resources/js/Components/Tailwind/TopBars/TopBarCopyrightSocials.jsx",
-      "resources/js/Components/Tailwind/TopBars/TopBarPages.jsx"
+      "resources/js/Components/Tailwind/TopBars/TopBarPages.jsx",
+      "resources/js/Components/Tailwind/TopBars/TopBarAddress.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/TopBars/TopBarAddress.jsx": {
+    "file": "assets/TopBarAddress--pJTheE3.js",
+    "name": "TopBarAddress",
+    "src": "resources/js/Components/Tailwind/TopBars/TopBarAddress.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/TopBars/TopBarCart.jsx": {
@@ -11011,7 +11063,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-Bb6fgFA3.js",
+    "file": "assets/Contact-SKD0fp5j.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -11056,7 +11108,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-CkrVeuQJ.js",
+    "file": "assets/CourseDetails-Cs_-yPW-.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -11092,7 +11144,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-DJ913ECu.js",
+    "file": "assets/Courses-MeWZ_896.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -11187,7 +11239,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-HYYRmrtU.js",
+    "file": "assets/Home-DAC6M_hw.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -11391,7 +11443,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-De9inejC.js",
+    "file": "assets/System-DhdAkR_7.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
