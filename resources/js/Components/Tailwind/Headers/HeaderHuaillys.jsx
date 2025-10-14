@@ -1,13 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Global from "../../../Utils/Global";
 import { ChevronRight } from "lucide-react";
 
 const HeaderHuaillys = ({ data, pages, generals }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isFixed, setIsFixed] = useState(false);
+
+    // Efecto para manejar el scroll y hacer el header fixed
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            setIsFixed(scrollPosition > 100);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
         <>
-            <section className={`bg-secondary customtext-neutral-dark shadow-lg z-20 relative ${data?.class || ""}`}>
+            <section className={`bg-secondary customtext-neutral-dark shadow-lg z-50 transition-all duration-300 ${
+                isFixed 
+                    ? 'fixed top-0 left-0 right-0 shadow-2xl backdrop-blur-sm bg-secondary/95' 
+                    : 'relative'
+            } ${data?.class || ""}`}>
                 <header className="px-[5%] w-full 2xl:px-0 2xl:max-w-7xl mx-auto flex py-4 justify-between items-center">
                     {/* Logo Section - Izquierda en mobile y desktop */}
                     <a href="/" className="flex-shrink-0 lg:mr-auto">
@@ -99,6 +115,9 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
                     </nav>
                 </div>
             </section>
+
+            {/* Espaciador cuando el header es fixed */}
+            {isFixed && <div className="h-20 md:h-24"></div>}
 
             {/* Animación CSS */}
             <style>{`

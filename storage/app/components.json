@@ -3500,6 +3500,21 @@
                     "support_phone",
                     "support_email"
                 ]
+            },
+            {
+                "id": "FooterHuaillys",
+                "name": "Footer Huaillys",
+                "image": "footer-huaillys.png",
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "generals": [
+                    "terms_conditions",
+                    "privacy_policy",
+                    "footer_description",
+                    "copyright"
+                ]
             }
         ]
     },

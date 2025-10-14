@@ -48,7 +48,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
-    'general': ['address', 'cintillo', 'copyright', 'opening_hours'],
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'footer_description'],
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'phone_whatsapp', 'message_whatsapp'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
@@ -222,6 +222,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       generals.find((x) => x.correlative == "address")?.description ?? "",
     openingHours:
       generals.find((x) => x.correlative == "opening_hours")
+        ?.description ?? "",
+    footerDescription:
+      generals.find((x) => x.correlative == "footer_description")
         ?.description ?? "",
     supportPhone:
       generals.find((x) => x.correlative == "support_phone")
@@ -801,6 +804,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: "opening_hours",
         name: "Horarios de atención",
         description: formData.openingHours || "",
+      },
+      {
+        correlative: "footer_description",
+        name: "Descripción del Footer",
+        description: formData.footerDescription || "",
       },
       {
         correlative: "support_phone",
@@ -1437,6 +1445,18 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     onChange={handleOpeningHoursChange}
                     value={formData.openingHours}
                     required
+                  />
+                </div>
+              </ConditionalField>
+
+              <ConditionalField correlative="footer_description">
+                <div className="mb-2">
+                  <TextareaFormGroup
+                    label="Descripción del Footer"
+                    onChange={(e) => handleFieldChange('footerDescription', e.target.value)}
+                    value={formData.footerDescription}
+                    placeholder="Descripción que aparecerá en el footer del sitio web"
+                    rows={3}
                   />
                 </div>
               </ConditionalField>
