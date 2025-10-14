@@ -7,19 +7,20 @@ const IndicatorHuaillys = ({ items, data, generals }) => {
   return (
     <section 
       className={`bg-accent bg-cover bg-opacity-100 relative ${data?.class || ""}`}
-      style={{ backgroundImage: "url('https://polleriahuaillys.com/images/img/texturapollos.png')" }}
+      style={{ backgroundImage: `url(${data?.url_background || ""})` }}
     >
       {/* Overlay oscuro */}
       <div className="w-full h-full bg-accent absolute opacity-50"></div>
       
       {/* Imagen de gallina */}
+      {data?.url_image && (
       <div className="absolute bottom-0 top-0 flex flex-col justify-end items-start">
         <img 
           className={`w-20 md:w-28 ${data?.class_chicken || ""}`}
-          src="https://polleriahuaillys.com/images/img/gallina.png" 
-          alt="Gallina" 
+          src={`${data?.url_image}`}
+          alt="secondary image" 
         />
-      </div>
+      </div>)}
       
       <div className="px-[8%] py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 py-5">

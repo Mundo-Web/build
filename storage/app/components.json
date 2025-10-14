@@ -1750,6 +1750,8 @@
                 "image": "indicator-huaillys.png",
                 "data": [
                     "class",
+                    "url_background",
+                    "url_image",
                     "class_chicken",
                     "class_icon",
                     "class_title",
