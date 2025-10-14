@@ -91,19 +91,22 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                             
                             {/* Contenido sobre la imagen */}
                             <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 text-white">
-                                <h3 className="text-2xl lg:text-3xl font-bold mb-3 leading-tight">
+                                <h3 className="text-2xl font-paragraph lg:text-3xl font-bold mb-3 leading-tight">
                                     {featuredProduct.name}
                                 </h3>
                                 {featuredProduct.summary && (
-                                    <p className="text-sm lg:text-base text-gray-200 mb-4 line-clamp-2">
+                                    <p className="text-sm font-paragraph lg:text-base text-white mb-4 line-clamp-3">
                                         {featuredProduct.summary}
                                     </p>
                                 )}
-                                <div className="flex items-end justify-between">
+                              
+
+
+                                <div className="flex items-end font-paragraph justify-between">
                                     <div className="flex flex-col">
                                         {parseFloat(featuredProduct.discount) > 0 ? (
                                             <>
-                                                <span className="text-sm text-gray-300 line-through mb-1">
+                                                <span className="text-sm text-white line-through mb-1">
                                                     S/ {parseFloat(featuredProduct.price).toFixed(2)}
                                                 </span>
                                                 <span className="text-3xl lg:text-4xl font-bold text-white">
@@ -135,7 +138,7 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                             {(data?.title || data?.description) && (
                                 <div className="mb-6">
                                     {data?.title && (
-                                        <h2 className="text-3xl lg:text-5xl font-bold customtext-neutral-dark font-title mb-3 uppercase tracking-wide">
+                                        <h2 className="text-3xl  customtext-neutral-dark lg:text-5xl font-bold  font-title mb-3 uppercase tracking-wide">
                                             {data.title}
                                         </h2>
                                     )}
@@ -157,7 +160,7 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -20 }}
                                             transition={{ duration: 0.3, delay: index * 0.05 }}
-                                            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-row hover:shadow-xl transition-shadow cursor-pointer h-[200px] lg:h-[220px]"
+                                            className="bg-transparent  rounded-2xl shadow-md overflow-hidden flex flex-row hover:shadow-xl transition-shadow cursor-pointer h-[200px] lg:h-[220px]"
                                         >
                                             {/* Imagen del producto */}
                                             <div className="relative w-2/5 flex-shrink-0">
@@ -177,15 +180,15 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                                             </div>
                                             
                                             {/* Contenido del producto */}
-                                            <div className="p-4 lg:p-5 w-3/5 flex flex-col justify-between">
+                                            <div className="p-4 font-paragraph customtext-neutral-dark lg:p-5 w-3/5 flex flex-col justify-between">
                                                 <div>
-                                                    <h4 className="text-base lg:text-lg font-bold text-gray-900 mb-2 line-clamp-2 leading-snug">
+                                                    <h4 className="text-base font-paragraph customtext-neutral-dark lg:text-xl font-semibold  mb-2 line-clamp-1 leading-snug">
                                                         {product.name}
                                                     </h4>
-                                                    {product.description && (
-                                                        <div className="text-xs lg:text-sm text-gray-600 line-clamp-3 mb-3" dangerouslySetInnerHTML={{ __html: product.description }}>
-                                                           
-                                                        </div>
+                                                    {product.summary && (
+                                                        <p className="text-base prose font-paragraph  customtext-neutral-dark   line-clamp-3 mb-3" >
+                                                            {product.summary}
+                                                        </p>
                                                     )}
                                                 </div>
                                                 
@@ -194,22 +197,22 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
                                                         <div className="flex flex-col">
                                                             {parseFloat(product.discount) > 0 ? (
                                                                 <>
-                                                                    <span className="text-xs text-gray-400 line-through mb-0.5">
+                                                                    <span className="text-xs customtext-neutral-dark line-through mb-0.5">
                                                                         S/ {parseFloat(product.price).toFixed(2)}
                                                                     </span>
-                                                                    <span className="text-xl lg:text-2xl font-bold text-gray-900">
+                                                                    <span className="text-xl lg:text-2xl font-bold customtext-neutral-dark">
                                                                         S/ {parseFloat(product.discount).toFixed(2)}
                                                                     </span>
                                                                 </>
                                                             ) : (
-                                                                <span className="text-xl lg:text-2xl font-bold text-gray-900">
+                                                                <span className="text-xl lg:text-2xl font-bold customtext-neutral-dark">
                                                                     S/ {parseFloat(product.price).toFixed(2)}
                                                                 </span>
                                                             )}
                                                         </div>
                                                         <button
                                                             onClick={() => onAddToCart(product)}
-                                                            className="bg-amber-600 hover:bg-amber-700 text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-xs lg:text-sm font-bold transition-colors shadow-md whitespace-nowrap"
+                                                            className="bg-accent  text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-xs lg:text-sm font-bold transition-colors shadow-md whitespace-nowrap"
                                                         >
                                                             Ordena aquí
                                                         </button>
