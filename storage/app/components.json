@@ -125,7 +125,10 @@
                 "name": "Menu - Multivet",
                 "image": "top-bar-simple.png",
                 "data": [
-                    "showCategories"
+                    "showCategories",
+
+                    "description",
+                    "icon"
                 ],
                 "using": {
                     "model": "Category",
