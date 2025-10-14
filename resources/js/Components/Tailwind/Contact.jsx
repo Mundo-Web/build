@@ -4,6 +4,7 @@ const ContactSimple = React.lazy(() => import('./Contact/ContactSimple'))
 const ContactGrid = React.lazy(() => import('./Contact/ContactGrid'))
 const ContactAko = React.lazy(() => import('./Contact/ContactAko'))
 const ContactKatya = React.lazy(() => import('./Contact/ContactKatya'))
+const ContactHuaillys = React.lazy(() => import('./Contact/ContactHuaillys'))
 const ThankContact = React.lazy(() => import('./Contact/ThankContact'))
 const Contact = ({ which, data, contacts, setContact,generals=[] }) => {
   const getContact = () => {
@@ -16,6 +17,8 @@ const Contact = ({ which, data, contacts, setContact,generals=[] }) => {
         return <ContactAko data={data} contacts={contacts} setContact={setContact} />
       case 'ContactKatya':
         return <ContactKatya data={data} contacts={contacts} setContact={setContact} generals={generals} />
+      case 'ContactHuaillys':
+        return <ContactHuaillys data={data} contacts={contacts} setContact={setContact} generals={generals} />
       case 'ThankContact':
         return <ThankContact data={data}  />
         default:

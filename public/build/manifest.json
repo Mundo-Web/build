@@ -6804,7 +6804,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-B4z8AjSP.js",
+    "file": "assets/Contact-DmDzUvWo.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -6820,6 +6820,7 @@
       "resources/js/Components/Tailwind/Contact/ContactGrid.jsx",
       "resources/js/Components/Tailwind/Contact/ContactAko.jsx",
       "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
+      "resources/js/Components/Tailwind/Contact/ContactHuaillys.jsx",
       "resources/js/Components/Tailwind/Contact/ThankContact.jsx"
     ]
   },
@@ -6877,6 +6878,23 @@
       "_main-B6F2O9-U.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
       "_BooleanLimit-D-OsQsek.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Contact/ContactHuaillys.jsx": {
+    "file": "assets/ContactHuaillys-m25aPf4d.js",
+    "name": "ContactHuaillys",
+    "src": "resources/js/Components/Tailwind/Contact/ContactHuaillys.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js"
     ]
@@ -11512,7 +11530,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DLc887I-.js",
+    "file": "assets/System-sYz-Yw9H.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

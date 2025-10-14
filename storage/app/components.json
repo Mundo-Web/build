@@ -2830,6 +2830,29 @@
                 ]
             },
             {
+                "id": "ContactHuaillys",
+                "name": "Contact Huaillys",
+                "image": "contact-huaillys.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "class_card_container",
+                    "class_card_title",
+                    "class_card_description",
+                    "class_card_icon"
+                ],
+                "generals": [
+                    "email_contact",
+                    "phone_contact",
+                    "address",
+                    "location",
+                    "opening_hours"
+                ]
+            },
+            {
                 "id": "ThankContact",
                 "name": "ThankContact",
                 "data": [
