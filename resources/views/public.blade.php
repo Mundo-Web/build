@@ -179,6 +179,9 @@
             .bg-{{ $color->name }} {
                 background-color: {{ $color->description }};
             }
+            .group:hover .group-hover\:bg-{{ $color->name }} {
+                background-color: {{ $color->description }};
+            }
 
             .customtext-{{ $color->name }} {
                 color: {{ $color->description }};

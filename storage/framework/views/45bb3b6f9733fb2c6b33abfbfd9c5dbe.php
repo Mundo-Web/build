@@ -180,6 +180,9 @@
             .bg-<?php echo e($color->name); ?> {
                 background-color: <?php echo e($color->description); ?>;
             }
+            .group:hover .group-hover\:bg-<?php echo e($color->name); ?> {
+                background-color: <?php echo e($color->description); ?>;
+            }
 
             .customtext-<?php echo e($color->name); ?> {
                 color: <?php echo e($color->description); ?>;

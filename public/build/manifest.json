@@ -5746,6 +5746,22 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx": {
+    "file": "assets/CategoryInfiniteSlider-C81xXMoK.js",
+    "name": "CategoryInfiniteSlider",
+    "src": "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
+    ]
+  },
   "resources/js/Components/Tailwind/Categories/CategoryOneLine.jsx": {
     "file": "assets/CategoryOneLine-BR0YRxbL.js",
     "name": "CategoryOneLine",
@@ -5873,7 +5889,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Category.jsx": {
-    "file": "assets/Category-BBecw0jF.js",
+    "file": "assets/Category-9VC6_DVb.js",
     "name": "Category",
     "src": "resources/js/Components/Tailwind/Category.jsx",
     "isDynamicEntry": true,
@@ -5895,7 +5911,8 @@
       "resources/js/Components/Tailwind/Categories/CategoryGridInfinite.jsx",
       "resources/js/Components/Tailwind/Scraping/Components/CategoriesScraping.jsx",
       "resources/js/Components/Tailwind/Categories/CategoryBoxSwiper.jsx",
-      "resources/js/Components/Tailwind/Categories/CategoryPidelo.jsx"
+      "resources/js/Components/Tailwind/Categories/CategoryPidelo.jsx",
+      "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Checkout.jsx": {
@@ -11380,7 +11397,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-wvwREg5u.js",
+    "file": "assets/BusinessIWorkCard-Cj37azoW.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -11388,13 +11405,14 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_BooleanLimit-D-OsQsek.js",
+      "_BasicRest-BML1C-ua.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js"
+      "_index-B6ujFmsw.js",
+      "_BooleanLimit-D-OsQsek.js"
     ]
   },
   "resources/js/Reutilizables/Pagination/FilterPagination.jsx": {
@@ -11443,7 +11461,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BuV0T9xC.js",
+    "file": "assets/System-jwEcVSQX.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

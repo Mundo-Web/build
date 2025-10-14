@@ -12,6 +12,7 @@ const CategoryGridInfinite = React.lazy(() => import('./Categories/CategoryGridI
 const CategoriesScraping = React.lazy(() => import('./Scraping/Components/CategoriesScraping'))
 const CategoryBoxSwiper = React.lazy(() => import('./Categories/CategoryBoxSwiper'))
 const CategoryPidelo = React.lazy(() => import('./Categories/CategoryPidelo'))
+const CategoryInfiniteSlider = React.lazy(() => import('./Categories/CategoryInfiniteSlider'))
 const Category = ({ which, data, items }) => {
   const getCategory = () => {
     switch (which) {
@@ -37,6 +38,8 @@ const Category = ({ which, data, items }) => {
         return <CategoryBoxSwiper data={data} items={items} />
       case 'CategoryPidelo':
         return <CategoryPidelo data={data} items={items} />
+      case 'CategoryInfiniteSlider':
+        return <CategoryInfiniteSlider data={data} items={items} />
       
       
         default:

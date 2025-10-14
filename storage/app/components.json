@@ -1577,6 +1577,27 @@
                 }
             },
             {
+                "id": "CategoryInfiniteSlider",
+                "name": "Slider Infinito con Hover",
+                "image": "category-infinite-slider.png",
+                "data": [
+                    "title",
+                    "description",
+                    "path",
+                    "link_catalog"
+                ],
+                "using": {
+                    "model": "Category",
+                    "fields": [
+                        "id",
+                        "name",
+                        "slug",
+                        "description",
+                        "image"
+                    ]
+                }
+            },
+            {
                 "id": "PaginationCategory",
                 "name": "paginacion",
                 "image": "categories-simple.png",
