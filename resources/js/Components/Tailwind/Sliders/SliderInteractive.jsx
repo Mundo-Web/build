@@ -264,21 +264,27 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         isDragging.current = true;
         startX.current = e.pageX;
         sliderRef.current.style.transition = "none";
+        e.preventDefault(); // Prevenir selección de texto
     };
 
     const handleMouseMove = (e) => {
         if (!isDragging.current) return;
+        e.preventDefault();
         const deltaX = e.pageX - startX.current;
         currentTranslate.current =
             -currentIndex * 100 + (deltaX / window.innerWidth) * 100;
-        sliderRef.current.style.transform = `translateX(${currentTranslate.current}%)`;
+        if (sliderRef.current) {
+            sliderRef.current.style.transform = `translateX(${currentTranslate.current}%)`;
+        }
     };
 
     const handleMouseUp = (e) => {
         if (!isDragging.current) return;
         isDragging.current = false;
+        if (!sliderRef.current) return;
+        
         sliderRef.current.style.transition = "transform 0.5s ease-in-out";
-        const threshold = 20;
+        const threshold = 50; // Aumentado de 20 a 50 para mejor detección
         const deltaX = Math.abs(
             (currentTranslate.current + currentIndex * 100) *
             (window.innerWidth / 100)
@@ -290,14 +296,14 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 nextSlide();
             }
         } else {
-            setCurrentIndex(currentIndex);
+            sliderRef.current.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
-        sliderRef.current.style.transform = `translateX(-${currentIndex * 100}%)`;
+        currentTranslate.current = 0;
     };
 
-    const handleMouseLeave = () => {
+    const handleMouseLeave = (e) => {
         if (isDragging.current) {
-            handleMouseUp();
+            handleMouseUp(e);
         }
     };
 
@@ -392,7 +398,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     return (
         <div className={`relative w-full mx-auto ${data?.class_slider || ""}`}>
             <div
-                className={`overflow-hidden relative cursor-grab ease ${data?.class_slider || ""}`}
+                className={`overflow-hidden relative ${isDragging.current ? 'cursor-grabbing' : 'cursor-grab'} ease ${data?.class_slider || ""}`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -400,6 +406,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
+                style={{ userSelect: 'none' }}
             >
                 <div
                     ref={sliderRef}
