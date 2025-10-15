@@ -3312,6 +3312,17 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+            {
+                "id": "AboutHuaillys",
+                "name": "AboutHuaillys - Pollería Huaillys",
+                "image": "about-huaillys.png",
+                "data": [
+                    "strengths_title"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
             }
         ]
     },
