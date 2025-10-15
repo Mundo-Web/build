@@ -1502,6 +1502,52 @@
                         }
                     }
                 ]
+            },
+            {
+                "id": "FilterHuaillys",
+                "name": "FilterHuaillys - Pollería Huaillys",
+                "image": "filters-huaillys.png",
+                "data": [
+                    "background_image",
+                    "hero_title",
+                    "hero_subtitle",
+                    "category_title",
+                    "category_description",
+                    "product_title",
+                    "product_description",
+                    "button_text"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Catálogo con categorías",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand",
+                                "images"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "discount",
+                                "final_price",
+                                "image",
+                                "summary",
+                                "description",
+                                "category_id"
+                            ]
+                        }
+                    }
+                ]
             }
         ]
     },

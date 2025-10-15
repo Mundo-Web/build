@@ -87,7 +87,7 @@ const ProductInfiniteSlider = ({ items, data, cart, setCart }) => {
                         className="product-swiper"
                     >
                         {items.map((product, index) => (
-                            <SwiperSlide key={product.id}>
+                            <SwiperSlide key={product.id} className="my-4">
                                 <ProductCard 
                                     product={product}
                                     handleProductClick={handleProductClick}

@@ -9,7 +9,7 @@ const ProductCard = ({ product, handleProductClick, data = {} }) => {
 
     return (
         <div 
-            className="group my-4 cursor-pointer bg-transparent rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col"
+            className="group cursor-pointer bg-transparent rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col"
             onClick={() => handleProductClick(product)}
         >
             {/* Imagen del producto */}

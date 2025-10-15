@@ -374,6 +374,14 @@
       "_BasicRest-BML1C-ua.js"
     ]
   },
+  "_ProductCard-CXclprnE.js": {
+    "file": "assets/ProductCard-CXclprnE.js",
+    "name": "ProductCard",
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js"
+    ]
+  },
   "_ProductCard-UCCIOcXu.js": {
     "file": "assets/ProductCard-UCCIOcXu.js",
     "name": "ProductCard",
@@ -7046,7 +7054,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-BOp-WvF6.js",
+    "file": "assets/Filter-DI8BRPEh.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -7067,7 +7075,8 @@
       "resources/js/Components/Tailwind/Filters/CatalagoFiltrosAko.jsx",
       "resources/js/Components/Tailwind/Filters/CatalagoFiltrosPaani.jsx",
       "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
-      "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx"
+      "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
+      "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltros.jsx": {
@@ -7601,6 +7610,41 @@
     ],
     "css": [
       "tippy.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
+    "file": "assets/FilterHuaillys-HQlOI8H8.js",
+    "name": "FilterHuaillys",
+    "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_navigation-BIDIUzpb.js",
+      "_autoplay-BjAsSK2h.js",
+      "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "_ProductCard-CXclprnE.js",
+      "_ItemsRest-Dp5IKigO.js",
+      "_Loading-B-FwDSWi.js",
+      "_NoResult-DlL_OOrq.js",
+      "_main-B6F2O9-U.js",
+      "_chevron-left-JcR9Fe4w.js",
+      "_chevron-right-Cug7tVUE.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_create-element-if-not-defined-DUWlnlug.js",
+      "_BasicRest-BML1C-ua.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js",
+      "_BooleanLimit-D-OsQsek.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_createLucideIcon-DfjclApS.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterSalaFabulosa.jsx": {
@@ -9099,7 +9143,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-BL9xmvCE.js",
+    "file": "assets/Product-C8o7CjiM.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -9129,7 +9173,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-BYGR_NI9.js",
+    "file": "assets/ProductDetail-B8Z5pdZY.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -9397,7 +9441,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-DKWx5cpF.js",
+    "file": "assets/ProductDetailHuaillys-CzzVUUsf.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9427,6 +9471,7 @@
       "_BooleanLimit-D-OsQsek.js",
       "_autoplay-BjAsSK2h.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
+      "_ProductCard-CXclprnE.js",
       "_createLucideIcon-DfjclApS.js"
     ],
     "css": [
@@ -11670,7 +11715,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-k5ApeJ12.js",
+    "file": "assets/System-BjRtXN44.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
