@@ -39,8 +39,8 @@ const SubscriptionSimple = ({ data }) => {
                 className="bg-cover bg-center w-full relative" 
                 style={{ 
                     backgroundImage: data?.background_image 
-                        ? `url(${data.background_image})` 
-                        : 'url(https://polleriahuaillys.com/images/img/2textura.png)' 
+                        && `url(${data.background_image})` 
+                       
                 }}
             >
                 {/* Overlay */}
@@ -68,7 +68,7 @@ const SubscriptionSimple = ({ data }) => {
                                     type="email" 
                                     required 
                                     disabled={saving}
-                                    className="customtext-neutral-dark min-w-[300px] font-paragraph ring-0 border-0 focus:ring-0 focus:border-0 border-transparent ring-transparent bg-transparent flex-1" 
+                                    className="customtext-neutral-dark max-w-[300px] font-paragraph ring-0 border-0 focus:ring-0 focus:border-0 focus:outline-none border-transparent ring-transparent bg-transparent flex-1" 
                                     placeholder={data?.placeholder || "Introduce tu email"}
                                 />
                                 

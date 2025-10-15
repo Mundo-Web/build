@@ -2844,7 +2844,9 @@
                     "class_card_container",
                     "class_card_title",
                     "class_card_description",
-                    "class_card_icon"
+                    "class_card_icon",
+                    "map_title",
+                    "map_description"
                 ],
                 "generals": [
                     "email_contact",
@@ -3511,11 +3513,19 @@
                     "model": "Social",
                     "limit": 10
                 },
+                "data": [
+                    "footer_background",
+                    "left_image",
+                    "right_image",
+                    "class_logo_footer"
+                   
+                ],
                 "generals": [
                     "terms_conditions",
                     "privacy_policy",
                     "footer_description",
                     "copyright"
+
                 ]
             }
         ]

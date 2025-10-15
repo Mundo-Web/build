@@ -12,9 +12,9 @@ const ProductInfiniteSlider = ({ items, data, cart, setCart }) => {
 
     // Función para manejar click en producto (ir a detalle)
     const handleProductClick = (product) => {
-        if (data?.path) {
-            window.location.href = `${data.path}/${product.slug}`;
-        }
+      
+            window.location.href = `/product/${product.slug}`;
+        
     };
 
     // Función para agregar al carrito
@@ -149,12 +149,12 @@ const ProductInfiniteSlider = ({ items, data, cart, setCart }) => {
                                         </div>
 
                                         {/* Botón Ordenar aquí */}
-                                        <button
-                                            onClick={(e) => onAddToCart(product, e)}
-                                            className="w-full bg-accent  text-white font-bold py-2.5 lg:py-3 rounded-lg transition-colors duration-300 text-sm lg:text-base mt-auto group-hover:bg-primary"
+                                        <a
+                                            href={`/product/${product.slug}`}
+                                            className="w-full text-center bg-accent  text-white font-bold py-2.5 lg:py-3 rounded-lg transition-colors duration-300 text-sm lg:text-base mt-auto group-hover:bg-primary"
                                         >
                                             Ordenar aquí
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </SwiperSlide>

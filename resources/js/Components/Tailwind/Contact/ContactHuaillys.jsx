@@ -109,20 +109,20 @@ const ContactHuaillys = ({ data, contacts }) => {
 
     return (
         <motion.section
-            className="bg-secondary py-12 px-primary"
+            className="bg-secondary py-12 "
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
         >
             <motion.div
-                className="mx-auto 2xl:max-w-7xl flex flex-col lg:flex-row gap-12  rounded-xl p-4 md:px-8 md:py-8"
+                className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl flex flex-col lg:flex-row gap-12 justify-between  rounded-xl py-4  md:py-8"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
             >
                 {/* Formulario de contacto */}
                 <motion.div
-                    className="w-full lg:w-1/2"
+                    className="w-full lg:w-3/6"
                     initial={{ x: -50, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -136,7 +136,7 @@ const ContactHuaillys = ({ data, contacts }) => {
                         {data?.title || 'Contáctanos'}
                     </motion.h2>
                     <motion.p
-                        className={`customtext-neutral-light mb-8 ${data?.class_description || ''}`}
+                        className={`customtext-neutral-light font-paragraph text-lg mb-8 ${data?.class_description || ''}`}
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 0.7 }}
@@ -288,7 +288,7 @@ const ContactHuaillys = ({ data, contacts }) => {
 
                 {/* Información de contacto */}
                 <motion.div
-                    className="w-full lg:w-1/2 space-y-6"
+                    className="w-full lg:w-2/6 space-y-6"
                     initial={{ x: 50, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
@@ -451,15 +451,15 @@ const ContactHuaillys = ({ data, contacts }) => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.7 }}
                     >
-                        Nuestra ubicación
+                       {data?.map_title || ' Nuestra ubicación'}
                     </motion.h3>
                     <motion.p
-                      className={`customtext-neutral-light mb-8 ${data?.class_description || ''}`}
+                      className={`customtext-neutral-light max-w-3xl font-paragraph text-lg mb-8 ${data?.class_description || ''}`}
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 1.8 }}
                     >
-                        Encuéntranos fácilmente en el mapa y ven a visitarnos.
+                          {data?.map_description || 'Encuéntranos fácilmente con el mapa interactivo a continuación.'}
                     </motion.p>
                 </motion.div>
 

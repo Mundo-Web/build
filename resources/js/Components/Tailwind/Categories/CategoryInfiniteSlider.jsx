@@ -12,9 +12,9 @@ const CategoryInfiniteSlider = ({ items, data }) => {
 
     // Función para manejar click en categoría
     const handleCategoryClick = (category) => {
-        if (data?.path) {
-            window.location.href = `${data.path}?categoria=${category.slug}`;
-        }
+     
+          window.location.href = `/catalogo?category=${category.slug}`;
+        
     };
 
     return (
