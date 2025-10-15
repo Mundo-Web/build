@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker, Autocomplete } from "@react-google-maps/api";
+
+// Bibliotecas requeridas para Google Maps
+const libraries = ["places"];
 import { Toaster, toast } from "sonner";
 
 // Asume que tienes un servicio para guardar los datos
@@ -48,7 +51,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
-    'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'footer_description'],
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours'],//footer_description
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'phone_whatsapp', 'message_whatsapp'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
@@ -108,6 +111,10 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const [showVisibilityModal, setShowVisibilityModal] = useState(false);
   const [fieldVisibility, setFieldVisibility] = useState({});
   const [savingVisibility, setSavingVisibility] = useState(false);
+
+  // Estados para Google Places Autocomplete
+  const [autocomplete, setAutocomplete] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
 
   // Fetch variables for selected template
   useEffect(() => {
@@ -223,9 +230,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     openingHours:
       generals.find((x) => x.correlative == "opening_hours")
         ?.description ?? "",
-    footerDescription:
+    /*footerDescription:
       generals.find((x) => x.correlative == "footer_description")
-        ?.description ?? "",
+        ?.description ?? "",*/
     supportPhone:
       generals.find((x) => x.correlative == "support_phone")
         ?.description ?? "",
@@ -760,6 +767,33 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     }));
   };
 
+  // Función para cargar el autocomplete
+  const onLoadAutocomplete = (autocompleteInstance) => {
+    setAutocomplete(autocompleteInstance);
+  };
+
+  // Función cuando se selecciona un lugar del autocomplete
+  const onPlaceChanged = () => {
+    if (autocomplete !== null) {
+      const place = autocomplete.getPlace();
+      
+      if (place.geometry && place.geometry.location) {
+        const newLocation = {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+        };
+        
+        setFormData((prevState) => ({
+          ...prevState,
+          location: newLocation,
+        }));
+        
+        // Actualizar el valor del input de búsqueda
+        setSearchValue(place.formatted_address || place.name || "");
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -805,11 +839,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         name: "Horarios de atención",
         description: formData.openingHours || "",
       },
-      {
+     /* {
         correlative: "footer_description",
         name: "Descripción del Footer",
         description: formData.footerDescription || "",
-      },
+      },*/
       {
         correlative: "support_phone",
         name: "Número de soporte",
@@ -1449,7 +1483,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 </div>
               </ConditionalField>
 
-              <ConditionalField correlative="footer_description">
+           {/*   <ConditionalField correlative="footer_description">
                 <div className="mb-2">
                   <TextareaFormGroup
                     label="Descripción del Footer"
@@ -1459,7 +1493,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     rows={3}
                   />
                 </div>
-              </ConditionalField>
+              </ConditionalField>*/}
 
             </div>
 
@@ -2323,22 +2357,55 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               className={`tab-pane fade ${activeTab === "location" ? "show active" : ""}`}
               role="tabpanel"
             >
-              <LoadScript googleMapsApiKey={Global.GMAPS_API_KEY}>
+              <LoadScript 
+                googleMapsApiKey={Global.GMAPS_API_KEY}
+                libraries={libraries}
+              >
+                <div className="mb-3">
+                  <label className="form-label">
+                    <i className="fas fa-search me-2"></i>
+                    Buscar ubicación
+                  </label>
+                  <Autocomplete
+                    onLoad={onLoadAutocomplete}
+                    onPlaceChanged={onPlaceChanged}
+                  >
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Busca tu dirección o nombre del lugar..."
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                    />
+                  </Autocomplete>
+                  <small className="form-text text-muted">
+                    Escribe el nombre o dirección de tu tienda para centrar el mapa automáticamente.
+                  </small>
+                </div>
+
                 <GoogleMap
                   mapContainerStyle={{
                     width: "100%",
                     height: "400px",
                   }}
                   center={formData.location}
-                  zoom={10}
+                  zoom={15}
                   onClick={handleMapClick}
                 >
                   <Marker position={formData.location} />
                 </GoogleMap>
               </LoadScript>
-              <small className="form-text text-muted">
-                Haz clic en el mapa para seleccionar la ubicación.
+              <small className="form-text text-muted mt-2 d-block">
+                <i className="fas fa-info-circle me-1"></i>
+                Haz clic en el mapa para ajustar la ubicación exacta después de buscar.
               </small>
+              <div className="mt-3 p-3 bg-light rounded">
+                <strong>Coordenadas seleccionadas:</strong>
+                <div className="mt-2">
+                  <span className="badge bg-primary me-2">Latitud: {formData.location.lat.toFixed(6)}</span>
+                  <span className="badge bg-success">Longitud: {formData.location.lng.toFixed(6)}</span>
+                </div>
+              </div>
             </div>
 
             <div

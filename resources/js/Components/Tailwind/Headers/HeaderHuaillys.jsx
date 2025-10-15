@@ -79,9 +79,29 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
                     </button>
                 </header>
 
-                {/* Mobile Navigation Menu - Estilo App Mobile */}
+             
+            </section>
+
+            {/* Espaciador cuando el header es fixed - incluye TopBar + Header */}
+            {isFixed && <div className="h-28 md:h-32"></div>}
+
+            {/* Animación CSS */}
+            <style>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
+
+         {/* Mobile Navigation Menu - Estilo App Mobile */}
                 <div
-                    className={`fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden transition-all duration-300 ease-in-out z-40 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    className={`fixed z-[99999999] inset-0 bg-black/50 backdrop-blur-sm lg:hidden transition-all duration-300 ease-in-out  ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                         }`}
                     onClick={() => setMobileMenuOpen(false)}
                 >
@@ -126,24 +146,6 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
                         </div>
                     </nav>
                 </div>
-            </section>
-
-            {/* Espaciador cuando el header es fixed - incluye TopBar + Header */}
-            {isFixed && <div className="h-28 md:h-32"></div>}
-
-            {/* Animación CSS */}
-            <style>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
         </>
     );
 };
