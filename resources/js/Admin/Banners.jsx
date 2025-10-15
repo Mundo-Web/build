@@ -385,7 +385,10 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
             const rawValue = $(element).val();
             const normalized = Array.isArray(rawValue) ? rawValue[0] : rawValue;
-            handlePreviewFieldChange("type", normalized || "BannerSimple");
+            const finalValue = normalized || "BannerSimple";
+            
+            // Actualizar el estado de preview data inmediatamente
+            handlePreviewFieldChange("type", finalValue);
         },
         [handlePreviewFieldChange]
     );
@@ -643,7 +646,9 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             const pageId = $(pageIdRef.current).val();
             const normalizedPageId = normalizePageId(pageId);
             const afterComponent = $(afterComponentRef.current).val() || null;
-            const bannerType = $(bannerTypeRef.current).val();
+            // CRÍTICO: Usar el estado previewData.type en lugar de leer del select
+            // Esto garantiza que el valor guardado sea el que está en el estado actualizado
+            const bannerType = previewData.type || 'BannerSimple';
 
             const systemData = {
                 name: `Banner - ${nameRef.current.value}`,
