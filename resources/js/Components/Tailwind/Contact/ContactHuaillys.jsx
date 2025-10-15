@@ -404,7 +404,7 @@ const ContactHuaillys = ({ data, contacts }) => {
 
                     {/* Horarios */}
                     <motion.div
-                        className={` p-6 rounded-xl group shadow-lg hover:bg-primary transition-all duration-300 cursor-pointer ${data?.class_card_container || ''}`}
+                        className={` p-6  rounded-xl group shadow-lg hover:bg-primary transition-all duration-300 cursor-pointer ${data?.class_card_container || ''}`}
                         initial={{ y: 30, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                   
@@ -499,7 +499,7 @@ const ContactHuaillys = ({ data, contacts }) => {
                                     scaledSize: { width: 48, height: 48 },
                                     anchor: { x: 24, y: 48 }
                                 }}
-                                title="Pollería Huaillys"
+                                title="tienda principal"
                             />
                         </GoogleMap>
                     </LoadScript>
