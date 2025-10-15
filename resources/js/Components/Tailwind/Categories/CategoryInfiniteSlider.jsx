@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, EffectFade } from 'swiper/modules';
+import { Autoplay, Navigation, EffectFade } from 'swiper/modules';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
+import 'swiper/css/navigation';
 
 const CategoryInfiniteSlider = ({ items, data }) => {
+    const navigationPrevRef = useRef(null);
+    const navigationNextRef = useRef(null);
+
     // Si no hay items o el array está vacío, no renderizar nada
     if (!items || items.length === 0) {
         return null;
@@ -12,9 +17,7 @@ const CategoryInfiniteSlider = ({ items, data }) => {
 
     // Función para manejar click en categoría
     const handleCategoryClick = (category) => {
-     
-          window.location.href = `/catalogo?category=${category.slug}`;
-        
+        window.location.href = `/catalogo?category=${category.slug}`;
     };
 
     return (
@@ -45,13 +48,21 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                 {/* Swiper Slider */}
                 <div className="relative">
                     <Swiper
-                        modules={[Autoplay]}
+                        modules={[Autoplay, Navigation]}
                         spaceBetween={16}
                         slidesPerView={1}
                         autoplay={{
                             delay: 3000,
                             disableOnInteraction: false,
                             pauseOnMouseEnter: true,
+                        }}
+                        navigation={{
+                            prevEl: navigationPrevRef.current,
+                            nextEl: navigationNextRef.current,
+                        }}
+                        onBeforeInit={(swiper) => {
+                            swiper.params.navigation.prevEl = navigationPrevRef.current;
+                            swiper.params.navigation.nextEl = navigationNextRef.current;
                         }}
                         loop={items.length > 4}
                         speed={800}
@@ -105,6 +116,22 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                             </SwiperSlide>
                         ))}
                     </Swiper>
+
+                    {/* Botones de navegación */}
+                    <button
+                        ref={navigationPrevRef}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -ml-5 lg:-ml-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Anterior"
+                    >
+                        <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
+                    </button>
+                    <button
+                        ref={navigationNextRef}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -mr-5 lg:-mr-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Siguiente"
+                    >
+                        <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
+                    </button>
                 </div>
 
                 {/* Botón ver todo */}
