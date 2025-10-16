@@ -1,7 +1,10 @@
 import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker, Autocomplete } from "@react-google-maps/api";
+
+// Bibliotecas requeridas para Google Maps
+const libraries = ["places"];
 
 import StoresRest from "../Actions/Admin/StoresRest";
 import CreateReactScript from "../Utils/CreateReactScript";
@@ -51,6 +54,10 @@ const Stores = ({ ubigeos = [] }) => {
         lng: -77.042793
     }); // Lima por defecto
     const [markerPosition, setMarkerPosition] = useState(null);
+
+    // Estados para Google Places Autocomplete
+    const [autocomplete, setAutocomplete] = useState(null);
+    const [searchValue, setSearchValue] = useState("");
 
     // Estados para horarios de atención
     const [businessHours, setBusinessHours] = useState([
@@ -426,6 +433,57 @@ const Stores = ({ ubigeos = [] }) => {
         });
     };
 
+    // Función para cargar el autocomplete
+    const onLoadAutocomplete = (autocompleteInstance) => {
+        setAutocomplete(autocompleteInstance);
+        
+        // Asegurar que el dropdown del autocomplete tenga el z-index correcto sobre el modal
+        setTimeout(() => {
+            const pacContainers = document.querySelectorAll('.pac-container');
+            pacContainers.forEach(container => {
+                container.style.zIndex = '9999';
+            });
+        }, 100);
+    };
+
+    // Función cuando se selecciona un lugar del autocomplete
+    const onPlaceChanged = () => {
+        if (autocomplete !== null) {
+            const place = autocomplete.getPlace();
+            
+            if (place.geometry && place.geometry.location) {
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                
+                // Actualizar el centro del mapa y la posición del marcador
+                setMapCenter({ lat, lng });
+                setMarkerPosition({ lat, lng });
+                
+                // Actualizar los campos de latitud y longitud
+                if (latitudeRef.current) {
+                    latitudeRef.current.value = lat.toFixed(8);
+                }
+                if (longitudeRef.current) {
+                    longitudeRef.current.value = lng.toFixed(8);
+                }
+                
+                // Actualizar el valor del input de búsqueda
+                setSearchValue(place.formatted_address || place.name || "");
+                
+                // Mostrar notificación
+                Swal.fire({
+                    title: "Ubicación encontrada",
+                    text: place.formatted_address || place.name,
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: "top-end"
+                });
+            }
+        }
+    };
+
     // Función para centrar el mapa en las coordenadas ingresadas manualmente
     const handleCoordinateChange = () => {
         const lat = parseFloat(latitudeRef.current?.value);
@@ -646,304 +704,452 @@ const Stores = ({ ubigeos = [] }) => {
                 modalRef={modalRef}
                 title={isEditing ? "Editar Tienda" : "Agregar Tienda"}
                 onSubmit={onModalSubmit}
-                size="lg"
+                size="xl"
             >
                 <input ref={idRef} type="hidden" />
-                <div id="form-container" className="row">
-                    <div className="col-md-6">
-                        <InputFormGroup
-                            eRef={nameRef}
-                            label="Nombre de la tienda"
-                            col="col-12"
-                            required
-                        />
-                    </div>
-                    <div className="col-md-6">
-                        <SelectFormGroup
-                            eRef={typeRef}
-                            label="Tipo de establecimiento"
-                            col="col-12"
-                            required
-                            dropdownParent={'#form-container'}
-                        >
-                            <option value="tienda_principal">Tienda Principal</option>
-                            <option value="tienda">Tienda</option>
-                            <option value="oficina">Oficina</option>
-                            <option value="almacen">Almacén</option>
-                            <option value="showroom">Showroom</option>
-                            <option value="otro">Otro</option>
-                        </SelectFormGroup>
-                    </div>
-                    {Fillable.has('stores', 'manager') && (
-                        <div className="col-md-6">
-                            <InputFormGroup
-                                eRef={managerRef}
-                                label="Encargado"
-                                col="col-12"
-                            />
-                        </div>
-                    )}
+                <div id="form-container">
+                    {/* Navegación de Pestañas */}
+                    <ul className="nav nav-pills mb-4" id="storeTabs" role="tablist" style={{
+                        gap: '10px',
+                        flexWrap: 'wrap',
+                        backgroundColor: '#f8f9fa',
+                        padding: '15px',
+                        borderRadius: '8px'
+                    }}>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link active" 
+                                id="basic-info-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#basic-info" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="basic-info" 
+                                aria-selected="true"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease',
+                                    padding: '10px 20px'
+                                }}
+                            >
+                                <i className="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="location-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#location" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="location" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease',
+                                    padding: '10px 20px'
+                                }}
+                            >
+                                <i className="fas fa-map-marker-alt me-2"></i>
+                                Ubicación
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="contact-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#contact" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="contact" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease',
+                                    padding: '10px 20px'
+                                }}
+                            >
+                                <i className="fas fa-phone me-2"></i>
+                                Contacto
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="schedule-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#schedule" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="schedule" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease',
+                                    padding: '10px 20px'
+                                }}
+                            >
+                                <i className="fas fa-clock me-2"></i>
+                                Horarios
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link" 
+                                id="multimedia-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#multimedia" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="multimedia" 
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease',
+                                    padding: '10px 20px'
+                                }}
+                            >
+                                <i className="fas fa-images me-2"></i>
+                                Multimedia
+                            </button>
+                        </li>
+                    </ul>
 
-                    <div className="col-12">
-                        <InputFormGroup
-                            eRef={addressRef}
-                            label="Dirección completa"
-                            col="col-12"
-                            required
-                        />
-                    </div>
-
-                    <div className="col-12">
-                        <SelectFormGroup
-                            eRef={ubigeoRef}
-                            label="Distrito/Ubigeo"
-                            col="col-12"
-                            templateResult={ubigeoTemplate}
-                            templateSelection={ubigeoTemplate}
-                            dropdownParent="#form-container"
-                            required
-                        >
-                            {ubigeos.map((x, index) => (
-                                <option key={index} value={x.reniec}>
-                                    {x.reniec} {x.distrito} {x.provincia} {x.departamento}
-                                </option>
-                            ))}
-                        </SelectFormGroup>
-                    </div>
-
-                    {Fillable.has('stores', 'phone') && (
-                        <div className="col-md-6">
-                            <InputFormGroup
-                                eRef={phoneRef}
-                                label="Teléfono"
-                                col="col-12"
-                                type="tel"
-                            />
-                        </div>
-                    )}
-                    {Fillable.has('stores', 'email') && (
-                        <div className="col-md-6">
-                            <InputFormGroup
-                                eRef={emailRef}
-                                label="Email"
-                                col="col-12"
-                                type="email"
-                            />
-                        </div>
-                    )}
-
-                    <div className="col-12">
-                        <div className="card">
-                            <div className="card-header">
-                                <h5 className="card-title mb-0">
-                                    <i className="fas fa-map-marker-alt me-2"></i>
-                                    Ubicación de la Tienda
-                                </h5>
-                            </div>
-                            <div className="card-body">
-
-
-                                {/* Mapa de Google */}
-                                <div className="mb-3">
-                                    <LoadScript
-                                        googleMapsApiKey={Global.GMAPS_API_KEY}
+                    {/* Contenido de las Pestañas */}
+                    <div className="tab-content" style={{ padding: '20px 0' }}>
+                        {/* Pestaña: Información Básica */}
+                        <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <InputFormGroup
+                                        eRef={nameRef}
+                                        label="Nombre de la tienda"
+                                        col="col-12"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <SelectFormGroup
+                                        eRef={typeRef}
+                                        label="Tipo de establecimiento"
+                                        col="col-12"
+                                        required
+                                        dropdownParent={'#form-container'}
                                     >
-                                        <GoogleMap
-                                            mapContainerStyle={{
-                                                width: "100%",
-                                                height: "400px",
-                                                borderRadius: "8px"
-                                            }}
-                                            center={mapCenter}
-                                            zoom={15}
-                                            onClick={handleMapClick}
-                                            options={{
-                                                streetViewControl: true,
-                                                mapTypeControl: true,
-                                                fullscreenControl: true
-                                            }}
-                                        >
-                                            {markerPosition && (
-                                                <Marker
-                                                    position={markerPosition}
-                                                    title="Ubicación de la tienda"
-                                                />
-                                            )}
-                                        </GoogleMap>
-                                    </LoadScript>
+                                        <option value="tienda_principal">Tienda Principal</option>
+                                        <option value="tienda">Tienda</option>
+                                        <option value="oficina">Oficina</option>
+                                        <option value="almacen">Almacén</option>
+                                        <option value="showroom">Showroom</option>
+                                        <option value="otro">Otro</option>
+                                    </SelectFormGroup>
                                 </div>
-
-                                {/* Campos de coordenadas */}
-                                <div className="row">
+                                {Fillable.has('stores', 'manager') && (
                                     <div className="col-md-6">
                                         <InputFormGroup
-                                            eRef={latitudeRef}
-                                            label="Latitud"
+                                            eRef={managerRef}
+                                            label="Encargado"
                                             col="col-12"
-                                            type="number"
-                                            step="0.00000001"
-                                            min="-18.5"
-                                            max="-0.1"
-                                            placeholder="Ej: -12.042626777544823"
-                                            onChange={handleCoordinateChange}
                                         />
-
                                     </div>
+                                )}
+                                {Fillable.has('stores', 'capacity') && (
                                     <div className="col-md-6">
                                         <InputFormGroup
-                                            eRef={longitudeRef}
-                                            label="Longitud"
+                                            eRef={capacityRef}
+                                            label="Capacidad de atención (personas/día)"
                                             col="col-12"
                                             type="number"
-                                            step="0.00000001"
-                                            min="-81.5"
-                                            max="-68.5"
-                                            placeholder="Ej: -77.04753389161506"
-                                            onChange={handleCoordinateChange}
+                                            placeholder="Ej: 50"
                                         />
-
                                     </div>
+                                )}
+                                <div className="col-12">
+                                    <InputFormGroup
+                                        eRef={addressRef}
+                                        label="Dirección completa"
+                                        col="col-12"
+                                        required
+                                    />
                                 </div>
+                                <div className="col-12">
+                                    <SelectFormGroup
+                                        eRef={ubigeoRef}
+                                        label="Distrito/Ubigeo"
+                                        col="col-12"
+                                        templateResult={ubigeoTemplate}
+                                        templateSelection={ubigeoTemplate}
+                                        dropdownParent="#form-container"
+                                        required
+                                    >
+                                        {ubigeos.map((x, index) => (
+                                            <option key={index} value={x.reniec}>
+                                                {x.reniec} {x.distrito} {x.provincia} {x.departamento}
+                                            </option>
+                                        ))}
+                                    </SelectFormGroup>
+                                </div>
+                            </div>
+                        </div>
 
-                                {/* Botones de acción rápida */}
-                                <div className="row mt-3">
+                        {/* Pestaña: Ubicación */}
+                        <div className="tab-pane fade" id="location" role="tabpanel" aria-labelledby="location-tab">
+                            <LoadScript
+                                googleMapsApiKey={Global.GMAPS_API_KEY}
+                                libraries={libraries}
+                            >
+                                <div className="row g-3">
                                     <div className="col-12">
-                                        <div className="d-flex gap-2 flex-wrap">
-
-                                            <button
-                                                type="button"
-                                                className="btn btn-outline-secondary btn-sm"
-                                                onClick={() => {
-                                                    setMarkerPosition(null);
-                                                    latitudeRef.current.value = "";
-                                                    longitudeRef.current.value = "";
+                                        {/* Buscador de ubicación */}
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                <i className="fas fa-search me-2"></i>
+                                                Buscar ubicación
+                                            </label>
+                                            <Autocomplete
+                                                onLoad={onLoadAutocomplete}
+                                                onPlaceChanged={onPlaceChanged}
+                                                options={{
+                                                    componentRestrictions: { country: 'pe' },
+                                                    fields: ['formatted_address', 'geometry', 'name'],
+                                                    strictBounds: false,
                                                 }}
                                             >
-                                                <i className="fas fa-eraser me-1"></i>
-                                                Limpiar
-                                            </button>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Busca la dirección o nombre del lugar..."
+                                                    value={searchValue}
+                                                    onChange={(e) => setSearchValue(e.target.value)}
+                                                    style={{ position: 'relative', zIndex: 1 }}
+                                                />
+                                            </Autocomplete>
+                                            <small className="form-text text-muted">
+                                                Escribe el nombre o dirección de la tienda para centrar el mapa automáticamente.
+                                            </small>
+                                        </div>
+
+                                        {/* Mapa de Google */}
+                                        <div className="mb-3">
+                                            <GoogleMap
+                                                mapContainerStyle={{
+                                                    width: "100%",
+                                                    height: "400px",
+                                                    borderRadius: "8px"
+                                                }}
+                                                center={mapCenter}
+                                                zoom={15}
+                                                onClick={handleMapClick}
+                                                options={{
+                                                    streetViewControl: true,
+                                                    mapTypeControl: true,
+                                                    fullscreenControl: true
+                                                }}
+                                            >
+                                                {markerPosition && (
+                                                    <Marker
+                                                        position={markerPosition}
+                                                        title="Ubicación de la tienda"
+                                                    />
+                                                )}
+                                            </GoogleMap>
+                                        </div>
+
+                                        {/* Campos de coordenadas */}
+                                        <div className="row mt-3">
+                                            <div className="col-md-6">
+                                                <InputFormGroup
+                                                    eRef={latitudeRef}
+                                                    label="Latitud"
+                                                    col="col-12"
+                                                    type="number"
+                                                    step="0.00000001"
+                                                    min="-18.5"
+                                                    max="-0.1"
+                                                    placeholder="Ej: -12.042626777544823"
+                                                    onChange={handleCoordinateChange}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <InputFormGroup
+                                                    eRef={longitudeRef}
+                                                    label="Longitud"
+                                                    col="col-12"
+                                                    type="number"
+                                                    step="0.00000001"
+                                                    min="-81.5"
+                                                    max="-68.5"
+                                                    placeholder="Ej: -77.04753389161506"
+                                                    onChange={handleCoordinateChange}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Botones de acción rápida */}
+                                        <div className="row mt-3">
+                                            <div className="col-12">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-secondary btn-sm"
+                                                    onClick={() => {
+                                                        setMarkerPosition(null);
+                                                        latitudeRef.current.value = "";
+                                                        longitudeRef.current.value = "";
+                                                    }}
+                                                >
+                                                    <i className="fas fa-eraser me-1"></i>
+                                                    Limpiar Ubicación
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            </LoadScript>
+                        </div>
+
+                        {/* Pestaña: Contacto */}
+                        <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            <div className="row g-3">
+                                {Fillable.has('stores', 'phone') && (
+                                    <div className="col-md-6">
+                                        <InputFormGroup
+                                            eRef={phoneRef}
+                                            label="Teléfono"
+                                            col="col-12"
+                                            type="tel"
+                                        />
+                                    </div>
+                                )}
+                                {Fillable.has('stores', 'email') && (
+                                    <div className="col-md-6">
+                                        <InputFormGroup
+                                            eRef={emailRef}
+                                            label="Email"
+                                            col="col-12"
+                                            type="email"
+                                        />
+                                    </div>
+                                )}
+                                {Fillable.has('stores', 'link') && (
+                                    <div className="col-12">
+                                        <InputFormGroup
+                                            eRef={linkRef}
+                                            label="Enlace personalizado (opcional)"
+                                            col="col-12"
+                                            type="url"
+                                            placeholder="https://ejemplo.com"
+                                        />
+                                        <small className="text-muted">
+                                            Si se especifica, al hacer clic en la tienda redirigirá a este enlace en lugar del perfil de la tienda.
+                                        </small>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Pestaña: Horarios */}
+                        <div className="tab-pane fade" id="schedule" role="tabpanel" aria-labelledby="schedule-tab">
+                            {Fillable.has('stores', 'business_hours') && (
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <label className="form-label">Horarios de atención</label>
+                                        <div className="table-responsive">
+                                            <table className="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Día</th>
+                                                        <th>Apertura</th>
+                                                        <th>Cierre</th>
+                                                        <th>Cerrado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {businessHours.map((schedule, index) => (
+                                                        <tr key={index}>
+                                                            <td className="align-middle">
+                                                                <strong>{schedule.day}</strong>
+                                                            </td>
+                                                            <td>
+                                                                <input
+                                                                    type="time"
+                                                                    className="form-control form-control-sm"
+                                                                    value={schedule.open}
+                                                                    onChange={(e) =>
+                                                                        updateBusinessHours(index, "open", e.target.value)
+                                                                    }
+                                                                    disabled={schedule.closed}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <input
+                                                                    type="time"
+                                                                    className="form-control form-control-sm"
+                                                                    value={schedule.close}
+                                                                    onChange={(e) =>
+                                                                        updateBusinessHours(index, "close", e.target.value)
+                                                                    }
+                                                                    disabled={schedule.closed}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <div className="form-check">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input"
+                                                                        checked={schedule.closed}
+                                                                        onChange={(e) =>
+                                                                            updateBusinessHours(index, "closed", e.target.checked)
+                                                                        }
+                                                                    />
+                                                                    <label className="form-check-label">
+                                                                        Cerrado
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Pestaña: Multimedia */}
+                        <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
+                            <div className="row g-3">
+                                {Fillable.has('stores', 'image') && (
+                                    <div className="col-12">
+                                        <ImageFormGroup
+                                            eRef={imageRef}
+                                            name="image"
+                                            label="Imagen de la tienda"
+                                            col="col-12"
+                                            accept="image/*"
+                                        />
+                                    </div>
+                                )}
+                                {Fillable.has('stores', 'description') && (
+                                    <div className="col-12">
+                                        <TextareaFormGroup
+                                            eRef={descriptionRef}
+                                            label="Descripción"
+                                            rows={3}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
-
-                    {Fillable.has('stores', 'capacity') && (
-                        <div className="col-md-6">
-                            <InputFormGroup
-                                eRef={capacityRef}
-                                label="Capacidad de atención (personas/día)"
-                                col="col-12"
-                                type="number"
-                                placeholder="Ej: 50"
-                            />
-                        </div>
-                    )}
-
-                    {Fillable.has('stores', 'link') && (
-                        <div className="col-12">
-                            <InputFormGroup
-                                eRef={linkRef}
-                                label="Enlace personalizado (opcional)"
-                                col="col-12"
-                                type="url"
-                                placeholder="https://ejemplo.com"
-                            />
-                            <small className="text-muted">
-                                Si se especifica, al hacer clic en la tienda redirigirá a este enlace en lugar del perfil de la tienda.
-                            </small>
-                        </div>
-                    )}
-
-                    {Fillable.has('stores', 'image') && (
-                        <div className="col-12">
-                            <ImageFormGroup
-                                eRef={imageRef}
-                                name="image"
-                                label="Imagen de la tienda"
-                                col="col-12"
-                                accept="image/*"
-                            />
-                        </div>
-                    )}
-
-                    {Fillable.has('stores', 'description') && (
-                        <div className="col-12">
-                            <TextareaFormGroup
-                                eRef={descriptionRef}
-                                label="Descripción"
-                                rows={3}
-                            />
-                        </div>
-                    )}
-
-                    {/* Horarios de atención */}
-                    {Fillable.has('stores', 'business_hours') && (
-                        <div className="col-12">
-                            <div className="mb-3">
-                                <label className="form-label">Horarios de atención</label>
-                                <div className="table-responsive">
-                                    <table className="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Día</th>
-                                                <th>Apertura</th>
-                                                <th>Cierre</th>
-                                                <th>Cerrado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {businessHours.map((schedule, index) => (
-                                                <tr key={index}>
-                                                    <td className="align-middle">
-                                                        <strong>{schedule.day}</strong>
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="time"
-                                                            className="form-control form-control-sm"
-                                                            value={schedule.open}
-                                                            onChange={(e) =>
-                                                                updateBusinessHours(index, "open", e.target.value)
-                                                            }
-                                                            disabled={schedule.closed}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="time"
-                                                            className="form-control form-control-sm"
-                                                            value={schedule.close}
-                                                            onChange={(e) =>
-                                                                updateBusinessHours(index, "close", e.target.value)
-                                                            }
-                                                            disabled={schedule.closed}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <div className="form-check">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="form-check-input"
-                                                                checked={schedule.closed}
-                                                                onChange={(e) =>
-                                                                    updateBusinessHours(index, "closed", e.target.checked)
-                                                                }
-                                                            />
-                                                            <label className="form-check-label">
-                                                                Cerrado
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </Modal>
         </>
