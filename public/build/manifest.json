@@ -1578,7 +1578,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-BTvnhsgS.js",
+    "file": "assets/Banners-NXE7EiHG.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -4838,7 +4838,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-7XtJl1IO.js",
+    "file": "assets/Banner-B2HPgJiJ.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -4883,17 +4883,19 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerBananaLab.jsx": {
-    "file": "assets/BannerBananaLab-DYlcHizO.js",
+    "file": "assets/BannerBananaLab--pJTheE3.js",
     "name": "BannerBananaLab",
     "src": "resources/js/Components/Tailwind/Banners/BannerBananaLab.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-yBjzXJbu.js"
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx": {
-    "file": "assets/BannerBlogSectionKatya-Ye2baZkf.js",
+    "file": "assets/BannerBlogSectionKatya-r7o_8ojH.js",
     "name": "BannerBlogSectionKatya",
     "src": "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx",
     "isDynamicEntry": true,
@@ -4903,6 +4905,7 @@
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "_navigation-BIDIUzpb.js",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "_bannerUtils-Dj-jRlM8.js",
       "_SubscriptionsRest-BUF-I9Hx.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
       "_Global-DWbVqTT_.js",
@@ -4925,13 +4928,15 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerCTAMakita.jsx": {
-    "file": "assets/BannerCTAMakita-DYlcHizO.js",
+    "file": "assets/BannerCTAMakita--pJTheE3.js",
     "name": "BannerCTAMakita",
     "src": "resources/js/Components/Tailwind/Banners/BannerCTAMakita.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-yBjzXJbu.js"
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerContactMakita.jsx": {
@@ -4995,7 +5000,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerPostSuscriptionPaani.jsx": {
-    "file": "assets/BannerPostSuscriptionPaani-D741wEYZ.js",
+    "file": "assets/BannerPostSuscriptionPaani-BosqbTNG.js",
     "name": "BannerPostSuscriptionPaani",
     "src": "resources/js/Components/Tailwind/Banners/BannerPostSuscriptionPaani.jsx",
     "isDynamicEntry": true,
@@ -5003,6 +5008,7 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_bannerUtils-Dj-jRlM8.js",
       "_Global-DWbVqTT_.js",
       "_SubscriptionsRest-BUF-I9Hx.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
@@ -5086,17 +5092,19 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerStatic.jsx": {
-    "file": "assets/BannerStatic-DYlcHizO.js",
+    "file": "assets/BannerStatic--pJTheE3.js",
     "name": "BannerStatic",
     "src": "resources/js/Components/Tailwind/Banners/BannerStatic.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-yBjzXJbu.js"
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerStaticSecond.jsx": {
-    "file": "assets/BannerStaticSecond-kJHwh1Jx.js",
+    "file": "assets/BannerStaticSecond-uQvMAxHg.js",
     "name": "BannerStaticSecond",
     "src": "resources/js/Components/Tailwind/Banners/BannerStaticSecond.jsx",
     "isDynamicEntry": true,
@@ -11728,7 +11736,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DcDWoZS0.js",
+    "file": "assets/System-CFTuzpXl.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

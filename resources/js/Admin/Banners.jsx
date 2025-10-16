@@ -232,7 +232,19 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         doc.body.style.padding = "0";
         doc.body.style.background = "transparent";
 
+        // Inyectar estilos de Tailwind
         injectTailwindIntoDocument(doc);
+
+        // CRÍTICO: Copiar scripts de Vite/esbuild al iframe para que los lazy components funcionen
+        const parentScripts = document.querySelectorAll('script[type="module"]');
+        parentScripts.forEach(script => {
+            if (script.src && (script.src.includes('@vite/client') || script.src.includes('app.js'))) {
+                const iframeScript = doc.createElement('script');
+                iframeScript.type = 'module';
+                iframeScript.src = script.src;
+                doc.head.appendChild(iframeScript);
+            }
+        });
 
         const rootContainer = doc.createElement("div");
         rootContainer.id = "banner-preview-root";
@@ -359,7 +371,13 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                 }
 
                 objectUrlRef.current[field] = nextUrl;
+                // Actualizar inmediatamente el preview con la nueva imagen
                 setPreviewData((prev) => ({ ...prev, [field]: nextUrl }));
+                
+                // Forzar actualización del preview después de un momento para que el componente se re-renderice
+                requestAnimationFrame(() => {
+                    updatePreviewScale();
+                });
                 return;
             }
 
@@ -375,7 +393,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             objectUrlRef.current[field] = null;
             setPreviewData((prev) => ({ ...prev, [field]: "" }));
         },
-        []
+        [updatePreviewScale]
     );
 
     const onBannerTypeChange = useCallback(
@@ -587,11 +605,14 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         const bannerData = banner?.data || {};
         const previewSnapshot = buildPreviewData(bannerData);
 
+        // Establecer el estado de previsualización PRIMERO
         resetPreviewData(previewSnapshot);
 
         idRef.current.value = banner?.id ?? "";
         nameRef.current.value = previewSnapshot.name;
         descriptionRef.current.value = previewSnapshot.description;
+        buttonTextRef.current.value = previewSnapshot.button_text;
+        buttonLinkRef.current.value = previewSnapshot.button_link;
         
         const backgroundUrl = resolveSystemAsset(previewSnapshot.background);
         const imageUrl = resolveSystemAsset(previewSnapshot.image);
@@ -609,9 +630,6 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
         if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
-        buttonTextRef.current.value = previewSnapshot.button_text;
-        buttonLinkRef.current.value = previewSnapshot.button_link;
-
         if (absoluteRef.current) {
             absoluteRef.current.checked = previewSnapshot.contenedor === 'absoluto';
         }
@@ -627,10 +645,10 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         // Esperar un momento para que se carguen los componentes y luego setear el valor
         setTimeout(() => {
             const afterValue = banner?.after_component || '';
-           // console.log('🔧 Editando banner - after_component:', afterValue);
             $(afterComponentRef.current).val(afterValue).trigger('change');
         }, 100);
         
+        // Establecer el tipo de banner y disparar el evento para actualizar el preview
         $(bannerTypeRef.current).val(previewSnapshot.type || 'BannerSimple').trigger('change');
 
         $(modalRef.current).modal("show");

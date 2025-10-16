@@ -1,7 +1,9 @@
 import React from "react";
 import TextWithHighlight_Second from "../../../Utils/TextWithHighlight_Second";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerMultivet = ({ data }) => {
+    const imageUrl = resolveSystemAsset(data?.image);
     
     // Estilos para posicionamiento avanzado de imagen
     const imageOverflowStyle = 'xl:absolute xl:right-0 xl:bottom-0 xl:top-4 xl:w-1/2 xl:h-auto xl:overflow-visible xl:z-10';
@@ -36,7 +38,7 @@ const BannerMultivet = ({ data }) => {
                 <div className={`flex flex-col w-full xl:w-5/12 2xl:w-4/12 items-end justify-end relative ${data?.image_position === 'overflow' ? imageOverflowStyle : 'xl:relative'} ${data?.class_image_container || ''}`}>
                     <div className="w-full h-full relative">
                         <img
-                            src={`/storage/images/system/${data?.image}`}
+                            src={imageUrl}
                             onError={(e) => (e.target.src = "/assets/img/noimage/no_img.jpg")}
                             alt={data?.name || 'Banner image'}
                             className={`w-full h-full object-contain object-bottom min-h-[250px] sm:min-h-[300px] xl:min-h-[400px] 2xl:min-h-[450px] ${data?.image_position === 'overflow' ? 'xl:object-right-bottom xl:scale-110 xl:translate-y-4' : ''} ${data?.class_image || ''}`}

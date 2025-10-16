@@ -1,7 +1,11 @@
-import React from "react";
+
 import TextWithHighlight_Second from "../../../Utils/TextWithHighlight_Second";
 
+import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
+
 const BannerSimpleSF = ({ data }) => {
+    const imageUrl = resolveSystemAsset(data?.image);
     
     const estilo = 'xl:absolute right-0 bottom-0 md:w-6/12 mt-0 md:-mt-16 ml-5';
 
@@ -27,7 +31,7 @@ const BannerSimpleSF = ({ data }) => {
 
                 <div className={`${data?.image_position === 'contenedor' ? estilo : ''} flex flex-col w-full items-end`}>
                     <img
-                        src={`/storage/images/system/${data?.image}`}
+                        src={imageUrl}
                         onError={(e) => (e.target.src = "/assets/img/noimage/no_img.jpg")}
                         className="object-contain min-h-[250px] max-h-[400px] md:object-contain aspect-[4/3] xl:max-h-[350px] md:max-h-none w-full object-bottom"
                     />

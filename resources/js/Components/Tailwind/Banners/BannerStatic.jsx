@@ -1,4 +1,8 @@
+import React from 'react';
+import { resolveSystemAsset } from './bannerUtils';
+
 export default function BannerStatic( {data, items} ) {
+    const backgroundUrl = resolveSystemAsset(data?.background);
 
     // const aboutTrasciendeTitle = aboutus.find(x => x.correlative == 'sala-falabella')?.description ?? '';
     // const aboutTrasciendeDescription = aboutus.find(x => x.correlative == 'mercado-libre')?.description ?? '';
@@ -26,43 +30,53 @@ export default function BannerStatic( {data, items} ) {
 
                     {/* Center Image */}
                     <div className="gap-8 xl:col-span-2 flex flex-col md:flex-row md:justify-center xl:justify-end items-center relative w-full h-full ">
-                    {/* chicatiendas.png */}
-                        <img
-                            src={`/storage/images/system/${data?.background}`}
-                            onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                            alt="Persona señalando las tiendas"
-                            className="h-[305px] max-w-96 md:h-96 object-contain md:object-cover object-right-bottom order-2 md:order-none"
-                        />
+                        {/* chicatiendas.png */}
+                        {/* Image */}
+                        <div className="xl:col-span-2 flex items-center justify-center py-8 xl:py-0">
+                            <div className="relative w-full h-full flex items-center justify-center">
+                                <img
+                                    src={backgroundUrl}
+                                    alt={data?.name}
+                                    className="w-full h-full object-contain"
+                                    onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
+                                />
+                            </div>
+                        </div>
 
                         <div className="flex items-center">
                             {/* Store Links */}
                             <div className="space-y-6 bg-white p-6 rounded-3xl lg:rounded-[40px] min-w-[300px] max-w-96 w-full h-max ">
-                                <p className="text-xl  font-semibold mb-6">{data?.button_text} </p>
+                                <p className="text-xl font-semibold mb-6">{data?.button_text || 'Enlaces'}</p>
 
                                 {/* Store Buttons */}
                                 <div className="space-y-4">
-                                {items.slice(0, 3).map((logo, index) => (
-                                    <a
-                                        key={logo?.id}
-                                        href={logo?.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex justify-center rounded-full items-center w-full p-4 bg-secondary transition-colors hover:bg-secondary-dark"
-                                    >
-                                        <img 
-                                            src={`/storage/images/aboutus/${logo?.image}`}
-                                            onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                            alt={cleanDescription(logo?.description)}
-                                            className="h-7 object-contain"
-                                        />
-                                    </a>
-                                ))}
+                                {items && items.length > 0 ? (
+                                    items.slice(0, 3).map((logo, index) => (
+                                        <a
+                                            key={logo?.id || index}
+                                            href={logo?.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex justify-center rounded-full items-center w-full p-4 bg-secondary transition-colors hover:bg-secondary-dark"
+                                        >
+                                            <img 
+                                                src={`/storage/images/aboutus/${logo?.image}`}
+                                                onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
+                                                alt={cleanDescription(logo?.description)}
+                                                className="h-7 object-contain"
+                                            />
+                                        </a>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-4 text-gray-500 text-sm">
+                                        <i className="mdi mdi-information-outline text-xl d-block mb-1"></i>
+                                        Agrega items para mostrar enlaces
+                                    </div>
+                                )}
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
         </section>

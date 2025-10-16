@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerAd = ({ data }) => {
     const [isVisible, setIsVisible] = useState(true);
+    const backgroundUrl = resolveSystemAsset(data?.background);
 
     if (!isVisible) return null;
 
@@ -12,9 +14,9 @@ const BannerAd = ({ data }) => {
                 backgroundColor: data?.background_color,
             }}
         >
-            {data?.background &&
+            {backgroundUrl &&
                 <img className="absolute top-0 left-0 w-full h-full object-cover opacity-10 z-0"
-                    src={`/storage/images/system/${data?.background}`}
+                    src={backgroundUrl}
                     style={{
                         filter: 'grayscale(100%) brightness(0.2)',
                         opacity: 0.2,

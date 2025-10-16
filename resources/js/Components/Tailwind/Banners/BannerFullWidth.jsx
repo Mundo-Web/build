@@ -1,11 +1,14 @@
-import React from "react";
+import React from 'react';
+import { resolveSystemAsset } from './bannerUtils';
 
 const BannerFullWidth = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
+    const imageUrl = resolveSystemAsset(data?.image);
     return (
         <section
             className="bg-gray-50"
             style={{
-                backgroundImage: `url('/storage/images/system/${data?.background}')`,
+                backgroundImage: `url('${backgroundUrl}')`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -29,9 +32,9 @@ const BannerFullWidth = ({ data }) => {
                         )}
                     </div>
                     <div className="flex items-center justify-center">
-                        {data?.image && (
+                        {imageUrl && (
                             <img
-                                src={`/storage/images/system/${data?.image}`}
+                                src={imageUrl}
                                 className="w-full aspect-auto object-contain object-bottom"
                                 alt=""
                             />

@@ -5,6 +5,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
+import { resolveSystemAsset } from "./bannerUtils";
 
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Swal from "sweetalert2";
@@ -13,6 +14,7 @@ import { ChevronRight, CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
 
 const BannerBlogSectionKatya = ({ data, items }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
     // Animaciones
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -128,42 +130,51 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                                 }}
                                 className="mySwiper"
                             >
-                                {items.map((item, index) => {
-                                    const content = document.createElement("div");
-                                    content.innerHTML = item?.description;
-                                    const text = content.textContent || content.innerText || "";
+                                {items && items.length > 0 ? (
+                                    items.map((item, index) => {
+                                        const content = document.createElement("div");
+                                        content.innerHTML = item?.description;
+                                        const text = content.textContent || content.innerText || "";
 
-                                    return (
-                                        <SwiperSlide key={index}>
-                                            <motion.div
-                                                variants={itemVariants}
+                                        return (
+                                            <SwiperSlide key={index}>
+                                                <motion.div
+                                                    variants={itemVariants}
 
-                                                className="block group hover:scale-105 transform "
-                                            >
-                                                <a href={`/post/${item.slug}`} className="rounded-lg shadow-sm h-auto cursor-pointer block">
-                                                    <div className="overflow-hidden rounded-xl">
-                                                        <motion.img
-                                                            src={`/storage/images/post/${item?.image}`}
-                                                            alt={item?.title}
-                                                            className="inset-0 w-full object-cover aspect-[1] transition-transform duration-500 ease-out group-hover:scale-110"
-                                                            onError={(e) =>
-                                                                (e.target.src = "/api/cover/thumbnail/null")
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="py-4 px-4">
-                                                        <h3 className="text-2xl font-bold mt-1 mb-2 leading-tight">
-                                                            {item?.name}
-                                                        </h3>
-                                                        <p className="text-base line-clamp-2 group-hover:text-gray-800 transition-colors duration-300">
-                                                            {text}
-                                                        </p>
-                                                    </div>
-                                                </a>
-                                            </motion.div>
-                                        </SwiperSlide>
-                                    );
-                                })}
+                                                    className="block group hover:scale-105 transform "
+                                                >
+                                                    <a href={`/post/${item.slug}`} className="rounded-lg shadow-sm h-auto cursor-pointer block">
+                                                        <div className="overflow-hidden rounded-xl">
+                                                            <motion.img
+                                                                src={`/storage/images/post/${item?.image}`}
+                                                                alt={item?.title}
+                                                                className="inset-0 w-full object-cover aspect-[1] transition-transform duration-500 ease-out group-hover:scale-110"
+                                                                onError={(e) =>
+                                                                    (e.target.src = "/api/cover/thumbnail/null")
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <div className="py-4 px-4">
+                                                            <h3 className="text-2xl font-bold mt-1 mb-2 leading-tight">
+                                                                {item?.name}
+                                                            </h3>
+                                                            <p className="text-base line-clamp-2 group-hover:text-gray-800 transition-colors duration-300">
+                                                                {text}
+                                                            </p>
+                                                        </div>
+                                                    </a>
+                                                </motion.div>
+                                            </SwiperSlide>
+                                        );
+                                    })
+                                ) : (
+                                    <SwiperSlide>
+                                        <div className="bg-white rounded-lg p-8 text-center text-gray-500">
+                                            <i className="mdi mdi-information-outline text-3xl d-block mb-2"></i>
+                                            <p className="text-sm">Agrega posts para mostrar en el slider</p>
+                                        </div>
+                                    </SwiperSlide>
+                                )}
                             </Swiper>
 
 
@@ -183,7 +194,7 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                         <div
                             className="rounded-2xl overflow-hidden shadow-sm h-full min-h-[500px] lg:min-h-[690px] relative flex flex-col items-center justify-end"
                             style={{
-                                backgroundImage: `url(/storage/images/system/${data?.background})`,
+                                backgroundImage: `url(${backgroundUrl})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 backgroundRepeat: 'no-repeat'

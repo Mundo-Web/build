@@ -1,3 +1,5 @@
+import React from 'react';
+import { resolveSystemAsset } from './bannerUtils';
 
 const benefits = [
   "Lubricación automática de la cadena.",
@@ -8,6 +10,7 @@ const benefits = [
 ];
 
 const BannerCTAMakita = ({data,items}) => {
+  const imageUrl = resolveSystemAsset(data?.image);
   return (
     <div className="bg-secondary w-full min-h-screen flex items-center justify-center ">
       <div className="px-primary 2xl:max-w-7xl 2xl:px-0 w-full flex flex-col md:flex-row gap-12 md:gap-16 items-center justify-center py-16">
@@ -15,7 +18,7 @@ const BannerCTAMakita = ({data,items}) => {
         <div className="w-full md:w-1/2 flex items-center justify-center">
           <div className="relative w-full max-w-md aspect-square rounded-xl overflow-hidden shadow-lg">
             <img
-              src={`/storage/images/system/${data?.image}`}
+              src={imageUrl}
               alt="Makita tool"
               className="w-full h-full object-cover"
               loading="lazy"
@@ -49,14 +52,18 @@ const BannerCTAMakita = ({data,items}) => {
           </p>
           <h2 className="text-xl font-bold mb-2">Beneficios</h2>
           <ul className="mb-8 space-y-3">
-            {items.map((b, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="mt-1 customtext-primary">
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#06b6d4"/><path d="M8 12.5l2.5 2.5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </span>
-                <span>{b?.description}</span>
-              </li>
-            ))}
+            {items && items.length > 0 ? (
+              items.map((b, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="mt-1 customtext-primary">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#06b6d4"/><path d="M8 12.5l2.5 2.5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </span>
+                  <span>{b?.description}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-500 text-sm italic">Agrega items para mostrar beneficios</li>
+            )}
           </ul>
           <a
             href="#"

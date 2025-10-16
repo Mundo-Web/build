@@ -2,7 +2,11 @@ import { useEffect, useRef } from "react";
 import { Tag } from "lucide-react";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 
+import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
+
 const BannerFlex = ({ data }) => {
+    const imageUrl = resolveSystemAsset(data?.image);
     const buttonFirstRef = useRef();
 
     useEffect(() => {
@@ -15,7 +19,7 @@ const BannerFlex = ({ data }) => {
 
                 <div className="w-full lg:w-6/12 h-full relative">
                     <img
-                        src={`/storage/images/system/${data?.image}`}
+                        src={imageUrl}
                         onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
                         className="w-full h-full sm:max-h-96  lg:min-h-[75vh] rounded-3xl object-cover  "
                     />

@@ -1,6 +1,8 @@
 import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerPidelo = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
     // Procesar el nombre para resaltar palabras entre *asteriscos*
     const renderName = (name) => {
         if (!name) return null;
@@ -22,7 +24,7 @@ const BannerPidelo = ({ data }) => {
                 <div
                     className="w-full aspect-square lg:aspect-[5/2] rounded-2xl flex flex-col items-center justify-center shadow-lg text-center relative overflow-hidden"
                     style={{
-                        backgroundImage: `url('/storage/images/system/${data?.background}')`,
+                        backgroundImage: `url('${backgroundUrl}')`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
