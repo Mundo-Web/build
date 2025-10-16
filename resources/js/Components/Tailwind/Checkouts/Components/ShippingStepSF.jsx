@@ -3,7 +3,8 @@ import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Curren
 import ubigeoData from "../../../../../../storage/app/utils/ubigeo.json";
 import DeliveryPricesRest from "../../../../Actions/DeliveryPricesRest";
 import { processCulqiPayment } from "../../../../Actions/culqiPayment";
-import { processMercadoPagoPayment } from "../../../../Actions/mercadoPagoPayment"
+import { processMercadoPagoPayment } from "../../../../Actions/mercadoPagoPayment";
+import { processOpenPayPayment } from "../../../../Actions/openPayPayment"
 import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
 import InputForm from "./InputForm";
@@ -971,6 +972,90 @@ export default function ShippingStepSF({
                 
                 try {
                     const response = await processMercadoPagoPayment(request)
+                    const data = response;
+                    
+                    if (data.status) {
+                        setSale(data.sale);
+                        setDelivery(data.delivery);
+                        setCode(data.code);
+                        
+                        // Ejecutar scripts de conversión si existen
+                        if (conversionScripts && Array.isArray(conversionScripts)) {
+                            conversionScripts.forEach(script => {
+                                try {
+                                    eval(script);
+                                } catch (error) {
+                                    console.error('Error executing conversion script:', error);
+                                }
+                            });
+                        }
+
+                        // Llamar callback de compra completada
+                        if (onPurchaseComplete) {
+                            onPurchaseComplete(data);
+                        }
+                        
+                    } else {
+                        toast.error('Error en el Pago', {
+                            description: `El pago ha sido rechazado`,
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: 'bottom-center',
+                        });
+                    }
+                } catch (error) {
+                    console.log(error);
+                    toast.error('Error en el Pago', {
+                        description: `No se llegó a procesar el pago`,
+                        icon: <CircleX className="h-5 w-5 text-red-500" />,
+                        duration: 3000,
+                        position: 'bottom-center',
+                    });
+                }
+            } else if(paymentMethod === "openpay") {
+                // Procesar pago con OpenPay
+                const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
+                const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
+
+                const request = {
+                    user_id: user?.id || "",
+                    name: formData?.name || "",
+                    lastname: formData?.lastname || "",
+                    fullname: `${formData?.name} ${formData?.lastname}`,
+                    phone_prefix: formData?.phone_prefix || "51",
+                    email: formData?.email || "",
+                    phone: formatPhoneNumber(formData.phone_prefix || "51", formData.phone),
+                    country: "Perú",
+                    department: formData?.department || "",
+                    province: formData?.province || "",
+                    district: formData?.district || "",
+                    ubigeo: formData?.ubigeo || "",
+                    address: formData?.address || "",
+                    number: formData?.number || "",
+                    comment: formData?.comment || "",
+                    reference: formData?.reference || "",
+                    amount: finalTotalWithCoupon || 0,
+                    delivery: envio,
+                    delivery_type: deliveryType,
+                    cart: cart,
+                    invoiceType: formData.invoiceType || "",
+                    documentType: formData.documentType || "",
+                    document: formData.document || "",
+                    businessName: formData.businessName || "",
+                    payment_method: paymentMethod || null,
+                    // Cupón aplicado
+                    coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                    coupon_discount: calculatedCouponDiscount || 0,
+                    // Descuentos automáticos
+                    automatic_discounts: autoDiscounts,
+                    automatic_discount_total: autoDiscountTotal,
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: autoDiscountTotal || 0,
+                    total_amount: finalTotalWithCoupon || 0,
+                };
+                
+                try {
+                    const response = await processOpenPayPayment(request);
                     const data = response;
                     
                     if (data.status) {

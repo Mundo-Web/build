@@ -29,6 +29,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
     
     const isButtonDisabled = saving || !paymentMethod;
     const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
+    const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
 
     return (
         <ReactModal
@@ -68,13 +69,14 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                     {
                         // General.get("checkout_mercadopago") !== "true" &&
                         ischeckmpobject?.description !== "true" &&
+                        ischeckopenpayobject?.description !== "true" &&
                         General.get("checkout_dwallet") !== "true" &&
                         General.get("checkout_transfer") !== "true" ? (
                             <div className="text-gray-500 text-center py-4">Sin opciones de pago</div>
                         ) : (
                         <>
                             <div className="mt-3 space-y-3">
-                                {/* Opción Tarjeta */}
+                                {/* Opción Tarjeta - Mercado Pago */}
                                 {
                                 // General.get("checkout_mercadopago") == "true" &&
                                 ischeckmpobject?.description == "true" &&
@@ -114,6 +116,52 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                 }`}>
                                                     <div className={`h-2 w-2 rounded-full ${
                                                         paymentMethod === "tarjeta" ? "bg-white" : ""
+                                                    }`}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+                                }
+                                {/* Opción Tarjeta - OpenPay */}
+                                {
+                                ischeckopenpayobject?.description == "true" &&
+                                    <div
+                                        className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
+                                            paymentMethod === "openpay"
+                                                ? "border-primary bg-[#f8f5f2]"
+                                                : "border-gray-200 hover:border-2 hover:border-primary"
+                                        }`}
+                                        onClick={() => setPaymentMethod("openpay")}
+                                    >
+                                        <div className="flex flex-row items-center justify-between gap-2">
+                                            <div className="flex flex-col items-start justify-center space-x-2">
+                                                <input
+                                                    type="radio"
+                                                    id="openpay"
+                                                    name="paymentMethod"
+                                                    checked={paymentMethod === "openpay"}
+                                                    onChange={() => setPaymentMethod("openpay")}
+                                                    className="h-5 w-5 text-primary focus:ring-primary hidden"
+                                                />
+                                                <label
+                                                    htmlFor="openpay"
+                                                    className="font-medium text-base 2xl:text-lg"
+                                                >
+                                                    Pago con Tarjeta (OpenPay)
+                                                </label>
+                                                <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
+                                                    Paga de forma segura con tu tarjeta de crédito o débito.
+                                                </p>
+                                            </div>
+                                            <div className="min-w-5 flex items-center justify-center">
+                                                <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
+                                                    paymentMethod === "openpay" 
+                                                        ? "bg-primary" 
+                                                        : "border-2 border-[#d0ccca]"
+                                                }`}>
+                                                    <div className={`h-2 w-2 rounded-full ${
+                                                        paymentMethod === "openpay" ? "bg-white" : ""
                                                     }`}></div>
                                                 </div>
                                             </div>
@@ -221,6 +269,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                     <div className="mt-4 space-y-3">
                     {/* {(General.get("checkout_mercadopago") === "true" || */}
                     {(ischeckmpobject?.description === "true" ||
+                      ischeckopenpayobject?.description === "true" ||
                       General.get("checkout_dwallet") === "true" ||
                       General.get("checkout_transfer") === "true") && (
                         <button

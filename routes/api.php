@@ -73,6 +73,7 @@ use App\Http\Controllers\ItemImportController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MercadoPagoController;
+use App\Http\Controllers\OpenPayController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SaleController;
@@ -192,6 +193,10 @@ Route::post('/mercadopago/preference', [MercadoPagoController::class, 'createPre
 Route::get('/mercadopago/success', [MercadoPagoController::class, 'handleSuccess']);
 Route::get('/mercadopago/failure', [MercadoPagoController::class, 'handleFailure']);
 Route::get('/mercadopago/pending', [MercadoPagoController::class, 'handlePending']);
+
+// Rutas para OpenPay
+Route::post('/openpay/charge', [OpenPayController::class, 'createCharge']);
+Route::post('/openpay/webhook', [OpenPayController::class, 'webhook']);
 
 Route::post('/temporaly-image', [TemporalyImageController::class, 'save'])->name('save_temporaly_image');
 Route::post('/temporaly-image/{id}', [TemporalyImageController::class, 'delete'])->name('delete_temporaly_image');

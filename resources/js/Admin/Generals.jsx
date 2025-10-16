@@ -54,7 +54,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'general': ['address', 'cintillo', 'copyright', 'opening_hours'],//footer_description
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'phone_whatsapp', 'message_whatsapp'],
-    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
+    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy'],
     'location': ['location'],
@@ -281,6 +281,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     checkout_mercadopago_name: generals.find(x => x.correlative == 'checkout_mercadopago_name')?.description ?? "",
     checkout_mercadopago_public_key: generals.find(x => x.correlative == 'checkout_mercadopago_public_key')?.description ?? "",
     checkout_mercadopago_private_key: generals.find(x => x.correlative == 'checkout_mercadopago_private_key')?.description ?? "",
+    checkout_openpay: generals.find(x => x.correlative == 'checkout_openpay')?.description ?? "",
+    checkout_openpay_name: generals.find(x => x.correlative == 'checkout_openpay_name')?.description ?? "",
+    checkout_openpay_merchant_id: generals.find(x => x.correlative == 'checkout_openpay_merchant_id')?.description ?? "",
+    checkout_openpay_public_key: generals.find(x => x.correlative == 'checkout_openpay_public_key')?.description ?? "",
+    checkout_openpay_private_key: generals.find(x => x.correlative == 'checkout_openpay_private_key')?.description ?? "",
     checkout_dwallet: generals.find(x => x.correlative == 'checkout_dwallet')?.description ?? "",
     checkout_dwallet_qr: generals.find(x => x.correlative == 'checkout_dwallet_qr')?.description ?? "",
     checkout_dwallet_name: generals.find(x => x.correlative == 'checkout_dwallet_name')?.description ?? "",
@@ -477,6 +482,26 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const handleCheckoutMercadopagoChange = useCallback((e) => {
     handleCheckboxChange('checkout_mercadopago', e.target.checked);
   }, [handleCheckboxChange]);
+
+  const handleCheckoutOpenpayChange = useCallback((e) => {
+    handleCheckboxChange('checkout_openpay', e.target.checked);
+  }, [handleCheckboxChange]);
+
+  const handleOpenpayNameChange = useCallback((e) => {
+    handleFieldChange('checkout_openpay_name', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleOpenpayMerchantIdChange = useCallback((e) => {
+    handleFieldChange('checkout_openpay_merchant_id', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleOpenpayPublicKeyChange = useCallback((e) => {
+    handleFieldChange('checkout_openpay_public_key', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleOpenpayPrivateKeyChange = useCallback((e) => {
+    handleFieldChange('checkout_openpay_private_key', e.target.value);
+  }, [handleFieldChange]);
 
   const handleCheckoutDwalletChange = useCallback((e) => {
     handleCheckboxChange('checkout_dwallet', e.target.checked);
@@ -963,6 +988,31 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: 'checkout_mercadopago_private_key',
         name: 'Llave privada de Mercadopago',
         description: formData.checkout_mercadopago_private_key || "",
+      },
+      {
+        correlative: "checkout_openpay",
+        name: "Habilitar OpenPay",
+        description: formData.checkout_openpay || "",
+      },
+      {
+        correlative: 'checkout_openpay_name',
+        name: 'Nombre de la cuenta de OpenPay',
+        description: formData.checkout_openpay_name || "",
+      },
+      {
+        correlative: 'checkout_openpay_merchant_id',
+        name: 'Merchant ID de OpenPay',
+        description: formData.checkout_openpay_merchant_id || "",
+      },
+      {
+        correlative: 'checkout_openpay_public_key',
+        name: 'Llave pública de OpenPay',
+        description: formData.checkout_openpay_public_key || "",
+      },
+      {
+        correlative: 'checkout_openpay_private_key',
+        name: 'Llave privada de OpenPay',
+        description: formData.checkout_openpay_private_key || "",
       },
       {
         correlative: 'checkout_dwallet',
@@ -1727,6 +1777,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                         Mercado Pago
                       </a>
                     )}
+                    {some(generals, (general) => general.correlative === "checkout_openpay") && (
+                      <a className="nav-link mb-1" id="v-openpay-tab" data-bs-toggle="pill" href="#v-openpay" role="tab" aria-controls="v-openpay" aria-selected="false">
+                        OpenPay
+                      </a>
+                    )}
                     {some(generals, (general) => general.correlative === "checkout_dwallet") && (
                       <a className="nav-link mb-1" id="v-digital-wallet-tab" data-bs-toggle="pill" href="#v-digital-wallet" role="tab" aria-controls="v-digital-wallet" aria-selected="false">
                         Yape / Plin
@@ -1842,6 +1897,75 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                             checkout_mercadopago_private_key: e.target.value
                           })}
                         />
+                      </div>
+                    </div>
+                  </ConditionalField>
+                  <ConditionalField correlative="checkout_openpay">
+                    <div className="tab-pane fade" id="v-openpay" role="tabpanel" aria-labelledby="v-openpay-tab">
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="checkout-openpay"
+                            checked={formData.checkout_openpay == 'true'}
+                            onChange={handleCheckoutOpenpayChange}
+                          />
+                          <label className="form-check-label form-label" htmlFor="checkout-openpay">
+                            Habilitar pago con OpenPay
+                            <small className="text-muted d-block">Al habilitar esta opción, permite pagos por OpenPay (tarjetas de crédito/débito)</small>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Título del formulario</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.checkout_openpay_name}
+                          onChange={handleOpenpayNameChange}
+                          placeholder="Pago con tarjeta"
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Merchant ID</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.checkout_openpay_merchant_id}
+                          onChange={handleOpenpayMerchantIdChange}
+                          placeholder="mxxxxxxxxxxx"
+                        />
+                        <small className="text-muted">El Merchant ID proporcionado por OpenPay</small>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Clave Pública</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.checkout_openpay_public_key}
+                          onChange={handleOpenpayPublicKeyChange}
+                          placeholder="pk_xxxxxxxxxxxxx"
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Clave Privada</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={formData.checkout_openpay_private_key}
+                          onChange={handleOpenpayPrivateKeyChange}
+                          placeholder="sk_xxxxxxxxxxxxx"
+                        />
+                      </div>
+                      <div className="alert alert-info mt-3">
+                        <h6><i className="mdi mdi-information me-2"></i>Configuración de OpenPay</h6>
+                        <ul className="mb-0">
+                          <li>Obtenga sus credenciales desde el <a href="https://dashboard.openpay.mx/" target="_blank" rel="noopener noreferrer">Dashboard de OpenPay</a></li>
+                          <li>Use credenciales de <strong>producción</strong> para transacciones reales</li>
+                          <li>Use credenciales de <strong>sandbox</strong> para pruebas</li>
+                          <li>OpenPay acepta tarjetas Visa, Mastercard y American Express</li>
+                        </ul>
                       </div>
                     </div>
                   </ConditionalField>
