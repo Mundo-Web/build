@@ -370,37 +370,40 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                         },
                     },
                     {
-                        dataField: "is_free",
+                        dataField: "active_options_search",
                         dataType: "string",
-                        caption: "Opciones Activas",
+                        caption: "Tipos de delivery",
                         width: "250px",
                         allowFiltering: true,
-                        calculateFilterExpression: function(filterValue, selectedFilterOperation) {
-                            // Convertir el filtro a minúsculas para búsqueda case-insensitive
-                            const searchTerm = (filterValue || '').toLowerCase();
+                        calculateCellValue: (data) => {
+                            const options = [];
                             
-                            return function(data) {
-                                const options = [];
-                                
-                                if (data.price && parseFloat(data.price) > 0 && !data.is_free) {
-                                    options.push('estandar', 'standard', 'normal');
-                                }
-                                if (data.is_express || (data.express_price && parseFloat(data.express_price) > 0)) {
-                                    options.push('express', 'rapido', 'rápido');
-                                }
-                                if (data.is_free) {
-                                    options.push('gratis', 'free', 'gratuito');
-                                }
-                                if (data.is_agency) {
-                                    options.push('agencia', 'agency', 'olva', 'shalom');
-                                }
-                                if (data.is_store_pickup) {
-                                    options.push('tienda', 'store', 'retiro', 'pickup');
-                                }
-                                
-                                // Buscar si alguna opción contiene el término de búsqueda
-                                return options.some(opt => opt.includes(searchTerm));
-                            };
+                            // Delivery Estándar
+                            if (data.price && parseFloat(data.price) > 0 && !data.is_free) {
+                                options.push('Estándar');
+                            }
+                            
+                            // Delivery Express
+                            if (data.is_express || (data.express_price && parseFloat(data.express_price) > 0)) {
+                                options.push('Express');
+                            }
+                            
+                            // Delivery Gratis
+                            if (data.is_free) {
+                                options.push('Gratis');
+                            }
+                            
+                            // Recojo en Agencia
+                            if (data.is_agency) {
+                                options.push('Agencia');
+                            }
+                            
+                            // Retiro en Tienda
+                            if (data.is_store_pickup) {
+                                options.push('Tienda');
+                            }
+                            
+                            return options.join(', ');
                         },
                         cellTemplate: (container, { data }) => {
                             const badges = [];

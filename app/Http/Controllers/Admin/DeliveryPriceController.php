@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BasicController;
+use App\Http\Classes\dxResponse;
 use App\Models\DeliveryPrice;
 use App\Models\TypeDelivery;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\DB;
 use SoDe\Extend\File;
 use SoDe\Extend\JSON;
@@ -24,6 +27,115 @@ class DeliveryPriceController extends BasicController
         return [
             'ubigeo' => $ubigeo
         ];
+    }
+
+    /**
+     * Override paginate to handle virtual column filter for active_options_search
+     */
+    public function paginate(Request $request): HttpResponse|ResponseFactory
+    {
+        // Interceptar y transformar filtros de columnas virtuales
+        if ($request->filter) {
+            $request->merge([
+                'filter' => $this->transformVirtualFilters($request->filter)
+            ]);
+        }
+
+        // Llamar al método padre
+        return parent::paginate($request);
+    }
+
+    /**
+     * Transform virtual column filters into real database column filters
+     */
+    protected function transformVirtualFilters($filter)
+    {
+        // Si el filtro no es un array, retornar sin cambios
+        if (!is_array($filter)) {
+            return $filter;
+        }
+
+        // Si es un filtro simple [field, operator, value]
+        if (count($filter) === 3 && !is_array($filter[0])) {
+            if ($filter[0] === 'active_options_search') {
+                return $this->convertActiveOptionsFilter($filter[2]);
+            }
+            return $filter;
+        }
+
+        // Si es un filtro compuesto (con 'and' u 'or')
+        $transformed = [];
+        foreach ($filter as $item) {
+            if (is_array($item)) {
+                $transformed[] = $this->transformVirtualFilters($item);
+            } else {
+                $transformed[] = $item;
+            }
+        }
+
+        return $transformed;
+    }
+
+    /**
+     * Convert active_options_search filter into multiple OR conditions
+     */
+    protected function convertActiveOptionsFilter($searchValue)
+    {
+        $conditions = [];
+
+        // Buscar "Estándar" o "Estandar" (price > 0 AND NOT is_free)
+        if (stripos($searchValue, 'estand') !== false || stripos($searchValue, 'standar') !== false) {
+            $conditions[] = [
+                ['price', '>', 0],
+                'and',
+                ['is_free', '=', false]
+            ];
+        }
+
+        // Buscar "Express"
+        if (stripos($searchValue, 'express') !== false || stripos($searchValue, 'exp') !== false) {
+            $conditions[] = [
+                ['is_express', '=', true],
+                'or',
+                ['express_price', '>', 0]
+            ];
+        }
+
+        // Buscar "Gratis" o "Free"
+        if (stripos($searchValue, 'gratis') !== false || stripos($searchValue, 'free') !== false) {
+            $conditions[] = ['is_free', '=', true];
+        }
+
+        // Buscar "Agencia"
+        if (stripos($searchValue, 'agencia') !== false || stripos($searchValue, 'age') !== false) {
+            $conditions[] = ['is_agency', '=', true];
+        }
+
+        // Buscar "Tienda" o "Store"
+        if (stripos($searchValue, 'tienda') !== false || stripos($searchValue, 'store') !== false) {
+            $conditions[] = ['is_store_pickup', '=', true];
+        }
+
+        // Si no se encontró ninguna condición, retornar un filtro que no coincida con nada
+        if (empty($conditions)) {
+            return ['id', '=', -1]; // No match
+        }
+
+        // Si solo hay una condición, retornarla directamente
+        if (count($conditions) === 1) {
+            return $conditions[0];
+        }
+
+        // Si hay múltiples condiciones, combinarlas con OR
+        $result = [];
+        foreach ($conditions as $condition) {
+            $result[] = $condition;
+            $result[] = 'or';
+        }
+        // Remover el último 'or'
+        array_pop($result);
+
+        return $result;
     }
 
     public function beforeSave(Request $request)
