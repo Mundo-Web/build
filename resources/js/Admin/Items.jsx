@@ -53,6 +53,7 @@ const Items = ({ categories, brands, collections, stores }) => {
     const descriptionRef = useRef();
     const skuRef = useRef();
     const pdfRef = useRef();
+    const manualRef = useRef();
     // Nuevos campos
 
     const stockRef = useRef();
@@ -68,6 +69,7 @@ const Items = ({ categories, brands, collections, stores }) => {
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [selectedStore, setSelectedStore] = useState(null);
     const [currentPdf, setCurrentPdf] = useState("");
+    const [currentManual, setCurrentManual] = useState("");
     /*ADD NEW LINES GALLERY */
 
     const [gallery, setGallery] = useState([]);
@@ -156,6 +158,7 @@ const Items = ({ categories, brands, collections, stores }) => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
         setCurrentPdf(data?.pdf ? `/storage/images/item/${data.pdf}` : "");
+        setCurrentManual(data?.manual ? `/storage/images/item/${data.manual}` : "");
         idRef.current.value = data?.id || "";
         $(categoryRef.current)
             .val(data?.category_id || null)
@@ -321,6 +324,12 @@ const Items = ({ categories, brands, collections, stores }) => {
 
         if (pdf) {
             formData.append("pdf", pdf);
+        }
+
+        const manual = manualRef.current.files[0];
+
+        if (manual) {
+            formData.append("manual", manual);
         }
 
         // Check for image deletion flags using React state
@@ -1285,14 +1294,14 @@ const Items = ({ categories, brands, collections, stores }) => {
                                             
                                             {/* PDF */}
                                             <div className="mb-3" hidden={!Fillable.has('items', 'pdf')}>
-                                                <label className="form-label fw-bold">Archivo PDF</label>
+                                                <label className="form-label fw-bold">Archivo PDF (Catálogo)</label>
                                                 <input
                                                     ref={pdfRef}
                                                     type="file"
                                                     className="form-control"
                                                     accept=".pdf"
                                                 />
-                                                <small className="text-muted">Catálogo, manual o documento relacionado</small>
+                                                <small className="text-muted">Catálogo o documento relacionado</small>
                                                 
                                                 {currentPdf && (
                                                     <div className="mt-2">
@@ -1303,6 +1312,31 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                             className="btn btn-sm btn-outline-primary"
                                                         >
                                                             <i className="fas fa-file-pdf me-1"></i> Ver PDF actual
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Manual */}
+                                            <div className="mb-3" hidden={!Fillable.has('items', 'manual')}>
+                                                <label className="form-label fw-bold">Manual de Usuario</label>
+                                                <input
+                                                    ref={manualRef}
+                                                    type="file"
+                                                    className="form-control"
+                                                    accept=".pdf"
+                                                />
+                                                <small className="text-muted">Manual de instrucciones, mantenimiento o especificaciones técnicas</small>
+                                                
+                                                {currentManual && (
+                                                    <div className="mt-2">
+                                                        <a
+                                                            href={currentManual}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="btn btn-sm btn-outline-success"
+                                                        >
+                                                            <i className="fas fa-book me-1"></i> Ver Manual actual
                                                         </a>
                                                     </div>
                                                 )}

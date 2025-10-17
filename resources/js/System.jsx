@@ -48,6 +48,7 @@ const Brands = React.lazy(() => import("./Components/Tailwind/Brands"));
 const Partner = React.lazy(() => import("./Components/Tailwind/Partner"));
 const Subscription = React.lazy(() => import("./Components/Tailwind/Subscription"));
 const Agradecimientos = React.lazy(() => import("./Components/Tailwind/Agradecimientos"));
+const Support = React.lazy(() => import("./Components/Tailwind/Support"));
 
 // Componente de carga para usar con Suspense
 const LoadingFallback = () => {
@@ -391,6 +392,8 @@ const System = ({
                 return <Subscription which={value} data={data} />
             case "agradecimientos":
                 return <Agradecimientos which={value} data={data} items={getItems(itemsId)} contacts={contacts} />
+            case "support":
+                return <Support which={value} data={data} items={getItems(itemsId)} />
             default:
                 return <NoComponent which={value} />
         }

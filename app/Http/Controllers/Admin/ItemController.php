@@ -28,7 +28,7 @@ class ItemController extends BasicController
 {
     public $model = Item::class;
     public $reactView = 'Admin/Items';
-    public $imageFields = ['image', 'banner', 'texture', 'pdf'];
+    public $imageFields = ['image', 'banner', 'texture', 'pdf', 'manual'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
     public $with4get = ['tags'];
@@ -174,6 +174,18 @@ class ItemController extends BasicController
                 $path = "images/{$snake_case}/{$uuid}.{$ext}";
                 Storage::put($path, file_get_contents($full));
                 $item->pdf = "{$uuid}.{$ext}";
+                $item->save();
+            }
+
+            // Guardar el Manual
+            if ($request->hasFile('manual')) {
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+                $full = $request->file("manual");
+                $uuid = Crypto::randomUUID();
+                $ext = $full->getClientOriginalExtension();
+                $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                Storage::put($path, file_get_contents($full));
+                $item->manual = "{$uuid}.{$ext}";
                 $item->save();
             }
 

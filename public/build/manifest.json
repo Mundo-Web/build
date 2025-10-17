@@ -2476,7 +2476,7 @@
     ]
   },
   "resources/js/Admin/Items.jsx": {
-    "file": "assets/Items-B20ZMy47.js",
+    "file": "assets/Items-DqeWRvNc.js",
     "name": "Items",
     "src": "resources/js/Admin/Items.jsx",
     "isEntry": true,
@@ -10993,6 +10993,60 @@
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js"
     ]
   },
+  "resources/js/Components/Tailwind/Support.jsx": {
+    "file": "assets/Support-bZHUFiyv.js",
+    "name": "Support",
+    "src": "resources/js/Components/Tailwind/Support.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-BfFHrpNk.js",
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Components/Tailwind/Support/SupportSimple.jsx",
+      "resources/js/Components/Tailwind/Support/SupportWithTabs.jsx",
+      "resources/js/Components/Tailwind/Support/SupportDownloadCenter.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Support/SupportDownloadCenter.jsx": {
+    "file": "assets/SupportDownloadCenter--pJTheE3.js",
+    "name": "SupportDownloadCenter",
+    "src": "resources/js/Components/Tailwind/Support/SupportDownloadCenter.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Support/SupportSimple.jsx": {
+    "file": "assets/SupportSimple--pJTheE3.js",
+    "name": "SupportSimple",
+    "src": "resources/js/Components/Tailwind/Support/SupportSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Support/SupportWithTabs.jsx": {
+    "file": "assets/SupportWithTabs--pJTheE3.js",
+    "name": "SupportWithTabs",
+    "src": "resources/js/Components/Tailwind/Support/SupportWithTabs.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
     "file": "assets/Testimonials-5hqcVTre.js",
     "name": "Testimonials",
@@ -11745,7 +11799,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-D0TuAGRt.js",
+    "file": "assets/System-BCtDtUhz.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
@@ -11814,6 +11868,7 @@
       "resources/js/Components/Tailwind/Partner.jsx",
       "resources/js/Components/Tailwind/Subscription.jsx",
       "resources/js/Components/Tailwind/Agradecimientos.jsx",
+      "resources/js/Components/Tailwind/Support.jsx",
       "resources/js/Components/Tailwind/AboutUs.jsx",
       "resources/js/Components/Tailwind/Ad.jsx",
       "resources/js/Components/Tailwind/Agradecimientos.jsx",
@@ -11851,6 +11906,7 @@
       "resources/js/Components/Tailwind/Slider.jsx",
       "resources/js/Components/Tailwind/Step.jsx",
       "resources/js/Components/Tailwind/Subscription.jsx",
+      "resources/js/Components/Tailwind/Support.jsx",
       "resources/js/Components/Tailwind/Testimonials.jsx",
       "resources/js/Components/Tailwind/Thank.jsx",
       "resources/js/Components/Tailwind/TopBar.jsx",

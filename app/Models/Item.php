@@ -43,6 +43,7 @@ class Item extends Model
         'color',
         'texture',
         'pdf',
+        'manual',
         'linkvideo',
         'size',
         'grouper',
