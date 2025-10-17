@@ -14,7 +14,6 @@ import Table from "../Components/Adminto/Table";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import SwitchFormGroup from "../Components/Adminto/form/SwitchFormGroup";
-import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
 import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 
 const deliverypricesRest = new DeliveryPricesRest();
@@ -31,7 +30,6 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     const idRef = useRef();
     const ubigeoRef = useRef();
     const priceRef = useRef();
-    const descriptionRef = useRef();
     const is_freeRef = useRef();
     const is_expressRef = useRef();
     const is_agencyRef = useRef();
@@ -90,7 +88,6 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         if (priceRef.current) priceRef.current.value = data?.price ?? 0;
         if (express_priceRef.current) express_priceRef.current.value = data?.express_price ?? 0;
         if (agency_priceRef.current) agency_priceRef.current.value = data?.agency_price ?? 0;
-        if (descriptionRef.current) descriptionRef.current.value = data?.description ?? "";
 
         // Cargar tiendas si retiro en tienda está activo
         if (data?.is_store_pickup) {
@@ -140,7 +137,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         );
         const request = {
             id: idRef.current.value || undefined,
-            name: `${selected.distrito}, ${selected.departamento}`.toTitleCase(),
+            name: `${selected.distrito}, ${selected.provincia} - ${selected.departamento}`.toTitleCase(),
             price: enableStandard ? (priceRef.current.value || 0) : 0,
             is_free: enableFree,
             is_express: enableExpress,
@@ -148,7 +145,6 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
             is_store_pickup: enableStorePickup,
             express_price: enableExpress ? (express_priceRef.current.value || 0) : 0,
             agency_price: enableAgency ? (agency_priceRef.current.value || 0) : 0,
-            description: descriptionRef.current.value,
             ubigeo: ubigeoRef.current.value,
             selected_stores: enableStorePickup ?
                 (selectedStores.length > 0 ? selectedStores : null) :
@@ -362,24 +358,50 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                     {
                         dataField: "name",
                         caption: "Envío a",
-                        width: "200px",
+                 
                         allowExporting: false,
-                    },
-                    {
-                        dataField: "description",
-                        caption: "Descripción",
-                        cellTemplate: (container, { data }) => {
-                            container.html(
-                                data.description ||
-                                '<i class="text-muted">- Sin descripción -</i>'
-                            );
+                        calculateCellValue: (data) => {
+                            // Buscar el ubigeo en el array para obtener el formato correcto
+                            if (data.data && data.data.distrito) {
+                                return `${data.data.distrito}, ${data.data.provincia} - ${data.data.departamento}`;
+                            }
+                            // Si no hay data, mostrar el name guardado
+                            return data.name;
                         },
                     },
                     {
                         dataField: "is_free",
-                        dataType: "number",
+                        dataType: "string",
                         caption: "Opciones Activas",
                         width: "250px",
+                        allowFiltering: true,
+                        calculateFilterExpression: function(filterValue, selectedFilterOperation) {
+                            // Convertir el filtro a minúsculas para búsqueda case-insensitive
+                            const searchTerm = (filterValue || '').toLowerCase();
+                            
+                            return function(data) {
+                                const options = [];
+                                
+                                if (data.price && parseFloat(data.price) > 0 && !data.is_free) {
+                                    options.push('estandar', 'standard', 'normal');
+                                }
+                                if (data.is_express || (data.express_price && parseFloat(data.express_price) > 0)) {
+                                    options.push('express', 'rapido', 'rápido');
+                                }
+                                if (data.is_free) {
+                                    options.push('gratis', 'free', 'gratuito');
+                                }
+                                if (data.is_agency) {
+                                    options.push('agencia', 'agency', 'olva', 'shalom');
+                                }
+                                if (data.is_store_pickup) {
+                                    options.push('tienda', 'store', 'retiro', 'pickup');
+                                }
+                                
+                                // Buscar si alguna opción contiene el término de búsqueda
+                                return options.some(opt => opt.includes(searchTerm));
+                            };
+                        },
                         cellTemplate: (container, { data }) => {
                             const badges = [];
                             
@@ -1035,12 +1057,6 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                             </div>
                         </div>
                     )}
-
-                    <TextareaFormGroup
-                        eRef={descriptionRef}
-                        label="Descripción"
-                        rows={2}
-                    />
                 </div>
             </Modal>
 
