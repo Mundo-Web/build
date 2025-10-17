@@ -83,16 +83,6 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         setAgencyPaymentOnDelivery(data?.agency_payment_on_delivery ?? false);
         setEnableStorePickup(data?.is_store_pickup ?? false);
 
-        // Setear valores en los refs
-        if (is_freeRef.current) is_freeRef.current.checked = data?.is_free ?? false;
-        if (is_expressRef.current) is_expressRef.current.checked = data?.is_express ?? false;
-        if (is_agencyRef.current) is_agencyRef.current.checked = data?.is_agency ?? false;
-        if (is_store_pickupRef.current) is_store_pickupRef.current.checked = data?.is_store_pickup ?? false;
-
-        if (priceRef.current) priceRef.current.value = data?.price ?? 0;
-        if (express_priceRef.current) express_priceRef.current.value = data?.express_price ?? 0;
-        if (agency_priceRef.current) agency_priceRef.current.value = data?.agency_payment_on_delivery ? 0 : (data?.agency_price ?? 0);
-        
         // Actualizar el estado del precio de agencia para la visualización
         const agencyPrice = data?.agency_payment_on_delivery ? '0.00' : (data?.agency_price ? parseFloat(data.agency_price).toFixed(2) : '0.00');
         setAgencyPriceValue(agencyPrice);
@@ -106,6 +96,18 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         }
 
         $(modalRef.current).modal("show");
+
+        // Setear valores en los refs DESPUÉS de que los campos sean visibles
+        setTimeout(() => {
+            if (is_freeRef.current) is_freeRef.current.checked = data?.is_free ?? false;
+            if (is_expressRef.current) is_expressRef.current.checked = data?.is_express ?? false;
+            if (is_agencyRef.current) is_agencyRef.current.checked = data?.is_agency ?? false;
+            if (is_store_pickupRef.current) is_store_pickupRef.current.checked = data?.is_store_pickup ?? false;
+
+            if (priceRef.current) priceRef.current.value = data?.price ?? '';
+            if (express_priceRef.current) express_priceRef.current.value = data?.express_price ?? '';
+            if (agency_priceRef.current) agency_priceRef.current.value = data?.agency_payment_on_delivery ? '' : (data?.agency_price ?? '');
+        }, 100);
     };
 
     // Función para cargar todas las tiendas disponibles
