@@ -310,7 +310,7 @@ class DeliveryPriceController extends BasicController
 
                 $searchLower = Str::lower($search);
 
-                // Verificar si el término de búsqueda está presente en el departamento, provincia o distrito en minúsclas
+                // Verificar si el término de búsqueda está presente en el departamento, provincia o distrito en minúsculas
 
                 return Str::contains(Str::lower($item['departamento']), $searchLower) ||
                     Str::contains(Str::lower($item['provincia']), $searchLower) ||
@@ -327,5 +327,28 @@ class DeliveryPriceController extends BasicController
                     'distrito' => $item['distrito']
                 ];
             });
+    }
+
+    public function findByCode($code)
+    {
+        $ubigeo = collect(config('app.ubigeo'))
+            ->first(function ($item) use ($code) {
+                return $item['reniec'] == $code || 
+                       $item['inei'] == $code;
+            });
+
+        if (!$ubigeo) {
+            return response()->json([
+                'error' => 'Ubigeo no encontrado'
+            ], 404);
+        }
+
+        return response()->json([
+            'inei' => $ubigeo['inei'],
+            'reniec' => $ubigeo['reniec'] ?? $ubigeo['inei'],
+            'departamento' => $ubigeo['departamento'],
+            'provincia' => $ubigeo['provincia'],
+            'distrito' => $ubigeo['distrito']
+        ]);
     }
 }

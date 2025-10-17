@@ -87,20 +87,68 @@ export default function ShippingStep({
         ubigeo: user?.ubigeo || null,    });
    
     useEffect(() => {
-        if (user?.ubigeo && user?.district && user?.province && user?.department) {
-          const defaultOption = {
-            value: user.ubigeo,
-            label: `${user.district}, ${user.province}, ${user.department}`,
-            data: {
-              reniec: user.ubigeo,
-              departamento: user.department,
-              provincia: user.province,
-              distrito: user.district
+        console.log('🔍 ShippingStep - Verificando usuario:', {
+            user: user,
+            ubigeo: user?.ubigeo,
+            district: user?.district,
+            province: user?.province,
+            department: user?.department
+        });
+        
+        if (user?.ubigeo) {
+            // Si tiene ubigeo pero no tiene los campos de texto, buscarlos
+            if (!user?.district || !user?.province || !user?.department) {
+                console.log('🔍 ShippingStep - Buscando ubicación por ubigeo:', user.ubigeo);
+                
+                // Buscar la ubicación usando el ubigeo
+                fetch(`/api/ubigeo/find/${user.ubigeo}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.distrito) {
+                            const defaultOption = {
+                                value: user.ubigeo,
+                                label: `${data.distrito}, ${data.provincia}, ${data.departamento}`,
+                                data: {
+                                    reniec: user.ubigeo,
+                                    departamento: data.departamento,
+                                    provincia: data.provincia,
+                                    distrito: data.distrito
+                                }
+                            };
+                            
+                            console.log('✅ ShippingStep - Ubicación encontrada y cargada:', defaultOption);
+                            
+                            setDefaultUbigeoOption(defaultOption);
+                            setSelectedUbigeo(defaultOption);
+                            handleUbigeoChange(defaultOption);
+                        } else {
+                            console.log('❌ ShippingStep - No se encontró ubicación para ubigeo:', user.ubigeo);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ ShippingStep - Error al buscar ubicación:', error);
+                    });
+            } else {
+                // Si tiene todos los datos, usarlos directamente
+                const defaultOption = {
+                    value: user.ubigeo,
+                    label: `${user.district}, ${user.province}, ${user.department}`,
+                    data: {
+                        reniec: user.ubigeo,
+                        departamento: user.department,
+                        provincia: user.province,
+                        distrito: user.district
+                    }
+                };
+                
+                console.log('✅ ShippingStep - Cargando ubicación por defecto:', defaultOption);
+                
+                setDefaultUbigeoOption(defaultOption);
+                setSelectedUbigeo(defaultOption);
+                handleUbigeoChange(defaultOption);
             }
-          };
-          setDefaultUbigeoOption(defaultOption);
-          setSelectedUbigeo(defaultOption); // Actualiza el estado del ubigeo seleccionado
-          handleUbigeoChange(defaultOption);
+        } else {
+            console.log('❌ ShippingStep - Usuario sin ubigeo registrado');
         }
     }, [user]);
 
@@ -1385,7 +1433,13 @@ export default function ShippingStep({
                     }
                     <div className="flex justify-between">
                         <span>Envío:</span>
-                        <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(envio))}</span>
+                        <span className="font-semibold">
+                            {selectedOption === "free" || selectedOption === "store_pickup" || envio === 0 ? (
+                                <span className="customtext-neutral-dark">Gratis</span>
+                            ) : (
+                                `${CurrencySymbol()} ${Number2Currency(envio)}`
+                            )}
+                        </span>
                     </div>
 
                     {/* Sección de cupón */}

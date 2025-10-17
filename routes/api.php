@@ -94,6 +94,7 @@ use App\Http\Controllers\UnifiedImportController;
 */
 
 Route::get('/ubigeo/search', [DeliveryPriceController::class, 'search'])->name('ubigeo.search');
+Route::get('/ubigeo/find/{code}', [DeliveryPriceController::class, 'findByCode'])->name('ubigeo.find');
 
 // Type Delivery routes
 Route::get('/type-delivery/{slug}', [TypeDeliveryController::class, 'getBySlug']);

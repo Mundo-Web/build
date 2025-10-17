@@ -215,22 +215,70 @@ export default function ShippingStepSF({
     }, [user]);
     
     useEffect(() => {
-        if (user?.ubigeo && user?.district && user?.province && user?.department) {
-          const defaultOption = {
-            value: user.ubigeo,
-            label: `${user.district}, ${user.province}, ${user.department}`,
-            data: {
-              reniec: user.ubigeo,
-              departamento: user.department,
-              provincia: user.province,
-              distrito: user.district
+        console.log('🔍 ShippingStepSF - Verificando usuario:', {
+            user: user,
+            ubigeo: user?.ubigeo,
+            district: user?.district,
+            province: user?.province,
+            department: user?.department
+        });
+        
+        if (user?.ubigeo) {
+            // Si tiene ubigeo pero no tiene los campos de texto, buscarlos
+            if (!user?.district || !user?.province || !user?.department) {
+                console.log('🔍 ShippingStepSF - Buscando ubicación por ubigeo:', user.ubigeo);
+                
+                // Buscar la ubicación usando el ubigeo
+                fetch(`/api/ubigeo/find/${user.ubigeo}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.distrito) {
+                            const defaultOption = {
+                                value: user.ubigeo,
+                                label: `${data.distrito}, ${data.provincia}, ${data.departamento}`,
+                                data: {
+                                    reniec: user.ubigeo,
+                                    departamento: data.departamento,
+                                    provincia: data.provincia,
+                                    distrito: data.distrito
+                                }
+                            };
+                            
+                            console.log('✅ ShippingStepSF - Ubicación encontrada y cargada:', defaultOption);
+                            
+                            setDefaultUbigeoOption(defaultOption);
+                            setSelectedUbigeo(defaultOption);
+                            handleUbigeoChange(defaultOption);
+                        } else {
+                            console.log('❌ ShippingStepSF - No se encontró ubicación para ubigeo:', user.ubigeo);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ ShippingStepSF - Error al buscar ubicación:', error);
+                    });
+            } else {
+                // Si tiene todos los datos, usarlos directamente
+                const defaultOption = {
+                    value: user.ubigeo,
+                    label: `${user.district}, ${user.province}, ${user.department}`,
+                    data: {
+                        reniec: user.ubigeo,
+                        departamento: user.department,
+                        provincia: user.province,
+                        distrito: user.district
+                    }
+                };
+                
+                console.log('✅ ShippingStepSF - Cargando ubicación por defecto:', defaultOption);
+                
+                setDefaultUbigeoOption(defaultOption);
+                setSelectedUbigeo(defaultOption);
+                handleUbigeoChange(defaultOption);
             }
-          };
-          setDefaultUbigeoOption(defaultOption);
-          setSelectedUbigeo(defaultOption); // Actualiza el estado del ubigeo seleccionado
-          handleUbigeoChange(defaultOption);
+        } else {
+            console.log('❌ ShippingStepSF - Usuario sin ubigeo registrado');
         }
-      }, [user]);
+    }, [user]);
 
     const getContact = (correlative) => {
     return (
@@ -1729,7 +1777,7 @@ export default function ShippingStepSF({
                                 <label
                                     className={`block text-sm 2xl:text-base mb-1 customtext-neutral-dark `}
                                 >
-                                    Ubicación de entrega (Distrito)
+                                    Distrito / Provincia / Departamento (Ubicación de entrega)<span className="text-red-500 ml-1">*</span>
                                 </label>
                                 <AsyncSelect
                                     name="ubigeo"
@@ -1739,12 +1787,27 @@ export default function ShippingStepSF({
                                     onChange={(selected) => {
                                         setSelectedUbigeo(selected);
                                         handleUbigeoChange(selected);
+                                        setSearchInput(""); // Limpiar input al seleccionar
+                                    }}
+                                    inputValue={searchInput}
+                                    onInputChange={(value, { action }) => {
+                                        if (action === "input-change") setSearchInput(value);
+                                    }}
+                                    onFocus={() => {
+                                        setSelectedUbigeo(null); // Limpiar selección al enfocar
+                                        setSearchInput("");      // Limpiar input de búsqueda
+                                    }}
+                                    onMenuOpen={() => {
+                                        if (selectedUbigeo) {
+                                            setSelectedUbigeo(null);
+                                            setSearchInput("");
+                                        }
                                     }}
                                     placeholder="Buscar por distrito | provincia | departamento ..."
                                     loadingMessage={() => "Buscando ubicaciones..."}
                                     noOptionsMessage={({ inputValue }) =>
                                         inputValue.length < 3
-                                            ? "Ingrese al menos 3 caracteres..."
+                                            ? "Buscar por distrito | provincia | departamento ..."
                                             : "No se encontraron resultados"
                                     }
                                     isLoading={loading}
@@ -1760,26 +1823,6 @@ export default function ShippingStepSF({
                                     className="w-full rounded-xl transition-all duration-300"
                                     menuPortalTarget={document.body}
                                     isClearable={true}
-                                    components={{
-                                    ClearIndicator: (props) => (
-                                        <div {...props.innerProps} className="p-1 cursor-pointer">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-red-400 hover:text-red-600"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
-                                        </div>
-                                    ),
-                                    }}
                                 />
                                 {errors.ubigeo && <div className="text-red-500 text-sm mt-1">{errors.ubigeo}</div>}
                             </div>
