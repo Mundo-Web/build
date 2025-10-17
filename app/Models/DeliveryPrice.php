@@ -22,6 +22,7 @@ class DeliveryPrice extends Model
         'price',
         'ubigeo',
         'is_free',
+        'is_express',
         'is_agency',
         'is_store_pickup',
         'express_price',
@@ -35,6 +36,7 @@ class DeliveryPrice extends Model
     ];
     protected $casts = [
         'is_free' => 'boolean',
+        'is_express' => 'boolean',
         'is_agency' => 'boolean',
         'is_store_pickup' => 'boolean',
         'selected_stores' => 'array'

@@ -2099,7 +2099,7 @@
     ]
   },
   "resources/js/Admin/DeliveryPricesType.jsx": {
-    "file": "assets/DeliveryPricesType-Dh2Zxrlg.js",
+    "file": "assets/DeliveryPricesType-wzB9a-4S.js",
     "name": "DeliveryPricesType",
     "src": "resources/js/Admin/DeliveryPricesType.jsx",
     "isEntry": true,
@@ -2120,7 +2120,6 @@
       "_Table-BCyay2bJ.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_SelectFormGroup-X8WqJHHl.js",
-      "_SwitchFormGroup-DXN0cwVk.js",
       "_TextareaFormGroup-CliirJM1.js",
       "_Number2Currency-D9Rjvh76.js",
       "_index-yBjzXJbu.js",

@@ -33,18 +33,22 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     const priceRef = useRef();
     const descriptionRef = useRef();
     const is_freeRef = useRef();
+    const is_expressRef = useRef();
     const is_agencyRef = useRef();
     const is_store_pickupRef = useRef();
     const express_priceRef = useRef();
     const agency_priceRef = useRef();
-    const standard_priceRef = useRef(); // Nuevo campo para precio estándar en delivery gratis
     const [isEditing, setIsEditing] = useState(false);
     const [isEditingType, setIsEditingType] = useState(false);
     const [inHome, setInHome] = useState(false);
-    const [isFreeChecked, setIsFreeChecked] = useState(false);
-    const [isAgencyChecked, setIsAgencyChecked] = useState(false);
-    const [isStorePickupChecked, setIsStorePickupChecked] = useState(false);
-    const [message, setMessage] = useState('');
+    
+    // Estados para habilitar cada opción de delivery
+    const [enableStandard, setEnableStandard] = useState(false);
+    const [enableExpress, setEnableExpress] = useState(false);
+    const [enableFree, setEnableFree] = useState(false);
+    const [enableAgency, setEnableAgency] = useState(false);
+    const [enableStorePickup, setEnableStorePickup] = useState(false);
+    
     const [stores, setStores] = useState([]);
     const [availableStores, setAvailableStores] = useState([]);
     const [selectedStores, setSelectedStores] = useState([]); // Tiendas seleccionadas específicamente
@@ -65,58 +69,42 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         $(ubigeoRef.current)
             .val(data?.ubigeo ?? null)
             .trigger("change");
-        setInHome(data?.price === null);
 
-        if (is_freeRef.current) {
-            is_freeRef.current.checked = data?.is_free ?? false;
-            setIsFreeChecked(data?.is_free ?? false);
-            // Si es delivery gratis, también activar retiro en tienda automáticamente
-            if (data?.is_free) {
-                is_store_pickupRef.current.checked = true;
-                setIsStorePickupChecked(true);
-                setMessage('Delivery gratis incluye retiro en tienda automáticamente. Configure precio normal y express.');
-                loadAvailableStores();
-                // Cargar tiendas seleccionadas existentes
-                if (data?.selected_stores && Array.isArray(data.selected_stores)) {
-                    setSelectedStores(data.selected_stores);
-                }
+        // Determinar qué opciones están habilitadas basándose en los valores
+        const hasStandardPrice = data?.price && parseFloat(data.price) > 0;
+        const hasExpressPrice = data?.express_price && parseFloat(data.express_price) > 0;
+        const hasAgencyPrice = data?.agency_price && parseFloat(data.agency_price) > 0;
+        
+        setEnableStandard(hasStandardPrice || !data?.id); // Por defecto activado si es nuevo
+        setEnableExpress(hasExpressPrice);
+        setEnableFree(data?.is_free ?? false);
+        setEnableAgency(data?.is_agency ?? false);
+        setEnableStorePickup(data?.is_store_pickup ?? false);
+
+        // Setear valores en los refs
+        if (is_freeRef.current) is_freeRef.current.checked = data?.is_free ?? false;
+        if (is_expressRef.current) is_expressRef.current.checked = data?.is_express ?? false;
+        if (is_agencyRef.current) is_agencyRef.current.checked = data?.is_agency ?? false;
+        if (is_store_pickupRef.current) is_store_pickupRef.current.checked = data?.is_store_pickup ?? false;
+
+        if (priceRef.current) priceRef.current.value = data?.price ?? 0;
+        if (express_priceRef.current) express_priceRef.current.value = data?.express_price ?? 0;
+        if (agency_priceRef.current) agency_priceRef.current.value = data?.agency_price ?? 0;
+        if (descriptionRef.current) descriptionRef.current.value = data?.description ?? "";
+
+        // Cargar tiendas si retiro en tienda está activo
+        if (data?.is_store_pickup) {
+            loadAvailableStores();
+            if (data?.selected_stores && Array.isArray(data.selected_stores)) {
+                setSelectedStores(data.selected_stores);
             }
         }
-
-        if (is_agencyRef.current) {
-            is_agencyRef.current.checked = data?.is_agency ?? false;
-            setIsAgencyChecked(data?.is_agency ?? false);
-            // Establecer mensaje si es recojo en agencia
-            if (data?.is_agency) {
-                setMessage('Este es un envío que se realizará por empresas de envío como Shalom, Olva Currier u otros, el cliente realizara el pago en destino.');
-            }
-        }
-
-        if (is_store_pickupRef.current) {
-            is_store_pickupRef.current.checked = data?.is_store_pickup ?? false;
-            setIsStorePickupChecked(data?.is_store_pickup ?? false);
-            // Establecer mensaje si es retiro en tienda
-            if (data?.is_store_pickup) {
-                setMessage('Retiro en tienda disponible. Los clientes podrán recoger sus pedidos en nuestras sucursales.');
-                loadAvailableStores();
-                // Cargar tiendas seleccionadas existentes
-                if (data?.selected_stores && Array.isArray(data.selected_stores)) {
-                    setSelectedStores(data.selected_stores);
-                }
-            }
-        }
-
-        priceRef.current.value = data?.price ?? 0;
-        standard_priceRef.current.value = data?.price ?? 0; // Para delivery gratis, usar price como precio estándar
-        express_priceRef.current.value = data?.express_price ?? 0;
-        agency_priceRef.current.value = data?.agency_price ?? 0;
-        descriptionRef.current.value = data?.description ?? "";
 
         $(modalRef.current).modal("show");
     };
 
     // Función para cargar todas las tiendas disponibles
-    const loadAvailableStores = async () => {        
+    const loadAvailableStores = async () => {
         try {
             // Cargar todas las tiendas activas desde el endpoint correcto
             const result = await storesRest.paginate({
@@ -130,9 +118,9 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                     }
                 ])
             });
-            
+
             console.log('Cargando todas las tiendas disponibles:', result);
-            
+
             if (result && result.data && Array.isArray(result.data)) {
                 setAvailableStores(result.data);
             } else {
@@ -153,18 +141,17 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         const request = {
             id: idRef.current.value || undefined,
             name: `${selected.distrito}, ${selected.departamento}`.toTitleCase(),
-            price: isFreeChecked ? standard_priceRef.current.value : priceRef.current.value, // Si es delivery gratis, usar precio estándar
-            is_free: is_freeRef.current.checked,
-            is_agency: is_agencyRef.current.checked,
-            is_store_pickup: is_store_pickupRef.current.checked,
-            express_price: express_priceRef.current.value,
-            agency_price: agency_priceRef.current.value,
+            price: enableStandard ? (priceRef.current.value || 0) : 0,
+            is_free: enableFree,
+            is_express: enableExpress,
+            is_agency: enableAgency,
+            is_store_pickup: enableStorePickup,
+            express_price: enableExpress ? (express_priceRef.current.value || 0) : 0,
+            agency_price: enableAgency ? (agency_priceRef.current.value || 0) : 0,
             description: descriptionRef.current.value,
             ubigeo: ubigeoRef.current.value,
-            // Si el retiro en tienda está habilitado y hay tiendas seleccionadas específicamente,
-            // enviar solo esas tiendas. Si no hay ninguna seleccionada, significa "todas las tiendas"
-            selected_stores: is_store_pickupRef.current.checked ? 
-                (selectedStores.length > 0 ? selectedStores : null) : 
+            selected_stores: enableStorePickup ?
+                (selectedStores.length > 0 ? selectedStores : null) :
                 null
         };
 
@@ -269,7 +256,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         if (!isConfirmed) return;
         const result = await deliverypricesRest.delete(id);
         if (!result) return;
-        
+
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
@@ -384,53 +371,83 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                         cellTemplate: (container, { data }) => {
                             container.html(
                                 data.description ||
-                                    '<i class="text-muted">- Sin descripción -</i>'
+                                '<i class="text-muted">- Sin descripción -</i>'
                             );
                         },
                     },
                     {
                         dataField: "is_free",
                         dataType: "number",
-                        caption: "Tipo Envio",
+                        caption: "Opciones Activas",
+                        width: "250px",
                         cellTemplate: (container, { data }) => {
+                            const badges = [];
+                            
+                            // Delivery Estándar
+                            if (data.price && parseFloat(data.price) > 0 && !data.is_free) {
+                                badges.push(
+                                    <span key="standard" className="badge bg-primary me-1 mb-1">
+                                        <i className="fas fa-truck me-1"></i>
+                                        Estándar
+                                    </span>
+                                );
+                            }
+                            
+                            // Delivery Express
+                            if (data.is_express || (data.express_price && parseFloat(data.express_price) > 0)) {
+                                badges.push(
+                                    <span key="express" className="badge bg-warning text-dark me-1 mb-1">
+                                        <i className="fas fa-bolt me-1"></i>
+                                        Express
+                                    </span>
+                                );
+                            }
+                            
+                            // Delivery Gratis
                             if (data.is_free) {
-                                container.html(
-                                    renderToString(
-                                        <div className="d-flex flex-column gap-1">
-                                            <span className="badge bg-success">
-                                                Delivery Gratis
-                                            </span>
-                                            <span className="badge bg-warning">
-                                                Delivery Express
-                                            </span>
-                                            <span className="badge bg-primary">
-                                                Retiro en Tienda
-                                            </span>
-                                        </div>
-                                    )
+                                badges.push(
+                                    <span key="free" className="badge bg-success me-1 mb-1">
+                                        <i className="fas fa-gift me-1"></i>
+                                        Gratis
+                                    </span>
                                 );
-                            } else if (data.is_agency) {
-                                container.html(
-                                    renderToString(
-                                        <span className="badge bg-info">
-                                            Recojo en Agencia
-                                        </span>
-                                    )
+                            }
+                            
+                            // Recojo en Agencia
+                            if (data.is_agency) {
+                                badges.push(
+                                    <span key="agency" className="badge bg-info me-1 mb-1">
+                                        <i className="fas fa-building me-1"></i>
+                                        Agencia
+                                    </span>
                                 );
-                            } else if (data.is_store_pickup) {
+                            }
+                            
+                            // Retiro en Tienda
+                            if (data.is_store_pickup) {
+                                badges.push(
+                                    <span key="store" className="badge bg-primary me-1 mb-1">
+                                        <i className="fas fa-store me-1"></i>
+                                        Tienda
+                                    </span>
+                                );
+                            }
+                            
+                            if (badges.length === 0) {
                                 container.html(
                                     renderToString(
-                                        <span className="badge bg-primary">
-                                            Retiro en Tienda
+                                        <span className="text-muted font-italic">
+                                            <i className="fas fa-times-circle me-1"></i>
+                                            Sin opciones
                                         </span>
                                     )
                                 );
                             } else {
                                 container.html(
                                     renderToString(
-                                        <span className="badge bg-secondary">
-                                            Delivery Normal
-                                        </span>
+                                        <div className="d-flex flex-wrap">
+                                            {badges}
+                                        </div>
                                     )
                                 );
                             }
@@ -438,60 +455,78 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                     },
                     {
                         dataField: "price",
-                        caption: "Precio",
+                        caption: "Precios",
                         dataType: "number",
-                        width: "150px",
+                        width: "200px",
                         cellTemplate: (container, { data }) => {
+                            const prices = [];
+                            
+                            // Precio Estándar
+                            if (data.price && parseFloat(data.price) > 0) {
+                                prices.push(
+                                    <div key="standard" className="mb-1">
+                                        <span className="badge bg-primary me-1">Est.</span>
+                                        <strong>{CurrencySymbol()} {Number2Currency(data.price)}</strong>
+                                    </div>
+                                );
+                            }
+                            
+                            // Precio Express
+                            if (data.express_price && parseFloat(data.express_price) > 0) {
+                                prices.push(
+                                    <div key="express" className="mb-1">
+                                        <span className="badge bg-warning text-dark me-1">Exp.</span>
+                                        <strong>{CurrencySymbol()} {Number2Currency(data.express_price)}</strong>
+                                    </div>
+                                );
+                            }
+                            
+                            // Precio Agencia
+                            if (data.is_agency && data.agency_price) {
+                                prices.push(
+                                    <div key="agency" className="mb-1">
+                                        <span className="badge bg-info me-1">Age.</span>
+                                        <strong>{CurrencySymbol()} {Number2Currency(data.agency_price)}</strong>
+                                    </div>
+                                );
+                            }
+                            
+                            // Delivery Gratis
                             if (data.is_free) {
-                                container.html(
-                                    renderToString(
-                                        <div className="d-flex flex-column">
-                                            <span className="text-success font-weight-bold">
-                                                Delivery Gratis (Condicional)
-                                            </span>
-                                            <small className="text-muted">
-                                                Normal: {CurrencySymbol()} {Number2Currency(data.price)} | 
-                                                Express: {CurrencySymbol()} {Number2Currency(data.express_price)}
-                                            </small>
-                                            <small className="text-primary">
-                                                + Retiro en Tienda
-                                            </small>
-                                        </div>
-                                    )
+                                prices.push(
+                                    <div key="free" className="mb-1">
+                                        <span className="badge bg-success me-1">Free</span>
+                                        <strong className="text-success">GRATIS*</strong>
+                                    </div>
                                 );
-                            } else if (data.is_agency) {
-                                container.html(
-                                    renderToString(
-                                        <div>
-                                            <span className="text-muted font-italic">
-                                                Recojo en Agencia
-                                            </span>
-                                            <br/>
-                                            <small className="text-muted">
-                                                {CurrencySymbol()} {Number2Currency(data.agency_price)}
-                                            </small>
-                                        </div>
-                                    )
+                            }
+                            
+                            // Retiro en Tienda
+                            if (data.is_store_pickup) {
+                                prices.push(
+                                    <div key="store" className="mb-1">
+                                        <span className="badge bg-primary me-1">Tienda</span>
+                                        <strong className="text-success">GRATIS</strong>
+                                    </div>
                                 );
-                            } else if (data.is_store_pickup && !data.is_free) {
+                            }
+                            
+                            if (prices.length === 0) {
                                 container.html(
                                     renderToString(
-                                        <span className="text-primary font-italic">
-                                            Solo Retiro en Tienda
+                                        <span className="text-muted font-italic">
+                                            - Sin precios -
                                         </span>
                                     )
                                 );
                             } else {
                                 container.html(
                                     renderToString(
-                                        <div>
-                                            <span className="text-muted font-italic">
-                                                Delivery Normal
-                                            </span>
-                                            <br/>
-                                            <small className="text-muted">
-                                                {CurrencySymbol()} {Number2Currency(data.price)}
-                                            </small>
+                                        <div className="d-flex flex-column">
+                                            {prices}
+                                            {data.is_free && (
+                                                <small className="text-muted">* Condicional</small>
+                                            )}
                                         </div>
                                     )
                                 );
@@ -593,172 +628,321 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                             </option>
                         ))}
                     </SelectFormGroup>
-                    
-                    <div className="col-12 mb-3">
-                        <label className="form-label">Tipo de Envío</label>
-                        <div className="row">
-                            <SwitchFormGroup
-                                eRef={is_freeRef}
-                                label="¿Delivery gratis?"
-                                col="col-4"
-                                onChange={(e) => {
-                                    setIsFreeChecked(e.target.checked);
-                                    if (e.target.checked) {
-                                        // Cuando se marca delivery gratis, automáticamente marcar retiro en tienda
-                                        setIsAgencyChecked(false);
-                                        setIsStorePickupChecked(true); // Auto-activar retiro en tienda
-                                        is_agencyRef.current.checked = false;
-                                        is_store_pickupRef.current.checked = true; // Auto-activar retiro en tienda
-                                        setMessage('Delivery gratis incluye retiro en tienda automáticamente. Configure precio normal y express.');
-                                        loadAvailableStores();
-                                    } else {
-                                        // Si se desmarca delivery gratis, también desmarcar retiro en tienda
-                                        setIsStorePickupChecked(false);
-                                        is_store_pickupRef.current.checked = false;
-                                        setMessage('');
-                                    }
-                                }}
-                                checked={isFreeChecked}
-                                refreshable={[isFreeChecked]}
-                            />
-                            <SwitchFormGroup
-                                eRef={is_agencyRef}
-                                label="¿Recojo en agencia?"
-                                col="col-4"
-                                onChange={(e) => {
-                                    setIsAgencyChecked(e.target.checked);
-                                    if (e.target.checked) {
-                                        setIsFreeChecked(false);
-                                        setIsStorePickupChecked(false);
-                                        is_freeRef.current.checked = false;
-                                        is_store_pickupRef.current.checked = false;
-                                        setMessage('Este es un envío que se realizará por empresas de envío como Shalom, Olva Currier u otros, el cliente realizara el pago en destino.');
-                                    } else {
-                                        setMessage('');
-                                    }
-                                }}
-                                checked={isAgencyChecked}
-                                refreshable={[isAgencyChecked]}
-                            />
-                            <SwitchFormGroup
-                                eRef={is_store_pickupRef}
-                                label="¿Retiro en tienda?"
-                                col="col-4"
-                                onChange={(e) => {
-                                    setIsStorePickupChecked(e.target.checked);
-                                    if (e.target.checked) {
-                                        // Cargar tiendas cuando se activa retiro en tienda
-                                        loadAvailableStores();
-                                        if (!isFreeChecked) {
-                                            // Solo afectar otros switches si no es delivery gratis
-                                            setIsAgencyChecked(false);
-                                            is_agencyRef.current.checked = false;
-                                        }
-                                        setMessage('Retiro en tienda disponible. Seleccione tiendas específicas o deje sin seleccionar para permitir retiro en cualquier tienda.');
-                                    } else {
-                                        setMessage('');
-                                        setSelectedStores([]); // Limpiar tiendas seleccionadas
-                                    }
-                                }}
-                                checked={isStorePickupChecked}
-                                refreshable={[isStorePickupChecked]}
-                            />
-                        </div>
-                        {message && (
-                            <div className={`alert ${isFreeChecked ? 'alert-success' : 'alert-info'} mt-2`}>
-                                <i className={`fas ${isFreeChecked ? 'fa-check-circle' : 'fa-info-circle'} me-2`}></i>
-                                {message}
-                            </div>
-                        )}
-                    </div>
-                    
-                    {/* Mostrar retiro en tienda como información cuando es delivery gratis */}
-                    {isFreeChecked && (
-                        <div className="col-12 mb-3">
-                            <div className="alert alert-info">
-                                <i className="fas fa-info-circle me-2"></i>
-                                <strong>Delivery gratis incluye automáticamente retiro en tienda.</strong>
-                                <br/>Configure el precio normal (cuando no califica para envío gratuito) y el precio express.
-                            </div>
-                        </div>
-                    )}
-                    
-                    {/* Campos de precio según el tipo de envío */}
-                    <div
-                        className="col-12"
-                        hidden={isFreeChecked || isAgencyChecked || isStorePickupChecked}
-                    >
-                        <InputFormGroup
-                            eRef={priceRef}
-                            label="Costo de envío"
-                            col="col-12"
-                            type="number"
-                            step={0.01}
-                            required
-                        />
-                    </div>
-                    
-                    {/* Campos específicos para delivery gratis */}
-                    <div className="col-12" hidden={!isFreeChecked}>
-                        <div className="row">
-                            <div className="col-md-6">
-                                <InputFormGroup
-                                    eRef={standard_priceRef}
-                                    label="Precio Normal (cuando no califica gratis)"
-                                    col="col-12"
-                                    type="number"
-                                    step={0.01}
-                                    required
-                                />
-                            </div>
-                            <div className="col-md-6">
-                                <InputFormGroup
-                                    eRef={express_priceRef}
-                                    label="Precio Express"
-                                    col="col-12"
-                                    type="number"
-                                    step={0.01}
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="col-12" hidden={!isAgencyChecked}>
-                        <InputFormGroup
-                            eRef={agency_priceRef}
-                            label="Costo de envío a Agencia"
-                            col="col-12"
-                            type="number"
-                            step={0.01}
-                            required
-                        />
-                    </div>
-                    
-                    {/* Mostrar tiendas disponibles cuando se selecciona retiro en tienda */}
-                    {isStorePickupChecked && (
-                        <div className="col-12 mb-3">
-                            <label className="form-label">Tiendas disponibles para retiro</label>
-                            {availableStores.length > 0 ? (
-                                <div>
-                                    <div className="alert alert-info mb-3">
-                                        <i className="fas fa-info-circle me-2"></i>
-                                        <strong>Instrucciones:</strong>
-                                        <ul className="mb-0 mt-2">
-                                            <li>Si no selecciona ninguna tienda, el retiro estará disponible en <strong>todas las tiendas</strong> de esta ubicación.</li>
-                                            <li>Si selecciona tiendas específicas, el retiro solo estará disponible en las tiendas marcadas.</li>
-                                        </ul>
+
+                    {/* Alert informativo mejorado */}
+                    <div className="col-12 mb-4">
+                        <div className="alert alert-primary border-0 shadow-sm" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white'}}>
+                            <div className="d-flex align-items-start">
+                                <div className="flex-shrink-0">
+                                    <i className="fas fa-info-circle fa-2x me-3 opacity-75"></i>
+                                </div>
+                                <div className="flex-grow-1">
+                                    <h5 className="alert-heading mb-2">
+                                        <i className="fas fa-truck me-2"></i>
+                                        ¿Cómo configurar las opciones de delivery?
+                                    </h5>
+                                    <p className="mb-2">Selecciona <strong>UNA O VARIAS</strong> opciones de envío para esta ubicación. Los clientes verán todas las opciones activas en el checkout y podrán elegir la que más les convenga.</p>
+                                    <hr className="my-2" style={{borderColor: 'rgba(255,255,255,0.3)'}} />
+                                    <div className="small">
+                                        <strong>💡 Ejemplo:</strong> Puedes activar "Delivery Estándar" + "Delivery Express" + "Retiro en Tienda" al mismo tiempo.
                                     </div>
-                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Delivery Estándar */}
+                    <div className="col-md-6 mb-3">
+                        <div className={`card h-100 border-2 ${enableStandard ? 'border-primary shadow-sm' : 'border-light'}`}>
+                            <div className="card-body">
+                                <div className="d-flex align-items-start mb-3">
+                                    <div className="form-check flex-grow-1">
+                                        <input 
+                                            className="form-check-input" 
+                                            type="checkbox" 
+                                            id="enableStandard"
+                                            checked={enableStandard}
+                                            onChange={(e) => setEnableStandard(e.target.checked)}
+                                            style={{width: '1.2em', height: '1.2em'}}
+                                        />
+                                        <label className="form-check-label fw-bold ms-2" htmlFor="enableStandard" style={{fontSize: '1.1rem'}}>
+                                            <i className="fas fa-truck text-primary me-2"></i>
+                                            Delivery Estándar
+                                        </label>
+                                    </div>
+                                    {enableStandard && (
+                                        <span className="badge bg-primary">Activo</span>
+                                    )}
+                                </div>
+                                <p className="text-muted small mb-3">
+                                    <i className="fas fa-clock me-1"></i> Entrega en 3-5 días hábiles<br/>
+                                    <i className="fas fa-box me-1"></i> Opción más común para envíos regulares
+                                </p>
+                                {enableStandard && (
+                                    <div className="mt-3 pt-3 border-top">
+                                        <InputFormGroup
+                                            eRef={priceRef}
+                                            label={<span><i className="fas fa-money-bill-wave me-1"></i> Costo de envío (S/)</span>}
+                                            col="col-12"
+                                            type="number"
+                                            step={0.01}
+                                            placeholder="Ej: 15.00"
+                                            required
+                                        />
+                                        <div className="alert alert-light border mb-0">
+                                            <small className="text-muted d-block mb-1">
+                                                <strong>💡 Sugerencia:</strong>
+                                            </small>
+                                            <small className="text-muted">Este es el precio estándar que pagarán los clientes por envío regular.</small>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Delivery Express */}
+                    <div className="col-md-6 mb-3">
+                        <div className={`card h-100 border-2 ${enableExpress ? 'border-warning shadow-sm' : 'border-light'}`}>
+                            <div className="card-body">
+                                <div className="d-flex align-items-start mb-3">
+                                    <div className="form-check flex-grow-1">
+                                        <input 
+                                            ref={is_expressRef}
+                                            className="form-check-input" 
+                                            type="checkbox" 
+                                            id="enableExpress"
+                                            checked={enableExpress}
+                                            onChange={(e) => setEnableExpress(e.target.checked)}
+                                            style={{width: '1.2em', height: '1.2em'}}
+                                        />
+                                        <label className="form-check-label fw-bold ms-2" htmlFor="enableExpress" style={{fontSize: '1.1rem'}}>
+                                            <i className="fas fa-bolt text-warning me-2"></i>
+                                            Delivery Express
+                                        </label>
+                                    </div>
+                                    {enableExpress && (
+                                        <span className="badge bg-warning text-dark">⚡ Rápido</span>
+                                    )}
+                                </div>
+                                <p className="text-muted small mb-3">
+                                    <i className="fas fa-shipping-fast me-1"></i> Entrega en 24-48 horas<br/>
+                                    <i className="fas fa-star me-1"></i> Envío prioritario con costo adicional
+                                </p>
+                                {enableExpress && (
+                                    <div className="mt-3 pt-3 border-top">
+                                        <InputFormGroup
+                                            eRef={express_priceRef}
+                                            label={<span><i className="fas fa-money-bill-wave me-1"></i> Costo express (S/)</span>}
+                                            col="col-12"
+                                            type="number"
+                                            step={0.01}
+                                            placeholder="Ej: 25.00"
+                                            required
+                                        />
+                                        <div className="alert alert-warning border mb-0">
+                                            <small className="text-dark d-block mb-1">
+                                                <strong>⚡ Importante:</strong>
+                                            </small>
+                                            <small className="text-dark">Precio premium por entrega rápida. Generalmente mayor que el estándar.</small>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Delivery Gratis */}
+                    <div className="col-md-6 mb-3">
+                        <div className={`card h-100 border-2 ${enableFree ? 'border-success shadow-sm' : 'border-light'}`}>
+                            <div className="card-body">
+                                <div className="d-flex align-items-start mb-3">
+                                    <div className="form-check flex-grow-1">
+                                        <input 
+                                            ref={is_freeRef}
+                                            className="form-check-input" 
+                                            type="checkbox" 
+                                            id="enableFree"
+                                            checked={enableFree}
+                                            onChange={(e) => setEnableFree(e.target.checked)}
+                                            style={{width: '1.2em', height: '1.2em'}}
+                                        />
+                                        <label className="form-check-label fw-bold ms-2" htmlFor="enableFree" style={{fontSize: '1.1rem'}}>
+                                            <i className="fas fa-gift text-success me-2"></i>
+                                            Delivery Gratis
+                                        </label>
+                                    </div>
+                                    {enableFree && (
+                                        <span className="badge bg-success">🎁 Gratis</span>
+                                    )}
+                                </div>
+                                <p className="text-muted small mb-3">
+                                    <i className="fas fa-check-circle me-1"></i> Condicional (monto mínimo)<br/>
+                                    <i className="fas fa-heart me-1"></i> Incentiva compras mayores
+                                </p>
+                                {enableFree && (
+                                    <div className="alert alert-success border-0 mb-0 mt-3">
+                                        <div className="d-flex align-items-start">
+                                            <i className="fas fa-info-circle me-2 mt-1"></i>
+                                            <div>
+                                                <strong className="d-block mb-1">¿Cómo funciona?</strong>
+                                                <small>
+                                                    El envío será <strong>GRATIS</strong> cuando el cliente alcance el monto mínimo de compra configurado en el sistema.
+                                                </small>
+                                                <hr className="my-2" />
+                                                <small className="text-muted">
+                                                    <i className="fas fa-cog me-1"></i> Configura el monto mínimo en: <strong>Configuraciones → General</strong>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recojo en Agencia */}
+                    <div className="col-md-6 mb-3">
+                        <div className={`card h-100 border-2 ${enableAgency ? 'border-info shadow-sm' : 'border-light'}`}>
+                            <div className="card-body">
+                                <div className="d-flex align-items-start mb-3">
+                                    <div className="form-check flex-grow-1">
+                                        <input 
+                                            ref={is_agencyRef}
+                                            className="form-check-input" 
+                                            type="checkbox" 
+                                            id="enableAgency"
+                                            checked={enableAgency}
+                                            onChange={(e) => setEnableAgency(e.target.checked)}
+                                            style={{width: '1.2em', height: '1.2em'}}
+                                        />
+                                        <label className="form-check-label fw-bold ms-2" htmlFor="enableAgency" style={{fontSize: '1.1rem'}}>
+                                            <i className="fas fa-building text-info me-2"></i>
+                                            Recojo en Agencia
+                                        </label>
+                                    </div>
+                                    {enableAgency && (
+                                        <span className="badge bg-info">📦 Agencia</span>
+                                    )}
+                                </div>
+                                <p className="text-muted small mb-3">
+                                    <i className="fas fa-map-marker-alt me-1"></i> Olva, Shalom, Cruz del Sur, etc.<br/>
+                                    <i className="fas fa-hand-holding-usd me-1"></i> Cliente paga contra entrega
+                                </p>
+                                {enableAgency && (
+                                    <div className="mt-3 pt-3 border-top">
+                                        <InputFormGroup
+                                            eRef={agency_priceRef}
+                                            label={<span><i className="fas fa-money-bill-wave me-1"></i> Costo a agencia (S/)</span>}
+                                            col="col-12"
+                                            type="number"
+                                            step={0.01}
+                                            placeholder="Ej: 8.00"
+                                            required
+                                        />
+                                        <div className="alert alert-info border mb-0">
+                                            <small className="text-dark d-block mb-1">
+                                                <strong>📋 Nota importante:</strong>
+                                            </small>
+                                            <small className="text-dark">Este costo lo paga el cliente al recoger su pedido en la agencia de transporte.</small>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Retiro en Tienda */}
+                    <div className="col-12 mb-3">
+                        <div className={`card border-2 ${enableStorePickup ? 'border-primary shadow-sm' : 'border-light'}`}>
+                            <div className="card-body">
+                                <div className="d-flex align-items-start mb-3">
+                                    <div className="form-check flex-grow-1">
+                                        <input 
+                                            ref={is_store_pickupRef}
+                                            className="form-check-input" 
+                                            type="checkbox" 
+                                            id="enableStorePickup"
+                                            checked={enableStorePickup}
+                                            onChange={(e) => {
+                                                setEnableStorePickup(e.target.checked);
+                                                if (e.target.checked) {
+                                                    loadAvailableStores();
+                                                } else {
+                                                    setSelectedStores([]);
+                                                }
+                                            }}
+                                            style={{width: '1.2em', height: '1.2em'}}
+                                        />
+                                        <label className="form-check-label fw-bold ms-2" htmlFor="enableStorePickup" style={{fontSize: '1.1rem'}}>
+                                            <i className="fas fa-store text-primary me-2"></i>
+                                            Retiro en Tienda
+                                        </label>
+                                    </div>
+                                    {enableStorePickup && (
+                                        <span className="badge bg-primary">🏪 Sin costo</span>
+                                    )}
+                                </div>
+                                <p className="text-muted small mb-3">
+                                    <i className="fas fa-map-marked-alt me-1"></i> Cliente recoge en tienda física<br/>
+                                    <i className="fas fa-dollar-sign me-1"></i> <strong className="text-success">Totalmente GRATIS</strong> (sin costo de envío)
+                                </p>
+                                {enableStorePickup && (
+                                    <div className="alert alert-primary border-0 mb-0 mt-3">
+                                        <div className="d-flex align-items-start">
+                                            <i className="fas fa-check-circle me-2 mt-1"></i>
+                                            <div>
+                                                <strong className="d-block mb-1">Beneficio para el cliente</strong>
+                                                <small>
+                                                    El cliente ahorra el costo de envío recogiendo su pedido directamente en tu tienda.
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mostrar tiendas disponibles cuando se selecciona retiro en tienda */}
+                    {enableStorePickup && (
+                        <div className="col-12 mb-3">
+                            <div className="card border-0 bg-light">
+                                <div className="card-header bg-primary text-white">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-store-alt me-2"></i>
+                                        Selecciona las tiendas disponibles
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    {availableStores.length > 0 ? (
+                                        <div>
+                                            <div className="alert alert-info border-0 mb-3">
+                                                <div className="d-flex align-items-start">
+                                                    <i className="fas fa-lightbulb fa-lg me-2 mt-1"></i>
+                                                    <div>
+                                                        <strong className="d-block mb-2">¿Cómo funciona?</strong>
+                                                        <ul className="mb-0 ps-3">
+                                                            <li className="mb-1">
+                                                                <strong>Sin selección:</strong> Retiro disponible en <span className="badge bg-success">TODAS las tiendas</span>
+                                                            </li>
+                                                            <li>
+                                                                <strong>Con selección:</strong> Retiro solo en <span className="badge bg-primary">tiendas marcadas</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                     <div className="row">
                                         {availableStores.map((store) => (
                                             <div key={store.id} className="col-md-6 mb-3">
                                                 <div className={`card border ${selectedStores.includes(store.id) ? 'border-primary bg-light' : ''}`}>
                                                     <div className="card-body p-3">
                                                         <div className="form-check">
-                                                            <input 
-                                                                className="form-check-input" 
-                                                                type="checkbox" 
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
                                                                 id={`store_${store.id}`}
                                                                 checked={selectedStores.includes(store.id)}
                                                                 onChange={(e) => {
@@ -772,18 +956,18 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                                             <label className="form-check-label w-100" htmlFor={`store_${store.id}`}>
                                                                 <div className="d-flex">
                                                                     <div className="flex-shrink-0">
-                                                                        {store.image ? (
-                                                                            <img 
-                                                                                src={`/storage/images/stores/${store.image}`}
-                                                                                alt={store.name}
-                                                                                className="rounded"
-                                                                                style={{width: "40px", height: "40px", objectFit: "cover"}}
-                                                                            />
-                                                                        ) : (
-                                                                            <div className="bg-secondary rounded d-flex align-items-center justify-content-center text-white" style={{width: "40px", height: "40px"}}>
-                                                                                <i className="fas fa-store"></i>
-                                                                            </div>
-                                                                        )}
+
+                                                                        <img
+                                                                            src={`/storage/images/stores/${store.image}`}
+                                                                            alt={store.name}
+                                                                            className="rounded"
+                                                                            style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                                                                            onError={(e) =>
+                                                                            (e.target.src =
+                                                                                "/api/cover/thumbnail/null")
+                                                                            }
+                                                                        />
+
                                                                     </div>
                                                                     <div className="flex-grow-1 ms-3">
                                                                         <h6 className="mb-1">{store.name}</h6>
@@ -805,29 +989,53 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                             </div>
                                         ))}
                                     </div>
-                                    
-                                    <div className="mt-3">
-                                        <small className="text-muted">
-                                            <strong>Tiendas seleccionadas:</strong> 
-                                            {selectedStores.length === 0 ? 
-                                                <span className="text-success"> Todas las tiendas disponibles ({availableStores.length})</span> :
-                                                <span className="text-primary"> {selectedStores.length} de {availableStores.length} tiendas</span>
-                                            }
-                                        </small>
-                                    </div>
+
+                                            <div className="mt-3 pt-3 border-top">
+                                                <div className="d-flex align-items-center justify-content-between bg-white p-3 rounded border">
+                                                    <div>
+                                                        <strong className="text-primary">
+                                                            <i className="fas fa-check-circle me-1"></i>
+                                                            Tiendas seleccionadas:
+                                                        </strong>
+                                                    </div>
+                                                    <div>
+                                                        {selectedStores.length === 0 ? (
+                                                            <span className="badge bg-success fs-6">
+                                                                <i className="fas fa-store me-1"></i>
+                                                                Todas ({availableStores.length})
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge bg-primary fs-6">
+                                                                <i className="fas fa-map-marker-alt me-1"></i>
+                                                                {selectedStores.length} de {availableStores.length}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="alert alert-warning border-0 mb-0">
+                                            <div className="d-flex align-items-center">
+                                                <i className="fas fa-exclamation-triangle fa-2x me-3"></i>
+                                                <div>
+                                                    <strong className="d-block mb-1">No hay tiendas disponibles</strong>
+                                                    <small>No se encontraron tiendas activas en esta ubicación.</small>
+                                                    <div className="mt-2">
+                                                        <a href="/admin/stores" target="_blank" className="btn btn-sm btn-warning">
+                                                            <i className="fas fa-plus me-1"></i>
+                                                            Administrar tiendas
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                <div className="alert alert-warning">
-                                    <i className="fas fa-exclamation-triangle me-2"></i>
-                                    No hay tiendas disponibles en esta ubicación. 
-                                    <a href="/admin/stores" target="_blank" className="alert-link ms-1">
-                                        Administrar tiendas
-                                    </a>
-                                </div>
-                            )}
+                            </div>
                         </div>
                     )}
-                    
+
                     <TextareaFormGroup
                         eRef={descriptionRef}
                         label="Descripción"
@@ -879,7 +1087,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                             cellTemplate: (container, { data }) => {
                                 container.html(
                                     data.description ||
-                                        '<i class="text-muted">- Sin descripción -</i>'
+                                    '<i class="text-muted">- Sin descripción -</i>'
                                 );
                             },
                         },
@@ -946,7 +1154,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                             label="Nombre"
                             col="col-12"
                             type="string"
-                           
+
                         />
                         <InputFormGroup
                             eRef={descriptionTypeRef}
