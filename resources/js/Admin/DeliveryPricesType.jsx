@@ -36,6 +36,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     const is_store_pickupRef = useRef();
     const express_priceRef = useRef();
     const agency_priceRef = useRef();
+    const agency_payment_on_deliveryRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [isEditingType, setIsEditingType] = useState(false);
     const [inHome, setInHome] = useState(false);
@@ -45,6 +46,8 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     const [enableExpress, setEnableExpress] = useState(false);
     const [enableFree, setEnableFree] = useState(false);
     const [enableAgency, setEnableAgency] = useState(false);
+    const [agencyPaymentOnDelivery, setAgencyPaymentOnDelivery] = useState(false);
+    const [agencyPriceValue, setAgencyPriceValue] = useState('0.00');
     const [enableStorePickup, setEnableStorePickup] = useState(false);
     
     const [stores, setStores] = useState([]);
@@ -77,6 +80,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         setEnableExpress(hasExpressPrice);
         setEnableFree(data?.is_free ?? false);
         setEnableAgency(data?.is_agency ?? false);
+        setAgencyPaymentOnDelivery(data?.agency_payment_on_delivery ?? false);
         setEnableStorePickup(data?.is_store_pickup ?? false);
 
         // Setear valores en los refs
@@ -87,7 +91,11 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
 
         if (priceRef.current) priceRef.current.value = data?.price ?? 0;
         if (express_priceRef.current) express_priceRef.current.value = data?.express_price ?? 0;
-        if (agency_priceRef.current) agency_priceRef.current.value = data?.agency_price ?? 0;
+        if (agency_priceRef.current) agency_priceRef.current.value = data?.agency_payment_on_delivery ? 0 : (data?.agency_price ?? 0);
+        
+        // Actualizar el estado del precio de agencia para la visualización
+        const agencyPrice = data?.agency_payment_on_delivery ? '0.00' : (data?.agency_price ? parseFloat(data.agency_price).toFixed(2) : '0.00');
+        setAgencyPriceValue(agencyPrice);
 
         // Cargar tiendas si retiro en tienda está activo
         if (data?.is_store_pickup) {
@@ -144,7 +152,8 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
             is_agency: enableAgency,
             is_store_pickup: enableStorePickup,
             express_price: enableExpress ? (express_priceRef.current.value || 0) : 0,
-            agency_price: enableAgency ? (agency_priceRef.current.value || 0) : 0,
+            agency_price: enableAgency && !agencyPaymentOnDelivery ? (agency_priceRef.current.value || 0) : 0,
+            agency_payment_on_delivery: enableAgency ? agencyPaymentOnDelivery : false,
             ubigeo: ubigeoRef.current.value,
             selected_stores: enableStorePickup ?
                 (selectedStores.length > 0 ? selectedStores : null) :
@@ -443,7 +452,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                 badges.push(
                                     <span key="agency" className="badge bg-info me-1 mb-1">
                                         <i className="fas fa-building me-1"></i>
-                                        Agencia
+                                        Agencia {data.agency_payment_on_delivery ? '(Pago Destino)' : ''}
                                     </span>
                                 );
                             }
@@ -507,13 +516,22 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                             }
                             
                             // Precio Agencia
-                            if (data.is_agency && data.agency_price) {
-                                prices.push(
-                                    <div key="agency" className="mb-1">
-                                        <span className="badge bg-info me-1">Age.</span>
-                                        <strong>{CurrencySymbol()} {Number2Currency(data.agency_price)}</strong>
-                                    </div>
-                                );
+                            if (data.is_agency) {
+                                if (data.agency_payment_on_delivery) {
+                                    prices.push(
+                                        <div key="agency" className="mb-1">
+                                            <span className="badge bg-info me-1">Age.</span>
+                                            <strong className="text-info">Pago en Destino</strong>
+                                        </div>
+                                    );
+                                } else if (data.agency_price) {
+                                    prices.push(
+                                        <div key="agency" className="mb-1">
+                                            <span className="badge bg-info me-1">Age.</span>
+                                            <strong>{CurrencySymbol()} {Number2Currency(data.agency_price)}</strong>
+                                        </div>
+                                    );
+                                }
                             }
                             
                             // Delivery Gratis
@@ -852,25 +870,97 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                 </div>
                                 <p className="text-muted small mb-3">
                                     <i className="fas fa-map-marker-alt me-1"></i> Olva, Shalom, Cruz del Sur, etc.<br/>
-                                    <i className="fas fa-hand-holding-usd me-1"></i> Cliente paga contra entrega
+                                    <i className="fas fa-hand-holding-usd me-1"></i> Dos modalidades disponibles
                                 </p>
                                 {enableAgency && (
                                     <div className="mt-3 pt-3 border-top">
-                                        <InputFormGroup
-                                            eRef={agency_priceRef}
-                                            label={<span><i className="fas fa-money-bill-wave me-1"></i> Costo a agencia (S/)</span>}
-                                            col="col-12"
-                                            type="number"
-                                            step={0.01}
-                                            placeholder="Ej: 8.00"
-                                            required
-                                        />
-                                        <div className="alert alert-info border mb-0">
-                                            <small className="text-dark d-block mb-1">
-                                                <strong>📋 Nota importante:</strong>
-                                            </small>
-                                            <small className="text-dark">Este costo lo paga el cliente al recoger su pedido en la agencia de transporte.</small>
+                                        {/* Selector de tipo de pago */}
+                                        <div className="mb-3">
+                                            <label className="form-label fw-bold">
+                                                <i className="fas fa-money-check-alt me-1"></i>
+                                                Tipo de cobro:
+                                            </label>
+                                            <div className="btn-group w-100" role="group">
+                                                <input 
+                                                    type="radio" 
+                                                    className="btn-check" 
+                                                    name="agencyPaymentType" 
+                                                    id="agencyFixedPrice"
+                                                    checked={!agencyPaymentOnDelivery}
+                                                    onChange={() => setAgencyPaymentOnDelivery(false)}
+                                                />
+                                                <label className="btn btn-outline-primary" htmlFor="agencyFixedPrice">
+                                                    <i className="fas fa-dollar-sign me-1"></i>
+                                                    Nosotros cobramos
+                                                </label>
+
+                                                <input 
+                                                    type="radio" 
+                                                    className="btn-check" 
+                                                    name="agencyPaymentType" 
+                                                    id="agencyPaymentOnDelivery"
+                                                    checked={agencyPaymentOnDelivery}
+                                                    onChange={() => setAgencyPaymentOnDelivery(true)}
+                                                />
+                                                <label className="btn btn-outline-info" htmlFor="agencyPaymentOnDelivery">
+                                                    <i className="fas fa-hand-holding-usd me-1"></i>
+                                                    Pago en Destino
+                                                </label>
+                                            </div>
                                         </div>
+
+                                        {/* Precio fijo (nosotros cobramos) */}
+                                        {!agencyPaymentOnDelivery && (
+                                            <div className="animate__animated animate__fadeIn">
+                                                <InputFormGroup
+                                                    eRef={agency_priceRef}
+                                                    label={<span><i className="fas fa-money-bill-wave me-1"></i> Precio que cobramos (S/)</span>}
+                                                    col="col-12"
+                                                    type="number"
+                                                    step={0.01}
+                                                    placeholder="Ej: 10.00"
+                                                    onChange={(e) => setAgencyPriceValue(e.target.value || '0.00')}
+                                                    required
+                                                />
+                                                <div className="alert alert-primary border-0 mb-0">
+                                                    <div className="d-flex align-items-start">
+                                                        <i className="fas fa-info-circle me-2 mt-1"></i>
+                                                        <div>
+                                                            <strong className="d-block mb-1">Nosotros cobramos el envío</strong>
+                                                            <small>
+                                                                El cliente paga <strong>S/ {agencyPriceValue}</strong> en el checkout.
+                                                                Con esta opción, el cliente <strong>ya NO paga nada adicional</strong> al recoger en la agencia.
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Pago en destino (cliente paga contra entrega) */}
+                                        {agencyPaymentOnDelivery && (
+                                            <div className="animate__animated animate__fadeIn">
+                                                <div className="alert alert-info border-0 mb-0">
+                                                    <div className="d-flex align-items-start">
+                                                        <i className="fas fa-hand-holding-usd fa-2x me-3 mt-1"></i>
+                                                        <div>
+                                                            <strong className="d-block mb-2">Cliente paga contra entrega</strong>
+                                                            <ul className="mb-0 ps-3">
+                                                                <li className="mb-1">
+                                                                    <strong>Nosotros NO cobramos</strong> por el envío
+                                                                </li>
+                                                                <li className="mb-1">
+                                                                    El cliente paga directamente a la <strong>agencia de transporte</strong> al recoger
+                                                                </li>
+                                                                <li>
+                                                                    Ideal para agencias como: <span className="badge bg-info ms-1">Olva</span> <span className="badge bg-info">Shalom</span> <span className="badge bg-info">Cruz del Sur</span>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
