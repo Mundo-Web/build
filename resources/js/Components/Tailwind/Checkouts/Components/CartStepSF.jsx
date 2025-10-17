@@ -8,15 +8,15 @@ import FreeItemsDisplay from "./FreeItemsDisplay";
 import PromotionSuggestion from "./PromotionSuggestion";
 import PromotionModal from "./PromotionModal";
 
-export default function CartStepSF({ 
+export default function CartStepSF({
     data,
-    cart, 
-    setCart, 
-    onContinue, 
-    subTotal, 
-    envio, 
-    igv, 
-    totalFinal, 
+    cart,
+    setCart,
+    onContinue,
+    subTotal,
+    envio,
+    igv,
+    totalFinal,
     openModal,
     automaticDiscounts,
     setAutomaticDiscounts,
@@ -32,7 +32,7 @@ export default function CartStepSF({
     const [showPromotionModal, setShowPromotionModal] = useState(false);
     const [selectedPromotion, setSelectedPromotion] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    
+
     const isCartEmpty = cart.length === 0;
 
     // Apply discount rules when cart changes
@@ -72,11 +72,11 @@ export default function CartStepSF({
                     category_id: item.category_id
                 }))
             });
-            
+
             console.log('📡 CartStepSF: About to call DiscountRulesRest.applyToCart...');
             const result = await DiscountRulesRest.applyToCart(cart, totalWithoutDiscounts);
             console.log('📡 CartStepSF: DiscountRulesRest.applyToCart completed');
-            
+
             // Debug: Log respuesta completa del servidor
             console.log('📥 Server response:', {
                 success: result.success,
@@ -84,13 +84,13 @@ export default function CartStepSF({
                 error: result.error,
                 fullResult: result
             });
-            
+
             if (result.success && result.data) {
                 console.log('✅ Discounts found:', result.data.applied_discounts);
                 const discounts = DiscountRulesRest.formatDiscounts(result.data.applied_discounts);
                 const discountAmount = result.data.total_discount || 0;
                 const freeItemsData = DiscountRulesRest.getFreeItems(result.data.applied_discounts);
-                
+
                 // Extract promotion suggestions from applied discounts
                 const suggestions = [];
                 result.data.applied_discounts.forEach(discount => {
@@ -98,12 +98,12 @@ export default function CartStepSF({
                         suggestions.push(...discount.suggested_items);
                     }
                 });
-                
+
                 setAppliedDiscounts(discounts);
                 setTotalDiscount(discountAmount);
                 setFreeItems(freeItemsData);
                 setPromotionSuggestions(suggestions);
-                
+
                 // Update parent component state
                 if (setAutomaticDiscounts) setAutomaticDiscounts(discounts);
                 if (setAutomaticDiscountTotal) setAutomaticDiscountTotal(discountAmount);
@@ -114,7 +114,7 @@ export default function CartStepSF({
                     data: result.data,
                     fullResult: result
                 });
-                
+
                 // No discounts applied or error
                 const emptyDiscounts = [];
                 const zeroDiscount = 0;
@@ -142,16 +142,16 @@ export default function CartStepSF({
 
     // Check if a product has available promotions
     const hasPromotionAvailable = (productId) => {
-        return promotionSuggestions.some(suggestion => 
-            suggestion.item_id === productId || 
+        return promotionSuggestions.some(suggestion =>
+            suggestion.item_id === productId ||
             suggestion.triggering_item_id === productId
         );
     };
 
     // Get promotion for a specific product
     const getPromotionForProduct = (productId) => {
-        return promotionSuggestions.find(suggestion => 
-            suggestion.item_id === productId || 
+        return promotionSuggestions.find(suggestion =>
+            suggestion.item_id === productId ||
             suggestion.triggering_item_id === productId
         );
     };
@@ -171,16 +171,16 @@ export default function CartStepSF({
         try {
             console.log('CartStepSF - handleAddPromotionalItem received:', suggestion);
             console.log('CartStepSF - current cart:', cart);
-            
+
             // Buscar el item existente en el carrito y agregar la cantidad sugerida
             setCart(old => {
                 console.log('CartStepSF - old cart before update:', old);
-                const existingItemIndex = old.findIndex(item => 
+                const existingItemIndex = old.findIndex(item =>
                     (item.item_id || item.id) === suggestion.item_id
                 );
-                
+
                 console.log('CartStepSF - existingItemIndex:', existingItemIndex);
-                
+
                 if (existingItemIndex !== -1) {
                     // Actualizar cantidad existente
                     const updatedCart = [...old];
@@ -211,7 +211,7 @@ export default function CartStepSF({
             setTimeout(() => {
                 applyDiscountRules();
             }, 100);
-            
+
         } catch (error) {
             console.error('Error adding promotional item:', error);
         }
@@ -221,8 +221,8 @@ export default function CartStepSF({
         <div className="grid lg:grid-cols-5 gap-4 md:gap-8">
             {/* Product List */}
             <div className="lg:col-span-3 space-y-4 md:space-y-6">
-              
-                
+
+
                 {isCartEmpty ? (
                     <div className="flex flex-col items-center justify-center p-8 text-center animate-fade-in">
                         <svg className="w-24 h-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,9 +233,9 @@ export default function CartStepSF({
                     </div>
                 ) : (
                     cart.map((item, index) => (
-                        <CardItem 
-                            key={index} 
-                            {...item} 
+                        <CardItem
+                            key={index}
+                            {...item}
                             setCart={setCart}
                             hasPromotion={hasPromotionAvailable(item.id)}
                             onPromotionClick={handlePromotionClick}
@@ -260,7 +260,7 @@ export default function CartStepSF({
                         <span className="customtext-neutral-dark">Envío</span>
                         <span className="font-semibold">{CurrencySymbol()} {Number2Currency(envio)}</span>
                     </div>
-                    
+
                     {/* Descuentos Automáticos */}
                     {isLoadingDiscounts && (
                         <div className="flex justify-between items-center">
@@ -268,7 +268,7 @@ export default function CartStepSF({
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                         </div>
                     )}
-                    
+
                     {!isLoadingDiscounts && appliedDiscounts.length > 0 && (
                         <div className="space-y-2">
                             <div className="text-xl md:text-2xl font-bold pb-4 md:pb-6 customtext-neutral-dark mb-2">
@@ -295,9 +295,9 @@ export default function CartStepSF({
                             </div>
                         </div>
                     )}
-                    
-                  
-                    
+
+
+
                     <div className="py-3 border-y-2 mt-4 md:mt-6">
                         <div className="flex justify-between font-bold text-lg md:text-[20px] items-center">
                             <span>Total</span>
@@ -313,10 +313,10 @@ export default function CartStepSF({
                         )}
                     </div>
                     <div className="space-y-2 pt-3 md:pt-4">
-                        <ButtonPrimary 
-                            onClick={onContinue} 
+                        <ButtonPrimary
+                            onClick={onContinue}
                             disabled={isCartEmpty}
-                            className={`w-full rounded-2xl xl:rounded-3xl ${data?.class_button || 'text-white'}`}
+                            className={`w-full py-3 px-6 font-semibold focus:outline-none outline-none focus:border-0 text-lg transition-all duration-300 hover:opacity-90 bg-primary  rounded-2xl xl:rounded-3xl ${data?.class_button || ' text-white'}`}
                         >
                             {isCartEmpty ? 'Carrito Vacío' : 'Continuar Compra'}
                         </ButtonPrimary>
@@ -333,7 +333,7 @@ export default function CartStepSF({
             </div>
 
             {/* Promotion Modal */}
-            <PromotionModal 
+            <PromotionModal
                 isOpen={showPromotionModal}
                 onClose={() => setShowPromotionModal(false)}
                 suggestion={selectedPromotion}

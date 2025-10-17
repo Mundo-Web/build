@@ -185,24 +185,25 @@ class DeliveryPriceController extends BasicController
                 $agencyType = TypeDelivery::where('slug', 'delivery-agencia')->first();
 
                 $result['agency'] = [
-                    'price' => $deliveryPrice->agency_price,
+                    'price' => $deliveryPrice->agency_payment_on_delivery ? 0 : $deliveryPrice->agency_price,
                     'description' => $agencyType->description ?? 'Entrega en Agencia',
                     'type' => $agencyType->name,
                     'characteristics' => $agencyType->characteristics,
+                    'payment_on_delivery' => $deliveryPrice->agency_payment_on_delivery,
                 ];
             }
 
             // 5. Verificar si hay retiro en tienda disponible
-            // Obtener directamente el TypeDelivery de retiro en tienda
-            $storePickupType = TypeDelivery::where('slug', 'retiro-en-tienda')->first();
-
-            if ($storePickupType) {
+            if ($deliveryPrice->is_store_pickup) {
+                $storePickupType = TypeDelivery::where('slug', 'retiro-en-tienda')->first();
+                
                 $result['is_store_pickup'] = true;
                 $result['store_pickup'] = [
                     'price' => 0,
-                    'description' => $storePickupType->description,
-                    'type' => $storePickupType->name,
+                    'description' => $storePickupType->description ?? 'Retiro en Tienda',
+                    'type' => $storePickupType->name ?? 'Retiro en Tienda',
                     'characteristics' => $storePickupType->characteristics ?? ['Sin costo de envío', 'Horarios flexibles', 'Atención personalizada'],
+                    'selected_stores' => $deliveryPrice->selected_stores, // Array de IDs de tiendas específicas, o null/[] para todas
                 ];
             } else {
                 $result['is_store_pickup'] = false;

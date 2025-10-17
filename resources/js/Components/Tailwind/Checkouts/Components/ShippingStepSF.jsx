@@ -10,6 +10,7 @@ import ButtonSecondary from "./ButtonSecondary";
 import InputForm from "./InputForm";
 import SelectForm from "./SelectForm";
 import OptionCard from "./OptionCard";
+import StorePickupSelector from "./StorePickupSelector";
 import { CheckCircleIcon, CircleX, InfoIcon, UserRoundX, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { Notify } from "sode-extend-react";
 import { renderToString } from "react-dom/server";
@@ -325,7 +326,7 @@ export default function ShippingStepSF({
     // Función para manejar la selección de tienda
     const handleStoreSelect = (store) => {
         setSelectedStore(store);
-        setShowStoreSelector(false);
+        // No ocultamos el selector para que el usuario pueda ver todas las opciones
         setFormData(prev => ({
             ...prev,
             shippingOption: "pickup",
@@ -483,12 +484,29 @@ export default function ShippingStepSF({
             // 4. ENVÍO AGENCIA: Si existe agency, agregarlo
             if (response.data.is_agency && response.data.agency) {
                 console.log('🏢 ShippingStepSF - Agregando envío por AGENCIA');
+                const agencyPrice = response.data.agency.price || 0;
+                const isPaymentOnDelivery = response.data.agency.payment_on_delivery || false;
+                
                 options.push({
                     type: "agency",
-                    price: response.data.agency.price || 0,
+                    price: agencyPrice,
                     description: response.data.agency.description,
                     deliveryType: response.data.agency.type,
                     characteristics: response.data.agency.characteristics,
+                    paymentOnDelivery: isPaymentOnDelivery,
+                });
+            }
+
+            // 5. RETIRO EN TIENDA: Si está disponible, agregarlo
+            if (response.data.is_store_pickup && response.data.store_pickup) {
+                console.log('🏪 ShippingStepSF - Agregando RETIRO EN TIENDA');
+                options.push({
+                    type: "store_pickup",
+                    price: 0,
+                    description: response.data.store_pickup.description,
+                    deliveryType: response.data.store_pickup.type,
+                    characteristics: response.data.store_pickup.characteristics,
+                    selectedStores: response.data.store_pickup.selected_stores, // IDs de tiendas específicas o null/[] para todas
                 });
             }
 
@@ -1861,27 +1879,26 @@ export default function ShippingStepSF({
                                     <h3 className="block text-xl 2xl:text-2xl font-bold mb-4 customtext-neutral-dark">
                                         Método de envío
                                     </h3>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {shippingOptions.map((option) => (
                                             <OptionCard
                                                 key={option.type}
-                                                title={
-                                                    option.type === "free"
-                                                        ? option.deliveryType
-                                                        : option.type === "express"
-                                                        ? option.deliveryType
-                                                        : option.type === "agency"
-                                                        ? option.deliveryType
-                                                        : option.deliveryType
-                                                }
+                                                title={option.deliveryType}
                                                 price={option.price}
                                                 description={option.description}
-                                                selected={
-                                                    selectedOption === option.type
-                                                }
+                                                selected={selectedOption === option.type}
+                                                paymentOnDelivery={option.paymentOnDelivery || false}
                                                 onSelect={() => {
                                                     setSelectedOption(option.type);
                                                     setEnvio(option.price);
+                                                    
+                                                    // Si selecciona retiro en tienda, mostrar selector
+                                                    if (option.type === "store_pickup") {
+                                                        setShowStoreSelector(true);
+                                                    } else {
+                                                        setShowStoreSelector(false);
+                                                        setSelectedStore(null);
+                                                    }
                                                 }}
                                             />
                                         ))}
@@ -1933,6 +1950,16 @@ export default function ShippingStepSF({
                                                     )
                                                 )}
                                         </div>
+                                    )}
+
+                                    {/* Selector de tiendas para retiro en tienda */}
+                                    {showStoreSelector && selectedOption === "store_pickup" && (
+                                        <StorePickupSelector 
+                                            ubigeo={selectedUbigeo?.data?.reniec || selectedUbigeo?.data?.inei}
+                                            onStoreSelect={handleStoreSelect}
+                                            selectedStore={selectedStore}
+                                            specificStores={shippingOptions.find(o => o.type === "store_pickup")?.selectedStores}
+                                        />
                                     )}
                                 </div>
                             )}
