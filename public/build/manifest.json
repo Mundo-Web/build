@@ -541,8 +541,8 @@
     "file": "assets/SortByAfterField-2AndDudn.js",
     "name": "SortByAfterField"
   },
-  "_StorePickupSelector-Bxh6oY1W.js": {
-    "file": "assets/StorePickupSelector-Bxh6oY1W.js",
+  "_StorePickupSelector-CDjcQF6y.js": {
+    "file": "assets/StorePickupSelector-CDjcQF6y.js",
     "name": "StorePickupSelector",
     "imports": [
       "_createLucideIcon-DfjclApS.js",
@@ -2998,7 +2998,7 @@
     ]
   },
   "resources/js/Admin/Stores.jsx": {
-    "file": "assets/Stores-B44tqfEf.js",
+    "file": "assets/Stores-Cj9ahKYh.js",
     "name": "Stores",
     "src": "resources/js/Admin/Stores.jsx",
     "isEntry": true,
@@ -3016,6 +3016,7 @@
       "_InputFormGroup-iZIO11ZN.js",
       "_TextareaFormGroup-CliirJM1.js",
       "_ImageFormGroup-DkVgPNU5.js",
+      "_SwitchFormGroup-DXN0cwVk.js",
       "_SelectFormGroup-X8WqJHHl.js",
       "_DxButton-DV0H-ZcL.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
@@ -5954,7 +5955,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkout.jsx": {
-    "file": "assets/Checkout-CFE_ncdd.js",
+    "file": "assets/Checkout-DdEWRsRQ.js",
     "name": "Checkout",
     "src": "resources/js/Components/Tailwind/Checkout.jsx",
     "isDynamicEntry": true,
@@ -6016,7 +6017,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkouts/CheckoutSteps.jsx": {
-    "file": "assets/CheckoutSteps-BJRV1I_d.js",
+    "file": "assets/CheckoutSteps-CPhSnkkJ.js",
     "name": "CheckoutSteps",
     "src": "resources/js/Components/Tailwind/Checkouts/CheckoutSteps.jsx",
     "isDynamicEntry": true,
@@ -6024,7 +6025,7 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_Number2Currency-D9Rjvh76.js",
-      "_StorePickupSelector-Bxh6oY1W.js",
+      "_StorePickupSelector-CDjcQF6y.js",
       "_tippy-react.esm-DmkRJDEW.js",
       "_useEcommerceTracking-DJ8tdrxn.js",
       "_InputForm-Dmyom2PO.js",
@@ -6121,7 +6122,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkouts/CheckoutStepsSF.jsx": {
-    "file": "assets/CheckoutStepsSF-DFyKA-DI.js",
+    "file": "assets/CheckoutStepsSF-BEJ1mxH_.js",
     "name": "CheckoutStepsSF",
     "src": "resources/js/Components/Tailwind/Checkouts/CheckoutStepsSF.jsx",
     "isDynamicEntry": true,
@@ -6131,7 +6132,7 @@
       "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
       "_HtmlContent-ghmllTyl.js",
       "_Number2Currency-D9Rjvh76.js",
-      "_StorePickupSelector-Bxh6oY1W.js",
+      "_StorePickupSelector-CDjcQF6y.js",
       "_main-B6F2O9-U.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_Global-CazroCzF.js",
@@ -8950,7 +8951,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-DZZ_3lC3.js",
+    "file": "assets/Menu-B7MpHoBw.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -9054,15 +9055,20 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu/MenuKatya.jsx": {
-    "file": "assets/MenuKatya--pJTheE3.js",
+    "file": "assets/MenuKatya-m25aPf4d.js",
     "name": "MenuKatya",
     "src": "resources/js/Components/Tailwind/Menu/MenuKatya.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-yBjzXJbu.js",
-      "__commonjsHelpers-D6-XlEtG.js"
+      "__commonjsHelpers-D6-XlEtG.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js"
     ]
   },
   "resources/js/Components/Tailwind/Menu/MenuMultivet.jsx": {
@@ -11738,7 +11744,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CVqCbSRT.js",
+    "file": "assets/System-DPRMBjgr.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

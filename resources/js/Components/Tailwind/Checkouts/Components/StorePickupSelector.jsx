@@ -37,10 +37,13 @@ const StorePickupSelector = ({
             console.log('🏪 Tiendas recibidas del API:', allStores.length);
             console.log('🏪 specificStores recibido:', specificStores);
             
-            // Filtrar por tipo de tienda (solo tienda y tienda_principal)
-            allStores = allStores.filter(store => 
-                store.type === 'tienda' || store.type === 'tienda_principal'
-            );
+            // Filtrar por tipo de tienda (solo tienda y tienda_principal) y que sean visibles
+            allStores = allStores.filter(store => {
+                const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
+                const isVisible = store.visible === true || store.visible === 1;
+                const isActive = store.status === true || store.status === 1;
+                return isCorrectType && isVisible && isActive;
+            });
             
             // Filtrar por tiendas específicas si se proporcionaron
             if (specificStores && Array.isArray(specificStores) && specificStores.length > 0) {

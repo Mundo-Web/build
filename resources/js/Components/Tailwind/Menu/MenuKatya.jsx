@@ -2,6 +2,7 @@ import { Tag, ChevronLeft, ChevronRight, ChevronDown, Store, Grid3X3 } from "luc
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Global from "../../../Utils/Global";
+import StoresRest from "../../../Actions/Admin/StoresRest";
 
 const MenuKatya = ({ pages = [], items, data, visible = false }) => {
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -19,15 +20,25 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
     useEffect(() => {
         const fetchStores = async () => {
             try {
-                const response = await fetch('/api/stores');
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📍 MenuKatya - Response completa del API:', data);
-                    if (data && Array.isArray(data.data)) {
-                        console.log('📍 MenuKatya - Stores recibidas:', data.data);
-                        console.log('📍 MenuKatya - Tipos de tiendas:', data.data.map(s => ({ name: s.name, type: s.type, status: s.status })));
-                        setStores(data.data);
-                    }
+                const storesRest = new StoresRest();
+                
+                // Usar paginate para traer solo tiendas activas y visibles
+                const result = await storesRest.paginate({
+                    status: true,
+                    visible: true
+                });
+                
+                console.log('📍 MenuKatya - Response completa del API:', result);
+                
+                if (result && Array.isArray(result.data)) {
+                    console.log('📍 MenuKatya - Stores recibidas:', result.data);
+                    console.log('📍 MenuKatya - Tipos de tiendas:', result.data.map(s => ({ 
+                        name: s.name, 
+                        type: s.type, 
+                        status: s.status,
+                        visible: s.visible 
+                    })));
+                    setStores(result.data);
                 }
             } catch (error) {
                 console.error('Error fetching stores:', error);
@@ -53,21 +64,20 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
     }, []);
 
     // Filtrar tiendas de tipo "tienda" y "tienda_principal"
+    // Agregar filtro adicional de visible por si el backend envía visible: 0 en lugar de no enviarla
     const tiendas = stores?.filter(store => {
         const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
-        const isActive = store.status === true || store.status === 1; // Considerando ambos formatos
-        console.log('📍 MenuKatya - Filtrando tienda:', {
-            name: store.name,
-            type: store.type,
-            status: store.status,
-            isCorrectType,
-            isActive,
-            passes: isCorrectType && isActive
-        });
-        return isCorrectType && isActive;
+        const isVisible = store.visible === true || store.visible === 1;
+        const isActive = store.status === true || store.status === 1;
+        return isCorrectType && isVisible && isActive;
     }) || [];
     
-    console.log('📍 MenuKatya - Tiendas filtradas:', tiendas.map(t => ({ name: t.name, type: t.type })));
+    console.log('📍 MenuKatya - Tiendas filtradas:', tiendas.map(t => ({ 
+        name: t.name, 
+        type: t.type,
+        status: t.status,
+        visible: t.visible 
+    })));
     console.log('📍 MenuKatya - Total tiendas filtradas:', tiendas.length);
 
     // Establecer tienda_principal como seleccionada por defecto

@@ -541,6 +541,16 @@ const Stores = ({ ubigeos = [] }) => {
         );
     };
 
+       const onVisibleChange = async ({ id, value }) => {
+        const result = await storesRest.boolean({
+            id,
+            field: "visible",
+            value,
+        });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
     return (
         <>
             <Table
@@ -668,6 +678,25 @@ const Stores = ({ ubigeos = [] }) => {
                             } else {
                                 container.text('Sin enlace');
                             }
+                        },
+                    },   {
+                        dataField: "visible",
+                        caption: "Visible",
+                        dataType: "boolean",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.visible == 1}
+                                    onChange={() =>
+                                        onVisibleChange({
+                                            id: data.id,
+                                            value: !data.visible,
+                                        })
+                                    }
+                                />
+                            );
                         },
                     },
                   
