@@ -2205,8 +2205,8 @@ export default function ShippingStepSF({
                         <div className="flex justify-between">
                             <span className="customtext-neutral-dark">Envío</span>
                             <span className="font-semibold">
-                                {hasShippingFree != null && subFinal >= hasShippingFree ? (
-                                    <span className="customtext-neutral-dark">Gratis (Compra mayor a {CurrencySymbol()} {hasShippingFree})</span>
+                                {selectedOption === "free" || selectedOption === "store_pickup" || envio === 0 ? (
+                                    <span className="customtext-neutral-dark">Gratis</span>
                                 ) : (
                                     `${CurrencySymbol()} ${Number2Currency(envio)}`
                                 )}

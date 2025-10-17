@@ -5955,7 +5955,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkout.jsx": {
-    "file": "assets/Checkout-DdEWRsRQ.js",
+    "file": "assets/Checkout-YIlD8Vfw.js",
     "name": "Checkout",
     "src": "resources/js/Components/Tailwind/Checkout.jsx",
     "isDynamicEntry": true,
@@ -6122,7 +6122,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Checkouts/CheckoutStepsSF.jsx": {
-    "file": "assets/CheckoutStepsSF-BEJ1mxH_.js",
+    "file": "assets/CheckoutStepsSF-DLz26QH_.js",
     "name": "CheckoutStepsSF",
     "src": "resources/js/Components/Tailwind/Checkouts/CheckoutStepsSF.jsx",
     "isDynamicEntry": true,
@@ -11681,7 +11681,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-wvwREg5u.js",
+    "file": "assets/BusinessIWorkCard-Cj37azoW.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -11689,13 +11689,14 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_BooleanLimit-D-OsQsek.js",
+      "_BasicRest-BML1C-ua.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js"
+      "_index-B6ujFmsw.js",
+      "_BooleanLimit-D-OsQsek.js"
     ]
   },
   "resources/js/Reutilizables/Pagination/FilterPagination.jsx": {
@@ -11744,7 +11745,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DPRMBjgr.js",
+    "file": "assets/System-DtG_bzw4.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
