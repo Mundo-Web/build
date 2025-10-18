@@ -5,6 +5,7 @@ import Tippy from "@tippyjs/react";
 import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 
+
 ReactModal.setAppElement('#app')
 
 const FooterSimple = ({ socials = [], terms = {}, footerLinks = [] }) => {
@@ -22,7 +23,7 @@ const FooterSimple = ({ socials = [], terms = {}, footerLinks = [] }) => {
       <footer className="px-[5%] py-[10%] md:px-[10%] md:py-[7.5%] lg:py-[5%] text-white relative grid grid-cols-3 md:grid-cols-2 gap-x-4 gap-y-6 text-sm bg-primary">
         <div className="col-span-2 flex flex-col gap-4 md:flex-row-reverse items-start justify-evenly md:col-span-1">
           <ul className="flex flex-col gap-2">
-            {links.whatsapp && <li><a href={`//wa.me/${links.whatsapp}`}>Conversemos</a></li>}
+          
             <li><a href="/faqs">Preguntas frecuentes</a></li>
             <li>
               <span className="cursor-pointer" onClick={openModal}>
@@ -40,7 +41,7 @@ const FooterSimple = ({ socials = [], terms = {}, footerLinks = [] }) => {
           <ul className="flex flex-col gap-2">
             {links.phone && <li><a href={`tel:${links.phone}`}>Teléfono</a></li>}
             {links.email && <li><a href={`mailto:${links.email}`}>Mail</a></li>}
-            {links.whatsapp && <li><a href={`//wa.me/${links.whatsapp}`}>WhatsApp</a></li>}
+         
           </ul>
           <div className="flex flex-wrap items-end justify-start gap-2">
             {socials.map((social, index) => (

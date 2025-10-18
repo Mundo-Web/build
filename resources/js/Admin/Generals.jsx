@@ -53,7 +53,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const tabCorrelatives = {
     'general': ['address', 'cintillo', 'copyright', 'opening_hours'],//footer_description
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email'],
-    'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'phone_whatsapp', 'message_whatsapp'],
+    'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy'],
@@ -254,12 +254,16 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     salebackPolicy:
       generals.find((x) => x.correlative == "saleback_policy")
         ?.description ?? "",
-    phoneWhatsapp:
-      generals.find((x) => x.correlative == "phone_whatsapp")
-        ?.description ?? "",
-    messageWhatsapp:
-      generals.find((x) => x.correlative == "message_whatsapp")
-        ?.description ?? "",
+    whatsappAdvisors: (() => {
+      const advisorsGeneral = generals.find((x) => x.correlative == "whatsapp_advisors");
+      if (!advisorsGeneral?.description) return [];
+      try {
+        const parsed = JSON.parse(advisorsGeneral.description);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    })(),
     igvCheckout:
       generals.find((x) => x.correlative == "igv_checkout")
         ?.description ?? "",
@@ -905,14 +909,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.salebackPolicy || "",
       },
       {
-        correlative: "phone_whatsapp",
-        name: "Número de Whatsapp",
-        description: formData.phoneWhatsapp || "",
-      },
-      {
-        correlative: "message_whatsapp",
-        name: "Mensaje de Whatsapp",
-        description: formData.messageWhatsapp || "",
+        correlative: "whatsapp_advisors",
+        name: "Asesores de WhatsApp",
+        description: JSON.stringify(formData.whatsappAdvisors || []),
       },
       {
         correlative: "igv_checkout",
@@ -1719,45 +1718,165 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   />
                 </div>
               </ConditionalField>
-              {generals?.some((general) => general.correlative === "phone_whatsapp") && generals?.some((general) => general.correlative === "message_whatsapp") && (
-                <div className="card bg-success" style={{ backgroundColor: "#8dfcbb", padding: "8px", color:"#FFFFFF" }}>
-                  <ConditionalField correlative="phone_whatsapp">
-                    <div className="mb-2">
-                      <label
-                        htmlFor="phoneWhatsapp"
-                        className="form-label"
+
+              {/* Sección de Asesores de WhatsApp */}
+              <div className="card mt-3" style={{ backgroundColor: "#e3f2fd", padding: "16px" }}>
+                <h6 className="mb-3">
+                  <i className="mdi mdi-account-multiple me-2"></i>
+                  Asesores de WhatsApp
+                </h6>
+                <p className="text-muted small mb-3">
+                  Agrega múltiples asesores. Si hay más de uno, se mostrará un modal para que el cliente elija.
+                </p>
+                
+                {formData.whatsappAdvisors?.map((advisor, index) => (
+                  <div key={index} className="card mb-3" style={{ padding: "12px", backgroundColor: "#fff" }}>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <h6 className="mb-0">Asesor #{index + 1}</h6>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger"
+                        onClick={() => {
+                          const newAdvisors = formData.whatsappAdvisors.filter((_, i) => i !== index);
+                          setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                        }}
                       >
-                        Número de Whatsapp
-                      </label>
-                      <input
-                        type="tel"
-                        className="form-control"
-                        id="phoneWhatsapp"
-                        value={formData.phoneWhatsapp}
-                        onChange={handlePhoneWhatsappChange}
-                        required
-                      />
+                        <i className="mdi mdi-delete"></i>
+                      </button>
                     </div>
-                  </ConditionalField>
-                  <ConditionalField correlative="message_whatsapp">
-                    <div className="mb-2">
-                      <label
-                        htmlFor="messageWhatsapp"
-                        className="form-label"
-                      >
-                        Mensaje de Whatsapp
-                      </label>
-                      <input
-                        type="tel"
-                        className="form-control"
-                        id="messageWhatsapp"
-                        value={formData.messageWhatsapp}
-                        onChange={handleMessageWhatsappChange}
-                        required
-                      />
+                    
+                    <div className="row">
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small">Nombre del Asesor</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="Ej: Romer Palacio"
+                          value={advisor.name || ''}
+                          onChange={(e) => {
+                            const newAdvisors = [...formData.whatsappAdvisors];
+                            newAdvisors[index].name = e.target.value;
+                            setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small">Puesto/Cargo</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="Ej: Asesor de Ventas"
+                          value={advisor.position || ''}
+                          onChange={(e) => {
+                            const newAdvisors = [...formData.whatsappAdvisors];
+                            newAdvisors[index].position = e.target.value;
+                            setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small">Número de WhatsApp</label>
+                        <input
+                          type="tel"
+                          className="form-control form-control-sm"
+                          placeholder="+51999999999"
+                          value={advisor.phone || ''}
+                          onChange={(e) => {
+                            const newAdvisors = [...formData.whatsappAdvisors];
+                            newAdvisors[index].phone = e.target.value;
+                            setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="col-md-6 mb-2">
+                        <label className="form-label small">Mensaje Inicial</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="¡Hola! Necesito información"
+                          value={advisor.message || ''}
+                          onChange={(e) => {
+                            const newAdvisors = [...formData.whatsappAdvisors];
+                            newAdvisors[index].message = e.target.value;
+                            setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="col-12 mb-2">
+                        <label className="form-label small">Foto del Asesor</label>
+                        {advisor.photo ? (
+                          <div className="position-relative d-inline-block">
+                            <Tippy content="Eliminar foto">
+                              <button 
+                                type="button"
+                                className="position-absolute btn btn-xs btn-danger" 
+                                style={{ top: '5px', left: '5px', zIndex: 10 }}
+                                onClick={() => {
+                                  const newAdvisors = [...formData.whatsappAdvisors];
+                                  newAdvisors[index].photo = null;
+                                  setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                                }}
+                              >
+                                <i className="mdi mdi-delete"></i>
+                              </button>
+                            </Tippy>
+                            <img 
+                              src={`/assets/resources/${advisor.photo}`} 
+                              alt={advisor.name}
+                              className="img-thumbnail"
+                              style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '50%' }}
+                            />
+                          </div>
+                        ) : (
+                          <input
+                            type="file"
+                            className="form-control form-control-sm"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
+                              e.target.value = null;
+
+                              const ext = file.name.split('.').pop();
+                              const imageName = `whatsapp-advisor-${Date.now()}.${ext}`;
+
+                              const request = new FormData();
+                              request.append('image', file);
+                              request.append('name', imageName);
+
+                              const result = await galleryRest.save(request);
+                              if (!result) return;
+
+                              const newAdvisors = [...formData.whatsappAdvisors];
+                              newAdvisors[index].photo = imageName;
+                              setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
-                  </ConditionalField>
-                </div>)}
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => {
+                    const newAdvisors = [
+                      ...(formData.whatsappAdvisors || []),
+                      { name: '', phone: '', message: '', photo: null, position: '' }
+                    ];
+                    setFormData({ ...formData, whatsappAdvisors: newAdvisors });
+                  }}
+                >
+                  <i className="mdi mdi-plus me-1"></i>
+                  Agregar Asesor
+                </button>
+              </div>
             </div>
 
             <div

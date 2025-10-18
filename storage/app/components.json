@@ -105,8 +105,7 @@
                 "image": "top-bar-address.png",
                 "generals": [
                     "address",
-                    "phone_whatsapp",
-                    "message_whatsapp"
+                    "whatsapp_advisors"
                 ],
                 "data": [
                     "class_content",
@@ -477,8 +476,7 @@
                 "name": "WhatsApp",
                 "image": "floating-whatsapp.png",
                 "generals": [
-                    "phone_whatsapp",
-                    "message_whatsapp"
+                    "whatsapp_advisors"
                 ]
             }
         ]

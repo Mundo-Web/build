@@ -30,6 +30,19 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import ProductNavigationSwiperPaani from "../Products/ProductNavigationSwiperPaani";
 import ProductBananaLab from "../Products/ProductBananaLab";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import General from "../../../Utils/General";
+import {
+    useFloating,
+    autoUpdate,
+    offset,
+    flip,
+    shift,
+    useClick,
+    useDismiss,
+    useRole,
+    useInteractions,
+    FloatingFocusManager,
+} from "@floating-ui/react";
 
 
 
@@ -135,8 +148,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     };
 
     const [expandedSpecificationMain, setExpanded] = useState(false);
-
-
+    const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
+    const [whatsappAction, setWhatsappAction] = useState(null); // 'consult' o 'quote'
 
     // Swiper Refs
     const mainSwiperRef = useRef(null);
@@ -144,25 +157,108 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     const navigationPrevRef = useRef(null);
     const navigationNextRef = useRef(null);
 
-    const phone_whatsapp = generals?.find(
-        (general) => general.correlative === "phone_whatsapp"
-    );
+    // Obtener asesores de WhatsApp
+    const advisors = General.whatsapp_advisors || [];
 
-    const numeroWhatsApp = phone_whatsapp?.description; // Reemplaza con tu número
-    const mensajeWhatsApp = encodeURIComponent(
-        `¡Hola! Tengo dudas sobre este producto: ${item?.name}`
-    );
-    const linkWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${mensajeWhatsApp}`;
+    // Floating UI setup para posicionamiento inteligente (botón cotizar)
+    const { refs, floatingStyles, context } = useFloating({
+        open: isAdvisorDropdownOpen,
+        onOpenChange: setIsAdvisorDropdownOpen,
+        placement: 'bottom-start',
+        middleware: [
+            offset(10),
+            flip({
+                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
+                padding: 8,
+            }),
+            shift({ padding: 8 }),
+        ],
+        whileElementsMounted: autoUpdate,
+    });
 
-    const handleClickWhatsApp = () => {
-        window.open(linkWhatsApp, "_blank");
+    const click = useClick(context);
+    const dismiss = useDismiss(context);
+    const role = useRole(context);
+
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+        click,
+        dismiss,
+        role,
+    ]);
+
+    // Floating UI setup para el link "clic aquí" (consultas)
+    const { 
+        refs: refsConsult, 
+        floatingStyles: floatingStylesConsult, 
+        context: contextConsult 
+    } = useFloating({
+        open: isAdvisorDropdownOpen && whatsappAction === 'consult',
+        onOpenChange: (open) => {
+            if (whatsappAction === 'consult') {
+                setIsAdvisorDropdownOpen(open);
+            }
+        },
+        placement: 'bottom-start',
+        middleware: [
+            offset(10),
+            flip({
+                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
+                padding: 8,
+            }),
+            shift({ padding: 8 }),
+        ],
+        whileElementsMounted: autoUpdate,
+    });
+
+    const clickConsult = useClick(contextConsult);
+    const dismissConsult = useDismiss(contextConsult);
+    const roleConsult = useRole(contextConsult);
+
+    const { getReferenceProps: getReferencePropsConsult, getFloatingProps: getFloatingPropsConsult } = useInteractions([
+        clickConsult,
+        dismissConsult,
+        roleConsult,
+    ]);
+
+    const handleClickWhatsApp = (event) => {
+        const message = `¡Hola! Tengo dudas sobre este producto: ${item?.name}`;
+        
+        if (advisors.length === 0) return;
+        
+        if (advisors.length === 1) {
+            // Un solo asesor, abrir directo
+            const advisor = advisors[0];
+            window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+        } else {
+            // Múltiples asesores, mostrar dropdown
+            setWhatsappAction('consult');
+            setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen);
+        }
     };
-    const mensajeWhatsAppCotizar = encodeURIComponent(
-        `¡Hola! Me gustaría cotizar este producto: ${item?.name}`
-    );
-    const linkWhatsAppCotizar = `https://wa.me/${numeroWhatsApp}?text=${mensajeWhatsAppCotizar}`;
-    const handleClickWhatsAppCotizar = () => {
-        window.open(linkWhatsAppCotizar, "_blank");
+
+    const handleClickWhatsAppCotizar = (event) => {
+        const message = `¡Hola! Me gustaría cotizar este producto: ${item?.name}`;
+        
+        if (advisors.length === 0) return;
+        
+        if (advisors.length === 1) {
+            // Un solo asesor, abrir directo
+            const advisor = advisors[0];
+            window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+        } else {
+            // Múltiples asesores, mostrar dropdown
+            setWhatsappAction('quote');
+            setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen);
+        }
+    };
+
+    const handleAdvisorSelect = (advisor) => {
+        const message = whatsappAction === 'quote' 
+            ? `¡Hola! Me gustaría cotizar este producto: ${item?.name}`
+            : `¡Hola! Tengo dudas sobre este producto: ${item?.name}`;
+        
+        window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+        setIsAdvisorDropdownOpen(false);
     };
     // Animaciones
     const fadeIn = {
@@ -338,7 +434,12 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                 {/* Bottom Navigation */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[99]">
                     <div className="p-4 flex gap-4">
-                        <button onClick={() => { handleClickWhatsAppCotizar(); }} className="flex-1 bg-primary text-white py-3 rounded-full font-medium active:scale-95 transition-transform">
+                        <button 
+                            ref={refs.setReference}
+                            {...getReferenceProps()}
+                            onClick={(event) => { handleClickWhatsAppCotizar(event); }} 
+                            className="flex-1 bg-primary text-white py-3 rounded-full font-medium active:scale-95 transition-transform"
+                        >
                             Quiero Cotizar
                         </button>
 
@@ -730,9 +831,10 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
 
                                 {/* Add to Cart */}
                                 <button
-                                    onClick={() => {
-
-                                        handleClickWhatsAppCotizar();
+                                    ref={refs.setReference}
+                                    {...getReferenceProps()}
+                                    onClick={(event) => {
+                                        handleClickWhatsAppCotizar(event);
                                     }}
                                     className="w-full bg-primary text-white py-3 font-bold shadow-lg rounded-full hover:opacity-90 transition-all duration-300 mt-4"
                                 >
@@ -763,8 +865,10 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                             ¿Tienes dudas sobre este producto?
                                             Haz{" "}
                                             <a
+                                                ref={refsConsult.setReference}
+                                                {...getReferencePropsConsult()}
                                                 className="underline"
-                                                onClick={handleClickWhatsApp}
+                                                onClick={(event) => handleClickWhatsApp(event)}
                                             >
                                                 clic aquí
                                             </a>{" "}
@@ -796,6 +900,74 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                 modalOpen={modalOpen}
                 setModalOpen={setModalOpen}
             />
+
+            {/* Dropdown de Selección de Asesores */}
+            {isAdvisorDropdownOpen && advisors.length > 1 && (
+                <FloatingFocusManager context={whatsappAction === 'consult' ? contextConsult : context} modal={false}>
+                    <div
+                        ref={whatsappAction === 'consult' ? refsConsult.setFloating : refs.setFloating}
+                        style={whatsappAction === 'consult' ? floatingStylesConsult : floatingStyles}
+                        {...(whatsappAction === 'consult' ? getFloatingPropsConsult() : getFloatingProps())}
+                        className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 z-[1000]"
+                    >
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white">
+                            <h3 className="font-bold text-base">Elige un asesor</h3>
+                            <p className="text-xs text-green-100 mt-1">
+                                {whatsappAction === 'quote' ? '¿Con quién quieres cotizar?' : '¿Con quién quieres hablar?'}
+                            </p>
+                        </div>
+
+                        {/* Lista de asesores */}
+                        <div className="max-h-[400px] overflow-y-auto" style={{ minWidth: '280px', maxWidth: '320px' }}>
+                            {advisors.map((advisor, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleAdvisorSelect(advisor)}
+                                    className="w-full flex items-center gap-3 p-3 hover:bg-green-50 transition-colors border-b border-gray-100 last:border-b-0 text-left"
+                                >
+                                    {/* Foto del asesor */}
+                                    <div className="flex-shrink-0">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-green-200">
+                                            {advisor.photo ? (
+                                                <img
+                                                    src={`/assets/resources/${advisor.photo}`}
+                                                    alt={advisor.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.target.src = '/assets/img/placeholder-user.png';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-lg font-bold">
+                                                    {advisor.name?.charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Info del asesor */}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-gray-900 text-sm truncate">
+                                            {advisor.name}
+                                        </p>
+                                        <p className="text-xs text-gray-500 truncate">
+                                            {advisor.position || 'Asesor'}
+                                        </p>
+                                    </div>
+
+                                    {/* Icono de WhatsApp */}
+                                    <div className="flex-shrink-0">
+                                        <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                        </svg>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </FloatingFocusManager>
+            )}
         </>
     );
 }
