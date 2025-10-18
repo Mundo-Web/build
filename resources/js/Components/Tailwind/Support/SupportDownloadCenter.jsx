@@ -195,15 +195,10 @@ const SupportDownloadCenter = ({ data, items }) => {
 
                                             {/* Precio */}
                                             <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
-                                                <div>
-                                                    <div className="text-xs customtext-neutral-dark mb-1">Precio</div>
-                                                    <div className="text-2xl font-bold customtext-primary">
-                                                        {CurrencySymbol()}{Number2Currency(item.final_price || item.price)}
-                                                    </div>
-                                                </div>
+                                                
                                                 <a
                                                     href={`/producto/${item.slug}`}
-                                                    className="inline-flex items-center gap-2 px-4 py-3 bg-primary text-white rounded-lg transition-all text-sm font-medium hover:bg-primary/90 hover:shadow-lg"
+                                                    className="inline-flex w-full text-center justify-center rounded-full items-center gap-2 px-4 py-3 bg-primary text-white  transition-all text-sm font-medium hover:bg-primary/90 hover:shadow-lg"
                                                 >
                                                     <span>Ver más</span>
                                                     <i className="mdi mdi-arrow-right"></i>
