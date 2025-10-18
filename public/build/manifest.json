@@ -2476,7 +2476,7 @@
     ]
   },
   "resources/js/Admin/Items.jsx": {
-    "file": "assets/Items-DqeWRvNc.js",
+    "file": "assets/Items-BFHIUa9W.js",
     "name": "Items",
     "src": "resources/js/Admin/Items.jsx",
     "isEntry": true,
@@ -10994,7 +10994,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Support.jsx": {
-    "file": "assets/Support-bZHUFiyv.js",
+    "file": "assets/Support-CoAWNZJa.js",
     "name": "Support",
     "src": "resources/js/Components/Tailwind/Support.jsx",
     "isDynamicEntry": true,
@@ -11006,8 +11006,6 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ],
     "dynamicImports": [
-      "resources/js/Components/Tailwind/Support/SupportSimple.jsx",
-      "resources/js/Components/Tailwind/Support/SupportWithTabs.jsx",
       "resources/js/Components/Tailwind/Support/SupportDownloadCenter.jsx"
     ]
   },
@@ -11015,30 +11013,6 @@
     "file": "assets/SupportDownloadCenter--pJTheE3.js",
     "name": "SupportDownloadCenter",
     "src": "resources/js/Components/Tailwind/Support/SupportDownloadCenter.jsx",
-    "isEntry": true,
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "_index-yBjzXJbu.js",
-      "__commonjsHelpers-D6-XlEtG.js"
-    ]
-  },
-  "resources/js/Components/Tailwind/Support/SupportSimple.jsx": {
-    "file": "assets/SupportSimple--pJTheE3.js",
-    "name": "SupportSimple",
-    "src": "resources/js/Components/Tailwind/Support/SupportSimple.jsx",
-    "isEntry": true,
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "_index-yBjzXJbu.js",
-      "__commonjsHelpers-D6-XlEtG.js"
-    ]
-  },
-  "resources/js/Components/Tailwind/Support/SupportWithTabs.jsx": {
-    "file": "assets/SupportWithTabs--pJTheE3.js",
-    "name": "SupportWithTabs",
-    "src": "resources/js/Components/Tailwind/Support/SupportWithTabs.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -11799,7 +11773,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BCtDtUhz.js",
+    "file": "assets/System-BMJ30Vt4.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

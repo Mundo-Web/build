@@ -3835,35 +3835,7 @@
         "icon": "mdi mdi-lifebuoy",
         "name": "Soporte Técnico",
         "options": [
-            {
-                "id": "SupportSimple",
-                "name": "Simple - Grid de Productos",
-                "image": "support-simple.png",
-                "data": [
-                    "backgroundColor",
-                    "textColor",
-                    "title",
-                    "subtitle"
-                ],
-                "using": {
-                    "model": "Item",
-                    "type": "many"
-                }
-            },
-            {
-                "id": "SupportWithTabs",
-                "name": "Con Pestañas y Filtros",
-                "image": "support-tabs.png",
-                "data": [
-                    "backgroundColor",
-                    "textColor",
-                    "title"
-                ],
-                "using": {
-                    "model": "Item",
-                    "type": "many"
-                }
-            },
+           
             {
                 "id": "SupportDownloadCenter",
                 "name": "Centro de Descargas Premium",

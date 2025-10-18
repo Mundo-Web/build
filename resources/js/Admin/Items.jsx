@@ -52,12 +52,9 @@ const Items = ({ categories, brands, collections, stores }) => {
     const textureRef = useRef();
     const descriptionRef = useRef();
     const skuRef = useRef();
-    const pdfRef = useRef();
-    const manualRef = useRef();
+    
     // Nuevos campos
-
     const stockRef = useRef();
-    const linkvideoRef = useRef();
     const storeRef = useRef();
 
     const featuresRef = useRef([]);
@@ -68,12 +65,16 @@ const Items = ({ categories, brands, collections, stores }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [selectedStore, setSelectedStore] = useState(null);
-    const [currentPdf, setCurrentPdf] = useState("");
-    const [currentManual, setCurrentManual] = useState("");
+    
     /*ADD NEW LINES GALLERY */
-
     const [gallery, setGallery] = useState([]);
     const galleryRef = useRef();
+    
+    /* PDFs y Videos como arrays con ordenamiento */
+    const [pdfs, setPdfs] = useState([]);
+    const pdfRef = useRef();
+    const [videos, setVideos] = useState([]);
+    const videoUrlRef = useRef();
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -148,6 +149,123 @@ const Items = ({ categories, brands, collections, stores }) => {
     };
 
     /*************************/
+    /* Funciones para PDFs */
+    /*************************/
+    const handlePdfChange = (e) => {
+        const files = Array.from(e.target.files);
+        const newPdfs = files.map((file) => ({
+            file,
+            name: file.name,
+            url: URL.createObjectURL(file),
+        }));
+        setPdfs((prev) => [...prev, ...newPdfs]);
+    };
+
+    const removePdf = (e, index) => {
+        e.preventDefault();
+        const pdf = pdfs[index];
+        if (pdf.url && !pdf.file) {
+            // PDF existente - marcar para eliminar
+            setPdfs((prev) =>
+                prev.map((p, i) =>
+                    i === index ? { ...p, toDelete: true } : p
+                )
+            );
+        } else {
+            // PDF nuevo - eliminar directamente
+            setPdfs((prev) => prev.filter((_, i) => i !== index));
+        }
+    };
+
+    const [draggedPdfIndex, setDraggedPdfIndex] = useState(null);
+    
+    const handlePdfDragStart = (e, index) => {
+        setDraggedPdfIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+    
+    const handlePdfDragEnd = () => {
+        setDraggedPdfIndex(null);
+    };
+    
+    const handlePdfDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+    
+    const handlePdfDropReorder = (e, dropIndex) => {
+        e.preventDefault();
+        if (draggedPdfIndex === null || draggedPdfIndex === dropIndex) return;
+        
+        const newPdfs = [...pdfs];
+        const draggedItem = newPdfs[draggedPdfIndex];
+        
+        newPdfs.splice(draggedPdfIndex, 1);
+        newPdfs.splice(dropIndex, 0, draggedItem);
+        
+        setPdfs(newPdfs);
+        setDraggedPdfIndex(null);
+    };
+
+    /*************************/
+    /* Funciones para Videos */
+    /*************************/
+    const addVideo = (e) => {
+        e.preventDefault();
+        const url = videoUrlRef.current.value.trim();
+        if (url) {
+            setVideos((prev) => [...prev, { url, order: prev.length + 1 }]);
+            videoUrlRef.current.value = '';
+        }
+    };
+
+    const removeVideo = (e, index) => {
+        e.preventDefault();
+        const video = videos[index];
+        if (video.order && !video.new) {
+            // Video existente - marcar para eliminar
+            setVideos((prev) =>
+                prev.map((v, i) =>
+                    i === index ? { ...v, toDelete: true } : v
+                )
+            );
+        } else {
+            // Video nuevo - eliminar directamente
+            setVideos((prev) => prev.filter((_, i) => i !== index));
+        }
+    };
+
+    const [draggedVideoIndex, setDraggedVideoIndex] = useState(null);
+    
+    const handleVideoDragStart = (e, index) => {
+        setDraggedVideoIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+    
+    const handleVideoDragEnd = () => {
+        setDraggedVideoIndex(null);
+    };
+    
+    const handleVideoDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+    
+    const handleVideoDropReorder = (e, dropIndex) => {
+        e.preventDefault();
+        if (draggedVideoIndex === null || draggedVideoIndex === dropIndex) return;
+        
+        const newVideos = [...videos];
+        const draggedItem = newVideos[draggedVideoIndex];
+        
+        newVideos.splice(draggedVideoIndex, 1);
+        newVideos.splice(dropIndex, 0, draggedItem);
+        
+        setVideos(newVideos);
+        setDraggedVideoIndex(null);
+    };
+
+    /*************************/
 
     // Eliminado useEffect duplicado que causaba la duplicación de imágenes
     // La carga de imágenes se maneja directamente en onModalOpen
@@ -157,8 +275,7 @@ const Items = ({ categories, brands, collections, stores }) => {
         setItemData(data || null); // Guardamos los datos en el estado
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
-        setCurrentPdf(data?.pdf ? `/storage/images/item/${data.pdf}` : "");
-        setCurrentManual(data?.manual ? `/storage/images/item/${data.manual}` : "");
+        
         idRef.current.value = data?.id || "";
         $(categoryRef.current)
             .val(data?.category_id || null)
@@ -185,7 +302,6 @@ const Items = ({ categories, brands, collections, stores }) => {
         colorRef.current.value = data?.color || "";
         sizeRef.current.value = data?.size || "";
         summaryRef.current.value = data?.summary || "";
-        linkvideoRef.current.value = data?.linkvideo || "";
         priceRef.current.value = data?.price || 0;
         discountRef.current.value = data?.discount || 0;
         weightRef.current.value = data?.weight || 0;
@@ -194,32 +310,45 @@ const Items = ({ categories, brands, collections, stores }) => {
         SetSelectValue(tagsRef.current, data?.tags ?? [], "id", "name");
 
         bannerRef.current.value = null;
-
         imageRef.current.value = null;
 
-
-
         bannerRef.image.src = data?.banner ? `/storage/images/item/${data.banner}` : '';
-
         imageRef.image.src = data?.image ? `/storage/images/item/${data.image}` : '';
-
         textureRef.image.src = data?.texture ? `/storage/images/item/${data.texture}` : '';
-
-        setCurrentPdf(data?.pdf ? `/storage/images/item/${data?.pdf}` : "");
 
         descriptionRef.editor.root.innerHTML = data?.description ?? "";
 
-        //TODO: Cargar las imágenes existentes de la galería
+        // Cargar PDFs existentes
+        if (data?.pdf && Array.isArray(data.pdf)) {
+            const existingPdfs = data.pdf.map((pdf) => ({
+                url: pdf.url ? `/storage/images/item/${pdf.url}` : pdf,
+                name: pdf.name || 'Documento.pdf',
+                order: pdf.order || 0,
+            }));
+            setPdfs(existingPdfs);
+        } else {
+            setPdfs([]);
+        }
+
+        // Cargar videos existentes
+        if (data?.linkvideo && Array.isArray(data.linkvideo)) {
+            setVideos(data.linkvideo.map((video) => ({
+                url: video.url || video,
+                order: video.order || 0,
+            })));
+        } else {
+            setVideos([]);
+        }
 
         // Cargar las imágenes de la galería
         if (data?.images) {
             const existingImages = data.images.map((img) => ({
-                id: img.id, // ID de la imagen en la base de datos
-                url: `/storage/images/item/${img.url}`, // Ruta de la imagen almacenada
+                id: img.id,
+                url: `/storage/images/item/${img.url}`,
             }));
             setGallery(existingImages);
         } else {
-            setGallery([]); // Limpiar la galería si no hay imágenes
+            setGallery([]);
         }
 
         if (data?.specifications) {
@@ -279,7 +408,6 @@ const Items = ({ categories, brands, collections, stores }) => {
             stock: stockRef.current.value || 0,
             features: cleanFeatures,
             specifications: cleanSpecs,
-            linkvideo: linkvideoRef.current.value,
             weight: weightRef.current.value || 0,
             store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
         };
@@ -320,16 +448,51 @@ const Items = ({ categories, brands, collections, stores }) => {
             formData.append("banner", banner);
         }
 
-        const pdf = pdfRef.current.files[0];
-
-        if (pdf) {
-            formData.append("pdf", pdf);
+        // Procesar PDFs (múltiples archivos)
+        const pdfFiles = pdfs.filter(pdf => !pdf.toDelete);
+        let pdfIndex = 0;
+        pdfFiles.forEach((pdf) => {
+            if (pdf.file) {
+                // Nuevo archivo PDF
+                formData.append(`pdf[${pdfIndex}]`, pdf.file);
+                pdfIndex++;
+            }
+        });
+        
+        // Enviar el orden de los PDFs
+        const pdfOrder = pdfFiles.map((pdf, index) => ({
+            index,
+            order: index + 1,
+            name: pdf.name || 'Documento.pdf'
+        }));
+        if (pdfOrder.length > 0) {
+            formData.append('pdf_order', JSON.stringify(pdfOrder));
+        }
+        
+        // PDFs marcados para eliminar
+        const deletedPdfs = pdfs
+            .map((pdf, index) => pdf.toDelete ? index : null)
+            .filter(index => index !== null);
+        if (deletedPdfs.length > 0) {
+            formData.append('deleted_pdfs', JSON.stringify(deletedPdfs));
         }
 
-        const manual = manualRef.current.files[0];
-
-        if (manual) {
-            formData.append("manual", manual);
+        // Procesar Videos (links)
+        const videoLinks = videos.filter(video => !video.toDelete);
+        const videoData = videoLinks.map((video, index) => ({
+            url: video.url,
+            order: index + 1
+        }));
+        if (videoData.length > 0) {
+            formData.append('linkvideo', JSON.stringify(videoData));
+        }
+        
+        // Videos marcados para eliminar
+        const deletedVideos = videos
+            .map((video, index) => video.toDelete ? index : null)
+            .filter(index => index !== null);
+        if (deletedVideos.length > 0) {
+            formData.append('deleted_videos', JSON.stringify(deletedVideos));
         }
 
         // Check for image deletion flags using React state
@@ -407,6 +570,8 @@ const Items = ({ categories, brands, collections, stores }) => {
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
         setGallery([]);
+        setPdfs([]);
+        setVideos([]);
     };
 
     const onVisibleChange = async ({ id, value }) => {
@@ -1284,62 +1449,179 @@ const Items = ({ categories, brands, collections, stores }) => {
                                                 )}
                                             </div>
                                             
-                                            {/* Video Link */}
-                                            <InputFormGroup
-                                                eRef={linkvideoRef}
-                                                label="Link de Video"
-                                                placeholder="https://youtube.com/watch?v=..."
-                                                hidden={!Fillable.has('items', 'linkvideo')}
-                                            />
-                                            
-                                            {/* PDF */}
-                                            <div className="mb-3" hidden={!Fillable.has('items', 'pdf')}>
-                                                <label className="form-label fw-bold">Archivo PDF (Catálogo)</label>
+                                            {/* PDFs múltiples con ordenamiento */}
+                                            <div className="mb-4" hidden={!Fillable.has('items', 'pdf')}>
+                                                <label className="form-label fw-semibold text-dark mb-3">
+                                                    <i className="fas fa-file-pdf me-2 text-danger"></i>
+                                                    Archivos PDF (Manuales / Catálogos)
+                                                    {pdfs.filter(pdf => !pdf.toDelete).length > 0 && (
+                                                        <span className="badge bg-danger ms-2">
+                                                            {pdfs.filter(pdf => !pdf.toDelete).length}
+                                                        </span>
+                                                    )}
+                                                </label>
+                                                
                                                 <input
                                                     ref={pdfRef}
                                                     type="file"
-                                                    className="form-control"
+                                                    multiple
                                                     accept=".pdf"
+                                                    hidden
+                                                    onChange={handlePdfChange}
                                                 />
-                                                <small className="text-muted">Catálogo o documento relacionado</small>
                                                 
-                                                {currentPdf && (
-                                                    <div className="mt-2">
-                                                        <a
-                                                            href={currentPdf}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="btn btn-sm btn-outline-primary"
-                                                        >
-                                                            <i className="fas fa-file-pdf me-1"></i> Ver PDF actual
-                                                        </a>
-                                                    </div>
-                                                )}
+                                                {/* Lista de PDFs con drag & drop */}
+                                                <div className="list-group mb-3">
+                                                    {pdfs.filter(pdf => !pdf.toDelete).map((pdf, index) => {
+                                                        const originalIndex = pdfs.findIndex(p => p === pdf);
+                                                        return (
+                                                            <div
+                                                                key={originalIndex}
+                                                                draggable
+                                                                onDragStart={(e) => handlePdfDragStart(e, originalIndex)}
+                                                                onDragEnd={handlePdfDragEnd}
+                                                                onDragOver={handlePdfDragOver}
+                                                                onDrop={(e) => handlePdfDropReorder(e, originalIndex)}
+                                                                className="list-group-item d-flex align-items-center justify-content-between"
+                                                                style={{
+                                                                    cursor: 'grab',
+                                                                    opacity: draggedPdfIndex === originalIndex ? 0.5 : 1,
+                                                                    backgroundColor: draggedPdfIndex === originalIndex ? '#f8f9fa' : 'white',
+                                                                    transition: 'all 0.2s ease'
+                                                                }}
+                                                            >
+                                                                <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: 0 }}>
+                                                                    <span className="badge bg-danger me-3" style={{ minWidth: '28px' }}>
+                                                                        {index + 1}
+                                                                    </span>
+                                                                    <i className="fas fa-grip-vertical text-muted me-3"></i>
+                                                                    <i className="fas fa-file-pdf text-danger me-2"></i>
+                                                                    <span className="text-truncate" style={{ maxWidth: '250px' }}>{pdf.name}</span>
+                                                                </div>
+                                                                <div className="d-flex gap-2 flex-shrink-0">
+                                                                    {!pdf.file && (
+                                                                        <a
+                                                                            href={pdf.url}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="btn btn-sm btn-outline-primary"
+                                                                        >
+                                                                            <i className="fas fa-eye"></i>
+                                                                        </a>
+                                                                    )}
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        onClick={(e) => removePdf(e, originalIndex)}
+                                                                    >
+                                                                        <i className="fas fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-danger w-100"
+                                                    onClick={() => pdfRef.current.click()}
+                                                >
+                                                    <i className="fas fa-plus me-2"></i>
+                                                    Agregar PDFs
+                                                </button>
                                             </div>
-
-                                            {/* Manual */}
-                                            <div className="mb-3" hidden={!Fillable.has('items', 'manual')}>
-                                                <label className="form-label fw-bold">Manual de Usuario</label>
-                                                <input
-                                                    ref={manualRef}
-                                                    type="file"
-                                                    className="form-control"
-                                                    accept=".pdf"
-                                                />
-                                                <small className="text-muted">Manual de instrucciones, mantenimiento o especificaciones técnicas</small>
+                                            
+                                            {/* Videos múltiples con ordenamiento */}
+                                            <div className="mb-3" hidden={!Fillable.has('items', 'linkvideo')}>
+                                                <label className="form-label fw-semibold text-dark mb-3">
+                                                    <i className="fas fa-video me-2 text-success"></i>
+                                                    Links de Videos
+                                                    {videos.filter(video => !video.toDelete).length > 0 && (
+                                                        <span className="badge bg-success ms-2">
+                                                            {videos.filter(video => !video.toDelete).length}
+                                                        </span>
+                                                    )}
+                                                </label>
                                                 
-                                                {currentManual && (
-                                                    <div className="mt-2">
-                                                        <a
-                                                            href={currentManual}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="btn btn-sm btn-outline-success"
-                                                        >
-                                                            <i className="fas fa-book me-1"></i> Ver Manual actual
-                                                        </a>
-                                                    </div>
-                                                )}
+                                                {/* Lista de videos con drag & drop */}
+                                                <div className="list-group mb-3">
+                                                    {videos.filter(video => !video.toDelete).map((video, index) => {
+                                                        const originalIndex = videos.findIndex(v => v === video);
+                                                        return (
+                                                            <div
+                                                                key={originalIndex}
+                                                                draggable
+                                                                onDragStart={(e) => handleVideoDragStart(e, originalIndex)}
+                                                                onDragEnd={handleVideoDragEnd}
+                                                                onDragOver={handleVideoDragOver}
+                                                                onDrop={(e) => handleVideoDropReorder(e, originalIndex)}
+                                                                className="list-group-item d-flex align-items-center justify-content-between"
+                                                                style={{
+                                                                    cursor: 'grab',
+                                                                    opacity: draggedVideoIndex === originalIndex ? 0.5 : 1,
+                                                                    backgroundColor: draggedVideoIndex === originalIndex ? '#f8f9fa' : 'white',
+                                                                    transition: 'all 0.2s ease'
+                                                                }}
+                                                            >
+                                                                <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: 0, overflow: 'hidden' }}>
+                                                                    <span className="badge bg-success me-3 flex-shrink-0" style={{ minWidth: '28px' }}>
+                                                                        {index + 1}
+                                                                    </span>
+                                                                    <i className="fas fa-grip-vertical text-muted me-3 flex-shrink-0"></i>
+                                                                    <i className="fas fa-video text-success me-2 flex-shrink-0"></i>
+                                                                    <span 
+                                                                        className="small" 
+                                                                        style={{ 
+                                                                            overflow: 'hidden',
+                                                                            textOverflow: 'ellipsis',
+                                                                            whiteSpace: 'nowrap',
+                                                                            maxWidth: '100%'
+                                                                        }}
+                                                                        title={video.url}
+                                                                    >
+                                                                        {video.url}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="d-flex gap-2 flex-shrink-0 ms-2">
+                                                                    <a
+                                                                        href={video.url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="btn btn-sm btn-outline-primary"
+                                                                    >
+                                                                        <i className="fas fa-external-link-alt"></i>
+                                                                    </a>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        onClick={(e) => removeVideo(e, originalIndex)}
+                                                                    >
+                                                                        <i className="fas fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                
+                                                {/* Formulario para agregar nuevo video */}
+                                                <div className="input-group">
+                                                    <input
+                                                        ref={videoUrlRef}
+                                                        type="url"
+                                                        className="form-control"
+                                                        placeholder="https://youtube.com/watch?v=..."
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-success"
+                                                        onClick={addVideo}
+                                                    >
+                                                        <i className="fas fa-plus me-2"></i>
+                                                        Agregar
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

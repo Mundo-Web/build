@@ -1,7 +1,6 @@
 import React from "react";
 
-const SupportSimple = React.lazy(() => import("./Support/SupportSimple"));
-const SupportWithTabs = React.lazy(() => import("./Support/SupportWithTabs"));
+
 const SupportDownloadCenter = React.lazy(() => import("./Support/SupportDownloadCenter"));
 
 const Support = ({
@@ -11,20 +10,7 @@ const Support = ({
 }) => {
     const getSupport = () => {
         switch (which) {
-            case "SupportSimple":
-                return (
-                    <SupportSimple
-                        data={data}
-                        items={items}
-                    />
-                );
-            case "SupportWithTabs":
-                return (
-                    <SupportWithTabs
-                        data={data}
-                        items={items}
-                    />
-                );
+         
             case "SupportDownloadCenter":
                 return (
                     <SupportDownloadCenter

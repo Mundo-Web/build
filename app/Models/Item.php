@@ -43,7 +43,6 @@ class Item extends Model
         'color',
         'texture',
         'pdf',
-        'manual',
         'linkvideo',
         'size',
         'grouper',
@@ -58,6 +57,8 @@ class Item extends Model
         'featured'=>'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',
+        'pdf' => 'array',
+        'linkvideo' => 'array',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)

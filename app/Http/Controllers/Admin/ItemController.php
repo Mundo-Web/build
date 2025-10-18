@@ -28,7 +28,7 @@ class ItemController extends BasicController
 {
     public $model = Item::class;
     public $reactView = 'Admin/Items';
-    public $imageFields = ['image', 'banner', 'texture', 'pdf', 'manual'];
+    public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
     public $with4get = ['tags'];
@@ -125,9 +125,91 @@ class ItemController extends BasicController
                     'description' => $request->input('description'),
                     'weight' => $request->input('weight'),
                     'stock' => $request->input('stock'),
-                    'linkvideo' => $request->input('linkvideo'),
                 ]
             );
+
+            // Procesar PDFs (múltiples archivos con ordenamiento)
+            $pdfData = [];
+            
+            // Cargar PDFs existentes si hay
+            if ($item->pdf && is_array($item->pdf)) {
+                $pdfData = $item->pdf;
+            }
+            
+            // Agregar nuevos PDFs
+            if ($request->hasFile('pdf')) {
+                $pdfFiles = is_array($request->file('pdf')) ? $request->file('pdf') : [$request->file('pdf')];
+                
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+                foreach ($pdfFiles as $index => $file) {
+                    $uuid = Crypto::randomUUID();
+                    $ext = $file->getClientOriginalExtension();
+                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                    Storage::put($path, file_get_contents($file));
+                    
+                    $pdfData[] = [
+                        'url' => "{$uuid}.{$ext}",
+                        'name' => $file->getClientOriginalName(),
+                        'order' => count($pdfData) + 1
+                    ];
+                }
+            }
+            
+            // Eliminar PDFs marcados para eliminación
+            if ($request->has('deleted_pdfs')) {
+                $deletedPdfs = json_decode($request->input('deleted_pdfs'), true);
+                if (is_array($deletedPdfs)) {
+                    $pdfData = array_values(array_filter($pdfData, function($pdf, $index) use ($deletedPdfs) {
+                        return !in_array($index, $deletedPdfs);
+                    }, ARRAY_FILTER_USE_BOTH));
+                }
+            }
+            
+            // Reordenar PDFs
+            if (!empty($pdfData)) {
+                foreach ($pdfData as $index => $pdf) {
+                    $pdfData[$index]['order'] = $index + 1;
+                }
+            }
+            
+            $item->pdf = !empty($pdfData) ? $pdfData : null;
+            
+            // Procesar Videos (múltiples links con ordenamiento)
+            $videoData = [];
+            
+            if ($request->has('linkvideo')) {
+                $videos = json_decode($request->input('linkvideo'), true);
+                if (is_array($videos)) {
+                    foreach ($videos as $index => $video) {
+                        if (isset($video['url']) && !empty($video['url'])) {
+                            $videoData[] = [
+                                'url' => $video['url'],
+                                'order' => $index + 1
+                            ];
+                        }
+                    }
+                }
+            }
+            
+            // Eliminar videos marcados para eliminación
+            if ($request->has('deleted_videos')) {
+                $deletedVideos = json_decode($request->input('deleted_videos'), true);
+                if (is_array($deletedVideos)) {
+                    $videoData = array_values(array_filter($videoData, function($video, $index) use ($deletedVideos) {
+                        return !in_array($index, $deletedVideos);
+                    }, ARRAY_FILTER_USE_BOTH));
+                }
+            }
+            
+            // Reordenar videos
+            if (!empty($videoData)) {
+                foreach ($videoData as $index => $video) {
+                    $videoData[$index]['order'] = $index + 1;
+                }
+            }
+            
+            $item->linkvideo = !empty($videoData) ? $videoData : null;
+            $item->save();
 
             // Guardar la imagen principal
             if ($request->hasFile('image')) {
@@ -162,30 +244,6 @@ class ItemController extends BasicController
                 $path = "images/{$snake_case}/{$uuid}.{$ext}";
                 Storage::put($path, file_get_contents($full));
                 $item->texture = "{$uuid}.{$ext}";
-                $item->save();
-            }
-
-            // Guardar el PDF
-            if ($request->hasFile('pdf')) {
-                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
-                $full = $request->file("pdf");
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $item->pdf = "{$uuid}.{$ext}";
-                $item->save();
-            }
-
-            // Guardar el Manual
-            if ($request->hasFile('manual')) {
-                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
-                $full = $request->file("manual");
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $item->manual = "{$uuid}.{$ext}";
                 $item->save();
             }
 
