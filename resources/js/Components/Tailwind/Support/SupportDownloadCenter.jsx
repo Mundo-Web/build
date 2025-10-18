@@ -170,7 +170,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                                             <div className="absolute top-4 left-4 right-4 flex gap-2">
                                                 {videos.length > 0 && (
                                                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg">
-                                                        <i className="mdi mdi-play-circle customtext-secondary"></i>
+                                                        <i className="mdi mdi-play-circle customtext-primary"></i>
                                                         <span className="text-xs font-semibold customtext-neutral-dark">{videos.length}</span>
                                                     </div>
                                                 )}
@@ -202,7 +202,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                                                 </div>
                                                 <a
                                                     href={`/producto/${item.slug}`}
-                                                    className="inline-flex items-center gap-2 px-4 py-3 bg-primary   rounded-lg transition-all text-sm font-medium customtext-neutral-dark hover:bg-secondary hover:text-white"
+                                                    className="inline-flex items-center gap-2 px-4 py-3 bg-primary text-white rounded-lg transition-all text-sm font-medium hover:bg-primary/90 hover:shadow-lg"
                                                 >
                                                     <span>Ver más</span>
                                                     <i className="mdi mdi-arrow-right"></i>
@@ -214,14 +214,14 @@ const SupportDownloadCenter = ({ data, items }) => {
                                                 <div className="mb-4">
                                                     <button
                                                         onClick={() => toggleSection(index, 'videos')}
-                                                        className="w-full flex items-center justify-between p-3  hover:from-blue-100 hover:to-blue-100/50 rounded-xl transition-all group/header"
+                                                        className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 rounded-xl transition-all group/header border border-primary/20"
                                                     >
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
+                                                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
                                                                 <i className="mdi mdi-play-circle text-white"></i>
                                                             </div>
                                                             <div className="text-left">
-                                                                <div className="text-sm font-semibold customtext-secondary">
+                                                                <div className="text-sm font-semibold customtext-primary">
                                                                     Videos Tutoriales
                                                                 </div>
                                                                 <div className="text-xs customtext-neutral-dark">
@@ -241,18 +241,18 @@ const SupportDownloadCenter = ({ data, items }) => {
                                                                 <button
                                                                     key={`vid-${vidIdx}`}
                                                                     onClick={() => openPreview(video, 'video', item.name)}
-                                                                    className="w-full flex items-center gap-3 p-3 bg-white border-2  hover:border-secondary  rounded-xl transition-all group/video"
+                                                                    className="w-full flex items-center gap-3 p-3 bg-white border-2 border-gray-100 hover:border-primary hover:shadow-md rounded-xl transition-all group/video"
                                                                 >
-                                                                    <div className="flex-shrink-0 w-10 h-10 bg-secondary rounded-lg flex items-center justify-center shadow-md">
+                                                                    <div className="flex-shrink-0 w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-md">
                                                                         <i className="mdi mdi-play text-white text-lg"></i>
                                                                     </div>
                                                                     <div className="flex-1 text-left">
-                                                                        <div className="text-sm font-medium customtext-secondary">
+                                                                        <div className="text-sm font-medium customtext-primary">
                                                                             Video {videos.length > 1 ? vidIdx + 1 : 'Tutorial'}
                                                                         </div>
                                                                         <div className="text-xs customtext-neutral-dark">Click para visualizar</div>
                                                                     </div>
-                                                                    <i className="mdi mdi-eye-outline customtext-secondary group-hover/video:scale-110 transition-transform"></i>
+                                                                    <i className="mdi mdi-eye-outline customtext-primary group-hover/video:scale-110 transition-transform"></i>
                                                                 </button>
                                                             ))}
                                                         </div>
@@ -265,10 +265,10 @@ const SupportDownloadCenter = ({ data, items }) => {
                                                 <div>
                                                     <button
                                                         onClick={() => toggleSection(index, 'pdfs')}
-                                                        className="w-full flex items-center justify-between p-3  0  rounded-xl transition-all group/header"
+                                                        className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 rounded-xl transition-all group/header border border-primary/20"
                                                     >
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                                                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
                                                                 <i className="mdi mdi-file-pdf-box text-white"></i>
                                                             </div>
                                                             <div className="text-left">
@@ -292,7 +292,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                                                                 <button
                                                                     key={`pdf-${pdfIdx}`}
                                                                     onClick={() => openPreview(pdf, 'pdf', item.name)}
-                                                                    className="w-full flex items-center gap-3 p-3 bg-white border-2  hover:border-primary  rounded-xl transition-all group/pdf"
+                                                                    className="w-full flex items-center gap-3 p-3 bg-white border-2 border-gray-100 hover:border-primary hover:shadow-md rounded-xl transition-all group/pdf"
                                                                 >
                                                                     <div className="flex-shrink-0 w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-md">
                                                                         <i className="mdi mdi-file-pdf-box text-white text-lg"></i>
@@ -320,21 +320,24 @@ const SupportDownloadCenter = ({ data, items }) => {
                     {/* CTA de ayuda */}
                     {filteredProducts.length > 0 && (
                         <div className="max-w-4xl mx-auto mt-20">
-                            <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-8 md:p-12 text-center border-2 border-primary/20">
+                            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 rounded-3xl p-8 md:p-12 text-center border-2 border-primary/20 shadow-lg">
                               
                                 <h3 className="text-2xl font-bold customtext-neutral-dark mb-3">
                                     ¿Necesitas ayuda adicional?
                                 </h3>
                                 <p className="text-lg customtext-neutral-light mb-6 max-w-2xl mx-auto">
-                                    Nuestro equipo de soporte está listo para ayudarte con cualquier pregunta
+                                    Nuestro equipo de soporte técnico está disponible para resolver tus dudas
                                 </p>
-                                <a 
-                                    href="/contacto" 
-                                    className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-xl font-semibold hover:shadow-2xl hover:shadow-primary/30 transition-all transform hover:scale-105"
-                                >
-                                    <i className="mdi mdi-chat-processing-outline text-xl"></i>
-                                    Contactar Soporte
-                                </a>
+                                <div className="flex flex-wrap gap-4 justify-center">
+                                    <a 
+                                        href="/contacto" 
+                                        className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-xl font-semibold hover:shadow-2xl hover:shadow-primary/30 transition-all transform hover:scale-105"
+                                    >
+                                        <i className="mdi mdi-chat-processing-outline text-xl"></i>
+                                        Contactar Soporte
+                                    </a>
+                                   
+                                </div>
                             </div>
                         </div>
                     )}
@@ -352,12 +355,12 @@ const SupportDownloadCenter = ({ data, items }) => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header del modal */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-primary/5 to-white">
                             <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                                    previewType === 'video' ? 'bg-gray-100' : 'bg-gray-100'
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
+                                    previewType === 'video' ? 'bg-primary/10' : 'bg-primary/10'
                                 }`}>
-                                    <i className={`mdi ${previewType === 'video' ? 'mdi-play-circle customtext-secondary' : 'mdi-file-pdf-box customtext-primary'} text-2xl`}></i>
+                                    <i className={`mdi ${previewType === 'video' ? 'mdi-play-circle customtext-primary' : 'mdi-file-pdf-box customtext-primary'} text-2xl`}></i>
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold customtext-neutral-dark">
