@@ -911,9 +911,9 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 z-[1000]"
                     >
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white">
+                        <div className="bg-primary p-4 text-white">
                             <h3 className="font-bold text-base">Elige un asesor</h3>
-                            <p className="text-xs text-green-100 mt-1">
+                            <p className="text-xs text-white  mt-1">
                                 {whatsappAction === 'quote' ? '¿Con quién quieres cotizar?' : '¿Con quién quieres hablar?'}
                             </p>
                         </div>
@@ -924,11 +924,11 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 <button
                                     key={index}
                                     onClick={() => handleAdvisorSelect(advisor)}
-                                    className="w-full flex items-center gap-3 p-3 hover:bg-green-50 transition-colors border-b border-gray-100 last:border-b-0 text-left"
+                                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 text-left"
                                 >
                                     {/* Foto del asesor */}
                                     <div className="flex-shrink-0">
-                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-green-200">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
                                             {advisor.photo ? (
                                                 <img
                                                     src={`/assets/resources/${advisor.photo}`}
