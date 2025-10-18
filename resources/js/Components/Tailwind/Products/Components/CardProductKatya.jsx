@@ -96,14 +96,14 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
 
             {/* Imagen del producto */}
             <div
-                className="relative bg-gray-50 flex items-center justify-center p-2 lg:p-8 h-48 lg:h-80 "
+                className="relative bg-gray-50 flex items-center justify-center  h-48 lg:h-80 "
 
 
             >
                 <img
                     src={product?.image ? `/api/items/media/${product.image}` : '/assets/img/noimage/no_img.jpg'}
                     alt={product?.name || 'Producto'}
-                    className="lg:w-full h-full lg:aspect-square object-contain lg:object-contain group-hover:scale-105 transition-transform duration-500"
+                    className="lg:w-full h-full lg:aspect-square object-cover lg:object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                         e.target.src = '/assets/img/noimage/no_img.jpg';
                     }}

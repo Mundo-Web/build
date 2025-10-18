@@ -38,6 +38,19 @@ import { toast } from "sonner";
 import ItemsRest from "../../../Actions/ItemsRest";
 import ProductInfinite from "../Products/ProductInfinite";
 import ProductMultivet from "../Products/ProductMultivet";
+import {
+    useFloating,
+    autoUpdate,
+    offset,
+    flip,
+    shift,
+    useClick,
+    useDismiss,
+    useRole,
+    useInteractions,
+    FloatingFocusManager,
+} from '@floating-ui/react';
+import General from '../../../Utils/General';
 
 const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, setFavorites }) => {
     const itemsRest = new ItemsRest();
@@ -73,12 +86,99 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
     const thumbSwiperRef = useRef(null);
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
-    // Obtener datos de WhatsApp de generals
-    const phone_whatsapp = generals?.find(
-        (general) => general.correlative === "phone_whatsapp"
-    );
+    // Estados para WhatsApp multi-asesor
+    const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
+    const [whatsappAction, setWhatsappAction] = useState('consult'); // 'consult' o 'quote'
 
-    const numeroWhatsApp = phone_whatsapp?.description;
+    // Configuración de Floating UI para botones de cotizar
+    const { refs, floatingStyles, context } = useFloating({
+        open: isAdvisorDropdownOpen && whatsappAction === 'quote',
+        onOpenChange: (open) => {
+            if (whatsappAction === 'quote') {
+                setIsAdvisorDropdownOpen(open);
+            }
+        },
+        placement: 'bottom-start',
+        middleware: [
+            offset(10),
+            flip({
+                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
+            }),
+            shift({ padding: 8 }),
+        ],
+        whileElementsMounted: autoUpdate,
+    });
+
+    // Configuración de Floating UI para link de consulta DESKTOP
+    const { refs: refsConsult, floatingStyles: floatingStylesConsult, context: contextConsult } = useFloating({
+        open: isAdvisorDropdownOpen && whatsappAction === 'consult',
+        onOpenChange: (open) => {
+            if (whatsappAction === 'consult') {
+                setIsAdvisorDropdownOpen(open);
+            }
+        },
+        placement: 'bottom-start',
+        middleware: [
+            offset(10),
+            flip({
+                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
+            }),
+            shift({ padding: 8 }),
+        ],
+        whileElementsMounted: autoUpdate,
+    });
+
+    // Configuración de Floating UI para link de consulta MOBILE
+    const { refs: refsConsultMobile, floatingStyles: floatingStylesConsultMobile, context: contextConsultMobile } = useFloating({
+        open: isAdvisorDropdownOpen && whatsappAction === 'consult-mobile',
+        onOpenChange: (open) => {
+            if (whatsappAction === 'consult-mobile') {
+                setIsAdvisorDropdownOpen(open);
+            }
+        },
+        placement: 'top-end',
+        middleware: [
+            offset(10),
+            flip({
+                fallbackPlacements: ['top-start', 'bottom-end', 'bottom-start'],
+            }),
+            shift({ padding: 8 }),
+        ],
+        whileElementsMounted: autoUpdate,
+    });
+
+    const click = useClick(context);
+    const dismiss = useDismiss(context);
+    const role = useRole(context);
+
+    const clickConsult = useClick(contextConsult);
+    const dismissConsult = useDismiss(contextConsult);
+    const roleConsult = useRole(contextConsult);
+
+    const clickConsultMobile = useClick(contextConsultMobile);
+    const dismissConsultMobile = useDismiss(contextConsultMobile);
+    const roleConsultMobile = useRole(contextConsultMobile);
+
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+        click,
+        dismiss,
+        role,
+    ]);
+
+    const { getReferenceProps: getReferencePropsConsult, getFloatingProps: getFloatingPropsConsult } = useInteractions([
+        clickConsult,
+        dismissConsult,
+        roleConsult,
+    ]);
+
+    const { getReferenceProps: getReferencePropsConsultMobile, getFloatingProps: getFloatingPropsConsultMobile } = useInteractions([
+        clickConsultMobile,
+        dismissConsultMobile,
+        roleConsultMobile,
+    ]);
+
+    // Obtener asesores de WhatsApp
+    const whatsappAdvisors = General.whatsapp_advisors || [];
 
     // Verificar si está en favoritos
     useEffect(() => {
@@ -219,24 +319,67 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
         setQuantity(Math.max(1, value));
     };
 
-    // Funciones de WhatsApp
-    const mensajeWhatsAppCotizar = encodeURIComponent(
-        `¡Hola! Me gustaría cotizar este producto para mi mascota: ${item?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
-    );
+    // Funciones de WhatsApp multi-asesor
+    const handleClickWhatsApp = (event) => {
+        event?.preventDefault();
+        event?.stopPropagation();
+        setWhatsappAction('consult');
 
-    const mensajeWhatsAppConsulta = encodeURIComponent(
-        `¡Hola! Tengo consultas sobre este producto: ${item?.name}\n\n¿Me pueden ayudar con más información?`
-    );
-
-    const linkWhatsAppCotizar = `https://wa.me/${numeroWhatsApp}?text=${mensajeWhatsAppCotizar}`;
-    const linkWhatsAppConsulta = `https://wa.me/${numeroWhatsApp}?text=${mensajeWhatsAppConsulta}`;
-
-    const handleClickWhatsAppCotizar = () => {
-        window.open(linkWhatsAppCotizar, '_blank');
+        if (whatsappAdvisors.length === 1) {
+            const advisor = whatsappAdvisors[0];
+            const message = encodeURIComponent(
+                `¡Hola! Tengo dudas sobre este producto: ${item?.name}\n\n¿Me pueden ayudar con más información?`
+            );
+            window.open(`https://wa.me/${advisor.phone}?text=${message}`, '_blank');
+        } else if (whatsappAdvisors.length > 1) {
+            setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen);
+        }
     };
 
-    const handleClickWhatsAppConsulta = () => {
-        window.open(linkWhatsAppConsulta, '_blank');
+    const handleClickWhatsAppMobile = (event) => {
+        event?.preventDefault();
+        event?.stopPropagation();
+        setWhatsappAction('consult-mobile');
+
+        if (whatsappAdvisors.length === 1) {
+            const advisor = whatsappAdvisors[0];
+            const message = encodeURIComponent(
+                `¡Hola! Tengo dudas sobre este producto: ${item?.name}\n\n¿Me pueden ayudar con más información?`
+            );
+            window.open(`https://wa.me/${advisor.phone}?text=${message}`, '_blank');
+        } else if (whatsappAdvisors.length > 1) {
+            setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen);
+        }
+    };
+
+    const handleClickWhatsAppCotizar = (event) => {
+        event?.preventDefault();
+        event?.stopPropagation();
+        setWhatsappAction('quote');
+
+        if (whatsappAdvisors.length === 1) {
+            const advisor = whatsappAdvisors[0];
+            const message = encodeURIComponent(
+                `¡Hola! Me gustaría cotizar este producto: ${item?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
+            );
+            window.open(`https://wa.me/${advisor.phone}?text=${message}`, '_blank');
+        } else if (whatsappAdvisors.length > 1) {
+            setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen);
+        }
+    };
+
+    const handleAdvisorSelect = (advisor) => {
+        const isQuote = whatsappAction === 'quote';
+        const message = isQuote
+            ? encodeURIComponent(
+                `¡Hola! Me gustaría cotizar este producto: ${item?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
+            )
+            : encodeURIComponent(
+                `¡Hola! Tengo dudas sobre este producto: ${item?.name}\n\n¿Me pueden ayudar con más información?`
+            );
+
+        window.open(`https://wa.me/${advisor.phone}?text=${message}`, '_blank');
+        setIsAdvisorDropdownOpen(false);
     };
 
     // Función para agregar al carrito (desde ProductDetailB)
@@ -612,7 +755,9 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
                                 {/* Botón de WhatsApp para consultas */}
                                 <button
-                                    onClick={handleClickWhatsAppConsulta}
+                                    ref={refsConsult.setReference}
+                                    {...getReferencePropsConsult()}
+                                    onClick={(event) => handleClickWhatsApp(event)}
                                     className="w-full bg-green-600 text-white py-4 px-6 rounded-full font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500"
                                 >
                                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -708,7 +853,9 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
                     {/* Botón de WhatsApp Mobile - más pequeño */}
                     <button
-                        onClick={handleClickWhatsAppConsulta}
+                        ref={refsConsultMobile.setReference}
+                        {...getReferencePropsConsultMobile()}
+                        onClick={(event) => handleClickWhatsAppMobile(event)}
                         className="bg-green-600 text-white p-3 rounded-xl hover:bg-green-700 transition-all shadow-lg active:scale-95"
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -753,6 +900,93 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Dropdown de Selección de Asesores */}
+            {isAdvisorDropdownOpen && whatsappAdvisors.length > 1 && (
+                <FloatingFocusManager 
+                    context={
+                        whatsappAction === 'consult' ? contextConsult : 
+                        whatsappAction === 'consult-mobile' ? contextConsultMobile : 
+                        context
+                    } 
+                    modal={false}
+                >
+                    <div
+                        ref={
+                            whatsappAction === 'consult' ? refsConsult.setFloating : 
+                            whatsappAction === 'consult-mobile' ? refsConsultMobile.setFloating : 
+                            refs.setFloating
+                        }
+                        style={
+                            whatsappAction === 'consult' ? floatingStylesConsult : 
+                            whatsappAction === 'consult-mobile' ? floatingStylesConsultMobile : 
+                            floatingStyles
+                        }
+                        {...(
+                            whatsappAction === 'consult' ? getFloatingPropsConsult() : 
+                            whatsappAction === 'consult-mobile' ? getFloatingPropsConsultMobile() : 
+                            getFloatingProps()
+                        )}
+                        className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 z-[1000]"
+                    >
+                        {/* Header */}
+                        <div className="bg-primary p-4 text-white">
+                            <h3 className="font-bold text-base">Elige un asesor</h3>
+                            <p className="text-xs text-white mt-1">
+                                {whatsappAction === 'quote' ? '¿Con quién quieres cotizar?' : '¿Con quién quieres hablar?'}
+                            </p>
+                        </div>
+
+                        {/* Lista de asesores */}
+                        <div className="max-h-[400px] overflow-y-auto" style={{ minWidth: '280px', maxWidth: '320px' }}>
+                            {whatsappAdvisors.map((advisor, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleAdvisorSelect(advisor)}
+                                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 text-left"
+                                >
+                                    {/* Foto del asesor */}
+                                    <div className="flex-shrink-0">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+                                            {advisor.photo ? (
+                                                <img
+                                                    src={`/assets/resources/${advisor.photo}`}
+                                                    alt={advisor.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.target.src = '/assets/img/placeholder-user.png';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-lg font-bold">
+                                                    {advisor.name?.charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Info del asesor */}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-gray-900 text-sm truncate">
+                                            {advisor.name}
+                                        </p>
+                                        <p className="text-xs text-gray-500 truncate">
+                                            {advisor.position || 'Asesor'}
+                                        </p>
+                                    </div>
+
+                                    {/* Icono de WhatsApp */}
+                                    <div className="flex-shrink-0">
+                                        <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386"/>
+                                        </svg>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </FloatingFocusManager>
+            )}
         </div>
     );
 };
