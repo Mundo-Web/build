@@ -121,7 +121,7 @@ const CardProductBananaLab = ({
                         {product?.discount != null &&
                             !isNaN(product?.discount) && (
                                 styleOffer === "square" ? (
-                                    <span className="absolute top-3 -right-1 lg:-right-2 bg-[#F93232] text-white text-xs font-bold px-2 py-2 shadow-md z-20">
+                                    <span className="absolute top-3 right-0 lg:right-0 bg-[#F93232] text-white text-xs font-bold px-2 py-2 shadow-md z-20">
                                         Oferta
                                     </span>
                                 ) : (
@@ -149,7 +149,7 @@ const CardProductBananaLab = ({
                                     (e.target.src = "/api/cover/thumbnail/null")
                                 }
                                 alt={product?.name}
-                                className="w-full h-full object-contain object-center"
+                                className="w-full h-full object-cover object-center"
                                 loading="lazy"
                             />
                         </motion.div>
@@ -205,7 +205,7 @@ const CardProductBananaLab = ({
                         {/* Precio */}
                         {data?.show_price && (
 
-                            <div className="flex flex-col lg:flex-row  items-center gap-4 items-baseline mt-1">
+                            <div className="flex flex-col lg:flex-row items-center gap-4 mt-1">
                                 <span className="customtext-neutral-dark text-[20px] md:text-2xl font-bold">
                                     {CurrencySymbol()} {product?.final_price}
                                 </span>
@@ -233,27 +233,29 @@ const CardProductBananaLab = ({
                                 />
                             </a>
                         </div>
-                        {/* Botón de acción - ahora con mejor manejo del hover */}
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{
-                                opacity: isHovered ? 1 : 0,
-                                height: isHovered ? "auto" : 0,
-                            }}
-                            transition={{ duration: 0.2 }}
-                            className="hidden lg:block mt-3 overflow-hidden"
-                        >
-                            <a
-                                href={`/product/${product?.slug}`}
-                                className={`w-full text-[10px] font-light lg:font-normal flex items-center justify-center bg-primary  lg:text-sm py-2 lg:py-3 px-4 rounded-full shadow-md hover:bg-primary-dark transition-all duration-300 ${data?.class_button || "text-white"}`}
+                        {/* Botón de acción - reservar espacio para evitar layout shift */}
+                        <div className="hidden lg:block mt-3 h-[48px]">
+                            <motion.div
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{
+                                    opacity: isHovered ? 1 : 0,
+                                    y: isHovered ? 0 : 6,
+                                }}
+                                transition={{ duration: 0.18 }}
+                                className="w-full h-full flex items-center"
                             >
-                                <span className="mr-2">Ir a detalle</span>
-                                <ChevronRightCircle
-                                    className="w-3 h-3 lg:w-4 lg:h-4"
-                                    strokeWidth={2}
-                                />
-                            </a>
-                        </motion.div>
+                                <a
+                                    href={`/product/${product?.slug}`}
+                                    className={`w-full text-[10px] font-light lg:font-normal flex items-center justify-center bg-primary  lg:text-sm py-2 lg:py-3 px-4 rounded-full shadow-md hover:bg-primary-dark transition-all duration-300 ${data?.class_button || "text-white"}`}
+                                >
+                                    <span className="mr-2">Ir a detalle</span>
+                                    <ChevronRightCircle
+                                        className="w-3 h-3 lg:w-4 lg:h-4"
+                                        strokeWidth={2}
+                                    />
+                                </a>
+                            </motion.div>
+                        </div>
                     </div>
                 </div>
             </motion.a>
