@@ -89,7 +89,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                         <h1 className="text-5xl font-bold customtext-neutral-dark mb-4">
                             {title}
                         </h1>
-                        <p className="text-xl customtext-neutral-light max-w-2xl mx-auto">
+                        <p className="text-xl customtext-neutral-dark max-w-2xl mx-auto">
                             {subtitle}
                         </p>
                     </div>
@@ -141,7 +141,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                             <h3 className="text-2xl font-semibold customtext-neutral-dark mb-2">
                                 Sin resultados
                             </h3>
-                            <p className="text-lg customtext-neutral-light">
+                            <p className="text-lg customtext-neutral-dark">
                                 {searchTerm 
                                     ? 'Prueba con otro término de búsqueda' 
                                     : 'No hay recursos disponibles'}
@@ -188,14 +188,15 @@ const SupportDownloadCenter = ({ data, items }) => {
                                             <h3 className="text-lg font-bold customtext-neutral-dark mb-2 line-clamp-2 min-h-[3.5rem]">
                                                 {item.name}
                                             </h3>
-                                            <p className="text-sm customtext-neutral-light line-clamp-2 mb-4">
-                                                {item.summary}
-                                            </p>
+
+                                               <div className="mb-4 prose line-clamp-2 prose-lg max-w-none customtext-neutral-dark" dangerouslySetInnerHTML={{ __html: item?.description || item?.summary }} />
+
+
 
                                             {/* Precio */}
                                             <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
                                                 <div>
-                                                    <div className="text-xs customtext-neutral-light mb-1">Precio</div>
+                                                    <div className="text-xs customtext-neutral-dark mb-1">Precio</div>
                                                     <div className="text-2xl font-bold customtext-primary">
                                                         {CurrencySymbol()}{Number2Currency(item.final_price || item.price)}
                                                     </div>
@@ -325,7 +326,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                                 <h3 className="text-2xl font-bold customtext-neutral-dark mb-3">
                                     ¿Necesitas ayuda adicional?
                                 </h3>
-                                <p className="text-lg customtext-neutral-light mb-6 max-w-2xl mx-auto">
+                                <p className="text-lg customtext-neutral-dark mb-6 max-w-2xl mx-auto">
                                     Nuestro equipo de soporte técnico está disponible para resolver tus dudas
                                 </p>
                                 <div className="flex flex-wrap gap-4 justify-center">
@@ -366,7 +367,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                                     <h3 className="text-xl font-bold customtext-neutral-dark">
                                         {selectedResource.productName}
                                     </h3>
-                                    <p className="text-sm customtext-neutral-light">
+                                    <p className="text-sm customtext-neutral-dark">
                                         {previewType === 'video' ? 'Video Tutorial' : selectedResource.name || 'Documento PDF'}
                                     </p>
                                 </div>
