@@ -701,7 +701,7 @@
                     "class_description",
                     "class_overlay"
                 ],
-                "using": {
+               "using": {
                     "model": "Slider",
                     "fields": [
                         "name",
@@ -710,7 +710,9 @@
                         "bg_image_mobile",
                         "button_text",
                         "button_link",
-                        "order_index"
+                        "order_index",
+                        "title_color",
+                        "description_color"
                     ]
                 },
                 "generals": [

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ChevronLeft, ChevronRight, Play, Pause, MessageCircle, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderMultivet = ({ items, data, generals = [] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -281,17 +282,23 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                       {/* Title */}
                       <motion.h1 
                         variants={titleVariants}
-                        className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold font-title ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_title}`}
-                        style={{ textShadow: "0 0 20px rgba(0, 0, 0, .25)" }}
+                        className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold font-title ${data?.class_title}`}
+                        style={{
+                          color: slide?.title_color || (isDarkBg ? "#FFFFFF" : "#000000"),
+                          textShadow: "0 0 20px rgba(0, 0, 0, .25)"
+                        }}
                       >
-                        {renderTextWithHighlight(slide?.name)}
+                        <TextWithHighlight text={slide?.name} color="" />
                       </motion.h1>
                       
                       {/* Description */}
                       <motion.p 
                         variants={descriptionVariants}
-                        className={`text-base lg:text-2xl leading-relaxed max-w-2xl font-paragraph ${isDarkBg ? "text-gray-200" : "customtext-neutral-dark"} ${data?.class_description}`}
-                        style={{ textShadow: "0 0 20px rgba(0, 0, 0, .25)" }}
+                        className={`text-base lg:text-2xl leading-relaxed max-w-2xl font-paragraph ${data?.class_description}`}
+                        style={{
+                          color: slide?.description_color || (isDarkBg ? "#FFFFFF" : "#000000"),
+                          textShadow: "0 0 20px rgba(0, 0, 0, .25)"
+                        }}
                       >
                         {slide?.description}
                       </motion.p>
