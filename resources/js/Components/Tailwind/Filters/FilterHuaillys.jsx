@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
-import ProductCard from '../Products/ProductCard';
+import ProductCardSelector from '../Products/ProductCardSelector';
 import ItemsRest from "../../../Actions/ItemsRest";
 import { Loading } from "../Components/Resources/Loading";
 import { NoResults } from "../Components/Resources/NoResult";
@@ -13,7 +13,7 @@ import { GET } from "sode-extend-react";
 
 const itemsRest = new ItemsRest();
 
-const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
+const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites, favorites }) => {
     const navigationPrevRef = useRef(null);
     const navigationNextRef = useRef(null);
 
@@ -203,11 +203,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
                 >
                     <div className="absolute inset-0 bg-black/60"></div>
                     <div className="relative w-full z-10 text-start px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
-                        <h1 className="text-3xl md:text-5xl font-title lg:text-7xl text-start   text-white">
+                        <h1 className={`text-3xl md:text-5xl font-title lg:text-7xl text-start text-white ${data?.class_hero_title || ''}`}>
                             {processHighlightText(data?.hero_title || 'Nuestro *Catálogo*')}
                         </h1>
                         {data?.hero_subtitle && (
-                            <p className="text-lg md:text-xl text-white/90 mt-4 font-paragraph">
+                            <p className={`text-lg md:text-xl text-white/90 mt-4 font-paragraph ${data?.class_hero_subtitle || ''}`}>
                                 {data.hero_subtitle}
                             </p>
                         )}
@@ -265,7 +265,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
                                         <div 
                                             className={`group cursor-pointer rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 h-full my-4 ${
                                                 selectedCategory?.id === category.id
-                                                    ? 'bg-white'
+                                                    ? `bg-white ${data?.class_category_card_selected || ''}`
                                                     : 'bg-white'
                                             }`}
                                             onClick={() => handleCategoryClick(category)}
@@ -273,7 +273,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
                                             {/* Imagen de la categoría */}
                                             <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-gray-100">
                                                 <img
-                                                    src={category.imagen || category.image ? `/storage/images/category/${category.imagen || category.image}` : '/assets/img/noimage/no_img.jpg'}
+                                                    src={`/storage/images/category/${category.image}`}
                                                     alt={category.name || category.nombre}
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                     onError={(e) => {
@@ -300,12 +300,12 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
                                                     ? 'bg-primary text-white'
                                                     : 'bg-white group-hover:bg-primary group-hover:text-white'
                                             }`}>
-                                                <h3 className="text-lg lg:text-xl font-bold transition-colors duration-300 text-left">
+                                                <h3 className={`text-lg lg:text-xl font-bold transition-colors duration-300 text-left ${data?.class_category_card_title || ''}`}>
                                                     {category.name || category.nombre}
                                                 </h3>
                                                 
                                                 {(category.description || category.descripcion) && (
-                                                    <p className="text-sm font-paragraph text-left mt-2 line-clamp-2 opacity-90">
+                                                    <p className={`text-sm font-paragraph text-left mt-2 line-clamp-2 opacity-90 ${data?.class_category_card_description || ''}`}>
                                                         {category.description || category.descripcion}
                                                     </p>
                                                 )}
@@ -340,11 +340,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
                 <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                     <div className="flex mb-8  w-full flex-col gap-6 lg:flex-row justify-between items-center">
                         <div className="text-left">
-                            <h2 className="text-3xl lg:text-5xl customtext-neutral-dark font-title mb-3 uppercase tracking-wide">
+                            <h2 className={`text-3xl lg:text-5xl customtext-neutral-dark font-title mb-3  tracking-wide ${data?.class_product_title || ''}`}>
                                 {data?.product_title || 'Pide todo lo que quieras y comparte'}
                             </h2>
                             {data?.product_description && (
-                                <p className="customtext-neutral-dark font-paragraph text-base">
+                                <p className={`customtext-neutral-dark font-paragraph text-base ${data?.class_product_description || ''}`}>
                                     {data.product_description}
                                 </p>
                             )}
@@ -373,13 +373,18 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData }) => {
                     {loading ? (
                         <Loading />
                     ) : products && products.length > 0 ? (
-                        <div className="grid  grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                             {products.map((product) => (
-                                <ProductCard 
+                                <ProductCardSelector
                                     key={product.id}
+                                    cardType={data?.type_card_product || 'ProductCard'}
                                     product={product}
-                                    handleProductClick={handleProductClick}
                                     data={data}
+                                    cart={cart}
+                                    setCart={setCart}
+                                    favorites={favorites}
+                                    setFavorites={setFavorites}
+                                    handleProductClick={handleProductClick}
                                 />
                             ))}
                         </div>

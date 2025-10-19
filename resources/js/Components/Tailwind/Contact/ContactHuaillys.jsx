@@ -324,7 +324,7 @@ const ContactHuaillys = ({ data, contacts }) => {
                                 <a
                                     key={index}
                                     href={`mailto:${email}`}
-                                    className="customtext-accent group-hover:text-white font-bold hover:no-underline block"
+                                    className={`customtext-accent group-hover:text-white font-bold hover:no-underline block ${data?.class_card_data || ''}`}
                                 >
                                     {email}
                                 </a>
@@ -363,7 +363,7 @@ const ContactHuaillys = ({ data, contacts }) => {
                                 <a
                                     key={index}
                                     href={`tel:${phone}`}
-                                    className="customtext-accent group-hover:text-white hover:no-underline font-bold block"
+                                    className={`customtext-accent group-hover:text-white hover:no-underline font-bold block ${data?.class_card_data || ''}`}
                                 >
                                     {phone}
                                 </a>
@@ -397,7 +397,7 @@ const ContactHuaillys = ({ data, contacts }) => {
                         <p className={`group-hover:text-white mb-2 ${data?.class_card_description || ''}`}>
                             Visítanos en nuestra ubicación
                         </p>
-                        <p className="customtext-accent  group-hover:text-white font-bold">
+                        <p className={`customtext-accent  group-hover:text-white font-bold ${data?.class_card_data || ''}`}>
                             {getContact("address")}
                         </p>
                     </motion.div>
@@ -429,7 +429,7 @@ const ContactHuaillys = ({ data, contacts }) => {
                             Estamos abiertos para atenderte
                         </p>
                         <div className="space-y-1">
-                            <p className="customtext-accent group-hover:text-white font-bold">
+                            <p className={`customtext-accent group-hover:text-white font-bold ${data?.class_card_data || ''}`}>
                                 {getContact("opening_hours") || "Lunes a Domingo: 8:00 AM - 10:00 PM"}
                             </p>
                         </div>
@@ -439,7 +439,7 @@ const ContactHuaillys = ({ data, contacts }) => {
 
             {/* Mapa */}
             <motion.div
-                className="mx-auto 2xl:max-w-7xl mt-8  rounded-xl p-8"
+                className="mx-auto px-[5%] 2xl:px-0 2xl:max-w-7xl mt-8  rounded-xl "
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1.6 }}

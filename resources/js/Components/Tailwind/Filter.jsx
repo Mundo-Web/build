@@ -42,7 +42,7 @@ const FilterHuaillys = React.lazy(() => import('./Filters/FilterHuaillys'))
   case 'CatalogoFiltrosKatya':
         return <CatalogoFiltrosKatya data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
       case 'FilterHuaillys':
-        return <FilterHuaillys data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} />
+        return <FilterHuaillys data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
 
       default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>

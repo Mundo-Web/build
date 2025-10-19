@@ -31,6 +31,7 @@ import { Loading } from "../Components/Resources/Loading";
 import { NoResults } from "../Components/Resources/NoResult";
 import SelectForm from "./Components/SelectForm";
 import { GET } from "sode-extend-react";
+import ProductCardSelector from "../Products/ProductCardSelector";
 
 // Importar diferentes tipos de tarjetas de productos
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
@@ -204,57 +205,6 @@ const SkeletonCard = ({ delay = 0 }) => {
 
 
 const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFavorites, favorites }) => {
-
-    // Función para renderizar la tarjeta de producto correcta basándose en el tipo
-    const renderProductCard = (product, commonProps) => {
-        const cardType = data?.type_card_product || 'default';
-        
-        // Props comunes que todas las tarjetas necesitan
-        const baseProps = {
-            product,
-            data,
-            setFavorites,
-            favorites,
-            cart,
-            setCart,
-            ...commonProps
-        };
-
-        switch (cardType) {
-            case 'multivet':
-                return (
-                    <CardProductMultivet
-                        {...baseProps}
-                    />
-                );
-            case 'sala-fabulosa':
-                return (
-                    <ProductCardColors
-                        {...baseProps}
-                    />
-                );
-            
-            case 'banana-lab':
-            case 'bananalab':
-                return (
-                    <CardProductBananaLab
-                        {...baseProps}
-                        widthClass="w-full sm:w-full lg:w-full"
-                    />
-                );
-            
-          
-            
-            default:
-                // Fallback a CardProductBananaLab si no se especifica tipo o no se reconoce
-                return (
-                    <CardProductBananaLab
-                        {...baseProps}
-                        widthClass="w-full sm:w-full lg:w-full"
-                    />
-                );
-        }
-    };
 
     // Opciones de ordenación (mover al inicio para evitar problemas de hoisting)
     const sortOptions = [
@@ -2620,7 +2570,15 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                     transition: { duration: 0.2 }
                                                 }}
                                             >
-                                                {renderProductCard(product)}
+                                                <ProductCardSelector
+                                                    cardType={data?.type_card_product || 'CardProductBananaLab'}
+                                                    product={product}
+                                                    data={data}
+                                                    cart={cart}
+                                                    setCart={setCart}
+                                                    favorites={favorites}
+                                                    setFavorites={setFavorites}
+                                                />
                                             </motion.div>
                                         ))
                                     ) : hasSearched && !loading && !isFiltering && showNoResults ? (

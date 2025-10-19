@@ -1515,7 +1515,17 @@
                     "category_description",
                     "product_title",
                     "product_description",
-                    "button_text"
+                    "button_text",
+                    "type_card_product",
+                    "class_hero_title",
+                    "class_hero_subtitle",
+                    "class_category_title",
+                    "class_category_description",
+                    "class_product_title",
+                    "class_product_description",
+                    "class_category_card_title",
+                    "class_category_card_description",
+                    "class_category_card_selected"
                 ],
                 "options": [
                     {
@@ -2918,6 +2928,7 @@
                     "class_card_container",
                     "class_card_title",
                     "class_card_description",
+                    "class_card_data",
                     "class_card_icon",
                     "map_title",
                     "map_description"
@@ -3012,7 +3023,8 @@
                     "second_title",
                     "second_description",
                     "bool:show_seen",
-                    "class_title"
+                    "class_title",
+                    "class_second_title"
                 ]
             },
             {

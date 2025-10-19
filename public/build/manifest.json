@@ -75,45 +75,6 @@
     "file": "assets/CanAccess-DgL4m2bH.js",
     "name": "CanAccess"
   },
-  "_CardProductBananaLab-CB297dRj.js": {
-    "file": "assets/CardProductBananaLab-CB297dRj.js",
-    "name": "CardProductBananaLab",
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ItemsRest-Dp5IKigO.js",
-      "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
-      "_tippy-react.esm-DmkRJDEW.js",
-      "_Number2Currency-jIsa99f9.js",
-      "_proxy-B0QLMKEh.js",
-      "_heart-DG8R4_Y8.js",
-      "_circle-chevron-right-Cragr8lM.js",
-      "_circle-check-big-CYWUGR3Z.js"
-    ]
-  },
-  "_CardProductKatya-Bu9KRHqy.js": {
-    "file": "assets/CardProductKatya-Bu9KRHqy.js",
-    "name": "CardProductKatya",
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_Number2Currency-jIsa99f9.js"
-    ]
-  },
-  "_CardProductMultivet-DEJJ6aW6.js": {
-    "file": "assets/CardProductMultivet-DEJJ6aW6.js",
-    "name": "CardProductMultivet",
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_circle-chevron-right-Cragr8lM.js"
-    ]
-  },
   "_CartItemRow-Dd2JdCJX.js": {
     "file": "assets/CartItemRow-Dd2JdCJX.js",
     "name": "CartItemRow",
@@ -353,14 +314,6 @@
       "_BasicRest-BML1C-ua.js"
     ]
   },
-  "_ProductCard-CXclprnE.js": {
-    "file": "assets/ProductCard-CXclprnE.js",
-    "name": "ProductCard",
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js"
-    ]
-  },
   "_ProductCard-Jmvp2LUm.js": {
     "file": "assets/ProductCard-Jmvp2LUm.js",
     "name": "ProductCard",
@@ -370,36 +323,6 @@
       "_Number2Currency-jIsa99f9.js",
       "_tippy-react.esm-DmkRJDEW.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx"
-    ]
-  },
-  "_ProductCardColors-EcSomiIU.js": {
-    "file": "assets/ProductCardColors-EcSomiIU.js",
-    "name": "ProductCardColors",
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ItemsRest-Dp5IKigO.js",
-      "_tippy-react.esm-DmkRJDEW.js",
-      "_Number2Currency-jIsa99f9.js"
-    ],
-    "css": [
-      "tippy.css"
-    ]
-  },
-  "_ProductCardColorsBoton-BJf1Rnic.js": {
-    "file": "assets/ProductCardColorsBoton-BJf1Rnic.js",
-    "name": "ProductCardColorsBoton",
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ItemsRest-Dp5IKigO.js",
-      "_tippy-react.esm-DmkRJDEW.js",
-      "_Number2Currency-jIsa99f9.js"
-    ],
-    "css": [
-      "tippy.css"
     ]
   },
   "_ProductCardScraping-DpBmFAWO.js": {
@@ -413,14 +336,23 @@
       "_Number2Currency-jIsa99f9.js"
     ]
   },
-  "_ProductCardSimple-BRIyzh9b.js": {
-    "file": "assets/ProductCardSimple-BRIyzh9b.js",
-    "name": "ProductCardSimple",
+  "_ProductCardSelector-DS-hLufr.js": {
+    "file": "assets/ProductCardSelector-DS-hLufr.js",
+    "name": "ProductCardSelector",
     "imports": [
+      "_preload-helper-BfFHrpNk.js",
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_Number2Currency-jIsa99f9.js"
+      "_index-BOnQTV8N.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Components/Tailwind/Products/ProductCard.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColorsBoton.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardFull.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardSimple.jsx"
     ]
   },
   "_ProfileImage-CwBDTNXg.js": {
@@ -5147,7 +5079,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-DeKafUYC.js",
+    "file": "assets/Blog-FtaQUwA4.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -5208,7 +5140,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx": {
-    "file": "assets/BlogMultivet-CuNt7B5t.js",
+    "file": "assets/BlogMultivet-CNDWZ0zt.js",
     "name": "BlogMultivet",
     "src": "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx",
     "isEntry": true,
@@ -6875,7 +6807,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-D29UELdN.js",
+    "file": "assets/Contact-D_ZKCXsg.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -7102,7 +7034,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-DCgN44cP.js",
+    "file": "assets/Filter-D47F_7L_.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -7185,7 +7117,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltrosAko.jsx": {
-    "file": "assets/CatalagoFiltrosAko-BXuJwgEn.js",
+    "file": "assets/CatalagoFiltrosAko-4V7sumuW.js",
     "name": "CatalagoFiltrosAko",
     "src": "resources/js/Components/Tailwind/Filters/CatalagoFiltrosAko.jsx",
     "isDynamicEntry": true,
@@ -7197,7 +7129,7 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-BvLefn0w.js",
       "_main-B6F2O9-U.js",
-      "_ProductCardColors-EcSomiIU.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
       "_Number2Currency-jIsa99f9.js",
       "_proxy-B0QLMKEh.js",
       "_sliders-vertical-BKVsqP9q.js",
@@ -7244,7 +7176,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltrosPaani.jsx": {
-    "file": "assets/CatalagoFiltrosPaani-DDy8QPN4.js",
+    "file": "assets/CatalagoFiltrosPaani-_eGFq_RS.js",
     "name": "CatalagoFiltrosPaani",
     "src": "resources/js/Components/Tailwind/Filters/CatalagoFiltrosPaani.jsx",
     "isDynamicEntry": true,
@@ -7256,7 +7188,7 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-BvLefn0w.js",
       "_main-B6F2O9-U.js",
-      "_ProductCardColorsBoton-BJf1Rnic.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColorsBoton.jsx",
       "_Number2Currency-jIsa99f9.js",
       "_proxy-B0QLMKEh.js",
       "_sliders-vertical-BKVsqP9q.js",
@@ -7390,7 +7322,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-CpkNUQ7W.js",
+    "file": "assets/CatalogoFiltrosDental-Ct2FWSHh.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -7402,10 +7334,12 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-BvLefn0w.js",
       "_main-B6F2O9-U.js",
-      "_CardProductBananaLab-CB297dRj.js",
-      "_CardProductMultivet-DEJJ6aW6.js",
+      "_ProductCardSelector-DS-hLufr.js",
+      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
+      "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
       "_Number2Currency-jIsa99f9.js",
-      "_ProductCardColors-EcSomiIU.js",
       "_proxy-B0QLMKEh.js",
       "_list-filter-B_9H95Vt.js",
       "_sliders-vertical-BKVsqP9q.js",
@@ -7429,8 +7363,13 @@
       "_chevron-right-Cug7tVUE.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
+      "_eye-ScgfreHn.js",
+      "_createLucideIcon-DfjclApS.js",
+      "_BasicRest-BML1C-ua.js",
+      "_BooleanLimit-D-OsQsek.js",
+      "_check-D5vaIe6v.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_preload-helper-BfFHrpNk.js",
       "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
       "_index-B6ujFmsw.js",
       "_index-Chjiymov.js",
@@ -7438,21 +7377,10 @@
       "_tippy-react.esm-DmkRJDEW.js",
       "_index-pSueRYGM.js",
       "_trash-2-DU7LB6-f.js",
-      "_createLucideIcon-DfjclApS.js",
       "_minus-Db6MFKEO.js",
       "_plus-CTIomuuF.js",
-      "_eye-ScgfreHn.js",
-      "_BasicRest-BML1C-ua.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_BooleanLimit-D-OsQsek.js",
-      "_check-D5vaIe6v.js",
-      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
-      "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
       "_shopping-cart-DLRnxGTD.js",
       "_arrow-right-MB8dWH_Y.js",
-      "_heart-DG8R4_Y8.js",
-      "_circle-chevron-right-Cragr8lM.js",
-      "_circle-check-big-CYWUGR3Z.js",
       "_General-apRuNwp7.js"
     ],
     "css": [
@@ -7460,7 +7388,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx": {
-    "file": "assets/CatalogoFiltrosKatya-YKTAMS_W.js",
+    "file": "assets/CatalogoFiltrosKatya-Db-4hVol.js",
     "name": "CatalogoFiltrosKatya",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
     "isDynamicEntry": true,
@@ -7472,9 +7400,9 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-BvLefn0w.js",
       "_main-B6F2O9-U.js",
-      "_CardProductBananaLab-CB297dRj.js",
-      "_CardProductMultivet-DEJJ6aW6.js",
-      "_CardProductKatya-Bu9KRHqy.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_General-apRuNwp7.js",
       "_Number2Currency-jIsa99f9.js",
       "_proxy-B0QLMKEh.js",
@@ -7547,7 +7475,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterBananaLab.jsx": {
-    "file": "assets/FilterBananaLab-CvvbVvLw.js",
+    "file": "assets/FilterBananaLab-1ipnfnr8.js",
     "name": "FilterBananaLab",
     "src": "resources/js/Components/Tailwind/Filters/FilterBananaLab.jsx",
     "isDynamicEntry": true,
@@ -7558,7 +7486,7 @@
       "_Loading-B-FwDSWi.js",
       "_NoResult-DlL_OOrq.js",
       "_SelectForm-BvLefn0w.js",
-      "_CardProductBananaLab-CB297dRj.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
       "_Number2Currency-jIsa99f9.js",
       "_proxy-B0QLMKEh.js",
       "_chevron-down-uIVDLcM-.js",
@@ -7602,7 +7530,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterCategoryImage.jsx": {
-    "file": "assets/FilterCategoryImage-DgxW5kZD.js",
+    "file": "assets/FilterCategoryImage-B5T-W36e.js",
     "name": "FilterCategoryImage",
     "src": "resources/js/Components/Tailwind/Filters/FilterCategoryImage.jsx",
     "isDynamicEntry": true,
@@ -7616,8 +7544,8 @@
       "_SelectForm-BvLefn0w.js",
       "_Number2Currency-jIsa99f9.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ProductCardSimple-BRIyzh9b.js",
-      "_CardProductBananaLab-CB297dRj.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardSimple.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
       "_chevron-down-uIVDLcM-.js",
       "_filter-BEzH_gaL.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -7661,7 +7589,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
-    "file": "assets/FilterHuaillys-HQlOI8H8.js",
+    "file": "assets/FilterHuaillys-BF82O95U.js",
     "name": "FilterHuaillys",
     "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
     "isDynamicEntry": true,
@@ -7673,7 +7601,7 @@
       "_autoplay-BjAsSK2h.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "_ProductCard-CXclprnE.js",
+      "_ProductCardSelector-DS-hLufr.js",
       "_ItemsRest-Dp5IKigO.js",
       "_Loading-B-FwDSWi.js",
       "_NoResult-DlL_OOrq.js",
@@ -7683,6 +7611,7 @@
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_create-element-if-not-defined-DUWlnlug.js",
+      "_preload-helper-BfFHrpNk.js",
       "_BasicRest-BML1C-ua.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
@@ -7696,7 +7625,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterSalaFabulosa.jsx": {
-    "file": "assets/FilterSalaFabulosa-QMWnWSi_.js",
+    "file": "assets/FilterSalaFabulosa-DKDywYy9.js",
     "name": "FilterSalaFabulosa",
     "src": "resources/js/Components/Tailwind/Filters/FilterSalaFabulosa.jsx",
     "isDynamicEntry": true,
@@ -7711,7 +7640,7 @@
       "_SelectForm-BvLefn0w.js",
       "_Number2Currency-jIsa99f9.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ProductCardColors-EcSomiIU.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
       "_main-B6F2O9-U.js",
       "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
       "_filter-BEzH_gaL.js",
@@ -8988,7 +8917,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-B7MpHoBw.js",
+    "file": "assets/Menu-B733BVQC.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -9210,7 +9139,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DXBh8Vlt.js",
+    "file": "assets/Product-EtaVEQaG.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -9240,7 +9169,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-DhiKwHUj.js",
+    "file": "assets/ProductDetail-BowmOWnh.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -9285,7 +9214,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailAko.jsx": {
-    "file": "assets/ProductDetailAko-D74f5XEN.js",
+    "file": "assets/ProductDetailAko-BYjOCImZ.js",
     "name": "ProductDetailAko",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailAko.jsx",
     "isDynamicEntry": true,
@@ -9324,7 +9253,7 @@
       "_plus-CTIomuuF.js",
       "_index-BZvh78jk.js",
       "_adjustTextColor-DJKJvkxA.js",
-      "_ProductCardColors-EcSomiIU.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
       "_navigation-BIDIUzpb.js",
       "_create-element-if-not-defined-DUWlnlug.js",
       "_TextWithHighlight-ByFNYMgN.js",
@@ -9337,7 +9266,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailB.jsx": {
-    "file": "assets/ProductDetailB-BTw1EdmO.js",
+    "file": "assets/ProductDetailB-3Gukz7V4.js",
     "name": "ProductDetailB",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailB.jsx",
     "isDynamicEntry": true,
@@ -9384,7 +9313,8 @@
       "_grid-BZ4EKnFQ.js",
       "resources/js/Components/Tailwind/Products/ProductNavigation.jsx",
       "_eye-ScgfreHn.js",
-      "_CardProductKatya-Bu9KRHqy.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_General-apRuNwp7.js",
       "_adjustTextColor-DJKJvkxA.js",
       "_tag-Dgi-uTqk.js",
       "_create-element-if-not-defined-DUWlnlug.js",
@@ -9394,7 +9324,6 @@
       "_package-DBFPPBi1.js",
       "_trash-2-DU7LB6-f.js",
       "_minus-Db6MFKEO.js",
-      "_General-apRuNwp7.js",
       "_index-BZvh78jk.js"
     ],
     "css": [
@@ -9402,7 +9331,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailBananaLab.jsx": {
-    "file": "assets/ProductDetailBananaLab-BiPxDdwC.js",
+    "file": "assets/ProductDetailBananaLab-BOUqV2vZ.js",
     "name": "ProductDetailBananaLab",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailBananaLab.jsx",
     "isDynamicEntry": true,
@@ -9444,7 +9373,7 @@
       "_navigation-BIDIUzpb.js",
       "_create-element-if-not-defined-DUWlnlug.js",
       "_autoplay-BjAsSK2h.js",
-      "_CardProductBananaLab-CB297dRj.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
       "_shopping-bag-C59bLmNC.js",
       "_x-fof_H3Vv.js",
@@ -9511,7 +9440,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-ILEwxAcB.js",
+    "file": "assets/ProductDetailHuaillys-BEEag0YA.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9544,7 +9473,7 @@
       "_BooleanLimit-D-OsQsek.js",
       "_autoplay-BjAsSK2h.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
-      "_ProductCard-CXclprnE.js",
+      "resources/js/Components/Tailwind/Products/ProductCard.jsx",
       "_createLucideIcon-DfjclApS.js"
     ],
     "css": [
@@ -9553,7 +9482,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailKatya.jsx": {
-    "file": "assets/ProductDetailKatya-BmtkYiO8.js",
+    "file": "assets/ProductDetailKatya-C9yfyKhT.js",
     "name": "ProductDetailKatya",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailKatya.jsx",
     "isDynamicEntry": true,
@@ -9604,7 +9533,7 @@
       "_minus-Db6MFKEO.js",
       "_plus-CTIomuuF.js",
       "_eye-ScgfreHn.js",
-      "_CardProductKatya-Bu9KRHqy.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_adjustTextColor-DJKJvkxA.js",
       "_tag-Dgi-uTqk.js",
       "_chevron-left-JcR9Fe4w.js"
@@ -9863,40 +9792,46 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx": {
-    "file": "assets/CardProductBananaLab-Ck-naUfJ.js",
+    "file": "assets/CardProductBananaLab-CvFn0oF3.js",
     "name": "CardProductBananaLab",
     "src": "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
-    "isEntry": true,
+    "isDynamicEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_ItemsRest-Dp5IKigO.js",
       "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
+      "_tippy-react.esm-DmkRJDEW.js",
+      "_Number2Currency-jIsa99f9.js",
+      "_proxy-B0QLMKEh.js",
+      "_heart-DG8R4_Y8.js",
+      "_circle-chevron-right-Cragr8lM.js",
+      "_circle-check-big-CYWUGR3Z.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
+      "_main-B6F2O9-U.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
-      "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js",
+      "_BasicRest-BML1C-ua.js",
+      "_BooleanLimit-D-OsQsek.js",
       "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
+      "_index-B6ujFmsw.js",
       "_index-Chjiymov.js",
       "_CartItemRow-Dd2JdCJX.js",
-      "_Number2Currency-jIsa99f9.js",
-      "_General-apRuNwp7.js",
-      "_tippy-react.esm-DmkRJDEW.js",
-      "_proxy-B0QLMKEh.js",
       "_package-DBFPPBi1.js",
       "_createLucideIcon-DfjclApS.js",
       "_trash-2-DU7LB6-f.js",
       "_minus-Db6MFKEO.js",
       "_plus-CTIomuuF.js",
       "_index-BZvh78jk.js",
+      "_index-pSueRYGM.js",
       "_shopping-bag-C59bLmNC.js",
       "_x-fof_H3Vv.js",
       "_shopping-cart-DLRnxGTD.js",
-      "_arrow-right-MB8dWH_Y.js"
+      "_arrow-right-MB8dWH_Y.js",
+      "_General-apRuNwp7.js"
     ],
     "css": [
       "tippy.css"
@@ -9932,21 +9867,27 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx": {
-    "file": "assets/ProductCardColors-DhYoO0TN.js",
+    "file": "assets/ProductCardColors-BsIf6E2V.js",
     "name": "ProductCardColors",
     "src": "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
-    "isEntry": true,
+    "isDynamicEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_ItemsRest-Dp5IKigO.js",
+      "_tippy-react.esm-DmkRJDEW.js",
+      "_Number2Currency-jIsa99f9.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
+      "_main-B6F2O9-U.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_BasicRest-BML1C-ua.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js"
+      "_index-B6ujFmsw.js",
+      "_BooleanLimit-D-OsQsek.js",
+      "_General-apRuNwp7.js"
     ],
     "css": [
       "tippy.css"
@@ -10008,7 +9949,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx": {
-    "file": "assets/ProductBananaLab-CSHPj8YF.js",
+    "file": "assets/ProductBananaLab-BejI_Ekh.js",
     "name": "ProductBananaLab",
     "src": "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx",
     "isDynamicEntry": true,
@@ -10020,7 +9961,7 @@
       "_autoplay-BjAsSK2h.js",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
       "resources/js/Components/Tailwind/Products/ProductNavigation.jsx",
-      "_CardProductBananaLab-CB297dRj.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
       "_use-in-view-DtBxy-1R.js",
       "_proxy-B0QLMKEh.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -10077,6 +10018,29 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx": {
+    "file": "assets/ProductCardSelector-DBFNLeVW.js",
+    "name": "ProductCardSelector",
+    "src": "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx",
+    "isEntry": true,
+    "imports": [
+      "_preload-helper-BfFHrpNk.js",
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Components/Tailwind/Products/ProductCard.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColorsBoton.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardFull.jsx",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardSimple.jsx"
+    ]
+  },
   "resources/js/Components/Tailwind/Products/ProductCarousel.jsx": {
     "file": "assets/ProductCarousel-D9WgCnyT.js",
     "name": "ProductCarousel",
@@ -10102,7 +10066,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductFeaturedSwiper.jsx": {
-    "file": "assets/ProductFeaturedSwiper-0CF_Ou6A.js",
+    "file": "assets/ProductFeaturedSwiper-CQSMwjVO.js",
     "name": "ProductFeaturedSwiper",
     "src": "resources/js/Components/Tailwind/Products/ProductFeaturedSwiper.jsx",
     "isDynamicEntry": true,
@@ -10112,19 +10076,20 @@
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "_navigation-BIDIUzpb.js",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ItemsRest-Dp5IKigO.js",
-      "_html2string-CfCixsO3.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardFull.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_create-element-if-not-defined-DUWlnlug.js",
+      "resources/js/Components/Tailwind/Components/ProductCard.jsx",
+      "_ItemsRest-Dp5IKigO.js",
       "_main-B6F2O9-U.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
       "_BasicRest-BML1C-ua.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js",
-      "_BooleanLimit-D-OsQsek.js"
+      "_BooleanLimit-D-OsQsek.js",
+      "_html2string-CfCixsO3.js"
     ],
     "css": [
       "swiper.css",
@@ -10288,7 +10253,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductNavigationSwiper.jsx": {
-    "file": "assets/ProductNavigationSwiper-4KRm0kqv.js",
+    "file": "assets/ProductNavigationSwiper-BQxWIEVq.js",
     "name": "ProductNavigationSwiper",
     "src": "resources/js/Components/Tailwind/Products/ProductNavigationSwiper.jsx",
     "isDynamicEntry": true,
@@ -10297,7 +10262,7 @@
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Products/ProductNavigation.jsx",
       "_adjustTextColor-DJKJvkxA.js",
-      "_ProductCardColors-EcSomiIU.js",
+      "resources/js/Components/Tailwind/Products/Components/ProductCardColors.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "_navigation-BIDIUzpb.js",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
@@ -11824,7 +11789,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-vi5U5_NL.js",
+    "file": "assets/System-CQ9iVLuF.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
