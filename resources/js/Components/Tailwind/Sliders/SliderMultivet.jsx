@@ -222,8 +222,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
             key={slide?.id || index}
             className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
               index === currentSlide
-                ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-105'
+                ? 'opacity-100 scale-100 pointer-events-auto'
+                : 'opacity-0 scale-105 pointer-events-none'
             }`}
           >
             {/* Background Images */}
@@ -265,20 +265,19 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
           
 
             {/* Content */}
-            <div className={`relative z-10 h-full flex items-center`}>
-              <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
-                <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
-                  {/* Text Content */}
-                  <AnimatePresence mode="wait">
-                    <motion.div 
-                      key={`content-${currentSlide}-${slide?.name}`}
-                      className={`space-y-6 ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${
-                        index === currentSlide ? 'opacity-100' : 'opacity-0'
-                      }`}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
+            {index === currentSlide && (
+              <div className={`relative z-10 h-full flex items-center`}>
+                <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
+                  <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
+                    {/* Text Content */}
+                    <AnimatePresence mode="wait">
+                      <motion.div 
+                        key={`content-${currentSlide}-${slide?.name}`}
+                        className={`space-y-6 ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                      >
                       {/* Title */}
                       <motion.h1 
                         variants={titleVariants}
@@ -318,7 +317,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                           </a>
 
                           {/* WhatsApp Button */}
-                          {data?.whatsapp_info && phoneWhatsapp && (
+                          {/*data?.whatsapp_info && phoneWhatsapp && (
                             <a
                               href={`https://wa.me/${phoneWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(messageWhatsapp || '¡Hola! Me interesa obtener más información sobre sus productos.')}`}
                               target="_blank"
@@ -328,14 +327,15 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                               <MessageCircle className="w-5 h-5" />
                               <span>Contactar ahora</span>
                             </a>
-                          )}
+                          )*/}
                         </motion.div>
                       )}
-                    </motion.div>
-                  </AnimatePresence>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>
