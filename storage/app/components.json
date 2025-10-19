@@ -2994,6 +2994,32 @@
                     "title",
                     "description"
                 ]
+            },
+            {
+                "id": "FaqModern",
+                "name": "FAQ Modern - Accordion Moderno",
+                "image": "faq-modern.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_faq_answer",
+                    "show_contact_cta"
+                ]
+            },
+            {
+                "id": "FaqChat",
+                "name": "FAQ Chat - Estilo Conversacional",
+                "image": "faq-chat.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_faq_answer",
+                    "show_contact_cta"
+                ]
             }
         ]
     },

@@ -6993,7 +6993,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Faq.jsx": {
-    "file": "assets/Faq-BVeih2EP.js",
+    "file": "assets/Faq-sMoejquA.js",
     "name": "Faq",
     "src": "resources/js/Components/Tailwind/Faq.jsx",
     "isDynamicEntry": true,
@@ -7006,13 +7006,39 @@
     ],
     "dynamicImports": [
       "resources/js/Components/Tailwind/Faqs/FaqSimple.jsx",
-      "resources/js/Components/Tailwind/Faqs/FaqAko.jsx"
+      "resources/js/Components/Tailwind/Faqs/FaqAko.jsx",
+      "resources/js/Components/Tailwind/Faqs/FaqModern.jsx",
+      "resources/js/Components/Tailwind/Faqs/FaqChat.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Faqs/FaqAko.jsx": {
     "file": "assets/FaqAko--pJTheE3.js",
     "name": "FaqAko",
     "src": "resources/js/Components/Tailwind/Faqs/FaqAko.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Faqs/FaqChat.jsx": {
+    "file": "assets/FaqChat--pJTheE3.js",
+    "name": "FaqChat",
+    "src": "resources/js/Components/Tailwind/Faqs/FaqChat.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Faqs/FaqModern.jsx": {
+    "file": "assets/FaqModern--pJTheE3.js",
+    "name": "FaqModern",
+    "src": "resources/js/Components/Tailwind/Faqs/FaqModern.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -11789,7 +11815,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CQ9iVLuF.js",
+    "file": "assets/System-D5Y9hniF.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
