@@ -39,7 +39,7 @@ const SliderImagen = ({ items, data }) => {
 
     return (
         <div className={`${data?.class_section || "bg-[#F7F9FB]"}`}>
-            <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-font-primary py-4 md:py-8 ">
+            <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-title py-4 md:py-8 ">
                 {data?.title}
             </h2>
             <div className={`py-6 md:py-8 ${data?.class_content || "bg-primary "}`}>
@@ -101,7 +101,7 @@ const SliderImagen = ({ items, data }) => {
                                             <img
                                                 src={`/storage/images/brand/${brand.image}`}
                                                 alt={brand.name}
-                                                className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image || "grayscale brightness-0 invert"}`}
+                                                className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image }`} //"grayscale brightness-0 invert"
                                                 onLoad={handleImagesLoad}
                                                 style={{
                                                     objectFit: 'contain',
