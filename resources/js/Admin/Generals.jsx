@@ -2301,7 +2301,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                   e.target.value = null;
 
                                   const ext = file.name.split('.').pop();
-                                  const imageName = `transfer-account-${Date.now()}.${ext}`;
+                                  const imageName = `transfer-account-${index + 1}.${ext}`;
 
                                   const request = new FormData();
                                   request.append('image', file);
