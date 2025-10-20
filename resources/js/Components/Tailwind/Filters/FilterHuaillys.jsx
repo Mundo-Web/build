@@ -28,7 +28,6 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
     // Cargar categorías desde filteredData
     useEffect(() => {
         if (filteredData?.categories) {
-            console.log('Categories loaded:', filteredData.categories);
             setCategories(filteredData.categories);
 
             
@@ -38,7 +37,6 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                     cat => cat.slug === GET.category || cat.id === parseInt(GET.category)
                 );
                 if (categoryFromUrl) {
-                    console.log('Category from URL:', categoryFromUrl);
                     setSelectedCategory(categoryFromUrl);
                     // Actualizar filtros con el ID de la categoría
                     setSelectedFilters(prev => ({
@@ -92,8 +90,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             const filters = transformFilters(selectedFilters);
             const itemsPerPage = 24;
             
-            console.log('Selected filters:', selectedFilters);
-            console.log('Transformed filters:', filters);
+           
 
             const params = {
                 filter: filters,
@@ -103,11 +100,9 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                 requireTotalCount: true,
             };
 
-            console.log('API params:', params);
 
             const response = await itemsRest.paginate(params);
 
-            console.log('API response:', response);
 
             if (response.status !== 200) {
                 throw new Error(`API returned status ${response.status}`);
@@ -130,7 +125,6 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
     // Cargar productos iniciales si vienen en items
     useEffect(() => {
         if (items && items.length > 0 && products.length === 0) {
-            console.log('Setting initial products from items:', items.length);
             setProducts(items);
             setLoading(false);
         }
@@ -157,7 +151,6 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
 
     // Manejar click en categoría
     const handleCategoryClick = (category) => {
-        console.log('Category clicked:', category);
         setSelectedCategory(category);
 
         // Actualizar filtros
@@ -277,7 +270,6 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                                     alt={category.name || category.nombre}
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                     onError={(e) => {
-                                                        console.log('Error loading category image:', category);
                                                         e.target.src = '/assets/img/noimage/no_img.jpg';
                                                     }}
                                                 />

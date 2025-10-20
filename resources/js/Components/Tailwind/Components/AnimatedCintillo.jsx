@@ -12,7 +12,6 @@ const AnimatedCintillo = ({ className = "" }) => {
         try {
             // Obtener los cintillos de la configuración general
             const cintilloData = General.get("cintillo");
-            console.log(cintilloData, 'cintilloData');
             let allCintillos = [];
             
             if (cintilloData) {

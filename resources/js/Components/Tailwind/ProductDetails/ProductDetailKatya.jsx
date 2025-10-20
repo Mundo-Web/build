@@ -282,7 +282,6 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
     const productosRelacionados = async (item) => {
         try {
-            console.log('Buscando productos relacionados para item:', item.id);
 
             // Preparar la solicitud como en ProductDetailB.jsx
             const request = {
@@ -291,11 +290,9 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
             // Llamar al backend para verificar el combo (usando el mismo método que ProductDetailB)
             const response = await itemsRest.productsRelations(request);
-            console.log('Respuesta de productos relacionados:', response);
 
             // Verificar si la respuesta es válida
             if (!response) {
-                console.log('No se encontró respuesta de productos relacionados');
                 setRelationsItems([]);
                 return;
             }
@@ -304,7 +301,6 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
             const relations = response;
             const relationsArray = Object.values(relations);
 
-            console.log('Productos relacionados encontrados:', relationsArray);
             setRelationsItems(relationsArray);
 
         } catch (error) {
@@ -404,7 +400,6 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
         });
         */
 
-        console.log(`Producto ${product?.name} agregado al carrito con cantidad: ${quantity}`);
     };
 
     // Manejar favoritos
@@ -773,7 +768,6 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
 
                 {/* Productos relacionados */}
-                {console.log('RelationsItems en render:', relationsItems)}
                 {relationsItems && relationsItems.length > 0 && (
                     <ProductInfinite
                         items={relationsItems}

@@ -93,7 +93,7 @@ const CreateReactScript = (render) => {
       if (Global.APP_ENV === 'local') {
         const modalBackdrops = document.querySelectorAll('.modal-backdrop');
         modalBackdrops.forEach(backdrop => {
-          console.log(backdrop);
+       
           if (!backdrop.textContent) {
             backdrop.remove();
           }

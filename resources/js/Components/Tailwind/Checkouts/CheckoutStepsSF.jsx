@@ -58,34 +58,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
     const [code, setCode] = useState([]);
     const [delivery, setDelivery] = useState([]);
 
-    // useEffect(() => {
-    //     const script = document.createElement("script");
-    //     script.src = "https://checkout.culqi.com/js/v4";
-    //     script.async = true;
-    //     script.onload = () => {
-    //         console.log("✅ Culqi cargado correctamente.");
-
-    //         // 🔹 Definir culqi() en window para capturar el token
-    //         window.culqi = function () {
-    //             if (window.Culqi.token) {
-    //                 console.log("✅ Token recibido:", window.Culqi.token.id);
-    //                 // Aquí puedes enviar el token a tu backend
-    //             } else if (window.Culqi.order) {
-    //                 console.log("✅ Orden recibida:", window.Culqi.order);
-    //             } else {
-    //                 console.error("❌ Error en Culqi:", window.Culqi.error);
-    //             }
-    //         };
-    //     };
-
-    //     document.body.appendChild(script);
-
-    //     return () => {
-    //         document.body.removeChild(script);
-    //     };
-
-    //     return null;
-    // }, []);
+ 
 
     // Efecto para detectar el código en la URL
     

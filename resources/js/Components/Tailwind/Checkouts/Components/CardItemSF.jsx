@@ -30,7 +30,7 @@ const CardItemSF = ({ setCart, ...item }) => {
             }).filter(Boolean)
         );
     }
-    console.log(item);
+
     return (
         <>  
             {/* Versión para desktop (tabla) */}

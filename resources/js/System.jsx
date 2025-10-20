@@ -249,19 +249,14 @@ const System = ({
                 // Combinar productos verificados con combos sin modificar
                 const newCart = [...verifiedRegularItems, ...combos];
                 
-                console.log('✅ System.jsx cart updated:', {
-                    verifiedItems: verifiedRegularItems.length,
-                    preservedCombos: combos.length,
-                    totalInNewCart: newCart.length
-                });
+              
                 
                 setCart(newCart);
             });
         } else if (combos.length > 0) {
             // Si solo hay combos, mantenerlos sin verificación
-            console.log('🔒 System.jsx: Only combos in cart, preserving as-is');
         }
-    }, [null]);
+    }, []);
 
     // Preload crítico para mobile
     useEffect(() => {

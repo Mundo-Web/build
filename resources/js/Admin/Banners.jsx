@@ -565,16 +565,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         // ORDENAR igual que System.jsx para que el select muestre en orden correcto
         const orderedComponents = SortByAfterField(filteredSystems);
         
-      /*  console.log('📋 Loading page components (como System.jsx):', {
-            pageId: pageId || 'Base Template',
-            totalComponents: filteredSystems.length,
-            orderedComponents: orderedComponents.map(c => ({ 
-                id: c.id, 
-                name: c.name, 
-                component: c.component,
-                after_component: c.after_component 
-            }))
-        });*/
+    
         
         setAvailableComponents(orderedComponents);
     };

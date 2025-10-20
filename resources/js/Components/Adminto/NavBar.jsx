@@ -6,7 +6,7 @@ const NavBar = ({ session = {}, title = 'Pagina' }) => {
 
   useEffect(() => {
     document.title = `${title} | ${Global.APP_NAME}`
-  }, [null])
+  }, [])
 
   return (
     <div className="navbar-custom">

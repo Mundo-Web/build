@@ -34,9 +34,7 @@ const StorePickupSelector = ({
             
             let allStores = result?.data || [];
             
-            console.log('🏪 Tiendas recibidas del API:', allStores.length);
-            console.log('🏪 specificStores recibido:', specificStores);
-            
+    
             // Filtrar por tipo de tienda (solo tienda y tienda_principal) y que sean visibles
             allStores = allStores.filter(store => {
                 const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
@@ -48,11 +46,7 @@ const StorePickupSelector = ({
             // Filtrar por tiendas específicas si se proporcionaron
             if (specificStores && Array.isArray(specificStores) && specificStores.length > 0) {
                 allStores = allStores.filter(store => specificStores.includes(store.id));
-                console.log('🏪 Filtrando tiendas específicas:', {
-                    specificStores,
-                    totalStores: result?.data?.length || 0,
-                    filteredStores: allStores.length
-                });
+               
             } else {
                 console.log('🏪 Mostrando TODAS las tiendas disponibles:', allStores.length);
             }

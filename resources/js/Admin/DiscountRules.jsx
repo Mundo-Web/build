@@ -189,12 +189,7 @@ const DiscountRules = ({ }) => {
     
     $(combinableRef.current).prop('checked', data?.combinable ?? false).trigger('change')
     $(stopFurtherRulesRef.current).prop('checked', data?.stop_further_rules ?? false).trigger('change')    // Configurar conditions y actions
-    console.log('Datos recibidos en onModalOpen:', { 
-      dataConditions: data?.conditions, 
-      dataActions: data?.actions,
-      ruleType 
-    });
-    
+ 
     if (data?.conditions || data?.actions) {
       const parsedConditions = typeof data.conditions === 'string' 
         ? JSON.parse(data.conditions) 
@@ -203,7 +198,6 @@ const DiscountRules = ({ }) => {
         ? JSON.parse(data.actions) 
         : data.actions || {};
         
-      console.log('Conditions y actions parseados:', { parsedConditions, parsedActions });
       
       setConditions(parsedConditions);
       setActions(parsedActions);
@@ -285,18 +279,15 @@ const DiscountRules = ({ }) => {
     if (!result) return
     $(gridRef.current).dxDataGrid('instance').refresh()  }
   const openConditionsModal = () => {
-    console.log('Abriendo modal de condiciones...', { isEditing, conditions, actions });
     
     // Mostrar el modal primero
     $(conditionsModalRef.current).modal('show');
     
     // Si hay condiciones o acciones guardadas (indicando que es una regla existente), cargarlas
     if (Object.keys(conditions).length > 0 || Object.keys(actions).length > 0) {
-      console.log('Regla con datos existentes detectada, cargando valores...');
       
       // Esperar a que el modal esté completamente visible
       $(conditionsModalRef.current).one('shown.bs.modal', () => {
-        console.log('Modal completamente visible, cargando valores...');
         setTimeout(() => {
           setFieldValues({ conditions, actions });
         }, 500);
@@ -388,30 +379,17 @@ const DiscountRules = ({ }) => {
     const conditionsData = ruleData.conditions || {};
     const actionsData = ruleData.actions || {};
 
-    console.log('setFieldValues ejecutándose con:', { 
-      conditionsData, 
-      actionsData,
-      selectedRuleType,
-      refs: {
-        buyQuantityRef: buyQuantityRef.current,
-        productIdsRef: productIdsRef.current,
-        getQuantityRef: getQuantityRef.current,
-        freeProductIdsRef: freeProductIdsRef.current
-      }
-    });
+ 
 
     // Establecer valores de condiciones
     if (minQuantityRef.current) {
       minQuantityRef.current.value = conditionsData.min_quantity || '';
-      console.log('Cantidad mínima establecida:', conditionsData.min_quantity);
     }
     if (minAmountRef.current) {
       minAmountRef.current.value = conditionsData.min_amount || '';
-      console.log('Monto mínimo establecido:', conditionsData.min_amount);
     }
     if (buyQuantityRef.current) {
       buyQuantityRef.current.value = conditionsData.buy_quantity || '';
-      console.log('Cantidad compra establecida:', conditionsData.buy_quantity);
     }
     if (minQuantityEachRef.current) {
       minQuantityEachRef.current.value = conditionsData.min_quantity_each || '';
@@ -420,51 +398,39 @@ const DiscountRules = ({ }) => {
     // Establecer valores de acciones
     if (discountTypeRef.current) {
       discountTypeRef.current.value = actionsData.discount_type || 'percentage';
-      console.log('Tipo descuento establecido:', actionsData.discount_type);
     }
     if (discountValueRef.current) {
       discountValueRef.current.value = actionsData.discount_value || '';
-      console.log('Valor descuento establecido:', actionsData.discount_value);
     }
     if (maxDiscountRef.current) {
       maxDiscountRef.current.value = actionsData.max_discount || '';
     }
     if (getQuantityRef.current) {
       getQuantityRef.current.value = actionsData.get_quantity || '';
-      console.log('Cantidad gratis establecida:', actionsData.get_quantity);
     }    // Para los selects API, necesitamos cargar los datos desde la API y usar SetSelectValue
     const setSelectValues = async () => {
-      console.log('Estableciendo valores de selects con SetSelectValue...');
       
       try {
         // Cargar productos si se necesitan
         if (productIdsRef.current && conditionsData.product_ids && Array.isArray(conditionsData.product_ids) && conditionsData.product_ids.length > 0) {
-          console.log('Cargando productos para establecer:', conditionsData.product_ids);
           const productsToSet = await discountRulesRest.getProductsByIds(conditionsData.product_ids);
-          console.log('Productos cargados:', productsToSet);
           SetSelectValue(productIdsRef.current, productsToSet, "id", "name");
         }
         
         // Cargar categorías si se necesitan
         if (categoryIdsRef.current && conditionsData.category_ids && Array.isArray(conditionsData.category_ids) && conditionsData.category_ids.length > 0) {
-          console.log('Cargando categorías para establecer:', conditionsData.category_ids);
           const categoriesToSet = await discountRulesRest.getCategoriesByIds(conditionsData.category_ids);
-          console.log('Categorías cargadas:', categoriesToSet);
           SetSelectValue(categoryIdsRef.current, categoriesToSet, "id", "name");
         }
         
         // Cargar productos requeridos si se necesitan
         if (requiredProductsRef.current && conditionsData.required_products && Array.isArray(conditionsData.required_products) && conditionsData.required_products.length > 0) {
-          console.log('Cargando productos requeridos para establecer:', conditionsData.required_products);
           const requiredToSet = await discountRulesRest.getProductsByIds(conditionsData.required_products);
-          console.log('Productos requeridos cargados:', requiredToSet);
           SetSelectValue(requiredProductsRef.current, requiredToSet, "id", "name");
         }
           // Cargar productos gratis si se necesitan
         if (freeProductIdsRef.current && actionsData.free_product_ids && Array.isArray(actionsData.free_product_ids) && actionsData.free_product_ids.length > 0) {
-          console.log('Cargando productos gratis para establecer:', actionsData.free_product_ids);
           const freeToSet = await discountRulesRest.getProductsByIds(actionsData.free_product_ids);
-          console.log('Productos gratis cargados:', freeToSet);
           SetSelectValue(freeProductIdsRef.current, freeToSet, "id", "name");
         }
         

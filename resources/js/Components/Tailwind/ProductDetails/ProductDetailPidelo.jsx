@@ -175,7 +175,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
             const request = {
                 id: item?.id,
             };
-            console.log(request);
+     
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida

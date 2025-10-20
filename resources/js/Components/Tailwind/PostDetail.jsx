@@ -6,7 +6,7 @@ import React from "react"
 const PostDetailSimple = React.lazy(() => import('./PostDetails/PostDetailSimple'))
 
 const PostDetail = ({ data, which, item, generals = [], cart, setCart, pages }) => {
-  console.log("PostDetail",item)
+ 
   const getPostDetail = () => {
     switch (which) {
 

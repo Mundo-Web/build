@@ -129,8 +129,7 @@ const Combos = ({ items }) => {
 
       // Cargar los productos asociados
       const products = comboData.items || [];
-      console.log('Combo data items:', comboData.items);
-      console.log('Products loaded:', products);
+    
 
       // Detectar el producto principal desde el pivot
       const mainProductFromPivot = products.find(product => {

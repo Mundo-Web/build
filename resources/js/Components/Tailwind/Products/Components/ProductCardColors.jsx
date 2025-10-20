@@ -11,8 +11,7 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
 
     const itemsRest = new ItemsRest();
     const [variationsItems, setVariationsItems] = useState(product.variants);
-    console.log(product , 'productos variaciones');
-
+  
     const onAddClicked = (product) => {
         const newCart = structuredClone(cart)
         const index = newCart.findIndex(x => x.id == product.id)

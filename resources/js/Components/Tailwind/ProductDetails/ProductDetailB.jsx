@@ -41,7 +41,6 @@ import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 
 const ProductDetail = ({ item, data, setCart, cart, generals }) => {
-    console.log(item);
     const itemsRest = new ItemsRest();
     const combosRest = new CombosCartRest();
     const [modalOpen, setModalOpen] = useState(false);
@@ -86,7 +85,6 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
     // Funciones para manejar el zoom de la imagen
     const handleZoomClick = () => {
-        console.log('Zoom clicked, current state:', isZoomEnabled);
         setIsZoomEnabled(!isZoomEnabled);
         if (!isZoomEnabled) {
             // Centrar la imagen cuando se activa el zoom
@@ -252,7 +250,6 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             const request = {
                 id: item?.id,
             };
-            console.log(request);
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida
@@ -324,7 +321,6 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             const relations = response;
 
             setRelationsItems(Object.values(relations));
-            console.log(relations);
         } catch (error) {
             return;
             // Mostrar un mensaje de error al usuario si es necesario

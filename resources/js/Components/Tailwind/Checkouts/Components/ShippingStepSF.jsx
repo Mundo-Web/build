@@ -112,7 +112,6 @@ export default function ShippingStepSF({
         }
 
         try {
-            console.log('🔄 ShippingStepSF: Calculating automatic discounts...', { cart, totalWithoutDiscounts });
             
             const result = await DiscountRulesRest.applyToCart(cart, totalWithoutDiscounts);
             
@@ -120,11 +119,7 @@ export default function ShippingStepSF({
                 const discounts = DiscountRulesRest.formatDiscounts(result.data.applied_discounts);
                 const discountAmount = result.data.total_discount || 0;
                 
-                console.log('✅ ShippingStepSF: Automatic discounts calculated', {
-                    discounts,
-                    discountAmount,
-                    freeItems: result.data.free_items
-                });
+              
                 
                 return {
                     discounts: result.data.applied_discounts,
@@ -215,18 +210,11 @@ export default function ShippingStepSF({
     }, [user]);
     
     useEffect(() => {
-        console.log('🔍 ShippingStepSF - Verificando usuario:', {
-            user: user,
-            ubigeo: user?.ubigeo,
-            district: user?.district,
-            province: user?.province,
-            department: user?.department
-        });
+      
         
         if (user?.ubigeo) {
             // Si tiene ubigeo pero no tiene los campos de texto, buscarlos
             if (!user?.district || !user?.province || !user?.department) {
-                console.log('🔍 ShippingStepSF - Buscando ubicación por ubigeo:', user.ubigeo);
                 
                 // Buscar la ubicación usando el ubigeo
                 fetch(`/api/ubigeo/find/${user.ubigeo}`)
@@ -244,7 +232,6 @@ export default function ShippingStepSF({
                                 }
                             };
                             
-                            console.log('✅ ShippingStepSF - Ubicación encontrada y cargada:', defaultOption);
                             
                             setDefaultUbigeoOption(defaultOption);
                             setSelectedUbigeo(defaultOption);
@@ -269,7 +256,6 @@ export default function ShippingStepSF({
                     }
                 };
                 
-                console.log('✅ ShippingStepSF - Cargando ubicación por defecto:', defaultOption);
                 
                 setDefaultUbigeoOption(defaultOption);
                 setSelectedUbigeo(defaultOption);
@@ -442,37 +428,18 @@ export default function ShippingStepSF({
             // Calcular el total del carrito para la lógica condicional
             const cartTotal = cart.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
             
-            console.log('🛒 ShippingStepSF - Cart total calculado:', cartTotal);
-            console.log('🛒 ShippingStepSF - Cart items:', cart.map(item => ({
-                name: item.name,
-                price: item.final_price,
-                quantity: item.quantity,
-                total: item.final_price * item.quantity
-            })));
-            console.log('💰 ShippingStepSF - Comparación de totales:');
-            console.log('   - Cart total (solo productos):', cartTotal);
-            console.log('   - SubTotal prop:', subTotal);
-            console.log('   - IGV prop:', igv);
-            console.log('   - Total con IGV:', subTotal + igv);
-            console.log('   - Total final prop:', totalFinal);
+        
             
             const response = await DeliveryPricesRest.getShippingCost({
                 ubigeo: data.reniec || data.inei,
                 cart_total: cartTotal, // Enviar el total del carrito
             });
 
-            console.log('📦 ShippingStepSF - Respuesta del backend:', response.data);
-            console.log('✅ ShippingStepSF - Califica para envío gratis?', response.data.qualifies_free_shipping);
-            console.log('💰 ShippingStepSF - Umbral requerido:', response.data.free_shipping_threshold);
-            console.log('🔍 ShippingStepSF - is_free:', response.data.is_free);
-            console.log('🔍 ShippingStepSF - Descripción standard:', response.data.standard?.description);
-            console.log('🔍 ShippingStepSF - Tipo standard:', response.data.standard?.type);
-
+  
             const options = [];
 
             // 1. ENVÍO GRATIS: SOLO para zonas con is_free=true Y que califiquen por monto
             if (response.data.is_free && response.data.qualifies_free_shipping) {
-                console.log('✅ ShippingStepSF - Es zona is_free=true Y califica por monto - Agregando envío GRATIS');
                 options.push({
                     type: "free",
                     price: 0,
@@ -486,7 +453,6 @@ export default function ShippingStepSF({
             if (response.data.standard) {
                 // Solo agregar envío normal si NO es zona gratis que califica, o si es zona gratis que NO califica
                 if (!response.data.is_free || (response.data.is_free && !response.data.qualifies_free_shipping)) {
-                    console.log('📦 ShippingStepSF - Agregando envío NORMAL');
                     
                     // Limpiar cualquier mención de "envío gratis" en la descripción si NO es zona is_free
                     let cleanDescription = response.data.standard.description;
@@ -519,7 +485,6 @@ export default function ShippingStepSF({
 
             // 3. ENVÍO EXPRESS: Si existe express, siempre agregarlo
             if (response.data.express && response.data.express.price > 0) {
-                console.log('⚡ ShippingStepSF - Agregando envío EXPRESS');
                 options.push({
                     type: "express",
                     price: response.data.express.price,
@@ -531,7 +496,6 @@ export default function ShippingStepSF({
 
             // 4. ENVÍO AGENCIA: Si existe agency, agregarlo
             if (response.data.is_agency && response.data.agency) {
-                console.log('🏢 ShippingStepSF - Agregando envío por AGENCIA');
                 const agencyPrice = response.data.agency.price || 0;
                 const isPaymentOnDelivery = response.data.agency.payment_on_delivery || false;
                 
@@ -547,7 +511,6 @@ export default function ShippingStepSF({
 
             // 5. RETIRO EN TIENDA: Si está disponible, agregarlo
             if (response.data.is_store_pickup && response.data.store_pickup) {
-                console.log('🏪 ShippingStepSF - Agregando RETIRO EN TIENDA');
                 options.push({
                     type: "store_pickup",
                     price: 0,
@@ -566,9 +529,7 @@ export default function ShippingStepSF({
             setSelectedOption(options[0]?.type || null);
             setEnvio(options[0]?.price || 0);
             
-            console.log('📋 ShippingStepSF - Opciones finales de envío:', options);
-            console.log('🚚 ShippingStepSF - Precio de envío seleccionado:', options[0]?.price || 0);
-           
+         
         } catch (error) {
             console.error("Error al obtener precios de envío:", error);
             toast.error('Sin cobertura', {
@@ -800,7 +761,6 @@ export default function ShippingStepSF({
                 });
             }
         } catch (error) {
-            console.log(error);
             toast.error("Error en el Pago", {
                 description: "No se llegó a procesar el pago",
                 icon: <CircleX className="h-5 w-5 text-red-500" />,
@@ -1070,7 +1030,6 @@ export default function ShippingStepSF({
                         });
                     }
                 } catch (error) {
-                    console.log(error);
                     toast.error('Error en el Pago', {
                         description: `No se llegó a procesar el pago`,
                         icon: <CircleX className="h-5 w-5 text-red-500" />,
@@ -1154,7 +1113,6 @@ export default function ShippingStepSF({
                         });
                     }
                 } catch (error) {
-                    console.log(error);
                     toast.error('Error en el Pago', {
                         description: `No se llegó a procesar el pago`,
                         icon: <CircleX className="h-5 w-5 text-red-500" />,
@@ -1308,13 +1266,7 @@ export default function ShippingStepSF({
             const categoryIds = [...new Set(cart.map(item => item.category_id).filter(Boolean))];
             const productIds = [...new Set(cart.map(item => item.id || item.item_id).filter(Boolean))];
 
-            console.log("Validando cupón:", {
-                code: couponCode.trim(),
-                cart_total: subTotal,
-                category_ids: categoryIds,
-                product_ids: productIds
-            });
-
+           
             const response = await CouponsRest.validateCoupon({
                 code: couponCode.trim(),
                 cart_total: subTotal,
@@ -1322,7 +1274,6 @@ export default function ShippingStepSF({
                 product_ids: productIds
             });
 
-            console.log("Respuesta del cupón:", response);
 
             // Manejar diferentes estructuras de respuesta
             const data = response.data || response; // response.data para nueva estructura, response para estructura anterior
@@ -1946,11 +1897,7 @@ export default function ShippingStepSF({
                                             />
                                         ))}
                                     </div>
-                                    {console.log(
-                                        shippingOptions.find(
-                                            (o) => o.type === selectedOption
-                                        )
-                                    )}
+                               
 
                                     {selectedOption && shippingOptions.length > 0 && (
                                         <div className="space-y-4 mt-4">

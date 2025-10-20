@@ -26,7 +26,7 @@ const ImageFormGroup = ({ id, col, label, eRef, required = false, onChange = () 
     eRef.current.value = ''
     setHasImage(false)
     setDeleteFlag(true)
-    console.log(`Setting delete flag for ${name}: DELETE`)
+  
     // Trigger onChange to notify parent component
     onChange({ target: { files: [] } })
   }
@@ -39,7 +39,7 @@ const ImageFormGroup = ({ id, col, label, eRef, required = false, onChange = () 
     eRef.image = imageRef.current
     eRef.getDeleteFlag = getDeleteFlag
     eRef.resetDeleteFlag = resetDeleteFlag
-    console.log(`ImageFormGroup ${name} - Setting up refs`)
+  
     // Check if image has a valid source on mount
     const checkImageSrc = () => {
       const src = imageRef.current?.src

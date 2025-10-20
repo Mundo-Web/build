@@ -26,8 +26,6 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
   // Ordenar items por order_index
   const sortedItems = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
 
-  console.log("SliderMultivet items:", sortedItems);
-  console.log("SliderMultivet data:", data);
 
   // Validaciones para mostrar controles
   const validAlignments = ["center", "left", "right"];

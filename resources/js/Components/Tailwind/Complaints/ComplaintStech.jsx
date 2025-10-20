@@ -123,7 +123,7 @@ export default function ComplaintSimple({ generals = [],data }) {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+            
                 if (data.type === "success") {
                     // Guardar los datos enviados para mostrar en la página de agradecimiento
                     setSubmittedData(formData);

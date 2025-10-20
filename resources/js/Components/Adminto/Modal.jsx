@@ -19,7 +19,7 @@ const Modal = ({ modalRef, title = 'Modal', isStatic = false, size = 'md', child
 
   useEffect(() => {
     $(modalRef.current).modal('hide')
-  }, [null])
+  }, [])
 
   return (<form className='modal fade' ref={modalRef} tabIndex='-1' aria-hidden='true' {...staticProp} onSubmit={onSubmit} autoComplete='off'>
     <div className={`modal-dialog modal-dialog-centered modal-${size ?? 'md'}`}>

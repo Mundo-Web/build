@@ -161,7 +161,6 @@ const ComboCartTest = () => {
                                     <button
                                         className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                                         onClick={() => {
-                                            console.log('Procesando compra:', cart);
                                             alert('Datos del carrito en consola');
                                         }}
                                     >

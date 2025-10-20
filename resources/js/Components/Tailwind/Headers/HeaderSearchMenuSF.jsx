@@ -50,10 +50,6 @@ const HeaderSearchMenuSF = ({
     return Number(acc) + Number(item.quantity);
   }, 0);
 
-  // Debug para verificar las categorías
-  console.log('HeaderSearchMenuSF - Items (categorías):', items);
-  console.log('HeaderSearchMenuSF - Items length:', items?.length || 0);
-
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {

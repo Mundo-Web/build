@@ -20,19 +20,7 @@ export default function ConfirmationStep({
     automaticDiscountTotal = 0,
     generals
 }) {
-    console.log('ConfirmationStep - Props received:', {
-        cart,
-        cartLength: cart?.length,
-        subTotal,
-        igv,
-        totalFinal,
-        delivery,
-        couponDiscount,
-        automaticDiscountTotal,
-        seguroImportacionTotal,
-        derechoArancelarioTotal,
-        fleteTotal
-    });
+   
 
     // Recalculate subtotal if it's 0 or incorrect
     const recalculatedTotal = cart.reduce((acc, item) => {
@@ -69,32 +57,12 @@ export default function ConfirmationStep({
     // Always recalculate totalFinal to ensure it's correct
     const actualTotalFinal = actualSubTotal + actualIgv + (delivery || 0) + actualSeguroImportacionTotal + actualDerechoArancelarioTotal - (couponDiscount || 0) - (automaticDiscountTotal || 0);
     
-    console.log('ConfirmationStep - Debug totals:', {
-        recalculatedTotal,
-        passedSubTotal: subTotal,
-        passedIgv: igv,
-        actualSubTotal,
-        actualIgv,
-        passedSeguro: seguroImportacionTotal,
-        actualSeguro: actualSeguroImportacionTotal,
-        passedDerecho: derechoArancelarioTotal,
-        actualDerecho: actualDerechoArancelarioTotal,
-        passedTotalFinal: totalFinal,
-        actualTotalFinal,
-        cart: cart.map(item => ({
-            name: item.name,
-            type: item.type,
-            price: item.price,
-            final_price: item.final_price,
-            quantity: item.quantity,
-            weight: item.weight
-        }))
-    });
+  
 
     // Execute conversion scripts when component mounts
     useEffect(() => {
         if (conversionScripts) {
-            console.log('Executing conversion scripts...');
+          
             try {
                 // Execute the scripts in the head
                 if (conversionScripts.head) {
@@ -110,7 +78,6 @@ export default function ConfirmationStep({
                     document.body.appendChild(bodyScript);
                 }
                 
-                console.log('Conversion scripts executed successfully');
             } catch (error) {
                 console.error('Error executing conversion scripts:', error);
             }

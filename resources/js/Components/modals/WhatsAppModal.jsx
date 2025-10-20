@@ -60,7 +60,7 @@ const WhatsAppModal = ({ status: whatsappStatus, setStatus, WA_URL, APP_URL }) =
         }
       }
       eventSource.onerror = event => {
-        console.log('Realtime closed')
+   
         setStatus('close')
         eventSource.close()
         setTimeout(() => {

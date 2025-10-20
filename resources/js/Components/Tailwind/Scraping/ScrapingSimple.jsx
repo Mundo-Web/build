@@ -19,7 +19,7 @@ const ScrapingSimple = ({ pages, filteredData, items, cart, setCart }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    console.log(products)
+
     return (
         <>
 

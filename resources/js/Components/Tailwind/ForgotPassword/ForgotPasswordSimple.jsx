@@ -24,7 +24,7 @@ export default function ForgotPasswordSimple() {
                 showConfirmButton: false,
                 timer: 3000,
             });
-    }, [null]);
+    }, []);
 
     const onForgotSubmit = async (e) => {
         e.preventDefault();

@@ -2,7 +2,7 @@ import React from "react"
 import em from "../../Utils/em"
 
 const AboutTrasciende = ({details}) => {
-  console.log(details)
+
   return <section className="flex overflow-hidden flex-col justify-center p-[5%] bg-slate-100">
     <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-center text-slate-700">
       {em(details['about.title'])}

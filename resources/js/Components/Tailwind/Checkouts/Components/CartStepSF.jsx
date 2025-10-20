@@ -53,40 +53,18 @@ export default function CartStepSF({
     }, [cart, subTotal]);
 
     const applyDiscountRules = async () => {
-        console.log('🔄 CartStepSF: Starting applyDiscountRules...');
         setIsLoadingDiscounts(true);
         try {
             // Debug: Log información detallada del carrito antes de enviar
             const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-            console.log('🛒 CartStepSF applying discounts:', {
-                cart,
-                subTotal,
-                totalWithoutDiscounts,
-                totalQuantity,
-                cartLength: cart.length,
-                cartItems: cart.map(item => ({
-                    id: item.id || item.item_id,
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price || item.final_price,
-                    category_id: item.category_id
-                }))
-            });
+        
 
-            console.log('📡 CartStepSF: About to call DiscountRulesRest.applyToCart...');
             const result = await DiscountRulesRest.applyToCart(cart, totalWithoutDiscounts);
-            console.log('📡 CartStepSF: DiscountRulesRest.applyToCart completed');
 
             // Debug: Log respuesta completa del servidor
-            console.log('📥 Server response:', {
-                success: result.success,
-                data: result.data,
-                error: result.error,
-                fullResult: result
-            });
+          
 
             if (result.success && result.data) {
-                console.log('✅ Discounts found:', result.data.applied_discounts);
                 const discounts = DiscountRulesRest.formatDiscounts(result.data.applied_discounts);
                 const discountAmount = result.data.total_discount || 0;
                 const freeItemsData = DiscountRulesRest.getFreeItems(result.data.applied_discounts);
@@ -169,28 +147,22 @@ export default function CartStepSF({
     // Handle adding promotional item from modal
     const handleAddPromotionalItem = async (suggestion) => {
         try {
-            console.log('CartStepSF - handleAddPromotionalItem received:', suggestion);
-            console.log('CartStepSF - current cart:', cart);
+          
 
             // Buscar el item existente en el carrito y agregar la cantidad sugerida
             setCart(old => {
-                console.log('CartStepSF - old cart before update:', old);
                 const existingItemIndex = old.findIndex(item =>
                     (item.item_id || item.id) === suggestion.item_id
                 );
 
-                console.log('CartStepSF - existingItemIndex:', existingItemIndex);
 
                 if (existingItemIndex !== -1) {
                     // Actualizar cantidad existente
                     const updatedCart = [...old];
                     const quantityToAdd = suggestion.quantity || suggestion.suggested_quantity || 1;
-                    console.log('CartStepSF - adding quantity:', quantityToAdd);
                     updatedCart[existingItemIndex].quantity += quantityToAdd;
-                    console.log('CartStepSF - updated cart:', updatedCart);
                     return updatedCart;
                 } else {
-                    console.log('CartStepSF - item not found, creating new product');
                     // Si no existe, crear un nuevo producto (caso menos común)
                     const newProduct = {
                         id: suggestion.item_id,

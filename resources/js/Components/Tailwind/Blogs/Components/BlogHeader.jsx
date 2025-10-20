@@ -39,13 +39,11 @@ export default function BlogHeader({
     }
     // Fecha
     if (filters.post_date) {
-      console.log("Fecha seleccionada:", filters.post_date);
       transformedFilters.push(["post_date", "=", filters.post_date]);
     }
 
     // Búsqueda (asumiendo que se filtra por título o contenido)
     if (filters.name) {
-      console.log("Nombre seleccionado:", filters.name);
       transformedFilters.push(["name", "contains", filters.name]);
     }
 
@@ -68,9 +66,7 @@ export default function BlogHeader({
         filter: filters,
       };
 
-      console.log(params);
       const response = await postsRest.paginate(params);
-      console.log(response);
 
       setPosts(response.data);
 
@@ -120,7 +116,6 @@ export default function BlogHeader({
     }));
   };
   useEffect(() => {
-    console.log("BlogHeader - posts actualizados:", posts);
   }, [posts]);
   return (
     <main className="bg-white font-title">

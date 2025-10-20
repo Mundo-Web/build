@@ -24,7 +24,7 @@ const galleryRest = new GalleryRest();
 const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole }) => {
   // Debug: Verificar si generals está cambiando constantemente
   useEffect(() => {
-    console.log('Generals component rendered, generals length:', generals?.length);
+    //use efect not validate
   });
 
   // Función para verificar si el usuario tiene rol Root
@@ -172,7 +172,6 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         }
       });
       
-      console.log('Initialized field visibility:', visibility);
       setFieldVisibility(visibility);
     }
   }, [allGenerals, hasRootRole]);
@@ -568,11 +567,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         status: isVisible ? 1 : 0
       }));
 
-      console.log('Sending visibility updates:', visibilityUpdates);
 
       const response = await generalsRest.updateVisibility(visibilityUpdates);
 
-      console.log('Response:', response);
 
       if (response.success) {
         //toast.success("Visibilidad de campos actualizada correctamente");
@@ -1242,7 +1239,6 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       const result = await generalsRest.save(dataToSend);
 
       if (result) {
-        console.log('Datos guardados exitosamente:', result);
         // Las notificaciones se manejan automáticamente en BasicRest
       }
     } catch (error) {

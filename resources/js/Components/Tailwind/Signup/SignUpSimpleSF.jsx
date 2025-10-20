@@ -28,7 +28,7 @@ export default function SignUpSimple() {
                 showConfirmButton: false,
                 timer: 3000,
             });
-    }, [null]);
+    }, []);
 
     const onSignUpSubmit = async (e) => {
         e.preventDefault();

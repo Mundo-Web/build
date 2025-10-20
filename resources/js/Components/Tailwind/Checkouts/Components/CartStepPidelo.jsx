@@ -50,12 +50,7 @@ export default function CartStepPidelo({
     useEffect(() => {
         const combosInCart = cart.filter(item => item.type === 'combo');
         
-        console.log('🔍 CartStep useEffect triggered:', {
-            cartLength: cart.length,
-            subTotal,
-            combosCount: combosInCart.length,
-            combos: combosInCart
-        });
+       
         
         if (cart.length > 0 && subTotal > 0) {
             applyDiscountRules();
@@ -79,36 +74,13 @@ export default function CartStepPidelo({
             const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
             const combosInCart = cart.filter(item => item.type === 'combo');
             
-            console.log('🛒 CartStep applying discounts:', {
-                cart,
-                subTotal,
-                totalWithoutDiscounts,
-                totalQuantity,
-                cartLength: cart.length,
-                combosInCart: combosInCart.length,
-                combos: combosInCart,
-                cartItems: cart.map(item => ({
-                    id: item.id || item.item_id,
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price || item.final_price,
-                    category_id: item.category_id,
-                    type: item.type
-                }))
-            });
+         
             
             const result = await DiscountRulesRest.applyToCart(cart, totalWithoutDiscounts);
             
-            // Debug: Log respuesta completa del servidor
-            console.log('📥 Server response:', {
-                success: result.success,
-                data: result.data,
-                error: result.error,
-                fullResult: result
-            });
+         
             
             if (result.success && result.data) {
-                console.log('✅ Discounts found:', result.data.applied_discounts);
                 const discounts = DiscountRulesRest.formatDiscounts(result.data.applied_discounts);
                 const discountAmount = result.data.total_discount || 0;
                 const freeItemsData = DiscountRulesRest.getFreeItems(result.data.applied_discounts);
@@ -133,7 +105,6 @@ export default function CartStepPidelo({
                 // IMPORTANTE: NO modificar el carrito aquí
                 // El servidor puede devolver cart_items modificados, pero no los usamos
                 // para actualizar el carrito del usuario
-                console.log('🔒 Preserving original cart, not updating from server response');
                 
             } else {
                 console.error('❌ Discount application failed:', {
@@ -197,28 +168,22 @@ export default function CartStepPidelo({
     // Handle adding promotional item from modal
     const handleAddPromotionalItem = async (suggestion) => {
         try {
-            console.log('CartStep - handleAddPromotionalItem received:', suggestion);
-            console.log('CartStep - current cart:', cart);
+            
             
             // Buscar el item existente en el carrito y agregar la cantidad sugerida
             setCart(old => {
-                console.log('CartStep - old cart before update:', old);
                 const existingItemIndex = old.findIndex(item => 
                     (item.item_id || item.id) === suggestion.item_id
                 );
                 
-                console.log('CartStep - existingItemIndex:', existingItemIndex);
                 
                 if (existingItemIndex !== -1) {
                     // Actualizar cantidad existente
                     const updatedCart = [...old];
                     const quantityToAdd = suggestion.quantity || suggestion.suggested_quantity || 1;
-                    console.log('CartStep - adding quantity:', quantityToAdd);
                     updatedCart[existingItemIndex].quantity += quantityToAdd;
-                    console.log('CartStep - updated cart:', updatedCart);
                     return updatedCart;
                 } else {
-                    console.log('CartStep - item not found, creating new product');
                     // Si no existe, crear un nuevo producto (caso menos común)
                     const newProduct = {
                         id: suggestion.item_id,

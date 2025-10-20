@@ -58,7 +58,6 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
     }, []);
 
     const onStatusChange = async (e, sale) => {
-        console.log({sale, saleLoaded})
         const status = statuses.find((s) => s.id == e.target.value)
         if (status.reversible == 0) {
             const { isConfirmed } = await Swal.fire({
@@ -864,7 +863,6 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
 
                 if (configToUse[configField] === true) {
                     enabledColumns.push(excelField);
-                    console.log(`Added ${excelField} to enabled columns`);
                 }
             });
             
@@ -879,7 +877,6 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                 return;
             }
             
-            console.log('Columnas habilitadas para exportar:', enabledColumns);
             
             // Crear datos filtrados solo con las columnas habilitadas
             const filteredExcelData = excelData.map(row => {
@@ -1415,7 +1412,6 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                         calculateCellValue: (data) => {
                             // Si no hay detalles cargados, usar el campo amount directamente
                             if (!data?.details || data.details.length === 0) {
-                                console.log('⚠️ No hay detalles cargados para sale ID:', data.id, '- Usando amount:', data.amount);
                                 return Number(data?.amount || 0);
                             }
                             
@@ -1434,7 +1430,6 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 Number(data?.bundle_discount || 0) - 
                                 Number(data?.renewal_discount || 0);
                             
-                            console.log('✅ Total calculado para sale ID:', data.id, '- Subtotal:', subtotalReal, '+ Delivery:', data.delivery, '= Total:', totalAmount);
                             return totalAmount;
                         },
                         cellTemplate: (container, { data }) => {

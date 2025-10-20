@@ -15,19 +15,7 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
     // Debug: Monitorear cambios en el carrito
     useEffect(() => {
         const combosInCart = cart.filter(item => item.type === 'combo');
-        console.log('🔍 CheckoutSteps cart changed:', {
-            totalItems: cart.length,
-            combos: combosInCart.length,
-            currentStep,
-            cart: cart.map(item => ({
-                id: item.id,
-                name: item.name,
-                type: item.type,
-                quantity: item.quantity,
-                final_price: item.final_price,
-                price: item.price
-            }))
-        });
+   
         
         // Si hay combos pero el carrito se vació repentinamente, alertar
         if (combosInCart.length === 0 && cart.length === 0) {
@@ -49,7 +37,7 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
         return acc + (itemPrice * item.quantity);
     }, 0);
     
-    console.log(categorias, 'eeeeeeeeeeee');
+  
     // Hook de tracking
     const { 
         trackCheckoutPageView, 
@@ -123,22 +111,6 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
         }
     }, [currentStep]);
 
-    // useEffect(() => {
-    //     const script = document.createElement("script");
-    //     script.src = Global.CULQI_API;
-    //     script.async = true;
-    //     script.onload = () => {
-    //         window.culqi = function () {
-    //             if (window.Culqi.token) {
-    //                 //  console.log("✅ Token recibido:", window.Culqi.token.id);
-    //             } else if (window.Culqi.order) {
-    //                 // console.log("✅ Orden recibida:", window.Culqi.order);
-    //             }
-    //         };
-    //     };
-    //     document.body.appendChild(script);
-    //     return () => document.body.removeChild(script);
-    // }, []);
 
     // Function to handle step changes and scroll to top
     const handleStepChange = (newStep) => {

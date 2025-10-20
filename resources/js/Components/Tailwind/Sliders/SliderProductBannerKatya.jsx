@@ -5,7 +5,6 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 
 const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
-    console.log("SliderProductBannerKatya items:", items);
 
     // Filtrar solo productos que tienen banner y están destacados (featured)
     const productsWithBanner = items?.filter(product =>
@@ -14,7 +13,6 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
         product.featured === true
     ) || [];
 
-    console.log("Productos filtrados con banner:", productsWithBanner);
 
     // Si no hay productos con banner, no renderizar nada
     if (productsWithBanner.length === 0) {

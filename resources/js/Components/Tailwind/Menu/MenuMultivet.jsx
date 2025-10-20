@@ -133,11 +133,9 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                     with: 'category,brand'
                 });
 
-                console.log('Featured products response:', response);
 
                 if (response?.status === 200 && Array.isArray(response.data)) {
                     setFeaturedProducts(response.data);
-                    console.log('Featured products set:', response.data);
                 } else {
                     console.log('No featured products found or invalid response:', response);
                 }

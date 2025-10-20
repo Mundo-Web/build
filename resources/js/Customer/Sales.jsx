@@ -103,7 +103,7 @@ const Sales = ({ statuses = [] }) => {
                         caption: "Orden",
                         width: "250px",
                         cellTemplate: (container, { data }) => {
-                            console.log(data);
+                       
                             container.css("cursor", "pointer");
                             container.on("click", () => {
                                 onModalOpen(data.id);

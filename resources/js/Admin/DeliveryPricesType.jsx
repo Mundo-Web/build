@@ -59,7 +59,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     // No necesitamos cargar cache de tiendas para la tabla
 
     const onModalOpen = (data) => {
-        console.log(data);
+     
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
@@ -126,8 +126,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                 ])
             });
 
-            console.log('Cargando todas las tiendas disponibles:', result);
-
+        
             if (result && result.data && Array.isArray(result.data)) {
                 setAvailableStores(result.data);
             } else {
@@ -162,7 +161,6 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                 null
         };
 
-        console.log('Datos a enviar:', request);
 
         const result = await deliverypricesRest.save(request);
         if (!result) return;

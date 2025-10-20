@@ -68,8 +68,7 @@ export default function FooterPaani({ data = footerData, generals, socials }) {
                 ?.description || ""
         );
     };
-    console.log("generals", generals);
-    console.log("method", data?.methodPayment);
+ 
     return (
         <footer className="w-full bg-primary text-white py-12 relative overflow-hidden">
             {/* Imagen overlay decorativa con blend mode */}

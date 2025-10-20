@@ -234,7 +234,7 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
     // if (dxSettings[location.pathname]) {
     //   $(dataGridRef.current).dxDataGrid('instance').state(dxSettings[location.pathname])
     // }
-  }, [null])
+  }, [])
 
   return (<>
     <Toaster />

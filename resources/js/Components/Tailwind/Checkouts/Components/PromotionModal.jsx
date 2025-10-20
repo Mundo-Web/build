@@ -16,7 +16,7 @@ export default function PromotionModal({
     const handleAddToCart = async () => {
         setIsAdding(true);
         try {
-            console.log('Modal - suggestion data:', suggestion);
+          
             await onAddToCart(suggestion);
             onClose();
         } catch (error) {

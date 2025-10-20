@@ -54,7 +54,7 @@ const ThankSimple = ({ data, item }) => {
       
       window.open(whatsappUrl, '_blank');
     }
-  }, [null])
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">

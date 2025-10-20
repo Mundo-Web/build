@@ -34,11 +34,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
         type: "main",
     });
 
-    // Debug: verificar que lleguen los datos
-    console.log("DEBUG - data:", data);
-    console.log("DEBUG - button_consultation:", data?.button_consultation);
-    console.log("DEBUG - button_buy:", data?.button_buy);
-
+    
   
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState(item?.slug);
@@ -152,7 +148,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             const request = {
                 id: item?.id,
             };
-            console.log(request);
+          
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida

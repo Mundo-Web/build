@@ -321,10 +321,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             // Solo hacer la petición si hay slugs que convertir
             if (Object.keys(params).length > 0) {
                 const response = await itemsRest.convertSlugs(params);
-                console.log("Estamos fuera de estatus 200")
                 if (response.status === 200) {
-                    console.log("Estamos dentro de estatus 200")
-                    console.log("Response data:", response.data);
                     setSelectedFilters(prev => ({
                         ...prev,
                         category_id: Array.isArray(response.data.category_ids) ? response.data.category_ids : (response.data.category_ids ? [response.data.category_ids] : []),
@@ -480,18 +477,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     // Función para detectar si el query coincide con marcas, categorías o subcategorías
     const detectIntelligentFilters = (query) => {
         if (!query || query.length < 2 || !intelligentSearchEnabled) {
-            console.log("🚫 Búsqueda inteligente deshabilitada o query muy corto:", { query, length: query?.length, enabled: intelligentSearchEnabled });
             return null;
         }
 
         const lowerQuery = query.toLowerCase().trim();
-        console.log("🔍 Buscando filtros inteligentes para:", lowerQuery);
-        console.log("📊 Datos disponibles:", {
-            categories: categories.length,
-            brands: brands.length,
-            subcategories: subcategories.length,
-            collections: collections.length
-        });
+       
 
         const detectedFilters = {
             categories: [],
@@ -504,7 +494,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         const matchedCategories = categories.filter(cat => {
             const match = cat.name.toLowerCase().includes(lowerQuery) ||
                 lowerQuery.includes(cat.name.toLowerCase());
-            if (match) console.log("✅ Categoría encontrada:", cat.name);
             return match;
         });
 
@@ -512,7 +501,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         const matchedBrands = brands.filter(brand => {
             const match = brand.name.toLowerCase().includes(lowerQuery) ||
                 lowerQuery.includes(brand.name.toLowerCase());
-            if (match) console.log("✅ Marca encontrada:", brand.name, "slug:", brand.slug);
             return match;
         });
 
@@ -520,7 +508,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         const matchedSubcategories = subcategories.filter(subcat => {
             const match = subcat.name.toLowerCase().includes(lowerQuery) ||
                 lowerQuery.includes(subcat.name.toLowerCase());
-            if (match) console.log("✅ Subcategoría encontrada:", subcat.name);
             return match;
         });
 
@@ -528,7 +515,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         const matchedCollections = collections.filter(collection => {
             const match = collection.name.toLowerCase().includes(lowerQuery) ||
                 lowerQuery.includes(collection.name.toLowerCase());
-            if (match) console.log("✅ Colección encontrada:", collection.name);
             return match;
         });
 
@@ -541,7 +527,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 matchedSubcategories.length > 0 || matchedCollections.length > 0
         };
 
-        console.log("📋 Resultado de detección inteligente:", result);
         return result;
     };
 
@@ -573,7 +558,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
         if (!detected || !detected.hasMatches) return;
 
-        console.log("🧠 Búsqueda inteligente detectada:", detected);
 
         setSelectedFilters(prev => {
             const newFilters = { ...prev };
@@ -614,7 +598,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         const detected = detectIntelligentFilters(query);
 
         if (detected && detected.hasMatches && intelligentSearchEnabled) {
-            console.log("🧠 Aplicando búsqueda inteligente para:", query);
             setLastIntelligentSearch(query);
 
             setSelectedFilters(prev => {
@@ -624,28 +607,24 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 if (detected.categories.length > 0) {
                     const categoryIds = detected.categories.map(cat => cat.id);
                     newFilters.category_id = [...new Set([...newFilters.category_id, ...categoryIds])];
-                    console.log("📂 Categorías detectadas:", detected.categories.map(c => c.name));
                 }
 
                 // Aplicar filtros de marcas detectadas
                 if (detected.brands.length > 0) {
                     const brandSlugs = detected.brands.map(brand => brand.slug);
                     newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
-                    console.log("🏷️ Marcas detectadas:", detected.brands.map(b => b.name));
                 }
 
                 // Aplicar filtros de subcategorías detectadas
                 if (detected.subcategories.length > 0) {
                     const subcategoryIds = detected.subcategories.map(subcat => subcat.id);
                     newFilters.subcategory_id = [...new Set([...newFilters.subcategory_id, ...subcategoryIds])];
-                    console.log("📋 Subcategorías detectadas:", detected.subcategories.map(s => s.name));
                 }
 
                 // Aplicar filtros de colecciones detectadas
                 if (detected.collections.length > 0) {
                     const collectionSlugs = detected.collections.map(collection => collection.slug);
                     newFilters.collection_id = [...new Set([...newFilters.collection_id, ...collectionSlugs])];
-                    console.log("🎯 Colecciones detectadas:", detected.collections.map(c => c.name));
                 }
 
                 return newFilters;
@@ -660,7 +639,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     // Función para alternar la búsqueda inteligente
     const toggleIntelligentSearch = () => {
         setIntelligentSearchEnabled(!intelligentSearchEnabled);
-        console.log(`🧠 Búsqueda inteligente ${!intelligentSearchEnabled ? 'activada' : 'desactivada'}`);
     };
 
     // Función para limpiar filtros aplicados por búsqueda inteligente
@@ -704,12 +682,9 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
     // Función de debug mejorada con búsqueda inteligente
     const debugCompareWithHeaderSearch = async (query) => {
-        console.log("=== DEBUG COMPARISON ===");
-        console.log("Query:", query);
 
         // Detectar filtros inteligentes
         const intelligentFilters = detectIntelligentFilters(query);
-        console.log("🧠 Filtros inteligentes detectados:", intelligentFilters);
 
         // Crear filtros mejorados con detección inteligente
         const enhancedFilters = { ...selectedFilters, name: query };
@@ -747,11 +722,9 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
         // Filtros de CatalagoFiltros (con mejora inteligente)
         const catalogFilters = transformFilters(enhancedFilters);
-        console.log("Catalog filters (enhanced):", catalogFilters);
 
         // Filtros de HeaderSearchB (básicos)
         const headerFilters = getSimpleSearchFilters(query);
-        console.log("Header filters (basic):", headerFilters);
 
         try {
             // Test con filtros de HeaderSearchB
@@ -772,7 +745,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             });
 
             const headerData = await headerResponse.json();
-            console.log("Header-style response:", headerData);
 
             // Test con filtros de CatalagoFiltros (mejorados)
             const catalogResponse = await itemsRest.paginate({
@@ -784,29 +756,18 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 with: 'category,brand'
             });
 
-            console.log("Catalog-style response (enhanced):", catalogResponse);
 
             // Comparación de resultados
             const headerCount = headerData?.data?.length || 0;
             const catalogCount = catalogResponse?.data?.length || 0;
 
-            console.log("📊 Comparación de resultados:");
-            console.log(`- Header (básico): ${headerCount} productos`);
-            console.log(`- Catalog (inteligente): ${catalogCount} productos`);
 
-            if (catalogCount > headerCount) {
-                console.log("✅ La búsqueda inteligente encontró más productos relevantes!");
-            } else if (headerCount > catalogCount) {
-                console.log("⚠️ La búsqueda básica encontró más productos");
-            } else {
-                console.log("🤷 Ambas búsquedas encontraron la misma cantidad");
-            }
+         
 
         } catch (error) {
             console.error("Debug comparison error:", error);
         }
 
-        console.log("=== END DEBUG ===");
     };
 
     // Exponer funciones globalmente para testing y uso externo
@@ -817,37 +778,10 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     window.isIntelligentSearchActive = isIntelligentSearchActive;
     window.detectIntelligentFilters = detectIntelligentFilters;
 
-    // Función específica para debuggear JBL
-    window.testJBLSearch = () => {
-        console.log("🧪 Testing JBL search...");
-        console.log("📊 Current state:", {
-            brands: brands.map(b => ({ name: b.name, slug: b.slug })),
-            intelligentSearchEnabled,
-            selectedFilters,
-            brandsCount: brands.length
-        });
-
-        // Test manual de detección
-        const detected = detectIntelligentFilters("JBL");
-        console.log("🔍 JBL detection result:", detected);
-
-        if (detected && detected.hasMatches) {
-            console.log("✅ JBL detectado correctamente");
-            handleIntelligentSearch("JBL");
-        } else {
-            console.log("❌ JBL no detectado");
-            console.log("🔍 Buscando manualmente en brands:", brands.filter(b =>
-                b.name.toLowerCase().includes("jbl") || "jbl".includes(b.name.toLowerCase())
-            ));
-
-            // Mostrar todas las marcas disponibles
-            console.log("🏷️ Todas las marcas disponibles:", brands.map(b => b.name));
-        }
-    };
+ 
 
     // Función para simular búsqueda desde HeaderSearchB
     window.simulateHeaderSearch = (query) => {
-        console.log("🎯 Simulando búsqueda desde HeaderSearchB:", query);
 
         // Simular lo que haría el HeaderSearchB
         setSelectedFilters(prev => ({
@@ -855,12 +789,10 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             name: query
         }));
 
-        console.log("✅ Filtro de nombre aplicado, esperando useEffect...");
     };
 
     // Función para forzar la búsqueda inteligente sin importar el estado
     window.forceIntelligentSearch = (query) => {
-        console.log("🚀 Forzando búsqueda inteligente para:", query);
         const originalEnabled = intelligentSearchEnabled;
         setIntelligentSearchEnabled(true);
 
@@ -886,8 +818,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             const itemsPerPage = 24; // Valor constante para evitar problemas de estado
 
             // Debug: Log de los filtros transformados
-            console.log("Selected filters:", selectedFilters);
-            console.log("Transformed filters:", filters);
 
             // Filtrar el sort para remover campos especiales que ya se convirtieron en filtros WHERE
             const specialSortFields = ['featured', 'offering', 'is_new', 'recommended'];
@@ -911,12 +841,9 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 // Removido los filtros duplicados - solo usar el filtro complejo
             };
 
-            console.log("API params:", params);
-            console.log("Final sort (filtered):", finalSort);
 
             const response = await itemsRest.paginate(params);
 
-            console.log("API response:", response);
 
             // Validar la respuesta del backend
             if (response.status !== 200) {
@@ -965,7 +892,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 selectedFilters.tag_id.length === 0 &&
                 selectedFilters.price.length === 0) {
 
-                console.log("Attempting fallback with simple search filters");
 
                 try {
                     const simpleParams = {
@@ -1035,7 +961,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         if (GET.search && intelligentSearchEnabled) {
             // Pequeño delay para asegurar que las categorías, marcas, etc. estén cargadas
             setTimeout(() => {
-                console.log("🚀 Inicializando búsqueda inteligente para:", GET.search);
                 handleIntelligentSearch(GET.search);
             }, 100);
         }
@@ -1045,11 +970,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     }, [filteredData, intelligentSearchEnabled]); // Agregar intelligentSearchEnabled como dependencia
 
     useEffect(() => {
-        // Cuando cambian los filtros, volvemos a la primera página SIN hacer scroll
-        // Siempre ejecutar cuando los filtros cambien (tanto búsqueda inicial como filtrado)
-        console.log("🔄 useEffect detectó cambio en selectedFilters:");
-        console.log("📊 Filtros actuales:", selectedFilters);
-        console.log("🚀 Ejecutando fetchProducts...");
+      
 
         fetchProducts(1, hasSearched); // true si ya había búsqueda, false si es inicial
     }, [selectedFilters]); // Eliminar hasSearched como dependencia
@@ -1057,19 +978,16 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     // useEffect para detectar cambios en el filtro de nombre y aplicar búsqueda inteligente
     useEffect(() => {
         if (selectedFilters.name && intelligentSearchEnabled && brands.length > 0) {
-            console.log("🔍 Detectando cambio en filtro de nombre:", selectedFilters.name);
 
             // Verificar si ya tiene filtros inteligentes aplicados
             const isAlreadyIntelligent = isIntelligentSearchActive(selectedFilters.name);
 
             if (!isAlreadyIntelligent) {
-                console.log("🧠 Aplicando búsqueda inteligente automática para:", selectedFilters.name);
 
                 // Aplicar búsqueda inteligente automáticamente
                 setTimeout(() => {
                     const detected = detectIntelligentFilters(selectedFilters.name);
                     if (detected && detected.hasMatches) {
-                        console.log("✅ Aplicando filtros inteligentes detectados");
 
                         setSelectedFilters(prev => {
                             const newFilters = { ...prev };
@@ -1078,28 +996,24 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                             if (detected.brands.length > 0) {
                                 const brandSlugs = detected.brands.map(brand => brand.slug);
                                 newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
-                                console.log("🏷️ Marcas aplicadas:", detected.brands.map(b => b.name));
                             }
 
                             // Aplicar filtros de categorías detectadas
                             if (detected.categories.length > 0) {
                                 const categoryIds = detected.categories.map(cat => cat.id);
                                 newFilters.category_id = [...new Set([...newFilters.category_id, ...categoryIds])];
-                                console.log("📂 Categorías aplicadas:", detected.categories.map(c => c.name));
                             }
 
                             // Aplicar filtros de subcategorías detectadas
                             if (detected.subcategories.length > 0) {
                                 const subcategoryIds = detected.subcategories.map(subcat => subcat.id);
                                 newFilters.subcategory_id = [...new Set([...newFilters.subcategory_id, ...subcategoryIds])];
-                                console.log("📋 Subcategorías aplicadas:", detected.subcategories.map(s => s.name));
                             }
 
                             // Aplicar filtros de colecciones detectadas
                             if (detected.collections.length > 0) {
                                 const collectionSlugs = detected.collections.map(collection => collection.slug);
                                 newFilters.collection_id = [...new Set([...newFilters.collection_id, ...collectionSlugs])];
-                                console.log("🎯 Colecciones aplicadas:", detected.collections.map(c => c.name));
                             }
 
                             return newFilters;
@@ -1240,7 +1154,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     const filteredSubcategories = subcategories.filter((subcategory) => {
         // Si hay categorías seleccionadas en los filtros, solo mostrar subcategorías de esas categorías
         let categoryIds;
-        console.log("selectedFilters.category_id", selectedFilters.category_id);
         if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
             // Hay categorías seleccionadas, solo mostrar subcategorías de esas categorías
             categoryIds = categories
@@ -2066,13 +1979,10 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         <motion.button
                                             className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
                                             onClick={() => {
-                                                console.log("🧹 Limpiando todos los filtros...");
-                                                console.log("📊 Estado actual antes de limpiar:", selectedFilters);
 
                                                 // Limpiar cada filtro individualmente usando setSelectedFilters con función
                                                 // Esto simula el comportamiento de handleFilterChange que funciona correctamente
                                                 setSelectedFilters((prev) => {
-                                                    console.log("🔄 Estado previo en setSelectedFilters:", prev);
 
                                                     const cleanFilters = {
                                                         collection_id: [],
@@ -2090,13 +2000,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                         ],
                                                     };
 
-                                                    console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
                                                     return cleanFilters;
                                                 });
 
                                                 setFilterSequence([]);
 
-                                                console.log("✅ Filtros limpiados correctamente - useEffect debería detectar el cambio");
                                             }}
                                             whileHover={{ scale: 1.02, y: -2 }}
                                             whileTap={{ scale: 0.98 }}
@@ -2274,12 +2182,9 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                     <motion.button
                                                         className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                                                         onClick={() => {
-                                                            console.log("🧹 Limpiando filtros desde mensaje 'sin resultados'...");
-                                                            console.log("📊 Estado actual antes de limpiar:", selectedFilters);
 
                                                             // Limpiar usando setSelectedFilters con función (como handleFilterChange)
                                                             setSelectedFilters((prev) => {
-                                                                console.log("🔄 Estado previo en setSelectedFilters:", prev);
 
                                                                 const cleanFilters = {
                                                                     collection_id: [],
@@ -2297,13 +2202,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                     ],
                                                                 };
 
-                                                                console.log("🆕 Filtros limpios que se aplicarán:", cleanFilters);
                                                                 return cleanFilters;
                                                             });
 
                                                             setFilterSequence([]);
 
-                                                            console.log("✅ Filtros limpiados correctamente desde 'sin resultados'");
                                                         }}
                                                         whileHover={{ scale: 1.05, y: -2 }}
                                                         whileTap={{ scale: 0.95 }}

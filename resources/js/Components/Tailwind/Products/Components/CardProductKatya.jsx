@@ -6,7 +6,6 @@ import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
     const [isHovered, setIsHovered] = useState(false);
-    console.log("CardProductKatya product:", product);
     // Verificar si el producto está en favoritos
     const isFavorite = favorites.some((fav) => fav.id === product?.id);
 

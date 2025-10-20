@@ -62,7 +62,7 @@ export default function ComplaintSimple({ generals }) {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                
                 if (data.type === "success") {
                     toast.success("Solicitud enviada", {
                         description: `Pronto nos comunicaremos contigo ¡Gracias!.`,

@@ -7,7 +7,7 @@ import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
 
-    console.log("data slider", data)
+  
     // Verificar si las animaciones están habilitadas
     const hasAnimation = data?.animation_slider === "true" || data?.animation_slider === "si" || data?.animation_slider === true;
 
@@ -183,7 +183,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     const isDragging = useRef(false);
     const startX = useRef(0);
     const currentTranslate = useRef(0);
-    console.log("sliders", items)
+
 
     // Ordenar items por order_index de menor a mayor antes de reasignar índices
     const sortedItems = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
