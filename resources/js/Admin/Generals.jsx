@@ -1809,7 +1809,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       <div className="col-12 mb-2">
                         <label className="form-label small">Foto del Asesor</label>
                         {advisor.photo ? (
-                          <div className="position-relative d-inline-block">
+                          <div className="position-relative ">
                             <Tippy content="Eliminar foto">
                               <button 
                                 type="button"
@@ -1842,7 +1842,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                               e.target.value = null;
 
                               const ext = file.name.split('.').pop();
-                              const imageName = `whatsapp-advisor-${Date.now()}.${ext}`;
+                              const imageName = `whatsapp-advisor-${index + 1}.${ext}`;
 
                               const request = new FormData();
                               request.append('image', file);

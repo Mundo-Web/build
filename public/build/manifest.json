@@ -1519,7 +1519,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-CiXgocyW.js",
+    "file": "assets/Banners-CvBvkfsN.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -2292,7 +2292,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-SAPzqGNt.js",
+    "file": "assets/Generals-L5GzEHSw.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -4792,7 +4792,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-BEO_u45b.js",
+    "file": "assets/Banner-D5wymML1.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -9178,7 +9178,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-EtaVEQaG.js",
+    "file": "assets/Product-Yndv8uZu.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -9208,7 +9208,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-CRtY5bP0.js",
+    "file": "assets/ProductDetail-Bnct2U6r.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -9370,7 +9370,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailBananaLab.jsx": {
-    "file": "assets/ProductDetailBananaLab-BOUqV2vZ.js",
+    "file": "assets/ProductDetailBananaLab-DxOx7Jzm.js",
     "name": "ProductDetailBananaLab",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailBananaLab.jsx",
     "isDynamicEntry": true,
@@ -9479,7 +9479,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-BVa_YZna.js",
+    "file": "assets/ProductDetailHuaillys-DGO6LGaV.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9986,7 +9986,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx": {
-    "file": "assets/ProductBananaLab-BejI_Ekh.js",
+    "file": "assets/ProductBananaLab-DcVkw_iX.js",
     "name": "ProductBananaLab",
     "src": "resources/js/Components/Tailwind/Products/ProductBananaLab.jsx",
     "isDynamicEntry": true,
@@ -11826,7 +11826,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CiVRcLEm.js",
+    "file": "assets/System-yRe8ZxNN.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
