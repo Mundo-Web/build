@@ -9208,7 +9208,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-BowmOWnh.js",
+    "file": "assets/ProductDetail-CRtY5bP0.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -9479,7 +9479,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-BEEag0YA.js",
+    "file": "assets/ProductDetailHuaillys-BVa_YZna.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9491,7 +9491,7 @@
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
       "_thumbs-l0sNRNKZ.js",
       "_ItemsRest-Dp5IKigO.js",
-      "resources/js/Components/Tailwind/Products/ProductInfiniteSlider.jsx",
+      "resources/js/Components/Tailwind/Product.jsx",
       "_floating-ui.react-h8x3UwNO.js",
       "_General-apRuNwp7.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -9510,9 +9510,7 @@
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js",
       "_BooleanLimit-D-OsQsek.js",
-      "_autoplay-BjAsSK2h.js",
-      "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
-      "resources/js/Components/Tailwind/Products/ProductCard.jsx",
+      "_preload-helper-BfFHrpNk.js",
       "_createLucideIcon-DfjclApS.js"
     ],
     "css": [
@@ -11828,7 +11826,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BNhgk02V.js",
+    "file": "assets/System-CiVRcLEm.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

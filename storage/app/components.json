@@ -2707,7 +2707,12 @@
                 "image": "product-detail-huaillys.png",
                 "data": [
                     "link_cart",
-                    "background"
+                    "background",
+                    "product_type_list",
+                    "title_related",
+                    "description_related",
+                    "link_text_related",
+                    "button_text_related"
                 ],
                 "using": {
                     "model": "Item",
