@@ -3361,6 +3361,28 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+            {
+                "id": "AboutModern",
+                "name": "About Modern - Completo con Secciones",
+                "image": "about-modern.png",
+                "data": [
+                    "class_hero_title",
+                    "class_hero_description",
+                    "class_historia_title",
+                    "class_historia_description",
+                    "class_valores_title",
+                    "class_valores_description",
+                    "class_mision_title",
+                    "class_mision_description",
+                    "class_vision_title",
+                    "class_vision_description",
+                    "class_equipo_title",
+                    "class_equipo_description"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
             }
         ]
     },
