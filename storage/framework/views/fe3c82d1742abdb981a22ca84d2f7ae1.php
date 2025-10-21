@@ -167,6 +167,9 @@
             }
         </style>
     <?php endif; ?>
+    <?php
+        $gradientBg = $data['colors']->firstWhere('name', 'gradient-background');
+    ?>
     <?php $__currentLoopData = $data['colors']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <style>
             .stroke-<?php echo e($color->name); ?> {
@@ -178,7 +181,13 @@
             }
 
             .bg-<?php echo e($color->name); ?> {
+                <?php if($color->name == 'primary' && $gradientBg): ?>
+                background-image: <?php echo e($gradientBg->description); ?> !important;
+                background-color: transparent !important;
+                background-repeat: no-repeat !important;
+                <?php else: ?>
                 background-color: <?php echo e($color->description); ?>;
+                <?php endif; ?>
             }
             .group:hover .group-hover\:bg-<?php echo e($color->name); ?> {
                 background-color: <?php echo e($color->description); ?>;
@@ -187,7 +196,6 @@
             .customtext-<?php echo e($color->name); ?> {
                 color: <?php echo e($color->description); ?>;
             }
-
             /* Variantes de hover */
             .hover\:customtext-<?php echo e($color->name); ?>:hover {
                 color: <?php echo e($color->description); ?>;

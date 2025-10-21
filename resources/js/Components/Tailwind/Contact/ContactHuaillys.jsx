@@ -109,7 +109,7 @@ const ContactHuaillys = ({ data, contacts }) => {
 
     return (
         <motion.section
-            className="bg-secondary py-12 "
+            className="bg-sections-color py-12 "
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}

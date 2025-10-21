@@ -166,6 +166,9 @@
             }
         </style>
     @endif
+    @php
+        $gradientBg = $data['colors']->firstWhere('name', 'gradient-background');
+    @endphp
     @foreach ($data['colors'] as $color)
         <style>
             .stroke-{{ $color->name }} {
@@ -177,7 +180,13 @@
             }
 
             .bg-{{ $color->name }} {
+                @if($color->name == 'primary' && $gradientBg)
+                background-image: {{ $gradientBg->description }} !important;
+                background-color: transparent !important;
+                background-repeat: no-repeat !important;
+                @else
                 background-color: {{ $color->description }};
+                @endif
             }
             .group:hover .group-hover\:bg-{{ $color->name }} {
                 background-color: {{ $color->description }};
@@ -186,7 +195,6 @@
             .customtext-{{ $color->name }} {
                 color: {{ $color->description }};
             }
-
             /* Variantes de hover */
             .hover\:customtext-{{ $color->name }}:hover {
                 color: {{ $color->description }};
