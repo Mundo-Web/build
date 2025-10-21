@@ -40,6 +40,8 @@
           { "label": "Categorías", "href": "/admin/blog-categories", "icon": "mdi mdi-shape-outline" }
         ]
       },
+      { "label": "Innovaciones", "href": "/admin/innovations", "icon": "mdi mdi-lightbulb-on" },
+      { "label": "Servicios", "href": "/admin/services", "icon": "mdi mdi-cog" },
       
     
       { "label": "Nosotros", "href": "/admin/about", "icon": "mdi mdi-briefcase" },

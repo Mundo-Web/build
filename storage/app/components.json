@@ -3917,5 +3917,101 @@
                 }
             }
         ]
+    },
+    {
+        "id": "innovation",
+        "icon": "mdi mdi-lightbulb-on",
+        "name": "Innovaciones",
+        "options": [
+            {
+                "id": "InnovationGrid",
+                "name": "Grid de Innovaciones",
+                "image": "innovation-grid.png",
+                "data": [
+                    "title",
+                    "title_color",
+                    "subtitle",
+                    "subtitle_color",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "InnovationSimple",
+                "name": "Lista Simple",
+                "image": "innovation-simple.png",
+                "data": [
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "InnovationCarousel",
+                "name": "Carrusel de Innovaciones",
+                "image": "innovation-carousel.png",
+                "data": [
+                    "title",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            }
+        ]
+    },
+    {
+        "id": "service",
+        "icon": "mdi mdi-cog",
+        "name": "Servicios",
+        "options": [
+            {
+                "id": "ServiceGrid",
+                "name": "Grid de Servicios",
+                "image": "service-grid.png",
+                "data": [
+                    "title",
+                    "title_color",
+                    "subtitle",
+                    "subtitle_color",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceSimple",
+                "name": "Lista Simple",
+                "image": "service-simple.png",
+                "data": [
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceCarousel",
+                "name": "Carrusel de Servicios",
+                "image": "service-carousel.png",
+                "data": [
+                    "title",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            }
+        ]
     }
 ]
