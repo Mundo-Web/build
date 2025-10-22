@@ -19,6 +19,7 @@ import { useUbigeo } from "../../../../Utils/useUbigeo";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import PaymentModal from "./PaymentModal";
+import OpenPayCardModal from "./OpenPayCardModal";
 import UploadVoucherModalYape from "./UploadVoucherModalYape";
 import UploadVoucherModalBancs from "./UploadVoucherModalBancs";
 import { toast } from "sonner";
@@ -817,6 +818,8 @@ export default function ShippingStepSF({
 
 
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [showOpenPayModal, setShowOpenPayModal] = useState(false);
+    const [openPayTokenData, setOpenPayTokenData] = useState(null);
     const [showVoucherModal, setShowVoucherModal] = useState(false);
     const [showVoucherModalBancs, setShowVoucherModalBancs] = useState(false);
     const [currentPaymentMethod, setCurrentPaymentMethod] = useState(null);
@@ -948,6 +951,12 @@ export default function ShippingStepSF({
             setShowPaymentModal(false);
             setCurrentPaymentMethod(paymentMethod);
 
+            // Si es OpenPay, abrir el modal para capturar datos de tarjeta
+            if (paymentMethod === "openpay") {
+                setShowOpenPayModal(true);
+                return; // Detener aquí, el modal manejará el resto
+            }
+
             if (paymentMethod === "tarjeta") {
                 // Procesar pago con tarjeta (MercadoPago)
                 if (!window.MercadoPago) {
@@ -998,89 +1007,6 @@ export default function ShippingStepSF({
                 
                 try {
                     const response = await processMercadoPagoPayment(request)
-                    const data = response;
-                    
-                    if (data.status) {
-                        setSale(data.sale);
-                        setDelivery(data.delivery);
-                        setCode(data.code);
-                        
-                        // Ejecutar scripts de conversión si existen
-                        if (conversionScripts && Array.isArray(conversionScripts)) {
-                            conversionScripts.forEach(script => {
-                                try {
-                                    eval(script);
-                                } catch (error) {
-                                    console.error('Error executing conversion script:', error);
-                                }
-                            });
-                        }
-
-                        // Llamar callback de compra completada
-                        if (onPurchaseComplete) {
-                            onPurchaseComplete(data);
-                        }
-                        
-                    } else {
-                        toast.error('Error en el Pago', {
-                            description: `El pago ha sido rechazado`,
-                            icon: <CircleX className="h-5 w-5 text-red-500" />,
-                            duration: 3000,
-                            position: 'bottom-center',
-                        });
-                    }
-                } catch (error) {
-                    toast.error('Error en el Pago', {
-                        description: `No se llegó a procesar el pago`,
-                        icon: <CircleX className="h-5 w-5 text-red-500" />,
-                        duration: 3000,
-                        position: 'bottom-center',
-                    });
-                }
-            } else if(paymentMethod === "openpay") {
-                // Procesar pago con OpenPay
-                const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
-                const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
-
-                const request = {
-                    user_id: user?.id || "",
-                    name: formData?.name || "",
-                    lastname: formData?.lastname || "",
-                    fullname: `${formData?.name} ${formData?.lastname}`,
-                    phone_prefix: formData?.phone_prefix || "51",
-                    email: formData?.email || "",
-                    phone: formatPhoneNumber(formData.phone_prefix || "51", formData.phone),
-                    country: "Perú",
-                    department: formData?.department || "",
-                    province: formData?.province || "",
-                    district: formData?.district || "",
-                    ubigeo: formData?.ubigeo || "",
-                    address: formData?.address || "",
-                    number: formData?.number || "",
-                    comment: formData?.comment || "",
-                    reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
-                    delivery: envio,
-                    delivery_type: deliveryType,
-                    cart: cart,
-                    invoiceType: formData.invoiceType || "",
-                    documentType: formData.documentType || "",
-                    document: formData.document || "",
-                    businessName: formData.businessName || "",
-                    payment_method: paymentMethod || null,
-                    // Cupón aplicado
-                    coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
-                    // Descuentos automáticos
-                    automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
-                    applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
-                };
-                
-                try {
-                    const response = await processOpenPayPayment(request);
                     const data = response;
                     
                     if (data.status) {
@@ -1226,6 +1152,123 @@ export default function ShippingStepSF({
                 duration: 3000,
                 position: 'bottom-center',
             });
+        }
+    };
+
+    // Función para manejar el token de OpenPay
+    const handleOpenPayTokenCreated = async (tokenData) => {
+        try {
+            console.log("💳 Token de OpenPay recibido:", tokenData);
+            
+            setOpenPayTokenData(tokenData);
+            setShowOpenPayModal(false);
+            setPaymentLoading(true);
+            
+            const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
+            const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
+            
+            const request = {
+                user_id: user?.id || "",
+                name: formData?.name || "",
+                lastname: formData?.lastname || "",
+                fullname: `${formData?.name} ${formData?.lastname}`,
+                phone_prefix: formData?.phone_prefix || "51",
+                email: formData?.email || "",
+                phone: formatPhoneNumber(formData.phone_prefix || "51", formData.phone),
+                country: "Perú",
+                department: formData?.department || "",
+                province: formData?.province || "",
+                district: formData?.district || "",
+                ubigeo: formData?.ubigeo || "",
+                address: formData?.address || "",
+                number: formData?.number || "",
+                comment: formData?.comment || "",
+                reference: formData?.reference || "",
+                amount: finalTotalWithCoupon || 0,
+                delivery: envio,
+                delivery_type: deliveryType,
+                cart: cart,
+                invoiceType: formData.invoiceType || "",
+                documentType: formData.documentType || "",
+                document: formData.document || "",
+                businessName: formData.businessName || "",
+                payment_method: "openpay",
+                source_id: tokenData.token,  // OpenPay usa 'source_id' en lugar de 'token'
+                device_session_id: tokenData.device_session_id,
+                // Cupón aplicado
+                coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                coupon_discount: calculatedCouponDiscount || 0,
+                // Descuentos automáticos
+                automatic_discounts: autoDiscounts,
+                automatic_discount_total: autoDiscountTotal,
+                applied_promotions: autoDiscounts,
+                promotion_discount: autoDiscountTotal || 0,
+                total_amount: finalTotalWithCoupon || 0,
+            };
+            
+            console.log("📤 Enviando request al backend:", request);
+            
+            const response = await processOpenPayPayment(request);
+            console.log("📥 Respuesta del backend:", response);
+            
+            if (response && response.status) {
+                // Guardar los datos de la venta
+                setSale(response.sale);
+                setDelivery(response.delivery);
+                setCode(response.code);
+                
+                // Limpiar el carrito
+                setCart([]);
+                localStorage.removeItem('cart');
+                
+                // Ejecutar scripts de conversión si existen
+                if (conversionScripts && Array.isArray(conversionScripts)) {
+                    conversionScripts.forEach(script => {
+                        try {
+                            eval(script);
+                        } catch (error) {
+                            console.error('Error executing conversion script:', error);
+                        }
+                    });
+                }
+
+                // Llamar callback de compra completada
+                if (onPurchaseComplete) {
+                    onPurchaseComplete(response);
+                }
+                
+                // Mostrar mensaje de éxito
+                toast.success('¡Pago exitoso!', {
+                    description: 'Tu pedido ha sido procesado correctamente',
+                    icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+                    duration: 2000,
+                    position: 'bottom-center',
+                });
+                
+                // Navegar a la página de éxito después de un breve delay
+                setTimeout(() => {
+                    onContinue(); // Esto navega a la página de confirmación
+                }, 1500);
+                
+            } else {
+                console.error("❌ Error: Respuesta sin status true", response);
+                toast.error('Error en el Pago', {
+                    description: response?.message || 'El pago ha sido rechazado',
+                    icon: <CircleX className="h-5 w-5 text-red-500" />,
+                    duration: 4000,
+                    position: 'bottom-center',
+                });
+                setPaymentLoading(false);
+            }
+        } catch (error) {
+            console.error('❌ Error en OpenPay handleOpenPayTokenCreated:', error);
+            toast.error('Error en el Pago', {
+                description: error.message || error || 'No se llegó a procesar el pago',
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 4000,
+                position: 'bottom-center',
+            });
+            setPaymentLoading(false);
         }
     };
 
@@ -2240,6 +2283,12 @@ export default function ShippingStepSF({
                 onClose={() => setShowPaymentModal(false)}
                 onPaymentComplete={handlePaymentComplete}
                 
+            />
+
+            <OpenPayCardModal
+                isOpen={showOpenPayModal}
+                onClose={() => setShowOpenPayModal(false)}
+                onTokenCreated={handleOpenPayTokenCreated}
             />
 
             <UploadVoucherModalYape
