@@ -151,6 +151,15 @@ const System = ({
   useEffect(() => {
     const containers = [...$('.components-container')];
     containers.forEach(container => {
+      // Destroy previous sortable if exists to avoid duplicate bindings
+      try {
+        if ($(container).hasClass('ui-sortable')) {
+          $(container).sortable('destroy');
+        }
+      } catch (e) {
+        // ignore
+      }
+
       $(container).sortable({
         connectWith: '.components-container',
         handle: '.handle-sortable',
@@ -199,7 +208,7 @@ const System = ({
 
   useEffect(() => {
     document.title = `Sistema | ${Global.APP_NAME}`
-  }, [null])
+  }, [])
 
   const [gitAuthor, gitDate, gitMessage] = lastRemoteCommit?.split('\n') ?? []
 

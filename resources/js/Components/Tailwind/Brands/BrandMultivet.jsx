@@ -1,8 +1,7 @@
 import React from 'react';
 
 const BrandMultivet = ({ items, data }) => {
-  console.log("BrandMultivet items:", items);
-  console.log("BrandMultivet data:", data);
+
 
   // Si no hay marcas, mostrar mensaje
   if (!items || items.length === 0) {

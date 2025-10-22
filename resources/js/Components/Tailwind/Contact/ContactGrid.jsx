@@ -8,7 +8,6 @@ import { toast } from "sonner";
 const messagesRest = new MessagesRest();
 
 const ContactGrid = ({ data, contacts }) => {
-    console.log(contacts);
     const getContact = (correlative) => {
         return (
             contacts.find((contact) => contact.correlative === correlative)
@@ -63,7 +62,6 @@ const ContactGrid = ({ data, contacts }) => {
                 const response = await fetch('/api/stores');
                 const result = await response.json();
 
-                console.log('API Response:', result); // Para debug
 
                 // La respuesta puede venir envuelta en un objeto con una propiedad 'data'
                 let data = result;
@@ -83,7 +81,6 @@ const ContactGrid = ({ data, contacts }) => {
                     const mainStore = activeStores.find(store => store.type === 'tienda_principal');
                     if (mainStore) {
                         setMainStoreData(mainStore);
-                        console.log('Tienda principal encontrada:', mainStore);
                     }
 
                     // Organizar tiendas por tipo (incluyendo tienda_principal)
@@ -97,7 +94,6 @@ const ContactGrid = ({ data, contacts }) => {
                     }, {});
 
                     setStoresByType(groupedByType);
-                    console.log('Stores grouped by type:', groupedByType);
                 } else {
                     console.error('API response is not an array:', result);
                     setAllStores([]);

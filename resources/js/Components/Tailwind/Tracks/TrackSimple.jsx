@@ -61,7 +61,7 @@ const TrackSimple = () => {
         if (orderCode) {
             handleSearch()
         }
-    }, [null])
+    }, [])
     const currentStatus = statusTracking?.[0] ?? null
 
     return (

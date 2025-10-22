@@ -34,7 +34,7 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
 
   useEffect(() => {
     const newData = {}
-    dataLoaded?.component?.data.forEach(key => {
+    dataLoaded?.component?.data?.forEach && dataLoaded?.component?.data?.forEach(key => {
       newData[key] = dataLoaded?.data?.[key] ?? ''
     })
     setData(newData)

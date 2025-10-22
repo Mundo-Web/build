@@ -29,6 +29,8 @@ const Carrusel = React.lazy(() => import("./Components/Tailwind/Carrusel"));
 const Faq = React.lazy(() => import("./Components/Tailwind/Faq"));
 const PostDetail = React.lazy(() => import("./Components/Tailwind/PostDetail"));
 const Blog = React.lazy(() => import("./Components/Tailwind/Blog"));
+const Innovation = React.lazy(() => import("./Components/Tailwind/Innovation"));
+const Service = React.lazy(() => import("./Components/Tailwind/Service"));
 const AboutUs = React.lazy(() => import("./Components/Tailwind/AboutUs"));
 const Login = React.lazy(() => import("./Components/Tailwind/Login"));
 const Signup = React.lazy(() => import("./Components/Tailwind/Signup"));
@@ -249,19 +251,14 @@ const System = ({
                 // Combinar productos verificados con combos sin modificar
                 const newCart = [...verifiedRegularItems, ...combos];
                 
-                console.log('✅ System.jsx cart updated:', {
-                    verifiedItems: verifiedRegularItems.length,
-                    preservedCombos: combos.length,
-                    totalInNewCart: newCart.length
-                });
+              
                 
                 setCart(newCart);
             });
         } else if (combos.length > 0) {
             // Si solo hay combos, mantenerlos sin verificación
-            console.log('🔒 System.jsx: Only combos in cart, preserving as-is');
         }
-    }, [null]);
+    }, []);
 
     // Preload crítico para mobile
     useEffect(() => {
@@ -362,6 +359,10 @@ const System = ({
                 return <Track which={value} data={data} />
             case "blog":
                 return <Blog which={value} data={data} items={getItems(itemsId)} headerPosts={headerPosts} postsLatest={postsLatest} filteredData={filteredData} />
+            case "innovation":
+                return <Innovation which={value} data={data} items={getItems(itemsId)} />
+            case "service":
+                return <Service which={value} data={data} items={getItems(itemsId)} />
             case "post-detail":
                 return <PostDetail which={value} data={data} item={filteredData.Post} />
             case "about":

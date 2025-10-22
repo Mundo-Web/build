@@ -7,7 +7,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
 import ItemsRest from "../../../Actions/ItemsRest";
-import ProductInfiniteSlider from "../Products/ProductInfiniteSlider";
+import Product from "../Product";
 import {
     useFloating,
     autoUpdate,
@@ -22,7 +22,7 @@ import {
 } from '@floating-ui/react';
 import General from '../../../Utils/General';
 
-const ProductDetailHuaillys = ({ item, data, setCart, cart, generals }) => {
+const ProductDetailHuaillys = ({ item, data, setCart, cart, generals, favorites, setFavorites }) => {
     const itemsRest = new ItemsRest();
     const [selectedImage, setSelectedImage] = useState({
         url: item?.image,
@@ -555,17 +555,20 @@ const ProductDetailHuaillys = ({ item, data, setCart, cart, generals }) => {
             {/* Productos Relacionados */}
             {relationsItems && relationsItems.length > 0 && (
                 <div className="mt-12 ">
-                    <ProductInfiniteSlider
+                    <Product
+                        which={data?.product_type_list || "ProductInfiniteSlider"}
                         items={relationsItems}
                         data={{
-                            title: "Productos Relacionados",
-                            description: "Otros productos que podrían interesarte",
+                            title: data?.title_related,
+                            description: data?.description_related,
                             link_catalog: `/catalogo?category=${item?.category?.slug}`,
-                            link_text: "Ver productos relacionados",
-                            button_text: "Ordenar aquí"
+                            link_text: data?.link_text_related,
+                            button_text: data?.button_text_related
                         }}
                         cart={cart}
                         setCart={setCart}
+                        setFavorites={setFavorites}
+                        favorites={favorites}
                     />
                 </div>
             )}

@@ -9,9 +9,6 @@ class EcommerceTracker {
     }
 
     init() {
-        // Auto-track page views (ya se hace automáticamente con los píxeles)
-        console.log('📊 Ecommerce Tracker inicializado');
-        
         // Configurar listeners para eventos comunes
         this.setupEventListeners();
     }

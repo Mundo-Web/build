@@ -32,34 +32,6 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
     return `${readTime} min`;
   };
 
-  // Función para obtener color de categoría dinámicamente
-  const getCategoryColor = (categoryName) => {
-    if (!categoryName) return 'bg-primary/20 text-primary';
-    
-    // Mapeo dinámico basado en el nombre de la categoría
-    const colorMap = {
-      'innovación': 'bg-blue-100 text-blue-800',
-      'innovacion': 'bg-blue-100 text-blue-800',
-      'prevención': 'bg-green-100 text-green-800',
-      'prevencion': 'bg-green-100 text-green-800',
-      'nutrición': 'bg-orange-100 text-orange-800',
-      'nutricion': 'bg-orange-100 text-orange-800',
-      'bioseguridad': 'bg-red-100 text-red-800',
-      'diagnóstico': 'bg-purple-100 text-purple-800',
-      'diagnostico': 'bg-purple-100 text-purple-800',
-      'regulación': 'bg-gray-100 text-gray-800',
-      'regulacion': 'bg-gray-100 text-gray-800',
-      'salud': 'bg-emerald-100 text-emerald-800',
-      'medicina': 'bg-indigo-100 text-indigo-800',
-      'veterinaria': 'bg-cyan-100 text-cyan-800',
-      'animales': 'bg-amber-100 text-amber-800',
-      'cuidado': 'bg-pink-100 text-pink-800',
-      'tratamiento': 'bg-violet-100 text-violet-800'
-    };
-    
-    const normalizedName = categoryName.toLowerCase().trim();
-    return colorMap[normalizedName] || 'bg-accent customtext-primary';
-  };
 
   if (flex) {
     // Versión flex (para featured posts horizontales)
@@ -78,7 +50,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
               />
               {post?.category && (
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-2 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
+                  <span className={`px-3 py-2 rounded-full text-xs font-semibold bg-accent  customtext-primary`}>
                     {post.category?.name}
                   </span>
                 </div>
@@ -87,7 +59,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
 
             <div className="p-6 w-1/2 flex flex-col justify-between">
               <div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
+                <div className="flex items-center space-x-4 text-sm customtext-neutral-light mb-3">
                   <div className="flex items-center space-x-1">
                     <Calendar className="w-4 h-4" />
                     <span>{formatDate(post?.created_at || post?.post_date)}</span>
@@ -114,7 +86,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
                     <span className="text-sm customtext-neutral-light">{post.autor}</span>
                   </div>
                 )}
-                <button className="customtext-secondary hover:customtext-primary font-semibold text-sm flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                <button className="customtext-neutral-light hover:customtext-primary font-semibold text-sm flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
                   <span>Leer más</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -140,8 +112,8 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
               }}
             />
             {post?.category ? (
-              <div className="absolute top-4 left-4">
-                <span className={`px-3 py-2 rounded-full text-xs font-semibold ${getCategoryColor(post.category?.name)}`}>
+              <div className="absolute top-4 left-4 ">
+                <span className={`px-3 py-2 t rounded-full text-xs font-semibold bg-accent  customtext-primary `}>
                   {post.category?.name}
                 </span>
               </div>
@@ -155,7 +127,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
           </div>
 
           <div className="p-6">
-            <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
+            <div className="flex items-center space-x-4 text-sm customtext-neutral-light mb-3">
               <div className="flex items-center space-x-1">
                 <Calendar className="w-4 h-4" />
                 <span>{formatDate(post?.created_at || post?.post_date)}</span>
@@ -181,7 +153,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
                   <span className="text-sm customtext-neutral-light">{post.autor}</span>
                 </div>
               )}
-              <button className="customtext-secondary hover:customtext-primary font-semibold text-sm flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+              <button className="customtext-neutral-light hover:customtext-primary font-semibold text-sm flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
                 <span>Leer más</span>
                 <ArrowRight className="w-4 h-4" />
               </button>

@@ -39,13 +39,11 @@ export default function BlogHeaderMultivet({
     }
     // Fecha
     if (filters.post_date) {
-      console.log("Fecha seleccionada:", filters.post_date);
       transformedFilters.push(["post_date", "=", filters.post_date]);
     }
 
     // Búsqueda por nombre
     if (filters.name) {
-      console.log("Nombre seleccionado:", filters.name);
       transformedFilters.push(["name", "contains", filters.name]);
     }
 
@@ -68,9 +66,7 @@ export default function BlogHeaderMultivet({
         filter: filters,
       };
 
-      console.log(params);
       const response = await postsRest.paginate(params);
-      console.log(response);
 
       setPosts(response.data);
 

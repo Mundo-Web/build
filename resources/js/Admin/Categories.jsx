@@ -74,18 +74,13 @@ const Categories = () => {
         // Check for image deletion flags using React state
         if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
             formData.append('banner_delete', 'DELETE');
-            console.log('Adding banner delete flag: DELETE');
         }
 
         if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
             formData.append('image_delete', 'DELETE');
-            console.log('Adding image delete flag: DELETE');
         }
 
-        // Debug: Log all FormData entries
-        console.log('FormData contents:');
         for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
         }
 
         const result = await categoriesRest.save(formData);

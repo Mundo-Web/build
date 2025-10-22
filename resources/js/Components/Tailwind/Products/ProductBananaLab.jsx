@@ -134,13 +134,13 @@ const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites})
                 {/* Header */}
                 <motion.div 
                     ref={headerRef}
-                    className="md:flex justify-between items-center    customborder-neutral-dark"
+                    className="md:flex justify-between items-center "
                 >
                     <motion.h2 
                         variants={headerVariants}
                         initial="hidden"
                         animate={headerInView ? "visible" : "hidden"}
-                        className="text-[32px] leading-9 font-semibold   mb-2 md:mb-0"
+                        className="text-[32px] customtext-neutral-dark leading-9 font-semibold   mb-2 md:mb-0"
                     >
                         {data?.title}
                     </motion.h2>

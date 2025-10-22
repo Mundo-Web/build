@@ -95,24 +95,9 @@ export default function ConfirmationStepSF({
     const totalBeforeDiscount = parseFloat(subTotal) + parseFloat(igv) + deliveryCost;
     const totalFinal = totalBeforeDiscount - couponDiscountAmount - automaticDiscount;
     
-    console.log('ConfirmationStepSF - Debug order data:', {
-        totalPrice,
-        subTotal,
-        igv,
-        deliveryCost,
-        couponDiscountAmount,
-        automaticDiscount,
-        totalFinal,
-        orderItems: order.items?.map(item => ({
-            name: item.name,
-            type: item.type,
-            price: item.price,
-            final_price: item.final_price,
-            quantity: item.quantity
-        }))
-    });
+   
     
-    console.log(order.delivery, "order.coupon_discount");
+
     return (
         <div className="mx-auto">
             <div className="bg-white rounded-lg shadow p-6 font-paragraph">

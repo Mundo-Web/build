@@ -28,16 +28,9 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
                     visible: true
                 });
                 
-                console.log('📍 MenuKatya - Response completa del API:', result);
                 
                 if (result && Array.isArray(result.data)) {
-                    console.log('📍 MenuKatya - Stores recibidas:', result.data);
-                    console.log('📍 MenuKatya - Tipos de tiendas:', result.data.map(s => ({ 
-                        name: s.name, 
-                        type: s.type, 
-                        status: s.status,
-                        visible: s.visible 
-                    })));
+                   
                     setStores(result.data);
                 }
             } catch (error) {
@@ -72,22 +65,12 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
         return isCorrectType && isVisible && isActive;
     }) || [];
     
-    console.log('📍 MenuKatya - Tiendas filtradas:', tiendas.map(t => ({ 
-        name: t.name, 
-        type: t.type,
-        status: t.status,
-        visible: t.visible 
-    })));
-    console.log('📍 MenuKatya - Total tiendas filtradas:', tiendas.length);
-
+  
     // Establecer tienda_principal como seleccionada por defecto
     useEffect(() => {
         if (tiendas.length > 0 && !selectedStore) {
-            console.log('📍 MenuKatya - Seleccionando tienda por defecto, tiendas disponibles:', tiendas);
             const tiendaPrincipal = tiendas.find(store => store.type === 'tienda_principal');
-            console.log('📍 MenuKatya - Tienda principal encontrada:', tiendaPrincipal);
             if (tiendaPrincipal) {
-                console.log('📍 MenuKatya - Seleccionando tienda principal:', tiendaPrincipal.name);
                 setSelectedStore(tiendaPrincipal);
             } else {
                 console.log('📍 MenuKatya - No hay tienda principal, seleccionando primera tienda:', tiendas[0]?.name);

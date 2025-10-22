@@ -12,7 +12,6 @@ const FooterTermsCTASocials = ({ data, pages, socials, generals }) => {
   const subscriptionsRest = new SubscriptionsRest();
   const emailRef = useRef();
 
-  console.log(socials)
 
   const [modalOpen, setModalOpen] = useState(null);
   const [saving, setSaving] = useState();

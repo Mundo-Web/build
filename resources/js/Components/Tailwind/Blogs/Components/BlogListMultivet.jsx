@@ -119,7 +119,7 @@ export default function BlogListMultivet({ data, posts, postsLatest, loading, is
             
               
               <motion.h2 
-                className="text-4xl md:text-5xl font-bold mb-6 font-title customtext-secondary leading-tight"
+                className={`text-4xl md:text-5xl font-bold mb-6 font-title customtext-secondary leading-tight ${data?.class_second_title || ''}`}
                 variants={titleVariants}
               >
                 {data?.second_title ? (

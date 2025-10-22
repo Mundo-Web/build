@@ -353,8 +353,6 @@ const CatalagoFiltrosPaani = ({ items, data, filteredData, cart, setCart }) => {
                 ),
             });
             // Update all filter options from backend summary
-            console.log('🔍 DEBUG - Response summary:', response?.summary);
-            console.log('🔍 DEBUG - Subcategories raw:', response?.summary.subcategories);
 
             setBrands(response?.summary.brands || []);
             setCategories(response?.summary.categories || []);
@@ -362,7 +360,6 @@ const CatalagoFiltrosPaani = ({ items, data, filteredData, cart, setCart }) => {
             setCollections(response?.summary.collections || []);
             setPriceRanges(response?.summary.priceRanges || []);
 
-            console.log('✅ DEBUG - Subcategories state set:', response?.summary.subcategories || []);
         } catch (error) {
             console.log("Error fetching products:", error);
         } finally {
@@ -371,43 +368,32 @@ const CatalagoFiltrosPaani = ({ items, data, filteredData, cart, setCart }) => {
     };
 
     useEffect(() => {
-        // Initialize state from filteredData prop
-        console.log('🚀 DEBUG - filteredData prop:', filteredData);
 
-        // Debug the complete filteredData object structure
-        console.log('🔍 FULL DEBUG - Complete filteredData object:');
-        console.log('Keys:', Object.keys(filteredData || {}));
+
         Object.keys(filteredData || {}).forEach(key => {
-            console.log(`${key}:`, filteredData[key]);
             if (Array.isArray(filteredData[key])) {
-                console.log(`${key} length:`, filteredData[key].length);
                 if (filteredData[key].length > 0) {
-                    console.log(`First ${key}:`, filteredData[key][0]);
+                    //array complete
                 }
             }
         });
 
         if (filteredData) {
-            console.log('📊 DEBUG - Available data keys:', Object.keys(filteredData));
 
             // Set initial data from SystemController
             if (filteredData.categories) {
-                console.log('📂 DEBUG - Setting categories:', filteredData.categories);
                 setCategories(filteredData.categories || []);
             }
 
             if (filteredData.brands) {
-                console.log('🏷️ DEBUG - Setting brands:', filteredData.brands);
                 setBrands(filteredData.brands || []);
             }
 
             if (filteredData.subcategories) {
-                console.log('📋 DEBUG - Setting subcategories from filteredData:', filteredData.subcategories);
                 setSubcategories(filteredData.subcategories || []);
             }
 
             if (filteredData.priceRanges) {
-                console.log('💰 DEBUG - Setting price ranges:', filteredData.priceRanges);
                 setPriceRanges(filteredData.priceRanges || []);
             }
         }

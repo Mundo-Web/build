@@ -16,19 +16,7 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     // Debug: Monitorear cambios en el carrito
     useEffect(() => {
         const combosInCart = cart.filter(item => item.type === 'combo');
-        console.log('🔍 CheckoutSteps cart changed:', {
-            totalItems: cart.length,
-            combos: combosInCart.length,
-            currentStep,
-            cart: cart.map(item => ({
-                id: item.id,
-                name: item.name,
-                type: item.type,
-                quantity: item.quantity,
-                final_price: item.final_price,
-                price: item.price
-            }))
-        });
+     
         
         // Si hay combos pero el carrito se vació repentinamente, alertar
         if (combosInCart.length === 0 && cart.length === 0) {
@@ -50,7 +38,7 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
         return acc + (itemPrice * item.quantity);
     }, 0);
     
-    console.log(categorias, 'eeeeeeeeeeee');
+ 
     // Hook de tracking
     const { 
         trackCheckoutPageView, 
@@ -91,24 +79,17 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const seguroImportacion = (Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) || 0) / 100;
     const seguroImportacionTotal = subTotalConDescuentos * seguroImportacion;
 
-    // Debug logs para verificar cálculos
-    console.log('=== DEBUG CÁLCULOS ===');
-    console.log('subTotalConDescuentos:', subTotalConDescuentos);
-    console.log('seguroImportacion rate:', seguroImportacion);
-    console.log('seguroImportacionTotal:', seguroImportacionTotal);
-    console.log('fleteTotal:', fleteTotal);
+   
 
     // 4. CIF (Cost, Insurance, Freight) = Subtotal con descuentos + Flete + Seguro
     const valorCIF = parseFloat(subTotalConDescuentos) + parseFloat(fleteTotal) + parseFloat(seguroImportacionTotal);
-    console.log('valorCIF:', valorCIF);
+ 
 
     // 5. Derecho Arancelario sobre el valor CIF
     // Obtener el porcentaje de derecho arancelario desde generals
     const derechoArancelarioRate = (Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) || 0) / 100;
     const derechoArancelarioTotal = valorCIF * derechoArancelarioRate;
-    console.log('derechoArancelarioRate:', derechoArancelarioRate);
-    console.log('derechoArancelarioTotal:', derechoArancelarioTotal);
-    console.log('=== FIN DEBUG ===');
+  
     
     // Variables individuales para compatibilidad (ahora todo está en derechoArancelarioTotal)
     const advTotal = derechoArancelarioTotal; // Para compatibilidad con componentes existentes
@@ -154,22 +135,6 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
         }
     }, [currentStep]);
 
-    // useEffect(() => {
-    //     const script = document.createElement("script");
-    //     script.src = Global.CULQI_API;
-    //     script.async = true;
-    //     script.onload = () => {
-    //         window.culqi = function () {
-    //             if (window.Culqi.token) {
-    //                 //  console.log("✅ Token recibido:", window.Culqi.token.id);
-    //             } else if (window.Culqi.order) {
-    //                 // console.log("✅ Orden recibida:", window.Culqi.order);
-    //             }
-    //         };
-    //     };
-    //     document.body.appendChild(script);
-    //     return () => document.body.removeChild(script);
-    // }, []);
 
     // Function to handle step changes and scroll to top
     const handleStepChange = (newStep) => {

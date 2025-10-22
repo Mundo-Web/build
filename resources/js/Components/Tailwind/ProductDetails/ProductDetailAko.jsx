@@ -122,7 +122,6 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
             const request = {
                 id: item?.id,
             };
-            console.log(request);
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida

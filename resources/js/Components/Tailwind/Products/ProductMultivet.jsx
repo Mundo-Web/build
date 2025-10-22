@@ -16,8 +16,6 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
   const headerInView = useInView(headerRef, { once: true, threshold: 0.3 });
   const carouselInView = useInView(carouselRef, { once: true, threshold: 0.2 });
 
-  console.log("ProductMultivet items:", items);
-  console.log("ProductMultivet data:", data);
 
   // Determinar qué tipo de card usar
   const cardType = data?.cardType || 'multivet'; // 'multivet' o 'katya'

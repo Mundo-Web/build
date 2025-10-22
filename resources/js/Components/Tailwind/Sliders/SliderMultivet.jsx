@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ChevronLeft, ChevronRight, Play, Pause, MessageCircle, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderMultivet = ({ items, data, generals = [] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -25,8 +26,6 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
   // Ordenar items por order_index
   const sortedItems = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
 
-  console.log("SliderMultivet items:", sortedItems);
-  console.log("SliderMultivet data:", data);
 
   // Validaciones para mostrar controles
   const validAlignments = ["center", "left", "right"];
@@ -221,8 +220,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
             key={slide?.id || index}
             className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
               index === currentSlide
-                ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-105'
+                ? 'opacity-100 scale-100 pointer-events-auto'
+                : 'opacity-0 scale-105 pointer-events-none'
             }`}
           >
             {/* Background Images */}
@@ -264,34 +263,39 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
           
 
             {/* Content */}
-            <div className={`relative z-10 h-full flex items-center`}>
-              <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
-                <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
-                  {/* Text Content */}
-                  <AnimatePresence mode="wait">
-                    <motion.div 
-                      key={`content-${currentSlide}-${slide?.name}`}
-                      className={`space-y-6 ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${
-                        index === currentSlide ? 'opacity-100' : 'opacity-0'
-                      }`}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
+            {index === currentSlide && (
+              <div className={`relative z-10 h-full flex items-center`}>
+                <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
+                  <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
+                    {/* Text Content */}
+                    <AnimatePresence mode="wait">
+                      <motion.div 
+                        key={`content-${currentSlide}-${slide?.name}`}
+                        className={`space-y-6 ${isDarkBg ? "text-white" : "customtext-neutral-dark"}`}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                      >
                       {/* Title */}
                       <motion.h1 
                         variants={titleVariants}
-                        className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold font-title ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_title}`}
-                        style={{ textShadow: "0 0 20px rgba(0, 0, 0, .25)" }}
+                        className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold font-title ${data?.class_title}`}
+                        style={{
+                          color: slide?.title_color || (isDarkBg ? "#FFFFFF" : "#000000"),
+                          textShadow: "0 0 20px rgba(0, 0, 0, .25)"
+                        }}
                       >
-                        {renderTextWithHighlight(slide?.name)}
+                        <TextWithHighlight text={slide?.name} color="" />
                       </motion.h1>
                       
                       {/* Description */}
                       <motion.p 
                         variants={descriptionVariants}
-                        className={`text-base lg:text-2xl leading-relaxed max-w-2xl font-paragraph ${isDarkBg ? "text-gray-200" : "customtext-neutral-dark"} ${data?.class_description}`}
-                        style={{ textShadow: "0 0 20px rgba(0, 0, 0, .25)" }}
+                        className={`text-base lg:text-2xl leading-relaxed max-w-2xl font-paragraph ${data?.class_description}`}
+                        style={{
+                          color: slide?.description_color || (isDarkBg ? "#FFFFFF" : "#000000"),
+                          textShadow: "0 0 20px rgba(0, 0, 0, .25)"
+                        }}
                       >
                         {slide?.description}
                       </motion.p>
@@ -311,7 +315,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                           </a>
 
                           {/* WhatsApp Button */}
-                          {data?.whatsapp_info && phoneWhatsapp && (
+                          {/*data?.whatsapp_info && phoneWhatsapp && (
                             <a
                               href={`https://wa.me/${phoneWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(messageWhatsapp || '¡Hola! Me interesa obtener más información sobre sus productos.')}`}
                               target="_blank"
@@ -321,14 +325,15 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                               <MessageCircle className="w-5 h-5" />
                               <span>Contactar ahora</span>
                             </a>
-                          )}
+                          )*/}
                         </motion.div>
                       )}
-                    </motion.div>
-                  </AnimatePresence>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>

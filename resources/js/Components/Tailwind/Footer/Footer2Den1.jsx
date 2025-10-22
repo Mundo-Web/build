@@ -11,7 +11,7 @@ import { X } from "lucide-react";
 const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
   const subscriptionsRest = new SubscriptionsRest();
   const emailRef = useRef();
-  console.log(stores);
+
   const [modalOpen, setModalOpen] = useState(null);
   const [saving, setSaving] = useState();
 

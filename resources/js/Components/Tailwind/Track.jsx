@@ -3,7 +3,7 @@ import React from "react"
 const TrackSimple = React.lazy(() => import('./Tracks/TrackSimple'))
 
 const Track = ({ which, data }) => {
-  console.log('which', which)
+ 
   const getTrack = () => {
     switch (which) {
       case 'TrackSimple':

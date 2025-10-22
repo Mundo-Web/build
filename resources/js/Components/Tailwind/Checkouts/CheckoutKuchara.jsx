@@ -72,7 +72,7 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
     const selectedDistrict = districts.find(d => d.id == district);
     if (!selectedDistrict) return null;
 
-    console.log(selectedDistrict)
+  
 
     if (selectedDistrict.price === null) return 'destination';
     return selectedDistrict.price === 0 ? 0 : selectedDistrict.price;
@@ -87,7 +87,7 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
     }))
 
     if (name === 'distrito') {
-      console.log(value)
+  
       setShippingPrice(getShippingPrice(value))
     }
   }
@@ -188,7 +188,7 @@ const CheckoutCulqi = ({ data, cart, setCart, items, prefixes }) => {
 
   useEffect(() => {
     if (cart.length == 0) location.href = '/'
-  }, [null])
+  }, [])
 
   const igv = Number(General.igv_checkout) / 100
 

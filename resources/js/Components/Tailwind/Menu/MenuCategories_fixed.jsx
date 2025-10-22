@@ -323,11 +323,7 @@ const MenuCategories = ({ pages = [], items, data ,visible=false}) => {
     // Mostrar solo tags en mobile si existen Y visible es true
     const showOnlyTagsMobile = tags.length > 0 && isMobile && visible;
 
-    console.log("items", items)
-    console.log("data", data)
-    console.log("tags", tags)
-    console.log("isMobile", isMobile)
-    console.log("shouldShowMenu", shouldShowMenu)
+
 
     // Si no debe mostrar el menú, retornar null (oculto)
     if (!shouldShowMenu) {

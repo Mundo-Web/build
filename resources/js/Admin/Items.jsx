@@ -292,7 +292,7 @@ const Items = ({ categories, brands, collections, stores }) => {
             .val(data?.brand_id || null)
             .trigger("change");
 
-        console.log("data item:", data)
+      
         $(storeRef.current)
             .val(data?.store_id && data.store_id !== "" ? data.store_id : "")
             .trigger("change");
@@ -495,25 +495,20 @@ const Items = ({ categories, brands, collections, stores }) => {
             formData.append('deleted_videos', JSON.stringify(deletedVideos));
         }
 
-        // Check for image deletion flags using React state
-        console.log('Checking delete flags:');
-        console.log('bannerRef.getDeleteFlag():', bannerRef.getDeleteFlag?.());
-        console.log('imageRef.getDeleteFlag():', imageRef.getDeleteFlag?.());
-        console.log('textureRef.getDeleteFlag():', textureRef.getDeleteFlag?.());
-
+     
         if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
             formData.append('banner_delete', 'DELETE');
-            console.log('Adding banner delete flag: DELETE');
+          
         }
 
         if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
             formData.append('image_delete', 'DELETE');
-            console.log('Adding image delete flag: DELETE');
+        
         }
 
         if (textureRef.getDeleteFlag && textureRef.getDeleteFlag()) {
             formData.append('texture_delete', 'DELETE');
-            console.log('Adding texture delete flag: DELETE');
+          
         }
 
         //TODO: Preparar los datos de la galería
@@ -554,9 +549,9 @@ const Items = ({ categories, brands, collections, stores }) => {
         }
 
         // Debug: Log all FormData entries
-        console.log('FormData contents:');
+    
         for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
+            // let in debug alll -(`${key}: ${value}`);
         }
 
         const result = await itemsRest.save(formData);

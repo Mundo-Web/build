@@ -29,7 +29,7 @@ const ModalImportItem = ({ gridRef, modalRef }) => {
         setLoading(true);
         try {
             const result = await itemsRest.importData(formData);
-            console.log(result);
+         
 
             if (result.error) {
                 const errors = Array.isArray(result.error)

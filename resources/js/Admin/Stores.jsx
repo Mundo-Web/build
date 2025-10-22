@@ -71,7 +71,7 @@ const Stores = ({ ubigeos = [] }) => {
     ]);
 
     const onModalOpen = (data) => {
-        console.log(data);
+      
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
@@ -106,16 +106,13 @@ const Stores = ({ ubigeos = [] }) => {
             storesRest.paginate({
                 filter: JSON.stringify({ type: 'tienda_principal' })
             }).then(response => {
-                console.log('Verificando tiendas principales existentes:', response);
                 const hasMainStore = response?.data && Array.isArray(response.data) && response.data.length > 0;
                 const typeSelect = $(typeRef.current);
 
                 // Si ya existe una tienda principal, deshabilitar esa opción
                 if (hasMainStore) {
-                    console.log('Se encontraron tiendas principales:', response.data);
                     typeSelect.find('option[value="tienda_principal"]').prop('disabled', true);
                 } else {
-                    console.log('No se encontraron tiendas principales');
                     typeSelect.find('option[value="tienda_principal"]').prop('disabled', false);
                 }
 
@@ -128,7 +125,6 @@ const Stores = ({ ubigeos = [] }) => {
             storesRest.paginate({
                 filter: JSON.stringify({ type: 'tienda_principal' })
             }).then(response => {
-                console.log('Verificando tiendas principales para edición:', response);
                 const typeSelect = $(typeRef.current);
 
                 if (response?.data && Array.isArray(response.data) && response.data.length > 0) {
@@ -136,7 +132,6 @@ const Stores = ({ ubigeos = [] }) => {
                     const otherMainStore = response.data.find(store => store.id !== data.id);
 
                     if (otherMainStore) {
-                        console.log('Existe otra tienda principal:', otherMainStore);
                         // Si la tienda actual NO es principal, deshabilitar la opción
                         if (data.type !== 'tienda_principal') {
                             typeSelect.find('option[value="tienda_principal"]').prop('disabled', true);
@@ -144,11 +139,10 @@ const Stores = ({ ubigeos = [] }) => {
                             typeSelect.find('option[value="tienda_principal"]').prop('disabled', false);
                         }
                     } else {
-                        console.log('No existe otra tienda principal');
                         typeSelect.find('option[value="tienda_principal"]').prop('disabled', false);
                     }
                 } else {
-                    console.log('No hay tiendas principales');
+                   
                     typeSelect.find('option[value="tienda_principal"]').prop('disabled', false);
                 }
 
@@ -214,7 +208,6 @@ const Stores = ({ ubigeos = [] }) => {
                 const response = await storesRest.paginate({
                     filter: JSON.stringify({ type: 'tienda_principal' })
                 });
-                console.log('Respuesta de validación tienda principal:', response);
 
                 // Verificar si hay tiendas principales existentes
                 if (response?.data && Array.isArray(response.data) && response.data.length > 0) {
@@ -222,7 +215,6 @@ const Stores = ({ ubigeos = [] }) => {
                     if (currentId) {
                         const existingMainStore = response.data.find(store => store.id !== currentId);
                         if (existingMainStore) {
-                            console.log('Ya existe otra tienda principal:', existingMainStore);
                             Swal.fire({
                                 title: "Error",
                                 text: "Ya existe una Tienda Principal. Solo puede haber una tienda de este tipo.",
@@ -232,7 +224,6 @@ const Stores = ({ ubigeos = [] }) => {
                         }
                     } else {
                         // Si es creación nueva, no permitir
-                        console.log('Tiendas principales encontradas:', response.data);
                         Swal.fire({
                             title: "Error",
                             text: "Ya existe una Tienda Principal. Solo puede haber una tienda de este tipo.",
@@ -262,7 +253,6 @@ const Stores = ({ ubigeos = [] }) => {
         // Procesar latitud si existe
         if (latitudeValue) {
             latitude = parseFloat(latitudeValue);
-            console.log("Latitud procesada:", latitude, "desde:", latitudeValue);
 
             // Validación de coordenadas para Perú
             if (latitude < -18.5 || latitude > -0.1) {
@@ -286,13 +276,11 @@ const Stores = ({ ubigeos = [] }) => {
             
             // Truncar a 8 decimales para cumplir con la BD
             latitude = Math.round(latitude * 100000000) / 100000000;
-            console.log("Latitud truncada:", latitude);
         }
         
         // Procesar longitud si existe
         if (longitudeValue) {
             longitude = parseFloat(longitudeValue);
-            console.log("Longitud procesada:", longitude, "desde:", longitudeValue);
             
             if (longitude < -81.5 || longitude > -68.5) {
                 Swal.fire({
@@ -315,7 +303,6 @@ const Stores = ({ ubigeos = [] }) => {
 
             // Truncar a 8 decimales para cumplir con la BD
             longitude = Math.round(longitude * 100000000) / 100000000;
-            console.log("Longitud truncada:", longitude);
         }
 
         const selectedUbigeo = ubigeos.find(
@@ -326,13 +313,9 @@ const Stores = ({ ubigeos = [] }) => {
         
         // Debug: Verificar ID antes de enviarlo
         const idValue = idRef.current.value;
-        console.log("DEBUG ID - Valor del ID a enviar:", idValue, "Tipo:", typeof idValue, "Vacío?:", !idValue);
         
         if (idRef.current.value) {
             formData.append("id", idRef.current.value);
-            console.log("DEBUG ID - ID agregado al FormData:", idRef.current.value);
-        } else {
-            console.log("DEBUG ID - No se agrega ID al FormData (valor vacío)");
         }
         
         formData.append("name", nameRef.current.value);
@@ -360,12 +343,9 @@ const Stores = ({ ubigeos = [] }) => {
             }
         }
 
-        // Debug: Mostrar los datos que se van a enviar
-        console.log("Datos a enviar:");
-        console.log("- Latitud:", latitude);
-        console.log("- Longitud:", longitude);
+     
         for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
+           // let pair from data (pair[0] + ': ' + pair[1]);
         }
 
         const result = await storesRest.save(formData);
@@ -408,8 +388,7 @@ const Stores = ({ ubigeos = [] }) => {
         const lat = event.latLng.lat();
         const lng = event.latLng.lng();
 
-        console.log("Coordenadas seleccionadas:", { lat, lng });
-
+       
         // Actualizar la posición del marcador
         setMarkerPosition({ lat, lng });
 
@@ -505,26 +484,18 @@ const Stores = ({ ubigeos = [] }) => {
         const integerPart = parts[0];
         const decimalPart = parts[1] || '';
 
-        console.log(`Validando coordenada: ${value}`);
-        console.log(`Parte entera: ${integerPart} (${integerPart.length} dígitos)`);
-        console.log(`Parte decimal: ${decimalPart} (${decimalPart.length} dígitos)`);
-        console.log(`Total permitido: ${totalDigits}, decimales permitidos: ${decimalPlaces}`);
-
         // Para coordenadas geográficas, ser más flexible con los decimales
         // Truncar los decimales si exceden el límite permitido
         if (decimalPart.length > decimalPlaces) {
-            console.log(`Advertencia: Truncando decimales de ${decimalPart.length} a ${decimalPlaces} dígitos`);
             // No retornar false, sino permitir el truncamiento automático
         }
 
         // Verificar que no exceda los dígitos enteros permitidos
         const maxIntegerDigits = totalDigits - decimalPlaces;
         if (integerPart.length > maxIntegerDigits) {
-            console.log(`Error: Excede dígitos enteros permitidos (${integerPart.length} > ${maxIntegerDigits})`);
             return false;
         }
 
-        console.log("Coordenada válida (se truncará automáticamente si es necesario)");
         return true;
     };
 

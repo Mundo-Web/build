@@ -226,7 +226,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
                     response.totalCount
                 ),
             });
-            console.log(response);
+           
             setCollections(response?.summary.collections);
             setBrands(response?.summary.brands);
             setCategories(response?.summary.categories);

@@ -9,7 +9,6 @@ export default function MobileMenuSF({ search, setSearch, pages, items, headerPo
 
     const handleCategoryClick = (categoryName) => {
         setSelectedSubcategory(categoryName);
-        console.log(selectedSubcategory);
         setSelectedCategory(categoryName);
         setMenuLevel("subcategories");
     };

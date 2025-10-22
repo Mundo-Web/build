@@ -37,7 +37,7 @@ export default function ResetPasswordSimple() {
                 showConfirmButton: false,
                 timer: 3000,
             });
-    }, [null]);
+    }, []);
 
     useEffect(() => {
         // Obtener los parámetros de la URL

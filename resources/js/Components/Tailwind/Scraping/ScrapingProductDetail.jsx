@@ -26,7 +26,7 @@ export default function ScrapingProductDetail({ item, setCart, cart }) {
     useEffect(() => {
         // Recuperar el dato oculto desde sessionStorage
         const storedUrl = sessionStorage.getItem("product_url");
-        console.log(storedUrl)
+      
         if (storedUrl) {
             setUrl(storedUrl);
             sessionStorage.removeItem("product_url"); // Limpiar después de usarlo

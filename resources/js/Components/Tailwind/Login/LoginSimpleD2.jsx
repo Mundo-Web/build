@@ -35,7 +35,7 @@ export default function LoginSimpleD2() {
                 showConfirmButton: false,
                 timer: 3000,
             });
-    }, [null]);
+    }, []);
 
     const onLoginSubmit = async (e) => {
         e.preventDefault();

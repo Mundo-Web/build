@@ -108,7 +108,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
             const request = {
                 id: item?.id,
             };
-            console.log(request);
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida
@@ -140,7 +139,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
             const relations = response;
 
             setRelationsItems(Object.values(relations));
-            console.log(relations);
         } catch (error) {
             return;
             // Mostrar un mensaje de error al usuario si es necesario
@@ -749,7 +747,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 }`}
                                             style={{ listStyleType: "disc" }}
                                         >
-                                            {console.log(item?.specifications)}
                                             {item?.specifications.map(
                                                 (spec, index) =>
                                                     spec.type ===

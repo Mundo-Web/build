@@ -701,7 +701,7 @@
                     "class_description",
                     "class_overlay"
                 ],
-                "using": {
+               "using": {
                     "model": "Slider",
                     "fields": [
                         "name",
@@ -710,7 +710,9 @@
                         "bg_image_mobile",
                         "button_text",
                         "button_link",
-                        "order_index"
+                        "order_index",
+                        "title_color",
+                        "description_color"
                     ]
                 },
                 "generals": [
@@ -1513,7 +1515,17 @@
                     "category_description",
                     "product_title",
                     "product_description",
-                    "button_text"
+                    "button_text",
+                    "type_card_product",
+                    "class_hero_title",
+                    "class_hero_subtitle",
+                    "class_category_title",
+                    "class_category_description",
+                    "class_product_title",
+                    "class_product_description",
+                    "class_category_card_title",
+                    "class_category_card_description",
+                    "class_category_card_selected"
                 ],
                 "options": [
                     {
@@ -2695,7 +2707,12 @@
                 "image": "product-detail-huaillys.png",
                 "data": [
                     "link_cart",
-                    "background"
+                    "background",
+                    "product_type_list",
+                    "title_related",
+                    "description_related",
+                    "link_text_related",
+                    "button_text_related"
                 ],
                 "using": {
                     "model": "Item",
@@ -2916,6 +2933,7 @@
                     "class_card_container",
                     "class_card_title",
                     "class_card_description",
+                    "class_card_data",
                     "class_card_icon",
                     "map_title",
                     "map_description"
@@ -2981,6 +2999,32 @@
                     "title",
                     "description"
                 ]
+            },
+            {
+                "id": "FaqModern",
+                "name": "FAQ Modern - Accordion Moderno",
+                "image": "faq-modern.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_faq_answer",
+                    "show_contact_cta"
+                ]
+            },
+            {
+                "id": "FaqChat",
+                "name": "FAQ Chat - Estilo Conversacional",
+                "image": "faq-chat.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_faq_answer",
+                    "show_contact_cta"
+                ]
             }
         ]
     },
@@ -3010,7 +3054,8 @@
                     "second_title",
                     "second_description",
                     "bool:show_seen",
-                    "class_title"
+                    "class_title",
+                    "class_second_title"
                 ]
             },
             {
@@ -3317,6 +3362,28 @@
                 "image": "about-huaillys.png",
                 "data": [
                     "strengths_title"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
+                "id": "AboutModern",
+                "name": "About Modern - Completo con Secciones",
+                "image": "about-modern.png",
+                "data": [
+                    "class_hero_title",
+                    "class_hero_description",
+                    "class_historia_title",
+                    "class_historia_description",
+                    "class_valores_title",
+                    "class_valores_description",
+                    "class_mision_title",
+                    "class_mision_description",
+                    "class_vision_title",
+                    "class_vision_description",
+                    "class_equipo_title",
+                    "class_equipo_description"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -3846,6 +3913,102 @@
                 ],
                 "using": {
                     "model": "Item",
+                    "type": "many"
+                }
+            }
+        ]
+    },
+    {
+        "id": "innovation",
+        "icon": "mdi mdi-lightbulb-on",
+        "name": "Innovaciones",
+        "options": [
+            {
+                "id": "InnovationGrid",
+                "name": "Grid de Innovaciones",
+                "image": "innovation-grid.png",
+                "data": [
+                    "title",
+                    "title_color",
+                    "subtitle",
+                    "subtitle_color",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "InnovationSimple",
+                "name": "Lista Simple",
+                "image": "innovation-simple.png",
+                "data": [
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "InnovationCarousel",
+                "name": "Carrusel de Innovaciones",
+                "image": "innovation-carousel.png",
+                "data": [
+                    "title",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            }
+        ]
+    },
+    {
+        "id": "service",
+        "icon": "mdi mdi-cog",
+        "name": "Servicios",
+        "options": [
+            {
+                "id": "ServiceGrid",
+                "name": "Grid de Servicios",
+                "image": "service-grid.png",
+                "data": [
+                    "title",
+                    "title_color",
+                    "subtitle",
+                    "subtitle_color",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceSimple",
+                "name": "Lista Simple",
+                "image": "service-simple.png",
+                "data": [
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceCarousel",
+                "name": "Carrusel de Servicios",
+                "image": "service-carousel.png",
+                "data": [
+                    "title",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
                     "type": "many"
                 }
             }
