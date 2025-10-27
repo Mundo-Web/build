@@ -142,7 +142,8 @@
                     "showCategories",
 
                     "description",
-                    "icon"
+                    "icon",
+                    "class_container"
                 ],
                 "using": {
                     "model": "Category",
@@ -1984,7 +1985,9 @@
                     "cardType",
                     "show_categories",
                     "button_top",
-                    "button_bottom"
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name"
                 ],
                 "using": {
                     "model": "Item",

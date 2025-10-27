@@ -178,9 +178,9 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
             <nav
                 className={
                     `${showOnlyTagsMobile
-                        ? " block w-full relative md:block bg-white font-paragraph text-sm"
-                        : " relative w-full md:block bg-white font-paragraph text-sm"
-                    }`
+                        ? " block w-full relative md:block  font-paragraph text-sm"
+                        : " relative w-full md:block  font-paragraph text-sm"
+                    } ${data?.class_container || 'bg-white customtext-neutral'}`
                 }
                 ref={menuRef}
             >
@@ -260,7 +260,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                     {data?.showCategories &&
                                         <li className="relative py-3">
                                             <button
-                                                className="font-semibold customtext-neutral-dark flex items-center gap-2 hover:customtext-primary pr-6 transition-colors duration-300 relative  "
+                                                className="font-semibold  flex items-center gap-2  pr-6 transition-colors duration-300 relative  "
                                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                                             >
                                                 Categorías
@@ -280,7 +280,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                                                     </div>
                                                                     <div>
                                                                         <h3 className="text-2xl font-title font-bold customtext-primary mb-1">Categorías</h3>
-                                                                        <p className="customtext-neutral-dark">{data?.description || "Encuentra todo lo que necesitas para el cuidado de tu mascota"}</p>
+                                                                        <p className="">{data?.description || "Encuentra todo lo que necesitas para el cuidado de tu mascota"}</p>
                                                                     </div>
                                                                 </div>
                                                                 <button
@@ -328,7 +328,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
 
                                                                                     {/* Texto centrado */}
                                                                                     <div className="absolute inset-0 flex items-center justify-center">
-                                                                                        <h3 className="customtext-neutral-dark bg-accent rounded-full text-sm font-bold text-center px-4 py-2 transform group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
+                                                                                        <h3 className=" bg-accent rounded-full text-sm font-bold text-center px-4 py-2 transform group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
                                                                                             {category.name}
                                                                                         </h3>
                                                                                     </div>
@@ -365,7 +365,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
 
                                                                                                     {/* Texto de subcategoría */}
                                                                                                     <div className="flex-1">
-                                                                                                        <span className="text-sm font-medium customtext-neutral-dark group-hover:customtext-primary transition-colors duration-300">
+                                                                                                        <span className="text-sm font-medium  group- transition-colors duration-300">
                                                                                                             {subcategory.name}
                                                                                                         </span>
                                                                                                     </div>
@@ -379,7 +379,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                                                                             {category.subcategories.length > 3 && (
                                                                                                 <a
                                                                                                     href={`/catalogo?category=${category.slug}`}
-                                                                                                    className="text-center p-2 text-sm customtext-primary hover:customtext-primary font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-all duration-300"
+                                                                                                    className="text-center p-2 text-sm customtext-primary  font-medium border border-dashed border-primary/30 rounded-lg hover:bg-primary/5 transition-all duration-300"
                                                                                                 >
                                                                                                     Ver {category.subcategories.length - 3} más...
                                                                                                 </a>
@@ -404,7 +404,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
 
                                                                     {isLoadingProducts ? (
                                                                         <div className="flex items-center justify-center py-8">
-                                                                            <div className="flex items-center gap-2 customtext-neutral-dark">
+                                                                            <div className="flex items-center gap-2 ">
                                                                                 <div className="w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full animate-spin"></div>
                                                                                 <span>Cargando productos destacados...</span>
                                                                             </div>
@@ -420,7 +420,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                                                             ))}
                                                                         </div>
                                                                     ) : (
-                                                                        <div className="text-center py-8 customtext-neutral-dark">
+                                                                        <div className="text-center py-8 ">
                                                                             <div className="text-4xl mb-2">🎁</div>
                                                                             <p>No hay productos destacados disponibles</p>
                                                                         </div>
@@ -442,7 +442,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                                 <a
                                                     href={page.path}
                                                     className={
-                                                        "font-semibold customtext-primary hover:customtext-primary cursor-pointer transition-all duration-300"
+                                                        "font-semibold   cursor-pointer transition-all duration-300"
                                                     }
                                                 >
                                                     {page.name}
