@@ -123,13 +123,40 @@ class GalleryController extends BasicController
             if (!$request->hasFile('image')) throw new Exception('Debe cargar una imagen válida');
             $file = $request->file('image');
             $name = $request->name;
+            $convertToPng = $request->input('convert_to_png', false);
 
             $directory = public_path('assets/resources');
             if (!is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
 
-            file_put_contents($directory . '/' . $name, file_get_contents($file));
+            // Si se solicita convertir a PNG
+            if ($convertToPng) {
+                // Crear imagen desde el archivo subido
+                $imageData = file_get_contents($file);
+                $sourceImage = imagecreatefromstring($imageData);
+                
+                if ($sourceImage === false) {
+                    throw new Exception('No se pudo procesar la imagen');
+                }
+                
+                // Asegurar que el nombre termine en .png
+                if (!str_ends_with(strtolower($name), '.png')) {
+                    $name = pathinfo($name, PATHINFO_FILENAME) . '.png';
+                }
+                
+                // Guardar como PNG
+                $targetPath = $directory . '/' . $name;
+                if (!imagepng($sourceImage, $targetPath)) {
+                    throw new Exception('Error al guardar la imagen como PNG');
+                }
+                
+                // Liberar memoria
+                imagedestroy($sourceImage);
+            } else {
+                // Guardar archivo original
+                file_put_contents($directory . '/' . $name, file_get_contents($file));
+            }
         });
         return response($response->toArray(), $response->status);
     }

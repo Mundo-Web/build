@@ -55,7 +55,8 @@
       { "label": "Preguntas Frecuentes", "href": "/admin/faqs", "icon": "mdi mdi-comment-account" },
       { "label": "Testimonios", "href": "/admin/testimonies", "icon": "mdi mdi-forum" },
       { "label": "Redes Sociales", "href": "/admin/socials", "icon": "mdi mdi-web" },
-      { "label": "Estados de ventas", "href": "/admin/statuses", "icon": "mdi mdi-bell-circle" }
+      { "label": "Estados de ventas", "href": "/admin/statuses", "icon": "mdi mdi-bell-circle" },
+      {"label": "Trabaja con Nosotros", "href": "/admin/job-applications", "icon": "mdi mdi-briefcase-search" }
     ]
   },
   {

@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
 // Public 
 use App\Http\Controllers\AuthController;
@@ -115,6 +116,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/coupons', [AdminCouponController::class, 'reactView'])->name('Admin/Coupons.jsx');
     Route::get('/discount-rules', [AdminDiscountRulesController::class, 'reactView'])->name('Admin/DiscountRules.jsx');
     Route::get('/ads', [AdminAdController::class, 'reactView'])->name('Admin/Ads.jsx');
+    Route::get('/job-applications', [AdminJobApplicationController::class, 'reactView'])->name('Admin/JobApplications.jsx');
 
     Route::get('/combos', [AdminComboController::class, 'reactView'])->name('Admin/Combos.jsx');
 

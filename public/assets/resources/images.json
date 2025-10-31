@@ -52,5 +52,14 @@
         "src": "subscribe.png",
         "fit": "cover",
         "aspect": "2\/3"
+    },
+    {
+        "name": "Imagen Formulario de  Trabajo",
+        "title": "Imagen Formulario de  Trabajo",
+        "filename": "job-application",
+        "description": "Imagen de formulario de trabajo",
+        "src": "job-application.png",
+        "fit": "cover",
+        "aspect": "9\/16"
     }
 ]

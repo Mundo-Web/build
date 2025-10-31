@@ -77,7 +77,8 @@
                     "copyright"
                 ],
                 "data": [
-                    "background"
+                    "class_container",
+                    "showJobApplicationButton"
                 ]
             },
             {

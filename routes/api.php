@@ -59,9 +59,11 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\FillableController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
 use App\Http\Controllers\AuthClientController;
+use App\Http\Controllers\JobApplicationController;
 // Public
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
@@ -128,6 +130,9 @@ Route::post('/signup', [AuthController::class, 'signup']);
 
 Route::post('/login-client', [AuthClientController::class, 'login']);
 Route::post('/signup-client', [AuthClientController::class, 'signup']);
+
+// Job Applications
+Route::post('/job-applications', [JobApplicationController::class, 'save']);
 Route::post('/forgot-password-client', [AuthClientController::class, 'forgotPassword']);
 Route::post('/reset-password-client', [AuthClientController::class, 'resetPassword']);
 
@@ -475,7 +480,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/socials/{field}', [AdminSocialController::class, 'boolean']);
     Route::delete('/socials/{id}', [AdminSocialController::class, 'delete']);
 
-    Route::post('/statuses', [AdminSaleStatusController::class, 'save']);
+
+    //JOB APLICATIONS
+    Route::post('/job-applications', [AdminJobApplicationController::class, 'save']);
+    Route::post('/job-applications/paginate', [AdminJobApplicationController::class, 'paginate']);
+    Route::patch('/job-applications/status', [AdminJobApplicationController::class, 'status']);
+    Route::patch('/job-applications/{field}', [AdminJobApplicationController::class, 'boolean']);
+    Route::delete('/job-applications/{id}', [AdminJobApplicationController::class, 'delete']);
+
+   Route::post('/statuses', [AdminSaleStatusController::class, 'save']);
     Route::post('/statuses/paginate', [AdminSaleStatusController::class, 'paginate']);
     Route::patch('/statuses/status', [AdminSaleStatusController::class, 'status']);
     Route::patch('/statuses/{field}', [AdminSaleStatusController::class, 'boolean']);
