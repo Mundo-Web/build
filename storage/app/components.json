@@ -2660,7 +2660,8 @@
                 "name": "ProductDetailMultivet - Tienda de Mascotas",
                 "data": [
                     "link_cart",
-                    "background"
+                    "background",
+                    "buyButton"
                 ],
                 "using": {
                     "model": "Item",

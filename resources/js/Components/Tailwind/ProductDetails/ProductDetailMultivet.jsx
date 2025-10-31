@@ -332,6 +332,28 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
         setIsAdvisorDropdownOpen(false);
     };
 
+    // Función para agregar al carrito (desde ProductDetailKatya)
+    const onAddClicked = (product) => {
+        if (!cart || !setCart) {
+            toast.error('Error al agregar al carrito');
+            return;
+        }
+
+        const newCart = structuredClone(cart);
+        const index = newCart.findIndex((x) => x.id == product?.id);
+        if (index == -1) {
+            newCart.push({ ...product, quantity: quantity });
+        } else {
+            newCart[index].quantity += quantity;
+        }
+        setCart(newCart);
+
+        toast.success('Producto agregado al carrito', {
+            description: `${product?.name} (${quantity} ${quantity === 1 ? 'unidad' : 'unidades'})`,
+            duration: 2000,
+        });
+    };
+
     // Manejar favoritos
     const toggleFavorite = () => {
         if (setFavorites && favorites) {
@@ -378,6 +400,10 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
     const discountPercentage = hasDiscount
         ? Math.round(((parseFloat(item.price) - parseFloat(item.final_price)) / parseFloat(item.price)) * 100)
         : 0;
+
+    // Verificar si el producto está en el carrito
+    const inCart = cart?.find((x) => x.id == item?.id);
+    const cartQuantity = inCart?.quantity || 0;
 
     // Preparar imágenes para galería (siguiendo estructura de ProductDetailB)
     const allImages = [
@@ -648,6 +674,23 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                             </div>
                             {/* Botones de acción Desktop */}
                             <div className="space-y-3 mt-6">
+                                {/* Botón de Comprar Ahora - Solo si buyButton es true */}
+                                {data?.buyButton && (
+                                    <button
+                                        onClick={() => onAddClicked(item)}
+                                        className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
+                                                ? 'bg-accent text-white'
+                                                : 'bg-primary text-white'
+                                            }`}
+                                    >
+                                        <ShoppingCart className="w-5 h-5" />
+                                        <span>
+                                            {inCart ? `En carrito (${cartQuantity})` : 'Comprar ahora'}
+                                        </span>
+                                    </button>
+                                )}
+
+                                {/* Botón de Cotizar */}
                                 <button
                                     ref={refs.setReference}
                                     {...getReferenceProps()}
@@ -776,15 +819,31 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                         </button>
                     </div>
                     
+                    {/* Botón de Comprar Mobile - Solo si buyButton es true */}
+                    {data?.buyButton && (
+                        <button
+                            onClick={() => onAddClicked(item)}
+                            className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
+                                    ? 'bg-secondary text-white'
+                                    : 'bg-primary customtext-neutral-dark hover:bg-accent'
+                                }`}
+                        >
+                            <ShoppingCart className="w-4 h-4" />
+                            <span className="text-sm">
+                                {inCart ? `En carrito (${cartQuantity})` : 'Comprar'}
+                            </span>
+                        </button>
+                    )}
+
                     {/* Botón de Cotizar Mobile */}
                     <button
                         ref={refsMobile.setReference}
                         {...getReferencePropsM()}
                         onClick={handleClickWhatsAppCotizarMobile}
-                        className="flex-1 bg-secondary text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95"
+                        className={`${data?.buyButton ? 'w-auto' : 'flex-1'} bg-secondary text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95`}
                     >
                         <Quote className="w-4 h-4" />
-                        <span className="text-sm">Solicitar Cotización</span>
+                        {!data?.buyButton && <span className="text-sm">Solicitar Cotización</span>}
                     </button>
 
                     {/* Dropdown de asesores Mobile */}
