@@ -1,0 +1,1 @@
+var i=Object.defineProperty;var o=(a,s,t)=>s in a?i(a,s,{enumerable:!0,configurable:!0,writable:!0,value:t}):a[s]=t;var e=(a,s,t)=>o(a,typeof s!="symbol"?s+"":s,t);import{B as p}from"./BasicRest-BML1C-ua.js";class n extends p{constructor(){super(...arguments);e(this,"path","job-applications");e(this,"is_use_notify",!1);e(this,"hasFiles",!0)}}export{n as J};

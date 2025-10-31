@@ -4,6 +4,9 @@ import { CircleCheckBig, X, Upload, CheckCircle } from "lucide-react"
 import General from "../../../Utils/General"
 import Global from "../../../Utils/Global"
 import { toast } from "sonner"
+import JobApplicationRest from "../../../Actions/JobApplicationRest"
+
+const jobApplicationRest = new JobApplicationRest()
 
 const TopBarCopyright = ({ data }) => {
   const [modalOpen, setModalOpen] = useState(false)
@@ -98,24 +101,38 @@ const TopBarCopyright = ({ data }) => {
     
     try {
       const formData = new FormData()
-      formData.append('name', nameRef.current.value)
-      formData.append('email', emailRef.current.value)
-      formData.append('phone', phoneRef.current.value)
-      formData.append('position', positionRef.current.value)
-      formData.append('message', messageRef.current.value)
       
-      if (cvRef.current.files[0]) {
+      // Capturar datos del formulario con validación
+      const name = nameRef.current?.value?.trim() || ''
+      const email = emailRef.current?.value?.trim() || ''
+      const phone = phoneRef.current?.value?.trim() || ''
+      const position = positionRef.current?.value?.trim() || ''
+      const message = messageRef.current?.value?.trim() || ''
+      
+      // Debug: verificar que los datos se capturan
+      console.log('Form data capture:', { name, email, phone, position, message })
+      
+      formData.append('name', name)
+      formData.append('email', email)
+      formData.append('phone', phone)
+      formData.append('position', position)
+      formData.append('message', message)
+      
+      if (cvRef.current?.files?.[0]) {
         formData.append('cv', cvRef.current.files[0])
+        console.log('CV file attached:', cvRef.current.files[0].name)
       }
 
-      const response = await fetch('/api/job-applications', {
-        method: 'POST',
-        body: formData
-      })
+      // Debug: mostrar contenido de FormData
+      console.log('FormData entries:')
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value)
+      }
 
-      const result = await response.json()
+      // Usar JobApplicationRest siguiendo el patrón de MessagesRest
+      const result = await jobApplicationRest.save(formData)
 
-      if (response.ok) {
+      if (result) {
         setSuccess(true)
         toast.success('¡Solicitud enviada!', {
           description: 'Gracias por tu interés. Pronto nos pondremos en contacto contigo.',
@@ -129,7 +146,7 @@ const TopBarCopyright = ({ data }) => {
         setSelectedFile(null)
       } else {
         toast.error('Error al enviar solicitud', {
-          description: result.message || 'Por favor, intenta nuevamente.',
+          description: 'Por favor, intenta nuevamente.',
         })
       }
     } catch (error) {
@@ -316,31 +333,28 @@ const TopBarCopyright = ({ data }) => {
                           </div>
                         </div>
                         
+                        {/* Botones dentro del formulario */}
+                        <div className="flex gap-4 pt-8">
+                          <button
+                            type="button"
+                            onClick={closeModal}
+                            className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-white py-4 rounded-2xl font-bold transition-all duration-300 text-base 2xl:text-lg shadow-sm hover:shadow-lg transform hover:-translate-y-0.5"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={saving}
+                            className="flex-1 bg-primary text-white py-4 rounded-2xl font-bold transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed text-base 2xl:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                          >
+                            {saving ? "Enviando..." : "Enviar solicitud"}
+                          </button>
+                        </div>
+                        
                         {/* Espacio extra para padding bottom */}
                         <div className="pb-4"></div>
                       </div>
                     </form>
-                  </div>
-                </div>
-
-                {/* Botones fijos en el bottom */}
-                <div className="p-6 pt-0 flex-shrink-0 border-t border-gray-100">
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-white py-4 rounded-2xl font-bold transition-all duration-300 text-base 2xl:text-lg shadow-sm hover:shadow-lg transform hover:-translate-y-0.5"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      form="job-application-form"
-                      disabled={saving}
-                      className="flex-1 bg-primary text-white py-4 rounded-2xl font-bold transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed text-base 2xl:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
-                    >
-                      {saving ? "Enviando..." : "Enviar solicitud"}
-                    </button>
                   </div>
                 </div>
               </>

@@ -4,7 +4,9 @@ import CreateReactScript from "../Utils/CreateReactScript";
 import BaseAdminto from "@Adminto/Base";
 import Table from "../Components/Adminto/Table";
 import Modal from "../Components/Adminto/Modal";
-
+import DxButton from "../Components/dx/DxButton";
+import SwitchFormGroup from "@Adminto/form/SwitchFormGroup";
+import ReactAppend from "../Utils/ReactAppend";
 import Swal from "sweetalert2";
 import JobApplicationsRest from "../Actions/Admin/JobApplicationsRest";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
@@ -27,8 +29,10 @@ const JobApplications = () => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [currentCV, setCurrentCV] = useState(null);
+    const [isViewing, setIsViewing] = useState(false);
 
-    const onModalOpen = (data) => {
+    const onModalOpen = (data, viewOnly = false) => {
+        setIsViewing(viewOnly);
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
@@ -82,9 +86,9 @@ const JobApplications = () => {
             value,
         });
 
-        if (!result) {
-            $(gridRef.current).dxDataGrid("instance").refresh();
-        }
+        if (!result) return;
+        
+        $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
     const onDeleteClicked = async (row) => {
@@ -107,7 +111,8 @@ const JobApplications = () => {
 
     const downloadCV = (cv) => {
         if (!cv) return;
-        window.open(`/storage/documents/cv/${cv}`, '_blank');
+        // Usar la ruta API del BasicController->media() como las imágenes
+        window.open(`/api/job-applications/media/${cv}`, '_blank');
     };
 
     return (
@@ -188,12 +193,14 @@ const JobApplications = () => {
                         allowFiltering: false,
                         cellTemplate: (container, { data }) => {
                             if (data.cv) {
-                                const button = $("<button>")
-                                    .addClass("btn btn-sm btn-info")
-                                    .html('<i class="fa fa-download"></i>')
-                                    .attr('title', 'Descargar CV')
-                                    .on("click", () => downloadCV(data.cv));
-                                container.append(button);
+                                container.append(
+                                    DxButton({
+                                        className: "btn btn-xs btn-soft-info",
+                                        title: "Descargar CV",
+                                        icon: "fa fa-download",
+                                        onClick: () => downloadCV(data.cv),
+                                    })
+                                );
                             } else {
                                 container.text('Sin CV');
                             }
@@ -205,17 +212,19 @@ const JobApplications = () => {
                         dataType: "boolean",
                         width: "100px",
                         cellTemplate: (container, { data }) => {
-                            const switchComponent = $("<div>").dxSwitch({
-                                value: data.reviewed,
-                                onValueChanged: ({ value, previousValue }) => {
-                                    onReviewedChange({
-                                        id: data.id,
-                                        value,
-                                        previous: previousValue,
-                                    });
-                                },
-                            });
-                            container.append(switchComponent);
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.reviewed == 1}
+                                    onChange={() =>
+                                        onReviewedChange({
+                                            id: data.id,
+                                            value: !data.reviewed,
+                                        })
+                                    }
+                                />
+                            );
                         },
                     },
                     {
@@ -229,17 +238,23 @@ const JobApplications = () => {
                         caption: "Acciones",
                         width: "100px",
                         cellTemplate: (container, { data }) => {
-                            const editButton = $("<button>")
-                                .addClass("btn btn-sm btn-warning me-2")
-                                .html('<i class="fa fa-edit"></i>')
-                                .on("click", () => onModalOpen(data));
-
-                            const deleteButton = $("<button>")
-                                .addClass("btn btn-sm btn-danger")
-                                .html('<i class="fa fa-trash"></i>')
-                                .on("click", () => onDeleteClicked(data));
-
-                            container.append(editButton, deleteButton);
+                            container.css("text-overflow", "unset");
+                            container.append(
+                                DxButton({
+                                    className: "btn btn-xs btn-soft-info",
+                                    title: "Ver detalles",
+                                    icon: "fa fa-eye",
+                                    onClick: () => onModalOpen(data, true),
+                                })
+                            );
+                            container.append(
+                                DxButton({
+                                    className: "btn btn-xs btn-soft-danger",
+                                    title: "Eliminar",
+                                    icon: "fa fa-trash",
+                                    onClick: () => onDeleteClicked(data),
+                                })
+                            );
                         },
                         allowFiltering: false,
                         allowExporting: false,
@@ -248,8 +263,9 @@ const JobApplications = () => {
             />
             <Modal
                 modalRef={modalRef}
-                title={isEditing ? "Editar solicitud" : "Agregar solicitud"}
+                title={isViewing ? "Ver solicitud" : (isEditing ? "Editar solicitud" : "Agregar solicitud")}
                 onSubmit={onModalSubmit}
+                hideFooter={isViewing}
             >
                 <input ref={idRef} type="hidden" />
                 <div className="row">
@@ -258,6 +274,7 @@ const JobApplications = () => {
                             eRef={nameRef}
                             label="Nombre completo"
                             required
+                            disabled={isViewing}
                         />
                     </div>
                     <div className="col-md-6">
@@ -266,6 +283,7 @@ const JobApplications = () => {
                             label="Email"
                             type="email"
                             required
+                            disabled={isViewing}
                         />
                     </div>
                     <div className="col-md-6">
@@ -273,12 +291,14 @@ const JobApplications = () => {
                             eRef={phoneRef}
                             label="Teléfono"
                             type="tel"
+                            disabled={isViewing}
                         />
                     </div>
                     <div className="col-md-6">
                         <InputFormGroup
                             eRef={positionRef}
                             label="Posición deseada"
+                            disabled={isViewing}
                         />
                     </div>
                     <div className="col-md-12">
@@ -286,26 +306,65 @@ const JobApplications = () => {
                             eRef={messageRef}
                             label="Mensaje"
                             rows={3}
+                            disabled={isViewing}
                         />
                     </div>
-                    <div className="col-md-12">
-                        <div className="mb-3">
-                            <label className="form-label">
-                                CV (PDF, DOC, DOCX)
-                                {currentCV && (
-                                    <span className="text-muted ms-2">
-                                        (Actual: {currentCV})
-                                    </span>
-                                )}
-                            </label>
-                            <input
-                                ref={cvRef}
-                                type="file"
-                                className="form-control"
-                                accept=".pdf,.doc,.docx"
-                            />
+                    {!isViewing && (
+                        <div className="col-md-12">
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    CV (PDF, DOC, DOCX)
+                                    {currentCV && (
+                                        <span className="text-muted ms-2">
+                                            (Actual: {currentCV})
+                                        </span>
+                                    )}
+                                </label>
+                                <input
+                                    ref={cvRef}
+                                    type="file"
+                                    className="form-control"
+                                    accept=".pdf,.doc,.docx"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
+                    {isViewing && currentCV && (
+                        <div className="col-md-12">
+                            <div className="mb-3">
+                                <label className="form-label d-flex justify-content-between align-items-center">
+                                    <span>Curriculum Vitae</span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-primary"
+                                        onClick={() => downloadCV(currentCV)}
+                                    >
+                                        <i className="fa fa-download me-2"></i>
+                                        Descargar CV
+                                    </button>
+                                </label>
+                                <div className="border rounded" style={{ height: '600px' }}>
+                                    <iframe
+                                        src={`/api/job-applications/media/${currentCV}`}
+                                        className="w-100 h-100"
+                                        style={{ border: 'none' }}
+                                        title="Vista previa del CV"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {isViewing && (
+                        <div className="col-md-12 text-end">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => $(modalRef.current).modal("hide")}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    )}
                 </div>
             </Modal>
         </>

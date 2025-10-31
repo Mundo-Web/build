@@ -167,6 +167,7 @@ Route::get('/certifications/media/{uuid}', [AdminCertificationController::class,
 Route::get('/partners/media/{uuid}', [AdminCertificationController::class, 'media']);
 Route::get('/ads/media/{uuid}', [AdminAdController::class, 'media'])->withoutMiddleware('throttle');
 Route::get('/stores/media/{uuid}', [AdminStoreController::class, 'media']);
+Route::get('/job-applications/media/{uuid}', [AdminJobApplicationController::class, 'media']);
 
 Route::post('/posts/paginate', [PostController::class, 'paginate']);
 Route::post('/items/paginate', [ItemController::class, 'paginate']);
