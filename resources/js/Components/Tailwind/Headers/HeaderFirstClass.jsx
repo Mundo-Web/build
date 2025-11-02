@@ -3,7 +3,7 @@ import { Menu, X, ChevronDown, User, Building, HelpCircle, MapPin, Globe, Truck,
 
 const HeaderFirstClass = ({
     data,
-    items,
+    items = [], // ServiceCategories con sus services
     cart,
     setCart,
     pages,
@@ -32,6 +32,9 @@ const HeaderFirstClass = ({
     const address = addressObj?.description ?? null;
 
     const totalCount = cart.reduce((acc, item) => Number(acc) + Number(item.quantity), 0);
+
+    // Verificar si hay servicios
+    const hasServices = items && items.length > 0 && items.some(cat => cat.services && cat.services.length > 0);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -90,34 +93,17 @@ const HeaderFirstClass = ({
         };
     }, []);
 
-    const megaMenuSections = [
-        {
-            title: "1. Personas",
-            icon: User,
-            items: [
-                { name: "Casillero virtual", description: "Tu dirección personal en Miami", icon: MapPin, path: "/casillero-virtual" },
-                { name: "Envíos de USA a Perú", description: "Servicio directo y confiable", icon: Globe, path: "/envios-usa-peru" },
-                { name: "Envíos de Perú a USA", description: "Exporta fácilmente", icon: Truck, path: "#" }
-            ]
-        },
-        {
-            title: "2. Empresas",
-            icon: Building,
-            items: [
-                { name: "Importación en modalidad courier", description: "Soluciones empresariales", icon: Globe, path: "#" },
-                { name: "Exportación en modalidad courier", description: "Expande tu negocio", icon: Truck, path: "#" }
-            ]
-        },
-        {
-            title: "3. Enlaces de Interés",
-            icon: HelpCircle,
-            items: [
-                { name: "Tarifas", description: "Consulta nuestros precios", icon: DollarSign, path: "#" },
-                { name: "Preguntas frecuentes", description: "Resuelve tus dudas", icon: MessageCircle, path: "#" },
-                { name: "PQR", description: "Peticiones, quejas y reclamos", icon: FileText, path: "#" }
-            ]
-        }
-    ];
+    // Iconos por defecto para fallback
+    const iconMap = {
+        'personas': User,
+        'empresas': Building,
+        'enlaces-interes': HelpCircle,
+        'enlaces-de-interes': HelpCircle,
+    };
+
+    const getIconForCategory = (slug) => {
+        return iconMap[slug?.toLowerCase()] || HelpCircle;
+    };
 
     const handleLogoClick = () => {
         window.location.href = '/';
@@ -172,22 +158,24 @@ const HeaderFirstClass = ({
 
                         {/* Desktop Navigation */}
                         <nav className="hidden lg:flex items-center space-x-8">
-                            {/* Servicios con Mega Menu */}
-                            <div 
-                                className="relative"
-                                onMouseEnter={handleMouseEnter}
-                                onMouseLeave={handleMouseLeave}
-                            >
-                                <button
-                                    ref={servicesButtonRef}
-                                    className="flex items-center customtext-primary hover:text-secondary transition-colors duration-200 py-2 font-medium cursor-pointer group"
-                                    aria-expanded={isMegaMenuOpen}
-                                    aria-haspopup="true"
+                            {/* Servicios con Mega Menu - Solo si hay servicios */}
+                            {hasServices && (
+                                <div 
+                                    className="relative"
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
                                 >
-                                    Servicios
-                                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 group-hover:text-secondary ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
-                                </button>
-                            </div>
+                                    <button
+                                        ref={servicesButtonRef}
+                                        className="flex items-center customtext-primary hover:text-secondary transition-colors duration-200 py-2 font-medium cursor-pointer group"
+                                        aria-expanded={isMegaMenuOpen}
+                                        aria-haspopup="true"
+                                    >
+                                        Servicios
+                                        <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 group-hover:text-secondary ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                </div>
+                            )}
                             
                             {/* Menu principal */}
                             <a 
@@ -240,7 +228,7 @@ const HeaderFirstClass = ({
                     </div>
 
                     {/* Mega Menu */}
-                    {isMegaMenuOpen && (
+                    {isMegaMenuOpen && hasServices && (
                         <div
                             ref={megaMenuRef}
                             className="absolute left-0 right-0 top-full bg-white shadow-2xl border-t border-gray-100 z-50 animate-mega-menu-slide-down"
@@ -250,44 +238,66 @@ const HeaderFirstClass = ({
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                                 {/* Main Sections Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                                    {megaMenuSections.map((section, sectionIndex) => {
-                                        const SectionIcon = section.icon;
+                                    {items.filter(cat => cat.services && cat.services.length > 0).map((category, sectionIndex) => {
+                                        const SectionIcon = getIconForCategory(category.slug);
                                         return (
                                             <div 
-                                                key={sectionIndex} 
+                                                key={category.id} 
                                                 className="space-y-4 animate-section-enter-left"
                                                 style={{ animationDelay: `${sectionIndex * 200 + 300}ms` }}
                                             >
                                                 <div className="flex items-center space-x-2 pb-3 border-b-2 border-primary/20 animate-section-header-slide" style={{ animationDelay: `${sectionIndex * 200 + 400}ms` }}>
-                                                    <SectionIcon className="h-5 w-5 customtext-primary animate-icon-spin-in" style={{ animationDelay: `${sectionIndex * 200 + 500}ms` }} />
-                                                    <h3 className="text-lg font-bold text-gray-900 animate-title-typewriter" style={{ animationDelay: `${sectionIndex * 200 + 600}ms` }}>{section.title}</h3>
+                                                    {category.image ? (
+                                                        <img 
+                                                            src={`/storage/images/service_category/${category.image}`} 
+                                                            alt={category.name}
+                                                            className="h-5 w-5 object-contain"
+                                                            onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
+                                                        />
+                                                    ) : (
+                                                        <SectionIcon 
+                                                            className="h-5 w-5 customtext-primary animate-icon-spin-in" 
+                                                            style={{ animationDelay: `${sectionIndex * 200 + 500}ms` }} 
+                                                        />
+                                                    )}
+                                                    <h3 className="text-lg font-bold text-gray-900 animate-title-typewriter" style={{ animationDelay: `${sectionIndex * 200 + 600}ms` }}>
+                                                        {sectionIndex + 1}. {category.name}
+                                                    </h3>
                                                 </div>
                                                 <ul className="space-y-3">
-                                                    {section.items.map((item, itemIndex) => {
-                                                        const ItemIcon = item.icon;
-                                                        return (
-                                                            <li 
-                                                                key={itemIndex}
-                                                                className="animate-item-pop-in"
-                                                                style={{ animationDelay: `${sectionIndex * 200 + itemIndex * 150 + 700}ms` }}
+                                                    {category.services.filter(s => s.visible && s.status).map((service, itemIndex) => (
+                                                        <li 
+                                                            key={service.id}
+                                                            className="animate-item-pop-in"
+                                                            style={{ animationDelay: `${sectionIndex * 200 + itemIndex * 150 + 700}ms` }}
+                                                        >
+                                                            <button
+                                                                onClick={() => handleMenuItemClick(service.path)}
+                                                                className="group flex items-start space-x-3 p-3 rounded-lg hover:bg-primary/5 transition-all duration-300 border border-transparent hover:border-primary/20 hover:scale-105 hover:shadow-lg transform hover:-translate-y-1 w-full text-left"
                                                             >
-                                                                <button
-                                                                    onClick={() => handleMenuItemClick(item.path)}
-                                                                    className="group flex items-start space-x-3 p-3 rounded-lg hover:bg-primary/5 transition-all duration-300 border border-transparent hover:border-primary/20 hover:scale-105 hover:shadow-lg transform hover:-translate-y-1 w-full text-left"
-                                                                >
-                                                                    <ItemIcon className="h-5 w-5 customtext-primary mt-0.5 group-hover:text-secondary transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                                                                    <div>
-                                                                        <div className="text-sm font-semibold text-gray-900 group-hover:customtext-primary transition-colors duration-300">
-                                                                            {item.name}
-                                                                        </div>
-                                                                        <div className="text-xs text-gray-500 mt-1 group-hover:text-gray-700 transition-colors duration-300">
-                                                                            {item.description}
-                                                                        </div>
+                                                                {service.image ? (
+                                                                    <img 
+                                                                        src={`/storage/images/service/${service.image}`}
+                                                                        alt={service.name}
+                                                                        className="h-5 w-5 mt-0.5 object-contain group-hover:scale-125 transition-all duration-300"
+                                                                        onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
+                                                                    />
+                                                                ) : (
+                                                                    <div className="h-5 w-5 mt-0.5 customtext-primary group-hover:text-secondary transition-all duration-300 group-hover:scale-125 group-hover:rotate-12 flex items-center justify-center">
+                                                                        <Globe className="h-full w-full" />
                                                                     </div>
-                                                                </button>
-                                                            </li>
-                                                        );
-                                                    })}
+                                                                )}
+                                                                <div>
+                                                                    <div className="text-sm font-semibold text-gray-900 group-hover:customtext-primary transition-colors duration-300">
+                                                                        {service.name}
+                                                                    </div>
+                                                                    <div className="text-xs text-gray-500 mt-1 group-hover:text-gray-700 transition-colors duration-300">
+                                                                        {service.description}
+                                                                    </div>
+                                                                </div>
+                                                            </button>
+                                                        </li>
+                                                    ))}
                                                 </ul>
                                             </div>
                                         );
@@ -324,77 +334,36 @@ const HeaderFirstClass = ({
                     {isMenuOpen && (
                         <div className="lg:hidden py-4 border-t animate-fade-in bg-white">
                             <div className="flex flex-col space-y-4">
-                                {/* Personas */}
-                                <div className="space-y-2">
-                                    <div className="text-sm font-bold customtext-primary px-2 flex items-center">
-                                        <User className="h-4 w-4 mr-2" />
-                                        1. Personas
-                                    </div>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('/casillero-virtual')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Casillero virtual
-                                    </button>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('/envios-usa-peru')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Envíos de USA a Perú
-                                    </button>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('#')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Envíos de Perú a USA
-                                    </button>
-                                </div>
-                                
-                                {/* Empresas */}
-                                <div className="space-y-2">
-                                    <div className="text-sm font-bold customtext-primary px-2 flex items-center">
-                                        <Building className="h-4 w-4 mr-2" />
-                                        2. Empresas
-                                    </div>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('#')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Importación en modalidad courier
-                                    </button>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('#')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Exportación en modalidad courier
-                                    </button>
-                                </div>
-
-                                {/* Enlaces de Interés */}
-                                <div className="space-y-2">
-                                    <div className="text-sm font-bold customtext-primary px-2 flex items-center">
-                                        <HelpCircle className="h-4 w-4 mr-2" />
-                                        3. Enlaces de Interés
-                                    </div>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('#')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Tarifas
-                                    </button>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('#')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        Preguntas frecuentes
-                                    </button>
-                                    <button 
-                                        onClick={() => handleMenuItemClick('#')}
-                                        className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
-                                    >
-                                        PQR
-                                    </button>
-                                </div>
+                                {/* Renderizar categorías dinámicas si hay servicios */}
+                                {hasServices && items.filter(cat => cat.services && cat.services.length > 0).map((category, index) => {
+                                    const CategoryIcon = getIconForCategory(category.slug);
+                                    return (
+                                        <div key={category.id} className="space-y-2">
+                                            <div className="text-sm font-bold customtext-primary px-2 flex items-center">
+                                                {category.image ? (
+                                                    <img 
+                                                        src={`/storage/images/service_category/${category.image}`} 
+                                                        alt={category.name}
+                                                        className="h-4 w-4 mr-2 object-contain"
+                                                        onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
+                                                    />
+                                                ) : (
+                                                    <CategoryIcon className="h-4 w-4 mr-2" />
+                                                )}
+                                                {index + 1}. {category.name}
+                                            </div>
+                                            {category.services.filter(s => s.visible && s.status).map((service) => (
+                                                <button 
+                                                    key={service.id}
+                                                    onClick={() => handleMenuItemClick(service.path)}
+                                                    className="block w-full text-left px-6 py-2 text-sm text-gray-700 hover:customtext-primary hover:bg-gray-50 rounded transition-colors duration-200"
+                                                >
+                                                    {service.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    );
+                                })}
 
                                 {/* Other navigation items */}
                                 <div className="border-t pt-4 space-y-2">

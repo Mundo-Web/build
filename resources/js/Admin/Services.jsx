@@ -3,6 +3,7 @@ import SwitchFormGroup from "@Adminto/form/SwitchFormGroup";
 import TextareaFormGroup from "@Adminto/form/TextareaFormGroup";
 import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 import Swal from "sweetalert2";
 import ServicesRest from "../Actions/Admin/ServicesRest";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
@@ -12,12 +13,12 @@ import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
-import SelectAPIFormGroup from "../Components/Adminto/form/SelectAPIFormGroup";
+import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import SetSelectValue from "../Utils/SetSelectValue";
 
 const servicesRest = new ServicesRest();
 
-const Services = ({ categories, subcategories }) => {
+const Services = ({ categories = [], subcategories = [] }) => {
     const gridRef = useRef();
     const modalRef = useRef();
 
@@ -27,7 +28,9 @@ const Services = ({ categories, subcategories }) => {
     const subcategoryRef = useRef();
     const nameRef = useRef();
     const descriptionRef = useRef();
+    const pathRef = useRef();
     const imageRef = useRef();
+    const backgroundImageRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -37,24 +40,33 @@ const Services = ({ categories, subcategories }) => {
         else setIsEditing(false);
 
         idRef.current.value = data?.id ?? "";
-        SetSelectValue(
-            categoryRef.current,
-            data?.category?.id,
-            data?.category?.name
-        );
-        SetSelectValue(
-            subcategoryRef.current,
-            data?.subcategory?.id,
-            data?.subcategory?.name
-        );
-        setSelectedCategory(data?.category?.id);
+        
+        // Cargar categoría y establecer selectedCategory
+        $(categoryRef.current)
+            .val(data?.service_category_id || "")
+            .trigger("change");
+        setSelectedCategory(data?.service_category_id || null);
+        
+        // Cargar subcategoría
+        setTimeout(() => {
+            $(subcategoryRef.current)
+                .val(data?.service_subcategory_id || "")
+                .trigger("change");
+        }, 100);
+        
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
+        pathRef.current.value = data?.path ?? "";
+        
         imageRef.image.src = data?.image ? `/storage/images/service/${data.image}` : '';
         imageRef.current.value = null;
+        
+        backgroundImageRef.image.src = data?.background_image ? `/storage/images/service/${data.background_image}` : '';
+        backgroundImageRef.current.value = null;
 
-        // Reset delete flags using React state - only when opening modal
+        // Reset delete flags
         if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (backgroundImageRef.resetDeleteFlag) backgroundImageRef.resetDeleteFlag();
 
         $(modalRef.current).modal("show");
     };
@@ -64,26 +76,52 @@ const Services = ({ categories, subcategories }) => {
 
         const request = {
             id: idRef.current.value || undefined,
-            service_category_id: categoryRef.current.value,
-            service_subcategory_id: subcategoryRef.current.value,
             name: nameRef.current.value,
             description: descriptionRef.current.value,
         };
 
+        // Solo agregar categoría si tiene valor
+        const categoryValue = categoryRef.current.value;
+        if (categoryValue && categoryValue !== '' && categoryValue !== 'null') {
+            request.service_category_id = categoryValue;
+        }
+
+        // Solo agregar subcategoría si tiene valor
+        const subcategoryValue = subcategoryRef.current.value;
+        if (subcategoryValue && subcategoryValue !== '' && subcategoryValue !== 'null') {
+            request.service_subcategory_id = subcategoryValue;
+        }
+
+        // Solo agregar path si tiene valor
+        const pathValue = pathRef.current.value;
+        if (pathValue && pathValue !== '') {
+            request.path = pathValue;
+        }
+
         const formData = new FormData();
         for (const key in request) {
-            if (request[key] !== undefined) {
+            if (request[key] !== undefined && request[key] !== null) {
                 formData.append(key, request[key]);
             }
         }
-        const file = imageRef.current.files[0];
-        if (file) {
-            formData.append("image", file);
+        
+        const imageFile = imageRef.current.files[0];
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+        
+        const backgroundImageFile = backgroundImageRef.current.files[0];
+        if (backgroundImageFile) {
+            formData.append("background_image", backgroundImageFile);
         }
 
-        // Check for image deletion flags using React state
+        // Check for image deletion flags
         if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
             formData.append('image_delete', 'DELETE');
+        }
+        
+        if (backgroundImageRef.getDeleteFlag && backgroundImageRef.getDeleteFlag()) {
+            formData.append('background_image_delete', 'DELETE');
         }
 
         const result = await servicesRest.save(formData);
@@ -91,6 +129,7 @@ const Services = ({ categories, subcategories }) => {
 
         // Reset delete flags after successful save
         if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (backgroundImageRef.resetDeleteFlag) backgroundImageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -171,11 +210,20 @@ const Services = ({ categories, subcategories }) => {
                         dataField: "category.name",
                         caption: "Categoría",
                         width: "120px",
-                    },
-                    {
-                        dataField: "subcategory.name",
-                        caption: "Subcategoría",
-                        width: "120px",
+                        cellTemplate: (container, { data }) => {
+                            container.html(
+                                renderToString(
+                                    <>
+                                        <b className="d-block">
+                                            {data.category?.name || 'Sin categoría'}
+                                        </b>
+                                        <small className="text-muted">
+                                            {data.subcategory?.name || 'Sin subcategoría'}
+                                        </small>
+                                    </>
+                                )
+                            );
+                        },
                     },
                     {
                         dataField: "name",
@@ -289,32 +337,53 @@ const Services = ({ categories, subcategories }) => {
                         <ImageFormGroup
                             eRef={imageRef}
                             name="image"
-                            label="Imagen"
+                            label="Imagen del Servicio"
+                            col="col-12"
+                            aspect={1}
+                        />
+                        <ImageFormGroup
+                            eRef={backgroundImageRef}
+                            name="background_image"
+                            label="Imagen de Fondo"
                             col="col-12"
                             aspect={16 / 9}
                         />
                     </div>
                     <div className="col-md-6">
-                        <SelectAPIFormGroup
+                        <SelectFormGroup
                             eRef={categoryRef}
                             label="Categoría"
-                            searchAPI="/api/admin/service-categories/paginate"
-                            searchBy="name"
                             dropdownParent="#services-modal-container"
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                        />
-                        <SelectAPIFormGroup
+                        >
+                            {categories.map((item, index) => (
+                                <option key={index} value={item.id}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </SelectFormGroup>
+                        <SelectFormGroup
                             eRef={subcategoryRef}
                             label="Subcategoría"
-                            searchAPI="/api/admin/service-subcategories/paginate"
-                            searchBy="name"
-                            filter={["service_category_id", "=", selectedCategory]}
                             dropdownParent="#services-modal-container"
-                        />
+                        >
+                            {subcategories
+                                .filter(sub => !selectedCategory || sub.service_category_id === selectedCategory)
+                                .map((item, index) => (
+                                    <option key={index} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                        </SelectFormGroup>
                         <InputFormGroup
                             eRef={nameRef}
-                            label="Servicio"
+                            label="Nombre del Servicio"
                             required
+                        />
+                        <InputFormGroup
+                            eRef={pathRef}
+                            label="Ruta (Path)"
+                            placeholder="/casillero-virtual"
                         />
                         <TextareaFormGroup
                             eRef={descriptionRef}

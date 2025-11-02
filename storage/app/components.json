@@ -476,6 +476,10 @@
                     "class_link",
                     "class_link_mobile"
                 ],
+                "using": {
+                    "model": "ServiceCategory",
+                    "with": ["services"]
+                },
                 "generals": [
                     "phone_whatsapp",
                     "message_whatsapp",
