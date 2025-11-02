@@ -11555,7 +11555,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-5hqcVTre.js",
+    "file": "assets/Testimonials-DTzs62Sy.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -11568,7 +11568,20 @@
     ],
     "dynamicImports": [
       "resources/js/Components/Tailwind/Testimonials/TestimonialsPaani.jsx",
-      "resources/js/Components/Tailwind/Testimonials/TestimonialsMultivet.jsx"
+      "resources/js/Components/Tailwind/Testimonials/TestimonialsMultivet.jsx",
+      "resources/js/Components/Tailwind/Testimonials/TestimonialsFirstClass.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Testimonials/TestimonialsFirstClass.jsx": {
+    "file": "assets/TestimonialsFirstClass--pJTheE3.js",
+    "name": "TestimonialsFirstClass",
+    "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsFirstClass.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsMultivet.jsx": {
@@ -12331,7 +12344,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CQOS8eLJ.js",
+    "file": "assets/System-D8509w5A.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

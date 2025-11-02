@@ -3879,6 +3879,35 @@
                 "using": {
                     "model": "Testimony"
                 }
+            },
+            {
+                "id": "TestimonialsFirstClass",
+                "name": "Testimonials FirstClass Courier",
+                "image": "testimonials-firstclass.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "class_section",
+                    "class_container",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_card",
+                    "class_author",
+                    "class_image",
+                    "class_name",
+                    "class_role",
+                    "class_rating",
+                    "class_text",
+                    "class_button",
+                    "class_icon",
+                    "class_dots",
+                    "class_dot_active",
+                    "class_dot_inactive"
+                ],
+                "using": {
+                    "model": "Testimony"
+                }
             }
         ]
     },
