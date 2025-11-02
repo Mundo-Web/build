@@ -464,6 +464,23 @@
                     "class_link_mobile"
                 ],
                 "generals": ["address"]
+            },
+            {
+                "id": "HeaderFirstClass",
+                "name": "Header - FirstClass Courier",
+                "image": "header-firstclass.png",
+                "data": [
+                    "class",
+                    "class_logo", 
+                    "class_menu",
+                    "class_link",
+                    "class_link_mobile"
+                ],
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "address"
+                ]
             }
         ]
     },
@@ -855,6 +872,28 @@
                         "button_text",
                         "button_link"
                     ]
+                }
+            },
+            {
+                "id": "SliderFirstClass",
+                "name": "Slider FirstClass Courier",
+                "image": "slider-firstclass.png",
+                "data": [
+                    "class_slider",
+                    "class_badge",
+                    "class_title",
+                    "class_highlight_title",
+                    "class_subtitle",
+                    "class_description",
+                    "class_button_primary",
+                    "class_button_secondary",
+                    "class_indicators",
+                    "class_arrows",
+                    "class_overlay"
+                ],
+                "using": {
+                    "model": "Slider"
+                  
                 }
             }
         ]
@@ -3259,6 +3298,25 @@
             {
                 "id": "TrackSimple",
                 "name": "Simple"
+            },
+            {
+                "id": "TrackingFirstClass",
+                "name": "Tracking FirstClass",
+                "image": "service-tracking.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_title",
+                    "class_subtitle", 
+                    "class_input",
+                    "class_button",
+                    "class_status_grid",
+                    "class_help_text"
+                ],
+                "generals": [
+                    "tracking_help_phone",
+                    "tracking_help_email"
+                ]
             }
         ]
     },
@@ -3393,6 +3451,22 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+            {
+                "id": "AboutBenefits",
+                "name": "Beneficios y Ventajas",
+                "image": "about-benefits.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_title",
+                    "class_subtitle",
+                    "class_benefits_grid",
+                    "class_benefit_card",
+                    "class_benefit_icon",
+                    "class_benefit_title",
+                    "class_benefit_description"
+                ]
             }
         ]
     },
@@ -3681,6 +3755,37 @@
                     "footer_description",
                     "copyright"
 
+                ]
+            },
+            {
+                "id": "FooterFirstClass",
+                "name": "Footer FirstClass Courier",
+                "image": "footer-firstclass.png",
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "data": [
+                    "class_footer",
+                    "class_container",
+                    "class_logo",
+                    "class_company_info",
+                    "class_services_section",
+                    "class_help_section",
+                    "class_contact_section",
+                    "class_social_links",
+                    "class_bottom_section",
+                    "class_copyright",
+                    "class_legal_links"
+                ],
+                "generals": [
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "footer_description",
+                    "copyright",
+                    "terms_conditions",
+                    "privacy_policy"
                 ]
             }
         ]
@@ -4016,6 +4121,25 @@
                     "model": "Service",
                     "type": "many"
                 }
+            },
+            {
+                "id": "ServiceSelection",
+                "name": "Selección de Servicios",
+                "image": "service-selection.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_title",
+                    "class_subtitle",
+                    "class_cards_grid",
+                    "class_card_personas",
+                    "class_card_empresas",
+                    "class_card_header",
+                    "class_card_title",
+                    "class_card_description",
+                    "class_card_button",
+                    "class_bottom_cta"
+                ]
             }
         ]
     }

@@ -25,6 +25,7 @@ const Sliders = () => {
   // Form elements ref
   const idRef = useRef()
   const nameRef = useRef()
+  const subtitleRef = useRef()
   const descriptionRef = useRef()
   const imageRef = useRef()
   const bgImageRef = useRef()
@@ -32,13 +33,14 @@ const Sliders = () => {
   const bgVideoRef = useRef()
   const buttonTextRef = useRef()
   const buttonLinkRef = useRef()
+  const secondaryButtonTextRef = useRef()
+  const secondaryButtonLinkRef = useRef()
   const titleColorRef = useRef()
   const descriptionColorRef = useRef()
-  const secondarybtnTextRef = useRef()
-  const secondarybtnUrlRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('image')
+  const [activeFormTab, setActiveFormTab] = useState('content')
   const [iframeSrc, setIframeSrc] = useState('')
 
   const onModalOpen = (data) => {
@@ -47,8 +49,10 @@ const Sliders = () => {
 
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
+    subtitleRef.current.value = data?.subtitle ?? ''
     descriptionRef.current.value = data?.description ?? ''
     setActiveTab(data?.bg_type ?? 'image')
+    setActiveFormTab('content')
     setIframeSrc(data?.bg_video ?? '')
     imageRef.current.value = null
     imageRef.image.src = data?.image ? `/storage/images/slider/${data.image}` : ''
@@ -59,6 +63,8 @@ const Sliders = () => {
     bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
     buttonTextRef.current.value = data?.button_text ?? ''
     buttonLinkRef.current.value = data?.button_link ?? ''
+    secondaryButtonTextRef.current.value = data?.secondary_button_text ?? ''
+    secondaryButtonLinkRef.current.value = data?.secondary_button_link ?? ''
     titleColorRef.current.value = data?.title_color ?? '#000000'
     descriptionColorRef.current.value = data?.description_color ?? '#000000'
 
@@ -71,9 +77,12 @@ const Sliders = () => {
     const request = {
       id: idRef.current.value || undefined,
       name: nameRef.current.value,
+      subtitle: subtitleRef.current.value,
       description: descriptionRef.current.value,
       button_text: buttonTextRef.current.value,
       button_link: buttonLinkRef.current.value,
+      secondary_button_text: secondaryButtonTextRef.current.value,
+      secondary_button_link: secondaryButtonLinkRef.current.value,
       title_color: titleColorRef.current.value,
       description_color: descriptionColorRef.current.value,
       bg_type: activeTab,
@@ -225,6 +234,7 @@ const Sliders = () => {
           dataField: 'bg_image',
           caption: 'Imagen',
           width: '90px',
+          allowFiltering: false,
           cellTemplate: (container, { data }) => {
             ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
               style={{
@@ -240,6 +250,7 @@ const Sliders = () => {
           dataField: 'bg_image_mobile',
           caption: 'Imagen Mobile',
           width: '90px',
+          allowFiltering: false,
           cellTemplate: (container, { data }) => {
             ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image_mobile}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
               style={{
@@ -255,6 +266,7 @@ const Sliders = () => {
           dataField: 'image',
           caption: 'Imagen',
           width: '90px',
+          allowFiltering: false,
           cellTemplate: (container, { data }) => {
             ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
               style={{
@@ -319,42 +331,95 @@ const Sliders = () => {
     <Modal modalRef={modalRef} title={isEditing ? 'Editar slider' : 'Agregar slider'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='sliders-container'>
         <input ref={idRef} type='hidden' />
-        <div>
-          <ul hidden={!Fillable.has('sliders', 'image') || !Fillable.has('sliders', 'bg_image') ||!Fillable.has('sliders', 'bg_video')} class="nav nav-pills navtab-bg nav-justified">
-            <li class="nav-item">
-              <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" class={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
+        
+        {/* Form Tabs Navigation */}
+        <div className="col-12 mb-3">
+          <ul className="nav nav-pills nav-fill">
+            <li className="nav-item">
+              <a 
+                href="#form-tab-content" 
+                className={`nav-link ${activeFormTab === 'content' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('content')}
+              >
+                Contenido
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#form-tab-media" 
+                className={`nav-link ${activeFormTab === 'media' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('media')}
+              >
+                Multimedia
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#form-tab-buttons" 
+                className={`nav-link ${activeFormTab === 'buttons' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('buttons')}
+              >
+                Botones
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#form-tab-colors" 
+                className={`nav-link ${activeFormTab === 'colors' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('colors')}
+              >
+                Colores
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Content Tab */}
+        <div className={`col-12 ${activeFormTab !== 'content' ? 'd-none' : ''}`}>
+          <div className='row'>
+            <TextareaFormGroup eRef={nameRef} label='Título principal' col='col-12' rows={2} required />
+            <TextareaFormGroup eRef={subtitleRef} label='Subtítulo (aparecerá resaltado)' col='col-12' rows={2} />
+            <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} col='col-12' />
+          </div>
+        </div>
+
+        {/* Media Tab */}
+        <div className={`col-12 ${activeFormTab !== 'media' ? 'd-none' : ''}`}>
+          <ul hidden={!Fillable.has('sliders', 'image') || !Fillable.has('sliders', 'bg_image') || !Fillable.has('sliders', 'bg_video')} className="nav nav-pills navtab-bg nav-justified">
+            <li className="nav-item">
+              <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" className={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
                 Imagen
               </a>
             </li>
-            <li class="nav-item">
-              <a href="#tab-video" data-bs-toggle="tab" aria-expanded="true" class={`nav-link ${activeTab == 'video' && 'active'}`} onClick={() => setActiveTab('video')}>
+            <li className="nav-item">
+              <a href="#tab-video" data-bs-toggle="tab" aria-expanded="true" className={`nav-link ${activeTab == 'video' && 'active'}`} onClick={() => setActiveTab('video')}>
                 Video
               </a>
             </li>
           </ul>
-          <div class="tab-content">
-            <div class={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
-          <div className='row'>
+          <div className="tab-content">
+            <div className={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
+              <div className='row'>
                 <ImageFormGroup 
-                hidden={!Fillable.has('sliders', 'bg_image')} 
-                eRef={bgImageRef} 
-                name="bg_image" 
-                aspect={Fillable.has('sliders', 'bg_image_mobile') ? '4/3' : '16/9'}
-                label='Imagen de fondo (Desktop)' 
-                col={Fillable.has('sliders', 'bg_image_mobile') ? 'col-md-8' : 'col-12'}
-              />
-              <ImageFormGroup 
-                hidden={!Fillable.has('sliders', 'bg_image_mobile')} 
-                eRef={bgImageMobileRef} 
-                name="bg_image_mobile" 
-                aspect='9/14'
-                label='Imagen (Mobile)' 
-                col="col-md-4"
-              />
-          </div>
+                  hidden={!Fillable.has('sliders', 'bg_image')} 
+                  eRef={bgImageRef} 
+                  name="bg_image" 
+                  aspect={Fillable.has('sliders', 'bg_image_mobile') ? '4/3' : '16/9'}
+                  label='Imagen de fondo (Desktop)' 
+                  col={Fillable.has('sliders', 'bg_image_mobile') ? 'col-md-8' : 'col-12'}
+                />
+                <ImageFormGroup 
+                  hidden={!Fillable.has('sliders', 'bg_image_mobile')} 
+                  eRef={bgImageMobileRef} 
+                  name="bg_image_mobile" 
+                  aspect='9/14'
+                  label='Imagen (Mobile)' 
+                  col="col-md-4"
+                />
+              </div>
               <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} name="image" label='Imagen' />
             </div>
-            <div hidden={!Fillable.has('sliders', 'bg_video')} class={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
+            <div hidden={!Fillable.has('sliders', 'bg_video')} className={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
               <InputFormGroup eRef={bgVideoRef} label='URL (Youtube)' type='link' onChange={e => setIframeSrc(getYTVideoId(e.target.value))} />
               <iframe src={`https://www.youtube.com/embed/${iframeSrc}`} className='w-100 rounded border mb-2' style={{
                 aspectRatio: 21 / 9
@@ -362,30 +427,50 @@ const Sliders = () => {
             </div>
           </div>
         </div>
-        <TextareaFormGroup eRef={nameRef} label='Titulo' col='col-12' rows={2} required />
-        <div className='col-sm-6'>
-          <label className='form-label'>Color del título</label>
-          <input 
-            ref={titleColorRef} 
-            type='color' 
-            className='form-control form-control-color' 
-            defaultValue='#000000'
-            title='Seleccionar color del título'
-          />
+
+        {/* Buttons Tab */}
+        <div className={`col-12 ${activeFormTab !== 'buttons' ? 'd-none' : ''}`}>
+          <div className='row'>
+            <div className='col-12 mb-3'>
+              <h6 className='text-muted'>Botón Principal</h6>
+            </div>
+            <InputFormGroup eRef={buttonTextRef} label='Texto del botón' col='col-sm-6' required />
+            <InputFormGroup eRef={buttonLinkRef} label='URL del botón' col='col-sm-6' required />
+            
+            <div className='col-12 mt-3 mb-3'>
+              <h6 className='text-muted'>Botón Secundario</h6>
+            </div>
+            <InputFormGroup eRef={secondaryButtonTextRef} label='Texto del botón secundario' col='col-sm-6' />
+            <InputFormGroup eRef={secondaryButtonLinkRef} label='URL del botón secundario' col='col-sm-6' />
+          </div>
         </div>
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} col='col-12' />
-        <div className='col-sm-6'>
-          <label className='form-label'>Color de la descripción</label>
-          <input 
-            ref={descriptionColorRef} 
-            type='color' 
-            className='form-control form-control-color' 
-            defaultValue='#000000'
-            title='Seleccionar color de la descripción'
-          />
+
+        {/* Colors Tab */}
+        <div className={`col-12 ${activeFormTab !== 'colors' ? 'd-none' : ''}`}>
+          <div className='row'>
+            <div className='col-sm-6'>
+              <label className='form-label'>Color del título</label>
+              <input 
+                ref={titleColorRef} 
+                type='color' 
+                className='form-control form-control-color' 
+                defaultValue='#000000'
+                title='Seleccionar color del título'
+              />
+            </div>
+            <div className='col-sm-6'>
+              <label className='form-label'>Color de la descripción</label>
+              <input 
+                ref={descriptionColorRef} 
+                type='color' 
+                className='form-control form-control-color' 
+                defaultValue='#000000'
+                title='Seleccionar color de la descripción'
+              />
+            </div>
+          </div>
         </div>
-        <InputFormGroup eRef={buttonTextRef} label='Texto botón primario' col='col-sm-6' required />
-        <InputFormGroup eRef={buttonLinkRef} label='URL botón primario' col='col-sm-6' required />
+
       </div>
     </Modal>
   </>

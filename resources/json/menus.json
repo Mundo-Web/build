@@ -41,9 +41,15 @@
         ]
       },
       { "label": "Innovaciones", "href": "/admin/innovations", "icon": "mdi mdi-lightbulb-on" },
-      { "label": "Servicios", "href": "/admin/services", "icon": "mdi mdi-cog" },
-      
-    
+      {
+        "label": "Servicios",
+        "icon": "mdi mdi-cog",
+        "children": [
+          { "label": "Servicios", "href": "/admin/services", "icon": "mdi mdi-tools" },
+          { "label": "Categorías de Servicios", "href": "/admin/service-categories", "icon": "mdi mdi-shape-outline" },
+          { "label": "SubCategorías de Servicios", "href": "/admin/service-subcategories", "icon": "mdi mdi-file-tree" }
+        ]
+      },
       { "label": "Nosotros", "href": "/admin/about", "icon": "mdi mdi-briefcase" },
       { "label": "Zonas de Cobertura", "href": "/admin/delivery-zones", "icon": "mdi mdi-map-marker-radius" },
       { "label": "Indicadores", "href": "/admin/indicators", "icon": "mdi mdi-dots-grid" },

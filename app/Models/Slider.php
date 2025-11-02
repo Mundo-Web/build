@@ -15,6 +15,7 @@ class Slider extends Model
 
     protected $fillable = [
         'name',
+        'subtitle',
         'description',
         'bg_type',
         'bg_image',
@@ -23,6 +24,8 @@ class Slider extends Model
         'image',
         'button_text',
         'button_link',
+        'secondary_button_text',
+        'secondary_button_link',
         'title_color',
         'description_color',
         'visible',

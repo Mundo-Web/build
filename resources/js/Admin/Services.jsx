@@ -12,26 +12,42 @@ import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
+import SelectAPIFormGroup from "../Components/Adminto/form/SelectAPIFormGroup";
+import SetSelectValue from "../Utils/SetSelectValue";
 
 const servicesRest = new ServicesRest();
 
-const Services = () => {
+const Services = ({ categories, subcategories }) => {
     const gridRef = useRef();
     const modalRef = useRef();
 
     // Form elements ref
     const idRef = useRef();
+    const categoryRef = useRef();
+    const subcategoryRef = useRef();
     const nameRef = useRef();
     const descriptionRef = useRef();
     const imageRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     const onModalOpen = (data) => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
         idRef.current.value = data?.id ?? "";
+        SetSelectValue(
+            categoryRef.current,
+            data?.category?.id,
+            data?.category?.name
+        );
+        SetSelectValue(
+            subcategoryRef.current,
+            data?.subcategory?.id,
+            data?.subcategory?.name
+        );
+        setSelectedCategory(data?.category?.id);
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
         imageRef.image.src = data?.image ? `/storage/images/service/${data.image}` : '';
@@ -48,6 +64,8 @@ const Services = () => {
 
         const request = {
             id: idRef.current.value || undefined,
+            service_category_id: categoryRef.current.value,
+            service_subcategory_id: subcategoryRef.current.value,
             name: nameRef.current.value,
             description: descriptionRef.current.value,
         };
@@ -66,9 +84,6 @@ const Services = () => {
         // Check for image deletion flags using React state
         if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
             formData.append('image_delete', 'DELETE');
-        }
-
-        for (let [key, value] of formData.entries()) {
         }
 
         const result = await servicesRest.save(formData);
@@ -153,14 +168,24 @@ const Services = () => {
                         visible: false,
                     },
                     {
+                        dataField: "category.name",
+                        caption: "Categoría",
+                        width: "120px",
+                    },
+                    {
+                        dataField: "subcategory.name",
+                        caption: "Subcategoría",
+                        width: "120px",
+                    },
+                    {
                         dataField: "name",
                         caption: "Servicio",
-                        width: "30%",
+                        width: "25%",
                     },
                     {
                         dataField: "description",
                         caption: "Descripción",
-                        width: "40%",
+                        width: "35%",
                     },
                     {
                         dataField: "image",
@@ -259,7 +284,7 @@ const Services = () => {
                 onSubmit={onModalSubmit}
             >
                 <input ref={idRef} type="hidden" />
-                <div className="row">
+                <div className="row" id="services-modal-container">
                     <div className="col-md-6">
                         <ImageFormGroup
                             eRef={imageRef}
@@ -270,6 +295,22 @@ const Services = () => {
                         />
                     </div>
                     <div className="col-md-6">
+                        <SelectAPIFormGroup
+                            eRef={categoryRef}
+                            label="Categoría"
+                            searchAPI="/api/admin/service-categories/paginate"
+                            searchBy="name"
+                            dropdownParent="#services-modal-container"
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                        />
+                        <SelectAPIFormGroup
+                            eRef={subcategoryRef}
+                            label="Subcategoría"
+                            searchAPI="/api/admin/service-subcategories/paginate"
+                            searchBy="name"
+                            filter={["service_category_id", "=", selectedCategory]}
+                            dropdownParent="#services-modal-container"
+                        />
                         <InputFormGroup
                             eRef={nameRef}
                             label="Servicio"
@@ -278,7 +319,7 @@ const Services = () => {
                         <TextareaFormGroup
                             eRef={descriptionRef}
                             label="Descripción"
-                            rows={5}
+                            rows={3}
                         />
                     </div>
                 </div>

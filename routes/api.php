@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\CollectionController as AdminCollectionController
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\InnovationController as AdminInnovationController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
+use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
 use App\Http\Controllers\Admin\StrengthController as AdminStrengthController;
 use App\Http\Controllers\Admin\CertificationController as AdminCertificationController;
@@ -155,6 +157,8 @@ Route::get('/testimonies/media/{uuid}', [AdminTestimonyController::class, 'media
 Route::get('/posts/media/{uuid}', [AdminPostController::class, 'media']);
 Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'media']);
 Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
+Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
+Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
 Route::get('/item_images/media/{uuid}', [AdminItemImageController::class, 'media']);
@@ -344,6 +348,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/services/status', [AdminServiceController::class, 'status']);
     Route::patch('/services/{field}', [AdminServiceController::class, 'boolean']);
     Route::delete('/services/{id}', [AdminServiceController::class, 'delete']);
+
+    Route::post('/service-categories', [AdminServiceCategoryController::class, 'save']);
+    Route::post('/service-categories/paginate', [AdminServiceCategoryController::class, 'paginate']);
+    Route::patch('/service-categories/status', [AdminServiceCategoryController::class, 'status']);
+    Route::patch('/service-categories/{field}', [AdminServiceCategoryController::class, 'boolean']);
+    Route::delete('/service-categories/{id}', [AdminServiceCategoryController::class, 'delete']);
+
+    Route::post('/service-subcategories', [AdminServiceSubCategoryController::class, 'save']);
+    Route::post('/service-subcategories/paginate', [AdminServiceSubCategoryController::class, 'paginate']);
+    Route::patch('/service-subcategories/status', [AdminServiceSubCategoryController::class, 'status']);
+    Route::patch('/service-subcategories/{field}', [AdminServiceSubCategoryController::class, 'boolean']);
+    Route::delete('/service-subcategories/{id}', [AdminServiceSubCategoryController::class, 'delete']);
 
     Route::post('/aboutus', [AdminAboutusController::class, 'save']);
     Route::post('/aboutus/paginate', [AdminAboutusController::class, 'paginate']);
