@@ -18,8 +18,9 @@ const BannerPidelo = lazy(() => import("./Banners/BannerPidelo"));
 const BannerMultivet = lazy(() => import("./Banners/BannerMultivet"));
 const BannerPublicitarioKatya = lazy(() => import("./Banners/BannerPublicitarioKatya"));
 const BannerBlogSectionKatya = lazy(() => import("./Banners/BannerBlogSectionKatya"));
+const BannerMobileApp = lazy(() => import("./Banners/BannerMobileApp"));
 
-const Banner = ({ which, data, items }) => {
+const Banner = ({ which, data, items, generals }) => {
     const getBanner = () => {
         switch (which) {
             case "BannerSimple":
@@ -58,7 +59,9 @@ const Banner = ({ which, data, items }) => {
                 return <BannerMultivet data={data} />;
             case "BannerBlogSectionKatya":
                 return <BannerBlogSectionKatya data={data} items={items} />;
-
+            case "BannerMobileApp":
+                return <BannerMobileApp data={data} generals={generals} items={items} />;
+ 
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

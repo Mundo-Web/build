@@ -16,6 +16,8 @@ class Testimony extends Model
     protected $fillable = [
         'image',
         'name',
+        'role',
+        'rating',
         'description',
         'country_id',
         'country',
@@ -33,6 +35,8 @@ class Testimony extends Model
         return Testimony::select([
             'image',
             'name',
+            'role',
+            'rating',
             'country',
             'description'
         ])

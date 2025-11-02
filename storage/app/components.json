@@ -2465,6 +2465,23 @@
             {
                 "id": "BannerBananaLab",
                 "name": "BannerBananaLab"
+            },
+            {
+                "id": "BannerMobileApp",
+                "name": "Banner Mobile App - FirstClass",
+                "image": "banner-mobile-app.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_content",
+                    "class_title",
+                    "class_description",
+                    "class_stats",
+                    "class_phone_mockup"
+                ],
+                "using": {
+                    "model": "App"
+                }
             }
         ]
     },
@@ -3907,6 +3924,36 @@
                 ],
                 "using": {
                     "model": "Testimony"
+                }
+            }
+        ]
+    },
+    {
+        "id": "strength",
+        "icon": "mdi mdi-shield-check",
+        "name": "Fortalezas",
+        "options": [
+            {
+                "id": "StrengthFirstClass",
+                "name": "Fortalezas FirstClass Courier",
+                "image": "strength-firstclass.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "class_section",
+                    "class_container",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_grid",
+                    "class_card",
+                    "class_icon_container",
+                    "class_icon",
+                    "class_benefit_title",
+                    "class_benefit_description"
+                ],
+                "using": {
+                    "model": "Strength"
                 }
             }
         ]
