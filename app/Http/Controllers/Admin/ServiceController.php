@@ -6,6 +6,7 @@ use App\Http\Controllers\BasicController;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\ServiceSubCategory;
+use App\Models\Partner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -28,9 +29,16 @@ class ServiceController extends BasicController
             ->orderBy('name')
             ->get();
 
+        // Cargar partners con sus categorías para la sección partners
+        $partners = Partner::where('status', true)
+            ->where('visible', true)
+            ->orderBy('name')
+            ->get();
+
         return [
-            'categories' => $categories,
-            'subcategories' => $subcategories
+            'service_categories' => $categories,
+            'service_sub_categories' => $subcategories,
+            'partners' => $partners
         ];
     }
 
@@ -41,6 +49,14 @@ class ServiceController extends BasicController
 
     public function beforeSave(Request $request)
     {
+        // Convertir campos vacíos a null
+        $fieldsToCheck = ['path', 'slug', 'service_category_id', 'service_subcategory_id'];
+        foreach ($fieldsToCheck as $field) {
+            if ($request->has($field) && trim($request->input($field)) === '') {
+                $request->merge([$field => null]);
+            }
+        }
+        
         // Generar slug automáticamente si no existe
         if (!$request->has('slug') || empty($request->slug)) {
             $request->merge(['slug' => Str::slug($request->name)]);

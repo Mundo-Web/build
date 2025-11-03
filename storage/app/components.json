@@ -4222,5 +4222,48 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "firstclass",
+        "icon": "mdi mdi-package-variant",
+        "name": "FirstClass Pages",
+        "options": [
+            {
+                "id": "CasilleroVirtual",
+                "name": "Casillero Virtual",
+                "image": "casillero-virtual.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features"
+                ],
+                "generals": []
+            },
+            {
+                "id": "EnviosUSAPeru",
+                "name": "Envíos USA - Perú",
+                "image": "envios-usa-peru.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features"
+                ],
+                "generals": []
+            }
+        ]
     }
 ]

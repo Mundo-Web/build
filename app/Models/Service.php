@@ -22,6 +22,13 @@ class Service extends Model
         'path',
         'image',
         'background_image',
+        'hero_content',
+        'steps_content',
+        'benefits_content',
+        'features_content',
+        'partners_section',
+        'requirements_section',
+        'cta_content',
         'visible',
         'status',
     ];
@@ -29,6 +36,13 @@ class Service extends Model
     protected $casts = [
         'visible' => 'boolean',
         'status' => 'boolean',
+        'hero_content' => 'array',
+        'steps_content' => 'array',
+        'benefits_content' => 'array',
+        'features_content' => 'array',
+        'partners_section' => 'array',
+        'requirements_section' => 'array',
+        'cta_content' => 'array',
     ];
 
     public function category()

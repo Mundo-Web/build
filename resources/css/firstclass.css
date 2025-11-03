@@ -371,6 +371,23 @@
   color: #03989e;
 }
 
+/* Custom text colors for FirstClass */
+.customtext-primary {
+  color: #19bdc4 !important;
+}
+
+.customtext-primary-light {
+  color: #4fd1d8 !important;
+}
+
+.customtext-primary-dark {
+  color: #03989e !important;
+}
+
+.customtext-secondary {
+  color: #03989e !important;
+}
+
 .bg-firstclass-primary {
   background-color: #19bdc4;
 }

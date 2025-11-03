@@ -306,7 +306,7 @@ const HeaderFirstClass = ({
                                 
                                 {/* Call to Action Section */}
                                 <div className="mt-8 pt-6 border-t border-gray-200">
-                                    <div className="bg-primary  rounded-xl p-6 text-white animate-cta-slide-up" style={{ animationDelay: '1200ms' }}>
+                                    <div className="bg-primary rounded-xl p-6 text-white animate-cta-slide-up" style={{ animationDelay: '1200ms' }}>
                                         <div className="flex flex-col md:flex-row items-center justify-between">
                                             <div className="mb-4 md:mb-0 animate-cta-content-slide" style={{ animationDelay: '1400ms' }}>
                                                 <h4 className="text-xl font-bold mb-2 animate-cta-title-pulse" style={{ animationDelay: '1500ms' }}>¿Nuevo en FirstClass?</h4>
