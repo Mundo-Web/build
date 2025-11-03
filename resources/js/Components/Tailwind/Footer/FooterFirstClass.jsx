@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import ServicesCategoriesPublicRest from '../../../Actions/Public/ServicesCategoriesPublicRest';
+
+const servicesCategoriesRest = new ServicesCategoriesPublicRest();
 
 const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
     
     const addressObj = generals.find(item => item.correlative === "address");
     const supportPhoneObj = generals.find(item => item.correlative === "support_phone");
@@ -18,6 +23,30 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
     const copyright = copyrightObj?.description ?? "© 2024 FirstClass Courier. Todos los derechos reservados.";
     const termsConditions = termsConditionsObj?.description ?? "/terminos-condiciones";
     const privacyPolicy = privacyPolicyObj?.description ?? "/politica-privacidad";
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await servicesCategoriesRest.getAll();
+                setCategories(data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    // Filtrar servicios por categorías
+    const mainServices = categories
+        .filter(cat => cat.name === 'Personas' || cat.name === 'Empresas')
+        .flatMap(cat => cat.services || []);
+
+    const helpLinks = categories
+        .filter(cat => cat.name === 'Enlaces de Interés')
+        .flatMap(cat => cat.services || []);
 
     return (
         <footer className={`bg-gray-900 text-white ${data?.class_footer || ''}`}>
@@ -77,25 +106,62 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
                     {/* Services */}
                     <div className={data?.class_services_section || ''}>
                         <h3 className="text-lg font-semibold mb-4">Servicios</h3>
-                        <ul className="space-y-2">
-                            <li><a href="/casillero-virtual" className="text-gray-400 hover:text-white transition-colors duration-200">Casillero Virtual</a></li>
-                            <li><a href="/envios-express" className="text-gray-400 hover:text-white transition-colors duration-200">Envío Express</a></li>
-                            <li><a href="/consolidacion" className="text-gray-400 hover:text-white transition-colors duration-200">Consolidación</a></li>
-                            <li><a href="/empresas" className="text-gray-400 hover:text-white transition-colors duration-200">Servicios Empresariales</a></li>
-                            <li><a href="/seguro" className="text-gray-400 hover:text-white transition-colors duration-200">Seguro de Envío</a></li>
-                        </ul>
+                        {loading ? (
+                            <div className="text-gray-400 text-sm">Cargando...</div>
+                        ) : (
+                            <ul className="space-y-2">
+                                {mainServices.length > 0 ? (
+                                    mainServices.map((service) => (
+                                        <li key={service.id}>
+                                            <a 
+                                                href={service.path || `/${service.slug}`} 
+                                                className="text-gray-400 hover:text-white transition-colors duration-200"
+                                            >
+                                                {service.name}
+                                            </a>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <>
+                                        <li><a href="/casillero-virtual" className="text-gray-400 hover:text-white transition-colors duration-200">Casillero virtual</a></li>
+                                        <li><a href="/envios-usa-peru" className="text-gray-400 hover:text-white transition-colors duration-200">Envíos de USA a Perú</a></li>
+                                        <li><a href="/envios-peru-usa" className="text-gray-400 hover:text-white transition-colors duration-200">Envíos de Perú a USA</a></li>
+                                    </>
+                                )}
+                            </ul>
+                        )}
                     </div>
 
-                    {/* Help */}
+                    {/* Help - Enlaces de Interés */}
                     <div className={data?.class_help_section || ''}>
                         <h3 className="text-lg font-semibold mb-4">Ayuda</h3>
-                        <ul className="space-y-2">
-                            <li><a href="/centro-ayuda" className="text-gray-400 hover:text-white transition-colors duration-200">Centro de Ayuda</a></li>
-                            <li><a href="/rastreo" className="text-gray-400 hover:text-white transition-colors duration-200">Rastrea tu Envío</a></li>
-                            <li><a href="/calculadora" className="text-gray-400 hover:text-white transition-colors duration-200">Calculadora de Envío</a></li>
-                            <li><a href="/preguntas-frecuentes" className="text-gray-400 hover:text-white transition-colors duration-200">Preguntas Frecuentes</a></li>
-                            <li><a href="/contacto" className="text-gray-400 hover:text-white transition-colors duration-200">Contacto</a></li>
-                        </ul>
+                        {loading ? (
+                            <div className="text-gray-400 text-sm">Cargando...</div>
+                        ) : (
+                            <ul className="space-y-2">
+                                <li>
+                                    <a href="/contacto" className="text-gray-400 hover:text-white transition-colors duration-200">
+                                        Contacto
+                                    </a>
+                                </li>
+                                {helpLinks.length > 0 && helpLinks.map((service) => (
+                                    <li key={service.id}>
+                                        <a 
+                                            href={service.path || `/${service.slug}`} 
+                                            className="text-gray-400 hover:text-white transition-colors duration-200"
+                                        >
+                                            {service.name}
+                                        </a>
+                                    </li>
+                                ))}
+                                {helpLinks.length === 0 && (
+                                    <>
+                                        <li><a href="/preguntas-frecuentes" className="text-gray-400 hover:text-white transition-colors duration-200">Preguntas Frecuentes</a></li>
+                                        <li><a href="/rastreo" className="text-gray-400 hover:text-white transition-colors duration-200">Rastrea tu Envío</a></li>
+                                    </>
+                                )}
+                            </ul>
+                        )}
                     </div>
 
                     {/* Contact */}
