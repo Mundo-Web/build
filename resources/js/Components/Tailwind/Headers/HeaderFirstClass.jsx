@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, ChevronDown, User, Building, HelpCircle, MapPin, Globe, Truck, DollarSign, MessageCircle, FileText, UserCircle, LogIn } from 'lucide-react';
+import Global from '../../../Utils/Global';
 
 const HeaderFirstClass = ({
     data,
@@ -135,26 +136,17 @@ const HeaderFirstClass = ({
                     <div className="flex justify-between items-center h-16 lg:h-20">
                         
                         {/* Logo */}
-                        <div 
-                            className="flex items-center cursor-pointer group" 
-                            onClick={handleLogoClick}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    handleLogoClick();
-                                }
+                        <a href="/" className="flex items-center gap-2 z-[51]">
+                        <img
+                            src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                            alt={Global.APP_NAME}
+                            className={`h-14 object-contain object-center ${data?.class_logo || ""}`}
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/assets/img/logo-bk.svg";
                             }}
-                        >
-                            <div className="bg-primary hover:bg-secondary px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg mr-3 transition-all duration-300 group-hover:scale-105 shadow-md hover:shadow-lg">
-                                <div className="text-white font-bold text-lg lg:text-2xl tracking-wide">
-                                    FirstClass
-                                </div>
-                                <div className="text-white text-xs lg:text-sm font-light tracking-widest -mt-1">
-                                    c o u r i e r
-                                </div>
-                            </div>
-                        </div>
+                        />
+                    </a>
 
                         {/* Desktop Navigation */}
                         <nav className="hidden lg:flex items-center space-x-8">
@@ -193,6 +185,7 @@ const HeaderFirstClass = ({
                                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                             </a>
                             <a 
+                            hidden
                                 href="#" 
                                 className="text-gray-700 hover:customtext-primary transition-colors duration-200 font-medium relative group"
                             >
@@ -202,7 +195,7 @@ const HeaderFirstClass = ({
                         </nav>
 
                         {/* Account Section */}
-                        <div className="flex items-center space-x-4">
+                        <div hidden className="flex items-center space-x-4 !hidden" >
                             {/* Account Buttons - Desktop */}
                             <div className="hidden lg:flex items-center space-x-3">
                                 <button className="flex items-center text-gray-700 hover:customtext-primary transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-gray-50 group">
@@ -368,7 +361,7 @@ const HeaderFirstClass = ({
                                 {/* Other navigation items */}
                                 <div className="border-t pt-4 space-y-2">
                                     <button 
-                                        onClick={() => handleMenuItemClick('/blog')}
+                                        onClick={() => handleMenuItemClick('/blogs')}
                                         className="block w-full text-left px-2 py-2 text-gray-700 hover:customtext-primary transition-colors duration-200"
                                     >
                                         Blog
@@ -380,6 +373,7 @@ const HeaderFirstClass = ({
                                         Contacto
                                     </button>
                                     <button 
+                                    hidden
                                         onClick={() => handleMenuItemClick('#')}
                                         className="block w-full text-left px-2 py-2 text-gray-700 hover:customtext-primary transition-colors duration-200"
                                     >
@@ -387,7 +381,7 @@ const HeaderFirstClass = ({
                                     </button>
                                     
                                     {/* Account buttons mobile */}
-                                    <div className="border-t pt-4 space-y-2">
+                                    <div className="border-t pt-4 space-y-2" hidden>
                                         <a href="/mi-cuenta" className="w-full flex items-center justify-center text-gray-700 hover:customtext-primary transition-colors duration-200 font-medium px-3 py-2 rounded-lg hover:bg-gray-50">
                                             <UserCircle className="h-5 w-5 mr-2" />
                                             Mi cuenta
