@@ -81,9 +81,9 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        setIsVisible((prev) => ({
+                        setIsVisible(prev => ({
                             ...prev,
-                            [entry.target.dataset.section]: true,
+                            [entry.target.id]: true
                         }));
                     }
                 });
@@ -91,9 +91,8 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             { threshold: 0.1 }
         );
 
-        document.querySelectorAll("[data-section]").forEach((section) => {
-            observerRef.current?.observe(section);
-        });
+        const elements = document.querySelectorAll('[data-animate]');
+        elements.forEach(el => observerRef.current?.observe(el));
 
         return () => observerRef.current?.disconnect();
     }, []);
@@ -297,33 +296,29 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
         {
             icon: ShieldCheck,
             titulo: "Seguro Incluido",
-            descripcion: "Cobertura hasta $200 USD sin costo adicional",
-            color: "text-blue-600"
+            descripcion: "Cobertura hasta $200 USD sin costo adicional"
         },
         {
             icon: Truck,
             titulo: "Entrega Nacional",
-            descripcion: "Entregamos en cualquier parte de Perú",
-            color: "text-green-600"
+            descripcion: "Entregamos en cualquier parte de Perú"
         },
         {
             icon: FileText,
             titulo: "Gestión Aduanera",
-            descripcion: "Nos encargamos de todos los trámites",
-            color: "text-purple-600"
+            descripcion: "Nos encargamos de todos los trámites"
         },
         {
             icon: Package,
             titulo: "Consolidación",
-            descripcion: "Agrupa múltiples compras en un solo envío",
-            color: "text-orange-600"
+            descripcion: "Agrupa múltiples compras en un solo envío"
         }
     ];
 
     return (
         <div className="min-h-screen bg-white" style={{ margin: 0, padding: 0 }}>
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
                 {/* Animated Background */}
                 <div className="absolute inset-0">
                     <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full animate-pulse"></div>
@@ -332,68 +327,190 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div 
-                            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 text-white font-medium"
-                            data-animate
-                            id="hero-badge"
-                        >
-                            <DollarSign className="w-5 h-5" />
-                            <span className="font-semibold">Tarifas Transparentes</span>
-                        </div>
-                        
-                        <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                            <span 
-                                className={`block transition-all duration-1000 ${isVisible['hero-title1'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                                data-animate
-                                id="hero-title1"
-                            >
-                                Tarifas y
-                            </span>
-                            <span 
-                                className={`block text-6xl lg:text-8xl bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                                data-animate
-                                id="hero-title2"
-                            >
-                                Normativas
-                            </span>
-                        </h1>
+                    {/* Breadcrumbs */}
+                    <div className="mb-8">
+                        <Breadcrumbs 
+                            items={[
+                                { label: 'Inicio', href: '/' },
+                                { label: 'Tarifas y Normativas', href: '/tarifas-normativas' }
+                            ]}
+                            className="text-white"
+                        />
+                    </div>
 
-                        <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto">
-                            Conoce nuestras tarifas competitivas y los requisitos aduaneros para tus envíos desde USA a Perú
-                        </p>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         
-                        <div className="flex flex-wrap gap-6 justify-center mb-10">
-                            <div className="bg-white/20 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg">
-                                <div className="text-4xl font-bold text-white">${fleteRate.toFixed(2)}</div>
-                                <div className="text-sm text-white/80 mt-1">USD por kilogramo</div>
+                        {/* Left Content */}
+                        <div className="text-center lg:text-left">
+                            <div 
+                                className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium mb-8 animate-fade-in"
+                                data-animate
+                                id="hero-badge"
+                            >
+                                <DollarSign className="mr-2 h-5 w-5" />
+                                Tarifas Transparentes
                             </div>
-                            <div className="bg-white/20 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg">
-                                <div className="text-4xl font-bold text-white">$10</div>
-                                <div className="text-sm text-white/80 mt-1">USD servicio</div>
+
+                            <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                                <span 
+                                    className={`block transition-all duration-1000 ${isVisible['hero-title1'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                                    data-animate
+                                    id="hero-title1"
+                                >
+                                    Tarifas y
+                                </span>
+                                <span 
+                                    className={`block text-6xl lg:text-8xl text-[#4fd1d8]  transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                                    data-animate
+                                    id="hero-title2"
+                                >
+                                    Normativas
+                                </span>
+                                <span 
+                                    className={`block transition-all duration-1000 delay-600 ${isVisible['hero-title3'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                                    data-animate
+                                    id="hero-title3"
+                                >
+                                    claras y accesibles
+                                </span>
+                            </h1>
+
+                            <div className="space-y-4 mb-8">
+                                <div 
+                                    className={`flex items-center text-white/90 text-lg transition-all duration-1000 delay-900 ${isVisible['benefit-1'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+                                    data-animate
+                                    id="benefit-1"
+                                >
+                                    <CheckCircle className="w-6 h-6 mr-3 text-green-400" />
+                                    ${fleteRate.toFixed(2)} USD por kilogramo - Sin costos ocultos
+                                </div>
+                                <div 
+                                    className={`flex items-center text-white/90 text-lg transition-all duration-1000 delay-1100 ${isVisible['benefit-2'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+                                    data-animate
+                                    id="benefit-2"
+                                >
+                                    <CheckCircle className="w-6 h-6 mr-3 text-green-400" />
+                                    Seguro incluido hasta $200 USD por envío
+                                </div>
+                                <div 
+                                    className={`flex items-center text-white/90 text-lg transition-all duration-1000 delay-1300 ${isVisible['benefit-3'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+                                    data-animate
+                                    id="benefit-3"
+                                >
+                                    <CheckCircle className="w-6 h-6 mr-3 text-green-400" />
+                                    Calculadora en tiempo real para cotizar al instante
+                                </div>
                             </div>
-                            <div className="bg-white/20 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg">
-                                <div className="text-4xl font-bold text-white">$200</div>
-                                <div className="text-sm text-white/80 mt-1">Seguro incluido</div>
+
+                            <p 
+                                className={`text-xl font-bold text-white mb-8 transition-all duration-1000 delay-1500 ${isVisible['hero-cta-text'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+                                data-animate
+                                id="hero-cta-text"
+                            >
+                                ¡Conoce el costo real de tus envíos desde USA a Perú!
+                            </p>
+
+                            <div 
+                                className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start transition-all duration-1000 delay-1700 ${isVisible['hero-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                                data-animate
+                                id="hero-buttons"
+                            >
+                                <button 
+                                    onClick={() => {
+                                        const calculatorSection = document.querySelector('[data-section="calculator"]');
+                                        calculatorSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }}
+                                    className="bg-primary hover:opacity-90 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center shadow-xl group"
+                                >
+                                    <Calculator className="mr-3 h-6 w-6" />
+                                    Calcular mi tarifa
+                                    <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
+                                </button>
+                                <button className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:customtext-secondary px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center group">
+                                    <Globe className="mr-3 h-6 w-6" />
+                                    Ver requisitos
+                                </button>
                             </div>
                         </div>
 
-                        <div 
-                            className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-1000 delay-600 ${isVisible['hero-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                            data-animate
-                            id="hero-buttons"
-                        >
-                            <button 
-                                onClick={() => {
-                                    const calculatorSection = document.querySelector('[data-section="calculator"]');
-                                    calculatorSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }}
-                                className="bg-white hover:bg-gray-100 text-primary px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center shadow-xl group"
+                        {/* Right Visual - Pricing Cards */}
+                        <div className="flex justify-center lg:justify-end">
+                            <div 
+                                className={`relative max-w-md w-full transition-all duration-1000 delay-800 ${isVisible['hero-card'] ? 'opacity-100 translate-x-0 rotate-0' : 'opacity-0 translate-x-10 rotate-12'}`}
+                                data-animate
+                                id="hero-card"
                             >
-                                <Calculator className="mr-3 h-6 w-6" />
-                                Calcular mi tarifa
-                                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
-                            </button>
+                                <div className="relative bg-white rounded-3xl p-8 shadow-2xl transform hover:rotate-0 transition-all duration-500 overflow-hidden">
+                                    {/* Pricing Stats Card */}
+                                    <div className="mb-6">
+                                        <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                                                <Calculator className="w-6 h-6 text-white" />
+                                            </div>
+                                            Costos de Envío
+                                        </h3>
+                                        
+                                        <div className="grid grid-cols-2 gap-4 mb-6">
+                                            <div className="bg-accent p-4 rounded-xl text-center border border-gray-200">
+                                                <DollarSign className="w-6 h-6 customtext-primary mx-auto mb-2" />
+                                                <div className="text-2xl font-bold customtext-primary">${fleteRate.toFixed(2)}</div>
+                                                <div className="text-xs text-gray-600 mt-1">por kilogramo</div>
+                                            </div>
+                                            <div className="bg-accent p-4 rounded-xl text-center border border-gray-200">
+                                                <Package className="w-6 h-6 customtext-secondary mx-auto mb-2" />
+                                                <div className="text-2xl font-bold customtext-secondary">$10</div>
+                                                <div className="text-xs text-gray-600 mt-1">servicio</div>
+                                            </div>
+                                            <div className="bg-accent p-4 rounded-xl text-center border border-gray-200">
+                                                <ShieldCheck className="w-6 h-6 customtext-neutral-dark mx-auto mb-2" />
+                                                <div className="text-2xl font-bold customtext-neutral-dark">$200</div>
+                                                <div className="text-xs text-gray-600 mt-1">seguro incluido</div>
+                                            </div>
+                                            <div className="bg-accent p-4 rounded-xl text-center border border-gray-200">
+                                                <Clock className="w-6 h-6 customtext-neutral-light mx-auto mb-2" />
+                                                <div className="text-2xl font-bold customtext-neutral-light">7-12</div>
+                                                <div className="text-xs text-gray-600 mt-1">días hábiles</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-primary rounded-xl p-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-white font-semibold">Ejemplo: Paquete 5kg</span>
+                                                <Plane className="w-5 h-5 text-white" />
+                                            </div>
+                                            <div className="space-y-2 text-sm text-white/90">
+                                                <div className="flex justify-between">
+                                                    <span>Flete (5kg × ${fleteRate.toFixed(2)})</span>
+                                                    <span className="font-semibold">${(5 * fleteRate).toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span>Servicio</span>
+                                                    <span className="font-semibold">$10.00</span>
+                                                </div>
+                                                <div className="border-t border-white/30 pt-2 flex justify-between">
+                                                    <span className="font-bold">Total</span>
+                                                    <span className="font-bold text-lg">${(5 * fleteRate + 10).toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={() => {
+                                            const calculatorSection = document.querySelector('[data-section="calculator"]');
+                                            calculatorSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }}
+                                        className="w-full bg-secondary hover:opacity-90 text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 group"
+                                    >
+                                        Calcular mi envío
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </div>
+
+                                {/* Floating Elements */}
+                                <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary rounded-full blur-2xl opacity-60 animate-pulse"></div>
+                                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-secondary rounded-full blur-2xl opacity-40 animate-pulse delay-1000"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -407,7 +524,8 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Calculadora de Tarifas */}
             <section 
                 data-section="calculator"
-                className={`py-16 bg-white transition-all duration-1000 ${
+                id="calculator"
+                className={`py-16 bg-accent transition-all duration-1000 ${
                     isVisible.calculator ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
@@ -415,14 +533,14 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                     <div className="max-w-4xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Calcula tu Tarifa
+                                <span className="customtext-primary">Calcula</span> tu Tarifa
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Usa nuestra calculadora para estimar el costo de tu envío
                             </p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 shadow-lg">
+                        <div className="bg-white rounded-2xl p-8 shadow-lg">
                             {/* Valor del producto */}
                             <div className="mb-8">
                                 <label className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
@@ -528,50 +646,50 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                 
                                 <div className="space-y-4">
                                     {/* Flete */}
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-100">
+                                    <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                <Plane className="w-5 h-5 text-blue-600" />
+                                            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
+                                                <Plane className="w-5 h-5 customtext-primary" />
                                             </div>
                                             <div>
                                                 <div className="font-semibold text-gray-900">Flete Internacional</div>
                                                 <div className="text-sm text-gray-600">{selectedWeight} kg × ${fleteRate.toFixed(2)}</div>
                                             </div>
                                         </div>
-                                        <div className="text-2xl font-bold text-blue-600">
+                                        <div className="text-2xl font-bold customtext-primary">
                                             ${tarifa.flete}
                                         </div>
                                     </div>
 
                                     {/* Servicio */}
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-100">
+                                    <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                                <Package className="w-5 h-5 text-orange-600" />
+                                            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
+                                                <Package className="w-5 h-5 customtext-secondary" />
                                             </div>
                                             <div>
                                                 <div className="font-semibold text-gray-900">Servicio de Importación</div>
                                                 <div className="text-sm text-gray-600">Gestión aduanera completa</div>
                                             </div>
                                         </div>
-                                        <div className="text-2xl font-bold text-orange-600">
+                                        <div className="text-2xl font-bold customtext-secondary">
                                             ${tarifa.cargosFijos}
                                         </div>
                                     </div>
 
                                     {/* Seguro (condicional) */}
                                     {tarifa.aplicaImpuestos && Number(tarifa.seguro) > 0 && (
-                                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100">
+                                        <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                                    <ShieldCheck className="w-5 h-5 text-green-600" />
+                                                <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
+                                                    <ShieldCheck className="w-5 h-5 customtext-neutral-dark" />
                                                 </div>
                                                 <div>
                                                     <div className="font-semibold text-gray-900">Seguro Adicional</div>
                                                     <div className="text-sm text-gray-600">{seguroRate}% sobre valor producto</div>
                                                 </div>
                                             </div>
-                                            <div className="text-2xl font-bold text-green-600">
+                                            <div className="text-2xl font-bold customtext-neutral-dark">
                                                 ${tarifa.seguro}
                                             </div>
                                         </div>
@@ -579,17 +697,17 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
 
                                     {/* Derecho Arancelario (condicional) */}
                                     {tarifa.aplicaImpuestos && Number(tarifa.derechoArancelario) > 0 && (
-                                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-100">
+                                        <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                    <FileText className="w-5 h-5 text-purple-600" />
+                                                <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
+                                                    <FileText className="w-5 h-5 customtext-neutral-light" />
                                                 </div>
                                                 <div>
                                                     <div className="font-semibold text-gray-900">Derecho Arancelario</div>
                                                     <div className="text-sm text-gray-600">{derechoArancelarioRate}% sobre valor CIF</div>
                                                 </div>
                                             </div>
-                                            <div className="text-2xl font-bold text-purple-600">
+                                            <div className="text-2xl font-bold customtext-neutral-light">
                                                 ${tarifa.derechoArancelario}
                                             </div>
                                         </div>
@@ -599,9 +717,9 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                     <div className="border-t-2 border-dashed border-gray-300 my-3"></div>
 
                                     {/* Subtotal de Envío */}
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg border border-gray-200">
+                                    <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
                                                 <Truck className="w-5 h-5 text-gray-600" />
                                             </div>
                                             <div>
@@ -615,23 +733,23 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                     </div>
 
                                     {/* Valor del Producto */}
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200">
+                                    <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                                <Package className="w-5 h-5 text-indigo-600" />
+                                            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
+                                                <Package className="w-5 h-5 customtext-secondary" />
                                             </div>
                                             <div>
                                                 <div className="font-semibold text-gray-900">Valor del Producto</div>
                                                 <div className="text-sm text-gray-600">Precio que pagas a la tienda</div>
                                             </div>
                                         </div>
-                                        <div className="text-2xl font-bold text-indigo-600">
+                                        <div className="text-2xl font-bold customtext-secondary">
                                             ${productValue.toFixed(2)}
                                         </div>
                                     </div>
 
                                     {/* Total Final */}
-                                    <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary to-secondary rounded-xl text-white shadow-lg mt-4">
+                                    <div className="flex items-center justify-between p-6 bg-primary rounded-xl text-white shadow-lg mt-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                                                 <DollarSign className="w-6 h-6" />
@@ -649,10 +767,10 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                             </div>
 
                             {/* Info adicional */}
-                            <div className="mt-6 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+                            <div className="mt-6 bg-accent border border-gray-200 rounded-xl p-5">
                                 <div className="flex items-start gap-3">
-                                    <ShieldCheck className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-                                    <div className="text-sm text-blue-900">
+                                    <ShieldCheck className="w-6 h-6 customtext-primary flex-shrink-0 mt-1" />
+                                    <div className="text-sm text-gray-900">
                                         <strong className="block mb-2">💡 Importante:</strong> 
                                         <p className="mb-2">Este es el <strong>costo del envío</strong>, no incluye el precio del producto que comprarás en la tienda.</p>
                                         {productValue <= 200 ? (
@@ -671,7 +789,8 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Desglose de Tarifas */}
             <section 
                 data-section="breakdown"
-                className={`py-16 bg-gray-50 transition-all duration-1000 ${
+                id="breakdown"
+                className={`py-16 bg-white transition-all duration-1000 ${
                     isVisible.breakdown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
@@ -679,26 +798,26 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Desglose de Tarifas
+                                <span className="customtext-primary">Desglose</span> de Tarifas
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Transparencia total en nuestros costos
                             </p>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
                             {/* Flete */}
-                            <div className="bg-white rounded-2xl p-8 shadow-lg">
+                            <div className="bg-accent rounded-2xl p-8 shadow-lg border border-gray-200">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+                                    <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                                         <Plane className="w-6 h-6 text-white" />
                                     </div>
                                     <div>
                                         <h3 className="text-2xl font-bold text-gray-900">Flete</h3>
-                                        <p className="text-primary font-semibold">{tarifasInfo.flete.precio} {tarifasInfo.flete.unidad}</p>
+                                        <p className="customtext-primary font-semibold">{tarifasInfo.flete.precio} {tarifasInfo.flete.unidad}</p>
                                     </div>
                                 </div>
-                                <div className="bg-primary/5 rounded-lg p-4 mb-4">
+                                <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
                                     <div className="font-semibold text-gray-900 mb-2">Rango de peso:</div>
                                     <div className="text-gray-700">{tarifasInfo.flete.rango}</div>
                                 </div>
@@ -709,17 +828,17 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                             </div>
 
                             {/* Cargos Fijos */}
-                            <div className="bg-white rounded-2xl p-8 shadow-lg">
+                            <div className="bg-accent rounded-2xl p-8 shadow-lg border border-gray-200">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                                    <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
                                         <FileText className="w-6 h-6 text-white" />
                                     </div>
                                     <div>
                                         <h3 className="text-2xl font-bold text-gray-900">Cargos Fijos</h3>
-                                        <p className="text-orange-600 font-semibold">{tarifasInfo.cargosFijos.precio}</p>
+                                        <p className="customtext-secondary font-semibold">{tarifasInfo.cargosFijos.precio}</p>
                                     </div>
                                 </div>
-                                <div className="bg-orange-50 rounded-lg p-4 mb-4">
+                                <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
                                     <div className="font-semibold text-gray-900 mb-2">Aplicación:</div>
                                     <div className="text-gray-700">{tarifasInfo.cargosFijos.descripcion}</div>
                                 </div>
@@ -741,7 +860,8 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Pasos para Cotizar */}
             <section 
                 data-section="steps"
-                className={`py-16 bg-white transition-all duration-1000 ${
+                id="steps"
+                className={`py-16 bg-accent transition-all duration-1000 ${
                     isVisible.steps ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
@@ -749,9 +869,9 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                ¿Cómo Calcular tu Envío?
+                                ¿Cómo <span className="customtext-primary">Calcular</span> tu Envío?
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Sigue estos simples pasos
                             </p>
                         </div>
@@ -759,11 +879,11 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                         <div className="grid md:grid-cols-4 gap-6">
                             {pasosCotizacion.map((paso, index) => (
                                 <div key={index} className="relative">
-                                    <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-6 h-full">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">
+                                    <div className="bg-white rounded-xl p-6 h-full border border-gray-200 shadow-lg">
+                                        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">
                                             {paso.numero}
                                         </div>
-                                        <paso.icon className="w-8 h-8 text-primary mb-3" />
+                                        <paso.icon className="w-8 h-8 customtext-primary mb-3" />
                                         <h3 className="font-bold text-lg text-gray-900 mb-2">
                                             {paso.titulo}
                                         </h3>
@@ -784,29 +904,30 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Requisitos Aduaneros */}
             <section 
                 data-section="requirements"
-                className={`py-16 bg-gray-50 transition-all duration-1000 ${
+                id="requirements"
+                className={`py-16 bg-white transition-all duration-1000 ${
                     isVisible.requirements ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
-                            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-                                <Globe className="w-5 h-5 text-primary" />
-                                <span className="text-primary font-semibold">Normativa Aduanera</span>
+                            <div className="inline-flex items-center gap-2 bg-accent px-4 py-2 rounded-full mb-4 border border-gray-200">
+                                <Globe className="w-5 h-5 customtext-primary" />
+                                <span className="customtext-primary font-semibold">Normativa Aduanera</span>
                             </div>
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Requisitos por Valor de Envío
+                                Requisitos por <span className="customtext-primary">Valor de Envío</span>
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Según las normas de aduana para modalidad courier
                             </p>
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-6">
                             {requisitosAduana.map((categoria, index) => (
-                                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                                    <div className={`bg-gradient-to-br ${categoria.color} p-6 text-white`}>
+                                <div key={index} className="bg-accent rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-200">
+                                    <div className={`${index === 0 ? 'bg-primary' : index === 1 ? 'bg-secondary' : 'bg-neutral-dark'} p-6 text-white`}>
                                         <div className="text-5xl mb-3">{categoria.icon}</div>
                                         <h3 className="text-xl font-bold">
                                             {categoria.categoria}
@@ -845,28 +966,29 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Mercancía Prohibida */}
             <section 
                 data-section="prohibited"
-                className={`py-16 bg-white transition-all duration-1000 ${
+                id="prohibited"
+                className={`py-16 bg-accent transition-all duration-1000 ${
                     isVisible.prohibited ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
-                            <div className="inline-flex items-center gap-2 bg-red-100 px-4 py-2 rounded-full mb-4">
-                                <XCircle className="w-5 h-5 text-red-600" />
-                                <span className="text-red-600 font-semibold">Restricciones</span>
+                            <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full mb-4 border border-gray-300">
+                                <XCircle className="w-5 h-5 customtext-neutral-dark" />
+                                <span className="customtext-neutral-dark font-semibold">Restricciones</span>
                             </div>
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Mercancía Prohibida
+                                Mercancía <span className="customtext-primary">Prohibida</span>
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Productos que no pueden ingresar a Perú por modalidad courier
                             </p>
                         </div>
 
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {mercanciaProhibida.map((categoria, index) => (
-                                <div key={index} className="bg-gradient-to-br from-gray-50 to-red-50 rounded-xl p-6 border border-red-100 hover:shadow-lg transition-shadow">
+                                <div key={index} className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
                                     <div className="text-4xl mb-3">{categoria.icon}</div>
                                     <h3 className="font-bold text-lg text-gray-900 mb-3">
                                         {categoria.titulo}
@@ -904,7 +1026,8 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Consecuencias de Incumplimiento */}
             <section 
                 data-section="consequences"
-                className={`py-16 bg-gray-50 transition-all duration-1000 ${
+                id="consequences"
+                className={`py-16 bg-white transition-all duration-1000 ${
                     isVisible.consequences ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
@@ -912,9 +1035,9 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                ¿Qué Pasa si el Envío No Cumple?
+                                ¿Qué Pasa si el Envío <span className="customtext-primary">No Cumple</span>?
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Consecuencias por incumplimiento de requisitos aduaneros
                             </p>
                         </div>
@@ -959,7 +1082,8 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             {/* Beneficios del Servicio */}
             <section 
                 data-section="benefits"
-                className={`py-16 bg-white transition-all duration-1000 ${
+                id="benefits"
+                className={`py-16 bg-accent transition-all duration-1000 ${
                     isVisible.benefits ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
             >
@@ -967,17 +1091,17 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Beneficios Incluidos
+                                <span className="customtext-primary">Beneficios</span> Incluidos
                             </h2>
-                            <p className="text-xl text-gray-600">
+                            <p className="text-xl customtext-secondary">
                                 Todo lo que obtienes con nuestro servicio
                             </p>
                         </div>
 
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {beneficiosServicio.map((beneficio, index) => (
-                                <div key={index} className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:-translate-y-1">
-                                    <beneficio.icon className={`w-12 h-12 ${beneficio.color} mb-4`} />
+                                <div key={index} className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:-translate-y-1">
+                                    <beneficio.icon className={`w-12 h-12 customtext-primary mb-4`} />
                                     <h3 className="font-bold text-lg text-gray-900 mb-2">
                                         {beneficio.titulo}
                                     </h3>
@@ -992,7 +1116,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             </section>
 
             {/* CTA Final */}
-            <section className="py-16 bg-gradient-to-br from-primary via-primary-dark to-secondary text-white">
+            <section className="py-16 bg-secondary text-white">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -1007,13 +1131,13 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                     const calculatorSection = document.querySelector('[data-section="calculator"]');
                                     calculatorSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }}
-                                className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg"
+                                className="inline-flex items-center gap-2 bg-primary hover:opacity-90 text-white px-8 py-4 rounded-full font-semibold transition-all shadow-lg"
                             >
                                 <Calculator className="w-5 h-5" />
                                 Cotiza tu Envío
                             </button>
-                            <  AdvisorButton
-                                className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold hover:bg-white/30 transition-colors border-2 border-white"
+                            <AdvisorButton
+                                className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:customtext-secondary transition-all border-2 border-white"
                             >
                                 <Headphones className="w-5 h-5" />
                                 Contactar Asesor
