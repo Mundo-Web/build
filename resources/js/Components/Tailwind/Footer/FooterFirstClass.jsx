@@ -45,7 +45,7 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
     const addressObj = generals.find(item => item.correlative === "address");
     const supportPhoneObj = generals.find(item => item.correlative === "support_phone");
     const emailContactObj = generals.find(item => item.correlative === "email_contact");
-    const footerDescriptionObj = generals.find(item => item.correlative === "footer_description");
+    const footerDescriptionObj = generals.find(item => item.correlative === "site_description");
     const copyrightObj = generals.find(item => item.correlative === "copyright");
     const termsConditionsObj = generals.find(item => item.correlative === "terms_conditions");
     const privacyPolicyObj = generals.find(item => item.correlative === "privacy_policy");

@@ -3807,7 +3807,8 @@
                     "copyright",
                     "terms_conditions",
                     "privacy_policy",
-                    "email_contact"
+                    "email_contact",
+                    "site_description"
                 ]
             }
         ]
