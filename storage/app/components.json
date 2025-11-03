@@ -4263,6 +4263,146 @@
                     "class_features"
                 ],
                 "generals": []
+            },
+            {
+                "id": "EnviosPeruUSA",
+                "name": "Envíos Perú - USA",
+                "image": "envios-peru-usa.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "products_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features",
+                    "class_products"
+                ],
+                "generals": []
+            },
+            {
+                "id": "ImportacionCourier",
+                "name": "Importación Modalidad Courier",
+                "image": "importacion-courier.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "import_types_title",
+                    "requirements_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features",
+                    "class_requirements"
+                ],
+                "generals": []
+            },
+            {
+                "id": "ExportacionCourier",
+                "name": "Exportación Modalidad Courier",
+                "image": "exportacion-courier.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "export_types_title",
+                    "requirements_title",
+                    "destinations_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features",
+                    "class_requirements"
+                ],
+                "generals": []
+            },
+            {
+                "id": "TarifasNormativas",
+                "name": "Tarifas y Normativas",
+                "image": "tarifas-normativas.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "calculator_title",
+                    "requirements_title",
+                    "prohibited_title",
+                    "consequences_title",
+                    "benefits_title",
+                    "class_hero",
+                    "class_calculator",
+                    "class_requirements",
+                    "class_prohibited",
+                    "class_consequences",
+                    "class_benefits"
+                ],
+                "generals": []
+            },
+            {
+                "id": "PQRS",
+                "name": "PQRS - Atención al Cliente",
+                "image": "pqrs.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "types_title",
+                    "form_title",
+                    "process_title",
+                    "commitments_title",
+                    "class_hero",
+                    "class_types",
+                    "class_form",
+                    "class_process",
+                    "class_commitments"
+                ],
+                "generals": [
+                    "phone_contact",
+                    "email_contact"
+                ]
+            },
+            {
+                "id": "FAQ",
+                "name": "Preguntas Frecuentes",
+                "image": "faq.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "search_placeholder",
+                    "categories_title",
+                    "cta_title",
+                    "cta_description",
+                    "class_hero",
+                    "class_categories",
+                    "class_faqs",
+                    "class_cta"
+                ],
+                "using": {
+                    "model": "Faq",
+                    "fields": [
+                        "id",
+                        "question",
+                        "answer",
+                        "category",
+                        "status"
+                    ],
+                    "filters": [
+                        "status"
+                    ]
+                },
+                "generals": [
+                    "phone_contact",
+                    "email_contact"
+                ]
             }
         ]
     }
