@@ -1,7 +1,18 @@
 import React from 'react';
 import { User, Building, ArrowRight, Shield, Globe, Truck, Calculator, Users, Briefcase } from 'lucide-react';
+import AdvisorButton from '../FirstClass/AdvisorButton';
 
 const ServiceSelection = ({ data }) => {
+    const handleCardClick = (e) => {
+        e.preventDefault();
+        // Trigger click on services button in header
+        const servicesButton = document.querySelector('[aria-haspopup="true"]');
+        if (servicesButton) {
+            servicesButton.click();
+            // Scroll to header
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
     return (
         <section className={`py-16 lg:py-24 bg-white relative overflow-hidden ${data?.class_section || ''}`}>
             {/* Background Pattern */}
@@ -26,7 +37,7 @@ const ServiceSelection = ({ data }) => {
                 <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 ${data?.class_cards_grid || ''}`}>
                     
                     {/* Personas Card */}
-                    <div className="group relative">
+                    <button onClick={handleCardClick} className="group relative block w-full text-left">
                         <div className={`relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-3xl p-8 lg:p-12 border-2 border-primary/20 hover:border-primary transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl cursor-pointer h-full overflow-hidden ${data?.class_card_personas || ''}`}>
                             
                             {/* Background Image */}
@@ -60,20 +71,20 @@ const ServiceSelection = ({ data }) => {
                                 </p>
 
                                 {/* CTA Button */}
-                                <button className={`w-full bg-primary hover:bg-secondary text-white py-4 lg:py-5 rounded-xl text-lg lg:text-xl font-semibold transition-all duration-300 transform group-hover:scale-105 flex items-center justify-center shadow-lg hover:shadow-xl backdrop-blur-sm mt-8 ${data?.class_card_button || ''}`}>
+                                <div className={`w-full bg-primary hover:bg-secondary text-white py-4 lg:py-5 rounded-xl text-lg lg:text-xl font-semibold transition-all duration-300 transform group-hover:scale-105 flex items-center justify-center shadow-lg hover:shadow-xl backdrop-blur-sm mt-8 ${data?.class_card_button || ''}`}>
                                     Ver más
                                     <ArrowRight className="ml-3 h-5 w-5 lg:h-6 lg:w-6 group-hover:translate-x-1 transition-transform duration-200" />
-                                </button>
+                                </div>
                             </div>
 
                             {/* Floating Elements */}
                             <div className="absolute -top-4 -right-4 w-8 h-8 bg-primary rounded-full opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                             <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-primary rounded-full opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                         </div>
-                    </div>
+                    </button>
 
                     {/* Empresas Card */}
-                    <div className="group relative">
+                    <button onClick={handleCardClick} className="group relative block w-full text-left">
                         <div className={`relative bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-3xl p-8 lg:p-12 border-2 border-secondary/20 hover:border-secondary transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl cursor-pointer h-full overflow-hidden ${data?.class_card_empresas || ''}`}>
                             
                             {/* Background Image */}
@@ -107,17 +118,17 @@ const ServiceSelection = ({ data }) => {
                                 </p>
 
                                 {/* CTA Button */}
-                                <button className={`w-full bg-secondary hover:bg-primary text-white py-4 lg:py-5 rounded-xl text-lg lg:text-xl font-semibold transition-all duration-300 transform group-hover:scale-105 flex items-center justify-center shadow-lg hover:shadow-xl backdrop-blur-sm mt-8 ${data?.class_card_button || ''}`}>
+                                <div className={`w-full bg-secondary hover:bg-primary text-white py-4 lg:py-5 rounded-xl text-lg lg:text-xl font-semibold transition-all duration-300 transform group-hover:scale-105 flex items-center justify-center shadow-lg hover:shadow-xl backdrop-blur-sm mt-8 ${data?.class_card_button || ''}`}>
                                     Ver más
                                     <ArrowRight className="ml-3 h-5 w-5 lg:h-6 lg:w-6 group-hover:translate-x-1 transition-transform duration-200" />
-                                </button>
+                                </div>
                             </div>
 
                             {/* Floating Elements */}
                             <div className="absolute -top-4 -right-4 w-8 h-8 bg-secondary rounded-full opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                             <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-secondary rounded-full opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                         </div>
-                    </div>
+                    </button>
                 </div>
 
                 {/* Bottom CTA */}
@@ -125,9 +136,9 @@ const ServiceSelection = ({ data }) => {
                     <p className="text-lg text-gray-600 mb-6">
                         ¿No estás seguro cuál opción es mejor para ti?
                     </p>
-                    <button className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <AdvisorButton className="inline-block bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         Habla con un asesor especializado
-                    </button>
+                    </AdvisorButton>
                 </div>
             </div>
         </section>

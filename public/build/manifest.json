@@ -1487,7 +1487,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-BaHnFuvj.js",
+    "file": "assets/About-CSn5gyEs.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3718,7 +3718,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-Cn0XOwg3.js",
+    "file": "assets/Blog-D_PDm7Jc.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3763,7 +3763,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-BJCPByPd.js",
+    "file": "assets/BlogArticle-DL1GnLB8.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5514,7 +5514,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-C4nwSp08.js",
+    "file": "assets/Base-BOjXIKVj.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -7263,6 +7263,12 @@
       "_index-yBjzXJbu.js"
     ]
   },
+  "resources/js/Components/Tailwind/Components/ServiceMenuButton.jsx": {
+    "file": "assets/ServiceMenuButton-l0sNRNKZ.js",
+    "name": "ServiceMenuButton",
+    "src": "resources/js/Components/Tailwind/Components/ServiceMenuButton.jsx",
+    "isEntry": true
+  },
   "resources/js/Components/Tailwind/Components/WhatsAppButton.jsx": {
     "file": "assets/WhatsAppButton--pJTheE3.js",
     "name": "WhatsAppButton",
@@ -8226,6 +8232,18 @@
       "resources/js/Components/Tailwind/FirstClass/FAQ.jsx"
     ]
   },
+  "resources/js/Components/Tailwind/FirstClass/AdvisorButton.jsx": {
+    "file": "assets/AdvisorButton--pJTheE3.js",
+    "name": "AdvisorButton",
+    "src": "resources/js/Components/Tailwind/FirstClass/AdvisorButton.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/FirstClass/BrandsCarousel.jsx": {
     "file": "assets/BrandsCarousel--pJTheE3.js",
     "name": "BrandsCarousel",
@@ -8347,7 +8365,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Floating.jsx": {
-    "file": "assets/Floating-Dlydfek_.js",
+    "file": "assets/Floating-CqFvMjUh.js",
     "name": "Floating",
     "src": "resources/js/Components/Tailwind/Floating.jsx",
     "isDynamicEntry": true,
@@ -8811,7 +8829,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-DDM6GzX-.js",
+    "file": "assets/Header-CBxIsUPz.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -11365,7 +11383,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-CiQah1qH.js",
+    "file": "assets/Service--xYaD2oR.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -12291,7 +12309,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-CVfo1zQJ.js",
+    "file": "assets/Contact-BgMPvkpS.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -12336,7 +12354,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-BWyCZk2R.js",
+    "file": "assets/CourseDetails-0QiydLmy.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -12372,7 +12390,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-BVZ1my6v.js",
+    "file": "assets/Courses-CAanUNQ2.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -12467,7 +12485,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-BcSD9mET.js",
+    "file": "assets/Home-BTtd9Ne9.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -12671,7 +12689,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DM56i1GT.js",
+    "file": "assets/System-CKwRtDEY.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

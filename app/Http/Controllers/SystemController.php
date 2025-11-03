@@ -99,6 +99,7 @@ class SystemController extends BasicController
         // Include all SEO generals by default plus currency
         $generals = [
             'currency',
+            'whatsapp_advisors',
             'site_title',
             'site_description', 
             'site_keywords',
