@@ -112,7 +112,11 @@ class SystemController extends BasicController
             'twitter_image',
             'twitter_card',
             'favicon',
-            'canonical_url'
+            'canonical_url',
+            'importation_flete',
+            'importation_servicio',
+            'importation_seguro',
+            'importation_derecho_arancelario'
         ];
         
         $jsons = [];

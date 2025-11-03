@@ -19,14 +19,61 @@ import {
     AlertCircle,
     TrendingUp,
     Home,
-    Headphones
+    Headphones,
+    ChevronDown
 } from "lucide-react";
 import Breadcrumbs from "./Breadcrumbs";
+import AdvisorButton from "./AdvisorButton";
 
-const TarifasNormativas = ({ data, items, generals, cart, setCart, pages, isUser, contacts }) => {
-    const [selectedWeight, setSelectedWeight] = useState(5);
+const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, isUser, contacts }) => {
+    const [selectedWeight, setSelectedWeight] = useState(2.5); // Peso en kg (equivalente a ~5 lb)
+    const [productValue, setProductValue] = useState(100); // Valor del producto en USD
+    const [useSlider, setUseSlider] = useState(true); // Switch entre slider e input
     const [isVisible, setIsVisible] = useState({});
     const observerRef = useRef(null);
+
+    // Obtener valores de generals
+    const fleteRate = Number(generals?.find(x => x.correlative === 'importation_flete')?.description || 3.86); // USD por kg
+    const servicioFijo = Number(generals?.find(x => x.correlative === 'importation_servicio')?.description || 10);
+    const seguroRate = Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0);
+    const derechoArancelarioRate = Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description || 0);
+
+    // Agregar estilos personalizados para el slider
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            input[type="range"].slider-thumb::-webkit-slider-thumb {
+                appearance: none;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #1e3a8a 0%, #0ea5e9 100%);
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+                transition: all 0.3s ease;
+            }
+            input[type="range"].slider-thumb::-webkit-slider-thumb:hover {
+                transform: scale(1.2);
+                box-shadow: 0 6px 16px rgba(30, 58, 138, 0.6);
+            }
+            input[type="range"].slider-thumb::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #1e3a8a 0%, #0ea5e9 100%);
+                cursor: pointer;
+                border: none;
+                box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+                transition: all 0.3s ease;
+            }
+            input[type="range"].slider-thumb::-moz-range-thumb:hover {
+                transform: scale(1.2);
+                box-shadow: 0 6px 16px rgba(30, 58, 138, 0.6);
+            }
+        `;
+        document.head.appendChild(style);
+        return () => document.head.removeChild(style);
+    }, []);
 
     // Intersection Observer for animations
     useEffect(() => {
@@ -51,35 +98,88 @@ const TarifasNormativas = ({ data, items, generals, cart, setCart, pages, isUser
         return () => observerRef.current?.disconnect();
     }, []);
 
-    // Cálculo de tarifas
-    const calcularTarifa = (peso) => {
-        const flete = peso * 1.75;
-        const cargosFijos = 14;
-        const total = flete + cargosFijos;
+    // Cálculo de tarifas según la lógica de ShippingStepPidelo
+    const calcularTarifa = (pesoKg, valorProducto) => {
+        const flete = pesoKg * fleteRate; // Calcular directamente en kg
+        const cargosFijos = servicioFijo;
+        
+        // Solo aplicar seguro y derecho arancelario si el producto cuesta más de $200
+        let seguro = 0;
+        let derechoArancelario = 0;
+        
+        if (valorProducto > 200) {
+            // Calcular valor CIF (Costo + Seguro + Flete)
+            seguro = valorProducto * (seguroRate / 100);
+            const valorCIF = valorProducto + seguro + flete;
+            derechoArancelario = valorCIF * (derechoArancelarioRate / 100);
+        }
+        
+        const totalEnvio = flete + cargosFijos + seguro + derechoArancelario;
+        const granTotal = valorProducto + totalEnvio;
+        
         return {
             flete: flete.toFixed(2),
             cargosFijos: cargosFijos.toFixed(2),
-            total: total.toFixed(2)
+            seguro: seguro.toFixed(2),
+            derechoArancelario: derechoArancelario.toFixed(2),
+            totalEnvio: totalEnvio.toFixed(2), // Solo costo de envío
+            total: granTotal.toFixed(2), // Producto + envío
+            aplicaImpuestos: valorProducto > 200
         };
     };
 
-    const tarifa = calcularTarifa(selectedWeight);
+    const tarifa = calcularTarifa(selectedWeight, productValue);
+
+    const pasosCotizacion = [
+        {
+            numero: 1,
+            titulo: "Pesa tu Paquete",
+            descripcion: "Calcula el peso real o volumétrico en kilogramos",
+            icon: Scale
+        },
+        {
+            numero: 2,
+            titulo: "Calcula el Flete",
+            descripcion: `Multiplica el peso por $${fleteRate.toFixed(2)} USD por kg`,
+            icon: Calculator
+        },
+        {
+            numero: 3,
+            titulo: "Suma Cargos Fijos",
+            descripcion: "Agrega $10 USD de servicio por envío",
+            icon: DollarSign
+        },
+        {
+            numero: 4,
+            titulo: "Total a Pagar",
+            descripcion: "Obtén el costo total de tu envío",
+            icon: CheckCircle
+        }
+    ];
 
     const tarifasInfo = {
         flete: {
-            precio: "$1.75 USD",
-            unidad: "por libra",
-            rango: "1LB hasta 110LB",
-            descripcion: "Recepción, almacenaje, consolidación, preparación y transporte internacional"
+            precio: `$${fleteRate.toFixed(2)} USD`,
+            unidad: "por kilogramo",
+            rango: "0.5kg hasta 50kg",
+            descripcion: generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description || "Recepción, almacenaje, consolidación, preparación y transporte internacional"
         },
         cargosFijos: {
-            precio: "$14 USD",
+            precio: `$${servicioFijo.toFixed(2)} USD`,
             descripcion: "Se calcula por envío",
             incluye: [
-                "Seguro con cobertura hasta $200 USD",
+                `Seguro con cobertura hasta $200 USD`,
                 "Proceso y trámite de importación postal",
                 "Entrega en cualquier parte de Perú"
             ]
+        },
+        seguro: {
+            tasa: seguroRate,
+            descripcion: generals?.find(x => x.correlative === 'importation_seguro_descripcion')?.description || "Aplica solo para envíos mayores a $200 USD"
+        },
+        derechoArancelario: {
+            tasa: derechoArancelarioRate,
+            descripcion: generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description || "Aplica solo para envíos mayores a $200 USD"
         }
     };
 
@@ -193,33 +293,6 @@ const TarifasNormativas = ({ data, items, generals, cart, setCart, pages, isUser
         }
     ];
 
-    const pasosCotizacion = [
-        {
-            numero: 1,
-            titulo: "Pesa tu Paquete",
-            descripcion: "Calcula el peso real o volumétrico de tu envío",
-            icon: Scale
-        },
-        {
-            numero: 2,
-            titulo: "Calcula el Flete",
-            descripcion: "Multiplica el peso por $1.75 USD",
-            icon: Calculator
-        },
-        {
-            numero: 3,
-            titulo: "Suma Cargos Fijos",
-            descripcion: "Agrega $14 USD de cargos fijos por envío",
-            icon: DollarSign
-        },
-        {
-            numero: 4,
-            titulo: "Total a Pagar",
-            descripcion: "Obtén el costo total de tu envío",
-            icon: CheckCircle
-        }
-    ];
-
     const beneficiosServicio = [
         {
             icon: ShieldCheck,
@@ -248,45 +321,86 @@ const TarifasNormativas = ({ data, items, generals, cart, setCart, pages, isUser
     ];
 
     return (
-        <div className="w-full bg-gray-50">
-            {/* Breadcrumbs */}
-            <Breadcrumbs />
-
+        <div className="min-h-screen bg-white" style={{ margin: 0, padding: 0 }}>
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-primary via-primary-dark to-secondary text-white py-20 overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                    }}></div>
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
+                {/* Animated Background */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full animate-pulse delay-1000"></div>
+                    <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-white/10 rounded-full animate-pulse delay-500"></div>
                 </div>
-                
-                <div className="container mx-auto px-4 relative z-10">
+
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                     <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-6">
+                        <div 
+                            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 text-white font-medium"
+                            data-animate
+                            id="hero-badge"
+                        >
                             <DollarSign className="w-5 h-5" />
                             <span className="font-semibold">Tarifas Transparentes</span>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                            Tarifas y Normativas
+                        
+                        <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                            <span 
+                                className={`block transition-all duration-1000 ${isVisible['hero-title1'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                                data-animate
+                                id="hero-title1"
+                            >
+                                Tarifas y
+                            </span>
+                            <span 
+                                className={`block text-6xl lg:text-8xl bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                                data-animate
+                                id="hero-title2"
+                            >
+                                Normativas
+                            </span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-white/90 mb-8">
+
+                        <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto">
                             Conoce nuestras tarifas competitivas y los requisitos aduaneros para tus envíos desde USA a Perú
                         </p>
-                        <div className="flex flex-wrap gap-4 justify-center">
-                            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                                <div className="text-3xl font-bold">$1.75</div>
-                                <div className="text-sm">USD por libra</div>
+                        
+                        <div className="flex flex-wrap gap-6 justify-center mb-10">
+                            <div className="bg-white/20 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg">
+                                <div className="text-4xl font-bold text-white">${fleteRate.toFixed(2)}</div>
+                                <div className="text-sm text-white/80 mt-1">USD por kilogramo</div>
                             </div>
-                            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                                <div className="text-3xl font-bold">$14</div>
-                                <div className="text-sm">USD cargos fijos</div>
+                            <div className="bg-white/20 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg">
+                                <div className="text-4xl font-bold text-white">$10</div>
+                                <div className="text-sm text-white/80 mt-1">USD servicio</div>
                             </div>
-                            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                                <div className="text-3xl font-bold">$200</div>
-                                <div className="text-sm">Seguro incluido</div>
+                            <div className="bg-white/20 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg">
+                                <div className="text-4xl font-bold text-white">$200</div>
+                                <div className="text-sm text-white/80 mt-1">Seguro incluido</div>
                             </div>
                         </div>
+
+                        <div 
+                            className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-1000 delay-600 ${isVisible['hero-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                            data-animate
+                            id="hero-buttons"
+                        >
+                            <button 
+                                onClick={() => {
+                                    const calculatorSection = document.querySelector('[data-section="calculator"]');
+                                    calculatorSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }}
+                                className="bg-white hover:bg-gray-100 text-primary px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center shadow-xl group"
+                            >
+                                <Calculator className="mr-3 h-6 w-6" />
+                                Calcular mi tarifa
+                                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
+                            </button>
+                        </div>
                     </div>
+                </div>
+
+                {/* Scroll Indicator */}
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <ChevronDown className="h-8 w-8 text-white/70" />
                 </div>
             </section>
 
@@ -309,71 +423,243 @@ const TarifasNormativas = ({ data, items, generals, cart, setCart, pages, isUser
                         </div>
 
                         <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 shadow-lg">
+                            {/* Valor del producto */}
                             <div className="mb-8">
-                                <label className="block text-lg font-semibold text-gray-900 mb-4">
-                                    Peso de tu envío (libras)
+                                <label className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
+                                    <DollarSign className="w-5 h-5 text-primary" />
+                                    Valor del producto (USD)
                                 </label>
                                 <input
-                                    type="range"
+                                    type="number"
                                     min="1"
-                                    max="110"
-                                    value={selectedWeight}
-                                    onChange={(e) => setSelectedWeight(Number(e.target.value))}
-                                    className="w-full h-3 bg-primary/20 rounded-lg appearance-none cursor-pointer accent-primary"
+                                    max="5000"
+                                    value={productValue}
+                                    onChange={(e) => setProductValue(Number(e.target.value))}
+                                    className="w-full px-6 py-4 border-2 border-primary/20 rounded-xl text-center text-3xl font-bold text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                                    placeholder="100"
                                 />
-                                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                                    <span>1 LB</span>
-                                    <span className="text-2xl font-bold text-primary">{selectedWeight} LB</span>
-                                    <span>110 LB</span>
+                                <div className="text-sm mt-3 text-center">
+                                    {productValue <= 200 ? (
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 inline-flex items-center gap-2">
+                                            <CheckCircle className="w-4 h-4 text-green-600" />
+                                            <span className="text-green-700 font-semibold">Solo pagas flete + servicio de importación</span>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 inline-flex items-center gap-2">
+                                            <AlertTriangle className="w-4 h-4 text-orange-600" />
+                                            <span className="text-orange-700 font-semibold">Se aplicarán impuestos adicionales (seguro y derecho arancelario)</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="grid md:grid-cols-3 gap-6 mb-8">
-                                <div className="bg-white rounded-xl p-6 shadow-md">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Scale className="w-6 h-6 text-primary" />
-                                        <span className="text-gray-600">Flete</span>
-                                    </div>
-                                    <div className="text-3xl font-bold text-gray-900">
-                                        ${tarifa.flete}
-                                    </div>
-                                    <div className="text-sm text-gray-500 mt-1">
-                                        {selectedWeight} lb × $1.75
-                                    </div>
+                            {/* Peso del envío */}
+                            <div className="mb-8">
+                                <div className="flex items-center justify-between mb-4">
+                                    <label className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                        <Scale className="w-5 h-5 text-primary" />
+                                        Peso de tu envío (kilogramos)
+                                    </label>
+                                    <button
+                                        onClick={() => setUseSlider(!useSlider)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-primary/20 rounded-lg hover:border-primary hover:bg-primary/5 transition-all"
+                                    >
+                                        {useSlider ? (
+                                            <>
+                                                <Calculator className="w-4 h-4 text-primary" />
+                                                <span className="text-sm font-medium text-gray-700">Ingresar peso</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Scale className="w-4 h-4 text-primary" />
+                                                <span className="text-sm font-medium text-gray-700">Usar selector</span>
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
 
-                                <div className="bg-white rounded-xl p-6 shadow-md">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Package className="w-6 h-6 text-orange-600" />
-                                        <span className="text-gray-600">Cargos Fijos</span>
+                                {useSlider ? (
+                                    <div>
+                                        <input
+                                            type="range"
+                                            min="0.5"
+                                            max="50"
+                                            step="0.5"
+                                            value={selectedWeight}
+                                            onChange={(e) => setSelectedWeight(Number(e.target.value))}
+                                            className="w-full h-3 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary slider-thumb"
+                                        />
+                                        <div className="flex justify-between items-center text-sm text-gray-600 mt-3">
+                                            <span className="text-gray-500">0.5 kg</span>
+                                            <div className="text-center">
+                                                <div className="text-4xl font-bold text-primary">{selectedWeight}</div>
+                                                <div className="text-xs text-gray-500 mt-1">kilogramos</div>
+                                            </div>
+                                            <span className="text-gray-500">50 kg</span>
+                                        </div>
                                     </div>
-                                    <div className="text-3xl font-bold text-gray-900">
-                                        ${tarifa.cargosFijos}
+                                ) : (
+                                    <div>
+                                        <input
+                                            type="number"
+                                            min="0.5"
+                                            max="200"
+                                            step="0.1"
+                                            value={selectedWeight}
+                                            onChange={(e) => setSelectedWeight(Number(e.target.value))}
+                                            className="w-full px-6 py-4 border-2 border-primary/20 rounded-xl text-center text-3xl font-bold text-secondary focus:outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition-all"
+                                            placeholder="0.0"
+                                        />
+                                        <div className="text-center mt-3">
+                                            <div className="text-xs text-gray-500">
+                                                Ingresa el peso de tu paquete en kilogramos
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="text-sm text-gray-500 mt-1">
-                                        Por envío
-                                    </div>
-                                </div>
+                                )}
+                            </div>
 
-                                <div className="bg-gradient-to-br from-primary to-secondary rounded-xl p-6 shadow-md text-white">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <DollarSign className="w-6 h-6" />
-                                        <span className="font-semibold">Total</span>
+                            {/* Resultados mejorados */}
+                            <div className="bg-white rounded-xl p-6 shadow-md">
+                                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                    <FileText className="w-6 h-6 text-primary" />
+                                    Desglose de tu envío
+                                </h3>
+                                
+                                <div className="space-y-4">
+                                    {/* Flete */}
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-100">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <Plane className="w-5 h-5 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold text-gray-900">Flete Internacional</div>
+                                                <div className="text-sm text-gray-600">{selectedWeight} kg × ${fleteRate.toFixed(2)}</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-2xl font-bold text-blue-600">
+                                            ${tarifa.flete}
+                                        </div>
                                     </div>
-                                    <div className="text-3xl font-bold">
-                                        ${tarifa.total}
+
+                                    {/* Servicio */}
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-100">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                                <Package className="w-5 h-5 text-orange-600" />
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold text-gray-900">Servicio de Importación</div>
+                                                <div className="text-sm text-gray-600">Gestión aduanera completa</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-2xl font-bold text-orange-600">
+                                            ${tarifa.cargosFijos}
+                                        </div>
                                     </div>
-                                    <div className="text-sm opacity-90 mt-1">
-                                        USD
+
+                                    {/* Seguro (condicional) */}
+                                    {tarifa.aplicaImpuestos && Number(tarifa.seguro) > 0 && (
+                                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                    <ShieldCheck className="w-5 h-5 text-green-600" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-semibold text-gray-900">Seguro Adicional</div>
+                                                    <div className="text-sm text-gray-600">{seguroRate}% sobre valor producto</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-2xl font-bold text-green-600">
+                                                ${tarifa.seguro}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Derecho Arancelario (condicional) */}
+                                    {tarifa.aplicaImpuestos && Number(tarifa.derechoArancelario) > 0 && (
+                                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                    <FileText className="w-5 h-5 text-purple-600" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-semibold text-gray-900">Derecho Arancelario</div>
+                                                    <div className="text-sm text-gray-600">{derechoArancelarioRate}% sobre valor CIF</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-2xl font-bold text-purple-600">
+                                                ${tarifa.derechoArancelario}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Separador */}
+                                    <div className="border-t-2 border-dashed border-gray-300 my-3"></div>
+
+                                    {/* Subtotal de Envío */}
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg border border-gray-200">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                <Truck className="w-5 h-5 text-gray-600" />
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold text-gray-900">Subtotal Envío</div>
+                                                <div className="text-sm text-gray-600">Flete + servicio{tarifa.aplicaImpuestos ? ' + impuestos' : ''}</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-2xl font-bold text-gray-700">
+                                            ${tarifa.totalEnvio}
+                                        </div>
+                                    </div>
+
+                                    {/* Valor del Producto */}
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                                <Package className="w-5 h-5 text-indigo-600" />
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold text-gray-900">Valor del Producto</div>
+                                                <div className="text-sm text-gray-600">Precio que pagas a la tienda</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-2xl font-bold text-indigo-600">
+                                            ${productValue.toFixed(2)}
+                                        </div>
+                                    </div>
+
+                                    {/* Total Final */}
+                                    <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary to-secondary rounded-xl text-white shadow-lg mt-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                                                <DollarSign className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm opacity-90">Total a pagar</div>
+                                                <div className="text-lg font-semibold">Producto + Envío completo</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-5xl font-bold">
+                                            ${tarifa.total}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            {/* Info adicional */}
+                            <div className="mt-6 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
                                 <div className="flex items-start gap-3">
-                                    <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-1" />
+                                    <ShieldCheck className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
                                     <div className="text-sm text-blue-900">
-                                        <strong>Incluye:</strong> Seguro hasta $200 USD, gestión aduanera, almacenaje, consolidación y entrega en Perú
+                                        <strong className="block mb-2">💡 Importante:</strong> 
+                                        <p className="mb-2">Este es el <strong>costo del envío</strong>, no incluye el precio del producto que comprarás en la tienda.</p>
+                                        {productValue <= 200 ? (
+                                            <p>✓ Incluye: Flete, servicio de importación, gestión aduanera, almacenaje, consolidación, seguro hasta $200 USD y entrega en Perú. <strong className="text-green-700">Sin impuestos adicionales.</strong></p>
+                                        ) : (
+                                            <p>✓ Incluye: Flete, servicio de importación, gestión aduanera, almacenaje, consolidación, entrega en Perú, seguro adicional ({seguroRate}%) y derecho arancelario ({derechoArancelarioRate}%) por valor superior a $200 USD.</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -716,20 +1002,22 @@ const TarifasNormativas = ({ data, items, generals, cart, setCart, pages, isUser
                             Cotiza tu envío ahora y aprovecha nuestras tarifas competitivas
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
-                            <a
-                                href="#cotizar"
+                            <button
+                                onClick={() => {
+                                    const calculatorSection = document.querySelector('[data-section="calculator"]');
+                                    calculatorSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }}
                                 className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg"
                             >
                                 <Calculator className="w-5 h-5" />
                                 Cotiza tu Envío
-                            </a>
-                            <a
-                                href="#contacto"
+                            </button>
+                            <  AdvisorButton
                                 className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold hover:bg-white/30 transition-colors border-2 border-white"
                             >
                                 <Headphones className="w-5 h-5" />
                                 Contactar Asesor
-                            </a>
+                            </AdvisorButton>
                         </div>
                     </div>
                 </div>

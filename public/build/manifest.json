@@ -1,4 +1,15 @@
 {
+  "_AdvisorButton-C3bfEr0Q.js": {
+    "file": "assets/AdvisorButton-C3bfEr0Q.js",
+    "name": "AdvisorButton",
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_General-apRuNwp7.js",
+      "_index-BZvh78jk.js",
+      "_proxy-B0QLMKEh.js"
+    ]
+  },
   "_ArrayDetails2Object-DR0Igcn7.js": {
     "file": "assets/ArrayDetails2Object-DR0Igcn7.js",
     "name": "ArrayDetails2Object"
@@ -8210,7 +8221,7 @@
     ]
   },
   "resources/js/Components/Tailwind/FirstClass.jsx": {
-    "file": "assets/FirstClass-B-T9HxY3.js",
+    "file": "assets/FirstClass-DUeWFelx.js",
     "name": "FirstClass",
     "src": "resources/js/Components/Tailwind/FirstClass.jsx",
     "isDynamicEntry": true,
@@ -11385,7 +11396,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service--xYaD2oR.js",
+    "file": "assets/Service-D27W_IjN.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -12691,7 +12702,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-D7HaDPlw.js",
+    "file": "assets/System-uxHlI0DV.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
