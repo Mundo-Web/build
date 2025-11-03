@@ -211,7 +211,7 @@ const EnviosPeruUSA = ({ data, items, generals, cart, setCart, pages, isUser, co
                                     Envía desde
                                 </span>
                                 <span 
-                                    className={`block text-6xl lg:text-8xl customtext-primary transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                                    className={`block text-6xl lg:text-8xl text-[#4fd1d8]  transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
                                     data-animate
                                     id="hero-title2"
                                 >
