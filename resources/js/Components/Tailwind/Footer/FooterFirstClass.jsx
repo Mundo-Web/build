@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Package, Facebook, Instagram, Twitter, Mail, Phone, MapPin, X } from 'lucide-react';
+import ReactModal from 'react-modal';
 import ServicesCategoriesPublicRest from '../../../Actions/Public/ServicesCategoriesPublicRest';
+import HtmlContent from '../../../Utils/HtmlContent';
+import Global from '../../../Utils/Global';
 
 const servicesCategoriesRest = new ServicesCategoriesPublicRest();
 
 const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [modalOpen, setModalOpen] = useState(null);
     
     const addressObj = generals.find(item => item.correlative === "address");
     const supportPhoneObj = generals.find(item => item.correlative === "support_phone");
@@ -21,8 +25,24 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
     const supportEmail = supportEmailObj?.description ?? "info@firstclass-courier.com";
     const footerDescription = footerDescriptionObj?.description ?? "Tu courier de primera clase para envíos seguros entre EE.UU. y América Latina.";
     const copyright = copyrightObj?.description ?? "© 2024 FirstClass Courier. Todos los derechos reservados.";
-    const termsConditions = termsConditionsObj?.description ?? "/terminos-condiciones";
-    const privacyPolicy = privacyPolicyObj?.description ?? "/politica-privacidad";
+    
+    // Content for modals
+    const termsConditionsContent = generals.find(item => item.correlative === "terms_conditions")?.description ?? "";
+    const privacyPolicyContent = generals.find(item => item.correlative === "privacy_policy")?.description ?? "";
+
+    const openModal = (index) => setModalOpen(index);
+    const closeModal = () => setModalOpen(null);
+
+    const policyItems = {
+        privacy_policy: { 
+            title: "Política de Privacidad",
+            content: privacyPolicyContent
+        },
+        terms_conditions: { 
+            title: "Términos y Condiciones",
+            content: termsConditionsContent
+        }
+    };
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -56,14 +76,10 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
                     {/* Company Info */}
                     <div className={data?.class_company_info || ''}>
                         <div className={`flex items-center mb-4 ${data?.class_logo || ''}`}>
-                            <div className="bg-primary px-3 py-1.5 rounded-lg mr-3">
-                                <div className="text-white font-bold text-lg tracking-wide">
-                                    FirstClass
-                                </div>
-                                <div className="text-white text-xs font-light tracking-widest -mt-1">
-                                    c o u r i e r
-                                </div>
-                            </div>
+                           <img src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className={`h-12 lg:h-16 object-contain ${data?.class_logo_footer || ''}`} onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/img/logo-bk.svg';
+                                }} />
                         </div>
                         <p className="text-gray-400 mb-6">
                             {footerDescription}
@@ -194,21 +210,82 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <div className={`text-gray-400 text-sm mb-4 md:mb-0 ${data?.class_copyright || ''}`}>
                             {copyright}
+                            {" "}
+                                <span>Powered by</span>
+                                <a 
+                                    href="https://mundoweb.pe/" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
+                                >{" "}
+                                    Mundoweb
+                                </a>
                         </div>
                         <div className={`flex space-x-6 text-sm ${data?.class_legal_links || ''}`}>
-                            <a href={termsConditions} className="text-gray-400 hover:text-white transition-colors duration-200">
+                            <button 
+                                onClick={() => openModal(1)}
+                                className="text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer"
+                            >
                                 Términos y Condiciones
-                            </a>
-                            <a href={privacyPolicy} className="text-gray-400 hover:text-white transition-colors duration-200">
+                            </button>
+                            <button 
+                                onClick={() => openModal(0)}
+                                className="text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer"
+                            >
                                 Política de Privacidad
-                            </a>
-                            <a href="/cookies" className="text-gray-400 hover:text-white transition-colors duration-200">
-                                Política de Cookies
-                            </a>
+                            </button>
+                      
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Modals */}
+            {Object.keys(policyItems).map((key, index) => {
+                const policy = policyItems[key];
+                return (
+                    <ReactModal
+                        key={index}
+                        isOpen={modalOpen === index}
+                        onRequestClose={closeModal}
+                        contentLabel={policy.title}
+                        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+                        ariaHideApp={false}
+                    >
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                                <h2 className="text-2xl font-bold text-gray-900 pr-4">{policy.title}</h2>
+                                <button
+                                    onClick={closeModal}
+                                    className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                    aria-label="Cerrar modal"
+                                >
+                                    <X size={24} strokeWidth={2} />
+                                </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 overflow-y-auto p-6">
+                                <div className="prose prose-gray max-w-none">
+                                    <HtmlContent html={policy.content} />
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="flex justify-end p-6 border-t border-gray-200">
+                                <button
+                                    onClick={closeModal}
+                                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200 font-medium"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </ReactModal>
+                );
+            })}
         </footer>
     );
 };
