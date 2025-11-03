@@ -1,658 +1,718 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-    MessageSquare,
-    AlertCircle,
-    Frown,
-    Lightbulb,
-    CheckCircle,
-    Send,
-    Clock,
-    FileText,
-    Mail,
-    Phone,
-    User,
-    Building2,
-    Hash,
-    ArrowRight,
-    ShieldCheck,
-    Headphones,
-    TrendingUp,
-    Award
-} from "lucide-react";
-import Breadcrumbs from "./Breadcrumbs";
+import { useEffect, useRef, useState } from "react";
+import InputForm from "../Checkouts/Components/InputForm";
+import ubigeoData from "../../../../../storage/app/utils/ubigeo.json";
+import SelectForm from "../Checkouts/Components/SelectForm";
 
-const PQRS = ({ data, items, generals, cart, setCart, pages, isUser, contacts }) => {
-    const [selectedType, setSelectedType] = useState("");
+
+
+import ReactModal from "react-modal";
+import HtmlContent from "../../../Utils/HtmlContent";
+import { Send, X, FileText, User, MapPin, Package, AlertTriangle, Shield } from "lucide-react";
+import { toast } from "sonner";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import CustomCaptcha from "../Complaints/CustomCaptcha";
+import ThankYouPage from "../Complaints/ThankYouPage";
+export default function PQRS({ generals = [],data }) {
+    const [messageCaptcha, setMessageCaptcha] = useState("");
+    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState(null);
+    const [showThankYou, setShowThankYou] = useState(false);
+    const [submittedData, setSubmittedData] = useState(null);
+    
+    // Referencia para el captcha
+    const captchaRef = useRef();
+    
     const [formData, setFormData] = useState({
-        type: "",
-        name: "",
-        email: "",
-        phone: "",
-        document: "",
-        subject: "",
-        description: "",
-        orderNumber: "",
-        company: ""
+        nombre: "",
+        tipo_documento: "RUC",
+        numero_identidad: "",
+        celular: "",
+        correo_electronico: "",
+        departamento: "",
+        provincia: "",
+        distrito: "",
+        direccion: "",
+        tipo_producto: "",
+        monto_reclamado: "",
+        descripcion_producto: "",
+        tipo_reclamo: "",
+        fecha_ocurrencia: "",
+        numero_pedido: "",
+        detalle_reclamo: "",
+        acepta_terminos: false,
     });
-    const [isVisible, setIsVisible] = useState({});
-    const [submitted, setSubmitted] = useState(false);
-    const observerRef = useRef(null);
+    const [loading, setLoading] = useState(false);
 
-    // Intersection Observer for animations
-    useEffect(() => {
-        observerRef.current = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setIsVisible((prev) => ({
-                            ...prev,
-                            [entry.target.dataset.section]: true,
-                        }));
-                    }
-                });
-            },
-            { threshold: 0.1 }
-        );
-
-        document.querySelectorAll("[data-section]").forEach((section) => {
-            observerRef.current?.observe(section);
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({
+            ...formData,
+            [name]: type === "checkbox" ? checked : value,
         });
-
-        return () => observerRef.current?.disconnect();
-    }, []);
-
-    const pqrsTypes = [
-        {
-            id: "peticion",
-            title: "Petición",
-            icon: MessageSquare,
-            description: "Solicitud de información, documentos o servicios relacionados con tus envíos",
-            color: "from-blue-500 to-cyan-500",
-            textColor: "text-blue-600",
-            bgColor: "bg-blue-50",
-            examples: [
-                "Solicitar información sobre mis envíos",
-                "Pedir certificados o documentos",
-                "Consultar sobre nuevos servicios"
-            ]
-        },
-        {
-            id: "queja",
-            title: "Queja",
-            icon: AlertCircle,
-            description: "Manifestación de insatisfacción relacionada con nuestro servicio o atención",
-            color: "from-orange-500 to-red-500",
-            textColor: "text-orange-600",
-            bgColor: "bg-orange-50",
-            examples: [
-                "Demoras en la entrega",
-                "Problemas con el servicio al cliente",
-                "Inconformidad con el proceso"
-            ]
-        },
-        {
-            id: "reclamo",
-            title: "Reclamo",
-            icon: Frown,
-            description: "Exigencia de solución a un problema o inconveniente con el servicio recibido",
-            color: "from-red-500 to-red-700",
-            textColor: "text-red-600",
-            bgColor: "bg-red-50",
-            examples: [
-                "Daño o pérdida de mercancía",
-                "Cobro incorrecto",
-                "Incumplimiento de términos acordados"
-            ]
-        },
-        {
-            id: "sugerencia",
-            title: "Sugerencia",
-            icon: Lightbulb,
-            description: "Propuesta o idea para mejorar nuestros servicios y procesos",
-            color: "from-green-500 to-emerald-500",
-            textColor: "text-green-600",
-            bgColor: "bg-green-50",
-            examples: [
-                "Mejoras en la plataforma web",
-                "Nuevos servicios o destinos",
-                "Optimización de procesos"
-            ]
-        }
-    ];
-
-    const processSteps = [
-        {
-            number: 1,
-            title: "Envía tu PQRS",
-            description: "Completa el formulario con toda la información necesaria",
-            icon: Send,
-            time: "Inmediato"
-        },
-        {
-            number: 2,
-            title: "Confirmación",
-            description: "Recibirás un número de radicado por email",
-            icon: CheckCircle,
-            time: "24 horas"
-        },
-        {
-            number: 3,
-            title: "Análisis",
-            description: "Nuestro equipo evalúa tu caso",
-            icon: FileText,
-            time: "2-3 días"
-        },
-        {
-            number: 4,
-            title: "Respuesta",
-            description: "Te contactamos con la solución",
-            icon: Mail,
-            time: "5-10 días"
-        }
-    ];
-
-    const commitments = [
-        {
-            icon: Clock,
-            title: "Respuesta Rápida",
-            description: "Respuesta inicial en máximo 24 horas",
-            color: "text-blue-600"
-        },
-        {
-            icon: ShieldCheck,
-            title: "Confidencialidad",
-            description: "Tus datos están protegidos",
-            color: "text-green-600"
-        },
-        {
-            icon: Headphones,
-            title: "Atención Personalizada",
-            description: "Seguimiento individual de tu caso",
-            color: "text-purple-600"
-        },
-        {
-            icon: TrendingUp,
-            title: "Mejora Continua",
-            description: "Cada PQRS nos ayuda a mejorar",
-            color: "text-orange-600"
-        }
-    ];
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
     };
 
-    const handleTypeSelect = (type) => {
-        setSelectedType(type);
-        setFormData(prev => ({
-            ...prev,
-            type: type
-        }));
+    // Función para resetear el formulario
+    const resetForm = () => {
+        setFormData({
+            nombre: "",
+            tipo_documento: "RUC",
+            numero_identidad: "",
+            celular: "",
+            correo_electronico: "",
+            departamento: "",
+            provincia: "",
+            distrito: "",
+            direccion: "",
+            tipo_producto: "",
+            monto_reclamado: "",
+            descripcion_producto: "",
+            tipo_reclamo: "",
+            fecha_ocurrencia: "",
+            numero_pedido: "",
+            detalle_reclamo: "",
+            acepta_terminos: false,
+        });
+        setDepartamento("");
+        setProvincia("");
+        setDistrito("");
+        setIsCaptchaVerified(false);
+        setCaptchaToken(null);
+        setMessageCaptcha("");
+        
+        // Resetear el captcha usando la referencia
+        if (captchaRef.current) {
+            captchaRef.current.reset();
+        }
+    };
+
+    // Función para manejar la verificación del captcha
+    const handleCaptchaVerify = (isVerified, token) => {
+        setIsCaptchaVerified(isVerified);
+        setCaptchaToken(token);
+        if (isVerified) {
+            setMessageCaptcha(""); // Limpiar cualquier mensaje de error
+        }
+    };
+
+    // Función para volver al formulario desde la página de agradecimiento
+    const handleBackToForm = () => {
+        setShowThankYou(false);
+        setSubmittedData(null);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Aquí iría la lógica de envío al backend
-        console.log("PQRS Submitted:", formData);
-        setSubmitted(true);
+        setLoading(true);
         
-        // Simular envío y resetear después de 3 segundos
-        setTimeout(() => {
-            setSubmitted(false);
-            setFormData({
-                type: "",
-                name: "",
-                email: "",
-                phone: "",
-                document: "",
-                subject: "",
-                description: "",
-                orderNumber: "",
-                company: ""
+        if (!isCaptchaVerified || !captchaToken) {
+            setMessageCaptcha("Por favor, completa la verificación de seguridad.");
+            setLoading(false);
+            return;
+        }
+
+        // Limpiar mensaje de error del captcha
+        setMessageCaptcha("");
+
+        const updatedFormData = {
+            ...formData,
+            captcha_verified: true,
+            recaptcha_token: captchaToken, // Enviar como recaptcha_token para compatibilidad con backend
+        };
+        fetch("/api/complaints", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedFormData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+            
+                if (data.type === "success") {
+                    // Guardar los datos enviados para mostrar en la página de agradecimiento
+                    setSubmittedData(formData);
+                    setShowThankYou(true);
+                    resetForm(); // Resetear el formulario
+                    setLoading(false);
+                }
+                else {
+                    toast.error("Solicitud rechazada", {
+                        description: `Lo sentimos, no se envió su solicitud.`,
+                        icon: <Send className="h-5 w-5 text-red-500" />,
+                        duration: 3000,
+                        position: "bottom-center",
+                    });
+                    setLoading(false);
+
+                }
+            })
+            .catch((error) => {
+                toast.error("Solicitud rechazada", {
+                    description: error || `Lo sentimos, no se envió su solicitud.`,
+                    icon: <Send className="h-5 w-5 text-red-500" />,
+                    duration: 3000,
+                    position: "bottom-center",
+                });
+                setLoading(false);
             });
-            setSelectedType("");
-        }, 3000);
     };
 
+    // Estados para manejar los valores seleccionados
+    const [departamento, setDepartamento] = useState("");
+    const [provincia, setProvincia] = useState("");
+    const [distrito, setDistrito] = useState("");
+
+    // Estados para las opciones dinámicas
+    const [departamentos, setDepartamentos] = useState([]);
+    const [provincias, setProvincias] = useState([]);
+    const [distritos, setDistritos] = useState([]);
+
+    // Cargar los departamentos al iniciar el componente
+    useEffect(() => {
+        const uniqueDepartamentos = [
+            ...new Set(ubigeoData.map((item) => item.departamento)),
+        ];
+        setDepartamentos(uniqueDepartamentos);
+    }, []);
+
+    // Filtrar provincias cuando se selecciona un departamento
+    useEffect(() => {
+        if (departamento) {
+            const filteredProvincias = [
+                ...new Set(
+                    ubigeoData
+                        .filter((item) => item.departamento === departamento)
+                        .map((item) => item.provincia)
+                ),
+            ];
+            setProvincias(filteredProvincias);
+            setProvincia(""); // Reiniciar provincia
+            setDistrito(""); // Reiniciar distrito
+            setDistritos([]); // Limpiar distritos
+            setFormData((prev) => ({
+                ...prev,
+                departamento: departamento,
+                provincia: "",
+                distrito: "",
+            }));
+        }
+    }, [departamento]);
+
+    // Filtrar distritos cuando se selecciona una provincia
+    useEffect(() => {
+        if (provincia) {
+            const filteredDistritos = ubigeoData
+                .filter(
+                    (item) =>
+                        item.departamento === departamento &&
+                        item.provincia === provincia
+                )
+                .map((item) => item.distrito);
+            setDistritos(filteredDistritos);
+            setDistrito(""); // Reiniciar distrito
+            setFormData((prev) => ({
+                ...prev,
+                provincia: provincia,
+                distrito: "",
+            }));
+        }
+    }, [provincia]);
+
+    // Consultar el precio de envío cuando se selecciona un distrito
+    useEffect(() => {
+        if (distrito) {
+            setFormData((prev) => ({ ...prev, distrito: distrito }));
+        }
+    }, [distrito]);
+
+    const typesDocument = [
+        { value: "ruc", label: "RUC" },
+        { value: "dni", label: "DNI" },
+        { value: "ce", label: "CE" },
+        { value: "pasaporte", label: "Pasaporte" },
+    ];
+    const typesContract = [
+        { value: "producto", label: "Producto" },
+        { value: "servicio", label: "Servicio" },
+    ];
+    const typesClaim = [
+        { value: "peticion", label: "Petición" },
+        { value: "queja", label: "Queja" },
+        { value: "reclamo", label: "Reclamo" },
+        { value: "sugerencia", label: "Sugerencia" },
+    ];
+
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const policyItems = {
+        terms_conditions: "Términos y condiciones",
+    };
+
+    const openModal = (index) => setModalOpen(index);
+    const closeModal = () => setModalOpen(null);
+    
+    // Si estamos mostrando la página de agradecimiento
+    if (showThankYou && submittedData) {
+        return (
+            <ThankYouPage
+                complaintData={submittedData}
+                onBackToForm={handleBackToForm}
+            />
+        );
+    }
+    
     return (
-        <div className="w-full bg-gray-50">
-            {/* Breadcrumbs */}
-            <Breadcrumbs />
-
-            {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-primary via-primary-dark to-secondary text-white py-20 overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                    }}></div>
-                </div>
-                
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-6">
-                            <Headphones className="w-5 h-5" />
-                            <span className="font-semibold">Atención al Cliente</span>
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                            PQRS
-                        </h1>
-                        <p className="text-xl md:text-2xl text-white/90 mb-4">
-                            Peticiones, Quejas, Reclamos y Sugerencias
-                        </p>
-                        <p className="text-lg text-white/80 max-w-3xl mx-auto">
-                            Aquí podrás expresar tus comentarios, sugerencias, quejas y reclamaciones sobre nuestros servicios. 
-                            Nuestro equipo de atención al cliente estará encantado de atenderte y resolver tus inquietudes.
-                        </p>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full px-4 py-8 font-paragraph">
+            <div className="max-w-5xl mx-auto">
+                {/* Header mejorado */}
+                <div className="text-center mb-12">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-6 ${data?.class_icon || ' shadow-lg'}`}>
+                        <FileText className="w-8 h-8 text-white" />
                     </div>
+                    <h1 className={`text-4xl font-bold  mb-4 ${data?.class_title || ' customtext-neutral-dark'}`}>
+                        PQRS - Peticiones, Quejas, Reclamos y Sugerencias
+                    </h1>
+                    <p className="text-lg customtext-neutral-light max-w-2xl mx-auto">
+                        Tu opinión es importante para nosotros. Completa este formulario para registrar tu petición, queja, reclamo o sugerencia.
+                    </p>
                 </div>
-            </section>
 
-            {/* Tipos de PQRS */}
-            <section 
-                data-section="types"
-                className={`py-16 bg-white transition-all duration-1000 ${
-                    isVisible.types ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-            >
-                <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                ¿Qué Tipo de PQRS Deseas Presentar?
-                            </h2>
-                            <p className="text-xl text-gray-600">
-                                Selecciona el tipo que mejor se ajuste a tu situación
-                            </p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {pqrsTypes.map((type) => (
-                                <div
-                                    key={type.id}
-                                    onClick={() => handleTypeSelect(type.id)}
-                                    className={`cursor-pointer rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 ${
-                                        selectedType === type.id ? 'ring-4 ring-primary scale-105' : ''
-                                    }`}
-                                >
-                                    <div className={`bg-gradient-to-br ${type.color} p-6 text-white`}>
-                                        <type.icon className="w-12 h-12 mb-3" />
-                                        <h3 className="text-2xl font-bold mb-2">{type.title}</h3>
-                                    </div>
-                                    <div className="p-6 bg-white">
-                                        <p className="text-gray-700 mb-4">{type.description}</p>
-                                        <div className="space-y-2">
-                                            <p className="text-sm font-semibold text-gray-900">Ejemplos:</p>
-                                            {type.examples.map((example, idx) => (
-                                                <div key={idx} className="flex items-start gap-2">
-                                                    <CheckCircle className={`w-4 h-4 ${type.textColor} flex-shrink-0 mt-0.5`} />
-                                                    <span className="text-sm text-gray-600">{example}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                <div className="bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden">
+                    <form onSubmit={handleSubmit} className="p-8 space-y-12">
+                        {/* Identificación del Consumidor */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <User className="w-6 h-6 text-white" />
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Formulario */}
-            <section 
-                data-section="form"
-                className={`py-16 bg-gray-50 transition-all duration-1000 ${
-                    isVisible.form ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-            >
-                <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Completa el Formulario
-                            </h2>
-                            <p className="text-xl text-gray-600">
-                                Proporciona toda la información necesaria para ayudarte mejor
-                            </p>
-                        </div>
-
-                        {submitted ? (
-                            <div className="bg-green-50 border-2 border-green-500 rounded-2xl p-8 text-center">
-                                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <CheckCircle className="w-12 h-12 text-white" />
+                                <div>
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
+                                        Identificación del Consumidor
+                                    </h2>
+                                    <p className="customtext-neutral-light">Proporciona tus datos personales</p>
                                 </div>
-                                <h3 className="text-2xl font-bold text-green-900 mb-4">
-                                    ¡PQRS Enviado Exitosamente!
-                                </h3>
-                                <p className="text-green-800 mb-4">
-                                    Hemos recibido tu solicitud. Recibirás un número de radicado por email en las próximas 24 horas.
-                                </p>
-                                <p className="text-sm text-green-700">
-                                    Nuestro equipo se pondrá en contacto contigo pronto.
-                                </p>
                             </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
-                                {/* Tipo de PQRS */}
-                                <div className="mb-6">
-                                    <label className="block text-sm font-semibold text-gray-900 mb-3">
-                                        Tipo de PQRS <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        {pqrsTypes.map((type) => (
-                                            <button
-                                                key={type.id}
-                                                type="button"
-                                                onClick={() => handleTypeSelect(type.id)}
-                                                className={`p-4 rounded-lg border-2 transition-all ${
-                                                    selectedType === type.id
-                                                        ? `border-primary ${type.bgColor}`
-                                                        : 'border-gray-200 hover:border-gray-300'
-                                                }`}
-                                            >
-                                                <type.icon className={`w-6 h-6 mx-auto mb-2 ${
-                                                    selectedType === type.id ? type.textColor : 'text-gray-400'
-                                                }`} />
-                                                <span className={`text-sm font-semibold ${
-                                                    selectedType === type.id ? type.textColor : 'text-gray-600'
-                                                }`}>
-                                                    {type.title}
-                                                </span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
 
-                                {/* Datos Personales */}
-                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            <User className="w-4 h-4 inline mr-2" />
-                                            Nombre Completo <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            placeholder="Juan Pérez García"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            <Hash className="w-4 h-4 inline mr-2" />
-                                            Documento de Identidad <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="document"
-                                            value={formData.document}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            placeholder="DNI / CE / RUC"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            <Mail className="w-4 h-4 inline mr-2" />
-                                            Email <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            placeholder="ejemplo@email.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            <Phone className="w-4 h-4 inline mr-2" />
-                                            Teléfono <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            placeholder="+51 999 999 999"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            <Building2 className="w-4 h-4 inline mr-2" />
-                                            Empresa (Opcional)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="company"
-                                            value={formData.company}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            placeholder="Nombre de la empresa"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            <Hash className="w-4 h-4 inline mr-2" />
-                                            Número de Orden (Opcional)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="orderNumber"
-                                            value={formData.orderNumber}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            placeholder="FC-12345"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Asunto y Descripción */}
-                                <div className="mb-6">
-                                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                        Asunto <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <InputForm
                                         type="text"
-                                        name="subject"
-                                        value={formData.subject}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                        placeholder="Breve descripción del tema"
+                                        label="Nombres completos"
+                                        name="nombre"
+                                        value={formData.nombre}
+                                        onChange={handleChange}
+                                        placeholder="Ingresa tu nombre completo"
                                     />
                                 </div>
+                                <div className="space-y-2">
+                                    <SelectForm
+                                        label="Tipo de documento"
+                                        options={typesDocument}
+                                        placeholder="Selecciona tu documento"
+                                        value={formData.tipo_documento}
+                                        onChange={(value) => {
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                tipo_documento: value,
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <InputForm
+                                        type="text"
+                                        label="Número de documento"
+                                        name="numero_identidad"
+                                        value={formData.numero_identidad}
+                                        onChange={handleChange}
+                                        placeholder="Número de documento"
+                                    />
+                                </div>
+                            </div>
 
-                                <div className="mb-6">
-                                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                        Descripción Detallada <span className="text-red-500">*</span>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <InputForm
+                                        type="tel"
+                                        label="Número de celular"
+                                        name="celular"
+                                        value={formData.celular}
+                                        onChange={handleChange}
+                                        placeholder="+51 999 999 999"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <InputForm
+                                        type="email"
+                                        label="Correo electrónico"
+                                        name="correo_electronico"
+                                        value={formData.correo_electronico}
+                                        onChange={handleChange}
+                                        placeholder="tu@correo.com"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Ubicación */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <MapPin className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
+                                        Ubicación
+                                    </h2>
+                                    <p className="customtext-neutral-light">Indica tu dirección actual</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <SelectForm
+                                    label="Departamento"
+                                    options={departamentos}
+                                    placeholder="Selecciona departamento"
+                                    value={departamento}
+                                    onChange={(value) => {
+                                        setDepartamento(value);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            departamento: value,
+                                        }));
+                                    }}
+                                />
+
+                                <SelectForm
+                                    disabled={!departamento}
+                                    label="Provincia"
+                                    options={provincias}
+                                    placeholder="Selecciona provincia"
+                                    value={provincia}
+                                    onChange={(value) => {
+                                        setProvincia(value);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            provincia: value,
+                                        }));
+                                    }}
+                                />
+
+                                <SelectForm
+                                    disabled={!provincia}
+                                    label="Distrito"
+                                    options={distritos}
+                                    placeholder="Selecciona distrito"
+                                    value={distrito}
+                                    onChange={(value) => {
+                                        setDistrito(value);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            distrito: value,
+                                        }));
+                                    }}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <InputForm
+                                    type="text"
+                                    label="Dirección completa"
+                                    name="direccion"
+                                    value={formData.direccion}
+                                    onChange={handleChange}
+                                    placeholder="Av. Principal 123, Urbanización..."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Identificación del bien contratado */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <Package className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
+                                        Identificación del bien contratado
+                                    </h2>
+                                    <p className="customtext-neutral-light">Detalles del producto o servicio</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <SelectForm
+                                    label="Tipo de contratación"
+                                    options={typesContract}
+                                    placeholder="¿Fue un producto o servicio?"
+                                    value={formData.tipo_producto}
+                                    onChange={(value) => {
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            tipo_producto: value,
+                                        }));
+                                    }}
+                                />
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <InputForm
+                                            type="number"
+                                            label={`Monto reclamado (${CurrencySymbol()})`}
+                                            name="monto_reclamado"
+                                            value={formData.monto_reclamado}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            step="0.01"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <InputForm
+                                            type="text"
+                                            label="Descripción del producto/servicio"
+                                            name="descripcion_producto"
+                                            value={formData.descripcion_producto}
+                                            onChange={handleChange}
+                                            placeholder="Nombre, modelo, código..."
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Detalle del reclamo */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
+                                <div className={`flex items-center justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary '}`}>
+                                    <AlertTriangle className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
+                                        Detalle de la solicitud
+                                    </h2>
+                                    <p className="customtext-neutral-light">Describe tu experiencia</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <SelectForm
+                                    label="Tipo de PQRS"
+                                    options={typesClaim}
+                                    placeholder="Selecciona el tipo de solicitud"
+                                    value={formData.tipo_reclamo}
+                                    onChange={(value) => {
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            tipo_reclamo: value,
+                                        }));
+                                    }}
+                                />
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <InputForm
+                                            type="date"
+                                            label="Fecha de ocurrencia"
+                                            name="fecha_ocurrencia"
+                                            value={formData.fecha_ocurrencia}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <InputForm
+                                            type="text"
+                                            label="Número de pedido (opcional)"
+                                            name="numero_pedido"
+                                            value={formData.numero_pedido}
+                                            onChange={handleChange}
+                                            placeholder="#PED-123456"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium customtext-neutral-dark mb-2">
+                                        Detalle de la solicitud
                                     </label>
                                     <textarea
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleInputChange}
-                                        required
-                                        rows="6"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                                        placeholder="Por favor, describe tu petición, queja, reclamo o sugerencia con el mayor detalle posible. Incluye fechas, números de orden, y cualquier otra información relevante."
-                                    ></textarea>
-                                    <p className="text-sm text-gray-500 mt-2">
-                                        Mínimo 50 caracteres. Sé lo más específico posible.
+                                        name="detalle_reclamo"
+                                        placeholder="Describe detalladamente tu petición, queja, reclamo o sugerencia. Incluye fechas, nombres, referencias y cualquier información relevante..."
+                                        className="w-full min-h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 resize-none"
+                                        value={formData.detalle_reclamo}
+                                        onChange={handleChange}
+                                        rows={5}
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Mínimo 50 caracteres para una descripción completa
                                     </p>
                                 </div>
-
-                                {/* Botón de Envío */}
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm text-gray-600">
-                                        <span className="text-red-500">*</span> Campos obligatorios
-                                    </p>
-                                    <button
-                                        type="submit"
-                                        disabled={!selectedType || formData.description.length < 50}
-                                        className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Send className="w-5 h-5" />
-                                        Enviar PQRS
-                                    </button>
-                                </div>
-                            </form>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* Proceso de Atención */}
-            <section 
-                data-section="process"
-                className={`py-16 bg-white transition-all duration-1000 ${
-                    isVisible.process ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-            >
-                <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Proceso de Atención
-                            </h2>
-                            <p className="text-xl text-gray-600">
-                                Así gestionamos tu PQRS
-                            </p>
+                            </div>
                         </div>
 
-                        <div className="grid md:grid-cols-4 gap-6">
-                            {processSteps.map((step, index) => (
-                                <div key={index} className="relative">
-                                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 h-full">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">
-                                            {step.number}
-                                        </div>
-                                        <step.icon className="w-8 h-8 text-primary mb-3" />
-                                        <h3 className="font-bold text-lg text-gray-900 mb-2">
-                                            {step.title}
-                                        </h3>
-                                        <p className="text-gray-600 mb-3 text-sm">
-                                            {step.description}
-                                        </p>
-                                        <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                                            <Clock className="w-4 h-4" />
-                                            {step.time}
-                                        </div>
-                                    </div>
-                                    {index < processSteps.length - 1 && (
-                                        <ArrowRight className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 w-6 h-6 text-primary" />
+                        {/* Verificación y términos */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
+                                <div className={`flex items-center  justify-center w-12 h-12 bg-secondary rounded-full ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
+                                    <Shield className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className={`text-2xl font-bold customtext-neutral-dark ${data?.class_title || ''}`}>
+                                        Verificación y términos
+                                    </h2>
+                                    <p className="customtext-neutral-light">Confirmación final</p>
+                                </div>
+                            </div>
+
+                            {/* Términos y condiciones */}
+                            <div className="bg-gray-50 rounded-xl p-6">
+                                <div className="flex items-start gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="terminos"
+                                        name="acepta_terminos"
+                                        className="mt-1 w-5 h-5 customtext-primary border-gray-300 rounded focus:ring-blue-500"
+                                        checked={formData.acepta_terminos}
+                                        onChange={handleChange}
+                                    />
+                                    <label htmlFor="terminos" className="text-sm customtext-neutral-dark leading-relaxed">
+                                        Acepto y estoy de acuerdo con los{" "}
+                                        <button
+                                            type="button"
+                                            onClick={() => openModal(0)}
+                                            className="customtext-primary underline hover:customtext-secondary font-medium"
+                                        >
+                                            términos y condiciones
+                                        </button>{" "}
+                                        del sistema PQRS. Confirmo que la información proporcionada es veraz y completa.
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Custom Captcha */}
+                            <div className="bg-gray-50 rounded-xl p-6">
+                                <CustomCaptcha
+                                    ref={captchaRef}
+                                    onVerify={handleCaptchaVerify}
+                                    error={messageCaptcha}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Botón de envío mejorado */}
+                        <div className="pt-8 border-t border-gray-200">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                                <button
+                                    type="button"
+                                    onClick={resetForm}
+                                    className="px-6 py-3 customtext-neutral-dark bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                                >
+                                    Limpiar formulario
+                                </button>
+                                <button
+                                    disabled={loading || !formData.acepta_terminos || !isCaptchaVerified}
+                                    type="submit"
+                                    className="px-8 py-3 bg-primary hover:brightness-110 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                            </svg>
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send className="w-5 h-5" />
+                                            Enviar PQRS
+                                        </>
                                     )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Nuestros Compromisos */}
-            <section 
-                data-section="commitments"
-                className={`py-16 bg-gray-50 transition-all duration-1000 ${
-                    isVisible.commitments ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-            >
-                <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-12">
-                            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-                                <Award className="w-5 h-5 text-primary" />
-                                <span className="text-primary font-semibold">Nuestro Compromiso</span>
+                                </button>
                             </div>
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                ¿Qué Garantizamos?
-                            </h2>
-                            <p className="text-xl text-gray-600">
-                                Tu satisfacción es nuestra prioridad
+                            
+                            <p className="text-xs text-gray-500 mt-4 text-center">
+                                Al enviar este formulario, tu PQRS será registrado y procesado según la normativa vigente.
+                                Recibirás una confirmación en tu correo electrónico.
                             </p>
                         </div>
+                    </form>
+                </div>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {commitments.map((commitment, index) => (
-                                <div key={index} className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
-                                    <commitment.icon className={`w-12 h-12 ${commitment.color} mb-4`} />
-                                    <h3 className="font-bold text-lg text-gray-900 mb-2">
-                                        {commitment.title}
-                                    </h3>
-                                    <p className="text-gray-600">
-                                        {commitment.description}
-                                    </p>
-                                </div>
-                            ))}
+                {/* Información adicional */}
+                <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-gray-100 rounded-xl p-6 text-center">
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                            <FileText className="w-6 h-6 text-white" />
                         </div>
-
-                        <div className="mt-12 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-6">
-                            <div className="flex items-start gap-3">
-                                <ShieldCheck className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                                <div className="text-blue-900">
-                                    <p className="font-semibold mb-2">Política de Privacidad</p>
-                                    <p>
-                                        Toda la información que nos proporcionas es tratada de forma confidencial y segura, 
-                                        cumpliendo con la Ley de Protección de Datos Personales. Solo será utilizada para 
-                                        gestionar tu PQRS y mejorar nuestros servicios.
-                                    </p>
+                        <h3 className="font-semibold customtext-neutral-dark mb-2">Respuesta garantizada</h3>
+                        <p className="text-sm customtext-neutral-light">Te responderemos en un máximo de 30 días calendario</p>
+                    </div>
+                    
+                    <div className="bg-gray-100 rounded-xl p-6 text-center">
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                            <Shield className="w-6 h-6 text-white" />
+                        </div>
+                        <h3 className="font-semibold customtext-neutral-dark mb-2">Información segura</h3>
+                        <p className="text-sm customtext-neutral-light">Tus datos están protegidos y son confidenciales</p>
+                    </div>
+                    
+                    <div className="bg-gray-100 rounded-xl p-6 text-center">
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                            <User className="w-6 h-6 text-white" />
+                        </div>
+                        <h3 className="font-semibold customtext-neutral-dark mb-2">Atención personalizada</h3>
+                        <p className="text-sm customtext-neutral-light">Un especialista revisará tu caso individualmente</p>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Modals para términos y condiciones */}
+            {Object.keys(policyItems).map((key, index) => {
+                const title = policyItems[key];
+                const content = Array.isArray(generals) 
+                    ? generals.find((x) => x.correlative == key)?.description ?? ""
+                    : "";
+                return (
+                  <ReactModal
+                        key={index}
+                        isOpen={modalOpen === index}
+                        onRequestClose={closeModal}
+                        contentLabel={title}
+                        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+                        ariaHideApp={false}
+                    >
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                                <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
+                                <button
+                                    onClick={closeModal}
+                                    className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                    aria-label="Cerrar modal"
+                                >
+                                    <X size={24} strokeWidth={2} />
+                                </button>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 overflow-y-auto p-6">
+                                <div className="prose prose-gray max-w-none">
+                                    <HtmlContent html={content} />
                                 </div>
                             </div>
+                            
+                            {/* Footer */}
+                            <div className="flex justify-end p-6 border-t border-gray-200">
+                                <button
+                                    onClick={closeModal}
+                                    className="px-6 py-2 bg-primary text-white rounded-lg  transition-colors duration-200 font-medium"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA Final */}
-            <section className="py-16 bg-gradient-to-br from-primary via-primary-dark to-secondary text-white">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                            ¿Necesitas Ayuda Inmediata?
-                        </h2>
-                        <p className="text-xl text-white/90 mb-8">
-                            Nuestro equipo de atención al cliente está disponible para ayudarte
-                        </p>
-                        <div className="flex flex-wrap gap-4 justify-center">
-                            <a
-                                href="tel:+51999999999"
-                                className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg"
-                            >
-                                <Phone className="w-5 h-5" />
-                                Llamar Ahora
-                            </a>
-                            <a
-                                href="mailto:atencion@firstclass.com"
-                                className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold hover:bg-white/30 transition-colors border-2 border-white"
-                            >
-                                <Mail className="w-5 h-5" />
-                                Enviar Email
-                            </a>
-                        </div>
-                        <p className="mt-8 text-white/80">
-                            En FirstClass estamos comprometidos en apoyar y asesorar el proceso de logística 
-                            internacional para tus envíos desde y hacia Estados Unidos.
-                        </p>
-                    </div>
-                </div>
-            </section>
+                    </ReactModal>
+                );
+            })}
         </div>
     );
-};
-
-export default PQRS;
+}
