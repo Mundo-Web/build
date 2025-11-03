@@ -64,7 +64,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       icon: User,
       title: "Regístrate Gratis",
       description: "Recibirás vía correo electrónico tu dirección en Miami, Estados Unidos.",
-      color: "from-blue-500 to-cyan-500",
+      color: "bg-primary",
       delay: "0ms"
     },
     {
@@ -72,7 +72,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       icon: MapPin,
       title: "Envía a tu casillero",
       description: "Usa tu dirección de Miami cuando realices tu compra, tal cual te la proporcionamos.",
-      color: "from-cyan-500 to-teal-500",
+      color: "bg-secondary",
       delay: "200ms"
     },
     {
@@ -80,7 +80,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       icon: Package,
       title: "Crea orden de envío",
       description: "Te notificaremos cuando tus compras lleguen al casillero virtual para que puedas indicarnos cómo prefieres realizar el envío a Perú.",
-      color: "from-teal-500 to-green-500",
+      color: "bg-neutral-dark",
       delay: "400ms"
     },
     {
@@ -88,7 +88,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       icon: CheckCircle,
       title: "Recibe en Perú",
       description: "Recibe tu envío de 3 a 7 días hábiles en la dirección que nos indiques en cualquier parte de Perú.",
-      color: "from-green-500 to-emerald-500",
+      color: "bg-neutral-light",
       delay: "600ms"
     }
   ];
@@ -98,25 +98,25 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       icon: Shield,
       title: "100% Seguro",
       description: "Protección total de tus paquetes",
-      color: "text-blue-500"
+      color: "customtext-primary"
     },
     {
       icon: Clock,
       title: "Entrega Rápida",
       description: "3-7 días hábiles a Perú",
-      color: "text-green-500"
+      color: "customtext-secondary"
     },
     {
       icon: Globe,
       title: "Acceso Global",
       description: "Miles de tiendas estadounidenses",
-      color: "text-purple-500"
+      color: "customtext-neutral-dark"
     },
     {
       icon: Star,
       title: "Calidad Premium",
       description: "Servicio de primera clase",
-      color: "text-yellow-500"
+      color: "customtext-neutral-light"
     }
   ];
 
@@ -156,7 +156,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
   return (
     <div className="min-h-screen bg-white" style={{ margin: 0, padding: 0 }}>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
+  <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full animate-pulse"></div>
@@ -167,7 +167,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           {/* Breadcrumbs */}
           <div className="mb-8">
-            <Breadcrumbs className="text-white/80" />
+            <Breadcrumbs className="text-white" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -192,7 +192,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                   Una forma
                 </span>
                 <span 
-                  className={`block text-6xl lg:text-8xl bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                  className={`block text-6xl lg:text-8xl text-[#4fd1d8] transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
                   data-animate
                   id="hero-title2"
                 >
@@ -255,20 +255,20 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                   <div className="absolute top-1/3 left-6 w-4 h-4 bg-yellow-400 rounded-full animate-pulse delay-1000"></div>
                   
                   {/* Floating geometric shapes */}
-                  <div className="absolute top-8 left-8 w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg transform rotate-45 animate-pulse"></div>
-                  <div className="absolute bottom-16 right-8 w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full animate-pulse delay-700"></div>
-                  <div className="absolute top-20 right-12 w-5 h-5 bg-gradient-to-br from-green-400 to-emerald-500 transform rotate-12 animate-pulse delay-300"></div>
+                  <div className="absolute top-8 left-8 w-8 h-8 bg-primary rounded-lg transform rotate-45 animate-pulse"></div>
+                  <div className="absolute bottom-16 right-8 w-6 h-6 bg-secondary rounded-full animate-pulse delay-700"></div>
+                  <div className="absolute top-20 right-12 w-5 h-5 bg-accent transform rotate-12 animate-pulse delay-300"></div>
                   
                   <div className="text-center relative z-10">
                     <h3 className="text-white text-2xl lg:text-3xl font-bold mb-4 leading-tight">
                       Una forma<br />
-                      <span className="text-primary text-3xl lg:text-4xl">Divertida</span><br />
+                      <span className="customtext-primary text-3xl lg:text-4xl">Divertida</span><br />
                       <span className="text-lg lg:text-xl">de Importar</span>
                     </h3>
-                    <p className="text-primary text-sm lg:text-base mb-6 font-medium">
+                    <p className="customtext-primary text-sm lg:text-base mb-6 font-medium">
                       Rápido | Seguro | Eficiente
                     </p>
-                    <button className="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <button className="bg-primary hover:opacity-90 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
                       Regístrate gratis
                     </button>
                     <p className="text-white text-sm mt-4 opacity-90">
@@ -293,7 +293,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       </section>
 
       {/* How it Works Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+  <section className="py-20 bg-accent relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-20 w-32 h-32 border-2 border-primary rounded-full"></div>
@@ -307,9 +307,9 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
             data-animate
             id="how-title"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               ¿Cómo funciona el servicio de
-              <span className="block text-primary">Casillero Virtual?</span>
+              <span className="block customtext-primary">Casillero Virtual?</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Con tu Casillero Virtual <strong>tendrás una dirección física en Miami</strong> a la que{' '}
@@ -339,17 +339,17 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                     style={{ animationDelay: step.delay }}
                   >
                     {/* Step Number */}
-                    <div className="absolute -left-4 -top-4 w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                    <div className="absolute -left-4 -top-4 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
                       {step.id}
                     </div>
 
                     <div className="flex items-start space-x-4 ml-4">
-                      <div className={`p-3 rounded-xl bg-gradient-to-br ${step.color} shadow-lg transform transition-all duration-300 ${isActive ? 'scale-110 rotate-12' : 'scale-100 rotate-0'}`}>
+                      <div className={`p-3 rounded-xl ${step.color} shadow-lg transform transition-all duration-300 ${isActive ? 'scale-110 rotate-12' : 'scale-100 rotate-0'}`}>
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       
                       <div className="flex-1">
-                        <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-gray-900'}`}>
+                        <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${isActive ? 'customtext-primary' : 'text-gray-900'}`}>
                           {step.title}
                         </h3>
                         <p className="text-gray-600 leading-relaxed">
@@ -371,34 +371,111 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
 
             {/* Visual Representation */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl p-8 relative overflow-hidden">
+              <div className="bg-accent rounded-3xl p-8 relative overflow-hidden">
                 {/* Animated Background */}
                 <div className="absolute inset-0">
-                  <div className="absolute top-4 right-4 w-20 h-20 bg-primary/20 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-4 left-4 w-16 h-16 bg-secondary/20 rounded-full animate-pulse delay-500"></div>
+                  <div className="absolute top-4 right-4 w-20 h-20 bg-primary rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-4 left-4 w-16 h-16 bg-secondary rounded-full animate-pulse delay-500"></div>
                 </div>
 
                 {/* Miami to Perú Visual */}
                 <div className="relative z-10 text-center">
                   <div className="flex items-center justify-between mb-8">
                     <div className="text-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
+                      <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
                         <span className="text-white font-bold text-lg">🇺🇸</span>
                       </div>
                       <p className="font-semibold text-gray-900">Miami, FL</p>
                       <p className="text-sm text-gray-600">Tu casillero</p>
                     </div>
 
-                    {/* Animated Arrow */}
-                    <div className="flex-1 relative">
-                      <div className="h-1 bg-gradient-to-r from-primary to-secondary rounded-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
+                    {/* Animated Flight Path */}
+                    <div className="flex-1 relative h-24 mx-4">
+                      {/* Dotted Path Line */}
+                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path
+                          d="M 0,50 Q 50,10 100,50"
+                          fill="none"
+                          stroke="#2fbfc6"
+                          strokeWidth="1"
+                          strokeDasharray="4,4"
+                          opacity="0.4"
+                        />
+                      </svg>
+                      
+                      {/* Animated Plane */}
+                      <div className="absolute inset-0 w-full h-full">
+                        <style>
+                          {`
+                            @keyframes planeFlightPath {
+                              0% {
+                                left: 0%;
+                                top: 50%;
+                                transform: translate(-50%, -50%) rotate(-25deg) scale(0.9);
+                              }
+                              15% {
+                                left: 15%;
+                                top: 35%;
+                                transform: translate(-50%, -50%) rotate(-15deg) scale(1);
+                              }
+                              25% {
+                                left: 25%;
+                                top: 25%;
+                                transform: translate(-50%, -50%) rotate(-8deg) scale(1.05);
+                              }
+                              40% {
+                                left: 40%;
+                                top: 15%;
+                                transform: translate(-50%, -50%) rotate(0deg) scale(1.15);
+                              }
+                              50% {
+                                left: 50%;
+                                top: 10%;
+                                transform: translate(-50%, -50%) rotate(0deg) scale(1.2);
+                              }
+                              60% {
+                                left: 60%;
+                                top: 15%;
+                                transform: translate(-50%, -50%) rotate(0deg) scale(1.15);
+                              }
+                              75% {
+                                left: 75%;
+                                top: 30%;
+                                transform: translate(-50%, -50%) rotate(12deg) scale(1.05);
+                              }
+                              85% {
+                                left: 85%;
+                                top: 40%;
+                                transform: translate(-50%, -50%) rotate(18deg) scale(1);
+                              }
+                              100% {
+                                left: 100%;
+                                top: 50%;
+                                transform: translate(-50%, -50%) rotate(25deg) scale(0.9);
+                              }
+                            }
+                            .plane-flight {
+                              position: absolute;
+                              animation: planeFlightPath 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+                            }
+                          `}
+                        </style>
+                        <div className="plane-flight">
+                          <Plane 
+                            className="customtext-primary h-8 w-8 drop-shadow-lg filter" 
+                          />
+                        </div>
                       </div>
-                      <Plane className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 h-8 w-8 text-primary animate-bounce" />
+                      
+                      {/* Animated Cloud Trail */}
+                      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full opacity-60 animate-ping"></div>
+                      <div className="absolute top-[15%] left-1/2 w-2 h-2 bg-white rounded-full opacity-50 animate-ping" style={{ animationDelay: '0.3s' }}></div>
+                      <div className="absolute top-[25%] left-[65%] w-2 h-2 bg-white rounded-full opacity-40 animate-ping" style={{ animationDelay: '0.6s' }}></div>
+                      <div className="absolute top-[40%] left-[85%] w-2 h-2 bg-white rounded-full opacity-30 animate-ping" style={{ animationDelay: '1s' }}></div>
                     </div>
 
                     <div className="text-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-yellow-500 to-red-500 rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
+                      <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
                         <span className="text-white font-bold text-lg">🇵🇪</span>
                       </div>
                       <p className="font-semibold text-gray-900">Perú</p>
@@ -410,7 +487,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                   <div className="bg-white rounded-xl p-6 shadow-lg">
                     <div className="flex items-center justify-center space-x-3 mb-4">
                       {React.createElement(steps[activeStep].icon, { 
-                        className: "h-8 w-8 text-primary" 
+                        className: "h-8 w-8 customtext-primary" 
                       })}
                       <h4 className="text-xl font-bold text-gray-900">
                         {steps[activeStep].title}
@@ -427,7 +504,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
 
           {/* CTA Button */}
           <div className="text-center mt-16">
-            <button className="bg-primary hover:bg-primary-dark text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl flex items-center mx-auto group">
+            <button className="bg-primary hover:opacity-90 text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl flex items-center mx-auto group">
               <CheckCircle className="mr-3 h-6 w-6" />
               Abrir mi casillero
               <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
@@ -463,7 +540,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                   id={`benefit-${index}`}
                   style={{ animationDelay: `${index * 200}ms` }}
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                     <Icon className={`h-8 w-8 ${benefit.color}`} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
@@ -476,7 +553,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+  <section className="py-20 bg-accent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div 
             className={`text-center mb-16 transition-all duration-1000 ${isVisible['features-title'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -528,13 +605,13 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
           >
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               ¿Dónde comprar con{' '}
-              <span className="text-primary">Casillero Virtual?</span>
+              <span className="customtext-primary">Casillero Virtual?</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Compra en las mejores tiendas de Estados Unidos como{' '}
-              <strong className="text-primary">Amazon, Macy's, Apple Store, Walmart</strong>{' '}
+              <strong className="customtext-primary">Amazon, Macy's, Apple Store, Walmart</strong>{' '}
               y muchas más con tu dirección en Miami, y recibe tus paquetes en{' '}
-              <strong className="text-secondary">Perú</strong> rápido, seguro y a bajo costo con{' '}
+              <strong className="customtext-secondary">Perú</strong> rápido, seguro y a bajo costo con{' '}
               <strong className="text-gray-900">FirstClass Casillero Virtual.</strong>
             </p>
           </div>
@@ -582,19 +659,19 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
             ].map((category, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-100 hover:border-primary/20"
+                className="bg-accent p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-100 hover:border-primary"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                   {category.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:customtext-primary transition-colors duration-300">
                   {category.title}
                 </h3>
                 <p className="text-gray-600 mb-3 leading-relaxed">
                   {category.description}
                 </p>
-                <p className="text-sm text-primary font-medium">
+                <p className="text-sm customtext-primary font-medium">
                   {category.brands}
                 </p>
               </div>
@@ -610,14 +687,14 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
             >
               <a
                 href="/tiendas-disponibles"
-                className="inline-flex items-center bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl group"
+                className="inline-flex items-center bg-primary hover:opacity-90 text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl group"
               >
                 <Globe className="mr-3 h-6 w-6" />
                 Explorar tiendas disponibles
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
               </a>
               <p className="text-gray-500 mt-4 text-lg">
-                Más de <strong className="text-primary">10,000 tiendas</strong> disponibles para comprar
+                Más de <strong className="customtext-primary">10,000 tiendas</strong> disponibles para comprar
               </p>
             </div>
           </div>
@@ -625,7 +702,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       </section>
 
       {/* Shipping Requirements Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+  <section className="py-20 bg-accent relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-10 left-10 w-40 h-40 border-2 border-primary rounded-full animate-pulse"></div>
@@ -640,19 +717,19 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
             data-animate
             id="requirements-title"
           >
-            <div className="inline-flex items-center bg-primary/10 backdrop-blur-sm px-6 py-3 rounded-full text-primary font-medium mb-6 border border-primary/20">
+            <div className="inline-flex items-center bg-accent backdrop-blur-sm px-6 py-3 rounded-full customtext-primary font-medium mb-6 border border-primary">
               <Shield className="mr-2 h-5 w-5" />
               Normativas Aduaneras
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-              <span className="text-primary">REQUISITOS POR ENVÍO</span> QUE DEBES CUMPLIR<br />
+              <span className="customtext-primary">REQUISITOS POR ENVÍO</span> QUE DEBES CUMPLIR<br />
               <span className="text-2xl lg:text-3xl text-gray-600 font-medium">
                 SEGÚN NORMA DE ADUANA
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Por la modalidad de <strong className="text-primary">tráficos postal y envíos urgentes</strong> a{' '}
-              <strong className="text-secondary">Perú</strong>
+              Por la modalidad de <strong className="customtext-primary">tráficos postal y envíos urgentes</strong> a{' '}
+              <strong className="customtext-secondary">Perú</strong>
             </p>
           </div>
 
@@ -705,7 +782,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                     style={{ animationDelay: requirement.delay }}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className={`p-4 rounded-xl bg-gradient-to-br ${requirement.color} shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}>
+                      <div className={`p-4 rounded-xl bg-primary shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}>
                         <Icon className="h-8 w-8 text-white" />
                       </div>
                       
@@ -789,7 +866,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                     )}
 
                     <div className="flex items-start space-x-4">
-                      <div className={`p-4 rounded-xl bg-gradient-to-br ${requirement.color} shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}>
+                      <div className={`p-4 rounded-xl bg-primary shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}>
                         <Icon className="h-8 w-8 text-white" />
                       </div>
                       
@@ -822,7 +899,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
 
           {/* Important Notice */}
           <div 
-            className={`bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border-2 border-primary/20 rounded-2xl p-8 lg:p-12 text-center transition-all duration-1000 delay-1200 ${isVisible['requirements-notice'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`bg-accent border-2 border-primary rounded-2xl p-8 lg:p-12 text-center transition-all duration-1000 delay-1200 ${isVisible['requirements-notice'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             data-animate
             id="requirements-notice"
           >
@@ -838,12 +915,12 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
               Nuestros asesores especializados te ayudarán a verificar que tu envío cumpla con todas las normativas aduaneras de Perú.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center justify-center group">
+              <button className="bg-primary hover:opacity-90 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center justify-center group">
                 <MessageCircle className="mr-3 h-6 w-6" />
                 Consultar con asesor
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
               </button>
-              <button className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center group">
+              <button className="border-2 border-primary customtext-primary hover:opacity-90 hover:text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center group">
                 <FileText className="mr-3 h-6 w-6" />
                 Ver lista completa
               </button>
@@ -881,7 +958,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
                 <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
                   {tip.icon}
                 </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:customtext-primary transition-colors duration-300">
                   {tip.title}
                 </h4>
                 <p className="text-gray-600 text-sm">
@@ -894,7 +971,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-primary via-primary-dark to-secondary relative overflow-hidden">
+  <section className="py-20 bg-primary relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-64 h-64 bg-white/10 rounded-full animate-pulse"></div>

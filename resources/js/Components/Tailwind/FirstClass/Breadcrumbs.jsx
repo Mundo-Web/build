@@ -53,13 +53,13 @@ const Breadcrumbs = ({ items, className = '' }) => {
           return (
             <li key={index} className="flex items-center">
               {index > 0 && (
-                <ChevronRight className="w-4 h-4 text-gray-400 mx-2" />
+                <ChevronRight className="w-4 h-4 text-white mx-2" />
               )}
               
               {item.path ? (
                 <a
                   href={item.path}
-                  className="flex items-center text-gray-600 hover:text-primary transition-colors duration-200 font-medium"
+                  className="flex items-center text-white  transition-colors duration-200 font-medium"
                 >
                   {Icon && <Icon className="w-4 h-4 mr-1" />}
                   {item.label}

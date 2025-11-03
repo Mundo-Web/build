@@ -21,16 +21,7 @@ export default {
                 "playfair": ["Playfair", "serif"],
                 'inter': ['Inter', 'sans-serif'],
             },
-            colors: {
-                'primary': '#19bdc4',
-                'primary-light': '#4fd1d8',
-                'primary-dark': '#03989e',
-                'secondary': '#03989e',
-                'secondary-light': '#067a7f',
-                'secondary-dark': '#025b5f',
-                'accent': '#f8f9fa',
-                'dark': '#212529',
-            },
+           
             margin: {
                 primary: "5%",
             },
