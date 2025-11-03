@@ -74,7 +74,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             icon: Building2,
             title: "Registro y Asesoría",
             description: "Registra tu empresa exportadora y recibe asesoría personalizada sobre documentación, partidas arancelarias y requisitos del mercado estadounidense.",
-            color: "from-green-500 to-emerald-500",
+            color: "bg-primary",
             delay: "0ms"
         },
         {
@@ -82,7 +82,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             icon: FileText,
             title: "Preparación de Documentos",
             description: "Te ayudamos con factura comercial, lista de empaque, certificados de origen, permisos sanitarios y documentación aduanera requerida por USA.",
-            color: "from-emerald-500 to-teal-500",
+            color: "bg-secondary",
             delay: "200ms"
         },
         {
@@ -90,7 +90,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             icon: Truck,
             title: "Recojo en Perú",
             description: "Recogemos tu mercancía en Lima o provincias, realizamos empaque profesional y preparamos el envío internacional.",
-            color: "from-teal-500 to-cyan-500",
+            color: "bg-neutral-dark",
             delay: "400ms"
         },
         {
@@ -98,7 +98,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             icon: Plane,
             title: "Exportación y Aduana",
             description: "Gestionamos el trámite de exportación ante SUNAT, transporte aéreo internacional y desaduanaje en Estados Unidos.",
-            color: "from-cyan-500 to-blue-500",
+            color: "bg-neutral-light",
             delay: "600ms"
         },
         {
@@ -106,7 +106,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             icon: CheckCircle,
             title: "Entrega en USA",
             description: "Tu producto llega a tu cliente o almacén en USA con tracking completo y confirmación de entrega.",
-            color: "from-blue-500 to-indigo-500",
+            color: "bg-accent",
             delay: "800ms"
         }
     ];
@@ -116,25 +116,25 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             icon: Globe,
             title: "Acceso a Mercado USA",
             description: "Exporta tus productos al mercado más grande del mundo",
-            color: "text-blue-600"
+            color: "customtext-primary"
         },
         {
             icon: Zap,
             title: "Proceso Ágil",
             description: "5-10 días de Perú a USA",
-            color: "text-green-600"
+            color: "customtext-secondary"
         },
         {
             icon: ShieldCheck,
             title: "Gestión Completa",
             description: "Nos encargamos de toda la logística",
-            color: "text-purple-600"
+            color: "customtext-neutral-dark"
         },
         {
             icon: CircleDollarSign,
             title: "Precios Competitivos",
             description: "Tarifas corporativas especiales",
-            color: "text-orange-600"
+            color: "customtext-neutral-light"
         }
     ];
 
@@ -241,7 +241,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
     return (
         <div className="min-h-screen bg-white" style={{ margin: 0, padding: 0 }}>
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
                 {/* Animated Background */}
                 <div className="absolute inset-0">
                     <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full animate-pulse"></div>
@@ -272,7 +272,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                                     Exporta desde
                                 </span>
                                 <span 
-                                    className={`block text-6xl lg:text-8xl bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                                    className={`block text-6xl lg:text-8xl customtext-primary transition-all duration-1000 delay-300 ${isVisible['hero-title2'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
                                     data-animate
                                     id="hero-title2"
                                 >
@@ -327,12 +327,12 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                                 data-animate
                                 id="hero-buttons"
                             >
-                                <button className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center shadow-xl group">
+                                <button className="bg-primary hover:opacity-90 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center shadow-xl group">
                                     <Upload className="mr-3 h-6 w-6" />
                                     Cotizar exportación
                                     <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
                                 </button>
-                                <button className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-green-900 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center group">
+                                <button className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:customtext-secondary px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center group">
                                     <BookOpen className="mr-3 h-6 w-6" />
                                     Guía de exportación
                                 </button>
@@ -354,45 +354,45 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                                                 <h3 className="text-2xl font-bold text-gray-900">Panel Exportador</h3>
                                                 <p className="text-sm text-gray-600">FirstClass Export</p>
                                             </div>
-                                            <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                                            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                                                 <Upload className="w-6 h-6 text-white" />
                                             </div>
                                         </div>
                                         
                                         <div className="space-y-4 mb-6">
-                                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+                                            <div className="bg-accent border border-gray-200 rounded-xl p-4">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="text-sm font-medium text-gray-700">Exportaciones Activas</span>
-                                                    <Plane className="w-4 h-4 text-green-600" />
+                                                    <Plane className="w-4 h-4 customtext-primary" />
                                                 </div>
-                                                <p className="text-3xl font-bold text-green-600">8</p>
+                                                <p className="text-3xl font-bold customtext-primary">8</p>
                                                 <p className="text-xs text-gray-600 mt-1">Rumbo a USA 🇺🇸</p>
                                             </div>
                                             
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                                <div className="bg-accent border border-gray-200 rounded-lg p-3">
                                                     <div className="flex items-center mb-1">
-                                                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                                        <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
                                                         <span className="text-xs font-medium text-gray-700">Este mes</span>
                                                     </div>
-                                                    <p className="text-2xl font-bold text-blue-600">24</p>
+                                                    <p className="text-2xl font-bold customtext-primary">24</p>
                                                 </div>
                                                 
-                                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                                <div className="bg-accent border border-gray-200 rounded-lg p-3">
                                                     <div className="flex items-center mb-1">
-                                                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-2 animate-pulse"></div>
+                                                        <div className="w-2 h-2 bg-secondary rounded-full mr-2 animate-pulse"></div>
                                                         <span className="text-xs font-medium text-gray-700">En aduana</span>
                                                     </div>
-                                                    <p className="text-2xl font-bold text-purple-600">2</p>
+                                                    <p className="text-2xl font-bold customtext-secondary">2</p>
                                                 </div>
                                             </div>
                                             
-                                            <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-4">
+                                            <div className="bg-accent border border-gray-200 rounded-xl p-4">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="text-sm font-medium text-gray-700">Valor exportado</span>
-                                                    <DollarSign className="w-4 h-4 text-orange-600" />
+                                                    <DollarSign className="w-4 h-4 customtext-secondary" />
                                                 </div>
-                                                <p className="text-2xl font-bold text-orange-600">$18,950</p>
+                                                <p className="text-2xl font-bold customtext-secondary">$18,950</p>
                                                 <p className="text-xs text-gray-600 mt-1">Mes actual • +32% vs anterior</p>
                                             </div>
                                         </div>
@@ -412,17 +412,17 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                                             </div>
                                         </div>
                                         
-                                        <button className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors duration-200">
+                                        <button className="w-full bg-primary text-white py-3 rounded-lg font-semibold text-sm hover:opacity-90 transition-all duration-200">
                                             Nueva exportación
                                         </button>
                                     </div>
                                     
                                     {/* Floating elements */}
-                                    <div className="absolute top-20 -right-4 w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg animate-bounce">
+                                    <div className="absolute top-20 -right-4 w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg animate-bounce">
                                         <Flag className="w-8 h-8 text-white" />
                                     </div>
                                     
-                                    <div className="absolute bottom-20 -left-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg animate-bounce delay-300">
+                                    <div className="absolute bottom-20 -left-4 w-12 h-12 bg-secondary rounded-xl flex items-center justify-center shadow-lg animate-bounce delay-300">
                                         <Globe className="w-6 h-6 text-white" />
                                     </div>
                                 </div>
@@ -438,7 +438,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             </section>
 
             {/* How it Works Section */}
-            <section className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+            <section className="py-20 bg-accent relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div 
                         className={`text-center mb-16 transition-all duration-1000 ${isVisible['how-title'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -447,7 +447,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                     >
                         <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
                             ¿Cómo funciona la
-                            <span className="block text-green-600">exportación en modalidad courier?</span>
+                            <span className="block customtext-primary">exportación en modalidad courier?</span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                             Proceso simplificado para <strong>empresas peruanas que exportan a Estados Unidos</strong> con{' '}
@@ -455,54 +455,192 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                         </p>
                     </div>
 
-                    {/* Steps */}
-                    <div className="space-y-6 mb-16">
-                        {steps.map((step, index) => {
-                            const Icon = step.icon;
-                            const isActive = activeStep === index;
-                            
-                            return (
-                                <div
-                                    key={step.id}
-                                    className={`relative p-6 rounded-2xl transition-all duration-500 cursor-pointer transform hover:scale-102 ${
-                                        isActive 
-                                            ? 'bg-white shadow-2xl border-2 border-green-600' 
-                                            : 'bg-white/50 hover:bg-white shadow-lg border border-gray-200'
-                                    }`}
-                                    onClick={() => setActiveStep(index)}
-                                >
-                                    <div className="flex items-start space-x-6">
-                                        <div className={`flex-shrink-0 w-16 h-16 bg-gradient-to-br ${step.color} rounded-2xl flex items-center justify-center shadow-lg transform transition-all duration-300 ${isActive ? 'scale-110 rotate-6' : 'scale-100 rotate-0'}`}>
-                                            <Icon className="h-8 w-8 text-white" />
-                                        </div>
-                                        
-                                        <div className="flex-1">
-                                            <div className="flex items-center mb-2">
-                                                <span className="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full mr-3">
-                                                    Paso {step.id}
-                                                </span>
-                                                <h3 className={`text-2xl font-bold transition-colors duration-300 ${isActive ? 'text-green-600' : 'text-gray-900'}`}>
-                                                    {step.title}
-                                                </h3>
-                                            </div>
-                                            <p className="text-gray-600 text-lg leading-relaxed">
-                                                {step.description}
-                                            </p>
+                    {/* Interactive Steps */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        
+                        {/* Steps List */}
+                        <div className="space-y-6">
+                            {steps.map((step, index) => {
+                                const Icon = step.icon;
+                                const isActive = activeStep === index;
+                                
+                                return (
+                                    <div
+                                        key={step.id}
+                                        className={`relative p-6 rounded-2xl transition-all duration-500 cursor-pointer transform hover:scale-105 ${
+                                            isActive 
+                                                ? 'bg-white shadow-2xl border-2 border-primary' 
+                                                : 'bg-white/50 hover:bg-white shadow-lg border border-gray-200'
+                                        }`}
+                                        onClick={() => setActiveStep(index)}
+                                        style={{ animationDelay: step.delay }}
+                                    >
+                                        {/* Step Number */}
+                                        <div className="absolute -left-4 -top-4 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                            {step.id}
                                         </div>
 
+                                        <div className="flex items-start space-x-4 ml-4">
+                                            <div className={`p-3 rounded-xl ${step.color} shadow-lg transform transition-all duration-300 ${isActive ? 'scale-110 rotate-12' : 'scale-100 rotate-0'}`}>
+                                                <Icon className="h-6 w-6 text-white" />
+                                            </div>
+                                            
+                                            <div className="flex-1">
+                                                <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${isActive ? 'customtext-primary' : 'text-gray-900'}`}>
+                                                    {step.title}
+                                                </h3>
+                                                <p className="text-gray-600 leading-relaxed">
+                                                    {step.description}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Active Indicator */}
                                         {isActive && (
-                                            <div className="flex-shrink-0">
-                                                <div className="w-4 h-4 bg-green-600 rounded-full animate-pulse"></div>
+                                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                                <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
                                             </div>
                                         )}
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                        </div>
 
-                    <div className="text-center">
-                        <button className="bg-green-600 hover:bg-green-700 text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl flex items-center mx-auto group">
+                        {/* Visual Representation */}
+                        <div className="relative">
+                            <div className="bg-accent rounded-3xl p-8 relative overflow-hidden">
+                                {/* Animated Background */}
+                                <div className="absolute inset-0">
+                                    <div className="absolute top-4 right-4 w-20 h-20 bg-primary rounded-full animate-pulse"></div>
+                                    <div className="absolute bottom-4 left-4 w-16 h-16 bg-secondary rounded-full animate-pulse delay-500"></div>
+                                </div>
+
+                                {/* Peru to USA Visual */}
+                                <div className="relative z-10 text-center">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div className="text-center">
+                                            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
+                                                <span className="text-white font-bold text-lg">🇵🇪</span>
+                                            </div>
+                                            <p className="font-semibold text-gray-900">Lima, Perú</p>
+                                            <p className="text-sm text-gray-600">Punto de origen</p>
+                                        </div>
+
+                                    {/* Flight Animation */}
+                                    <div className="flex-1 relative h-24 mx-4">
+                                        {/* Dotted line path */}
+                                        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                            <path
+                                                d="M 0,50 Q 50,10 100,50"
+                                                fill="none"
+                                                stroke="#2fbfc6"
+                                                strokeWidth="1"
+                                                strokeDasharray="4,4"
+                                                opacity="0.4"
+                                            />
+                                        </svg>
+                                        
+                                        {/* Animated plane */}
+                                        <div className="absolute inset-0 w-full h-full">
+                                            <style>
+                                                {`
+                                                    @keyframes planeFlightPathExport {
+                                                        0% {
+                                                            left: 0%;
+                                                            top: 50%;
+                                                            transform: translate(-50%, -50%) rotate(-25deg) scale(0.9);
+                                                        }
+                                                        15% {
+                                                            left: 15%;
+                                                            top: 35%;
+                                                            transform: translate(-50%, -50%) rotate(-15deg) scale(1);
+                                                        }
+                                                        25% {
+                                                            left: 25%;
+                                                            top: 25%;
+                                                            transform: translate(-50%, -50%) rotate(-8deg) scale(1.05);
+                                                        }
+                                                        40% {
+                                                            left: 40%;
+                                                            top: 15%;
+                                                            transform: translate(-50%, -50%) rotate(0deg) scale(1.15);
+                                                        }
+                                                        50% {
+                                                            left: 50%;
+                                                            top: 10%;
+                                                            transform: translate(-50%, -50%) rotate(0deg) scale(1.2);
+                                                        }
+                                                        60% {
+                                                            left: 60%;
+                                                            top: 15%;
+                                                            transform: translate(-50%, -50%) rotate(0deg) scale(1.15);
+                                                        }
+                                                        75% {
+                                                            left: 75%;
+                                                            top: 30%;
+                                                            transform: translate(-50%, -50%) rotate(12deg) scale(1.05);
+                                                        }
+                                                        85% {
+                                                            left: 85%;
+                                                            top: 40%;
+                                                            transform: translate(-50%, -50%) rotate(18deg) scale(1);
+                                                        }
+                                                        100% {
+                                                            left: 100%;
+                                                            top: 50%;
+                                                            transform: translate(-50%, -50%) rotate(25deg) scale(0.9);
+                                                        }
+                                                    }
+                                                    .plane-flight-export {
+                                                        position: absolute;
+                                                        animation: planeFlightPathExport 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+                                                    }
+                                                `}
+                                            </style>
+                                            <div className="plane-flight-export">
+                                                <Plane 
+                                                    className="customtext-primary h-8 w-8 drop-shadow-lg filter" 
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Cloud trail particles */}
+                                        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full opacity-60 animate-ping"></div>
+                                        <div className="absolute top-[15%] left-1/2 w-2 h-2 bg-white rounded-full opacity-50 animate-ping" style={{ animationDelay: '0.3s' }}></div>
+                                        <div className="absolute top-[25%] left-[65%] w-2 h-2 bg-white rounded-full opacity-40 animate-ping" style={{ animationDelay: '0.6s' }}></div>
+                                        <div className="absolute top-[40%] left-[85%] w-2 h-2 bg-white rounded-full opacity-30 animate-ping" style={{ animationDelay: '1s' }}></div>
+                                    </div>
+
+                                    <div className="text-center">
+                                        <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
+                                            <span className="text-white font-bold text-lg">🇺🇸</span>
+                                        </div>
+                                        <p className="font-semibold text-gray-900">Estados Unidos</p>
+                                        <p className="text-sm text-gray-600">Destino final</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-xl p-6 shadow-lg">
+                                    <div className="flex items-center justify-center space-x-3 mb-4">
+                                        {React.createElement(steps[activeStep].icon, { 
+                                            className: "h-8 w-8 customtext-primary" 
+                                        })}
+                                        <h4 className="text-xl font-bold text-gray-900">
+                                            {steps[activeStep].title}
+                                        </h4>
+                                    </div>
+                                    <p className="text-gray-600">
+                                        {steps[activeStep].description}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* CTA Button */}
+                    <div className="text-center mt-16">
+                        <button className="bg-primary hover:opacity-90 text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl flex items-center mx-auto group">
                             <Upload className="mr-3 h-6 w-6" />
                             Iniciar mi primera exportación
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
@@ -527,8 +665,8 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                         {benefits.map((benefit, index) => {
                             const Icon = benefit.icon;
                             return (
-                                <div key={index} className="text-center p-6 rounded-2xl bg-gradient-to-br from-gray-50 to-white hover:from-white hover:to-gray-50 hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-200">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <div key={index} className="text-center p-6 rounded-2xl bg-accent hover:bg-white hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-200">
+                                    <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                                         <Icon className={`h-8 w-8 ${benefit.color}`} />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
@@ -541,7 +679,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             </section>
 
             {/* Features Section */}
-            <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+            <section className="py-20 bg-accent">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -583,21 +721,21 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                         {exportTypes.map((type, index) => (
                             <div
                                 key={index}
-                                className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-green-100"
+                                className="bg-accent p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-200"
                             >
                                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                                     {type.icon}
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:customtext-primary transition-colors duration-300">
                                     {type.title}
                                 </h3>
                                 <p className="text-gray-600 mb-3 leading-relaxed">
                                     {type.description}
                                 </p>
-                                <p className="text-sm text-green-600 font-medium mb-2">
+                                <p className="text-sm customtext-primary font-medium mb-2">
                                     {type.examples}
                                 </p>
-                                <span className="inline-block text-xs bg-green-600 text-white px-3 py-1 rounded-full">
+                                <span className="inline-block text-xs bg-primary text-white px-3 py-1 rounded-full">
                                     {type.popular}
                                 </span>
                             </div>
@@ -607,7 +745,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             </section>
 
             {/* Popular Destinations Section */}
-            <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+            <section className="py-20 bg-accent">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -629,11 +767,11 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                                         {dest.flag}
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-green-600 transition-colors duration-300">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:customtext-primary transition-colors duration-300">
                                             {dest.city}
                                         </h3>
                                         <p className="text-sm text-gray-600 mb-2">{dest.state}</p>
-                                        <span className="inline-block text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                                        <span className="inline-block text-xs bg-accent customtext-primary border border-primary px-3 py-1 rounded-full font-medium">
                                             {dest.popular}
                                         </span>
                                     </div>
@@ -669,20 +807,20 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                         {requirements.map((req, index) => (
                             <div
                                 key={index}
-                                className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-200"
+                                className="bg-accent p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-200"
                             >
                                 <div className="flex items-start space-x-4">
                                     <div className="text-5xl group-hover:scale-110 transition-transform duration-300">
                                         {req.icon}
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                                        <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:customtext-primary transition-colors duration-300">
                                             {req.title}
                                         </h3>
                                         <p className="text-gray-600 text-lg leading-relaxed mb-3">
                                             {req.description}
                                         </p>
-                                        <span className="inline-block bg-green-100 text-green-600 px-4 py-2 rounded-lg font-bold text-lg">
+                                        <span className="inline-block bg-accent customtext-primary border border-primary px-4 py-2 rounded-lg font-bold text-lg">
                                             {req.highlight}
                                         </span>
                                     </div>
@@ -691,10 +829,10 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                         ))}
                     </div>
 
-                    <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 text-center shadow-xl">
+                    <div className="bg-primary rounded-2xl p-8 text-center shadow-xl">
                         <div className="flex items-center justify-center mb-4">
                             <div className="bg-white p-3 rounded-full">
-                                <BookOpen className="h-8 w-8 text-green-600" />
+                                <BookOpen className="h-8 w-8 customtext-primary" />
                             </div>
                         </div>
                         <h3 className="text-3xl font-bold text-white mb-3">
@@ -703,7 +841,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                         <p className="text-xl text-white/90 mb-6">
                             Descarga nuestra guía completa de exportación con todos los pasos y documentos necesarios
                         </p>
-                        <button className="bg-white hover:bg-gray-100 text-green-600 px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 inline-flex items-center">
+                        <button className="bg-white hover:bg-gray-100 customtext-primary px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 inline-flex items-center">
                             <BookOpen className="mr-2 h-5 w-5" />
                             Descargar guía gratuita
                         </button>
@@ -712,7 +850,7 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
             </section>
 
             {/* Final CTA Section */}
-            <section className="py-20 bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900 relative overflow-hidden">
+            <section className="py-20 bg-secondary relative overflow-hidden">
                 <div className="absolute inset-0">
                     <div className="absolute top-10 left-10 w-64 h-64 bg-white/10 rounded-full animate-pulse"></div>
                     <div className="absolute bottom-10 right-10 w-80 h-80 bg-white/5 rounded-full animate-pulse delay-1000"></div>
@@ -727,13 +865,13 @@ const ExportacionCourier = ({ data, items, generals, cart, setCart, pages, isUse
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-                        <button className="bg-green-500 hover:bg-green-600 text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl flex items-center group">
+                        <button className="bg-primary hover:opacity-90 text-white px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl flex items-center group">
                             <Upload className="mr-3 h-6 w-6" />
                             Cotizar mi exportación
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
                         </button>
                         
-                        <button className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-green-900 px-8 py-5 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 flex items-center group">
+                        <button className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:customtext-secondary px-8 py-5 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 flex items-center group">
                             <Headphones className="mr-3 h-6 w-6" />
                             Asesoría personalizada
                         </button>
