@@ -20,7 +20,8 @@ import {
     TrendingUp,
     Home,
     Headphones,
-    ChevronDown
+    ChevronDown,
+    Info
 } from "lucide-react";
 import Breadcrumbs from "./Breadcrumbs";
 import AdvisorButton from "./AdvisorButton";
@@ -29,6 +30,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
     const [selectedWeight, setSelectedWeight] = useState(2.5); // Peso en kg (equivalente a ~5 lb)
     const [productValue, setProductValue] = useState(100); // Valor del producto en USD
     const [useSlider, setUseSlider] = useState(true); // Switch entre slider e input
+    const [showWithProduct, setShowWithProduct] = useState(false); // Switch para mostrar total con producto
     const [isVisible, setIsVisible] = useState({});
     const observerRef = useRef(null);
 
@@ -160,7 +162,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
         flete: {
             precio: `$${fleteRate.toFixed(2)} USD`,
             unidad: "por kilogramo",
-            rango: "0.5kg hasta 50kg",
+            rango: "1kg hasta 100kg",
             descripcion: generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description || "Recepción, almacenaje, consolidación, preparación y transporte internacional"
         },
         cargosFijos: {
@@ -598,28 +600,28 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                     <div>
                                         <input
                                             type="range"
-                                            min="0.5"
-                                            max="50"
+                                            min="1"
+                                            max="100"
                                             step="0.5"
                                             value={selectedWeight}
                                             onChange={(e) => setSelectedWeight(Number(e.target.value))}
-                                            className="w-full h-3 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary slider-thumb"
+                                            className="w-full h-3 bg-primary rounded-lg appearance-none cursor-pointer accent-primary slider-thumb"
                                         />
                                         <div className="flex justify-between items-center text-sm text-gray-600 mt-3">
-                                            <span className="text-gray-500">0.5 kg</span>
+                                            <span className="text-gray-500">1 kg</span>
                                             <div className="text-center">
                                                 <div className="text-4xl font-bold text-primary">{selectedWeight}</div>
                                                 <div className="text-xs text-gray-500 mt-1">kilogramos</div>
                                             </div>
-                                            <span className="text-gray-500">50 kg</span>
+                                            <span className="text-gray-500">100 kg</span>
                                         </div>
                                     </div>
                                 ) : (
                                     <div>
                                         <input
                                             type="number"
-                                            min="0.5"
-                                            max="200"
+                                            min="1"
+                                            max="100"
                                             step="0.1"
                                             value={selectedWeight}
                                             onChange={(e) => setSelectedWeight(Number(e.target.value))}
@@ -650,7 +652,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                                 <Plane className="w-5 h-5 customtext-primary" />
                                             </div>
                                             <div>
-                                                <div className="font-semibold text-gray-900">Flete Internacional</div>
+                                                <div className="font-semibold text-gray-900">Flete de Envío Internacional</div>
                                                 <div className="text-sm text-gray-600">{selectedWeight} kg × ${fleteRate.toFixed(2)}</div>
                                             </div>
                                         </div>
@@ -701,8 +703,25 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                                     <FileText className="w-5 h-5 customtext-neutral-light" />
                                                 </div>
                                                 <div>
-                                                    <div className="font-semibold text-gray-900">Derecho Arancelario</div>
-                                                    <div className="text-sm text-gray-600">{derechoArancelarioRate}% sobre valor CIF</div>
+                                                    <div className="font-semibold text-gray-900 flex items-center gap-2">
+                                                        Impuestos Perú ({derechoArancelarioRate}%)
+                                                        {/* Tooltip Icon */}
+                                                        <div className="relative group">
+                                                            <Info className="w-4 h-4 customtext-primary cursor-help" />
+                                                            {/* Tooltip */}
+                                                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 bg-gray-900 text-white text-xs rounded-lg p-3 shadow-lg z-10">
+                                                                <div className="whitespace-pre-line">
+                                                                    {generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description || 
+                                                                    'ADV: 4%\nIGV: 16%\nIPM: 2%'}
+                                                                </div>
+                                                                {/* Arrow */}
+                                                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-sm text-gray-600">
+                                                        {derechoArancelarioRate}% sobre valor CIF
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="text-2xl font-bold customtext-neutral-light">
@@ -714,53 +733,52 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                     {/* Separador */}
                                     <div className="border-t-2 border-dashed border-gray-300 my-3"></div>
 
-                                    {/* Subtotal de Envío */}
-                                    <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
-                                                <Truck className="w-5 h-5 text-gray-600" />
-                                            </div>
-                                            <div>
-                                                <div className="font-semibold text-gray-900">Subtotal Envío</div>
-                                                <div className="text-sm text-gray-600">Flete + servicio{tarifa.aplicaImpuestos ? ' + impuestos' : ''}</div>
+                                    {/* Primera fila: Total de Envío FirstClass - 50% width, alineado a la derecha */}
+                                    <div className="w-1/2 ml-auto bg-primary rounded-xl p-6 text-white shadow-lg">
+                                        <div className=" flex flex-row items-center justify-between">
+                                          <div>  <div className="text-sm opacity-90 mb-1">Total Costo de Envío</div>
+                                            <div className="text-lg font-semibold mb-2">FirstClass</div></div>
+                                            <div className="text-5xl font-bold">
+                                                ${tarifa.totalEnvio}
                                             </div>
                                         </div>
-                                        <div className="text-2xl font-bold text-gray-700">
-                                            ${tarifa.totalEnvio}
-                                        </div>
+                                      
                                     </div>
 
-                                    {/* Valor del Producto */}
-                                    <div className="flex items-center justify-between p-4 bg-accent rounded-lg border border-gray-200">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-gray-300">
-                                                <Package className="w-5 h-5 customtext-secondary" />
-                                            </div>
+                                    {/* Segunda fila: Pregunta/Switch - 50% width, alineado a la derecha */}
+                                    <div className="w-1/2 ml-auto bg-accent rounded-xl p-4 border-2 border-gray-200">
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={showWithProduct}
+                                                onChange={(e) => setShowWithProduct(e.target.checked)}
+                                                className="w-6 h-6 rounded border-gray-300 cursor-pointer"
+                                            />
                                             <div>
-                                                <div className="font-semibold text-gray-900">Valor del Producto</div>
-                                                <div className="text-sm text-gray-600">Precio que pagas a la tienda</div>
+                                                <div className="font-semibold text-sm text-gray-900">
+                                                    ¿Quieres saber cuánto sería con tu producto incluido?
+                                                </div>
+                                            
                                             </div>
-                                        </div>
-                                        <div className="text-2xl font-bold customtext-secondary">
-                                            ${productValue.toFixed(2)}
-                                        </div>
+                                        </label>
                                     </div>
 
-                                    {/* Total Final */}
-                                    <div className="flex items-center justify-between p-6 bg-primary rounded-xl text-white shadow-lg mt-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                                                <DollarSign className="w-6 h-6" />
-                                            </div>
-                                            <div>
-                                                <div className="text-sm opacity-90">Total a pagar</div>
-                                                <div className="text-lg font-semibold">Producto + Envío completo</div>
+                                    {/* Tercera fila (condicional): Total con Producto - 50% width, alineado a la derecha */}
+                                    {showWithProduct && (
+                                        <div className="w-1/2 bg-primary ml-auto  rounded-xl p-6 text-white shadow-lg">
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <div className="text-sm opacity-90">TOTAL COMPLETO</div>
+                                                    <div className="text-base font-medium">Producto + Envío</div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-5xl font-bold">
+                                                        ${tarifa.total}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="text-5xl font-bold">
-                                            ${tarifa.total}
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -770,11 +788,11 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
                                     <ShieldCheck className="w-6 h-6 customtext-primary flex-shrink-0 mt-1" />
                                     <div className="text-sm text-gray-900">
                                         <strong className="block mb-2">💡 Importante:</strong> 
-                                        <p className="mb-2">Este es el <strong>costo del envío</strong>, no incluye el precio del producto que comprarás en la tienda.</p>
+                                        <p className="mb-2">El costo mostrado arriba es el <strong>servicio de envío de FirstClass</strong>. El precio del producto lo pagas directamente a la tienda donde compras.</p>
                                         {productValue <= 200 ? (
-                                            <p>✓ Incluye: Flete, servicio de importación, gestión aduanera, almacenaje, consolidación, seguro hasta $200 USD y entrega en Perú. <strong className="text-green-700">Sin impuestos adicionales.</strong></p>
+                                            <p>✓ <strong className="text-green-700">Sin impuestos adicionales</strong> para productos hasta $200 USD.</p>
                                         ) : (
-                                            <p>✓ Incluye: Flete, servicio de importación, gestión aduanera, almacenaje, consolidación, entrega en Perú, seguro adicional ({seguroRate}%) y derecho arancelario ({derechoArancelarioRate}%) por valor superior a $200 USD.</p>
+                                            <p>⚠️ Productos mayores a $200 USD incluyen seguro adicional ({seguroRate}%) y derecho arancelario ({derechoArancelarioRate}%).</p>
                                         )}
                                     </div>
                                 </div>
