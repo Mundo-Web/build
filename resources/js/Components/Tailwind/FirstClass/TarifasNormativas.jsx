@@ -525,9 +525,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="calculator"
                 id="calculator"
-                className={`py-16 bg-accent transition-all duration-1000 ${
-                    isVisible.calculator ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-accent"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
@@ -790,9 +788,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="breakdown"
                 id="breakdown"
-                className={`py-16 bg-white transition-all duration-1000 ${
-                    isVisible.breakdown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-white"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
@@ -861,9 +857,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="steps"
                 id="steps"
-                className={`py-16 bg-accent transition-all duration-1000 ${
-                    isVisible.steps ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-accent"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
@@ -905,9 +899,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="requirements"
                 id="requirements"
-                className={`py-16 bg-white transition-all duration-1000 ${
-                    isVisible.requirements ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-white"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
@@ -967,9 +959,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="prohibited"
                 id="prohibited"
-                className={`py-16 bg-accent transition-all duration-1000 ${
-                    isVisible.prohibited ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-accent"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
@@ -1027,9 +1017,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="consequences"
                 id="consequences"
-                className={`py-16 bg-white transition-all duration-1000 ${
-                    isVisible.consequences ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-white"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
@@ -1083,9 +1071,7 @@ const TarifasNormativas = ({ data, items, generals = [], cart, setCart, pages, i
             <section 
                 data-section="benefits"
                 id="benefits"
-                className={`py-16 bg-accent transition-all duration-1000 ${
-                    isVisible.benefits ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
+                className="py-16 bg-accent"
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
