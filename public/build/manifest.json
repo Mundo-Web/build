@@ -1401,13 +1401,6 @@
       "_createLucideIcon-DfjclApS.js"
     ]
   },
-  "_twitter-B__hdd8J.js": {
-    "file": "assets/twitter-B__hdd8J.js",
-    "name": "twitter",
-    "imports": [
-      "_createLucideIcon-DfjclApS.js"
-    ]
-  },
   "_ubigeo-Q-ocg024.js": {
     "file": "assets/ubigeo-Q-ocg024.js",
     "name": "ubigeo"
@@ -1498,7 +1491,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-PEB45faL.js",
+    "file": "assets/About-Cst2pVX6.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3729,7 +3722,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-C-pUFJdT.js",
+    "file": "assets/Blog-DSGerFH7.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3774,7 +3767,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-C86yDo5k.js",
+    "file": "assets/BlogArticle-CGkHdjni.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5525,7 +5518,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-5rrWoL8v.js",
+    "file": "assets/Base-Du-RscAY.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -8416,7 +8409,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer.jsx": {
-    "file": "assets/Footer-DzpFcXwW.js",
+    "file": "assets/Footer-Cxzy2gUj.js",
     "name": "Footer",
     "src": "resources/js/Components/Tailwind/Footer.jsx",
     "isEntry": true,
@@ -8559,7 +8552,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer/FooterFirstClass.jsx": {
-    "file": "assets/FooterFirstClass-DEodzbTK.js",
+    "file": "assets/FooterFirstClass-BBj2Lyug.js",
     "name": "FooterFirstClass",
     "src": "resources/js/Components/Tailwind/Footer/FooterFirstClass.jsx",
     "isDynamicEntry": true,
@@ -8570,10 +8563,7 @@
       "_main-B6F2O9-U.js",
       "_HtmlContent-ghmllTyl.js",
       "_Global-CazroCzF.js",
-      "_facebook-BAcM1sJM.js",
-      "_createLucideIcon-DfjclApS.js",
-      "_twitter-B__hdd8J.js",
-      "_package-DBFPPBi1.js",
+      "_index-1Pdwdrgt.js",
       "_mail-drJGpT4k.js",
       "_phone-ZNY-sPqk.js",
       "_map-pin-Cj3PUWlD.js",
@@ -8582,7 +8572,8 @@
       "__commonjsHelpers-D6-XlEtG.js",
       "_index-B6ujFmsw.js",
       "_index-Chjiymov.js",
-      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js"
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_createLucideIcon-DfjclApS.js"
     ]
   },
   "resources/js/Components/Tailwind/Footer/FooterHuaillys.jsx": {
@@ -9885,7 +9876,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetail.jsx": {
-    "file": "assets/PostDetail-dVs9pdCk.js",
+    "file": "assets/PostDetail-BAM672qD.js",
     "name": "PostDetail",
     "src": "resources/js/Components/Tailwind/PostDetail.jsx",
     "isDynamicEntry": true,
@@ -12335,7 +12326,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-DCR4gBfO.js",
+    "file": "assets/Contact-nBjRM260.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -12380,7 +12371,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-C9s-nTMx.js",
+    "file": "assets/CourseDetails-Dg7TZWbi.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -12416,7 +12407,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-DMB6KhjS.js",
+    "file": "assets/Courses-DVoPhHWg.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -12511,7 +12502,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-Di8ET9hE.js",
+    "file": "assets/Home-HXBWs37p.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -12715,7 +12706,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CpesFvgf.js",
+    "file": "assets/System-skVTFxOJ.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

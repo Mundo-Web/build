@@ -3806,7 +3806,8 @@
                     "footer_description",
                     "copyright",
                     "terms_conditions",
-                    "privacy_policy"
+                    "privacy_policy",
+                    "email_contact"
                 ]
             }
         ]

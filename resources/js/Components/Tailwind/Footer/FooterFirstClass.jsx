@@ -1,9 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Facebook, Instagram, Twitter, Mail, Phone, MapPin, X } from 'lucide-react';
+import { Mail, Phone, MapPin, X } from 'lucide-react';
 import ReactModal from 'react-modal';
 import ServicesCategoriesPublicRest from '../../../Actions/Public/ServicesCategoriesPublicRest';
 import HtmlContent from '../../../Utils/HtmlContent';
 import Global from '../../../Utils/Global';
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaYoutube,
+  FaTiktok,
+  FaWhatsapp,
+  FaTelegram,
+  FaDiscord,
+  FaSnapchat,
+  FaPinterest,
+  FaReddit
+} from 'react-icons/fa';
+
+// Redes sociales predefinidas (mismo mapeo que en TopBarSocials.jsx)
+const predefinedSocials = [
+  { id: 'facebook', name: 'Facebook', icon: FaFacebook, iconRef: 'fab fa-facebook' },
+  { id: 'instagram', name: 'Instagram', icon: FaInstagram, iconRef: 'fab fa-instagram' },
+  { id: 'twitter', name: 'Twitter/X', icon: FaTwitter, iconRef: 'fab fa-twitter' },
+  { id: 'linkedin', name: 'LinkedIn', icon: FaLinkedin, iconRef: 'fab fa-linkedin' },
+  { id: 'youtube', name: 'YouTube', icon: FaYoutube, iconRef: 'fab fa-youtube' },
+  { id: 'tiktok', name: 'TikTok', icon: FaTiktok, iconRef: 'fab fa-tiktok' },
+  { id: 'whatsapp', name: 'WhatsApp', icon: FaWhatsapp, iconRef: 'fab fa-whatsapp' },
+  { id: 'telegram', name: 'Telegram', icon: FaTelegram, iconRef: 'fab fa-telegram' },
+  { id: 'discord', name: 'Discord', icon: FaDiscord, iconRef: 'fab fa-discord' },
+  { id: 'snapchat', name: 'Snapchat', icon: FaSnapchat, iconRef: 'fab fa-snapchat' },
+  { id: 'pinterest', name: 'Pinterest', icon: FaPinterest, iconRef: 'fab fa-pinterest' },
+  { id: 'reddit', name: 'Reddit', icon: FaReddit, iconRef: 'fab fa-reddit' }
+];
 
 const servicesCategoriesRest = new ServicesCategoriesPublicRest();
 
@@ -14,7 +44,7 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
     
     const addressObj = generals.find(item => item.correlative === "address");
     const supportPhoneObj = generals.find(item => item.correlative === "support_phone");
-    const supportEmailObj = generals.find(item => item.correlative === "support_email");
+    const emailContactObj = generals.find(item => item.correlative === "email_contact");
     const footerDescriptionObj = generals.find(item => item.correlative === "footer_description");
     const copyrightObj = generals.find(item => item.correlative === "copyright");
     const termsConditionsObj = generals.find(item => item.correlative === "terms_conditions");
@@ -22,7 +52,8 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
     
     const address = addressObj?.description ?? "Miami, FL 33101, Estados Unidos";
     const supportPhone = supportPhoneObj?.description ?? "+57 1 234 5678";
-    const supportEmail = supportEmailObj?.description ?? "info@firstclass-courier.com";
+    const emailContact = emailContactObj?.description ?? "info@firstclass-courier.com";
+    const emailList = emailContact.split(',').map(email => email.trim()).filter(email => email);
     const footerDescription = footerDescriptionObj?.description ?? "Tu courier de primera clase para envíos seguros entre EE.UU. y América Latina.";
     const copyright = copyrightObj?.description ?? "© 2024 FirstClass Courier. Todos los derechos reservados.";
     
@@ -86,33 +117,44 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
                         </p>
                         <div className={`flex space-x-4 ${data?.class_social_links || ''}`}>
                             {socials.length > 0 ? (
-                                socials.map((social, index) => (
-                                    <a 
-                                        key={index}
-                                        href={social.link || '#'} 
-                                        className="text-gray-400 hover:customtext-primary transition-colors duration-200"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        {social.name?.toLowerCase().includes('facebook') && <Facebook className="h-6 w-6" />}
-                                        {social.name?.toLowerCase().includes('instagram') && <Instagram className="h-6 w-6" />}
-                                        {social.name?.toLowerCase().includes('twitter') && <Twitter className="h-6 w-6" />}
-                                        {!social.name?.toLowerCase().includes('facebook') && 
-                                         !social.name?.toLowerCase().includes('instagram') && 
-                                         !social.name?.toLowerCase().includes('twitter') && 
-                                         <Package className="h-6 w-6" />}
-                                    </a>
-                                ))
+                                socials.map((social, index) => {
+                                    // Buscar el icono correcto basado en la descripción o el iconRef
+                                    const socialData = predefinedSocials.find(s => 
+                                        s.name === social.description || 
+                                        s.iconRef === social.icon ||
+                                        s.name.toLowerCase() === social.description?.toLowerCase() ||
+                                        s.name.toLowerCase() === social.name?.toLowerCase()
+                                    );
+                                    
+                                    const IconComponent = socialData?.icon;
+
+                                    return (
+                                        <a 
+                                            key={index}
+                                            href={social.url || social.link || '#'} 
+                                            className="text-gray-400 hover:customtext-primary transition-all duration-200 hover:scale-110"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title={social.name || social.description || 'Red social'}
+                                        >
+                                            {IconComponent ? (
+                                                <IconComponent className="h-6 w-6" />
+                                            ) : (
+                                                <i className={social.icon || 'fab fa-globe'} style={{ fontSize: '24px' }} />
+                                            )}
+                                        </a>
+                                    );
+                                })
                             ) : (
                                 <>
                                     <a href="#" className="text-gray-400 hover:customtext-primary transition-colors duration-200">
-                                        <Facebook className="h-6 w-6" />
+                                        <FaFacebook className="h-6 w-6" />
                                     </a>
                                     <a href="#" className="text-gray-400 hover:customtext-primary transition-colors duration-200">
-                                        <Instagram className="h-6 w-6" />
+                                        <FaInstagram className="h-6 w-6" />
                                     </a>
                                     <a href="#" className="text-gray-400 hover:customtext-primary transition-colors duration-200">
-                                        <Twitter className="h-6 w-6" />
+                                        <FaTwitter className="h-6 w-6" />
                                     </a>
                                 </>
                             )}
@@ -185,10 +227,11 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
                         <h3 className="text-lg font-semibold mb-4">Contacto</h3>
                         <ul className="space-y-4">
                             <li className="flex items-start">
-                                <Mail className="h-5 w-5 customtext-primary mr-2 mt-0.5" />
+                                <Mail className="h-5 w-5 customtext-primary mr-2 mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <p className="text-gray-400">{supportEmail}</p>
-                                    <p className="text-gray-400">soporte@firstclass-courier.com</p>
+                                    {emailList.map((email, index) => (
+                                        <p key={index} className="text-gray-400">{email}</p>
+                                    ))}
                                 </div>
                             </li>
                             <li className="flex items-start">
