@@ -275,33 +275,19 @@ export default function CartStepPidelo({
                         </div>
                     )}
                     
-                    {/* Mostrar seguro */}
+                    {/* Mostrar seguro - Solo si subtotal > 200 y hay configuración */}
                     {
-                        Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
-                        <div className="flex justify-between !hidden">
+                        subTotal > 200 && seguroImportacionTotal > 0 && Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
+                        <div hidden className="flex justify-between !hidden">
                             <span className="customtext-neutral-dark">Seguro ({Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0).toFixed(2)}%)</span>
                             <span className="font-semibold">{CurrencySymbol()}{Number2Currency(seguroImportacionTotal)}</span>
                         </div>
                     }
                     
-                    {/* Mostrar flete */}
-                    {fleteTotal > 0 && (
-                        <div className="flex justify-between">
-                            <span className="customtext-neutral-dark">
-                                Flete
-                                {
-                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
-                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
-                                        <i className="mdi mdi-information ms-1"></i>
-                                    </Tippy>
-                                }
-                            </span>
-                            <span className="font-semibold">{CurrencySymbol()}{Number2Currency(fleteTotal)}</span>
-                        </div>
-                    )}
+
                     
-                    {/* Derecho Arancelario Simplificado */}
-                    {derechoArancelarioTotal > 0 && (
+                    {/* Derecho Arancelario Simplificado - Solo si subtotal > 200 y hay valor */}
+                    {subTotal > 200 && derechoArancelarioTotal > 0 && (
                         <div className="flex justify-between">
                             <span className="customtext-neutral-dark">
                                 Impuestos Perú ({generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description}%)
@@ -315,7 +301,21 @@ export default function CartStepPidelo({
                             <span className="font-semibold">{CurrencySymbol()}{Number2Currency(derechoArancelarioTotal)}</span>
                         </div>
                     )}
-                    
+                                        {/* Mostrar flete */}
+                    {fleteTotal > 0 && (
+                        <div className="flex justify-between ">
+                            <span className="customtext-neutral-dark">
+                                 Flete de Envio Internacional
+                                {
+                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span className="font-semibold">{CurrencySymbol()}{Number2Currency(fleteTotal)}</span>
+                        </div>
+                    )}
                     {/*<div className="flex justify-between">
                         <span className="customtext-neutral-dark">
                             Envío
