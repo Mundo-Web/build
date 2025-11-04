@@ -278,7 +278,7 @@ export default function CartStepPidelo({
                     {/* Mostrar seguro */}
                     {
                         Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
-                        <div className="flex justify-between">
+                        <div className="flex justify-between !hidden">
                             <span className="customtext-neutral-dark">Seguro ({Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0).toFixed(2)}%)</span>
                             <span className="font-semibold">{CurrencySymbol()}{Number2Currency(seguroImportacionTotal)}</span>
                         </div>
@@ -304,7 +304,7 @@ export default function CartStepPidelo({
                     {derechoArancelarioTotal > 0 && (
                         <div className="flex justify-between">
                             <span className="customtext-neutral-dark">
-                                Derecho Arancelario
+                                Impuestos Perú ({generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description}%)
                                 {
                                     generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description &&
                                     <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description}</p>} allowHTML>

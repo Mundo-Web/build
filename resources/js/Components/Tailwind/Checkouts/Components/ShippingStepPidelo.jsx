@@ -1336,34 +1336,19 @@ export default function ShippingStepPidelo({
                     {/* Seguro */}
                     {
                         Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
-                        <div className="flex justify-between">
+                        <div className="flex justify-between !hidden">
                             <span>Seguro ({Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0).toFixed(2)}%):</span>
                             <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(seguroImportacionTotal))}</span>
                         </div>
                     }
-                    
-                    {/* Flete */}
-                    {fleteTotal > 0 && (
-                        <div className="flex justify-between">
-                            <span>
-                                Flete
-                                {
-                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
-                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
-                                        <i className="mdi mdi-information ms-1"></i>
-                                    </Tippy>
-                                }
-                            </span>
-                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(fleteTotal))}</span>
-                        </div>
-                    )}
+                 
                     
                     {/* Derecho Arancelario Simplificado */}
                     {
                         Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 &&
                         <div className="flex justify-between">
                             <span>
-                                Derecho Arancelario
+                                Impuestos Perú ({generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description}%)
                                 {
                                     generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description &&
                                     <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description}</p>} allowHTML>
@@ -1374,11 +1359,26 @@ export default function ShippingStepPidelo({
                             <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(derechoArancelarioTotal))}</span>
                         </div>
                     }
-                    
+                       
+                    {/* Flete */}
+                    {fleteTotal > 0 && (
+                        <div className="flex justify-between">
+                            <span>
+                                Flete de Envio Internacional
+                                {
+                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(fleteTotal))}</span>
+                        </div>
+                    )}
                     {/* Envío */}
                     <div className="flex justify-between">
                         <span>
-                            Envío
+                            Envío Local
                             {
                                 generals?.find(x => x.correlative === 'envio')?.description &&
                                 <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'envio')?.description}</p>} allowHTML>
