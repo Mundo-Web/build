@@ -266,6 +266,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/items/status', [AdminItemController::class, 'status']);
     Route::patch('/items/{field}', [AdminItemController::class, 'boolean']);
     Route::delete('/items/{id}', [AdminItemController::class, 'delete']);
+    Route::get('/items/export', [AdminItemController::class, 'export']);
 
     // Cupones
     Route::post('/coupons', [AdminCouponController::class, 'save']);

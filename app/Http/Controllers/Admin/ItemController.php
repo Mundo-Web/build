@@ -23,6 +23,8 @@ use App\Models\ItemSpecification;
 use App\Models\Store;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use App\Exports\UnifiedItemExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends BasicController
 {
@@ -481,5 +483,35 @@ class ItemController extends BasicController
         //         );
         //     }
         // }
+    }
+
+    /**
+     * Exportar items en formato Excel compatible con importación
+     */
+    public function export(Request $request)
+    {
+        try {
+            Log::info('Iniciando exportación de items');
+            
+            $fileName = 'items_export_' . date('Y-m-d_His') . '.xlsx';
+            
+            Log::info('Creando archivo Excel', ['fileName' => $fileName]);
+            
+            return Excel::download(new UnifiedItemExport, $fileName);
+        } catch (\Exception $e) {
+            Log::error('Error al exportar items: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al exportar items: ' . $e->getMessage(),
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
     }
 }

@@ -605,6 +605,38 @@ const Items = ({ categories, brands, collections, stores }) => {
     const onModalImportOpen = () => {
         $(modalImportRef.current).modal("show");
     };
+
+    const onExportItems = async () => {
+        try {
+            // Mostrar loader
+            Swal.fire({
+                title: 'Exportando items...',
+                text: 'Por favor espere',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Usar el método exportData de ItemsRest
+            await itemsRest.exportData();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Exportación exitosa',
+                text: 'El archivo se ha descargado correctamente',
+                timer: 2000
+            });
+        } catch (error) {
+            console.error('Error al exportar:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'No se pudo exportar los items. Por favor intente nuevamente.'
+            });
+        }
+    };
+
     return (
         <>
             <Table
@@ -642,6 +674,16 @@ const Items = ({ categories, brands, collections, stores }) => {
                             text: "Importar Datos",
                             hint: "Importar Datos",
                             onClick: () => onModalImportOpen(),
+                        },
+                    });
+                    container.unshift({
+                        widget: "dxButton",
+                        location: "after",
+                        options: {
+                            icon: "download",
+                            text: "Exportar Items",
+                            hint: "Exportar Items (Formato Excel)",
+                            onClick: () => onExportItems(),
                         },
                     });
                 }}

@@ -209,16 +209,16 @@
       "_index-BOnQTV8N.js"
     ]
   },
-  "_ItemsRest-Dp5IKigO.js": {
-    "file": "assets/ItemsRest-Dp5IKigO.js",
+  "_ItemsRest-BelP-LFB.js": {
+    "file": "assets/ItemsRest-BelP-LFB.js",
     "name": "ItemsRest",
     "imports": [
       "_main-B6F2O9-U.js",
       "_BasicRest-BML1C-ua.js"
     ]
   },
-  "_ItemsRest-pSN9Z_la.js": {
-    "file": "assets/ItemsRest-pSN9Z_la.js",
+  "_ItemsRest-Dp5IKigO.js": {
+    "file": "assets/ItemsRest-Dp5IKigO.js",
     "name": "ItemsRest",
     "imports": [
       "_main-B6F2O9-U.js",
@@ -1935,14 +1935,14 @@
     ]
   },
   "resources/js/Admin/Components/ModalImportItem.jsx": {
-    "file": "assets/ModalImportItem-QhADzfay.js",
+    "file": "assets/ModalImportItem-DOHj4wUK.js",
     "name": "ModalImportItem",
     "src": "resources/js/Admin/Components/ModalImportItem.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
-      "_ItemsRest-pSN9Z_la.js",
+      "_ItemsRest-BelP-LFB.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
@@ -2470,7 +2470,7 @@
     ]
   },
   "resources/js/Admin/Items.jsx": {
-    "file": "assets/Items-3j6_x8d-.js",
+    "file": "assets/Items-bnKZYMBm.js",
     "name": "Items",
     "src": "resources/js/Admin/Items.jsx",
     "isEntry": true,
@@ -2483,7 +2483,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_server.browser-Bf4gQIc7.js",
       "resources/js/Components/Tailwind/Components/ProductCard.jsx",
-      "_ItemsRest-pSN9Z_la.js",
+      "_ItemsRest-BelP-LFB.js",
       "_Modal-xDw9ufjg.js",
       "_Table-Cv5qc0FM.js",
       "_ImageFormGroup-40MuGzez.js",
