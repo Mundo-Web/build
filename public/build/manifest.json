@@ -67,6 +67,13 @@
       "_BasicRest-BML1C-ua.js"
     ]
   },
+  "_BlogCategoriesRest-E3l413KJ.js": {
+    "file": "assets/BlogCategoriesRest-E3l413KJ.js",
+    "name": "BlogCategoriesRest",
+    "imports": [
+      "_BasicRest-BML1C-ua.js"
+    ]
+  },
   "_BooleanLimit-D-OsQsek.js": {
     "file": "assets/BooleanLimit-D-OsQsek.js",
     "name": "BooleanLimit"
@@ -5230,7 +5237,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-WNH1tRn0.js",
+    "file": "assets/Blog-C2bRAS84.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -5393,7 +5400,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogSimple.jsx": {
-    "file": "assets/BlogSimple-txZirBu6.js",
+    "file": "assets/BlogSimple-CRin1CUH.js",
     "name": "BlogSimple",
     "src": "resources/js/Components/Tailwind/Blogs/BlogSimple.jsx",
     "isEntry": true,
@@ -5401,9 +5408,9 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_PostsRest-ZrMMk0OC.js",
-      "_BlogCategoriesRest-Cu0lDmUR.js",
       "_SelectForm-CPo74rd_.js",
       "_Global-CazroCzF.js",
+      "_BlogCategoriesRest-E3l413KJ.js",
       "_search-BQ59Robe.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
@@ -5437,7 +5444,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/Components/BlogHeader.jsx": {
-    "file": "assets/BlogHeader-n19HPzFl.js",
+    "file": "assets/BlogHeader-D_vzBP0n.js",
     "name": "BlogHeader",
     "src": "resources/js/Components/Tailwind/Blogs/Components/BlogHeader.jsx",
     "isEntry": true,
@@ -5445,7 +5452,7 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_PostsRest-ZrMMk0OC.js",
-      "_BlogCategoriesRest-Cu0lDmUR.js",
+      "_BlogCategoriesRest-E3l413KJ.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_BasicRest-BML1C-ua.js",
@@ -12116,7 +12123,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B0293pZX.js",
+    "file": "assets/System-BfAU4otf.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

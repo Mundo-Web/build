@@ -66,6 +66,7 @@ use App\Http\Controllers\AuthClientController;
 use App\Http\Controllers\JobApplicationController;
 // Public
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogCategoryController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\CoverController;
@@ -229,6 +230,8 @@ Route::get('/person/{dni}', [PersonController::class, 'find']);
 
 // Ruta pública para aplicar reglas de descuento al carrito
 Route::post('/discount-rules/apply-to-cart', [AdminDiscountRulesController::class, 'applyToCart']);
+
+    Route::post('/blog-categories/paginate', [BlogCategoryController::class, 'paginate']);
 
 Route::middleware('auth')->group(function () {
   Route::get('/notification-variables/{type}', [NotificationVariableController::class, 'variables']);
