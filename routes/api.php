@@ -17,8 +17,11 @@ use App\Http\Controllers\Admin\CollectionController as AdminCollectionController
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\InnovationController as AdminInnovationController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
+use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
 use App\Http\Controllers\Admin\StrengthController as AdminStrengthController;
+use App\Http\Controllers\Admin\AppController as AdminAppController;
 use App\Http\Controllers\Admin\CertificationController as AdminCertificationController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\GeneralController as AdminGeneralController;
@@ -156,6 +159,8 @@ Route::get('/testimonies/media/{uuid}', [AdminTestimonyController::class, 'media
 Route::get('/posts/media/{uuid}', [AdminPostController::class, 'media']);
 Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'media']);
 Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
+Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
+Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
 Route::get('/item_images/media/{uuid}', [AdminItemImageController::class, 'media']);
@@ -164,6 +169,7 @@ Route::get('/indicators/media/{uuid}', [AdminIndicatorController::class, 'media'
 
 Route::get('/aboutuses/media/{uuid}', [AdminAboutusController::class, 'media']);
 Route::get('/strengths/media/{uuid}', [AdminStrengthController::class, 'media']);
+Route::get('/apps/media/{uuid}', [App\Http\Controllers\Admin\AppController::class, 'media']);
 Route::get('/certifications/media/{uuid}', [AdminCertificationController::class, 'media']);
 Route::get('/partners/media/{uuid}', [AdminCertificationController::class, 'media']);
 Route::get('/ads/media/{uuid}', [AdminAdController::class, 'media'])->withoutMiddleware('throttle');
@@ -349,6 +355,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/services/{field}', [AdminServiceController::class, 'boolean']);
     Route::delete('/services/{id}', [AdminServiceController::class, 'delete']);
 
+    Route::post('/service-categories', [AdminServiceCategoryController::class, 'save']);
+    Route::post('/service-categories/paginate', [AdminServiceCategoryController::class, 'paginate']);
+    Route::patch('/service-categories/status', [AdminServiceCategoryController::class, 'status']);
+    Route::patch('/service-categories/{field}', [AdminServiceCategoryController::class, 'boolean']);
+    Route::delete('/service-categories/{id}', [AdminServiceCategoryController::class, 'delete']);
+
+    Route::post('/service-subcategories', [AdminServiceSubCategoryController::class, 'save']);
+    Route::post('/service-subcategories/paginate', [AdminServiceSubCategoryController::class, 'paginate']);
+    Route::patch('/service-subcategories/status', [AdminServiceSubCategoryController::class, 'status']);
+    Route::patch('/service-subcategories/{field}', [AdminServiceSubCategoryController::class, 'boolean']);
+    Route::delete('/service-subcategories/{id}', [AdminServiceSubCategoryController::class, 'delete']);
+
     Route::post('/aboutus', [AdminAboutusController::class, 'save']);
     Route::post('/aboutus/paginate', [AdminAboutusController::class, 'paginate']);
     Route::patch('/aboutus/status', [AdminAboutusController::class, 'status']);
@@ -466,6 +484,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/strengths/status', [AdminStrengthController::class, 'status']);
     Route::patch('/strengths/{field}', [AdminStrengthController::class, 'boolean']);
     Route::delete('/strengths/{id}', [AdminStrengthController::class, 'delete']);
+
+    Route::post('/apps', [AdminAppController::class, 'save']);
+    Route::post('/apps/paginate', [AdminAppController::class, 'paginate']);
+    Route::patch('/apps/status', [AdminAppController::class, 'status']);
+    Route::patch('/apps/{field}', [AdminAppController::class, 'boolean']);
+    Route::delete('/apps/{id}', [AdminAppController::class, 'delete']);
 
     Route::post('/certifications', [AdminCertificationController::class, 'save']);
     Route::post('/certifications/paginate', [AdminCertificationController::class, 'paginate']);

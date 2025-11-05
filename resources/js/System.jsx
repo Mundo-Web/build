@@ -46,11 +46,13 @@ const Floating = React.lazy(() => import("./Components/Tailwind/Floating"));
 const DeliveryZone = React.lazy(() => import("./Components/Tailwind/DeliveryZone"));
 const Ad = React.lazy(() => import("./Components/Tailwind/Ad"));
 const Testimonials = React.lazy(() => import("./Components/Tailwind/Testimonials"));
+const Strength = React.lazy(() => import("./Components/Tailwind/Strength"));
 const Brands = React.lazy(() => import("./Components/Tailwind/Brands"));
 const Partner = React.lazy(() => import("./Components/Tailwind/Partner"));
 const Subscription = React.lazy(() => import("./Components/Tailwind/Subscription"));
 const Agradecimientos = React.lazy(() => import("./Components/Tailwind/Agradecimientos"));
 const Support = React.lazy(() => import("./Components/Tailwind/Support"));
+const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
 
 // Componente de carga para usar con Suspense
 const LoadingFallback = () => {
@@ -334,7 +336,7 @@ const System = ({
             case "indicator":
                 return <Indicator which={value} data={data} items={getItems(itemsId)} />
             case "banner":
-                return <Banner which={value} data={data} items={getItems(itemsId)} />
+                return <Banner which={value} data={data} items={getItems(itemsId)} generals={generals} />
             case "ads":
                 return <Ad which={value} data={data} items={getItems(itemsId)} />
             case "image":
@@ -385,6 +387,8 @@ const System = ({
                 return <Floating which={value} data={data} />
             case "testimonials":
                 return <Testimonials which={value} data={data} items={getItems(itemsId)} />
+            case "strength":
+                return <Strength which={value} data={data} items={getItems(itemsId)} />
             case "brands":
                 return <Brands which={value} data={data} items={getItems(itemsId)} />
             case "partner":
@@ -395,6 +399,8 @@ const System = ({
                 return <Agradecimientos which={value} data={data} items={getItems(itemsId)} contacts={contacts} />
             case "support":
                 return <Support which={value} data={data} items={getItems(itemsId)} />
+            case "firstclass":
+                return <FirstClass {...componentProps} />
             default:
                 return <NoComponent which={value} />
         }

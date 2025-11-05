@@ -75,8 +75,8 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const costoxpeso = Number(generals?.find(x => x.correlative === 'importation_flete')?.description) || 0;
     const fleteTotal = costoxpeso > 0 ? pesoTotal * costoxpeso : 0;
     
-    // Seguro de importación (sobre subtotal con descuentos)
-    const seguroImportacion = (Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) || 0) / 100;
+    // Seguro de importación (sobre subtotal con descuentos) - Solo si subtotal > 200
+    const seguroImportacion = subTotal > 200 ? (Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) || 0) / 100 : 0;
     const seguroImportacionTotal = subTotalConDescuentos * seguroImportacion;
 
    
@@ -85,9 +85,9 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const valorCIF = parseFloat(subTotalConDescuentos) + parseFloat(fleteTotal) + parseFloat(seguroImportacionTotal);
  
 
-    // 5. Derecho Arancelario sobre el valor CIF
+    // 5. Derecho Arancelario sobre el valor CIF - Solo si subtotal > 200
     // Obtener el porcentaje de derecho arancelario desde generals
-    const derechoArancelarioRate = (Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) || 0) / 100;
+    const derechoArancelarioRate = subTotal > 200 ? (Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) || 0) / 100 : 0;
     const derechoArancelarioTotal = valorCIF * derechoArancelarioRate;
   
     
@@ -96,11 +96,17 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const igvTotal = 0; // Ya no se calcula por separado
     const ipmTotal = 0; // Ya no se calcula por separado
     
-    // 6. Total Final = Subtotal con descuentos + Derecho Arancelario + Envío
-    const totalFinal = subTotalConDescuentos + derechoArancelarioTotal + parseFloat(envio);
+    // 6. Total Final - Condicional según subtotal
+    // Si subtotal <= 200: solo subtotal + flete + envío
+    // Si subtotal > 200: subtotal + derecho arancelario + envío
+    const totalFinal = subTotal <= 200 
+        ? subTotalConDescuentos + fleteTotal + parseFloat(envio)
+        : subTotalConDescuentos + derechoArancelarioTotal + parseFloat(envio)+ fleteTotal;
     
-    // Para compatibilidad con componentes existentes
-    const totalWithoutDiscounts = subTotal + parseFloat(envio) + parseFloat(seguroImportacionTotal) + parseFloat(derechoArancelarioTotal);
+    // Para compatibilidad con componentes existentes - Condicional según subtotal
+    const totalWithoutDiscounts = subTotal <= 200 
+        ? subTotal + parseFloat(envio) + parseFloat(fleteTotal) // Solo flete si subtotal <= 200
+        : subTotal + parseFloat(envio) + parseFloat(seguroImportacionTotal) + parseFloat(derechoArancelarioTotal)+parseFloat(fleteTotal); // Todo si subtotal > 200
     
     // Variables individuales para mostrar en el resumen
     const igv = igvTotal; // Para mostrar en el resumen (ahora 0)

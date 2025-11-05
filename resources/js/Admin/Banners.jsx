@@ -499,7 +499,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         { id: 'BannerPidelo', name: 'Banner Pidelo', icon: 'mdi mdi-shopping' },
         { id: 'BannerMultivet', name: 'Banner Multivet', icon: 'mdi mdi-medical-bag' },
         { id: 'BannerPublicitarioKatya', name: 'Banner Publicitario Katya', icon: 'mdi mdi-account-star' },
-        { id: 'BannerBlogSectionKatya', name: 'Banner Blog Section Katya', icon: 'mdi mdi-post' }
+        { id: 'BannerBlogSectionKatya', name: 'Banner Blog Section Katya', icon: 'mdi mdi-post' },
+        { id: 'BannerMobileApp', name: 'Banner Mobile App - FirstClass', icon: 'mdi mdi-cellphone-link' }
     ];
 
     const normalizePageId = (value) => value === undefined || value === null || value === '' ? null : value;
