@@ -16,37 +16,50 @@ export const processOpenPayPayment = (request) => {
         try {
             console.log("🔄 Iniciando proceso de pago con OpenPay...", request);
             
-            // Verificar que OpenPay esté habilitado
-            if (!Global.OPENPAY_ENABLED) {
-                console.error("❌ Error: OpenPay no está habilitado en la configuración");
-                reject("Método de pago no disponible: OpenPay está deshabilitado");
-                return;
-            }
-            
-            // Verificar que OpenPay esté disponible
+            // Verificar que OpenPay esté disponible (primero verificar el SDK)
             if (typeof window.OpenPay === 'undefined') {
                 console.error("❌ Error: OpenPay no está definido. Verifique que el script de OpenPay esté cargado.");
                 reject("Error en la integración con OpenPay: Script no cargado");
                 return;
             }
             
-            if (!Global.OPENPAY_MERCHANT_ID || !Global.OPENPAY_PUBLIC_KEY) {
+            // Obtener credenciales desde window (configuradas en blade) o Global (configuradas por Inertia)
+            const merchantId = window.OPENPAY_MERCHANT_ID || Global.OPENPAY_MERCHANT_ID;
+            const publicKey = window.OPENPAY_PUBLIC_KEY || Global.OPENPAY_PUBLIC_KEY;
+            const sandboxMode = window.OPENPAY_SANDBOX_MODE !== undefined ? window.OPENPAY_SANDBOX_MODE : (Global.OPENPAY_SANDBOX_MODE || false);
+            
+            if (!merchantId || !publicKey) {
                 console.error("❌ Error: Credenciales de OpenPay no están configuradas");
+                console.error("   window.OPENPAY_MERCHANT_ID:", window.OPENPAY_MERCHANT_ID);
+                console.error("   Global.OPENPAY_MERCHANT_ID:", Global.OPENPAY_MERCHANT_ID);
                 reject("Error de configuración: Credenciales de OpenPay no encontradas");
                 return;
             }
             
+            console.log("✅ Credenciales de OpenPay encontradas:");
+            console.log("   Merchant ID:", merchantId);
+            console.log("   Public Key:", publicKey ? publicKey.substring(0, 10) + "..." : "N/A");
+            console.log("   Sandbox Mode:", sandboxMode);
+            
             const orderNumber = generarNumeroOrdenConPrefijoYFecha();
             console.log("📝 Número de orden generado:", orderNumber);
             
-            // Configurar OpenPay
-            window.OpenPay.setId(Global.OPENPAY_MERCHANT_ID);
-            window.OpenPay.setApiKey(Global.OPENPAY_PUBLIC_KEY);
-            window.OpenPay.setSandboxMode(Global.OPENPAY_SANDBOX_MODE || false);
+            // Verificar que tengamos el token y device_session_id
+            if (!request.source_id && !request.token) {
+                console.error("❌ Error: Token de tarjeta no proporcionado");
+                reject("Error: Token de tarjeta no proporcionado");
+                return;
+            }
             
-            console.log("✅ OpenPay configurado exitosamente");
-            console.log("   - Merchant ID:", Global.OPENPAY_MERCHANT_ID);
-            console.log("   - Modo Sandbox:", Global.OPENPAY_SANDBOX_MODE || false);
+            if (!request.device_session_id) {
+                console.error("❌ Error: device_session_id no proporcionado");
+                reject("Error: device_session_id no proporcionado (requerido para antifraude)");
+                return;
+            }
+            
+            console.log("✅ Datos de tokenización verificados:");
+            console.log("   - Token (source_id):", request.source_id || request.token);
+            console.log("   - Device Session ID:", request.device_session_id);
             console.log("   - Monto:", request.amount);
             
             // Preparar datos para el cargo
@@ -54,7 +67,8 @@ export const processOpenPayPayment = (request) => {
                 ...request,
                 orderNumber,
                 method: "card",
-                device_session_id: window.OpenPay.deviceData.setup()
+                source_id: request.source_id || request.token, // Asegurar que se envíe source_id
+                device_session_id: request.device_session_id // Ya viene del frontend
             };
             
             console.log("📤 Enviando solicitud de cargo al servidor:", chargeRequest);

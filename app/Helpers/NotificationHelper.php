@@ -6,8 +6,10 @@ use App\Models\General;
 use App\Notifications\AdminPurchaseNotification;
 use App\Notifications\AdminContactNotification;
 use App\Notifications\AdminClaimNotification;
+use App\Notifications\AdminJobApplicationNotification;
 use App\Notifications\PurchaseSummaryNotification;
 use App\Notifications\MessageContactNotification;
+use App\Notifications\JobApplicationNotification;
 use App\Notifications\ClaimNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -176,6 +178,13 @@ class NotificationHelper
                 $message = $messageProperty->getValue($originalNotification);
                 
                 return new AdminContactNotification($message);
+                
+            } elseif ($originalNotification instanceof JobApplicationNotification) {
+                $jobApplicationProperty = $reflection->getProperty('jobApplication');
+                $jobApplicationProperty->setAccessible(true);
+                $jobApplication = $jobApplicationProperty->getValue($originalNotification);
+                
+                return new AdminJobApplicationNotification($jobApplication);
                 
             } elseif ($originalNotification instanceof ClaimNotification) {
                 $complaintProperty = $reflection->getProperty('complaint');

@@ -644,9 +644,9 @@ export default function ShippingStepPidelo({
                 document_type: formData.documentType, // Cambiar a document_type para que coincida con lo que espera el backend
                 amount: roundToTwoDecimals(finalTotalWithCoupon),
                 delivery: roundToTwoDecimals(envio),
-                // Campos de importación
-                seguro_importacion_total: roundToTwoDecimals(seguroImportacionTotal || 0),
-                derecho_arancelario_total: roundToTwoDecimals(derechoArancelarioTotal || 0),
+                // Campos de importación - Solo si subtotal > 200
+                seguro_importacion_total: subTotal > 200 ? roundToTwoDecimals(seguroImportacionTotal || 0) : 0,
+                derecho_arancelario_total: subTotal > 200 ? roundToTwoDecimals(derechoArancelarioTotal || 0) : 0,
                 flete_total: roundToTwoDecimals(fleteTotal || 0),
                 delivery_type: selectedOption, // Agregar tipo de entrega
                 store_id: selectedOption === "store_pickup" ? selectedStore?.id : null, // ID de tienda si es retiro en tienda
@@ -1333,37 +1333,22 @@ export default function ShippingStepPidelo({
                     
                   
                     
-                    {/* Seguro */}
+                    {/* Seguro - Solo si subtotal > 200 y hay valor */}
                     {
-                        Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
-                        <div className="flex justify-between">
+                        subTotal > 200 && seguroImportacionTotal > 0 && Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
+                        <div className="flex justify-between !hidden">
                             <span>Seguro ({Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0).toFixed(2)}%):</span>
                             <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(seguroImportacionTotal))}</span>
                         </div>
                     }
+                 
                     
-                    {/* Flete */}
-                    {fleteTotal > 0 && (
-                        <div className="flex justify-between">
-                            <span>
-                                Flete
-                                {
-                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
-                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
-                                        <i className="mdi mdi-information ms-1"></i>
-                                    </Tippy>
-                                }
-                            </span>
-                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(fleteTotal))}</span>
-                        </div>
-                    )}
-                    
-                    {/* Derecho Arancelario Simplificado */}
+                    {/* Derecho Arancelario Simplificado - Solo si subtotal > 200 y hay valor */}
                     {
-                        Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 &&
+                        subTotal > 200 && derechoArancelarioTotal > 0 && Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 &&
                         <div className="flex justify-between">
                             <span>
-                                Derecho Arancelario
+                                Impuestos Perú ({generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description}%)
                                 {
                                     generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description &&
                                     <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description}</p>} allowHTML>
@@ -1374,11 +1359,26 @@ export default function ShippingStepPidelo({
                             <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(derechoArancelarioTotal))}</span>
                         </div>
                     }
-                    
+                       
+                    {/* Flete */}
+                    {fleteTotal > 0 && (
+                        <div className="flex justify-between">
+                            <span>
+                                Flete de Envio Internacional
+                                {
+                                    generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_flete_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(fleteTotal))}</span>
+                        </div>
+                    )}
                     {/* Envío */}
                     <div className="flex justify-between">
                         <span>
-                            Envío
+                            Envío Local
                             {
                                 generals?.find(x => x.correlative === 'envio')?.description &&
                                 <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'envio')?.description}</p>} allowHTML>

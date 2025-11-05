@@ -161,11 +161,11 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
         const formData = new FormData();
         formData.append('image', newImageForm.file);
         
-        // Generar nombre del archivo basado en el filename
-        const fileExtension = newImageForm.file.name.split('.').pop();
-        const fileName = `${newImageForm.filename.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.${fileExtension}`;
+        // Forzar extensión PNG (el backend debe procesar esto)
+        const fileName = `${newImageForm.filename.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.png`;
         
         formData.append('name', fileName);
+        formData.append('convert_to_png', 'true'); // Indicar al backend que convierta a PNG
         
         const uploadResult = await galleryRest.save(formData);
         if (!uploadResult) {
@@ -440,6 +440,34 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
                       <small className="text-muted">Solo letras, números y guiones (sin espacios ni caracteres especiales)</small>
                     </div>
                   </div>
+                </div>
+
+                {/* Campo de archivo de imagen */}
+                <div className="mb-3">
+                  <label className="form-label">
+                    Seleccionar imagen {editingImage === null && <span className="text-danger">*</span>}
+                  </label>
+                  <input 
+                    type="file" 
+                    className="form-control"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={isLoading}
+                  />
+                  <small className="text-muted">
+                    {editingImage === null 
+                      ? 'Selecciona un archivo de imagen (JPG, PNG, GIF, SVG, etc.)'
+                      : 'Opcional: Selecciona una nueva imagen para reemplazar la actual'
+                    }
+                  </small>
+                  {newImageForm.file && (
+                    <div className="mt-2">
+                      <small className="text-success">
+                        <i className="mdi mdi-check-circle me-1"></i>
+                        Archivo seleccionado: {newImageForm.file.name}
+                      </small>
+                    </div>
+                  )}
                 </div>
 
                 <div className="row">

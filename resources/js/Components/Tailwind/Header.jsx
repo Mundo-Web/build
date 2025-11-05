@@ -22,6 +22,7 @@ const HeaderMakita = React.lazy(() => import("./Headers/HeaderMakita"));
 const HeaderPidelo = React.lazy(() => import("./Headers/HeaderPidelo"));
 const HeaderSearchKatya = React.lazy(() => import("./Headers/HeaderSearchKatya"));
 const HeaderHuaillys = React.lazy(() => import("./Headers/HeaderHuaillys"));
+const HeaderFirstClass = React.lazy(() => import("./Headers/HeaderFirstClass"));
 
 const Header = ({
     data,
@@ -204,6 +205,18 @@ const Header = ({
                     <HeaderHuaillys
                         data={data}
                         pages={pages}
+                        generals={generals}
+                    />
+                );
+            case "HeaderFirstClass":
+                return (
+                    <HeaderFirstClass
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
                         generals={generals}
                     />
                 );

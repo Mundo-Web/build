@@ -197,7 +197,7 @@ const SupportDownloadCenter = ({ data, items }) => {
                                             <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
                                                 
                                                 <a
-                                                    href={`/producto/${item.slug}`}
+                                                    href={`/product/${item.slug}`}
                                                     className="inline-flex w-full text-center justify-center rounded-full items-center gap-2 px-4 py-3 bg-primary text-white  transition-all text-sm font-medium hover:bg-primary/90 hover:shadow-lg"
                                                 >
                                                     <span>Ver más</span>

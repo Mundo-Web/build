@@ -136,6 +136,33 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
 
                                 </a>
                             </li>
+                            
+                            {/* Nuevos enlaces para PDFs - Solo se muestran si tienen contenido */}
+                            {generals.find((item) => item.correlative === "politica_sistema_gestion")?.description && (
+                                <li>
+                                    <a
+                                        href={`/cloud/${generals.find((item) => item.correlative === "politica_sistema_gestion")?.description}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    >
+                                        Política del sistema de Gestión
+                                    </a>
+                                </li>
+                            )}
+                            
+                            {generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description && (
+                                <li>
+                                    <a
+                                        href={`/cloud/${generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    >
+                                        Alcance del sistema de Gestión
+                                    </a>
+                                </li>
+                            )}
                         </ul>
 
                         <h3 className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ''}`}>
@@ -220,7 +247,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         isOpen={modalOpen === index}
                         onRequestClose={closeModal}
                         contentLabel={title}
-                        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
+                        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-[9999]"
                         overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
                         ariaHideApp={false}
                     >

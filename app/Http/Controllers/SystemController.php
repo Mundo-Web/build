@@ -99,6 +99,7 @@ class SystemController extends BasicController
         // Include all SEO generals by default plus currency
         $generals = [
             'currency',
+            'whatsapp_advisors',
             'site_title',
             'site_description', 
             'site_keywords',
@@ -111,7 +112,11 @@ class SystemController extends BasicController
             'twitter_image',
             'twitter_card',
             'favicon',
-            'canonical_url'
+            'canonical_url',
+            'importation_flete',
+            'importation_servicio',
+            'importation_seguro',
+            'importation_derecho_arancelario'
         ];
         
         $jsons = [];

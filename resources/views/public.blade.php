@@ -281,6 +281,43 @@
     <!-- Culqi Checkout v4 -->
     <script src="https://checkout.culqi.com/js/v4"></script>
 
+    <!-- OpenPay SDK -->
+    @php
+        $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
+        // Verificar múltiples formatos: 'true', '1', 'on', 'yes', etc.
+        $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+        $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
+        $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
+    @endphp
+    @if($openpayEnabled && $openpayMerchantId && $openpayPublicKey)
+        <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
+        <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
+        <script type="text/javascript">
+            // Configurar OpenPay globalmente ANTES de que React se monte
+            window.OPENPAY_MERCHANT_ID = "{{ $openpayMerchantId }}";
+            window.OPENPAY_PUBLIC_KEY = "{{ $openpayPublicKey }}";
+            window.OPENPAY_SANDBOX_MODE = true; // Cambiar a false en producción
+            
+            // Log de configuración (solo desarrollo)
+            console.log("✅ OpenPay configurado:", {
+                merchantId: window.OPENPAY_MERCHANT_ID,
+                publicKey: window.OPENPAY_PUBLIC_KEY ? window.OPENPAY_PUBLIC_KEY.substring(0, 8) + "..." : "N/A",
+                sandbox: window.OPENPAY_SANDBOX_MODE
+            });
+        </script>
+    @else
+        <script type="text/javascript">
+            console.warn("⚠️ OpenPay no está configurado correctamente:", {
+                enabledRaw: "{{ $openpayEnabledRaw }}",
+                enabled: {{ $openpayEnabled ? 'true' : 'false' }},
+                hasMerchantId: {{ $openpayMerchantId ? 'true' : 'false' }},
+                hasPublicKey: {{ $openpayPublicKey ? 'true' : 'false' }},
+                merchantId: "{{ $openpayMerchantId ? substr($openpayMerchantId, 0, 5) . '...' : 'VACÍO' }}",
+                publicKey: "{{ $openpayPublicKey ? substr($openpayPublicKey, 0, 5) . '...' : 'VACÍO' }}"
+            });
+        </script>
+    @endif
+
     <script src="/lte/assets/libs/select2/js/select2.full.min.js" defer></script>    <!-- App js -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
     <script src="/lte/assets/libs/moment/min/moment.min.js" defer></script>

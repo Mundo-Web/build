@@ -120,35 +120,57 @@ class OpenPayController extends Controller
                 ]);
             }
 
+            // Validar que venga el token de la tarjeta
+            if (!$request->token && !$request->source_id) {
+                Log::error('OpenPay - Token no proporcionado', [
+                    'request_keys' => array_keys($request->all())
+                ]);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Se requiere el token de la tarjeta'
+                ], 400);
+            }
+
+            // Validar device_session_id (requerido para antifraude)
+            if (!$request->device_session_id) {
+                Log::error('OpenPay - device_session_id no proporcionado');
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Se requiere el device_session_id para validación antifraude'
+                ], 400);
+            }
+
             // Preparar datos para OpenPay
             $amount = round($request->amount + $request->delivery - $discountAmount, 2);
             
-            // URL base según ambiente (producción o sandbox)
+            // URL base según ambiente (producción o sandbox) - OpenPay Perú
             $baseUrl = env('OPENPAY_SANDBOX_MODE', true) 
-                ? 'https://sandbox-api.openpay.mx/v1'
-                : 'https://api.openpay.mx/v1';
+                ? 'https://sandbox-api.openpay.pe/v1'
+                : 'https://api.openpay.pe/v1';
             
             $url = "{$baseUrl}/{$credentials['merchant_id']}/charges";
 
-            // Datos del cargo
+            // Datos del cargo según documentación de OpenPay
             $chargeData = [
                 'method' => 'card',
+                'source_id' => $request->source_id ?? $request->token,  // Token de la tarjeta (source_id es el nombre correcto en OpenPay)
                 'amount' => $amount,
-                'currency' => 'MXN', // Cambiar a 'PEN' si OpenPay soporta soles
+                'currency' => 'PEN',  // Moneda de Perú
                 'description' => "Pedido {$orderNumber}",
                 'order_id' => $orderNumber,
-                'device_session_id' => $request->device_session_id ?? null,
+                'device_session_id' => $request->device_session_id,  // Requerido para antifraude
                 'customer' => [
                     'name' => $request->name,
                     'last_name' => $request->lastname,
                     'email' => $request->email,
-                    'phone_number' => $request->phone,
+                    'phone_number' => $request->phone ?? '999999999',
                     'address' => [
-                        'line1' => $request->address,
-                        'line2' => $request->number,
-                        'postal_code' => '00000',
-                        'city' => $request->district,
-                        'state' => $request->department,
+                        'line1' => $request->address ?? 'Sin dirección',
+                        'line2' => $request->number ?? '',
+                        'line3' => $request->reference ?? '',
+                        'postal_code' => '15001',  // Código postal Lima por defecto
+                        'city' => $request->district ?? 'Lima',
+                        'state' => $request->department ?? 'Lima',
                         'country_code' => 'PE',
                     ],
                 ],

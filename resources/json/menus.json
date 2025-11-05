@@ -41,21 +41,29 @@
         ]
       },
       { "label": "Innovaciones", "href": "/admin/innovations", "icon": "mdi mdi-lightbulb-on" },
-      { "label": "Servicios", "href": "/admin/services", "icon": "mdi mdi-cog" },
-      
-    
+      {
+        "label": "Servicios",
+        "icon": "mdi mdi-cog",
+        "children": [
+          { "label": "Servicios", "href": "/admin/services", "icon": "mdi mdi-tools" },
+          { "label": "Categorías de Servicios", "href": "/admin/service-categories", "icon": "mdi mdi-shape-outline" },
+          { "label": "SubCategorías de Servicios", "href": "/admin/service-subcategories", "icon": "mdi mdi-file-tree" }
+        ]
+      },
       { "label": "Nosotros", "href": "/admin/about", "icon": "mdi mdi-briefcase" },
       { "label": "Zonas de Cobertura", "href": "/admin/delivery-zones", "icon": "mdi mdi-map-marker-radius" },
       { "label": "Indicadores", "href": "/admin/indicators", "icon": "mdi mdi-dots-grid" },
       { "label": "Certificaciones", "href": "/admin/certifications", "icon": "mdi mdi-certificate" },
       { "label": "Aliados", "href": "/admin/partners", "icon": "mdi mdi-charity" },
       { "label": "Fortalezas", "href": "/admin/strengths", "icon": "mdi mdi-arm-flex" },
+      { "label": "Apps Móviles", "href": "/admin/apps", "icon": "mdi mdi-cellphone-link" },
       { "label": "Banners", "href": "/admin/banners", "icon": "mdi mdi-post-outline" },
       { "label": "Sliders", "href": "/admin/sliders", "icon": "mdi mdi-page-layout-body" },
       { "label": "Preguntas Frecuentes", "href": "/admin/faqs", "icon": "mdi mdi-comment-account" },
       { "label": "Testimonios", "href": "/admin/testimonies", "icon": "mdi mdi-forum" },
       { "label": "Redes Sociales", "href": "/admin/socials", "icon": "mdi mdi-web" },
-      { "label": "Estados de ventas", "href": "/admin/statuses", "icon": "mdi mdi-bell-circle" }
+      { "label": "Estados de ventas", "href": "/admin/statuses", "icon": "mdi mdi-bell-circle" },
+      {"label": "Trabaja con Nosotros", "href": "/admin/job-applications", "icon": "mdi mdi-briefcase-search" }
     ]
   },
   {

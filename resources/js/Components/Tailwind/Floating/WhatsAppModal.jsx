@@ -69,7 +69,7 @@ const WhatsAppModal = ({ isOpen, onClose, advisors }) => {
                                                         alt={advisor.name}
                                                         className="w-full h-full object-cover"
                                                         onError={(e) => {
-                                                            e.target.src = '/assets/img/placeholder-user.png';
+                                                            e.target.src = '/api/cover/thumbnail/null';
                                                         }}
                                                     />
                                                 ) : (
