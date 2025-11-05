@@ -14,12 +14,14 @@ import QuillFormGroup from "../Components/Adminto/form/QuillFormGroup";
 import TinyMCEFormGroup from "../Components/Adminto/form/TinyMCEFormGroup";
 import Global from "../Utils/Global";
 import GalleryRest from "../Actions/Admin/GalleryRest";
+import RepositoryRest from "../Actions/Admin/RepositoryRest";
 import Tippy from "@tippyjs/react";
 import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
 import { some } from "lodash";
 
 const generalsRest = new GeneralsRest();
 const galleryRest = new GalleryRest();
+const repositoryRest = new RepositoryRest();
 
 const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole }) => {
   // Debug: Verificar si generals está cambiando constantemente
@@ -56,7 +58,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
-    'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy'],
+    'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy', 'politica_sistema_gestion', 'alcance_sistema_gestion'],
     'location': ['location'],
     'shippingfree': ['shipping_free', 'igv_checkout', 'currency'],
     'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'],
@@ -252,6 +254,12 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         ?.description ?? "",
     salebackPolicy:
       generals.find((x) => x.correlative == "saleback_policy")
+        ?.description ?? "",
+    politicaSistemaGestion:
+      generals.find((x) => x.correlative == "politica_sistema_gestion")
+        ?.description ?? "",
+    alcanceSistemaGestion:
+      generals.find((x) => x.correlative == "alcance_sistema_gestion")
         ?.description ?? "",
     whatsappAdvisors: (() => {
       const advisorsGeneral = generals.find((x) => x.correlative == "whatsapp_advisors");
@@ -904,6 +912,16 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: "saleback_policy",
         name: "Políticas de devolucion y cambio",
         description: formData.salebackPolicy || "",
+      },
+      {
+        correlative: "politica_sistema_gestion",
+        name: "Política del sistema de Gestión",
+        description: formData.politicaSistemaGestion || "",
+      },
+      {
+        correlative: "alcance_sistema_gestion",
+        name: "Alcance del sistema de Gestión",
+        description: formData.alcanceSistemaGestion || "",
       },
       {
         correlative: "whatsapp_advisors",
@@ -2455,6 +2473,151 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     })
                   }
                 />
+              </div>
+
+              {/* Campos de PDF usando repositoryRest */}
+              <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "politica_sistema_gestion")}>
+                <label className="form-label">Política del sistema de Gestión (PDF)</label>
+                {formData.politicaSistemaGestion ? (
+                  <div className="position-relative">
+                    <Tippy content="Eliminar PDF">
+                      <button
+                        type="button"
+                        className="position-absolute btn btn-xs btn-danger"
+                        style={{ top: '5px', left: '5px', zIndex: 10 }}
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            politicaSistemaGestion: ""
+                          });
+                        }}
+                      >
+                        <i className="mdi mdi-delete"></i>
+                      </button>
+                    </Tippy>
+                    <div className="d-flex align-items-center p-3 border rounded bg-light">
+                      <i className="mdi mdi-file-pdf-box text-danger me-2" style={{ fontSize: '2rem' }}></i>
+                      <div className="flex-grow-1">
+                        <strong>Archivo PDF cargado</strong>
+                        <br />
+                        <small className="text-muted">{formData.politicaSistemaGestion}</small>
+                      </div>
+                      <a
+                        href={`/cloud/${formData.politicaSistemaGestion}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        <i className="mdi mdi-eye"></i> Ver
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept=".pdf"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      
+                      // Validar que sea PDF
+                      if (file.type !== 'application/pdf') {
+                        alert('Por favor, selecciona solo archivos PDF');
+                        e.target.value = null;
+                        return;
+                      }
+                      
+                      e.target.value = null;
+
+                      const request = new FormData();
+                      request.append('file', file);
+                      request.append('name', `politica-sistema-gestion.pdf`);
+
+                      const result = await repositoryRest.save(request);
+                      if (!result) return;
+
+                      // Guardar el UUID del archivo devuelto por la API
+                      setFormData({
+                        ...formData,
+                        politicaSistemaGestion: result.file
+                      });
+                    }}
+                  />
+                )}
+                <small className="text-muted">Solo se permiten archivos PDF</small>
+              </div>
+
+              <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "alcance_sistema_gestion")}>
+                <label className="form-label">Alcance del sistema de Gestión (PDF)</label>
+                {formData.alcanceSistemaGestion ? (
+                  <div className="position-relative">
+                    <Tippy content="Eliminar PDF">
+                      <button
+                        type="button"
+                        className="position-absolute btn btn-xs btn-danger"
+                        style={{ top: '5px', left: '5px', zIndex: 10 }}
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            alcanceSistemaGestion: ""
+                          });
+                        }}
+                      >
+                        <i className="mdi mdi-delete"></i>
+                      </button>
+                    </Tippy>
+                    <div className="d-flex align-items-center p-3 border rounded bg-light">
+                      <i className="mdi mdi-file-pdf-box text-danger me-2" style={{ fontSize: '2rem' }}></i>
+                      <div className="flex-grow-1">
+                        <strong>Archivo PDF cargado</strong>
+                        <br />
+                        <small className="text-muted">{formData.alcanceSistemaGestion}</small>
+                      </div>
+                      <a
+                        href={`/cloud/${formData.alcanceSistemaGestion}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        <i className="mdi mdi-eye"></i> Ver
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept=".pdf"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      
+                      // Validar que sea PDF
+                      if (file.type !== 'application/pdf') {
+                        alert('Por favor, selecciona solo archivos PDF');
+                        e.target.value = null;
+                        return;
+                      }
+                      
+                      e.target.value = null;
+
+                      const request = new FormData();
+                      request.append('file', file);
+                      request.append('name', `alcance-sistema-gestion.pdf`);
+
+                      const result = await repositoryRest.save(request);
+                      if (!result) return;
+
+                      // Guardar el UUID del archivo devuelto por la API
+                      setFormData({
+                        ...formData,
+                        alcanceSistemaGestion: result.file
+                      });
+                    }}
+                  />
+                )}
+                <small className="text-muted">Solo se permiten archivos PDF</small>
               </div>
             </div>
 
