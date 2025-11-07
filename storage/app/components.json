@@ -3604,7 +3604,8 @@
                     "class_menu_item",
                     "class_icon",
                     "class_description",
-                    "class_button"
+                    "class_button",
+                    "link_denuncias"
                 ],
                 "using": {
                     "model": "Social",

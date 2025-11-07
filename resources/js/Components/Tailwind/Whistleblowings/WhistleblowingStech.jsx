@@ -3,7 +3,7 @@ import InputForm from "../Checkouts/Components/InputForm";
 import ubigeoData from "../../../../../storage/app/utils/ubigeo.json";
 import SelectForm from "../Checkouts/Components/SelectForm";
 import CustomCaptcha from "../Complaints/CustomCaptcha";
-import ThankYouPage from "../Complaints/ThankYouPage";
+import ThankYouPageWhistleblowing from "./ThankYouPageWhistleblowing";
 import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { Send, X, FileText, MapPin, AlertTriangle, Shield, Building2 } from "lucide-react";
@@ -210,13 +210,10 @@ export default function WhistleblowingStech({ generals = [], data }) {
     
     if (showThankYou && submittedData) {
         return (
-            <ThankYouPage
+            <ThankYouPageWhistleblowing
                 title="¡Denuncia Recibida!"
                 message="Tu denuncia ha sido registrada exitosamente y será revisada por nuestro equipo de compliance."
-                submittedData={{
-                    ...submittedData,
-                    subtitle: `Código de seguimiento: ${submittedData.codigo}`
-                }}
+                submittedData={submittedData}
                 onBackToForm={handleBackToForm}
             />
         );

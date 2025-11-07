@@ -54,7 +54,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
     'general': ['address', 'cintillo', 'copyright', 'opening_hours'],//footer_description
-    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email'],
+    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
@@ -90,7 +90,25 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const location =
     generals.find((x) => x.correlative == "location")?.description ?? "0,0";
 
-  // Memoizar plantillas de email para evitar re-renders
+  // Lista completa de plantillas de email que deben existir (para guardarlas)
+  const allEmailTemplateCorrelatives = [
+    'purchase_summary_email',
+    'order_status_changed_email',
+    'blog_published_email',
+    'claim_email',
+    'whistleblowing_email',
+    'password_changed_email',
+    'reset_password_email',
+    'subscription_email',
+    'verify_account_email',
+    'message_contact_email',
+    'admin_purchase_email',
+    'admin_contact_email',
+    'admin_claim_email',
+    'admin_whistleblowing_email'
+  ];
+
+  // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
   const emailTemplates = useMemo(() => {
     return generals.filter(g => g.correlative.endsWith('_email') && g.correlative !== 'support_email' && g.correlative !== 'coorporative_email');
   }, [generals]);
@@ -196,8 +214,12 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   }, [shouldShowSeoField]);
 
   const [formData, setFormData] = useState(() => ({
+    // Incluir TODAS las plantillas de email (aunque no existan en generals)
     email_templates: Object.fromEntries(
-      emailTemplates.map(t => [t.correlative, t.description ?? ""])
+      allEmailTemplateCorrelatives.map(correlative => {
+        const existing = generals.find(g => g.correlative === correlative);
+        return [correlative, existing?.description ?? ""];
+      })
     ),
     phones: generals
       .find((x) => x.correlative == "phone_contact")

@@ -136,7 +136,8 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
 
                                 </a>
                             </li>
-                              <li>
+                            {data?.link_denuncias && (
+                                  <li>
                                 <a
 
 
@@ -149,6 +150,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
 
                                 </a>
                             </li>
+                            )}
                             
                             {/* Nuevos enlaces para PDFs - Solo se muestran si tienen contenido */}
                             {generals.find((item) => item.correlative === "politica_sistema_gestion")?.description && (

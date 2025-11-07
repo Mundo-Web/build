@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Whistleblowing;
+use App\Helpers\NotificationHelper;
+use App\Notifications\WhistleblowingNotification;
+use App\Notifications\AdminWhistleblowingNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class WhistleblowingController extends BasicController
 {
@@ -116,23 +119,61 @@ class WhistleblowingController extends BasicController
                 'estado' => 'Pendiente',
             ]);
 
+            // El UUID ya es el código de seguimiento
+            $codigo = 'WB-' . strtoupper(substr($whistleblowing->id, 0, 8));
+
             // Log para auditoría
             Log::info("DENUNCIA: Nueva denuncia registrada", [
                 'id' => $whistleblowing->id,
+                'codigo' => $codigo,
                 'ambito' => $whistleblowing->ambito,
                 'departamento' => $whistleblowing->departamento,
                 'ip' => $request->ip(),
             ]);
 
-            // TODO: Enviar notificación por email al equipo de compliance
-            // Puedes usar el mismo sistema de notificaciones que en Complaints
+            // Enviar notificaciones por email
+            try {
+                Log::info('WhistleblowingController - Iniciando envío de notificaciones', [
+                    'whistleblowing_id' => $whistleblowing->id,
+                    'email' => $whistleblowing->email,
+                    'name' => $whistleblowing->nombre,
+                    'ambito' => $whistleblowing->ambito
+                ]);
+
+                // Enviar notificación al denunciante y al administrador usando NotificationHelper
+                NotificationHelper::sendToClientAndAdmin(
+                    $whistleblowing, 
+                    new WhistleblowingNotification($whistleblowing), 
+                    new AdminWhistleblowingNotification($whistleblowing)
+                );
+                
+                Log::info('WhistleblowingController - Notificaciones de denuncia enviadas exitosamente', [
+                    'whistleblowing_id' => $whistleblowing->id
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('WhistleblowingController - Error enviando notificaciones de denuncia', [
+                    'error' => $e->getMessage(),
+                    'whistleblowing_id' => $whistleblowing->id ?? 'unknown',
+                    'trace' => $e->getTraceAsString(),
+                    'email_settings' => [
+                        'mail_host' => config('mail.mailers.smtp.host'),
+                        'mail_port' => config('mail.mailers.smtp.port'),
+                        'mail_encryption' => config('mail.mailers.smtp.encryption'),
+                        'mail_from' => config('mail.from.address'),
+                    ]
+                ]);
+                // No lanzamos la excepción para no interrumpir el flujo del guardado
+            }
 
             return response()->json([
                 'type' => 'success',
-                'message' => 'Denuncia registrada exitosamente. Será revisada por nuestro equipo.',
+                'message' => 'Denuncia registrada exitosamente. Hemos enviado una confirmación a tu correo electrónico.',
                 'data' => [
                     'id' => $whistleblowing->id,
-                    'codigo' => 'WB-' . str_pad($whistleblowing->id, 6, '0', STR_PAD_LEFT),
+                    'codigo' => $codigo,
+                    'nombre' => $whistleblowing->nombre,
+                    'ambito' => $whistleblowing->ambito,
                 ]
             ]);
 

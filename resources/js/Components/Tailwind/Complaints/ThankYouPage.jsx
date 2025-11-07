@@ -258,7 +258,7 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                     </div>
 
                     {/* Información sobre próximos pasos */}
-                    <div className="mt-8 bg-secondary border  rounded-xl p-6 no-print">
+                    <div className="mt-8 bg-gray-100 border  rounded-xl p-6 no-print">
                         <h4 className="text-lg font-bold customtext-primary mb-3">Próximos Pasos</h4>
                         <div className="space-y-2 customtext-primary">
                             <p>✓ Conserve este comprobante como respaldo de su reclamo</p>
