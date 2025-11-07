@@ -119,7 +119,7 @@ class WhistleblowingController extends BasicController
                 'estado' => 'Pendiente',
             ]);
 
-            // El UUID ya es el código de seguimiento
+            // El UUID es generado automáticamente por Laravel con HasUuids
             $codigo = 'WB-' . strtoupper(substr($whistleblowing->id, 0, 8));
 
             // Log para auditoría
@@ -166,15 +166,17 @@ class WhistleblowingController extends BasicController
                 // No lanzamos la excepción para no interrumpir el flujo del guardado
             }
 
+            // Agregar el código al objeto para devolverlo al frontend
+            $whistleblowing->codigo = $codigo;
+            
+            // Convertir a array para asegurar que el código se incluya
+            $responseData = $whistleblowing->toArray();
+            $responseData['codigo'] = $codigo;
+
             return response()->json([
                 'type' => 'success',
                 'message' => 'Denuncia registrada exitosamente. Hemos enviado una confirmación a tu correo electrónico.',
-                'data' => [
-                    'id' => $whistleblowing->id,
-                    'codigo' => $codigo,
-                    'nombre' => $whistleblowing->nombre,
-                    'ambito' => $whistleblowing->ambito,
-                ]
+                'data' => $responseData
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {

@@ -27,11 +27,11 @@ export default function ThankYouPageWhistleblowing({
                 {/* Main Card */}
                 <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-green-500 to-blue-600 px-8 py-12 text-center">
+                    <div className="bg-primary text-white px-8 py-12 text-center">
                         <h1 className={`text-4xl font-bold text-white mb-4 ${data?.class_title || ''}`}>
                             {title}
                         </h1>
-                        <p className="text-green-50 text-lg max-w-2xl mx-auto">
+                        <p className="text-white text-lg max-w-2xl mx-auto">
                             {message}
                         </p>
                     </div>

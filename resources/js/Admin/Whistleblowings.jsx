@@ -71,7 +71,8 @@ const Whistleblowings = () => {
                 {
                     dataField: 'id',
                     caption: 'ID',
-                    width: 70
+                   
+                    visible: false
                 },
                 {
                     dataField: 'nombre',

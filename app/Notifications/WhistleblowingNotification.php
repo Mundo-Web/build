@@ -4,11 +4,10 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Mail\RawHtmlMail;
 
-class WhistleblowingNotification extends Notification implements ShouldQueue
+class WhistleblowingNotification extends Notification
 {
     use Queueable;
 

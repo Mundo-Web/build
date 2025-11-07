@@ -3755,7 +3755,7 @@
     ]
   },
   "resources/js/Admin/Whistleblowings.jsx": {
-    "file": "assets/Whistleblowings-DrEo3iP3.js",
+    "file": "assets/Whistleblowings-Blln-0DI.js",
     "name": "Whistleblowings",
     "src": "resources/js/Admin/Whistleblowings.jsx",
     "isEntry": true,
@@ -12319,7 +12319,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Whistleblowing.jsx": {
-    "file": "assets/Whistleblowing-bdmfyVom.js",
+    "file": "assets/Whistleblowing-BcjlurUI.js",
     "name": "Whistleblowing",
     "src": "resources/js/Components/Tailwind/Whistleblowing.jsx",
     "isDynamicEntry": true,
@@ -12849,7 +12849,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BXT6OGRc.js",
+    "file": "assets/System-wHTaSE4W.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

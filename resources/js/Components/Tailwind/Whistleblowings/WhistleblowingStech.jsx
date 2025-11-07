@@ -137,6 +137,10 @@ export default function WhistleblowingStech({ generals = [], data }) {
                 return res.json();
             })
             .then((data) => {
+                console.log('Respuesta del servidor:', data);
+                console.log('Data completa:', data.data);
+                console.log('Código recibido:', data.data?.codigo);
+                
                 if (data.type === "success") {
                     toast.success(data.message);
                     setSubmittedData(data.data);
