@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use SoDe\Extend\Crypto;
 
 class ComplaintController extends BasicController
@@ -18,21 +19,46 @@ class ComplaintController extends BasicController
     public $model = Complaint::class;
     public $reactView = 'Complaint';
     public $reactRootView = 'public';
+    
+    /**
+     * Verificar CAPTCHA server-side usando el nuevo sistema
+     */
+    private function verifyCaptchaToken($token)
+    {
+        // Verificar que el token exista y sea válido en cache
+        $captchaData = Cache::get("captcha:{$token}");
+        
+        if (!$captchaData) {
+            Log::warning("CAPTCHA: Token inválido o expirado al enviar formulario: {$token}");
+            return false;
+        }
+        
+        // Verificar que el CAPTCHA haya sido verificado previamente
+        if (!isset($captchaData['verified']) || $captchaData['verified'] !== true) {
+            Log::warning("CAPTCHA: Token no verificado al enviar formulario: {$token}");
+            return false;
+        }
+        
+        return true;
+    }
+
     private function verifyCustomCaptcha($token)
     {
-        // Si el token tiene el formato de nuestro captcha personalizado
+        // Mantener compatibilidad con sistema antiguo (deprecado)
         if (preg_match('/^captcha_\d+_[a-z0-9]+$/', $token)) {
+            Log::warning("CAPTCHA: Usando sistema antiguo de captcha (inseguro)");
             $parts = explode('_', $token);
             if (count($parts) === 3) {
                 $timestamp = intval($parts[1]);
                 $currentTime = time() * 1000;
                 $maxAge = 10 * 60 * 1000; // 10 minutos
                 
-                // Verificar que no sea muy antiguo
                 return ($currentTime - $timestamp) <= $maxAge;
             }
         }
-        return false;
+        
+        // Usar nuevo sistema seguro
+        return $this->verifyCaptchaToken($token);
     }
 
     private function verifyRecaptcha($recaptchaToken)
@@ -84,11 +110,15 @@ class ComplaintController extends BasicController
             $isValidCaptcha = $this->verifyCustomCaptcha($token) || $this->verifyRecaptcha($token);
             
             if (!$isValidCaptcha) {
+                Log::warning("CAPTCHA: Verificación fallida para formulario de queja desde IP: {$request->ip()}");
                 return response()->json([
                     'type' => 'error',
-                    'message' => 'Verificación de seguridad no válida'
+                    'message' => 'Verificación de seguridad no válida. Por favor, completa el CAPTCHA correctamente.'
                 ], 400);
             }
+            
+            // Invalidar el token después de usarlo (one-time use)
+            Cache::forget("captcha:{$token}");
 
             // Guardar en la base de datos
             $complaint = Complaint::create([

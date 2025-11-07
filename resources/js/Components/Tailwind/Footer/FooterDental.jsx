@@ -136,6 +136,19 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
 
                                 </a>
                             </li>
+                              <li>
+                                <a
+
+
+                                    href="/canal-denuncias"
+                                    className="cursor-pointer flex flex-col gap-2 items-start  "
+                                >
+                                    <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
+                                        Denuncias
+                                    </span>
+
+                                </a>
+                            </li>
                             
                             {/* Nuevos enlaces para PDFs - Solo se muestran si tienen contenido */}
                             {generals.find((item) => item.correlative === "politica_sistema_gestion")?.description && (

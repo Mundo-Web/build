@@ -16,9 +16,15 @@ export default function ComplaintSimple({ generals = [],data }) {
     const [captchaToken, setCaptchaToken] = useState(null);
     const [showThankYou, setShowThankYou] = useState(false);
     const [submittedData, setSubmittedData] = useState(null);
+    const [formLoadedAt, setFormLoadedAt] = useState(null);
     
     // Referencia para el captcha
     const captchaRef = useRef();
+    
+    // Registrar tiempo de carga del formulario
+    useEffect(() => {
+        setFormLoadedAt(Math.floor(Date.now() / 1000));
+    }, []);
     
     const [formData, setFormData] = useState({
         nombre: "",
@@ -115,6 +121,8 @@ export default function ComplaintSimple({ generals = [],data }) {
             ...formData,
             captcha_verified: true,
             recaptcha_token: captchaToken, // Enviar como recaptcha_token para compatibilidad con backend
+            _form_loaded_at: formLoadedAt, // Timestamp para verificación de tiempo mínimo
+            _hp: '', // Campo honeypot vacío
         };
         fetch("/api/complaints", {
             method: "POST",
@@ -273,6 +281,23 @@ export default function ComplaintSimple({ generals = [],data }) {
 
                 <div className="bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden">
                     <form onSubmit={handleSubmit} className="p-8 space-y-12">
+                        {/* Campo Honeypot - Oculto para usuarios reales, visible para bots */}
+                        <input
+                            type="text"
+                            name="_hp"
+                            tabIndex="-1"
+                            autoComplete="off"
+                            style={{
+                                position: 'absolute',
+                                left: '-9999px',
+                                width: '1px',
+                                height: '1px',
+                                opacity: 0,
+                                pointerEvents: 'none'
+                            }}
+                            aria-hidden="true"
+                        />
+                        
                         {/* Identificación del Consumidor */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">

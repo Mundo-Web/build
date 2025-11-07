@@ -37,6 +37,7 @@ const Signup = React.lazy(() => import("./Components/Tailwind/Signup"));
 const ForgotPassword = React.lazy(() => import("./Components/Tailwind/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./Components/Tailwind/ResetPassword"));
 const Complaint = React.lazy(() => import("./Components/Tailwind/Complaint"));
+const Whistleblowing = React.lazy(() => import("./Components/Tailwind/Whistleblowing"));
 const Indicator = React.lazy(() => import("./Components/Tailwind/Indicator"));
 const ThankSimple = React.lazy(() => import("./Components/Tailwind/Thanks/ThankSimple"));
 const Image = React.lazy(() => import("./Components/Tailwind/Image"));
@@ -383,6 +384,8 @@ const System = ({
                 return <Footer {...componentProps} contacts={contacts} generals={generals} data={data} stores={stores} />
             case "complaints":
                 return <Complaint which={value} data={data} generals={generals} />
+            case "whistleblowings":
+                return <Whistleblowing which={value} data={data} generals={generals} />
             case "floating":
                 return <Floating which={value} data={data} />
             case "testimonials":

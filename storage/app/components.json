@@ -3846,6 +3846,25 @@
         ]
     },
     {
+        "id": "whistleblowings",
+        "icon": "mdi mdi-alert-decagram",
+        "name": "Whistleblowings",
+        "options": [
+            {
+                "id": "WhistleblowingStech",
+                "name": "Stech",
+                "data": [
+                    "class_base",
+                    "class_title",
+                    "class_icon"
+                ],
+                "generals": [
+                    "privacy_policy"
+                ]
+            }
+        ]
+    },
+    {
         "id": "testimonials",
         "name": "Testimonials",
         "options": [

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AboutusController as AdminAboutusController;
 use App\Http\Controllers\Admin\IndicatorController as AdminIndicatorController;
 use App\Http\Controllers\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
+use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
@@ -72,6 +73,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogCategoryController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\WhistleblowingController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DeliveryPriceController;
@@ -121,8 +123,15 @@ Route::post('/unified-import', [UnifiedImportController::class, 'import']);
 Route::post('/unified-import/preview', [UnifiedImportController::class, 'preview']);
 Route::get('/unified-import/field-mappings', [UnifiedImportController::class, 'getFieldMappings']);
 
-Route::post('/complaints', [ComplaintController::class, 'saveComplaint']);
+Route::post('/complaints', [ComplaintController::class, 'saveComplaint'])
+    ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
+Route::post('/whistleblowings', [WhistleblowingController::class, 'saveWhistleblowing'])
+    ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
 Route::get('/notification-variables/{type}', [NotificationVariablesController::class, 'getVariables']);
+
+// CAPTCHA routes (seguridad mejorada)
+Route::post('/captcha/generate', [App\Http\Controllers\CaptchaController::class, 'generate'])->middleware('throttle:30,1');
+Route::post('/captcha/verify', [App\Http\Controllers\CaptchaController::class, 'verify'])->middleware('throttle:20,1');
 
 // Tracking de ecommerce
 Route::post('/tracking/add-to-cart', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackAddToCart']);
@@ -332,6 +341,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/complaints/status', [AdminComplaintController::class, 'status']);
     Route::patch('/complaints/{field}', [AdminComplaintController::class, 'boolean']);
     Route::delete('/complaints/{id}', [AdminComplaintController::class, 'delete']);
+
+    Route::post('/whistleblowings', [AdminWhistleblowingController::class, 'save']);
+    Route::post('/whistleblowings/paginate', [AdminWhistleblowingController::class, 'paginate']);
+    Route::patch('/whistleblowings/status', [AdminWhistleblowingController::class, 'status']);
+    Route::patch('/whistleblowings/{field}', [AdminWhistleblowingController::class, 'boolean']);
+    Route::delete('/whistleblowings/{id}', [AdminWhistleblowingController::class, 'delete']);
 
     Route::post('/subscriptions/paginate', [AdminSubscriptionController::class, 'paginate']);
     Route::patch('/subscriptions/status', [AdminSubscriptionController::class, 'status']);
