@@ -44,7 +44,7 @@ const Whistleblowings = () => {
         const result = await whistleblowingsRest.save({ id, estado: newStatus })
         if (!result) return
         $(gridRef.current).dxDataGrid('instance').refresh()
-        Swal.fire('Estado actualizado', '', 'success')
+       
     }
 
     const onNotasChange = async () => {
@@ -136,7 +136,7 @@ const Whistleblowings = () => {
                         
                         const selectHtml = `
                             <select class="form-select form-select-sm bg-${color} text-white border-0" 
-                                    onchange="window.handleStatusChange(${data.id}, this.value)"
+                                    onchange="window.handleStatusChange('${data.id}', this.value)"
                                     style="cursor: pointer; font-weight: 500;">
                                 <option value="Pendiente" ${data.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
                                 <option value="En revisión" ${data.estado === 'En revisión' ? 'selected' : ''}>En revisión</option>
