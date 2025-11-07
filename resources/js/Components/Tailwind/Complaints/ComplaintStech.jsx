@@ -698,7 +698,7 @@ export default function ComplaintSimple({ generals = [],data }) {
                         onRequestClose={closeModal}
                         contentLabel={title}
                         className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
-                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[9999999]"
                         ariaHideApp={false}
                     >
                         <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">

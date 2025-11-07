@@ -206,7 +206,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
         privacy_policy: "Política de Privacidad",
     };
     const openModal = (index) => setModalOpen(index);
-    const closeModal = () => setModalOpen(null);
+    const closeModal = () => setModalOpen(false);
     
     if (showThankYou && submittedData) {
         return (
@@ -275,6 +275,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                 <SelectForm
                                     label="Departamento"
                                     name="departamento"
+                                     placeholder="Selecciona departamento"
                                     value={formData.departamento}
                                     onChange={(value) => handleSelectChange('departamento', value)}
                                     options={departamentos}
@@ -320,6 +321,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                 <SelectForm
                                     label="Ámbito de la denuncia"
                                     name="ambito"
+                                        placeholder="Selecciona ámbito"
                                     value={formData.ambito}
                                     onChange={(value) => handleSelectChange('ambito', value)}
                                     options={ambitosOptions}
@@ -328,6 +330,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                 <SelectForm
                                     label="Tu relación con la compañía"
                                     name="relacion_compania"
+                                    placeholder="Selecciona relación"
                                     value={formData.relacion_compania}
                                     onChange={(value) => handleSelectChange('relacion_compania', value)}
                                     options={relacionesOptions}
@@ -477,7 +480,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                     Acepto la{" "}
                                     <button
                                         type="button"
-                                        onClick={() => openModal("privacy_policy")}
+                                        onClick={() => openModal(0)}
                                         className="customtext-primary underline hover:no-underline"
                                     >
                                         Política de Privacidad
@@ -487,12 +490,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                 </span>
                             </label>
 
-                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
-                                <p className="text-sm text-blue-800">
-                                    <strong>Confidencialidad garantizada:</strong> Tu denuncia será tratada con absoluta confidencialidad
-                                    y solo será compartida con el equipo de compliance autorizado.
-                                </p>
-                            </div>
+                          
                         </div>
 
                         {/* BOTÓN ENVIAR */}
@@ -527,31 +525,54 @@ export default function WhistleblowingStech({ generals = [], data }) {
             </div>
 
             {/* MODAL DE POLÍTICAS */}
-            <ReactModal
-                isOpen={modalOpen !== false}
-                onRequestClose={closeModal}
-                className="relative w-full max-w-2xl mx-auto my-8 bg-white rounded-2xl shadow-2xl overflow-hidden"
-                overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-            >
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-bold customtext-neutral-dark">
-                            {policyItems[modalOpen]}
-                        </h3>
-                        <button
-                            onClick={closeModal}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
-                    </div>
-                    <div className="prose max-w-none">
-                        <HtmlContent className="customtext-neutral-dark">
-                            {generals?.find((x) => x.correlative === modalOpen)?.description || "Contenido no disponible"}
-                        </HtmlContent>
-                    </div>
-                </div>
-            </ReactModal>
+            {Object.keys(policyItems).map((key, index) => {
+                const title = policyItems[key];
+                const content = Array.isArray(generals) 
+                    ? generals.find((x) => x.correlative == key)?.description ?? ""
+                    : "";
+                return (
+                    <ReactModal
+                        key={index}
+                        isOpen={modalOpen === index}
+                        onRequestClose={closeModal}
+                        contentLabel={title}
+                        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[9999999]"
+                        ariaHideApp={false}
+                    >
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                                <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
+                                <button
+                                    onClick={closeModal}
+                                    className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                    aria-label="Cerrar modal"
+                                >
+                                    <X size={24} strokeWidth={2} />
+                                </button>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 overflow-y-auto p-6">
+                                <div className="prose prose-gray max-w-none">
+                                    <HtmlContent html={content} />
+                                </div>
+                            </div>
+                            
+                            {/* Footer */}
+                            <div className="flex justify-end p-6 border-t border-gray-200">
+                                <button
+                                    onClick={closeModal}
+                                    className="px-6 py-2 bg-primary text-white rounded-lg transition-colors duration-200 font-medium"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </ReactModal>
+                );
+            })}
         </div>
     );
 }
