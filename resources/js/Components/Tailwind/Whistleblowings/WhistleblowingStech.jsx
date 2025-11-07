@@ -215,6 +215,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                 message="Tu denuncia ha sido registrada exitosamente y será revisada por nuestro equipo de compliance."
                 submittedData={submittedData}
                 onBackToForm={handleBackToForm}
+                data={data}
             />
         );
     }

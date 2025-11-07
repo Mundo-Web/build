@@ -259,6 +259,7 @@ export default function ComplaintSimple({ generals = [],data }) {
             <ThankYouPage 
                 complaintData={submittedData}
                 onBackToForm={handleBackToForm}
+                data={data}
             />
         );
     }

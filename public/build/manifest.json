@@ -590,8 +590,8 @@
       "_index-BOnQTV8N.js"
     ]
   },
-  "_ThankYouPage-7a_1tNld.js": {
-    "file": "assets/ThankYouPage-7a_1tNld.js",
+  "_ThankYouPage-Dny8oxi5.js": {
+    "file": "assets/ThankYouPage-Dny8oxi5.js",
     "name": "ThankYouPage",
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -7152,7 +7152,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Complaint.jsx": {
-    "file": "assets/Complaint-CE0PaXP7.js",
+    "file": "assets/Complaint-Waloia66.js",
     "name": "Complaint",
     "src": "resources/js/Components/Tailwind/Complaint.jsx",
     "isDynamicEntry": true,
@@ -8295,7 +8295,7 @@
     ]
   },
   "resources/js/Components/Tailwind/FirstClass.jsx": {
-    "file": "assets/FirstClass-Kg855LxW.js",
+    "file": "assets/FirstClass-tHjb0uEt.js",
     "name": "FirstClass",
     "src": "resources/js/Components/Tailwind/FirstClass.jsx",
     "isDynamicEntry": true,
@@ -12319,7 +12319,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Whistleblowing.jsx": {
-    "file": "assets/Whistleblowing-qO9XXw5j.js",
+    "file": "assets/Whistleblowing-bdmfyVom.js",
     "name": "Whistleblowing",
     "src": "resources/js/Components/Tailwind/Whistleblowing.jsx",
     "isDynamicEntry": true,
@@ -12849,7 +12849,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DYXVsXzd.js",
+    "file": "assets/System-BXT6OGRc.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

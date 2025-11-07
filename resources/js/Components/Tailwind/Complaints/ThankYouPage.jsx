@@ -1,7 +1,7 @@
 import { CheckCircle, FileText, User, MapPin, Package, Calendar, Hash, MessageSquare, Mail, Phone, Printer, ArrowLeft } from 'lucide-react';
 import { CurrencySymbol } from '../../../Utils/Number2Currency';
 
-export default function ThankYouPage({ complaintData, onBackToForm }) {
+export default function ThankYouPage({ complaintData, onBackToForm, data }) {
     const formatDate = (dateString) => {
         if (!dateString) return 'No especificada';
         return new Date(dateString).toLocaleDateString('es-PE', {
@@ -70,10 +70,10 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
             <div className="max-w-5xl mx-auto">
                 {/* Header de agradecimiento */}
                 <div className="text-center mb-10 no-print">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-6 shadow-lg">
+                    <div className={`inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-6 ${data?.class_icon || 'shadow-lg'}`}>
                         <CheckCircle className="w-12 h-12 text-white" />
                     </div>
-                    <h1 className="text-4xl font-bold customtext-neutral-dark mb-4">
+                    <h1 className={`text-4xl font-bold mb-4 ${data?.class_title || 'customtext-neutral-dark'}`}>
                         ¡Reclamo Registrado Exitosamente!
                     </h1>
                     <p className="text-lg customtext-neutral-light max-w-2xl mx-auto leading-relaxed">
@@ -112,10 +112,10 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                             {/* Datos del consumidor */}
                             <div className="print-section">
                                 <div className="flex items-center gap-3 mb-6 pb-3 border-b ">
-                                    <div className="flex items-center justify-center w-10 h-10 bg-secondary customtext-primary rounded-full">
+                                    <div className={`flex items-center justify-center w-10 h-10 bg-secondary rounded-full ${data?.class_icon || 'customtext-primary'}`}>
                                         <User className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-xl font-bold customtext-neutral-dark">Datos del Consumidor</h3>
+                                    <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Datos del Consumidor</h3>
                                 </div>
                                 
                                 <div className="space-y-4">
@@ -145,10 +145,10 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                             {/* Ubicación */}
                             <div className="print-section">
                                 <div className="flex items-center gap-3 mb-6 pb-3 border-b ">
-                                    <div className="flex items-center justify-center w-10 h-10 bg-secondary customtext-primary  rounded-full">
+                                    <div className={`flex items-center justify-center w-10 h-10 bg-secondary rounded-full ${data?.class_icon || 'customtext-primary'}`}>
                                         <MapPin className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-xl font-bold customtext-neutral-dark">Información de Ubicación</h3>
+                                    <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Información de Ubicación</h3>
                                 </div>
                                 
                                 <div className="space-y-4">
@@ -176,10 +176,10 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                             {/* Detalles del producto/servicio */}
                             <div className="print-section">
                                 <div className="flex items-center gap-3 mb-6 pb-3 border-b ">
-                                    <div className="flex items-center justify-center w-10 h-10 bg-secondary rounded-full customtext-primary">
+                                    <div className={`flex items-center justify-center w-10 h-10 bg-secondary rounded-full ${data?.class_icon || 'customtext-primary'}`}>
                                         <Package className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-xl font-bold customtext-neutral-dark">Producto/Servicio</h3>
+                                    <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Producto/Servicio</h3>
                                 </div>
                                 
                                 <div className="space-y-4">
@@ -203,10 +203,10 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                             {/* Detalles del reclamo */}
                             <div className="print-section">
                                 <div className="flex items-center gap-3 mb-6 pb-3 border-b ">
-                                    <div className="flex items-center justify-center w-10 h-10 bg-secondary customtext-primary rounded-full">
+                                    <div className={`flex items-center justify-center w-10 h-10 bg-secondary rounded-full ${data?.class_icon || 'customtext-primary'}`}>
                                         <MessageSquare className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-xl font-bold customtext-neutral-dark">Detalles del Reclamo</h3>
+                                    <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Detalles del Reclamo</h3>
                                 </div>
                                 
                                 <div className="space-y-4">
@@ -236,10 +236,10 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                             {/* Información del registro */}
                             <div className="print-section">
                                 <div className="flex items-center gap-3 mb-6 pb-3 border-b ">
-                                    <div className="flex items-center justify-center w-10 h-10 bg-secondary customtext-primary rounded-full">
+                                    <div className={`flex items-center justify-center w-10 h-10 bg-secondary rounded-full ${data?.class_icon || 'customtext-primary'}`}>
                                         <Hash className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-xl font-bold customtext-neutral-dark">Información del Registro</h3>
+                                    <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Información del Registro</h3>
                                 </div>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -258,9 +258,9 @@ export default function ThankYouPage({ complaintData, onBackToForm }) {
                     </div>
 
                     {/* Información sobre próximos pasos */}
-                    <div className="mt-8 bg-gray-100 border  rounded-xl p-6 no-print">
-                        <h4 className="text-lg font-bold customtext-primary mb-3">Próximos Pasos</h4>
-                        <div className="space-y-2 customtext-primary">
+                    <div className="mt-8 bg-gray-100 border rounded-xl p-6 no-print">
+                        <h4 className={`text-lg font-bold mb-3 ${data?.class_title || 'customtext-primary'}`}>Próximos Pasos</h4>
+                        <div className={`space-y-2 ${data?.class_base || 'customtext-primary'}`}>
                             <p>✓ Conserve este comprobante como respaldo de su reclamo</p>
                             <p>✓ Recibirá una respuesta dentro de los próximos 30 días hábiles</p>
                             <p>✓ Si requiere información adicional, contáctenos a través de nuestros canales oficiales</p>
