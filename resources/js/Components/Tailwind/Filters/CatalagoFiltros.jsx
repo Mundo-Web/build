@@ -208,7 +208,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         { value: "best_discount:desc", label: "Mejores ofertas" },
         { value: "featured:desc", label: "Destacados" },
         { value: "offering:desc", label: "En oferta" },
-        // { value: "is_new:desc", label: "Nuevos productos" },
+        { value: "is_new:desc", label: "Nuevos productos" },
         // { value: "recommended:desc", label: "Recomendados por expertos" },
     ];
 
