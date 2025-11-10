@@ -35,12 +35,16 @@ class UnifiedImportController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+            'mode' => 'nullable|in:reset,add_update', // Validar modo
         ]);
 
         try {
+            // Obtener modo de importación (default: reset)
+            $mode = $request->input('mode', 'reset');
+
             // Configurar opciones del importador
             $options = [
-                'truncate' => $request->boolean('truncate', true),
+                'mode' => $mode,
             ];
 
             // Mapeos personalizados si se proporcionan
@@ -60,11 +64,16 @@ class UnifiedImportController extends Controller
             // Obtener errores si los hay
             $errors = $import->getErrors();
 
+            $modeMessage = $mode === 'reset' 
+                ? 'Importación desde 0 completada' 
+                : 'Agregado/Actualización completada';
+
             $response = [
                 'success' => empty($errors),
                 'message' => empty($errors) 
-                    ? 'Importación completada exitosamente' 
-                    : 'Importación completada con errores',
+                    ? $modeMessage . ' exitosamente' 
+                    : $modeMessage . ' con errores',
+                'mode' => $mode,
                 'errors_count' => count($errors),
                 'field_mappings_used' => $import->getFieldMappings(),
             ];

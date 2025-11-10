@@ -25,7 +25,7 @@ import Fillable from "../Utils/Fillable";
 
 const itemsRest = new ItemsRest();
 
-const Items = ({ categories, brands, collections, stores }) => {
+const Items = ({ categories, brands, collections, stores, generals }) => {
     //!FALTA EDIT AND DELETEDE GALERIA
 
     const [itemData, setItemData] = useState([]);
@@ -1719,8 +1719,12 @@ const Items = ({ categories, brands, collections, stores }) => {
                     </div>
                 </div>
             </Modal>
-            <Modal modalRef={modalImportRef} title={"Importar Datos"} size="sm">
-                <ModalImportItem gridRef={gridRef} modalRef={modalImportRef} />
+            <Modal modalRef={modalImportRef} title={"Importar Datos"} size="lg">
+                <ModalImportItem 
+                    gridRef={gridRef} 
+                    modalRef={modalImportRef}
+                    excelTemplate={Array.isArray(generals) ? generals.find(g => g.correlative === 'excel_import_template')?.description : null}
+                />
             </Modal>
         </>
     );

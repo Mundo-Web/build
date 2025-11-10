@@ -364,12 +364,14 @@ class ItemController extends BasicController
         $brands = Brand::where('status', 1)->get();
         $collections = Collection::where('status', 1)->get();
         $stores = Store::where('status', 1)->get();
+        $generals = \App\Models\General::all();
 
         return [
             'categories' => $categories,
             'brands' => $brands,
             'collections' => $collections,
-            'stores' => $stores
+            'stores' => $stores,
+            'generals' => $generals
         ];
     }
 

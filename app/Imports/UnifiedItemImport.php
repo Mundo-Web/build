@@ -32,17 +32,20 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private $errors = [];
     private $fieldMappings = [];
     private $truncateMode = true;
+    private $importMode = 'reset'; // 'reset' o 'add_update'
 
     /**
      * Constructor con configuración flexible
      * 
      * @param array $options Opciones de configuración:
      *   - truncate: bool - Si debe limpiar las tablas (default: true)
+     *   - mode: string - Modo de importación: 'reset' o 'add_update' (default: 'reset')
      *   - fieldMappings: array - Mapeo de campos alternativos
      */
     public function __construct(array $options = [])
     {
-        $this->truncateMode = $options['truncate'] ?? true;
+        $this->importMode = $options['mode'] ?? 'reset';
+        $this->truncateMode = ($this->importMode === 'reset') ? true : false;
         $this->fieldMappings = $options['fieldMappings'] ?? $this->getDefaultFieldMappings();
         
         if ($this->truncateMode) {
@@ -310,7 +313,14 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 $itemData['size'] = $this->getFieldValue($row, 'talla');
             }
 
-            $item = Item::create($itemData);
+            // 7️⃣ Crear/Actualizar el producto según el modo
+            if ($this->importMode === 'add_update') {
+                // Modo: Agregar/Actualizar - Buscar por SKU
+                $item = $this->createOrUpdateItem($itemData, $sku);
+            } else {
+                // Modo: Reset - Crear siempre nuevo
+                $item = Item::create($itemData);
+            }
 
             if ($item) {
                 // 8️⃣ Guardar especificaciones si existen
@@ -846,6 +856,42 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     //         $index++;
     //     }
     // }
+
+    /**
+     * Crear o actualizar un item basado en el SKU
+     */
+    private function createOrUpdateItem(array $itemData, string $sku): ?Item
+    {
+        // Buscar el item existente por SKU
+        $existingItem = Item::where('sku', $sku)->first();
+
+        if ($existingItem) {
+            // Actualizar el item existente
+            Log::info("Actualizando producto existente", [
+                'sku' => $sku,
+                'item_id' => $existingItem->id
+            ]);
+
+            // Eliminar especificaciones e imágenes anteriores para reemplazarlas
+            ItemSpecification::where('item_id', $existingItem->id)->delete();
+            ItemImage::where('item_id', $existingItem->id)->delete();
+            
+            // Desasociar tags antiguos
+            $existingItem->tags()->detach();
+
+            // Actualizar los datos del item
+            $existingItem->update($itemData);
+            
+            return $existingItem;
+        } else {
+            // Crear nuevo item
+            Log::info("Creando nuevo producto", [
+                'sku' => $sku
+            ]);
+            
+            return Item::create($itemData);
+        }
+    }
 
     /**
      * Verificar si una fila está vacía

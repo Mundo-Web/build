@@ -53,7 +53,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
-    'general': ['address', 'cintillo', 'copyright', 'opening_hours'],//footer_description
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'excel_import_template'],//footer_description
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
@@ -282,6 +282,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         ?.description ?? "",
     alcanceSistemaGestion:
       generals.find((x) => x.correlative == "alcance_sistema_gestion")
+        ?.description ?? "",
+    excelImportTemplate:
+      generals.find((x) => x.correlative == "excel_import_template")
         ?.description ?? "",
     whatsappAdvisors: (() => {
       const advisorsGeneral = generals.find((x) => x.correlative == "whatsapp_advisors");
@@ -946,6 +949,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.alcanceSistemaGestion || "",
       },
       {
+        correlative: "excel_import_template",
+        name: "Plantilla de Importación Excel",
+        description: formData.excelImportTemplate || "",
+      },
+      {
         correlative: "whatsapp_advisors",
         name: "Asesores de WhatsApp",
         description: JSON.stringify(formData.whatsappAdvisors || []),
@@ -1565,6 +1573,87 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     value={formData.openingHours}
                     required
                   />
+                </div>
+              </ConditionalField>
+
+              {/* Campo para subir plantilla de Excel para importación */}
+              <ConditionalField correlative="excel_import_template">
+                <div className="mb-2">
+                  <label className="form-label">
+                    <i className="fas fa-file-excel me-2 text-success"></i>
+                    Plantilla de Importación de Productos (Excel)
+                  </label>
+                  {formData.excelImportTemplate ? (
+                    <div className="position-relative">
+                      <Tippy content="Eliminar plantilla">
+                        <button
+                          type="button"
+                          className="position-absolute btn btn-xs btn-danger"
+                          style={{ top: '5px', left: '5px', zIndex: 10 }}
+                          onClick={() => {
+                            setFormData({
+                              ...formData,
+                              excelImportTemplate: ""
+                            });
+                          }}
+                        >
+                          <i className="mdi mdi-delete"></i>
+                        </button>
+                      </Tippy>
+                      <div className="d-flex align-items-center p-3 border rounded bg-light">
+                        <i className="mdi mdi-file-excel text-success me-2" style={{ fontSize: '2rem' }}></i>
+                        <div className="flex-grow-1">
+                          <strong>Plantilla Excel cargada</strong>
+                          <br />
+                          <small className="text-muted">{formData.excelImportTemplate}</small>
+                        </div>
+                        <a
+                          href={`/cloud/${formData.excelImportTemplate}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-sm btn-outline-success"
+                          download
+                        >
+                          <i className="mdi mdi-download"></i> Descargar
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept=".xlsx,.xls"
+                      onChange={async (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        
+                        // Validar que sea Excel
+                        if (!file.name.match(/\.(xlsx|xls)$/i)) {
+                          alert('Por favor, selecciona solo archivos Excel (.xlsx o .xls)');
+                          e.target.value = null;
+                          return;
+                        }
+                        
+                        e.target.value = null;
+
+                        const request = new FormData();
+                        request.append('file', file);
+                        request.append('name', `plantilla-importacion-productos.xlsx`);
+
+                        const result = await repositoryRest.save(request);
+                        if (!result) return;
+
+                        // Guardar el UUID del archivo devuelto por la API
+                        setFormData({
+                          ...formData,
+                          excelImportTemplate: result.file
+                        });
+                      }}
+                    />
+                  )}
+                  <small className="text-muted">
+                    Esta plantilla se descargará desde el modal de importación en Items. Solo archivos Excel (.xlsx, .xls)
+                  </small>
                 </div>
               </ConditionalField>
 
