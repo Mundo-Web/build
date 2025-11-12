@@ -1522,7 +1522,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-ecPoJwCV.js",
+    "file": "assets/About-CTn5NdSO.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3796,7 +3796,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-C40tDVhA.js",
+    "file": "assets/Blog-CSGVObeZ.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3841,7 +3841,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-DCI4_1zQ.js",
+    "file": "assets/BlogArticle-FZxz9nO-.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5592,7 +5592,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-Bxt05N4o.js",
+    "file": "assets/Base-bpRmvunU.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -8937,7 +8937,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-BvvB8hGl.js",
+    "file": "assets/Header-Bau6IyrC.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -9352,7 +9352,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Headers/HeaderSearchDental.jsx": {
-    "file": "assets/HeaderSearchDental-Cu6u85D2.js",
+    "file": "assets/HeaderSearchDental-CMU1Y3B2.js",
     "name": "HeaderSearchDental",
     "src": "resources/js/Components/Tailwind/Headers/HeaderSearchDental.jsx",
     "isDynamicEntry": true,
@@ -9468,7 +9468,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Headers/HeaderSearchMenuSF.jsx": {
-    "file": "assets/HeaderSearchMenuSF-DIX2pkB7.js",
+    "file": "assets/HeaderSearchMenuSF-D1euXxoj.js",
     "name": "HeaderSearchMenuSF",
     "src": "resources/js/Components/Tailwind/Headers/HeaderSearchMenuSF.jsx",
     "isDynamicEntry": true,
@@ -12096,7 +12096,7 @@
     ]
   },
   "resources/js/Components/Tailwind/TopBar.jsx": {
-    "file": "assets/TopBar-DJjupec7.js",
+    "file": "assets/TopBar-7lIiGxv_.js",
     "name": "TopBar",
     "src": "resources/js/Components/Tailwind/TopBar.jsx",
     "isEntry": true,
@@ -12465,7 +12465,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-BYycDdZ3.js",
+    "file": "assets/Contact-kca5G3qp.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -12510,7 +12510,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-Do9La4QR.js",
+    "file": "assets/CourseDetails-BhjiGfxm.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -12546,7 +12546,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-BDut2set.js",
+    "file": "assets/Courses-ZO7cvoXs.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -12641,7 +12641,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-Cai4rNEK.js",
+    "file": "assets/Home-B3NTRYGV.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -12782,7 +12782,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-wvwREg5u.js",
+    "file": "assets/BusinessIWorkCard-Cj37azoW.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -12790,13 +12790,14 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_BooleanLimit-D-OsQsek.js",
+      "_BasicRest-BML1C-ua.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js"
+      "_index-B6ujFmsw.js",
+      "_BooleanLimit-D-OsQsek.js"
     ]
   },
   "resources/js/Reutilizables/Pagination/FilterPagination.jsx": {
@@ -12848,7 +12849,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DBbwrpIf.js",
+    "file": "assets/System-CW6AhHoZ.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

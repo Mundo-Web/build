@@ -5,6 +5,7 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Log;
 use App\Mail\RawHtmlMail;
 
 class AdminWhistleblowingNotification extends Notification
@@ -18,6 +19,13 @@ class AdminWhistleblowingNotification extends Notification
     {
         $this->whistleblowing = $whistleblowing;
         $this->coorporative_email = \App\Models\General::where('correlative', 'coorporative_email')->first();
+        
+        // Log para debugging
+        Log::info('AdminWhistleblowingNotification - Constructor', [
+            'whistleblowing_id' => $whistleblowing->id ?? 'null',
+            'corporate_email_exists' => $this->coorporative_email ? 'yes' : 'no',
+            'corporate_email_value' => $this->coorporative_email->description ?? 'null'
+        ]);
     }
 
     public function via($notifiable)
@@ -59,11 +67,21 @@ class AdminWhistleblowingNotification extends Notification
 
     public function toMail($notifiable)
     {
+        Log::info('AdminWhistleblowingNotification - toMail iniciado', [
+            'whistleblowing_id' => $this->whistleblowing->id,
+            'notifiable' => get_class($notifiable)
+        ]);
+        
         // Buscar plantilla específica para administrador, si no existe usar la del denunciante
         $template = \App\Models\General::where('correlative', 'admin_whistleblowing_email')->first();
         if (!$template) {
             $template = \App\Models\General::where('correlative', 'whistleblowing_email')->first();
         }
+
+        Log::info('AdminWhistleblowingNotification - Template encontrado', [
+            'template_exists' => $template ? 'yes' : 'no',
+            'template_correlative' => $template->correlative ?? 'none'
+        ]);
 
         $ubicacionCompleta = implode(', ', array_filter([
             $this->whistleblowing->direccion_exacta,
@@ -98,6 +116,12 @@ class AdminWhistleblowingNotification extends Notification
                 'admin_note'        => 'Nueva denuncia recibida que requiere tu atención inmediata.',
             ])
             : 'Nueva denuncia recibida de: ' . ($this->whistleblowing->nombre ?? 'Anónimo') . ' (' . ($this->whistleblowing->email ?? 'sin email') . ')';
+
+        Log::info('AdminWhistleblowingNotification - Preparando envío', [
+            'to_email' => $this->coorporative_email->description ?? 'NO SET',
+            'subject' => '[NUEVA DENUNCIA] Ámbito: ' . $this->whistleblowing->ambito . ' - ' . ($this->whistleblowing->nombre ?? 'Anónimo'),
+            'has_body' => !empty($body)
+        ]);
 
         return (new RawHtmlMail(
             $body,

@@ -177,8 +177,8 @@ const TopBarCopyright = ({ data }) => {
         isOpen={modalOpen}
         onRequestClose={closeModal}
         contentLabel="Trabaja con nosotros"
-        className="absolute left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-lg w-[95%] max-w-5xl top-1/2 -translate-y-1/2 overflow-hidden"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+        className="absolute left-1/2 -translate-x-1/2 bg-white z-[99999999] rounded-2xl shadow-lg w-[95%] max-w-5xl top-1/2 -translate-y-1/2 overflow-hidden"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[99999999]"
         ariaHideApp={false}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 max-h-[90vh] min-h-[70vh]">
