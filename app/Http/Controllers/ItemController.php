@@ -195,8 +195,54 @@ class ItemController extends BasicController
             ->leftJoin('stores AS store', 'store.id', 'items.store_id')
             ->leftJoin('item_tags AS item_tag', 'item_tag.item_id', 'items.id')
             ->where('items.status', true)
-            ->where('items.visible', true)
-            ->where(function ($query) {
+            ->where('items.visible', true);
+        
+        // Búsqueda inteligente con paráfrasis: detectar términos en cualquier orden
+        if ($request->has('filter') && is_array($request->filter)) {
+            $searchTerms = [];
+            $this->extractSearchTerms($request->filter, $searchTerms);
+            
+            if (!empty($searchTerms)) {
+                // Dividir cada término de búsqueda en palabras individuales
+                $allWords = [];
+                foreach ($searchTerms as $term) {
+                    $words = preg_split('/\s+/', trim($term));
+                    $allWords = array_merge($allWords, array_filter($words, fn($w) => strlen($w) >= 2));
+                }
+                
+                if (!empty($allWords)) {
+                    // Convertir todas las palabras a minúsculas para búsqueda case-insensitive
+                    $allWords = array_map('strtolower', $allWords);
+                    
+                    // Cambiar lógica: buscar que CUALQUIER palabra coincida (OR entre palabras)
+                    $query->where(function($q) use ($allWords) {
+                        foreach ($allWords as $word) {
+                            // Escapar caracteres especiales para evitar SQL injection
+                            $word = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $word);
+                            // OR entre cada palabra: si encuentra "lector" O "optico" muestra el resultado
+                            $q->orWhere(function($subQ) use ($word) {
+                                $subQ->whereRaw('LOWER(items.name) LIKE ?', ["%{$word}%"])
+                                     ->orWhereRaw('LOWER(items.summary) LIKE ?', ["%{$word}%"])
+                                     ->orWhereRaw('LOWER(items.description) LIKE ?', ["%{$word}%"]);
+                            });
+                        }
+                    });
+                    
+                    // Ordenar por relevancia: productos con MÁS coincidencias aparecen primero
+                    $caseStatements = [];
+                    foreach ($allWords as $word) {
+                        // Name vale 3 puntos, summary 2, description 1
+                        $caseStatements[] = "(CASE WHEN LOWER(items.name) LIKE '%{$word}%' THEN 3 ELSE 0 END)";
+                        $caseStatements[] = "(CASE WHEN LOWER(items.summary) LIKE '%{$word}%' THEN 2 ELSE 0 END)";
+                        $caseStatements[] = "(CASE WHEN LOWER(items.description) LIKE '%{$word}%' THEN 1 ELSE 0 END)";
+                    }
+                    $relevanceScore = implode(' + ', $caseStatements);
+                    $query->orderByRaw("({$relevanceScore}) DESC");
+                }
+            }
+        }
+        
+        $query->where(function ($query) {
                 $query->where('collection.status', true)
                     ->orWhereNull('collection.id');
             })
@@ -1134,9 +1180,19 @@ class ItemController extends BasicController
             }
 
             if ($request->filter) {
-                $instance->where(function ($query) use ($request) {
-                    dxDataGrid::filter($query, $request->filter ?? [], false, $this->prefix4filter);
-                });
+                // NO aplicar el filtro automático de DevExtreme para búsquedas
+                // porque ya lo manejamos en setPaginationInstance con búsqueda inteligente
+                // Solo aplicar si NO hay términos de búsqueda
+                $searchTerms = [];
+                $this->extractSearchTerms($request->filter, $searchTerms);
+                
+                if (empty($searchTerms)) {
+                    // No hay búsqueda de texto, aplicar filtros normales
+                    $instance->where(function ($query) use ($request) {
+                        dxDataGrid::filter($query, $request->filter ?? [], false, $this->prefix4filter);
+                    });
+                }
+                // Si hay términos de búsqueda, la lógica ya se aplicó en setPaginationInstance
             }
 
             // Custom filter handling for tags
@@ -1445,6 +1501,28 @@ class ItemController extends BasicController
             $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
         } finally {
             return response($response->toArray(), $response->status);
+        }
+    }
+    
+    /**
+     * Extraer términos de búsqueda del array de filtros de manera recursiva
+     */
+    private function extractSearchTerms($filter, &$searchTerms)
+    {
+        if (!is_array($filter)) return;
+        
+        foreach ($filter as $item) {
+            if (is_array($item)) {
+                // Si es un array de condición [campo, operador, valor]
+                if (count($item) === 3 && 
+                    ($item[1] === 'contains' || $item[1] === 'like') &&
+                    (in_array($item[0], ['name', 'summary', 'description']))) {
+                    $searchTerms[] = $item[2];
+                } else {
+                    // Recursión para arrays anidados
+                    $this->extractSearchTerms($item, $searchTerms);
+                }
+            }
         }
     }
 }

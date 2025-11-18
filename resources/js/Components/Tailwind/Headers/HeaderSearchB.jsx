@@ -105,7 +105,7 @@ const HeaderSearchB = ({
                         'or',
                         ['description', 'contains', query]
                     ],
-                    sort: [{ selector: 'name', desc: false }],
+                    // No enviar sort para usar el ordenamiento por relevancia del backend
                     requireTotalCount: false,
                     with: 'category,brand' // Incluir relaciones necesarias
                 })
@@ -382,6 +382,31 @@ const HeaderSearchB = ({
     // --- SUGERENCIAS DE BÚSQUEDA ---
     const SearchSuggestions = ({ suggestions, isLoading, onSelect, selectedIndex }) => {
         if (!showSuggestions) return null;
+        
+        // Función para resaltar palabras coincidentes
+        const highlightMatches = (text, searchQuery) => {
+            if (!text || !searchQuery) return text;
+            
+            // Dividir la búsqueda en palabras individuales
+            const searchWords = searchQuery.trim().toLowerCase().split(/\s+/).filter(w => w.length >= 2);
+            
+            // Crear un pattern regex que encuentre cualquiera de las palabras
+            const pattern = new RegExp(`(${searchWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+            
+            // Dividir el texto en partes, manteniendo las coincidencias
+            const parts = text.split(pattern);
+            
+            return parts.map((part, index) => {
+                // Verificar si esta parte coincide con alguna palabra de búsqueda
+                const isMatch = searchWords.some(word => part.toLowerCase() === word);
+                
+                if (isMatch) {
+                    return <strong key={index} className="font-bold customtext-primary">{part}</strong>;
+                }
+                return <span key={index}>{part}</span>;
+            });
+        };
+        
         return (
             <motion.div
                 ref={suggestionsRef}
@@ -432,7 +457,7 @@ const HeaderSearchB = ({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="font-medium customtext-neutral-dark truncate">
-                                            {suggestion.name}
+                                            {highlightMatches(suggestion.name, search)}
                                         </div>
                                         {suggestion.category && (
                                             <div className="text-sm customtext-neutral-dark truncate">
