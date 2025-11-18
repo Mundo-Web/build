@@ -909,6 +909,46 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+                    {
+                        dataField: "views",
+                        caption: "Vistas",
+                        dataType: "number",
+                        width: "80px",
+                        cellTemplate: (container, { data }) => {
+                            const viewCount = data.views || 0;
+                            container.html(
+                                renderToString(
+                                    <div className="text-center">
+                                        <i className="fas fa-eye text-primary me-1"></i>
+                                        <span className="fw-bold">{viewCount.toLocaleString()}</span>
+                                    </div>
+                                )
+                            );
+                        },
+                    },
+                    Fillable.has('items', 'most_view') && {
+                        dataField: "most_view",
+                        caption: "Más visto",
+                        dataType: "boolean",
+                        width: "80px",
+                        cellTemplate: (container, { data }) => {
+                            const mostViewValue = data.most_view === 1 || data.most_view === '1' || data.most_view === true;
+
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={mostViewValue}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "most_view",
+                                            value: e.target.checked ? 1 : 0,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
                     Fillable.has('items', 'visible') && {
                         dataField: "visible",
                         caption: "Visible",

@@ -132,12 +132,14 @@ class SystemController extends BasicController
                     $query->with($component['using']['with']);
                 }
 
+                $hasViewsOrder = false;
                 if ($system->filters) {
                     foreach ($system->filters as $field) {
                         if (in_array($field, ['ignoreVisibility', 'ignoreStatus'])) continue;
                         if ($field === 'views') {
                             // Ordenar por vistas de manera descendente
                             $query->orderBy('views', 'desc');
+                            $hasViewsOrder = true;
                         } else {
                             // Aplicar filtro booleano para otros campos
                             $query->where($field, true);
@@ -180,6 +182,11 @@ class SystemController extends BasicController
                 //         );
                 // }
 
+                // Ordenar por updated_at para respetar los cambios más recientes en campos booleanos
+                // Solo si no hay un ordenamiento por 'views' previamente definido
+                if (!$hasViewsOrder && Schema::hasColumn($table, 'updated_at')) {
+                    $query->orderBy($table . '.updated_at', 'desc');
+                }
 
                 $shortID = Crypto::short();
                 $system->itemsId = $shortID;
