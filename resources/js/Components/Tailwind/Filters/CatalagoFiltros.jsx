@@ -470,8 +470,8 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         ];
     };
 
-    // Estado para controlar la búsqueda inteligente
-    const [intelligentSearchEnabled, setIntelligentSearchEnabled] = useState(true);
+    // Estado para controlar la búsqueda inteligente - DESACTIVADA por defecto
+    const [intelligentSearchEnabled, setIntelligentSearchEnabled] = useState(false); // Cambiar a false
     const [lastIntelligentSearch, setLastIntelligentSearch] = useState(null);
 
     // Función para detectar si el query coincide con marcas, categorías o subcategorías
@@ -594,46 +594,12 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     const handleIntelligentSearch = (query) => {
         if (!query || query.length < 2) return;
 
-        // Detectar y aplicar filtros inteligentes solo si está habilitado
-        const detected = detectIntelligentFilters(query);
-
-        if (detected && detected.hasMatches && intelligentSearchEnabled) {
-            setLastIntelligentSearch(query);
-
-            setSelectedFilters(prev => {
-                const newFilters = { ...prev, name: query };
-
-                // Aplicar filtros de categorías detectadas
-                if (detected.categories.length > 0) {
-                    const categoryIds = detected.categories.map(cat => cat.id);
-                    newFilters.category_id = [...new Set([...newFilters.category_id, ...categoryIds])];
-                }
-
-                // Aplicar filtros de marcas detectadas
-                if (detected.brands.length > 0) {
-                    const brandSlugs = detected.brands.map(brand => brand.slug);
-                    newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
-                }
-
-                // Aplicar filtros de subcategorías detectadas
-                if (detected.subcategories.length > 0) {
-                    const subcategoryIds = detected.subcategories.map(subcat => subcat.id);
-                    newFilters.subcategory_id = [...new Set([...newFilters.subcategory_id, ...subcategoryIds])];
-                }
-
-                // Aplicar filtros de colecciones detectadas
-                if (detected.collections.length > 0) {
-                    const collectionSlugs = detected.collections.map(collection => collection.slug);
-                    newFilters.collection_id = [...new Set([...newFilters.collection_id, ...collectionSlugs])];
-                }
-
-                return newFilters;
-            });
-        } else {
-            // Si no hay filtros inteligentes, solo aplicar búsqueda de texto
-            setSelectedFilters(prev => ({ ...prev, name: query }));
-            setLastIntelligentSearch(null);
-        }
+        // SOLO aplicar búsqueda de texto, SIN filtros automáticos
+        // La búsqueda inteligente está DESACTIVADA para evitar filtros no deseados
+        setSelectedFilters(prev => ({ ...prev, name: query }));
+        setLastIntelligentSearch(null);
+        
+        // NO aplicar detectIntelligentFilters ni agregar filtros automáticos
     };
 
     // Función para alternar la búsqueda inteligente
@@ -1839,6 +1805,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                 selectedFilters.category_id?.length > 0 ||
                                                 selectedFilters.subcategory_id?.length > 0 ||
                                                 selectedFilters.tag_id?.length > 0 ||
+                                                selectedFilters.name ||
                                                 (selectedFilters.price && selectedFilters.price.length > 0)) && (
                                                     <motion.div
                                                         className="mb-4"
@@ -1963,6 +1930,23 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                     </AnimatedBadge>
                                                                 );
                                                             })}
+
+                                                            {/* Chip de búsqueda (name) con AnimatedBadge */}
+                                                            {selectedFilters.name && (
+                                                                <AnimatedBadge
+                                                                    onClick={() => handleFilterChange("name", null)}
+                                                                >
+                                                                    <Search className="h-3 w-3" />
+                                                                    <span>{selectedFilters.name}</span>
+                                                                    <motion.div
+                                                                        className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                        whileHover={{ scale: 1.2 }}
+                                                                        whileTap={{ scale: 0.9 }}
+                                                                    >
+                                                                        <X className="h-3 w-3" />
+                                                                    </motion.div>
+                                                                </AnimatedBadge>
+                                                            )}
                                                         </div>
                                                     </motion.div>
                                                 )}
@@ -1970,53 +1954,63 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                     </motion.div>
 
                                     {/* Botón de limpiar filtros mejorado */}
-                                    <motion.div
-                                        className="mt-6 pt-6 border-t border-gray-200"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.6 }}
-                                    >
-                                        <motion.button
-                                            className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
-                                            onClick={() => {
+                                    <AnimatePresence>
+                                        {(selectedFilters.brand_id?.length > 0 ||
+                                            selectedFilters.category_id?.length > 0 ||
+                                            selectedFilters.subcategory_id?.length > 0 ||
+                                            selectedFilters.tag_id?.length > 0 ||
+                                            selectedFilters.name ||
+                                            (selectedFilters.price && selectedFilters.price.length > 0)) && (
+                                                <motion.div
+                                                    className="mt-6 pt-6 border-t border-gray-200"
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <motion.button
+                                                        className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
+                                                        onClick={() => {
 
-                                                // Limpiar cada filtro individualmente usando setSelectedFilters con función
-                                                // Esto simula el comportamiento de handleFilterChange que funciona correctamente
-                                                setSelectedFilters((prev) => {
+                                                            // Limpiar cada filtro individualmente usando setSelectedFilters con función
+                                                            // Esto simula el comportamiento de handleFilterChange que funciona correctamente
+                                                            setSelectedFilters((prev) => {
 
-                                                    const cleanFilters = {
-                                                        collection_id: [],
-                                                        category_id: [],
-                                                        brand_id: [],
-                                                        subcategory_id: [],
-                                                        tag_id: [],
-                                                        price: [],
-                                                        name: null,
-                                                        sort: [
-                                                            {
-                                                                selector: "final_price",
-                                                                desc: true,
-                                                            },
-                                                        ],
-                                                    };
+                                                                const cleanFilters = {
+                                                                    collection_id: [],
+                                                                    category_id: [],
+                                                                    brand_id: [],
+                                                                    subcategory_id: [],
+                                                                    tag_id: [],
+                                                                    price: [],
+                                                                    name: null,
+                                                                    sort: [
+                                                                        {
+                                                                            selector: "final_price",
+                                                                            desc: true,
+                                                                        },
+                                                                    ],
+                                                                };
 
-                                                    return cleanFilters;
-                                                });
+                                                                return cleanFilters;
+                                                            });
 
-                                                setFilterSequence([]);
+                                                            setFilterSequence([]);
 
-                                            }}
-                                            whileHover={{ scale: 1.02, y: -2 }}
-                                            whileTap={{ scale: 0.98 }}
-                                        >
-                                            <div className="flex items-center justify-center gap-3">
+                                                        }}
+                                                        whileHover={{ scale: 1.02, y: -2 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                    >
+                                                        <div className="flex items-center justify-center gap-3">
 
-                                                <Trash className="h-5 w-5" />
+                                                            <Trash className="h-5 w-5" />
 
-                                                <span>Limpiar todos los filtros</span>
-                                            </div>
-                                        </motion.button>
-                                    </motion.div>
+                                                            <span>Limpiar todos los filtros</span>
+                                                        </div>
+                                                    </motion.button>
+                                                </motion.div>
+                                            )}
+                                    </AnimatePresence>
                                 </div>
                             </div>
                         </div>
@@ -2179,43 +2173,50 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                 >
                                                     <h3 className="text-xl font-bold customtext-neutral-dark">¡Ups! No encontramos productos</h3>
                                                     <p className="customtext-neutral-dark max-w-md">Intenta ajustar tus filtros o buscar términos diferentes.</p>
-                                                    <motion.button
-                                                        className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                                                        onClick={() => {
+                                                    {(selectedFilters.brand_id?.length > 0 ||
+                                                        selectedFilters.category_id?.length > 0 ||
+                                                        selectedFilters.subcategory_id?.length > 0 ||
+                                                        selectedFilters.tag_id?.length > 0 ||
+                                                        selectedFilters.name ||
+                                                        (selectedFilters.price && selectedFilters.price.length > 0)) && (
+                                                            <motion.button
+                                                                className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                                                                onClick={() => {
 
-                                                            // Limpiar usando setSelectedFilters con función (como handleFilterChange)
-                                                            setSelectedFilters((prev) => {
+                                                                    // Limpiar usando setSelectedFilters con función (como handleFilterChange)
+                                                                    setSelectedFilters((prev) => {
 
-                                                                const cleanFilters = {
-                                                                    collection_id: [],
-                                                                    category_id: [],
-                                                                    brand_id: [],
-                                                                    subcategory_id: [],
-                                                                    tag_id: [],
-                                                                    price: [],
-                                                                    name: null,
-                                                                    sort: [
-                                                                        {
-                                                                            selector: "final_price",
-                                                                            desc: true,
-                                                                        },
-                                                                    ],
-                                                                };
+                                                                        const cleanFilters = {
+                                                                            collection_id: [],
+                                                                            category_id: [],
+                                                                            brand_id: [],
+                                                                            subcategory_id: [],
+                                                                            tag_id: [],
+                                                                            price: [],
+                                                                            name: null,
+                                                                            sort: [
+                                                                                {
+                                                                                    selector: "final_price",
+                                                                                    desc: true,
+                                                                                },
+                                                                            ],
+                                                                        };
 
-                                                                return cleanFilters;
-                                                            });
+                                                                        return cleanFilters;
+                                                                    });
 
-                                                            setFilterSequence([]);
+                                                                    setFilterSequence([]);
 
-                                                        }}
-                                                        whileHover={{ scale: 1.05, y: -2 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        <div className="flex items-center gap-2">
-                                                            <Trash className="h-4 w-4" />
-                                                            <span>Limpiar filtros</span>
-                                                        </div>
-                                                    </motion.button>
+                                                                }}
+                                                                whileHover={{ scale: 1.05, y: -2 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <Trash className="h-4 w-4" />
+                                                                    <span>Limpiar filtros</span>
+                                                                </div>
+                                                            </motion.button>
+                                                        )}
                                                 </motion.div>
                                             </div>
                                         </motion.div>

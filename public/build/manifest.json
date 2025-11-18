@@ -7620,7 +7620,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-BYhA59PU.js",
+    "file": "assets/Filter-DpyxszVN.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -7646,7 +7646,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltros.jsx": {
-    "file": "assets/CatalagoFiltros-BJshLa7l.js",
+    "file": "assets/CatalagoFiltros-CMIBaUIq.js",
     "name": "CatalagoFiltros",
     "src": "resources/js/Components/Tailwind/Filters/CatalagoFiltros.jsx",
     "isDynamicEntry": true,
@@ -12849,7 +12849,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-kt7G23dG.js",
+    "file": "assets/System-BHTH5M2Y.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
