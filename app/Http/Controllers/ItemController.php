@@ -186,6 +186,7 @@ class ItemController extends BasicController
         //dump('[STEP 1] setPaginationInstance INICIO', $request->all());
         //dump('[STEP 2] Antes de armar query base');
         $query = $model::select(['items.*'])
+            ->distinct() // Agregar DISTINCT para evitar duplicados por múltiples tags
             ->with(['collection', 'category', 'subcategory', 'brand', 'store', 'tags'])
             ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
             ->leftJoin('categories AS category', 'category.id', 'items.category_id')
