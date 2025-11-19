@@ -174,6 +174,27 @@ const Combos = ({ items }) => {
 
   const onModalSubmit = async (e) => {
     e.preventDefault()
+
+    // Validar que haya productos seleccionados
+    if (selectedProducts.length === 0) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Debes seleccionar al menos un producto para crear el combo.',
+        icon: 'error'
+      });
+      return;
+    }
+
+    // Validar que haya un producto principal seleccionado
+    if (!mainProduct) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Debes marcar un producto como principal antes de guardar el combo.',
+        icon: 'error'
+      });
+      return;
+    }
+
     const request = {
       id: idRef.current.value || undefined,
       name: nameRef.current.value,
@@ -358,7 +379,7 @@ const Combos = ({ items }) => {
 
           <InputFormGroup eRef={nameRef} label='Nombre' required />
           <InputFormGroup label="Precio" eRef={priceRef} type="number" readOnly />
-          <InputFormGroup eRef={discountRef} label='Descuento' type='number' step='0.01' onChange={handleDiscountChange} />
+          <InputFormGroup eRef={discountRef} label='Precio con Descuento' type='number' step='0.01' onChange={handleDiscountChange} />
           <SelectAPIFormGroup
             id="items"
             eRef={itemsRef}
