@@ -135,21 +135,29 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
                 {/* Steps indicator */}
                 <div className="mb-4 md:mb-8">
                     <div className="flex items-center justify-between gap-1 md:gap-4 max-w-3xl mx-auto">
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 1 ? "customtext-primary font-medium" : "customtext-neutral-dark"}`}>
-                            <span className=" bg-primary text-white w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm">1</span>
+                        {/* Paso 1 - Clickeable solo si estamos en paso 2 */}
+                        <div 
+                            className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 1 ? "customtext-primary font-medium" : "customtext-neutral-dark"} ${currentStep === 2 ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+                            onClick={() => currentStep === 2 && handleStepChange(1)}
+                        >
+                            <span className="bg-primary text-white w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm">1</span>
                             <span className="text-[10px] md:text-sm text-center">Carrito</span>
                         </div>
-                        <div className="mb-4 lg:mb-0  flex-1 h-[2px] bg-gray-200 relative">
+                        <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
                             <div className="absolute inset-0 bg-primary transition-all duration-500" style={{ width: currentStep > 1 ? "100%" : "0%" }} />
                         </div>
+                        
+                        {/* Paso 2 - No clickeable */}
                         <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep > 1 ? "customtext-primary font-medium" : "customtext-neutral-dark"}`}>
                             <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep > 1 ? "bg-primary text-white" : "bg-white customtext-primary"}`}>2</span>
                             <span className="text-[10px] md:text-sm text-center">Envío</span>
                         </div>
-                        <div className="mb-4 lg:mb-0  flex-1 h-[2px] bg-gray-200 relative">
+                        <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
                             <div className="absolute inset-0 bg-primary transition-all duration-500" style={{ width: currentStep > 2 ? "100%" : "0%" }} />
                         </div>
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 3 ? "customtext-primary  font-medium" : "customtext-neutral-dark"}`}>
+                        
+                        {/* Paso 3 - No clickeable */}
+                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 3 ? "customtext-primary font-medium" : "customtext-neutral-dark"}`}>
                             <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep === 3 ? "bg-primary text-white" : "bg-white customtext-primary"}`}>3</span>
                             <span className="text-[10px] md:text-sm text-center">Confirmación</span>
                         </div>
