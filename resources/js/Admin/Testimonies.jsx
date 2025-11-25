@@ -159,25 +159,32 @@ const Testimonies = ({ countries, details }) => {
                         dataField: "name",
                         caption: "Autor",
                         cellTemplate: (container, { data }) => {
-                            container.append(
-                                DxBox(
-                                    [
+                            // DevExtreme may give us a jQuery-wrapped element or a plain DOM node.
+                            const domElement = container instanceof HTMLElement
+                                ? container
+                                : (container.get ? container.get(0) : container[0]);
+                            // Ensure the container is empty before mounting React.
+                            if (domElement) {
+                                domElement.innerHTML = '';
+                                const root = createRoot(domElement);
+                                root.render(
+                                    <div className="d-flex align-items-center gap-2">
                                         <img
                                             className="avatar-xs rounded-circle"
                                             src={`/storage/images/testimony/${data.image}`}
                                             alt={data.name}
-                                            onError={e => e.target.src = '/api/cover/thumbnail/null'}
-                                        />,
-                                        <p
-                                            className="mb-0"
-                                            style={{ fontSize: "14px" }}
-                                        >
+                                            onError={(e) => {
+                                                e.target.onerror = null; // prevent loop
+                                                console.error('Image failed to load (admin):', data.image);
+                                                e.target.src = '/api/cover/thumbnail/null';
+                                            }}
+                                        />
+                                        <p className="mb-0" style={{ fontSize: '14px' }}>
                                             {data.name}
-                                        </p>,
-                                    ],
-                                    false
-                                )
-                            );
+                                        </p>
+                                    </div>
+                                );
+                            }
                         },
                     },
                     {

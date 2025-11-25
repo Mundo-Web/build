@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 
 const TestimonialsMultivet = ({ items = [], data }) => {
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
+    const [imageErrors, setImageErrors] = useState({});
 
     // Si no hay testimonios, usar datos de fallback o no mostrar nada
     const testimonials = items.length > 0 ? items : [];
@@ -51,16 +52,11 @@ const TestimonialsMultivet = ({ items = [], data }) => {
 
     // Si no hay testimonios, mostrar placeholder
     if (!testimonials || testimonials.length === 0) {
-        return (
-            <section className={`py-16 ${data?.section_background || 'bg-primary'} text-white ${data?.class_section || ''}`}>
-                <div className="max-w-7xl mx-auto px-primary text-center">
-                    <p className="text-white">No hay testimonios disponibles</p>
-                </div>
-            </section>
-        );
+        return null;
     }
 
     const currentItem = testimonials[currentTestimonial];
+
 
     return (
         <section className={`py-16 ${data?.section_background || 'bg-primary'} text-white ${data?.class_section || ''}`}>
@@ -80,7 +76,7 @@ const TestimonialsMultivet = ({ items = [], data }) => {
                     <div className={`rounded-2xl p-8 md:p-12 relative overflow-hidden ${data?.testimonials_background || 'bg-white'} ${data?.testimonials_text_color || 'text-gray-800'} ${data?.class_testimonials_card || ''}`}>
                         {/* Quote icon */}
                         <Quote className={`absolute top-6 right-6 w-12 h-12 opacity-20 ${data?.quote_color || 'customtext-accent'}`} />
-                        
+
                         <div className="flex flex-col md:flex-row items-center gap-8">
                             {/* Testimonial content */}
                             <div className="flex-1">
@@ -105,11 +101,21 @@ const TestimonialsMultivet = ({ items = [], data }) => {
                             {/* Profile image */}
                             <div className="flex-shrink-0">
                                 <img
-                                    src={currentItem.image ? `/storage/images/testimony/${currentItem.image}` : "/api/cover/thumbnail/null"}
+                                    src={
+                                        imageErrors[currentTestimonial]
+                                            ? "/api/cover/thumbnail/null"
+                                            : currentItem.image
+                                                ? `/storage/images/testimony/${currentItem.image}`
+                                                : "/api/cover/thumbnail/null"
+                                    }
                                     alt={currentItem.name}
                                     className={`w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 ${data?.avatar_border || 'border-accent'}`}
                                     onError={(e) => {
-                                        e.target.src = "/api/cover/thumbnail/null";
+                                        console.log('Image failed to load:', currentItem.image);
+                                        setImageErrors(prev => ({
+                                            ...prev,
+                                            [currentTestimonial]: true
+                                        }));
                                     }}
                                 />
                             </div>
@@ -143,11 +149,10 @@ const TestimonialsMultivet = ({ items = [], data }) => {
                                 <button
                                     key={index}
                                     onClick={() => setCurrentTestimonial(index)}
-                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                        index === currentTestimonial 
-                                            ? `${data?.active_dot || 'bg-accent'} scale-125` 
-                                            : `${data?.inactive_dot || 'bg-gray-400 hover:bg-gray-300'}`
-                                    }`}
+                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentTestimonial
+                                        ? `${data?.active_dot || 'bg-accent'} scale-125`
+                                        : `${data?.inactive_dot || 'bg-gray-400 hover:bg-gray-300'}`
+                                        }`}
                                     aria-label={`Ir al testimonio ${index + 1}`}
                                 />
                             ))}
@@ -155,7 +160,7 @@ const TestimonialsMultivet = ({ items = [], data }) => {
                     )}
                 </div>
 
-        
+
             </div>
         </section>
     );
