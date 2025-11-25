@@ -4883,7 +4883,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Ad.jsx": {
-    "file": "assets/Ad-U6u39KM3.js",
+    "file": "assets/Ad-9fI0PmjM.js",
     "name": "Ad",
     "src": "resources/js/Components/Tailwind/Ad.jsx",
     "isDynamicEntry": true,
@@ -4895,7 +4895,54 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ],
     "dynamicImports": [
-      "resources/js/Components/Tailwind/Ads/AdSubscription.jsx"
+      "resources/js/Components/Tailwind/Ads/AdSubscription.jsx",
+      "resources/js/Components/Tailwind/Ads/AdModal.jsx",
+      "resources/js/Components/Tailwind/Ads/AdBanner.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Ads/AdBanner.jsx": {
+    "file": "assets/AdBanner-Dk9g4jGf.js",
+    "name": "AdBanner",
+    "src": "resources/js/Components/Tailwind/Ads/AdBanner.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "resources/js/Components/About/Strengths.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Ads/AdModal.jsx": {
+    "file": "assets/AdModal-yns5V9Md.js",
+    "name": "AdModal",
+    "src": "resources/js/Components/Tailwind/Ads/AdModal.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_navigation-BIDIUzpb.js",
+      "_pagination-C411qpn9.js",
+      "_autoplay-BjAsSK2h.js",
+      "_HtmlContent-ghmllTyl.js",
+      "resources/js/Components/About/Strengths.jsx",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "_x-fof_H3Vv.js",
+      "_createLucideIcon-DfjclApS.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_index-B6ujFmsw.js",
+      "_index-Chjiymov.js",
+      "_create-element-if-not-defined-DUWlnlug.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Ads/AdSubscription.jsx": {
@@ -10073,7 +10120,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-AaLCw_xO.js",
+    "file": "assets/ProductDetail-By1iys_A.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -12834,7 +12881,7 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-Cj37azoW.js",
+    "file": "assets/BusinessIWorkCard-wvwREg5u.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
@@ -12842,14 +12889,13 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_main-B6F2O9-U.js",
-      "_BasicRest-BML1C-ua.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_BooleanLimit-D-OsQsek.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
-      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
-      "_index-B6ujFmsw.js",
-      "_BooleanLimit-D-OsQsek.js"
+      "_index-B6ujFmsw.js"
     ]
   },
   "resources/js/Reutilizables/Pagination/FilterPagination.jsx": {
@@ -12901,7 +12947,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Cue1j3S6.js",
+    "file": "assets/System-DAcFVnpL.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

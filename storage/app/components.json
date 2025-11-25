@@ -2501,27 +2501,6 @@
         ]
     },
     {
-        "id": "ads",
-        "name": "Pop-ups",
-        "icon": "mdi mdi-google-ads",
-        "options": [
-            {
-                "id": "AdSubscription",
-                "name": "Suscripción",
-                "using": {
-                    "model": "Ad",
-                    "fields": [
-                        "image",
-                        "name"
-                    ]
-                },
-                "generals": [
-                    "privacy_policy"
-                ]
-            }
-        ]
-    },
-    {
         "id": "image",
         "icon": "mdi mdi-image-area",
         "name": "Imágenes",
@@ -4449,6 +4428,61 @@
                     "phone_contact",
                     "email_contact"
                 ]
+            }
+        ]
+    },
+    {
+        "id": "ads",
+        "name": "Pop-ups",
+        "icon": "mdi mdi-google-ads",
+        "options": [
+            {
+                "id": "AdSubscription",
+                "name": "Suscripción",
+                "using": {
+                    "model": "Ad",
+                    "fields": [
+                        "image",
+                        "name"
+                    ]
+                },
+                "generals": [
+                    "privacy_policy"
+                ]
+            },
+            {
+                "id": "AdModal",
+                "name": "Pop-up / Modal",
+                "image": "ad-modal.png",
+                "using": {
+                    "model": "Ad",
+                    "fields": [
+                        "name",
+                        "description",
+                        "image",
+                        "link",
+                        "seconds",
+                        "date_begin",
+                        "date_end",
+                        "invasivo",
+                        "visible"
+                    ]
+                }
+            },
+            {
+                "id": "AdBanner",
+                "name": "Banner / Strip",
+                "image": "ad-banner.png",
+                "using": {
+                    "model": "Ad",
+                    "fields": [
+                        "name",
+                        "description",
+                        "image",
+                        "link",
+                        "visible"
+                    ]
+                }
             }
         ]
     }

@@ -533,7 +533,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
                                 {/* Dropdown de PDFs Desktop */}
                                 {isPdfDropdownOpen && (
-                                    <div className="absolute top-full left-0 right-0 sm:right-auto sm:min-w-[320px] mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+                                    <div className="absolute top-full left-0 right-0 sm:right-auto sm:min-w-[320px] mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-20">
                                         <div className="bg-primary p-3 text-white">
                                             <h4 className="font-bold text-sm">Documentos disponibles</h4>
                                             <p className="text-xs text-white opacity-90 mt-0.5">{item.pdf.length} {item.pdf.length === 1 ? 'archivo' : 'archivos'}</p>
