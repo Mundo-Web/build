@@ -3616,7 +3616,8 @@
                     "class_icon",
                     "class_description",
                     "class_button",
-                    "link_denuncias"
+                    "link_denuncias",
+                    "job_button"
                 ],
                 "using": {
                     "model": "Social",

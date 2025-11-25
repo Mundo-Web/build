@@ -8,6 +8,7 @@ import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { CircleCheckBig, X } from "lucide-react";
 import { toast } from "sonner";
+import JobApplicationModal from "../Modals/JobApplicationModal";
 
 const FooterDental = ({ pages, generals, data, socials = [] }) => {
     const subscriptionsRest = new SubscriptionsRest();
@@ -15,6 +16,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
 
     const [modalOpen, setModalOpen] = useState(null);
     const [saving, setSaving] = useState();
+    const [jobModalOpen, setJobModalOpen] = useState(false);
 
     const policyItems = {
         privacy_policy: "Políticas de privacidad",
@@ -137,21 +139,21 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                 </a>
                             </li>
                             {data?.link_denuncias && (
-                                  <li>
-                                <a
+                                <li>
+                                    <a
 
 
-                                    href="/canal-denuncias"
-                                    className="cursor-pointer flex flex-col gap-2 items-start  "
-                                >
-                                    <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
-                                        Denuncias
-                                    </span>
+                                        href="/canal-denuncias"
+                                        className="cursor-pointer flex flex-col gap-2 items-start  "
+                                    >
+                                        <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
+                                            Denuncias
+                                        </span>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
                             )}
-                            
+
                             {/* Nuevos enlaces para PDFs - Solo se muestran si tienen contenido */}
                             {generals.find((item) => item.correlative === "politica_sistema_gestion")?.description && (
                                 <li>
@@ -165,7 +167,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     </a>
                                 </li>
                             )}
-                            
+
                             {generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description && (
                                 <li>
                                     <a
@@ -248,6 +250,16 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                 </Tippy>
                             ))}
                         </div>
+
+                        {/* Trabaja con nosotros button */}
+                        {data?.job_button && (
+                            <button
+                                onClick={() => setJobModalOpen(true)}
+                                className={`mt-6 font-bold hover:underline transition-all duration-300 cursor-pointer ${data?.class_menu_item || 'text-white'}`}
+                            >
+                                Trabaja con nosotros
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -299,6 +311,12 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                     </ReactModal>
                 );
             })}
+
+            {/* Job Application Modal */}
+            <JobApplicationModal
+                isOpen={jobModalOpen}
+                onClose={() => setJobModalOpen(false)}
+            />
         </footer>
     );
 };
