@@ -548,13 +548,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/clients/paginate', [AdminClientController::class, 'paginate']);
     Route::patch('/clients/{field}', [AdminClientController::class, 'boolean']);
 
+
+    // System routes - accessible by Admin and Root
+    Route::post('/system', [AdminSystemController::class, 'save']);
+    Route::post('/system/page', [AdminSystemController::class, 'savePage']);
+    Route::delete('/system/page/{id}', [AdminSystemController::class, 'deletePage']);
+    Route::patch('/system/order', [AdminSystemController::class, 'updateOrder']);
+    Route::delete('/system/{id}', [AdminSystemController::class, 'delete']);
+    Route::get('/system/related/{model}/{method}', [AdminSystemController::class, 'getRelatedFilter']);
+
+    // Root-only routes - sensitive operations
     Route::middleware(['can:Root'])->group(function () {
       Route::post('/fillable/{model}', [FillableController::class, 'save']);
-      Route::post('/system', [AdminSystemController::class, 'save']);
-      Route::post('/system/page', [AdminSystemController::class, 'savePage']);
-      Route::delete('/system/page/{id}', [AdminSystemController::class, 'deletePage']);
-      Route::patch('/system/order', [AdminSystemController::class, 'updateOrder']);
-      Route::delete('/system/{id}', [AdminSystemController::class, 'delete']);
 
       Route::get('/system/backup', [AdminSystemController::class, 'exportBK']);
       Route::post('/system/backup', [AdminSystemController::class, 'importBK']);
@@ -567,8 +572,6 @@ Route::middleware('auth')->group(function () {
 
       Route::get('/system/fetch-remote-changes', [AdminSystemController::class, 'fetchRemoteChanges']);
       Route::get('/system/has-remote-changes', [AdminSystemController::class, 'hasRemoteChanges']);
-
-      Route::get('/system/related/{model}/{method}', [AdminSystemController::class, 'getRelatedFilter']);
     });
 
     Route::post('/repository', [AdminRepositoryController::class, 'save']);
