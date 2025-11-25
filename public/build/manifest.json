@@ -9934,7 +9934,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Partner.jsx": {
-    "file": "assets/Partner-DAAmBo1C.js",
+    "file": "assets/Partner-BCHvbeiu.js",
     "name": "Partner",
     "src": "resources/js/Components/Tailwind/Partner.jsx",
     "isDynamicEntry": true,
@@ -9946,7 +9946,20 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ],
     "dynamicImports": [
-      "resources/js/Components/Tailwind/Partner/PartnerSimple.jsx"
+      "resources/js/Components/Tailwind/Partner/PartnerSimple.jsx",
+      "resources/js/Components/Tailwind/Partner/PartnerMblens.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Partner/PartnerMblens.jsx": {
+    "file": "assets/PartnerMblens--pJTheE3.js",
+    "name": "PartnerMblens",
+    "src": "resources/js/Components/Tailwind/Partner/PartnerMblens.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Partner/PartnerSimple.jsx": {
@@ -12849,7 +12862,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DPN5YgL2.js",
+    "file": "assets/System-DEEgrqoH.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
