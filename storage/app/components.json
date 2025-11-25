@@ -2035,7 +2035,8 @@
                     "button_top",
                     "button_bottom",
                     "badge_offer_percent",
-                    "badge_category_up_name"
+                    "badge_category_up_name",
+                    "is_card_content_description"
                 ],
                 "using": {
                     "model": "Item",

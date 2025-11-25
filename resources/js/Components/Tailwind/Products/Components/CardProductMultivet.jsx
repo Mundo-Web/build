@@ -83,13 +83,13 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
 
                 {/* Badges */}
 
-                {data?.badge_offer_percent  ? (
+                {data?.badge_offer_percent ? (
                     hasDiscount && (
-                  <div className="absolute top-3 left-3 bg-danger text-white rounded-full text-sm font-bold shadow-lg z-10">
+                        <div className="absolute top-3 left-3 bg-danger text-white rounded-full text-sm font-bold shadow-lg z-10">
                             <span className="bg-danger text-white bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold">
-                            -{discountPercentage}%
-                        </span>
-                    </div>
+                                -{discountPercentage}%
+                            </span>
+                        </div>
                     )
                 ) : (
                     product?.category && (
@@ -141,11 +141,18 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                 </h3>
 
                 {/* Descripción corta */}
-                {product?.description && (
+                {!data?.is_card_content_description &&
+                    product?.description ? (
                     <p className="customtext-neutral-light text-sm mb-3 line-clamp-2 min-h-[2.5rem]"
                         dangerouslySetInnerHTML={{ __html: product.description }}>
                     </p>
-                )}
+                ) : (
+                    <p className="customtext-neutral-light text-sm mb-1 line-clamp-2 min-h-[2rem]"
+                    >
+                        {product?.sku}
+                    </p>
+                )
+                }
 
 
 
