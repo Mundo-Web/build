@@ -26,7 +26,9 @@ import {
     ZoomIn,
     ZoomOut,
     X,
-    CheckCircle
+    CheckCircle,
+    FileText,
+    Download
 } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, FreeMode, Autoplay } from 'swiper/modules';
@@ -89,6 +91,9 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
     // Estados para WhatsApp multi-asesor
     const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
     const [whatsappAction, setWhatsappAction] = useState('consult'); // 'consult' o 'quote'
+
+    // Estado para dropdown de fichas técnicas
+    const [isPdfDropdownOpen, setIsPdfDropdownOpen] = useState(false);
 
     // Configuración de Floating UI para botones de cotizar
     const { refs, floatingStyles, context } = useFloating({
@@ -260,7 +265,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
     const productosRelacionados = async (item) => {
         try {
-            
+
             // Preparar la solicitud como en ProductDetailB.jsx
             const request = {
                 id: item?.id,
@@ -278,9 +283,9 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
             // Actualizar el estado con los productos asociados (como en ProductDetailB)
             const relations = response;
             const relationsArray = Object.values(relations);
-            
+
             setRelationsItems(relationsArray);
-            
+
         } catch (error) {
             console.error('Error fetching related products:', error);
             setRelationsItems([]);
@@ -420,7 +425,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
     return (
         <div className="bg-gray-50 min-h-screen overflow-x-hidden">
-          
+
 
             <div className="max-w-7xl mx-auto px-4 py-4 lg:py-8">
                 <div className="grid lg:grid-cols-2 gap-6 lg:gap-12">
@@ -513,6 +518,52 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                 ))}
                             </div>
                         )}
+
+                        {/* Botón de Fichas Técnicas - Desktop */}
+                        {item?.pdf && Array.isArray(item.pdf) && item.pdf.length > 0 && (
+                            <div className="relative mt-4 hidden lg:block">
+                                <button
+                                    onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                    className="w-full sm:w-auto bg-white border-2 border-primary text-primary py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all shadow-md hover:shadow-lg group"
+                                >
+                                    <FileText className="w-5 h-5" />
+                                    <span className="text-sm">Fichas Técnicas</span>
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isPdfDropdownOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {/* Dropdown de PDFs Desktop */}
+                                {isPdfDropdownOpen && (
+                                    <div className="absolute top-full left-0 right-0 sm:right-auto sm:min-w-[320px] mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+                                        <div className="bg-primary p-3 text-white">
+                                            <h4 className="font-bold text-sm">Documentos disponibles</h4>
+                                            <p className="text-xs text-white opacity-90 mt-0.5">{item.pdf.length} {item.pdf.length === 1 ? 'archivo' : 'archivos'}</p>
+                                        </div>
+                                        <div className="max-h-64 overflow-y-auto">
+                                            {item.pdf.map((pdf, index) => (
+                                                <a
+                                                    key={index}
+                                                    href={`/storage/images/item/${pdf.url || pdf}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 p-3 transition-colors border-b  last:border-b-0 group"
+                                                >
+                                                    <div className="flex-shrink-0 w-10 h-10  rounded-lg flex items-center justify-center transition-colors">
+                                                        <FileText className="w-5 h-5 customtext-secondary" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold max-w-36 customtext-neutral-dark text-sm truncate">
+                                                            {pdf.name || (typeof pdf === 'string' ? pdf.split('/').pop().replace('.pdf', '') : 'Documento')}
+                                                        </p>
+                                                        <p className="text-xs cusomtext-neutral-light">Documento PDF</p>
+                                                    </div>
+                                                    <Download className="w-4 h-4 customtext-neutral-light group-hover:text-primary transition-colors" />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Precio Mobile - Debajo de la galería */}
@@ -535,7 +586,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                     </div>
 
                     {/* Información del producto */}
-                    <div className="space-y-4 lg:space-y-6 pb-20 lg:pb-0">
+                    <div className="space-y-4 lg:space-y-6 pb-20 lg:pb-0 overflow-x-hidden">
                         {/* Header con categoría y marca */}
                         <div className="flex flex-row  items-center justify-between gap-3">
                             {item?.category && (
@@ -627,6 +678,47 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                 )}
                             </div>
                         )}
+
+                        {/* Botón de Fichas Técnicas - Mobile (Acordeón) */}
+                        {item?.pdf && Array.isArray(item.pdf) && item.pdf.length > 0 && (
+                            <div className="lg:hidden bg-white rounded-2xl shadow-sm overflow-hidden mt-6 max-w-full">
+                                <div className="border-b">
+                                    <button
+                                        onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                        className="w-full p-4 flex justify-between items-center"
+                                    >
+                                        <span className="font-medium">Fichas Técnicas ({item.pdf.length})</span>
+                                        <ChevronDown
+                                            className={`transform transition-transform ${isPdfDropdownOpen ? "rotate-180" : ""}`}
+                                        />
+                                    </button>
+                                </div>
+                                {isPdfDropdownOpen && (
+                                    <div className="p-4 space-y-2 max-w-full">
+                                        {item.pdf.map((pdf, index) => (
+                                            <a
+                                                key={index}
+                                                href={`/storage/images/item/${pdf.url || pdf}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-3 p-3 w-full border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all group max-w-full"
+                                            >
+                                                <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                                                    <FileText className="w-5 h-5 text-red-600" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 overflow-hidden">
+                                                    <p className="font-semibold customtext-neutral-dark text-sm truncate break-words">
+                                                        {pdf.name || (typeof pdf === 'string' ? pdf.split('/').pop().replace('.pdf', '') : 'Documento')}
+                                                    </p>
+                                                    <p className="text-xs cusomtext-neutral-light">Documento PDF</p>
+                                                </div>
+                                                <Download className="w-4 h-4 flex-shrink-0 text-gray-400 group-hover:text-primary transition-colors" />
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         {/* Precio - Desktop */}
                         <div className="hidden lg:block bg-white rounded-lg p-6 shadow-xl">
                             <div className="flex items-center justify-between mb-4">
@@ -679,8 +771,8 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                     <button
                                         onClick={() => onAddClicked(item)}
                                         className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
-                                                ? 'bg-accent text-white'
-                                                : 'bg-primary text-white'
+                                            ? 'bg-accent text-white'
+                                            : 'bg-primary text-white'
                                             }`}
                                     >
                                         <ShoppingCart className="w-5 h-5" />
@@ -748,10 +840,10 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
                                                         {/* Info del asesor */}
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-semibold text-gray-900 text-sm truncate">
+                                                            <p className="font-semibold customtext-neutral-dark text-sm truncate">
                                                                 {advisor.name}
                                                             </p>
-                                                            <p className="text-xs text-gray-500 truncate">
+                                                            <p className="text-xs cusomtext-neutral-light truncate">
                                                                 {advisor.position || 'Asesor'}
                                                             </p>
                                                         </div>
@@ -759,7 +851,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                                         {/* Icono de WhatsApp */}
                                                         <div className="flex-shrink-0">
                                                             <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386"/>
+                                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
                                                             </svg>
                                                         </div>
                                                     </button>
@@ -790,7 +882,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                         setCart={setCart}
                         cart={cart}
                     />
-                ) }
+                )}
             </div>
 
             {/* Botón Flotante Mobile */}
@@ -818,14 +910,14 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                             +
                         </button>
                     </div>
-                    
+
                     {/* Botón de Comprar Mobile - Solo si buyButton es true */}
                     {data?.buyButton && (
                         <button
                             onClick={() => onAddClicked(item)}
                             className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
-                                    ? 'bg-secondary text-white'
-                                    : 'bg-primary customtext-neutral-dark hover:bg-accent'
+                                ? 'bg-secondary text-white'
+                                : 'bg-primary customtext-neutral-dark hover:bg-accent'
                                 }`}
                         >
                             <ShoppingCart className="w-4 h-4" />
@@ -893,10 +985,10 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
                                             {/* Info del asesor */}
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-gray-900 text-sm truncate">
+                                                <p className="font-semibold customtext-neutral-dark text-sm truncate">
                                                     {advisor.name}
                                                 </p>
-                                                <p className="text-xs text-gray-500 truncate">
+                                                <p className="text-xs cusomtext-neutral-light truncate">
                                                     {advisor.position || 'Asesor'}
                                                 </p>
                                             </div>
@@ -904,7 +996,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                             {/* Icono de WhatsApp */}
                                             <div className="flex-shrink-0">
                                                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386"/>
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
                                                 </svg>
                                             </div>
                                         </button>
