@@ -54,6 +54,7 @@ const Subscription = React.lazy(() => import("./Components/Tailwind/Subscription
 const Agradecimientos = React.lazy(() => import("./Components/Tailwind/Agradecimientos"));
 const Support = React.lazy(() => import("./Components/Tailwind/Support"));
 const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
+const Store = React.lazy(() => import("./Components/Tailwind/Store"));
 
 // Componente de carga para usar con Suspense
 const LoadingFallback = () => {
@@ -61,16 +62,16 @@ const LoadingFallback = () => {
     const [showFallback, setShowFallback] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
     const [progress, setProgress] = useState(10);
-    
+
     useEffect(() => {
         // Detectar mobile
         const checkMobile = () => {
             setIsMobile(window.innerWidth <= 768);
         };
-        
+
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        
+
         // Simular progreso de carga más realista
         const progressInterval = setInterval(() => {
             setProgress(prev => {
@@ -80,20 +81,20 @@ const LoadingFallback = () => {
                 return Math.min(prev + increment, 95);
             });
         }, 200);
-        
+
         // Timeout diferenciado para mobile vs desktop
         const timeout = setTimeout(() => {
             setProgress(100);
             setTimeout(() => setShowFallback(false), 300);
         }, isMobile ? 1500 : 2500);
-        
+
         return () => {
             clearTimeout(timeout);
             clearInterval(progressInterval);
             window.removeEventListener('resize', checkMobile);
         };
     }, [isMobile]);
-    
+
     // Si ya no mostrar fallback, hacer transición suave manteniendo la barra de progreso
     if (!showFallback) {
         return (
@@ -106,29 +107,27 @@ const LoadingFallback = () => {
                             e.target.onerror = null;
                             e.target.src = "/assets/img/logo-bk.svg";
                         }}
-                        className={`${
-                            isMobile ? 'w-36' : 'w-48 lg:w-64'
-                        } transition-all duration-300 opacity-50`}
+                        className={`${isMobile ? 'w-36' : 'w-48 lg:w-64'
+                            } transition-all duration-300 opacity-50`}
                         loading="eager"
                         decoding="async"
                     />
                 </div>
-                
+
                 {/* Mantener barra de progreso pero más sutil */}
-                <div className={`mt-4 bg-gray-200 rounded-full h-1 ${
-                    isMobile ? 'w-32' : 'w-48'
-                }`}>
-                    <div 
+                <div className={`mt-4 bg-gray-200 rounded-full h-1 ${isMobile ? 'w-32' : 'w-48'
+                    }`}>
+                    <div
                         className="bg-primary h-1 rounded-full transition-all duration-500"
                         style={{ width: `${Math.min(progress + 5, 100)}%` }}
                     ></div>
                 </div>
-                
-               
+
+
             </div>
         );
     }
-    
+
     return (
         <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/95 backdrop-blur-sm z-50">
             <div className="animate-bounce">
@@ -146,41 +145,38 @@ const LoadingFallback = () => {
                             setTimeout(() => setShowFallback(false), 300);
                         }
                     }}
-                    className={`${
-                        isMobile ? 'w-32 sm:w-48' : 'w-64 lg:w-96'
-                    } transition-all duration-300 transform hover:scale-105 ${
-                        isLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`${isMobile ? 'w-32 sm:w-48' : 'w-64 lg:w-96'
+                        } transition-all duration-300 transform hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
                     loading="eager"
                     decoding="async"
                 />
             </div>
-            
+
             {/* Spinner de respaldo si la imagen no carga */}
             {!isLoaded && (
-                <div className={`animate-spin rounded-full border-b-2 border-primary mt-4 ${
-                    isMobile ? 'h-8 w-8' : 'h-12 w-12'
-                }`}></div>
+                <div className={`animate-spin rounded-full border-b-2 border-primary mt-4 ${isMobile ? 'h-8 w-8' : 'h-12 w-12'
+                    }`}></div>
             )}
-            
+
             {/* Indicador de progreso mejorado */}
             {isMobile && (
                 <div className="mt-4 w-32 bg-gray-200 rounded-full h-1.5">
-                    <div 
+                    <div
                         className="bg-primary h-1.5 rounded-full transition-all duration-500 ease-out"
-                        style={{ 
+                        style={{
                             width: `${Math.max(progress, 10)}%`
                         }}
                     ></div>
                 </div>
             )}
-            
+
             {/* Barra de progreso para desktop también */}
             {!isMobile && (
                 <div className="mt-6 w-48 bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                         className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
-                        style={{ 
+                        style={{
                             width: `${Math.max(progress, 10)}%`
                         }}
                     ></div>
@@ -214,7 +210,7 @@ const System = ({
     categorias,
     hasRole = () => { }
 }) => {
-    
+
     const getItems = (itemsId) => {
         return systemItems[itemsId] ?? [];
     };
@@ -239,7 +235,7 @@ const System = ({
         // Separar combos de productos normales
         const regularItems = cart.filter(x => x.type !== 'combo');
         const combos = cart.filter(x => x.type === 'combo');
-        
+
         if (regularItems.length > 0) {
             itemsRest.verifyStock(regularItems.map((x) => x.id)).then((items) => {
                 const verifiedRegularItems = items.map((item) => {
@@ -250,12 +246,12 @@ const System = ({
                     found.name = item.name;
                     return found;
                 }).filter(Boolean); // Filtrar undefined/null
-                
+
                 // Combinar productos verificados con combos sin modificar
                 const newCart = [...verifiedRegularItems, ...combos];
-                
-              
-                
+
+
+
                 setCart(newCart);
             });
         } else if (combos.length > 0) {
@@ -266,11 +262,11 @@ const System = ({
     // Preload crítico para mobile
     useEffect(() => {
         const isMobile = window.innerWidth <= 768;
-        
+
         if (isMobile) {
             // Preload componentes críticos solo en mobile
             const criticalComponents = ['Header', 'Footer', 'Product', 'Cart'];
-            
+
             criticalComponents.forEach(component => {
                 import(`./Components/Tailwind/${component}.jsx`).catch(() => {
                     // Silenciar errores de preload
@@ -296,7 +292,7 @@ const System = ({
             contacts,
             categorias
         };
-        
+
         switch (component) {
             case "top_bar":
                 return (
@@ -369,7 +365,7 @@ const System = ({
             case "post-detail":
                 return <PostDetail which={value} data={data} item={filteredData.Post} />
             case "about":
-                return <AboutUs which={value} data={data} filteredData={filteredData} items={getItems(itemsId)}/>
+                return <AboutUs which={value} data={data} filteredData={filteredData} items={getItems(itemsId)} />
             case "login":
                 return <Login which={value} data={data} />
             case "signup":
@@ -404,6 +400,8 @@ const System = ({
                 return <Support which={value} data={data} items={getItems(itemsId)} />
             case "firstclass":
                 return <FirstClass {...componentProps} />
+            case "store":
+                return <Store {...componentProps} />
             default:
                 return <NoComponent which={value} />
         }
@@ -417,10 +415,10 @@ const System = ({
         // <SystemContext.Provider value={{
         //     hasRole
         // }}>
-            <main className="font-paragraph">
-                {systemsSorted.map((system) => getSystem(system))}
-                <Toaster />
-            </main>
+        <main className="font-paragraph">
+            {systemsSorted.map((system) => getSystem(system))}
+            <Toaster />
+        </main>
         // </SystemContext.Provider>
     );
 };

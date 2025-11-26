@@ -1,0 +1,389 @@
+import React, { useState, useEffect, useRef } from "react";
+import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
+import Global from "../../../Utils/Global";
+
+// Bibliotecas requeridas para Google Maps
+const libraries = ["places"];
+
+const StoreMap = ({ data, stores = [] }) => {
+    const [selectedStore, setSelectedStore] = useState(null);
+    const [mapCenter, setMapCenter] = useState({
+        lat: -12.046374,
+        lng: -77.042793
+    }); // Lima por defecto
+    const [zoom, setZoom] = useState(6);
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const mapRef = useRef(null);
+
+    // Filtrar solo las tiendas visibles y con coordenadas válidas
+    const validStores = stores.filter(store =>
+        store.visible &&
+        store.latitude &&
+        store.longitude &&
+        !isNaN(parseFloat(store.latitude)) &&
+        !isNaN(parseFloat(store.longitude))
+    );
+
+    // Calcular el centro del mapa basado en todas las ubicaciones
+    useEffect(() => {
+        if (validStores.length > 0 && !selectedStore) {
+            // Si solo hay una tienda, centrar en ella
+            if (validStores.length === 1) {
+                setMapCenter({
+                    lat: parseFloat(validStores[0].latitude),
+                    lng: parseFloat(validStores[0].longitude)
+                });
+                setZoom(15);
+            } else {
+                // Calcular el centro promedio de todas las tiendas
+                const avgLat = validStores.reduce((sum, store) => sum + parseFloat(store.latitude), 0) / validStores.length;
+                const avgLng = validStores.reduce((sum, store) => sum + parseFloat(store.longitude), 0) / validStores.length;
+
+                setMapCenter({
+                    lat: avgLat,
+                    lng: avgLng
+                });
+
+                // Ajustar el zoom basado en la dispersión de las tiendas
+                const latitudes = validStores.map(s => parseFloat(s.latitude));
+                const longitudes = validStores.map(s => parseFloat(s.longitude));
+                const latRange = Math.max(...latitudes) - Math.min(...latitudes);
+                const lngRange = Math.max(...longitudes) - Math.min(...longitudes);
+                const maxRange = Math.max(latRange, lngRange);
+
+                // Calcular zoom apropiado
+                if (maxRange > 10) setZoom(5);
+                else if (maxRange > 5) setZoom(6);
+                else if (maxRange > 2) setZoom(7);
+                else if (maxRange > 1) setZoom(8);
+                else if (maxRange > 0.5) setZoom(10);
+                else setZoom(12);
+            }
+        }
+    }, [validStores, selectedStore]);
+
+    // Función para obtener el label del tipo de tienda
+    const getTypeLabel = (type) => {
+        const labels = {
+            'tienda_principal': 'Tienda Principal',
+            'tienda': 'Tienda',
+            'oficina': 'Oficina',
+            'almacen': 'Almacén',
+            'showroom': 'Showroom',
+            'otro': 'Otro'
+        };
+        return labels[type] || 'No especificado';
+    };
+
+    // Función para formatear horarios
+    const formatBusinessHours = (businessHours) => {
+        if (!businessHours) return null;
+
+        try {
+            const hours = typeof businessHours === 'string'
+                ? JSON.parse(businessHours)
+                : businessHours;
+
+            return hours;
+        } catch (e) {
+            return null;
+        }
+    };
+
+    // SVG Path para el marcador (estilo pin de Google Maps)
+    const pinPath = "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z";
+
+    // Función para manejar la selección de una tienda
+    const handleStoreSelect = (store) => {
+        setSelectedStore(store);
+        // Centrar el mapa en la tienda seleccionada con un ligero offset vertical
+        // para dar espacio al InfoWindow
+        const lat = parseFloat(store.latitude);
+        const lng = parseFloat(store.longitude);
+
+        // Offset aproximado para que el InfoWindow se vea completo (mover el centro un poco hacia abajo)
+        // Cuanto mayor el zoom, menor el offset necesario en grados
+        const offset = 0.005;
+
+        setMapCenter({
+            lat: lat + (offset * (15 / zoom)), // Ajuste dinámico según zoom
+            lng: lng
+        });
+
+        if (zoom < 14) setZoom(15);
+    };
+
+    return (
+        <section className={` ${data?.class_container || ''}`}>
+            {/* Estilos globales para sobrescribir Google Maps InfoWindow */}
+            <style>{`
+                .gm-style-iw-c {
+                    padding: 0 !important;
+                    background: none !important;
+                    box-shadow: none !important;
+                    border-radius: 8px !important;
+                }
+                .gm-style-iw-d {
+                    overflow: visible !important; /* Permitir overflow para que el div interno maneje el scroll */
+                    max-height: none !important;
+                }
+                .gm-style .gm-style-iw-t::after {
+                    display: none !important;
+                }
+                /* Ocultar botón de cerrar por defecto de Google Maps */
+                .gm-ui-hover-effect {
+                    display: none !important;
+                }
+                
+                /* Custom Scrollbar para el InfoWindow */
+                .store-info-scroll::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .store-info-scroll::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+                .store-info-scroll::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 3px;
+                }
+                .store-info-scroll::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.5);
+                }
+            `}</style>
+
+            <div className="w-full">
+                {/* Título y descripción */}
+                {(data?.title || data?.description) && (
+                    <div className="text-center mb-8 px-primary">
+                        {data?.title && (
+                            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${data?.class_title || 'customtext-neutral-dark'}`}>
+                                {data?.title}
+                            </h2>
+                        )}
+                        {data?.description && (
+                            <p className={`text-lg max-w-3xl mx-auto ${data?.class_description || 'customtext-neutral-light'}`}>
+                                {data?.description}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {validStores.length > 0 ? (
+                    <div className="w-full relative">
+                        {/* Mapa a pantalla completa */}
+                        <LoadScript
+                            googleMapsApiKey={Global.GMAPS_API_KEY}
+                            libraries={libraries}
+                            onLoad={() => setIsMapLoaded(true)}
+                        >
+                            <GoogleMap
+                                mapContainerStyle={{
+                                    width: "100%",
+                                    height: "80vh", // Aumentado para mejor visualización
+                                    minHeight: "600px"
+                                }}
+                                center={mapCenter}
+                                zoom={zoom}
+                                onLoad={map => mapRef.current = map}
+                                options={{
+                                    streetViewControl: true,
+                                    mapTypeControl: true,
+                                    fullscreenControl: true,
+                                    zoomControl: true,
+                                    styles: [
+                                        {
+                                            featureType: "poi",
+                                            elementType: "labels",
+                                            stylers: [{ visibility: "off" }]
+                                        }
+                                    ]
+                                }}
+                            >
+                                {/* Marcadores personalizados - Solo renderizar si el mapa está cargado */}
+                                {isMapLoaded && validStores.map((store) => (
+                                    <Marker
+                                        key={store.id}
+                                        position={{
+                                            lat: parseFloat(store.latitude),
+                                            lng: parseFloat(store.longitude)
+                                        }}
+                                        onClick={() => handleStoreSelect(store)}
+                                        title={store.name}
+                                        icon={{
+                                            path: pinPath,
+                                            fillColor: Global.APP_COLOR_PRIMARY || '#FF0000',
+                                            fillOpacity: 1,
+                                            strokeWeight: 1,
+                                            strokeColor: "#FFFFFF",
+                                            rotation: 0,
+                                            scale: 2.5, // Marcador más grande (aprox 60x60px)
+                                            anchor: new window.google.maps.Point(12, 24), // Centrado en la punta inferior
+                                        }}
+                                    />
+                                ))}
+
+                                {/* InfoWindow para la tienda seleccionada - Solo renderizar si el mapa está cargado */}
+                                {isMapLoaded && selectedStore && (
+                                    <InfoWindow
+                                        position={{
+                                            lat: parseFloat(selectedStore.latitude),
+                                            lng: parseFloat(selectedStore.longitude)
+                                        }}
+                                        onCloseClick={() => setSelectedStore(null)}
+                                        options={{
+                                            pixelOffset: new window.google.maps.Size(0, -50), // Subir el InfoWindow para que no tape el marker
+                                            maxWidth: 320
+                                        }}
+                                    >
+                                        <div
+                                            className="bg-secondary text-white rounded-lg overflow-hidden shadow-xl store-info-scroll relative"
+                                            style={{
+                                                minWidth: '280px',
+                                                maxHeight: '400px', // Altura máxima para activar scroll
+                                                overflowY: 'auto' // Scroll vertical automático
+                                            }}
+                                        >
+                                            {/* Botón de cerrar personalizado */}
+                                            <button
+                                                onClick={() => setSelectedStore(null)}
+                                                className="absolute top-2 right-2 z-50 w-8 h-8 flex items-center justify-center bg-secondary rounded-full shadow-md hover:opacity-90 transition-opacity text-white border border-white/20"
+                                                aria-label="Cerrar"
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+
+                                            {/* Imagen */}
+                                            {selectedStore.image && (
+                                                <div className="relative h-40 w-full flex-shrink-0">
+                                                    <img
+                                                        src={`/storage/images/store/${selectedStore.image}`}
+                                                        alt={selectedStore.name}
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => e.target.style.display = 'none'}
+                                                    />
+                                                    <div className="absolute top-2 left-2">
+                                                        <span className="inline-block px-2 py-1 text-xs font-bold rounded bg-white customtext-primary shadow-sm">
+                                                            {getTypeLabel(selectedStore.type)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="p-4 pt-2">
+                                                {/* Nombre (con margen derecho para no chocar con el botón de cerrar si no hay imagen) */}
+                                                <h3 className={`font-bold text-lg mb-3 customtext-primary ${!selectedStore.image ? 'pr-8' : ''}`}>
+                                                    {selectedStore.name}
+                                                </h3>
+
+                                                {/* Dirección */}
+                                                <p className="text-sm mb-2 flex items-start">
+                                                    <i className="fas fa-map-marker-alt mt-1 mr-2 customtext-primary flex-shrink-0"></i>
+                                                    <span className="opacity-90">{selectedStore.address}</span>
+                                                </p>
+
+                                                {/* Teléfono */}
+                                                {selectedStore.phone && (
+                                                    <p className="text-sm mb-2 flex items-center">
+                                                        <i className="fas fa-phone mr-2 customtext-primary flex-shrink-0"></i>
+                                                        <a href={`tel:${selectedStore.phone}`} className="hover:text-white hover:underline opacity-90 transition-opacity">
+                                                            {selectedStore.phone}
+                                                        </a>
+                                                    </p>
+                                                )}
+
+                                                {/* Email */}
+                                                {selectedStore.email && (
+                                                    <p className="text-sm mb-2 flex items-center">
+                                                        <i className="fas fa-envelope mr-2 customtext-primary flex-shrink-0"></i>
+                                                        <a href={`mailto:${selectedStore.email}`} className="hover:text-white hover:underline opacity-90 transition-opacity truncate">
+                                                            {selectedStore.email}
+                                                        </a>
+                                                    </p>
+                                                )}
+
+                                                {/* Descripción */}
+                                                {selectedStore.description && (
+                                                    <p className="text-sm opacity-80 mb-3 mt-3 pt-3 border-t border-white/10">
+                                                        {selectedStore.description}
+                                                    </p>
+                                                )}
+
+                                                {/* Encargado */}
+                                                {selectedStore.manager && (
+                                                    <p className="text-sm mb-2 opacity-90">
+                                                        <i className="fas fa-user mr-2 customtext-primary"></i>
+                                                        <strong>Encargado:</strong> {selectedStore.manager}
+                                                    </p>
+                                                )}
+
+                                                {/* Horarios */}
+                                                {selectedStore.business_hours && (
+                                                    <div className="mt-3 pt-3 border-t border-white/10">
+                                                        <p className="text-xs font-bold customtext-primary mb-2 flex items-center">
+                                                            <i className="fas fa-clock mr-2"></i>
+                                                            Horarios de atención
+                                                        </p>
+                                                        <div className="space-y-1">
+                                                            {formatBusinessHours(selectedStore.business_hours)?.slice(0, 3).map((schedule, idx) => (
+                                                                <p key={idx} className="text-xs opacity-80">
+                                                                    <strong className="text-white">{schedule.day}:</strong>{' '}
+                                                                    {schedule.closed ? 'Cerrado' : `${schedule.open} - ${schedule.close}`}
+                                                                </p>
+                                                            ))}
+                                                            {formatBusinessHours(selectedStore.business_hours)?.length > 3 && (
+                                                                <p className="text-xs customtext-primary font-semibold mt-1">
+                                                                    + {formatBusinessHours(selectedStore.business_hours).length - 3} días más
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Botones */}
+                                                <div className="mt-4 flex flex-col gap-2">
+                                                    {/* Link si existe */}
+                                                    {selectedStore.link && (
+                                                        <a
+                                                            href={selectedStore.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="w-full py-2 px-4 rounded text-center text-sm font-semibold border border-white/20 hover:bg-white/10 transition-colors customtext-primary"
+                                                        >
+                                                            <i className="fas fa-external-link-alt mr-2"></i>
+                                                            Más información
+                                                        </a>
+                                                    )}
+
+                                                    {/* Botón de direcciones */}
+                                                    <a
+                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${selectedStore.latitude},${selectedStore.longitude}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className={`w-full py-2 px-4 rounded text-center text-sm font-bold transition-colors shadow-lg ${data?.class_button || 'bg-white customtext-primary hover:bg-gray-100'
+                                                            }`}
+                                                    >
+                                                        <i className="fas fa-directions mr-2"></i>
+                                                        Cómo llegar
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </InfoWindow>
+                                )}
+                            </GoogleMap>
+                        </LoadScript>
+                    </div>
+                ) : (
+                    <div className="text-center py-12 px-primary">
+                        <i className="fas fa-map-marked-alt text-6xl customtext-neutral-light mb-4"></i>
+                        <p className="text-xl customtext-neutral-light">
+                            No hay ubicaciones disponibles en este momento
+                        </p>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+};
+
+export default StoreMap;

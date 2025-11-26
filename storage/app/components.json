@@ -4594,5 +4594,82 @@
                 }
             }
         ]
+    },
+    {
+        "id": "store",
+        "name": "Tiendas",
+        "icon": "mdi mdi-store-outline",
+        "options": [
+            {
+                "id": "StoreMap",
+                "name": "Mapa de Ubicaciones",
+                "image": "store-map.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_container",
+                    "class_title",
+                    "class_description",
+                    "class_store_card",
+                    "class_button"
+                ],
+                "using": {
+                    "model": "Store",
+                    "fields": [
+                        "id",
+                        "name",
+                        "address",
+                        "phone",
+                        "email",
+                        "description",
+                        "latitude",
+                        "longitude",
+                        "image",
+                        "type",
+                        "business_hours",
+                        "link",
+                        "visible"
+                    ],
+                    "filters": [
+                        "visible"
+                    ]
+                }
+            },
+            {
+                "id": "StoreList",
+                "name": "Lista de Ubicaciones",
+                "image": "store-list.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_container",
+                    "class_title",
+                    "class_description",
+                    "class_store_card",
+                    "class_button"
+                ],
+                "using": {
+                    "model": "Store",
+                    "fields": [
+                        "id",
+                        "name",
+                        "address",
+                        "phone",
+                        "email",
+                        "description",
+                        "latitude",
+                        "longitude",
+                        "image",
+                        "type",
+                        "business_hours",
+                        "link",
+                        "visible"
+                    ],
+                    "filters": [
+                        "visible"
+                    ]
+                }
+            }
+        ]
     }
 ]
