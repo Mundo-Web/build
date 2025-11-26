@@ -7,6 +7,7 @@ const HeaderSearchContact = React.lazy(() =>
 const HeaderSearch = React.lazy(() => import("./Headers/HeaderSearch"));
 const HeaderSimple = React.lazy(() => import("./Headers/HeaderSimple"));
 const HeaderSearchB = React.lazy(() => import("./Headers/HeaderSearchB"));
+const HeaderIbergruas = React.lazy(() => import("./Headers/HeaderIbergruas"));
 const HeaderSearchDental = React.lazy(() => import("./Headers/HeaderSearchDental"));
 
 const HeaderSearchPaani = React.lazy(() => import("./Headers/HeaderSearchPaani"));
@@ -80,7 +81,19 @@ const Header = ({
                         generals={generals}
                     />
                 );
-               case "HeaderSearchKatya":
+            case "HeaderIbergruas":
+                return (
+                    <HeaderIbergruas
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderSearchKatya":
                 return (
                     <HeaderSearchKatya
                         data={data}
@@ -92,7 +105,7 @@ const Header = ({
                         generals={generals}
                     />
                 );
-             case "HeaderPidelo":
+            case "HeaderPidelo":
                 return (
                     <HeaderPidelo
                         data={data}
@@ -104,7 +117,7 @@ const Header = ({
                         generals={generals}
                     />
                 );
-             case "HeaderSearchDental":
+            case "HeaderSearchDental":
                 return (
                     <HeaderSearchDental
                         data={data}
@@ -128,7 +141,7 @@ const Header = ({
                         generals={generals}
                     />
                 );
-             case "HeaderMakita":
+            case "HeaderMakita":
                 return (
                     <HeaderMakita
                         data={data}

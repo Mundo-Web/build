@@ -33,7 +33,7 @@ const HeaderSearchB = ({
     const messageWhatsappObj = generals.find(
         (item) => item.correlative === "message_whatsapp"
     );
-    
+
     const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
     const messageWhatsapp = messageWhatsappObj?.description ?? null;
 
@@ -382,31 +382,31 @@ const HeaderSearchB = ({
     // --- SUGERENCIAS DE BÚSQUEDA ---
     const SearchSuggestions = ({ suggestions, isLoading, onSelect, selectedIndex }) => {
         if (!showSuggestions) return null;
-        
+
         // Función para resaltar palabras coincidentes
         const highlightMatches = (text, searchQuery) => {
             if (!text || !searchQuery) return text;
-            
+
             // Dividir la búsqueda en palabras individuales
             const searchWords = searchQuery.trim().toLowerCase().split(/\s+/).filter(w => w.length >= 2);
-            
+
             // Crear un pattern regex que encuentre cualquiera de las palabras
             const pattern = new RegExp(`(${searchWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
-            
+
             // Dividir el texto en partes, manteniendo las coincidencias
             const parts = text.split(pattern);
-            
+
             return parts.map((part, index) => {
                 // Verificar si esta parte coincide con alguna palabra de búsqueda
                 const isMatch = searchWords.some(word => part.toLowerCase() === word);
-                
+
                 if (isMatch) {
                     return <strong key={index} className="font-bold customtext-primary">{part}</strong>;
                 }
                 return <span key={index}>{part}</span>;
             });
         };
-        
+
         return (
             <motion.div
                 ref={suggestionsRef}
@@ -489,8 +489,8 @@ const HeaderSearchB = ({
         isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
     }
     return (
-        <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-white shadow-lg" : "relative bg-white"}`}>
-            <div className="px-primary  bg-white 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
+        <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed shadow-lg" : "relative "} ${data.backgroundColor || 'bg-white'}`}>
+            <div className={`px-primary   2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold ${data.backgroundColor || 'bg-white'}`}>
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2 z-[51]">
@@ -517,16 +517,16 @@ const HeaderSearchB = ({
                                             <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                                 {isUser.uuid ? (
                                                     <div className="relative">
-                                                        <ProfileImage 
+                                                        <ProfileImage
                                                             uuid={isUser.uuid}
                                                             name={isUser.name}
                                                             lastname={isUser.lastname}
                                                             className="!w-6 !h-6 rounded-full object-cover border-2 border-primary ring-secondary transition-all duration-300"
                                                         />
                                                         <div className="relative" style={{ display: 'none' }}>
-                                                            <CircleUser 
-                                                                className="customtext-primary  border-primary rounded-full   ring-secondary transition-all duration-300" 
-                                                                width="1.5rem" 
+                                                            <CircleUser
+                                                                className="customtext-primary  border-primary rounded-full   ring-secondary transition-all duration-300"
+                                                                width="1.5rem"
                                                             />
                                                         </div>
                                                         {/* Punto indicador online animado */}
@@ -537,9 +537,9 @@ const HeaderSearchB = ({
                                                     </div>
                                                 ) : (
                                                     <div className="relative">
-                                                        <CircleUser 
-                                                            className="customtext-primary border-2 border-primary rounded-full  ring-secondary  transition-all duration-300" 
-                                                            width="1.5rem" 
+                                                        <CircleUser
+                                                            className="customtext-primary border-2 border-primary rounded-full  ring-secondary  transition-all duration-300"
+                                                            width="1.5rem"
                                                         />
                                                         {/* Punto indicador online animado */}
                                                         <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary border-2 border-white rounded-full animate-pulse">
@@ -751,7 +751,7 @@ const HeaderSearchB = ({
                                         <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                             {isUser.uuid ? (
                                                 <div className="relative">
-                                                    <ProfileImage 
+                                                    <ProfileImage
                                                         uuid={isUser.uuid}
                                                         name={isUser.name}
                                                         lastname={isUser.lastname}
@@ -765,8 +765,8 @@ const HeaderSearchB = ({
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <CircleUser 
-                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300" 
+                                                    <CircleUser
+                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300"
                                                     />
                                                     {/* Punto indicador online animado */}
                                                     <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
@@ -967,7 +967,7 @@ const HeaderSearchB = ({
                                                 </button>
                                                 <button
                                                     type="submit"
-                                                    className={`p-2 ${data?.backgroundColor || "bg-primary" } text-white rounded-lg hover:bg-primary transition-colors`}
+                                                    className={`p-2 ${data?.backgroundColor || "bg-primary"} text-white rounded-lg hover:bg-primary transition-colors`}
                                                     aria-label="Buscar"
                                                 >
                                                     <Search size={16} />
@@ -1065,7 +1065,7 @@ const HeaderSearchB = ({
                 setModalOpen={setModalOpen}
             />
 
-        
+
         </header>
     );
 };

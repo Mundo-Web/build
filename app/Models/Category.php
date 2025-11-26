@@ -17,6 +17,7 @@ class Category extends Model
         'slug',
         // 'order',
         'name',
+        'alias',
         'description',
         'banner',
         'image',

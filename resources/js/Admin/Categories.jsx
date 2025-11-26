@@ -24,6 +24,7 @@ const Categories = () => {
     // Form elements ref
     const idRef = useRef();
     const nameRef = useRef();
+    const aliasRef = useRef();
     const descriptionRef = useRef();
     const bannerRef = useRef();
     const imageRef = useRef();
@@ -36,6 +37,7 @@ const Categories = () => {
 
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
+        aliasRef.current.value = data?.alias ?? "";
         descriptionRef.current.value = data?.description ?? "";
         bannerRef.image.src = data?.banner ? `/storage/images/category/${data.banner}` : '';
         bannerRef.current.value = null;
@@ -55,6 +57,7 @@ const Categories = () => {
         const request = {
             id: idRef.current.value || undefined,
             name: nameRef.current.value,
+            alias: aliasRef.current.value,
             description: descriptionRef.current.value,
         };
 
@@ -377,6 +380,11 @@ const Categories = () => {
                             label="Categoría"
                             rows={2}
                             required
+                        />
+                        <InputFormGroup
+                            eRef={aliasRef}
+                            label="Alias (Nombre para mostrar)"
+                            col="col-12"
                         />
                         <TextareaFormGroup
                             eRef={descriptionRef}

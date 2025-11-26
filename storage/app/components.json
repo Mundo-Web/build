@@ -250,6 +250,32 @@
                 ]
             },
             {
+                "id": "HeaderIbergruas",
+                "name": "HeaderIbergruas",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "class_logo",
+                    "input_search_placeholder",
+                    "input_search_label",
+                    "input_search_class"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
                 "id": "HeaderSearchKatya",
                 "name": "HeaderSearchKatya",
                 "image": "header-with-search.png",
