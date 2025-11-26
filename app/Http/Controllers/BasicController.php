@@ -19,6 +19,7 @@ use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -601,6 +602,12 @@ class BasicController extends Controller
     try {
 
       $body = $this->beforeSave($request);
+      
+      Log::info('BasicController - Después de beforeSave:', [
+        'controller' => get_class($this),
+        'has_banners' => isset($body['banners']),
+        'banners_in_body' => $body['banners'] ?? 'not_set'
+      ]);
 
     
       $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
@@ -670,7 +677,19 @@ class BasicController extends Controller
         $jpa = $this->model::create($body);
         $isNew = true;
       } else {
+        Log::info('BasicController - Antes de update:', [
+          'controller' => get_class($this),
+          'id' => $jpa->id,
+          'has_banners_in_body' => isset($body['banners']),
+          'banners_value' => $body['banners'] ?? 'not_set'
+        ]);
+        
         $jpa->update($body);
+        
+        Log::info('BasicController - Después de update:', [
+          'banners_in_model' => $jpa->banners
+        ]);
+        
         $isNew = false;
       }
 

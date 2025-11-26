@@ -19,6 +19,7 @@ class Category extends Model
         'name',
         'alias',
         'description',
+        'banners',
         'banner',
         'image',
         'featured',
@@ -27,6 +28,7 @@ class Category extends Model
     ];
 
     protected $casts = [
+        'banners' => 'array',
         'featured' => 'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',

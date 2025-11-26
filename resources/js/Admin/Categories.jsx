@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import Swal from "sweetalert2";
 import CategoriesRest from "../Actions/Admin/CategoriesRest";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
+import BannersJsonEditor from "../Components/Adminto/form/BannersJsonEditor";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
@@ -28,10 +29,16 @@ const Categories = () => {
     const descriptionRef = useRef();
     const bannerRef = useRef();
     const imageRef = useRef();
+    const bannersJsonRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
 
     const onModalOpen = (data) => {
+        console.log('=== onModalOpen called ===');
+        console.log('Full data object:', data);
+        console.log('data.banners specifically:', data?.banners);
+        console.log('typeof data.banners:', typeof data?.banners);
+        
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
@@ -43,6 +50,56 @@ const Categories = () => {
         bannerRef.current.value = null;
         imageRef.image.src = data?.image ? `/storage/images/category/${data.image}` : '';
         imageRef.current.value = null;
+
+        // Load banners JSON
+        if (bannersJsonRef.current) {
+            let banners = data?.banners || [];
+            console.log('Categories.onModalOpen - data.banners:', data?.banners);
+            console.log('Categories.onModalOpen - banners type:', typeof banners);
+            // If banners is a string, parse it
+            if (typeof banners === 'string') {
+                try {
+                    banners = JSON.parse(banners);
+                } catch (e) {
+                    console.error('Error parsing banners JSON:', e);
+                    banners = [];
+                }
+            }
+            console.log('Categories.onModalOpen - calling setValue with:', banners);
+            bannersJsonRef.current.setValue(banners);
+            
+            // Load images AFTER setValue - wait for refs to be ready
+            const tryLoadImages = (attempt = 1) => {
+                console.log(`Attempt ${attempt} to load banner images...`);
+                const imageRefs = bannersJsonRef.current.getImageRefs();
+                console.log('imageRefs:', imageRefs);
+                
+                let allLoaded = true;
+                banners.forEach((banner, index) => {
+                    if (banner.image) {
+                        const imgRef = imageRefs[index];
+                        console.log(`Banner ${index} - Full ref:`, imgRef);
+                        console.log(`Banner ${index} - imgRef.image:`, imgRef?.image);
+                        console.log(`Banner ${index} - All properties:`, Object.keys(imgRef || {}));
+                        
+                        if (imgRef?.image) {
+                            imgRef.image.src = `/storage/images/category/${banner.image}`;
+                            console.log(`✓ Loaded image for banner ${index}:`, banner.image);
+                        } else {
+                            allLoaded = false;
+                            console.log(`✗ Ref not ready for banner ${index}`);
+                        }
+                    }
+                });
+                
+                // Retry if not all loaded and less than 5 attempts
+                if (!allLoaded && attempt < 5) {
+                    setTimeout(() => tryLoadImages(attempt + 1), 300);
+                }
+            };
+            
+            setTimeout(() => tryLoadImages(), 500);
+        }
 
         // Reset delete flags using React state - only when opening modal
         if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
@@ -72,6 +129,17 @@ const Categories = () => {
         const file2 = bannerRef.current.files[0];
         if (file2) {
             formData.append("banner", file2);
+        }
+
+        // Add banners JSON
+        if (bannersJsonRef.current) {
+            formData.append('banners', bannersJsonRef.current.getValue());
+            
+            // Add banner images
+            const bannerImages = bannersJsonRef.current.getImageFiles();
+            Object.keys(bannerImages).forEach(key => {
+                formData.append(key, bannerImages[key]);
+            });
         }
 
         // Check for image deletion flags using React state
@@ -390,6 +458,15 @@ const Categories = () => {
                             eRef={descriptionRef}
                             label="Descripción"
                             rows={3}
+                        />
+                    </div>
+                    <div className="col-12 mt-3">
+                        <BannersJsonEditor
+                            ref={bannersJsonRef}
+                            name="banners"
+                            label="Banners del Catálogo"
+                            initialValue={[]}
+                            model="category"
                         />
                     </div>
                 </div>

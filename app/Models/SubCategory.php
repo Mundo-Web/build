@@ -19,6 +19,7 @@ class SubCategory extends Model
         'slug',
         'name',
         'description',
+        'banners',
         'image',
         'featured',
         'visible',
@@ -26,6 +27,7 @@ class SubCategory extends Model
     ];
 
     protected $casts = [
+        'banners' => 'array',
         'featured'=>'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',
