@@ -409,7 +409,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                         // First banner: Full-width background with centered text (Slider style)
                         if (index === 0) {
                             return (
-                                <div key={index} className="relative overflow-hidden h-[500px] lg:h-[600px] flex items-center justify-center -mx-4 md:-mx-6 lg:-mx-8">
+                                <div key={index} className="relative overflow-hidden h-[500px] lg:h-[600px] flex items-center justify-center">
                                     {/* Background Image */}
                                     {banner.image && (
                                         <>
@@ -530,10 +530,12 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
     return (
         <>
            {/* Banners / Hero Section */}
+           <div className="">
                 {renderBanners()}
+           </div>
 
         <section className="py-4 lg:py-12 bg-secondary">
-            <div className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className="mx-auto px-4 md:px-6 lg:px-8 2xl:px-0 2xl:max-w-7xl">
 
                 {/* Subcategory Dropdown and Sort Options in same row */}
                 <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
