@@ -2520,6 +2520,14 @@
                 "name": "Flex"
             },
             {
+                "id": "BannerIbergruas",
+                "name": "BannerIbergruas",
+                "data": [
+                    "title",
+                    "subtitle"
+                ]
+            },
+            {
                 "id": "BannerStatic",
                 "name": "Estatico",
                 "using": {

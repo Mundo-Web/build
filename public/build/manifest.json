@@ -1751,7 +1751,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-C7KLfQR7.js",
+    "file": "assets/Banners-DX4ZLe4N.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -5349,7 +5349,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-B8ueYZ3p.js",
+    "file": "assets/Banner-CKnrC3Rb.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -5365,6 +5365,7 @@
       "resources/js/Components/Tailwind/Banners/BannerAd.jsx",
       "resources/js/Components/Tailwind/Banners/BannerFullWidth.jsx",
       "resources/js/Components/Tailwind/Banners/BannerFlex.jsx",
+      "resources/js/Components/Tailwind/Banners/BannerIbergruas.jsx",
       "resources/js/Components/Tailwind/Banners/BannerPublicitario.jsx",
       "resources/js/Components/Tailwind/Banners/BannerPublicitarioPaani.jsx",
       "resources/js/Components/Tailwind/Banners/BannerPostSuscriptionPaani.jsx",
@@ -5479,6 +5480,18 @@
     "file": "assets/BannerFullWidth--pJTheE3.js",
     "name": "BannerFullWidth",
     "src": "resources/js/Components/Tailwind/Banners/BannerFullWidth.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Banners/BannerIbergruas.jsx": {
+    "file": "assets/BannerIbergruas--pJTheE3.js",
+    "name": "BannerIbergruas",
+    "src": "resources/js/Components/Tailwind/Banners/BannerIbergruas.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -13030,7 +13043,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CZz0iXky.js",
+    "file": "assets/System-fOJCrM7i.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

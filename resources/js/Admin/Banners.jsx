@@ -373,7 +373,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                 objectUrlRef.current[field] = nextUrl;
                 // Actualizar inmediatamente el preview con la nueva imagen
                 setPreviewData((prev) => ({ ...prev, [field]: nextUrl }));
-                
+
                 // Forzar actualización del preview después de un momento para que el componente se re-renderice
                 requestAnimationFrame(() => {
                     updatePreviewScale();
@@ -404,7 +404,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             const rawValue = $(element).val();
             const normalized = Array.isArray(rawValue) ? rawValue[0] : rawValue;
             const finalValue = normalized || "BannerSimple";
-            
+
             // Actualizar el estado de preview data inmediatamente
             handlePreviewFieldChange("type", finalValue);
         },
@@ -485,6 +485,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         { id: 'BannerSimple', name: 'Banner Simple', icon: 'mdi mdi-image-size-select-large' },
         { id: 'BannerAd', name: 'Banner Ad', icon: 'mdi mdi-google-ads' },
         { id: 'BannerFullWidth', name: 'Banner Full Width', icon: 'mdi mdi-view-carousel' },
+        { id: 'BannerIbergruas', name: 'Banner Ibergruas', icon: 'mdi mdi-image-size-select-large' },
         { id: 'BannerFlex', name: 'Banner Flex', icon: 'mdi mdi-view-split-vertical' },
         { id: 'BannerPublicitario', name: 'Banner Publicitario', icon: 'mdi mdi-bullhorn' },
         { id: 'BannerPublicitarioPaani', name: 'Banner Publicitario Paani', icon: 'mdi mdi-bullhorn-variant' },
@@ -556,18 +557,18 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const loadPageComponents = (pageId) => {
         // System.jsx línea 263: SortByAfterField(systems).filter(x => x.page_id == null)
         // System.jsx línea 306: SortByAfterField(systems).filter(x => x.page_id == page.id)
-        
+
         // Filtrar primero y luego ordenar con SortByAfterField como hace System.jsx
         const normalizedPageId = normalizePageId(pageId);
-        const filteredSystems = systems.filter(s => 
+        const filteredSystems = systems.filter(s =>
             normalizePageId(s.page_id) === normalizedPageId
         );
-        
+
         // ORDENAR igual que System.jsx para que el select muestre en orden correcto
         const orderedComponents = SortByAfterField(filteredSystems);
-        
-    
-        
+
+
+
         setAvailableComponents(orderedComponents);
     };
 
@@ -605,7 +606,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         descriptionRef.current.value = previewSnapshot.description;
         buttonTextRef.current.value = previewSnapshot.button_text;
         buttonLinkRef.current.value = previewSnapshot.button_link;
-        
+
         const backgroundUrl = resolveSystemAsset(previewSnapshot.background);
         const imageUrl = resolveSystemAsset(previewSnapshot.image);
 
@@ -630,16 +631,16 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         $(pageIdRef.current).val(banner?.page_id || '').trigger('change');
         const editingPageId = banner?.page_id || '';
         setSelectedPageId(editingPageId);
-        
+
         // CRÍTICO: Cargar componentes primero, luego establecer after_component
         loadPageComponents(editingPageId);
-        
+
         // Esperar un momento para que se carguen los componentes y luego setear el valor
         setTimeout(() => {
             const afterValue = banner?.after_component || '';
             $(afterComponentRef.current).val(afterValue).trigger('change');
         }, 100);
-        
+
         // Establecer el tipo de banner y disparar el evento para actualizar el preview
         $(bannerTypeRef.current).val(previewSnapshot.type || 'BannerSimple').trigger('change');
 
@@ -792,7 +793,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const onPageChange = (e) => {
         const pageId = $(e.target).val();
         setSelectedPageId(pageId);
-        
+
         // Clear the after component selection safely
         setTimeout(() => {
             $(afterComponentRef.current).val('').trigger('change');
@@ -806,9 +807,9 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             value,
         });
         if (!result) return;
-        
+
         // Actualizar el estado local en lugar de refrescar desde el backend
-        setSystems(old => old.map(system => 
+        setSystems(old => old.map(system =>
             system.id === id ? { ...system, visible: value } : system
         ));
     };
@@ -823,10 +824,10 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             cancelButtonText: "Cancelar",
         });
         if (!isConfirmed) return;
-        
+
         const result = await bannersRest.delete(id);
         if (!result) return;
-        
+
         // Actualizar el estado local inmediatamente como en System.jsx
         setSystems(old => old.filter(x => x.id != id));
     };
@@ -852,7 +853,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                         },
                     });
                     container.unshift({
-                        widget: 'dxButton', 
+                        widget: 'dxButton',
                         location: 'after',
                         options: {
                             icon: 'plus',
@@ -905,7 +906,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                 container.text("Al inicio");
                                 return;
                             }
-                            
+
                             // Buscar el componente al que hace referencia
                             const afterComponent = systems.find(s => s.id === data.after_component);
                             container.text(afterComponent ? afterComponent.name : "Componente eliminado");
@@ -929,8 +930,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />
                             );
@@ -954,8 +955,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />
                             );
@@ -1075,8 +1076,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                     <div className="col-12 col-lg-7 order-2 order-lg-1">
                         <div className="row">
                             <div className="col-md-6">
-                                <SelectFormGroup 
-                                    eRef={bannerTypeRef} 
+                                <SelectFormGroup
+                                    eRef={bannerTypeRef}
                                     label="Tipo de Banner"
                                     dropdownParent={"#banner-container"}
                                     onChange={onBannerTypeChange}
@@ -1089,8 +1090,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                 </SelectFormGroup>
                             </div>
                             <div className="col-md-6">
-                                <SelectFormGroup 
-                                    eRef={pageIdRef} 
+                                <SelectFormGroup
+                                    eRef={pageIdRef}
                                     label="Página"
                                     onChange={onPageChange}
                                     dropdownParent={"#banner-container"}
@@ -1105,8 +1106,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             </div>
                         </div>
 
-                        <SelectFormGroup 
-                            eRef={afterComponentRef} 
+                        <SelectFormGroup
+                            eRef={afterComponentRef}
                             label="Posición (después de)"
                             dropdownParent="#banner-container"
                             changeWith={[selectedPageId]}
@@ -1119,13 +1120,13 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             ))}
                         </SelectFormGroup>
 
-                        <ImageFormGroup 
-                            eRef={backgroundRef} 
-                            name="background" 
+                        <ImageFormGroup
+                            eRef={backgroundRef}
+                            name="background"
                             label="Fondo"
                             onChange={handleImageChange("background")}
                         />
-                        
+
                         <div className="row">
                             <div className="col-sm-6">
                                 <ImageFormGroup
@@ -1156,20 +1157,20 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                 />
                             </div>
                         </div>
-                        
-                        <InputFormGroup 
-                            eRef={buttonLinkRef} 
+
+                        <InputFormGroup
+                            eRef={buttonLinkRef}
                             label="URL botón"
                             onChange={(event) => handlePreviewFieldChange("button_link", event.target.value)}
                         />
-                        
+
                         <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Posición</label>
                             <div className="col-sm-9">
                                 <div className="custom-control custom-switch">
-                                    <input 
-                                        type="checkbox" 
-                                        className="custom-control-input" 
+                                    <input
+                                        type="checkbox"
+                                        className="custom-control-input"
                                         id="absoluteSwitch"
                                         ref={absoluteRef}
                                         onChange={handleAbsoluteChange}

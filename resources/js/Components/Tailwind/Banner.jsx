@@ -4,6 +4,7 @@ const BannerSimple = lazy(() => import("./Banners/BannerSimple"));
 const BannerAd = lazy(() => import("./Banners/BannerAd"));
 const BannerFullWidth = lazy(() => import("./Banners/BannerFullWidth"));
 const BannerFlex = lazy(() => import("./Banners/BannerFlex"));
+const BannerIbergruas = lazy(() => import("./Banners/BannerIbergruas"));
 const BannerPublicitario = lazy(() => import("./Banners/BannerPublicitario"));
 const BannerPublicitarioPaani = lazy(() => import("./Banners/BannerPublicitarioPaani"));
 const BannerPostSuscriptionPaani = lazy(() => import("./Banners/BannerPostSuscriptionPaani"));
@@ -39,6 +40,8 @@ const Banner = ({ which, data, items, generals }) => {
                 return <BannerFullWidth data={data} />;
             case "BannerFlex":
                 return <BannerFlex data={data} />;
+            case "BannerIbergruas":
+                return <BannerIbergruas data={data} />;
             case "BannerStatic":
                 return <BannerStatic data={data} items={items} />;
             case "BannerSimpleSF":
@@ -61,7 +64,7 @@ const Banner = ({ which, data, items, generals }) => {
                 return <BannerBlogSectionKatya data={data} items={items} />;
             case "BannerMobileApp":
                 return <BannerMobileApp data={data} generals={generals} items={items} />;
- 
+
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">
