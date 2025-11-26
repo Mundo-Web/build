@@ -520,7 +520,7 @@ const HeaderIbergruas = ({
                             {items?.map((category) => (
                                 <div key={category.id} className="relative group">
                                     <a
-                                        href={`/category/${category.slug}`}
+                                        href={`/catalogo?category=${category.slug}`}
                                         className={`
                                             flex items-center gap-1 text-base font-bold transition-colors
                                             ${category.alias
@@ -542,7 +542,7 @@ const HeaderIbergruas = ({
                                                 {category.subcategories.map((sub) => (
                                                     <a
                                                         key={sub.id}
-                                                        href={`/category/${category.slug}/${sub.slug}`}
+                                                        href={`/catalogo?subcategory=${sub.slug}`}
                                                         className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors border-b border-gray-50 last:border-0"
                                                     >
                                                         {sub.name}

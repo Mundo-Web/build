@@ -3,6 +3,7 @@ import React from "react"
 
 const FilterSimple = React.lazy(() => import('./Filters/FilterSimple'))
 const CatalagoFiltros = React.lazy(() => import('./Filters/CatalagoFiltros'))
+const CatalogoIbergruas = React.lazy(() => import('./Filters/CatalogoIbergruas'))
 const CatalagoFiltrosPidelo = React.lazy(() => import('./Filters/CatalagoFiltrosPidelo'))
 const FilterSalaFabulosa = React.lazy(() => import('./Filters/FilterSalaFabulosa'))
 const FilterBananaLab = React.lazy(() => import('./Filters/FilterBananaLab'))
@@ -13,7 +14,7 @@ const CatalagoFiltrosPaani = React.lazy(() => import('./Filters/CatalagoFiltrosP
 const CatalogoFiltrosDental = React.lazy(() => import('./Filters/CatalogoFiltrosDental'))
 const CatalogoFiltrosKatya = React.lazy(() => import('./Filters/CatalogoFiltrosKatya'))
 const FilterHuaillys = React.lazy(() => import('./Filters/FilterHuaillys'))
-  const Filter = ({ which, items, data, cart, setCart, filteredData,setFavorites,favorites }) => {
+const Filter = ({ which, items, data, cart, setCart, filteredData, setFavorites, favorites }) => {
   const getFilter = () => {
     switch (which) {
       case 'FilterSimple':
@@ -39,11 +40,12 @@ const FilterHuaillys = React.lazy(() => import('./Filters/FilterHuaillys'))
         return <CatalagoFiltrosPaani data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} />
       case 'CatalogoFiltrosDental':
         return <CatalogoFiltrosDental data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
-  case 'CatalogoFiltrosKatya':
+      case 'CatalogoFiltrosKatya':
         return <CatalogoFiltrosKatya data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
       case 'FilterHuaillys':
         return <FilterHuaillys data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
-
+      case 'CatalogoIbergruas':
+        return <CatalogoIbergruas data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
       default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }
