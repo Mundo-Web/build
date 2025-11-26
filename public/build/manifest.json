@@ -11759,7 +11759,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-Cy77YHgM.js",
+    "file": "assets/Slider-CwSrFaoL.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -11783,6 +11783,7 @@
       "resources/js/Components/Tailwind/Sliders/SliderTwoColumnSwiper.jsx",
       "resources/js/Components/Tailwind/Sliders/SliderPideloPe.jsx",
       "resources/js/Components/Tailwind/Sliders/SliderMultivet.jsx",
+      "resources/js/Components/Tailwind/Sliders/SliderIbergruas.jsx",
       "resources/js/Components/Tailwind/Sliders/SliderProductBannerKatya.jsx",
       "resources/js/Components/Tailwind/Sliders/SliderFirstClass.jsx"
     ]
@@ -11860,6 +11861,18 @@
     "file": "assets/SliderFirstClass--pJTheE3.js",
     "name": "SliderFirstClass",
     "src": "resources/js/Components/Tailwind/Sliders/SliderFirstClass.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Sliders/SliderIbergruas.jsx": {
+    "file": "assets/SliderIbergruas--pJTheE3.js",
+    "name": "SliderIbergruas",
+    "src": "resources/js/Components/Tailwind/Sliders/SliderIbergruas.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -12975,7 +12988,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-vxEPA77O.js",
+    "file": "assets/System-DEQX4Ing.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

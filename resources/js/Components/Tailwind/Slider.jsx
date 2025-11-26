@@ -20,10 +20,11 @@ const SliderTwoColumnSwiper = React.lazy(() =>
 );
 const SliderPideloPe = React.lazy(() => import("./Sliders/SliderPideloPe"));
 const SliderMultivet = React.lazy(() => import("./Sliders/SliderMultivet"));
+const SliderIbergruas = React.lazy(() => import("./Sliders/SliderIbergruas"));
 const SliderProductBannerKatya = React.lazy(() => import("./Sliders/SliderProductBannerKatya"));
 const SliderFirstClass = React.lazy(() => import("./Sliders/SliderFirstClass"));
 
-const Slider = ({ which, data, sliders ,generals=[]}) => {
+const Slider = ({ which, data, sliders, generals = [] }) => {
     const getSlider = () => {
         switch (which) {
             case "SliderSimple":
@@ -38,7 +39,7 @@ const Slider = ({ which, data, sliders ,generals=[]}) => {
                 return <SliderBananaLab data={data} items={sliders} />;
             case "SliderImagen":
                 return <SliderImagen data={data} items={sliders} />;
-         
+
             case "SliderJustImage":
                 return <SliderJustImage data={data} items={sliders} />;
             case "SliderBrandsPaani":
@@ -51,12 +52,14 @@ const Slider = ({ which, data, sliders ,generals=[]}) => {
                 return <SliderPideloPe data={data} items={sliders} />;
             case "SliderMultivet":
                 return <SliderMultivet data={data} items={sliders} generals={generals} />;
+            case "SliderIbergruas":
+                return <SliderIbergruas data={data} items={sliders} generals={generals} />;
             case "SliderProductBannerKatya":
                 return <SliderProductBannerKatya data={data} items={sliders} generals={generals} />;
             case "SliderFirstClass":
                 return <SliderFirstClass data={data} sliders={sliders} />;
-            
-                default:
+
+            default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">
                         - No Hay componente <b>{which}</b> -
