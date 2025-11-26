@@ -2601,7 +2601,7 @@
     ]
   },
   "resources/js/Admin/Indicators.jsx": {
-    "file": "assets/Indicators-D1w4q16t.js",
+    "file": "assets/Indicators-BNv6Aft4.js",
     "name": "Indicators",
     "src": "resources/js/Admin/Indicators.jsx",
     "isEntry": true,
@@ -9669,7 +9669,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Indicator.jsx": {
-    "file": "assets/Indicator-C1MR1deG.js",
+    "file": "assets/Indicator-BWaeZK4V.js",
     "name": "Indicator",
     "src": "resources/js/Components/Tailwind/Indicator.jsx",
     "isDynamicEntry": true,
@@ -9682,7 +9682,8 @@
     ],
     "dynamicImports": [
       "resources/js/Components/Tailwind/Indicators/IndicatorSimple.jsx",
-      "resources/js/Components/Tailwind/Indicators/IndicatorHuaillys.jsx"
+      "resources/js/Components/Tailwind/Indicators/IndicatorHuaillys.jsx",
+      "resources/js/Components/Tailwind/Indicators/IndicatorIbergruas.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Indicators/IndicatorHuaillys.jsx": {
@@ -9695,6 +9696,22 @@
       "_index-BOnQTV8N.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Indicators/IndicatorIbergruas.jsx": {
+    "file": "assets/IndicatorIbergruas-C81xXMoK.js",
+    "name": "IndicatorIbergruas",
+    "src": "resources/js/Components/Tailwind/Indicators/IndicatorIbergruas.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Indicators/IndicatorSimple.jsx": {
@@ -12988,7 +13005,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DEQX4Ing.js",
+    "file": "assets/System-XpRZg_tO.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

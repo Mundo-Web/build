@@ -17,6 +17,8 @@ class Indicator extends Model
         'symbol',
         'name',
         'description',
+        'button_text',
+        'button_link',
         'visible',
         'status',
     ];
