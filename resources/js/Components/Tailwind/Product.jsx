@@ -4,6 +4,7 @@ const ProductCarousel = React.lazy(() => import("./Products/ProductCarousel"));
 const ProductList = React.lazy(() => import("./Products/ProductList"));
 const ProductSlider = React.lazy(() => import("./Products/ProductSlider"));
 const ProductInfinite = React.lazy(() => import("./Products/ProductInfinite"));
+const ProductIbergruas = React.lazy(() => import("./Products/ProductIbergruas"));
 const ProductNavigation = React.lazy(() => import("./Products/ProductNavigation"));
 const ProductNavigationSwiper = React.lazy(() => import("./Products/ProductNavigationSwiper"));
 const ProductNavigationSwiperSimple = React.lazy(() => import("./Products/ProductNavigationSwiperSimple"));
@@ -60,6 +61,15 @@ const Product = ({
             case "ProductInfinite":
                 return (
                     <ProductInfinite
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductIbergruas":
+                return (
+                    <ProductIbergruas
                         data={data}
                         items={items}
                         cart={cart}
@@ -128,7 +138,7 @@ const Product = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
-                        favorites={favorites}   
+                        favorites={favorites}
                         setFavorites={setFavorites}
                     />
                 );

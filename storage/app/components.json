@@ -2062,6 +2062,35 @@
                 }
             },
             {
+                "id": "ProductIbergruas",
+                "name": "ProductIbergruas",
+                "image": "products-list.png",
+                "data": [
+                    "title",
+                    "path",
+                    "description",
+                    "link_catalog",
+                    "link_cart"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "views",
+                        "most_view"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
                 "id": "ProductMakita",
                 "name": "ProductMakita",
                 "image": "products-list.png",
