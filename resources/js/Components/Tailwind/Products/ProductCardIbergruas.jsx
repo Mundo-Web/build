@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Eye } from "lucide-react";
+import { ShoppingCart, Eye, Download, FileText, ChevronDown } from "lucide-react";
 
 
 import CartModal from "../Components/CartModal";
@@ -13,6 +13,7 @@ const ProductCardIbergruas = ({
     cart,
 }) => {
     const [modalOpen, setModalOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const onAddClicked = (e) => {
         e.preventDefault();
@@ -30,12 +31,31 @@ const ProductCardIbergruas = ({
         setTimeout(() => setModalOpen(false), 3000);
     };
 
+    const handlePdfDownload = (e, pdf, index) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Abrir el PDF en una nueva pestaña - el nombre ya incluye la extensión .pdf
+        window.open(`/storage/images/item/${pdf.url}`, '_blank');
+        setDropdownOpen(false);
+    };
+
+    const toggleDropdown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDropdownOpen(!dropdownOpen);
+    };
+
     const isPriceZero = Number(product.final_price) === 0;
+    const hasDetail = product.is_detail !== false && product.is_detail !== 0 && product.is_detail !== '0';
+    const pdfs = Array.isArray(product.pdf) ? product.pdf : [];
+    const shouldShowDropdown = !hasDetail && pdfs.length > 0;
 
     return (
         <>
             <motion.a
-                href={`/product/${product.slug}`}
+                href={shouldShowDropdown ? undefined : `/product/${product.slug}`}
+                onClick={shouldShowDropdown ? (e) => e.preventDefault() : undefined}
                 className="group flex flex-col h-full bg-transparent  border-0 transition-all duration-300 overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -105,12 +125,42 @@ const ProductCardIbergruas = ({
                     )}
 
                     {/* Action Button */}
-                    <div className={`mt-auto ${isPriceZero ? 'pt-4' : ''}`}>
-                        {isPriceZero ? (
+                    <div className={`mt-auto ${isPriceZero ? 'pt-4' : ''} relative`}>
+                        {shouldShowDropdown ? (
+                            <div className="relative">
+                                <button
+                                    onClick={toggleDropdown}
+                                    className="w-full flex items-center justify-center gap-2 bg-transparent border-2 border-primary customtext-primary py-3 px-4 font-semibold hover:bg-primary hover:text-white transition-all duration-300"
+                                >
+                                    <Download size={18} />
+                                    Descargar Fichas
+                                    <ChevronDown size={16} className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                
+                                {dropdownOpen && (
+                                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border-2 border-primary shadow-xl z-50 max-h-60 overflow-y-auto">
+                                        <div className="p-2">
+                                            {pdfs.map((pdf, index) => (
+                                                <button
+                                                    key={index}
+                                                    onClick={(e) => handlePdfDownload(e, pdf, index)}
+                                                    className="w-full flex items-center gap-3 px-4 py-3 text-left customtext-neutral-dark hover:bg-gray-100 transition-colors rounded-lg"
+                                                >
+                                                    <FileText size={18} className="customtext-primary flex-shrink-0" />
+                                                    <span className="flex-1 truncate">
+                                                        {pdf.title || `Ficha Técnica ${index + 1}`}
+                                                    </span>
+                                                    <Download size={16} className="customtext-primary flex-shrink-0" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : isPriceZero ? (
                             <button
                                 className="w-full flex items-center justify-center gap-2 bg-transparent border-2 border-primary customtext-primary py-3 px-4  font-semibold hover:bg-primary hover:text-white transition-all duration-300"
                             >
-                              
                                 Ver más
                             </button>
                         ) : (

@@ -571,18 +571,18 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                         const isEven = index % 2 === 1; // index 1, 3, 5... (text left)
                         
                         return (
-                            <div key={index} className="w-full rounded-2xl overflow-hidden shadow-xl">
+                            <div key={index} className="w-full overflow-hidden shadow-xl">
                                 <div className={`grid lg:grid-cols-2 min-h-[400px] lg:min-h-[500px] ${!isEven ? 'bg-white' : 'bg-white'}`}>
                                     {/* Content Side */}
                                     <div className={`bg-primary flex items-center justify-center px-8 md:px-12 lg:px-16 xl:px-20 py-12 lg:py-16 ${isEven ? 'order-2 lg:order-1' : 'order-2'}`}>
                                         <div className="max-w-2xl w-full space-y-6">
                                             {banner.title && (
-                                                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                                                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold customtext-neutral-dark leading-tight">
                                                     {parseTitle(banner.title)}
                                                 </h2>
                                             )}
                                             {banner.description && (
-                                                <p className="text-lg md:text-xl text-white/90 leading-relaxed">
+                                                <p className="text-lg md:text-xl customtext-neutral-darkleading-relaxed">
                                                     {banner.description}
                                                 </p>
                                             )}
@@ -590,7 +590,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                                                 <div className="pt-4">
                                                     <a
                                                         href={banner.button_link}
-                                                        className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-primary font-bold text-lg rounded-lg hover:bg-white/90 transition-all duration-300 hover:scale-105 shadow-xl"
+                                                        className="inline-flex items-center border-2 border-neutral-dark justify-center gap-3 px-8 py-4 customtext-neutral-dark font-bold text-lg  transition-all duration-300 hover:scale-105 shadow-xl"
                                                     >
                                                         <span>{banner.button_text}</span>
                                                     </a>
@@ -893,8 +893,8 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                                             labelKey="name"
                                             value={selectedSubcategory || contextData.current_subcategory?.name || ''}
                                             placeholder="Seleccionar maquinaria"
-                                            className="bg-transparent text-white "
-                                            classNameDropdown="!rounded-none border-white/30"
+                                            className="bg-transparent text-white   "
+                                            classNameDropdown="!rounded-none "
                                             classNameIcon="text-white"
 
                                             onChange={setSelectedSubcategory}

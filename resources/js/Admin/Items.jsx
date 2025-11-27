@@ -949,6 +949,29 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+                    Fillable.has('items', 'is_detail') && {
+                        dataField: "is_detail",
+                        caption: "Con Detalle",
+                        dataType: "boolean",
+                        width: "90px",
+                        cellTemplate: (container, { data }) => {
+                            const isDetailValue = data.is_detail === 1 || data.is_detail === '1' || data.is_detail === true;
+
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={isDetailValue}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "is_detail",
+                                            value: e.target.checked ? 1 : 0,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
                     Fillable.has('items', 'visible') && {
                         dataField: "visible",
                         caption: "Visible",
