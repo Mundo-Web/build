@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Indicator extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -21,6 +21,7 @@ class Indicator extends Model
         'button_link',
         'visible',
         'status',
+        'order_index',
     ];
     protected $casts = [
     

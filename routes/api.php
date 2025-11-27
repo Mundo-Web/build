@@ -207,9 +207,6 @@ Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->w
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
 Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
-Route::get('/strengths', function() {
-    return \App\Models\Strength::where('status', true)->where('visible', true)->get();
-});
 
 // Combos API para carrito
 Route::get('/combos-as-products', [App\Http\Controllers\Api\ComboApiController::class, 'index']);
@@ -396,7 +393,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/indicators/paginate', [AdminIndicatorController::class, 'paginate']);
     Route::patch('/indicators/status', [AdminIndicatorController::class, 'status']);
     Route::patch('/indicators/{field}', [AdminIndicatorController::class, 'boolean']);
-    Route::delete('/indicators/{id}', [AdminIndicatorController::class, 'delete']);
+    Route::put('/indicators/{id}/reorder', [AdminIndicatorController::class, 'reorder']);
 
     Route::post('/faqs', [AdminFaqController::class, 'save']);
     Route::post('/faqs/paginate', [AdminFaqController::class, 'paginate']);
