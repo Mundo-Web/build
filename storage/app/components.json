@@ -4426,6 +4426,23 @@
                     "class_card_button",
                     "class_bottom_cta"
                 ]
+            },
+            {
+                "id": "ServiceSidebar",
+                "name": "Servicios con Sidebar",
+                "image": "service-sidebar.png",
+                "data": [
+                    "title",
+                    "description",
+                    "sidebar_title",
+                    "class_container",
+                    "class_title",
+                    "class_description"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
             }
         ]
     },

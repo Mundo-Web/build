@@ -1547,7 +1547,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-LWNQFFX4.js",
+    "file": "assets/About-C1fd_YhS.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -3828,7 +3828,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-CV1VHVVa.js",
+    "file": "assets/Blog-d0cDdK49.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -3873,7 +3873,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-D3o9PSTp.js",
+    "file": "assets/BlogArticle-DTCT7IRA.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5703,7 +5703,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-Dv5iV-G1.js",
+    "file": "assets/Base-BpLxgjay.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -9110,7 +9110,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-Bc5_dL9s.js",
+    "file": "assets/Header-yuYfufc9.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -9332,7 +9332,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Headers/HeaderIbergruas.jsx": {
-    "file": "assets/HeaderIbergruas-_uFzUuTx.js",
+    "file": "assets/HeaderIbergruas-ZynAPrmM.js",
     "name": "HeaderIbergruas",
     "src": "resources/js/Components/Tailwind/Headers/HeaderIbergruas.jsx",
     "isDynamicEntry": true,
@@ -11790,7 +11790,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-D27W_IjN.js",
+    "file": "assets/Service-Di6EwTYk.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -11805,7 +11805,8 @@
       "resources/js/Components/Tailwind/Services/ServiceSimple.jsx",
       "resources/js/Components/Tailwind/Services/ServiceGrid.jsx",
       "resources/js/Components/Tailwind/Services/ServiceCarousel.jsx",
-      "resources/js/Components/Tailwind/Services/ServiceSelection.jsx"
+      "resources/js/Components/Tailwind/Services/ServiceSelection.jsx",
+      "resources/js/Components/Tailwind/Services/ServiceSidebar.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceCarousel.jsx": {
@@ -11842,6 +11843,18 @@
     "file": "assets/ServiceSelection--pJTheE3.js",
     "name": "ServiceSelection",
     "src": "resources/js/Components/Tailwind/Services/ServiceSelection.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Services/ServiceSidebar.jsx": {
+    "file": "assets/ServiceSidebar--pJTheE3.js",
+    "name": "ServiceSidebar",
+    "src": "resources/js/Components/Tailwind/Services/ServiceSidebar.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -12823,7 +12836,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-_7bwCqJM.js",
+    "file": "assets/Contact-CZBgRuOD.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -12868,7 +12881,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-ByIciuEh.js",
+    "file": "assets/CourseDetails-D1ffDkza.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -12904,7 +12917,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-DUPIAh5j.js",
+    "file": "assets/Courses-BcKCvf3b.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -12999,7 +13012,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-Bchr5uuT.js",
+    "file": "assets/Home-A0DBxQTd.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -13207,7 +13220,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DJ-6K23O.js",
+    "file": "assets/System-jPxZWOAl.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

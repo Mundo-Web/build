@@ -4,6 +4,7 @@ const ServiceSimple = React.lazy(() => import("./Services/ServiceSimple"));
 const ServiceGrid = React.lazy(() => import("./Services/ServiceGrid"));
 const ServiceCarousel = React.lazy(() => import("./Services/ServiceCarousel"));
 const ServiceSelection = React.lazy(() => import("./Services/ServiceSelection"));
+const ServiceSidebar = React.lazy(() => import("./Services/ServiceSidebar"));
 
 const Service = ({
     data,
@@ -20,6 +21,8 @@ const Service = ({
                 return <ServiceCarousel data={data} items={items} />;
             case "ServiceSelection":
                 return <ServiceSelection data={data} />;
+            case "ServiceSidebar":
+                return <ServiceSidebar data={data} items={items} />;
             default:
                 return <div>No hay componente {which}</div>;
         }

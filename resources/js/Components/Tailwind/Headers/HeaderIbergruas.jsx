@@ -560,7 +560,7 @@ const HeaderIbergruas = ({
                                 .map((page, index, arr) => (
                                     <a
                                         key={index}
-                                        href={`/${page.slug}`}
+                                        href={page.path}
                                         className="text-base font-bold text-gray-900 hover:text-black transition-colors"
                                     >
                                         {page.name}
