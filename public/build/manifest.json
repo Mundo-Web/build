@@ -1769,7 +1769,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-DX4ZLe4N.js",
+    "file": "assets/Banners-Bv1rP0m6.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -5406,7 +5406,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-CKnrC3Rb.js",
+    "file": "assets/Banner-CN7Cr4IP.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -13233,7 +13233,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Q-EadxcW.js",
+    "file": "assets/System-PPfelj5p.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

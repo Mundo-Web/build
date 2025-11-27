@@ -16,19 +16,19 @@ const BannerIbergruas = ({ data }) => {
 
     return (
         <section className="w-full">
-            <div className="grid lg:grid-cols-2 min-h-[500px] lg:min-h-[600px]">
+            <div className="grid lg:grid-cols-2 min-h-[500px] lg:min-h-[400px]">
 
                 {/* Left side - Content with bg-primary (50% width) */}
                 <div className="bg-primary flex items-center justify-center px-8 md:px-12 lg:px-16 xl:px-24 py-16 lg:py-20 order-2 lg:order-1">
                     <div className="max-w-2xl w-full space-y-8">
                         {/* Title */}
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
+                        <h2 className="text-4xl md:text-4xl lg:text-5xl xl:text-5xl font-bold customtext-neutral-dark leading-tight">
                             {data?.name}
                         </h2>
 
                         {/* Description */}
                         {data?.description && (
-                            <p className="text-xl md:text-2xl lg:text-3xl text-white/90 leading-relaxed">
+                            <p className="text-xl md:text-2xl lg:text-3xl customtext-neutral-dark leading-relaxed">
                                 {data.description}
                             </p>
                         )}
@@ -39,7 +39,7 @@ const BannerIbergruas = ({ data }) => {
                                 <a
                                     href={data.button_link}
                                     ref={buttonRef}
-                                    className="inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-primary font-bold text-xl rounded-lg hover:bg-white/90 transition-all duration-300 hover:scale-105 shadow-xl"
+                                    className="inline-flex rounded-none items-center justify-center gap-3 px-10 py-5 bg-transparent customtext-neutral-dark font-bold text-xl  transition-all duration-300 hover:scale-105 border-2 border-neutral-dark "
                                 >
                                     <span>{data.button_text}</span>
                                     <ArrowRight className="w-6 h-6" />
@@ -49,7 +49,7 @@ const BannerIbergruas = ({ data }) => {
 
                         {/* Subtitle */}
                         {data?.subtitle && (
-                            <p className="text-lg md:text-xl text-white/80 font-semibold pt-4">
+                            <p className="text-lg md:text-xl customtext-neutral-dark/80 font-semibold pt-4">
                                 {data.subtitle}
                             </p>
                         )}
