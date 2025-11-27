@@ -183,11 +183,19 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
             if (GET.category) params.category = GET.category;
             if (GET.brand) params.brand = GET.brand;
 
+            console.log('fetchContextData - params:', params);
+            console.log('fetchContextData - GET object:', GET);
+
             if (Object.keys(params).length > 0) {
                 const response = await axios.get('/api/catalog/context', { params });
+                console.log('fetchContextData - API response:', response.data);
                 if (response.data) {
                     setContextData(response.data);
+                    console.log('fetchContextData - contextData actualizado:', response.data);
+                    console.log('fetchContextData - subcategories:', response.data.subcategories);
                 }
+            } else {
+                console.log('fetchContextData - No params to fetch');
             }
         } catch (error) {
             console.error("Error fetching context data:", error);
@@ -638,16 +646,19 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
 
                 {/* Subcategory Dropdown and Sort Options in same row */}
                 <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  
                     {/* Subcategory Dropdown */}
-                    {contextData.current_subcategory && contextData.subcategories.length > 0 && (
+                    {contextData.subcategories && contextData.subcategories.length > 0 && (
                         <div className="w-full md:w-auto md:min-w-[280px]">
                             <SelectForm
                                 options={contextData.subcategories}
                                 valueKey="slug"
                                 labelKey="name"
-                                value={contextData.current_subcategory.slug}
+                                value={contextData.current_subcategory?.slug || ''}
                                 placeholder="Seleccionar subcategoría"
                                 className="bg-primary text-white border-primary"
+                                classNameDropdown="!rounded-none"
+                                classNameIcon="text-white"
                                 onChange={(slug) => {
                                     window.location.href = `/catalogo?subcategory=${slug}`;
                                 }}
@@ -664,6 +675,8 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                             value={selectedFilters.sort?.[0]?.selector ? `${selectedFilters.sort[0].selector}:${selectedFilters.sort[0].desc ? "desc" : "asc"}` : "final_price:desc"}
                             placeholder="Ordenar por"
                             className="bg-primary text-white border-primary"
+                            classNameDropdown="!rounded-none"
+                            classNameIcon="text-white"
                             onChange={(value) => {
                                 const [selector, order] = value.split(":");
                                 setSelectedFilters(prev => ({ ...prev, sort: [{ selector, desc: order === "desc" }] }));

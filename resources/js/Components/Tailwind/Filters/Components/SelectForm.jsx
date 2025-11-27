@@ -16,6 +16,8 @@ const SelectForm = ({
     className = "customtext-neutral-dark   rounded-xl ",
     disabled = false,
     generalIcon,
+    classNameDropdown = "",
+    classNameIcon,
 }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [selectedOption, setSelectedOption] = useState(null)
@@ -85,13 +87,13 @@ const SelectForm = ({
                 </span>
                 <span className="absolute inset-y-0 right-0 flex items-center justify-center py-3 pr-2 pointer-events-none">
                     <ChevronDown
-                        className={`w-5 h-5 customtext-neutral-dark transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                        className={`w-5 h-5  transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${classNameIcon || "customtext-neutral-dark"}`}
                     />
                 </span>
             </button>
 
             {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div className={`absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg max-h-60 overflow-auto ${classNameDropdown}`}>
                     <div className="sticky top-0 bg-white p-2">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
