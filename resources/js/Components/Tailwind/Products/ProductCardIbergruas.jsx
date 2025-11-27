@@ -36,13 +36,13 @@ const ProductCardIbergruas = ({
         <>
             <motion.a
                 href={`/product/${product.slug}`}
-                className="group flex flex-col h-full bg-transparent rounded-2xl border-0 transition-all duration-300 overflow-hidden"
+                className="group flex flex-col h-full bg-transparent  border-0 transition-all duration-300 overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -5 }}
             >
                 {/* Image Section */}
-                <div className="relative aspect-[4/3] overflow-hidden  rounded-2xl">
+                <div className="relative aspect-[4/3] overflow-hidden">
                     {product.discount > 0 && (
                         <span className="absolute top-3 right-3 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
                             -{Math.round(((product.price - product.discount) / product.price) * 100)}%
