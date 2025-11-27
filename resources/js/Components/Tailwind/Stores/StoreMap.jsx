@@ -195,7 +195,7 @@ const StoreMap = ({ data, stores = [] }) => {
                                     mapTypeControl: true,
                                     fullscreenControl: true,
                                     zoomControl: true,
-                                    gestureHandling: 'greedy', // Permitir scroll sin necesidad de Ctrl
+                                    gestureHandling: 'cooperative', // Requiere Ctrl+scroll para zoom
                                     styles: [
                                         {
                                             featureType: "poi",
