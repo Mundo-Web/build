@@ -414,7 +414,7 @@ const HeaderIbergruas = ({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-[60] max-h-80 overflow-y-auto mt-1"
+                className="absolute top-full left-0 right-0 bg-white border border-gray-200  shadow-lg z-[60] max-h-80 overflow-y-auto mt-1"
             >
                 {isLoading ? (
                     <div className="p-4 text-center customtext-neutral-dark">
@@ -440,7 +440,7 @@ const HeaderIbergruas = ({
                                     className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${index === selectedIndex ? 'bg-primary border-l-4 border-primary' : ''}`}
                                     type="button"
                                 >
-                                    <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+                                    <div className="flex-shrink-0 w-12 h-12 bg-gray-100  overflow-hidden">
                                         {suggestion.image ? (
                                             <img
                                                 src={`/api/items/media/${suggestion.image}`}
@@ -538,7 +538,7 @@ const HeaderIbergruas = ({
                                     {/* Dropdown Menu for Subcategories */}
                                     {category.subcategories?.length > 0 && (
                                         <div className="absolute top-full left-0 w-56 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2 z-50">
-                                            <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-gray-100">
+                                            <div className="bg-white  shadow-xl overflow-hidden border border-gray-100">
                                                 {category.subcategories.map((sub) => (
                                                     <a
                                                         key={sub.id}

@@ -45,10 +45,11 @@ const BannersJsonEditor = forwardRef(({ name = "banners", label = "Banners", ini
                 const imgRef = imageRefs.current[index];
                 console.log(`getImageFiles - index ${index}:`, imgRef);
                 
-                // imgRef IS the input element directly (not {current: input})
-                if (imgRef?.files?.[0]) {
-                    files[`banner_image_${index}`] = imgRef.files[0];
-                    console.log(`getImageFiles - Added file for banner_image_${index}:`, imgRef.files[0].name);
+                // imgRef is the whole ref object with {current, image, getDeleteFlag, resetDeleteFlag}
+                // We need to access imgRef.current.files[0]
+                if (imgRef?.current?.files?.[0]) {
+                    files[`banner_image_${index}`] = imgRef.current.files[0];
+                    console.log(`getImageFiles - Added file for banner_image_${index}:`, imgRef.current.files[0].name);
                 }
             });
             console.log('getImageFiles - Final files object:', files);

@@ -528,7 +528,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                                     <div className="relative z-10 px-4 sm:px-6 lg:px-8">
                                         <div className="max-w-3xl mx-auto text-center">
                                             {banner.title && (
-                                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
+                                                <h1 className="text-4xl md:text-5xl  max-w-xl lg:text-6xl font-bold mb-6 leading-tight text-white">
                                                     {parseTitle(banner.title)}
                                                 </h1>
                                             )}
