@@ -23,7 +23,7 @@ const ServiceSidebar = ({ data, items = [] }) => {
                                             : 'text-white hover:text-primary'
                                     }`}
                                 >
-                                    <span className="text-lg">
+                                    <span className="text-lg font-bold">
                                         {service.name}
                                     </span>
                                 </button>
@@ -43,8 +43,8 @@ const ServiceSidebar = ({ data, items = [] }) => {
                                     transition={{ duration: 0.3 }}
                                 >
                                     {/* Title Banner (Amarillo/Primary) */}
-                                    <div className="bg-primary px-12 py-8">
-                                        <h2 className="text-4xl lg:text-5xl font-bold text-neutral-900">
+                                    <div className="bg-primary px-12 py-4">
+                                        <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900">
                                             {selectedService.name}
                                         </h2>
                                     </div>
