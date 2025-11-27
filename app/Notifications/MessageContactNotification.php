@@ -27,9 +27,14 @@ class MessageContactNotification extends Notification implements ShouldQueue
     {
         return [
             'nombre' => 'Nombre del remitente',
-            'descripcion' => 'Descripción del mensaje',
             'email' => 'Correo electrónico del remitente',
             'telefono' => 'Teléfono del remitente',
+            'empresa' => 'Empresa del remitente',
+            'ruc' => 'RUC de la empresa',
+            'categoria' => 'Categoría de interés',
+            'subcategoria' => 'Subcategoría seleccionada',
+            'maquinaria' => 'Maquinaria de interés',
+            'descripcion' => 'Descripción del mensaje',
             'fecha_contacto' => 'Fecha de contacto',
         ];
     }
@@ -45,12 +50,16 @@ class MessageContactNotification extends Notification implements ShouldQueue
         $template = \App\Models\General::where('correlative', 'message_contact_email')->first();
         $body = $template
             ? \App\Helpers\Text::replaceData($template->description, [
-
                 'nombre' => $this->message->name,
-                'descripcion' => $this->message->description,
                 'email' => $this->message->email,
-                'telefono' => $this->message->phone,
-                'year'         => date('Y'),
+                'telefono' => $this->message->phone ?? 'No proporcionado',
+                'empresa' => $this->message->company ?? 'No proporcionado',
+                'ruc' => $this->message->ruc ?? 'No proporcionado',
+                'categoria' => $this->message->category ?? 'No especificado',
+                'subcategoria' => $this->message->subcategory ?? 'No especificado',
+                'maquinaria' => $this->message->machinery ?? 'No especificado',
+                'descripcion' => $this->message->description,
+                'year' => date('Y'),
                 'fecha_contacto' => $this->message->created_at
                     ? $this->message->created_at->translatedFormat('d \d\e F \d\e\l Y')
                     : '',

@@ -35,7 +35,7 @@ const Messages = () => {
   const onModalOpen = (data) => {
     if (!data.seen) {
       messagesRest.boolean({
-        id: data,
+        id: data.id,
         field: 'seen',
         value: true
       })

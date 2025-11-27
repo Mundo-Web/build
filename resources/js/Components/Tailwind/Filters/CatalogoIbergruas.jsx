@@ -467,6 +467,10 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
             description: descriptionRef.current.value,
         };
 
+        console.log('📤 Enviando request:', request);
+        console.log('📋 contextData:', contextData);
+        console.log('🎯 selectedSubcategory:', selectedSubcategory);
+
         const result = await messagesRest.save(request);
 
         if (nameRef.current) nameRef.current.value = "";
@@ -880,16 +884,19 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                                 {/* Maquinaria - Select o Input disabled */}
                                 <div>
                                     <label className="block text-sm font-semibold text-white mb-2">
-                                        Maquinarias <span className="text-red-500">*</span>
+                                        {contextData.category?.name || 'Maquinarias'} <span className="text-red-500">*</span>
                                     </label>
                                     {contextData.subcategories && contextData.subcategories.length > 0 ? (
                                         <SelectForm
                                             options={contextData.subcategories}
                                             valueKey="name"
                                             labelKey="name"
-                                            value={selectedSubcategory}
+                                            value={selectedSubcategory || contextData.current_subcategory?.name || ''}
                                             placeholder="Seleccionar maquinaria"
-                                            className="bg-transparent text-white border-white/30"
+                                            className="bg-transparent text-white "
+                                            classNameDropdown="!rounded-none border-white/30"
+                                            classNameIcon="text-white"
+
                                             onChange={setSelectedSubcategory}
                                         />
                                     ) : (
