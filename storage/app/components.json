@@ -3789,7 +3789,43 @@
                     "class_description",
                     "class_button",
                     "link_denuncias",
-                    "job_button"
+                    "job_button",
+                    "section_newsletter"
+                ],
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "generals": [
+                    "terms_conditions",
+                    "privacy_policy",
+                    "delivery_policy",
+                    "saleback_policy",
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "opening_hours",
+                    "politica_sistema_gestion",
+                    "alcance_sistema_gestion"
+                ]
+            },
+              {
+                "id": "FooterIbergruas",
+                "name": "FooterIbergruas",
+                "image": "footer-simple.png",
+                "data": [
+                    "class_footer",
+                    "logo_footer_content",
+                    "logo_footer",
+                    "class_menu",
+                    "class_menu_list",
+                    "class_menu_item",
+                    "class_icon",
+                    "class_description",
+                    "class_button",
+                    "link_denuncias",
+                    "job_button",
+                    "section_newsletter"
                 ],
                 "using": {
                     "model": "Social",

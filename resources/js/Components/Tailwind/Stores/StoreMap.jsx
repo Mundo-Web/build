@@ -13,6 +13,7 @@ const StoreMap = ({ data, stores = [] }) => {
     }); // Lima por defecto
     const [zoom, setZoom] = useState(6);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const [userInteracted, setUserInteracted] = useState(false); // Flag para saber si el usuario movió el mapa
     const mapRef = useRef(null);
 
     // Filtrar solo las tiendas visibles y con coordenadas válidas
@@ -26,7 +27,8 @@ const StoreMap = ({ data, stores = [] }) => {
 
     // Calcular el centro del mapa basado en todas las ubicaciones
     useEffect(() => {
-        if (validStores.length > 0 && !selectedStore) {
+        // Solo ajustar el mapa automáticamente si el usuario NO ha interactuado
+        if (validStores.length > 0 && !selectedStore && !userInteracted) {
             // Si solo hay una tienda, centrar en ella
             if (validStores.length === 1) {
                 setMapCenter({
@@ -60,7 +62,7 @@ const StoreMap = ({ data, stores = [] }) => {
                 else setZoom(12);
             }
         }
-    }, [validStores, selectedStore]);
+    }, [validStores, selectedStore, userInteracted]);
 
     // Función para obtener el label del tipo de tienda
     const getTypeLabel = (type) => {
@@ -96,6 +98,7 @@ const StoreMap = ({ data, stores = [] }) => {
     // Función para manejar la selección de una tienda
     const handleStoreSelect = (store) => {
         setSelectedStore(store);
+        setUserInteracted(false); // Permitir que el mapa se mueva automáticamente al seleccionar
         // Centrar el mapa en la tienda seleccionada con un ligero offset vertical
         // para dar espacio al InfoWindow
         const lat = parseFloat(store.latitude);
@@ -185,11 +188,14 @@ const StoreMap = ({ data, stores = [] }) => {
                                 center={mapCenter}
                                 zoom={zoom}
                                 onLoad={map => mapRef.current = map}
+                                onDragStart={() => setUserInteracted(true)} // Marcar que el usuario interactuó
+                                onZoomChanged={() => setUserInteracted(true)} // Marcar que el usuario interactuó
                                 options={{
                                     streetViewControl: true,
                                     mapTypeControl: true,
                                     fullscreenControl: true,
                                     zoomControl: true,
+                                    gestureHandling: 'greedy', // Permitir scroll sin necesidad de Ctrl
                                     styles: [
                                         {
                                             featureType: "poi",
