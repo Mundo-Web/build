@@ -13,6 +13,7 @@ const ProductDetailAko = React.lazy(() => import('./ProductDetails/ProductDetail
 const ProductDetailDental = React.lazy(() => import('./ProductDetails/ProductDetailDental'))
 const ProductDetailPidelo = React.lazy(() => import('./ProductDetails/ProductDetailPidelo'))
 const ProductDetailMultivet = React.lazy(() => import('./ProductDetails/ProductDetailMultivet'))
+const ProductDetailIbergruas = React.lazy(() => import('./ProductDetails/ProductDetailIbergruas'))
 const ProductDetailKatya = React.lazy(() => import('./ProductDetails/ProductDetailKatya'))
 const ProductDetailHuaillys = React.lazy(() => import('./ProductDetails/ProductDetailHuaillys'))
 const ProductDetail = ({ which, item, cart, setCart, data, generals = [], favorites, setFavorites, textstatic, contacts }) => {
@@ -41,7 +42,8 @@ const ProductDetail = ({ which, item, cart, setCart, data, generals = [], favori
         return <ProductDetailPidelo item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} data={data} />
       case 'ProductDetailMultivet':
         return <ProductDetailMultivet item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />
-
+      case 'ProductDetailIbergruas':
+        return <ProductDetailIbergruas item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />;
       case 'ProductDetailKatya':
         return <ProductDetailKatya item={item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} />;
       case 'ProductDetailHuaillys':

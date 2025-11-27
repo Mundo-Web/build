@@ -2224,7 +2224,34 @@
                         "subcategory",
                         "brand"
                     ],
-                    "limit": 8
+                    "limit": 12
+                }
+            },
+            {
+                "id": "ProductIbergruasSwiper",
+                "name": "Product Ibergruas Swiper",
+                "image": "products-carousel.png",
+                "data": [
+                    "title",
+                    "description",
+                    "link_catalog",
+                    "class_button",
+                    "class_content_header"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
                 }
             },
             {
@@ -2889,6 +2916,32 @@
             {
                 "id": "ProductDetailMultivet",
                 "name": "ProductDetailMultivet - Tienda de Mascotas",
+                "data": [
+                    "link_cart",
+                    "background",
+                    "buyButton"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "images",
+                        "specifications"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+                {
+                "id": "ProductDetailIbergruas",
+                "name": "ProductDetailIbergruas - Ibergruas",
                 "data": [
                     "link_cart",
                     "background",

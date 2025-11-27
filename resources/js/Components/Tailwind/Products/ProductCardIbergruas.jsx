@@ -20,7 +20,7 @@ const ProductCardIbergruas = ({
         e.stopPropagation();
 
         const newCart = structuredClone(cart);
-        const index = newCart.findIndex((x) => x.id == product.id);
+        const index = newCart.findIndex((x) => x.id ==product?.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: 1 });
         } else {
@@ -46,9 +46,9 @@ const ProductCardIbergruas = ({
         setDropdownOpen(!dropdownOpen);
     };
 
-    const isPriceZero = Number(product.final_price) === 0;
-    const hasDetail = product.is_detail !== false && product.is_detail !== 0 && product.is_detail !== '0';
-    const pdfs = Array.isArray(product.pdf) ? product.pdf : [];
+    const isPriceZero = Number(product?.final_price) === 0;
+    const hasDetail =product?.is_detail !== false &&product?.is_detail !== 0 &&product?.is_detail !== '0';
+    const pdfs = Array.isArray(product.pdf) ?product?.pdf : [];
     const shouldShowDropdown = !hasDetail && pdfs.length > 0;
 
     return (
@@ -62,10 +62,10 @@ const ProductCardIbergruas = ({
                 whileHover={{ y: -5 }}
             >
                 {/* Image Section */}
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div className="relative aspect-square overflow-hidden">
                     {product.discount > 0 && (
                         <span className="absolute top-3 right-3 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-                            -{Math.round(((product.price - product.discount) / product.price) * 100)}%
+                            -{Math.round(((product.price -product?.discount) /product?.price) * 100)}%
                         </span>
                     )}
                     <motion.img
@@ -81,7 +81,7 @@ const ProductCardIbergruas = ({
                 <div className="flex flex-col flex-grow p-5  rounded-b-2xl">
                     {/* Brand/Category */}
                     <div className="text-xs font-medium customtext-primary  mb-2 uppercase tracking-wide">
-                        {product.brand?.name || product.category?.name}
+                        {product.brand?.name ||product?.category?.name}
                     </div>
 
                     {/* Name */}
@@ -92,7 +92,7 @@ const ProductCardIbergruas = ({
                     {/* Description */}
                     <div
                         className="text-base text-white mb-4 line-clamp-2 min-h-10"
-                        dangerouslySetInnerHTML={{ __html: product.description }}
+                        dangerouslySetInnerHTML={{ __html:product?.description }}
                     />
 
                     {/* Price Section - Only if price > 0 */}
