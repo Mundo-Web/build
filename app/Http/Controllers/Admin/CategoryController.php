@@ -33,6 +33,12 @@ class CategoryController extends BasicController
             $body['banners'] = json_decode($request->input('banners'), true);
         }
 
+        // Process stores JSON array
+        if ($request->has('stores')) {
+            $storesData = $request->input('stores');
+            $body['stores'] = is_string($storesData) ? json_decode($storesData, true) : $storesData;
+        }
+
         return $body;
     }
 

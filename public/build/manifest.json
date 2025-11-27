@@ -1911,7 +1911,7 @@
     ]
   },
   "resources/js/Admin/Categories.jsx": {
-    "file": "assets/Categories-BQ4VRjKi.js",
+    "file": "assets/Categories-BTGxMjjn.js",
     "name": "Categories",
     "src": "resources/js/Admin/Categories.jsx",
     "isEntry": true,
@@ -1929,6 +1929,7 @@
       "_image-BPmHvEaV.js",
       "_move-up-Gz4AiwKb.js",
       "_trash-2-DU7LB6-f.js",
+      "_SelectAPIFormGroup-BZe8H0Ph.js",
       "_Modal-xDw9ufjg.js",
       "_Table-CjKaEY3W.js",
       "_DxButton-DV0H-ZcL.js",
@@ -1936,6 +1937,7 @@
       "_ReactAppend-Vm5G2nof.js",
       "_BooleanLimit-D-OsQsek.js",
       "_InputFormGroup-iZIO11ZN.js",
+      "_SetSelectValue-UxyCmHse.js",
       "_index-yBjzXJbu.js",
       "_Global-CazroCzF.js",
       "_tippy-react.esm-DmkRJDEW.js",
@@ -7730,7 +7732,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-iJeVfNeB.js",
+    "file": "assets/Filter-C2YCHHN6.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -8148,7 +8150,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoIbergruas.jsx": {
-    "file": "assets/CatalogoIbergruas-D4BwMM2l.js",
+    "file": "assets/CatalogoIbergruas-BOns1Hkg.js",
     "name": "CatalogoIbergruas",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoIbergruas.jsx",
     "isDynamicEntry": true,
@@ -8159,6 +8161,7 @@
       "_Number2Currency-jIsa99f9.js",
       "_proxy-B0QLMKEh.js",
       "_shopping-cart-DLRnxGTD.js",
+      "resources/js/Components/Tailwind/Stores/StoreMap.jsx",
       "_ItemsRest-Dp5IKigO.js",
       "_ArrayJoin-2k6ba35P.js",
       "_NoResult-DlL_OOrq.js",
@@ -8184,6 +8187,8 @@
       "_minus-Db6MFKEO.js",
       "_plus-CTIomuuF.js",
       "_General-apRuNwp7.js",
+      "_esm-CTRYOAnL.js",
+      "_Global-CazroCzF.js",
       "_BasicRest-BML1C-ua.js",
       "_BooleanLimit-D-OsQsek.js",
       "_chevron-down-uIVDLcM-.js",
@@ -13202,7 +13207,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-w3pvmQ__.js",
+    "file": "assets/System-DJ-6K23O.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

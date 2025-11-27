@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import CategoriesRest from "../Actions/Admin/CategoriesRest";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
 import BannersJsonEditor from "../Components/Adminto/form/BannersJsonEditor";
+import SelectAPIFormGroup from "../Components/Adminto/form/SelectAPIFormGroup";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
@@ -15,6 +16,7 @@ import ReactAppend from "../Utils/ReactAppend";
 import Fillable from "../Utils/Fillable";
 import BooleanLimit from "../Utils/BooleanLimit";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
+import SetSelectValue from "../Utils/SetSelectValue";
 const categoriesRest = new CategoriesRest();
 
 const Categories = () => {
@@ -30,6 +32,7 @@ const Categories = () => {
     const bannerRef = useRef();
     const imageRef = useRef();
     const bannersJsonRef = useRef();
+    const storesRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
 
@@ -67,7 +70,7 @@ const Categories = () => {
             }
             console.log('Categories.onModalOpen - calling setValue with:', banners);
             bannersJsonRef.current.setValue(banners);
-            
+
             // Load images AFTER setValue - wait for refs to be ready
             const tryLoadImages = (attempt = 1) => {
                 console.log(`Attempt ${attempt} to load banner images...`);
@@ -100,6 +103,9 @@ const Categories = () => {
             
             setTimeout(() => tryLoadImages(), 500);
         }
+
+        // Load stores
+        SetSelectValue(storesRef.current, data?.stores ?? [], "id", "name");
 
         // Reset delete flags using React state - only when opening modal
         if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
@@ -140,6 +146,14 @@ const Categories = () => {
             Object.keys(bannerImages).forEach(key => {
                 formData.append(key, bannerImages[key]);
             });
+        }
+
+        // Add stores array
+        const storesValue = $(storesRef.current).val();
+        if (storesValue && storesValue.length > 0) {
+            formData.append('stores', JSON.stringify(storesValue));
+        } else {
+            formData.append('stores', JSON.stringify([]));
         }
 
         // Check for image deletion flags using React state
@@ -467,6 +481,18 @@ const Categories = () => {
                             label="Banners del Catálogo"
                             initialValue={[]}
                             model="category"
+                        />
+                    </div>
+                    <div className="col-12 mt-3">
+                        <SelectAPIFormGroup
+                            id="stores"
+                            eRef={storesRef}
+                            searchAPI="/api/admin/stores/paginate"
+                            searchBy="name"
+                            label="Ubicaciones (Stores)"
+                            dropdownParent="#categories-container"
+                            tags
+                            multiple
                         />
                     </div>
                 </div>

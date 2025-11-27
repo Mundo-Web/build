@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCardIbergruas from "../Products/ProductCardIbergruas";
+import StoreMap from "../Stores/StoreMap";
 import {
     Filter,
     Search,
@@ -109,7 +110,8 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
         category: null,
         current_subcategory: null,
         subcategories: [], // Sibling subcategories
-        banners: []
+        banners: [],
+        stores: []
     });
 
     const [sections, setSections] = useState(() => {
@@ -925,6 +927,42 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                 </motion.div>
             </div>
         </motion.section>
+
+        {/* Store Locations Section */}
+        {contextData.stores && contextData.stores.length > 0 && (
+            <motion.section
+                className="pt-12 bg-secondary"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+            >
+                <div className="">
+                    <motion.div
+                        className="text-center mb-8"
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                    >
+                        <h2 className="text-3xl lg:text-4xl font-bold customtext-primary mb-3">
+                            Nuestras Ubicaciones
+                        </h2>
+                        <p className="text-lg text-white max-w-2xl mx-auto">
+                            Visítanos en cualquiera de nuestras sedes especializadas en {contextData.category?.name || 'maquinaria de construcción'}
+                        </p>
+                    </motion.div>
+
+                    <StoreMap 
+                        data={{
+                            class_container: '',
+                            class_title: 'customtext-primary',
+                            class_description: 'customtext-neutral-dark',
+                            class_button: 'bg-primary text-white hover:bg-primary/90'
+                        }} 
+                        stores={contextData.stores} 
+                    />
+                </div>
+            </motion.section>
+        )}
         </>
     );
 };
