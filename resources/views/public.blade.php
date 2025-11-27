@@ -171,6 +171,10 @@
     @endphp
     @foreach ($data['colors'] as $color)
         <style>
+            :root {
+                --bg-{{ $color->name }}: {{ $color->description }};
+            }
+            
             .stroke-{{ $color->name }} {
                 stroke: {{ $color->description }};
             }

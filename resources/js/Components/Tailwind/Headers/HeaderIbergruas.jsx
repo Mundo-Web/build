@@ -522,10 +522,10 @@ const HeaderIbergruas = ({
                                     <a
                                         href={`/catalogo?category=${category.slug}`}
                                         className={`
-                                            flex items-center gap-1 text-base font-bold transition-colors
+                                            flex items-center gap-1 text-lg  font-bold transition-colors
                                             ${category.alias
                                                 ? 'bg-black text-white px-6 py-2.5 shadow-lg hover:bg-gray-900'
-                                                : 'text-gray-900 hover:text-black'
+                                                : 'customtext-neutral-dark hover:text-black'
                                             }
                                         `}
                                     >
@@ -543,7 +543,7 @@ const HeaderIbergruas = ({
                                                     <a
                                                         key={sub.id}
                                                         href={`/catalogo?subcategory=${sub.slug}`}
-                                                        className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors border-b border-gray-50 last:border-0"
+                                                        className="block px-4 py-3 text-base text-gray-700 hover:bg-primary hover:text-white transition-colors duration-300 last:border-0"
                                                     >
                                                         {sub.name}
                                                     </a>
@@ -561,14 +561,13 @@ const HeaderIbergruas = ({
                                     <a
                                         key={index}
                                         href={page.path}
-                                        className="text-base font-bold text-gray-900 hover:text-black transition-colors"
+                                        className="text-lg font-bold customtext-neutral-dark hover:text-black transition-colors"
                                     >
                                         {page.name}
                                     </a>
                                 ))}
-                        </nav>
-
-                        {/* Right Section: Cart & Mobile Menu */}
+                            
+                                {/* Right Section: Cart & Mobile Menu */}
                         <div className="flex items-center gap-4">
                             {/* User Profile / Login */}
                             {/*** 
@@ -602,7 +601,7 @@ const HeaderIbergruas = ({
                                         </div>
                                     </div>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="text-gray-900 font-bold hover:text-black">
+                                    <a href="/iniciar-sesion" className="customtext-neutral-dark font-bold hover:text-black">
                                         <User size={24} />
                                     </a>
                                 )}
@@ -637,6 +636,9 @@ const HeaderIbergruas = ({
                                 )}
                             </button>
                         </div>
+                        </nav>
+
+                    
                     </div>
                 </div>
 

@@ -12,9 +12,8 @@ const IndicatorIbergruas = ({ items, data, generals }) => {
     }
 
     return (
-        <section className="w-full py-16 bg-secondary relative overflow-hidden">
-            {/* Orange overlay with transparency */}
-            <div className="absolute inset-0 bg-[#FCB026] opacity-90"></div>
+        <section className="w-full py-16 bg-primary relative overflow-hidden">
+          
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
                 <Swiper
@@ -41,7 +40,7 @@ const IndicatorIbergruas = ({ items, data, generals }) => {
                     {visibleIndicators.map((indicator, index) => (
                         <SwiperSlide key={indicator.id || index}>
                             <div
-                                className="relative rounded-lg aspect-square p-8 h-full flex flex-col justify-between min-h-[320px] overflow-hidden group"
+                                className="relative  aspect-square p-8 h-full flex flex-col justify-between min-h-[320px] overflow-hidden group"
                                 style={{
                                     backgroundImage: indicator.symbol
                                         ? `url(/storage/images/indicator/${indicator.symbol})`

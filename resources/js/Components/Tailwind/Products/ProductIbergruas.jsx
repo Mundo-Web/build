@@ -11,6 +11,18 @@ const ProductIbergruas = ({ items, data }) => {
     // Filter visible items
     const visibleItems = items?.filter(item => item.visible) || [];
 
+    // Obtener el color de fondo de la sección
+    const getBgColor = () => {
+        // Intentar obtener el color del elemento raíz cuando se monte
+        if (typeof window !== 'undefined') {
+            const secondaryColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('--color-secondary')?.trim();
+            if (secondaryColor) return secondaryColor;
+        }
+        // Fallback: intentar extraer de las clases CSS generadas dinámicamente
+        return '#1a1a1a'; // Color oscuro por defecto
+    };
+
     if (!visibleItems || visibleItems.length === 0) {
         return null;
     }
@@ -21,7 +33,7 @@ const ProductIbergruas = ({ items, data }) => {
                 {/* Header */}
                 {data?.title && (
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+                        <h2 className="text-3xl whitespace-pre-line md:text-4xl lg:text-5xl font-bold text-white mb-4">
                             {data.title}
                         </h2>
                         {data?.subtitle && (
@@ -34,6 +46,14 @@ const ProductIbergruas = ({ items, data }) => {
 
                 {/* Swiper with Coverflow Effect */}
                 <div className="relative">
+                    {/* Gradient Overlays - Desktop only */}
+                    <div 
+                        className="hidden md:block absolute left-0 top-0 bottom-0 w-32 lg:w-48 z-10 pointer-events-none gradient-overlay-left"
+                    ></div>
+                    <div 
+                        className="hidden md:block absolute right-0 top-0 bottom-0 w-32 lg:w-48 z-10 pointer-events-none gradient-overlay-right"
+                    ></div>
+                    
                     <Swiper
                         modules={[EffectCoverflow, Autoplay]}
                         effect="coverflow"
@@ -124,7 +144,7 @@ const ProductIbergruas = ({ items, data }) => {
 
                 {/* View All Button */}
                 {data?.link_catalog && (
-                    <div className="text-center mt-12">
+                    <div className="text-center mt-12 hidden">
                         <a
                             href={data.link_catalog}
                             className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105 shadow-lg"
@@ -138,7 +158,7 @@ const ProductIbergruas = ({ items, data }) => {
 
             <style jsx>{`
                 .coverflow-swiper {
-                    padding: 60px 0 40px;
+                    padding: 0px 0 0px;
                 }
                 
                 .coverflow-swiper .swiper-slide {
@@ -162,12 +182,21 @@ const ProductIbergruas = ({ items, data }) => {
                 /* Make center slide BIGGER */
                 .coverflow-swiper .swiper-slide-active {
                     z-index: 10;
-                    transform: scale(1.3) !important;
+                    transform: scale(1.4) !important;
                 }
                 
                 /* Side slides smaller and with opacity */
                 .coverflow-swiper .swiper-slide:not(.swiper-slide-active) {
-                    opacity: 0.6;
+                    opacity: 0.4;
+                }
+                
+                /* Gradient overlays */
+                .gradient-overlay-left {
+                    background: linear-gradient(to right, var(--bg-secondary, #1a1a1a) 0%, transparent 100%);
+                }
+                
+                .gradient-overlay-right {
+                    background: linear-gradient(to left, var(--bg-secondary, #1a1a1a) 0%, transparent 100%);
                 }
             `}</style>
         </section>

@@ -178,7 +178,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                 )}
 
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/50"></div>
+                <div className="absolute inset-0 bg-black/90"></div>
 
                 {/* Content */}
                 <div className="relative h-full flex items-center justify-center">
@@ -193,7 +193,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                         className="max-w-3xl mx-auto text-center"
                       >
                         {/* Title */}
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl max-w-lg mx-auto font-bold mb-6 leading-tight">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-title max-w-lg mx-auto font-bold mb-6 leading-tight">
                           {parseTitle(slide?.name)}
                         </h1>
 
