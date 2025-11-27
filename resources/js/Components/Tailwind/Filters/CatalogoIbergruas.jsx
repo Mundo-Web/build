@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCardIbergruas from "../Products/ProductCardIbergruas";
 import {
@@ -9,7 +9,12 @@ import {
     ListFilter,
     CheckCircle2,
     Grid3X3,
-    Sliders
+    Sliders,
+    Send,
+    Building2,
+    FileText,
+    Phone,
+    Mail
 } from "lucide-react";
 import ItemsRest from "../../../Actions/ItemsRest";
 import ArrayJoin from "../../../Utils/ArrayJoin";
@@ -19,8 +24,11 @@ import SelectForm from "./Components/SelectForm";
 import { GET } from "sode-extend-react";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import axios from "axios";
+import MessagesRest from "../../../Actions/MessagesRest";
+import { toast } from "sonner";
 
 const itemsRest = new ItemsRest();
+const messagesRest = new MessagesRest();
 
 // Configuración de animaciones para todos los elementos del filtro
 const filterAnimations = {
@@ -374,12 +382,101 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
     const [searchBrand, setSearchBrand] = useState("");
     const [filtersOpen, setFiltersOpen] = useState(false);
 
+    // Contact form states
+    const nameRef = useRef();
+    const phoneRef = useRef();
+    const emailRef = useRef();
+    const companyRef = useRef();
+    const rucRef = useRef();
+    const descriptionRef = useRef();
+    const [sending, setSending] = useState(false);
+    const [phoneValue, setPhoneValue] = useState("");
+    const [phoneError, setPhoneError] = useState("");
+    const [selectedSubcategory, setSelectedSubcategory] = useState("");
+
     const filteredCategories = categories.filter((category) =>
         category.name.toLowerCase().includes(searchCategory.toLowerCase())
     );
     const filteredBrands = brands.filter((brand) =>
         brand.name.toLowerCase().includes(searchBrand.toLowerCase())
     );
+
+    // Phone validation and formatting
+    const formatPhone = (value) => {
+        const numbers = value.replace(/\D/g, "");
+        const limited = numbers.slice(0, 9);
+        if (limited.length <= 3) return limited;
+        if (limited.length <= 6) return `${limited.slice(0, 3)} ${limited.slice(3)}`;
+        return `${limited.slice(0, 3)} ${limited.slice(3, 6)} ${limited.slice(6)}`;
+    };
+
+    const validatePhone = (phone) => {
+        const phoneNumbers = phone.replace(/\D/g, "");
+        if (phoneNumbers.length !== 9) return "El teléfono debe tener 9 dígitos";
+        if (!phoneNumbers.startsWith("9")) return "El número debe empezar con 9";
+        return "";
+    };
+
+    const handlePhoneChange = (e) => {
+        const formatted = formatPhone(e.target.value);
+        setPhoneValue(formatted);
+        if (phoneError) {
+            const error = validatePhone(formatted);
+            setPhoneError(error);
+        }
+    };
+
+    const onSubmitQuote = async (e) => {
+        e.preventDefault();
+        if (sending) return;
+
+        const phoneNumbers = phoneValue.replace(/\D/g, "");
+        const phoneValidationError = validatePhone(phoneValue);
+        if (phoneValidationError) {
+            setPhoneError(phoneValidationError);
+            toast.error("Error de validación", {
+                description: phoneValidationError,
+                duration: 3000,
+                position: "bottom-center",
+            });
+            return;
+        }
+
+        setSending(true);
+
+        const request = {
+            name: nameRef.current.value,
+            phone: phoneNumbers,
+            email: emailRef.current.value,
+            company: companyRef.current?.value || "",
+            ruc: rucRef.current?.value || "",
+            subject: "Cotización desde catálogo",
+            category: contextData.category?.name || "",
+            subcategory: selectedSubcategory || contextData.current_subcategory?.name || "",
+            machinery: selectedSubcategory || contextData.current_subcategory?.name || contextData.category?.name || "",
+            description: descriptionRef.current.value,
+        };
+
+        const result = await messagesRest.save(request);
+
+        if (nameRef.current) nameRef.current.value = "";
+        if (phoneRef.current) phoneRef.current.value = "";
+        setPhoneValue("");
+        setPhoneError("");
+        if (emailRef.current) emailRef.current.value = "";
+        if (companyRef.current) companyRef.current.value = "";
+        if (rucRef.current) rucRef.current.value = "";
+        if (descriptionRef.current) descriptionRef.current.value = "";
+        setSelectedSubcategory("");
+
+        toast.success("Cotización enviada", {
+            description: '¡Tu solicitud ha sido enviada correctamente! Nos pondremos en contacto contigo pronto.',
+            duration: 3000,
+            position: "bottom-center",
+        });
+        
+        setSending(false);
+    };
 
     // Render Banners
     const renderBanners = () => {
@@ -638,6 +735,196 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                 </div>
             </div>
         </section>
+
+        {/* Contact Section - Cotización */}
+        <motion.section
+            className="bg-secondary"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+        >
+            <div className="">
+                <motion.div
+                    className="bg-transparent overflow-hidden"
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
+                >
+                    <div className="grid lg:grid-cols-3 gap-0">
+                        {/* Image Section - 1/3 width */}
+                        <div className="relative h-64 lg:h-auto bg-gradient-to-br from-primary to-primary/80 order-1 lg:col-span-1">
+                            {contextData.category?.image ? (
+                                <>
+                                    <img
+                                        src={`/storage/images/category/${contextData.category.image}`}
+                                        alt={contextData.category.name}
+                                        className="absolute inset-0 w-full h-full object-cover opacity-80"
+                                    />
+                                   
+                                </>
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center text-white">
+                                        <Building2 size={80} className="mx-auto mb-4 opacity-50" />
+                                        <p className="text-2xl font-bold">
+                                            {contextData.category?.name || "Maquinaria de Construcción"}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Form Section - 2/3 width */}
+                        <div className="text-white p-8 lg:p-12 lg:pr-20 order-2 lg:col-span-2">
+                            <div className="mb-8">
+                                <h2 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+                                    ¡Cotiza con los N° 1 en el mundo!
+                                </h2>
+                                <p className="text-white">
+                                    Cotizar nuestras maquinarias de construcción es muy fácil, déjanos tus datos a través del siguiente formulario.
+                                </p>
+                            </div>
+
+                            <form onSubmit={onSubmitQuote} className="space-y-6">
+                                {/* Nombre completo */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-white mb-2">
+                                        Nombre completo <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        ref={nameRef}
+                                        type="text"
+                                        placeholder="Nombre y apellido"
+                                        required
+                                        className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
+                                    />
+                                </div>
+
+                                {/* Email y Teléfono */}
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-white mb-2">
+                                            Correo electrónico <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            ref={emailRef}
+                                            type="email"
+                                            placeholder="hola@mail.com.pe"
+                                            required
+                                            className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-white mb-2">
+                                            Celular o Whatsapp <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            ref={phoneRef}
+                                            type="tel"
+                                            placeholder="+51..."
+                                            value={phoneValue}
+                                            onChange={handlePhoneChange}
+                                            required
+                                            className={`w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border focus:ring-2 focus:ring-white/50 focus:border-white transition-all ${
+                                                phoneError ? 'border-red-500' : 'border-white/30'
+                                            }`}
+                                        />
+                                        {phoneError && (
+                                            <p className="mt-1 text-sm text-red-500">{phoneError}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Empresa y RUC */}
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-white mb-2">
+                                            Empresa
+                                        </label>
+                                        <input
+                                            ref={companyRef}
+                                            type="text"
+                                            placeholder="Razón Social"
+                                            className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-white mb-2">
+                                            RUC
+                                        </label>
+                                        <input
+                                            ref={rucRef}
+                                            type="text"
+                                            placeholder="Número de RUC"
+                                            maxLength={11}
+                                            className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Maquinaria - Select o Input disabled */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-white mb-2">
+                                        Maquinarias <span className="text-red-500">*</span>
+                                    </label>
+                                    {contextData.subcategories && contextData.subcategories.length > 0 ? (
+                                        <SelectForm
+                                            options={contextData.subcategories}
+                                            valueKey="name"
+                                            labelKey="name"
+                                            value={selectedSubcategory}
+                                            placeholder="Seleccionar maquinaria"
+                                            className="bg-transparent text-white border-white/30"
+                                            onChange={setSelectedSubcategory}
+                                        />
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            value={contextData.category?.name || "Categoría"}
+                                            disabled
+                                            className="w-full px-4 py-3 border border-white/30 bg-transparent text-white/60 cursor-not-allowed"
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Comentario */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-white mb-2">
+                                        Comentario <span className="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        ref={descriptionRef}
+                                        placeholder="Consideraciones a tomar en cuenta"
+                                        rows={4}
+                                        required
+                                        className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all resize-none"
+                                    />
+                                </div>
+
+                                {/* Submit Button */}
+                                <button
+                                    type="submit"
+                                    disabled={sending}
+                                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {sending ? (
+                                        <>
+                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send size={20} />
+                                            Enviar
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </motion.section>
         </>
     );
 };

@@ -137,16 +137,51 @@ const Messages = () => {
       {
         dataLoaded?.phone &&
         <p>
-          <b>Telefono</b>:
+          <b>Teléfono</b>:
           <span className='ms-1'>{dataLoaded?.phone}</span>
+        </p>
+      }
+      {
+        dataLoaded?.company &&
+        <p>
+          <b>Empresa</b>:
+          <span className='ms-1'>{dataLoaded?.company}</span>
+        </p>
+      }
+      {
+        dataLoaded?.ruc &&
+        <p>
+          <b>RUC</b>:
+          <span className='ms-1'>{dataLoaded?.ruc}</span>
         </p>
       }
       {
         dataLoaded?.subject &&
       <p>
-        <b>Teléfono</b>:
+        <b>Asunto</b>:
         <span className='ms-1'>{dataLoaded?.subject}</span>
       </p>
+      }
+      {
+        dataLoaded?.category &&
+        <p>
+          <b>Categoría</b>:
+          <span className='ms-1'>{dataLoaded?.category}</span>
+        </p>
+      }
+      {
+        dataLoaded?.subcategory &&
+        <p>
+          <b>Subcategoría</b>:
+          <span className='ms-1'>{dataLoaded?.subcategory}</span>
+        </p>
+      }
+      {
+        dataLoaded?.machinery &&
+        <p>
+          <b>Maquinaria</b>:
+          <span className='ms-1'>{dataLoaded?.machinery}</span>
+        </p>
       }
       <p>
         <b>Mensaje</b>:

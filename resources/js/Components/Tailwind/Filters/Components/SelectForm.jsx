@@ -97,7 +97,7 @@ const SelectForm = ({
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
-                                className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 `}
+                                className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900`}
                                 placeholder="Search options..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -109,7 +109,7 @@ const SelectForm = ({
                             <li
                                 key={option.value}
                                 className={`px-4 py-2 cursor-pointer flex items-center justify-between 
-                                    ${selectedOption && selectedOption.value === option.value ? "bg-primary text-white" : "hover:bg-gray-100"}`}
+                                    ${selectedOption && selectedOption.value === option.value ? "bg-primary text-white" : "text-gray-900 hover:bg-gray-100"}`}
                                 onClick={() => handleSelect(option)}
                                 role="option"
                                 aria-selected={selectedOption && selectedOption.value === option.value}

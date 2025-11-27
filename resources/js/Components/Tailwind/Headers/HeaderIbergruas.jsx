@@ -496,7 +496,7 @@ const HeaderIbergruas = ({
     return (
         <>
             <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed shadow-lg" : "relative"} ${data.backgroundColor || 'bg-primary'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-[5%] 2xl:px-0">
                     <div className="flex justify-between items-center h-20">
                         {/* Logos Section */}
                         <div className="flex items-center gap-6">
