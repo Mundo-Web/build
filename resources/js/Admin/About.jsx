@@ -139,6 +139,21 @@ const About = ({ details: detailsDB }) => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+        
+        try {
+            const result = await aboutusRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering about:', error);
+        }
+    };
+
     const [details, setDetails] = useState(ArrayDetails2Object(detailsDB));
     const [videoEditing, setVideoEditing] = useState(false);
 
@@ -178,6 +193,14 @@ const About = ({ details: detailsDB }) => {
                     </>
                 }
                 rest={aboutusRest}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 toolBar={(container) => {
                     container.unshift({
                         widget: "dxButton",
@@ -211,6 +234,13 @@ const About = ({ details: detailsDB }) => {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: "order_index",
+                        caption: "Orden",
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     {
                         dataField: "correlative",

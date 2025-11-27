@@ -388,6 +388,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/aboutus/status', [AdminAboutusController::class, 'status']);
     Route::patch('/aboutus/{field}', [AdminAboutusController::class, 'boolean']);
     Route::delete('/aboutus/{id}', [AdminAboutusController::class, 'delete']);
+    Route::put('/aboutus/{id}/reorder', [AdminAboutusController::class, 'reorder']);
 
     Route::post('/indicators', [AdminIndicatorController::class, 'save']);
     Route::post('/indicators/paginate', [AdminIndicatorController::class, 'paginate']);
