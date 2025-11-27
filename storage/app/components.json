@@ -3659,6 +3659,18 @@
                     "class_benefit_title",
                     "class_benefit_description"
                 ]
+            },
+            {
+                "id": "AboutSidebar",
+                "name": "About con Sidebar - Estilo Service",
+                "image": "about-sidebar.png",
+                "data": [
+                    "strengths_title",
+                    "class_container"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
             }
         ]
     },

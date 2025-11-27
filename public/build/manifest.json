@@ -4818,7 +4818,7 @@
     ]
   },
   "resources/js/Components/Tailwind/AboutUs.jsx": {
-    "file": "assets/AboutUs-rkDv7lNR.js",
+    "file": "assets/AboutUs-CEE4CIXO.js",
     "name": "AboutUs",
     "src": "resources/js/Components/Tailwind/AboutUs.jsx",
     "isDynamicEntry": true,
@@ -4837,7 +4837,8 @@
       "resources/js/Components/Tailwind/AboutUs/AboutMultivet.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutHuaillys.jsx",
-      "resources/js/Components/Tailwind/AboutUs/AboutModern.jsx"
+      "resources/js/Components/Tailwind/AboutUs/AboutModern.jsx",
+      "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx"
     ]
   },
   "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx": {
@@ -4916,6 +4917,18 @@
     "file": "assets/AboutPaani--pJTheE3.js",
     "name": "AboutPaani",
     "src": "resources/js/Components/Tailwind/AboutUs/AboutPaani.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx": {
+    "file": "assets/AboutSidebar--pJTheE3.js",
+    "name": "AboutSidebar",
+    "src": "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -13220,7 +13233,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-jPxZWOAl.js",
+    "file": "assets/System-paHH8-2e.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

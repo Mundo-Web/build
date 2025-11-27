@@ -207,6 +207,9 @@ Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->w
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
 Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
+Route::get('/strengths', function() {
+    return \App\Models\Strength::where('status', true)->where('visible', true)->get();
+});
 
 // Combos API para carrito
 Route::get('/combos-as-products', [App\Http\Controllers\Api\ComboApiController::class, 'index']);
