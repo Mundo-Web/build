@@ -272,7 +272,8 @@
                 },
                 "generals": [
                     "phone_whatsapp",
-                    "message_whatsapp"
+                    "message_whatsapp",
+                    "header_menu_order "
                 ]
             },
             {

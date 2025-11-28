@@ -39,6 +39,51 @@ const HeaderIbergruas = ({
     const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
     const messageWhatsapp = messageWhatsappObj?.description ?? null;
 
+    // Obtener orden del menú desde generals
+    const headerMenuOrderObj = generals.find(
+        (item) => item.correlative === "header_menu_order"
+    );
+    const headerMenuOrder = headerMenuOrderObj?.description ?? null;
+
+    // Función para ordenar el menú según el orden especificado
+    const getOrderedMenuItems = () => {
+        if (!headerMenuOrder) {
+            // Si no hay orden definido, mostrar categorías primero y luego páginas
+            return [
+                ...items.map(cat => ({ type: 'category', data: cat })),
+                ...pages.filter(page => page.menuable).map(page => ({ type: 'page', data: page }))
+            ];
+        }
+
+        // Parsear el orden (separado por comas)
+        const orderArray = headerMenuOrder.split(',').map(item => item.trim()).filter(Boolean);
+        const orderedItems = [];
+
+        orderArray.forEach(displayName => {
+            // Buscar en categorías (por alias o name)
+            const category = items.find(cat => 
+                (cat.alias && cat.alias.toLowerCase() === displayName.toLowerCase()) ||
+                cat.name.toLowerCase() === displayName.toLowerCase()
+            );
+            if (category) {
+                orderedItems.push({ type: 'category', data: category });
+                return;
+            }
+
+            // Buscar en páginas (por name)
+            const page = pages.find(p => 
+                p.menuable && p.name.toLowerCase() === displayName.toLowerCase()
+            );
+            if (page) {
+                orderedItems.push({ type: 'page', data: page });
+            }
+        });
+
+        return orderedItems;
+    };
+
+    const orderedMenuItems = getOrderedMenuItems();
+
     const [modalOpen, setModalOpen] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
     const [searchMobile, setSearchMobile] = useState(false);
@@ -517,56 +562,60 @@ const HeaderIbergruas = ({
 
                         {/* Desktop Navigation */}
                         <nav className="hidden lg:flex items-center gap-8">
-                            {/* Dynamic Categories */}
-                            {items?.map((category) => (
-                                <div key={category.id} className="relative group">
-                                    <a
-                                        href={`/catalogo?category=${category.slug}`}
-                                        className={`
-                                            flex items-center gap-1 text-lg  font-bold transition-colors
-                                            ${category.alias
-                                                ? 'bg-secondary text-white px-6 py-2.5 shadow-lg '
-                                                : 'customtext-neutral-dark '
-                                            }
-                                        `}
-                                    >
-                                        {category.alias || category.name}
-                                        {category.subcategories?.length > 0 && (
-                                            <ChevronDown size={16} className={`transition-transform duration-200 group-hover:rotate-180 ${category.alias ? 'text-white' : ''}`} />
-                                        )}
-                                    </a>
+                            {/* Ordered Menu Items */}
+                            {orderedMenuItems.map((menuItem, index) => {
+                                if (menuItem.type === 'category') {
+                                    const category = menuItem.data;
+                                    return (
+                                        <div key={`cat-${category.id}`} className="relative group">
+                                            <a
+                                                href={`/catalogo?category=${category.slug}`}
+                                                className={`
+                                                    flex items-center gap-1 text-lg  font-bold transition-colors
+                                                    ${category.alias
+                                                        ? 'bg-secondary text-white px-6 py-2.5 shadow-lg '
+                                                        : 'customtext-neutral-dark '
+                                                    }
+                                                `}
+                                            >
+                                                {category.alias || category.name}
+                                                {category.subcategories?.length > 0 && (
+                                                    <ChevronDown size={16} className={`transition-transform duration-200 group-hover:rotate-180 ${category.alias ? 'text-white' : ''}`} />
+                                                )}
+                                            </a>
 
-                                    {/* Dropdown Menu for Subcategories */}
-                                    {category.subcategories?.length > 0 && (
-                                        <div className="absolute top-full left-0 w-56 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2 z-50">
-                                            <div className="bg-white  shadow-xl overflow-hidden border border-gray-100">
-                                                {category.subcategories.map((sub) => (
-                                                    <a
-                                                        key={sub.id}
-                                                        href={`/catalogo?subcategory=${sub.slug}`}
-                                                        className="block px-4 py-3 text-base text-gray-700 hover:bg-primary hover:text-white transition-colors duration-300 last:border-0"
-                                                    >
-                                                        {sub.name}
-                                                    </a>
-                                                ))}
-                                            </div>
+                                            {/* Dropdown Menu for Subcategories */}
+                                            {category.subcategories?.length > 0 && (
+                                                <div className="absolute top-full left-0 w-56 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2 z-50">
+                                                    <div className="bg-white  shadow-xl overflow-hidden border border-gray-100">
+                                                        {category.subcategories.map((sub) => (
+                                                            <a
+                                                                key={sub.id}
+                                                                href={`/catalogo?subcategory=${sub.slug}`}
+                                                                className="block px-4 py-3 text-base text-gray-700 hover:bg-primary hover:text-white transition-colors duration-300 last:border-0"
+                                                            >
+                                                                {sub.name}
+                                                            </a>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            ))}
-
-                            {/* Dynamic Pages */}
-                            {pages
-                                .filter(page => page.menuable)
-                                .map((page, index, arr) => (
-                                    <a
-                                        key={index}
-                                        href={page.path}
-                                        className="text-lg font-bold customtext-neutral-dark hover:text-black transition-colors"
-                                    >
-                                        {page.name}
-                                    </a>
-                                ))}
+                                    );
+                                } else if (menuItem.type === 'page') {
+                                    const page = menuItem.data;
+                                    return (
+                                        <a
+                                            key={`page-${index}`}
+                                            href={page.path}
+                                            className="text-lg font-bold customtext-neutral-dark hover:text-black transition-colors"
+                                        >
+                                            {page.name}
+                                        </a>
+                                    );
+                                }
+                                return null;
+                            })}
                             
                                 {/* Right Section: Cart & Mobile Menu */}
                         <div className="flex items-center gap-4">

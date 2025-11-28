@@ -286,6 +286,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     excelImportTemplate:
       generals.find((x) => x.correlative == "excel_import_template")
         ?.description ?? "",
+    headerMenuOrder:
+      generals.find((x) => x.correlative == "header_menu_order")
+        ?.description ?? "",
     whatsappAdvisors: (() => {
       const advisorsGeneral = generals.find((x) => x.correlative == "whatsapp_advisors");
       if (!advisorsGeneral?.description) return [];
@@ -952,6 +955,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: "excel_import_template",
         name: "Plantilla de Importación Excel",
         description: formData.excelImportTemplate || "",
+      },
+      {
+        correlative: "header_menu_order",
+        name: "Orden del Menú del Header",
+        description: formData.headerMenuOrder || "",
       },
       {
         correlative: "whatsapp_advisors",
@@ -1653,6 +1661,26 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   )}
                   <small className="text-muted">
                     Esta plantilla se descargará desde el modal de importación en Items. Solo archivos Excel (.xlsx, .xls)
+                  </small>
+                </div>
+              </ConditionalField>
+
+              {/* Campo para orden del menú del header */}
+              <ConditionalField correlative="header_menu_order">
+                <div className="mb-2">
+                  <label className="form-label">
+                    <i className="fas fa-bars me-2"></i>
+                    Orden del Menú del Header
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.headerMenuOrder}
+                    onChange={(e) => handleFieldChange('headerMenuOrder', e.target.value)}
+                    placeholder="Ej: Maquinarias,Grúas,Servicios,Nosotros"
+                  />
+                  <small className="text-muted">
+                    Nombres de categorías y páginas separados por comas. Use los nombres exactos como aparecen en el menú.
                   </small>
                 </div>
               </ConditionalField>
