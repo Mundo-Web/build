@@ -721,7 +721,7 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                         {/* Precio - Desktop */}
                         <div className="hidden lg:block  p-6 ">
                             <div className="flex items-center justify-between mb-4">
-                                {item?.price && (
+                                {item?.price > 0  && (
                                     <div>
                                         <div className="text-4xl font-bold font-title text-white">
                                             {formatPrice(item?.final_price || item?.price)}
@@ -740,7 +740,7 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
 
                                 )}
                                 {/* Selector de Cantidad Desktop */}
-                                {item?.price && (
+                                {item?.price > 0  && (
                                     <div className="space-y-4 mt-4">
                                         <div className="flex items-center gap-3">
                                             <div className="flex items-center rounded-none border border-primary p-1">
@@ -770,9 +770,9 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
 
                             </div>
                             {/* Botones de acción Desktop */}
-                            <div className={`mt-6 grid ${item?.price ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+                            <div className={`mt-6 grid ${item?.price > 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
                                 {/* Botón de Comprar Ahora - Solo si buyButton es true */}
-                                {item?.price && (
+                                {item?.price > 0  && (
                                     data?.buyButton && (
                                         <button
                                             onClick={() => onAddClicked(item)}
@@ -795,7 +795,7 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                                     ref={refs.setReference}
                                     {...getReferenceProps()}
                                     onClick={handleClickWhatsAppCotizar}
-                                    className="w-full bg-primary text-white py-4 !h-full px-6 rounded-none font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg hover:shadow-xl transform duration-500"
+                                    className="w-full bg-primary text-white py-4 !h-full px-6 rounded-none font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-secondary transition-all shadow-lg hover:shadow-xl transform duration-500"
                                 >
                                     <Quote className="w-5 h-5" />
                                     <span>Solicitar Cotización</span>

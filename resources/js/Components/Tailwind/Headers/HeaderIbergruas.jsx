@@ -18,6 +18,7 @@ import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import CartModalIbergruas from "../Components/CartModalIbergruas";
 
 const HeaderIbergruas = ({
     items,
@@ -524,8 +525,8 @@ const HeaderIbergruas = ({
                                         className={`
                                             flex items-center gap-1 text-lg  font-bold transition-colors
                                             ${category.alias
-                                                ? 'bg-black text-white px-6 py-2.5 shadow-lg hover:bg-gray-900'
-                                                : 'customtext-neutral-dark hover:text-black'
+                                                ? 'bg-secondary text-white px-6 py-2.5 shadow-lg '
+                                                : 'customtext-neutral-dark '
                                             }
                                         `}
                                     >
@@ -665,7 +666,7 @@ const HeaderIbergruas = ({
                 </AnimatePresence>
             </header>
 
-            <CartModal
+            <CartModalIbergruas
                 data={data}
                 cart={cart}
                 setCart={setCart}
