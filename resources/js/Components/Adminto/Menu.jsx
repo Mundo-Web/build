@@ -1,5 +1,5 @@
 import Tippy from "@tippyjs/react";
-import React from "react";
+import React, { useState, useMemo } from "react";
 import "tippy.js/dist/tippy.css";
 import Logout from "../../Actions/Logout";
 import MenuItem from "../MenuItem";
@@ -9,6 +9,54 @@ import CanAccess from "../../Utils/CanAccess";
 
 const Menu = ({ session, hasRole }) => {
   const mainRole = session.roles[0];
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Función para filtrar menús según la búsqueda
+  const filteredMenus = useMemo(() => {
+    if (!searchQuery.trim()) return menus;
+
+    const query = searchQuery.toLowerCase();
+    
+    return menus.map(section => {
+      const filteredItems = section.items.filter(item => {
+        // Verificar si el label del item coincide
+        if (item.label.toLowerCase().includes(query)) {
+          return true;
+        }
+
+        // Si tiene hijos, verificar si algún hijo coincide
+        if (item.children) {
+          return item.children.some(child => 
+            child.label.toLowerCase().includes(query) && CanAccess[child.href]
+          );
+        }
+
+        return false;
+      }).map(item => {
+        // Si el item tiene hijos, filtrar solo los hijos que coinciden
+        if (item.children) {
+          const filteredChildren = item.children.filter(child =>
+            child.label.toLowerCase().includes(query) && CanAccess[child.href]
+          );
+          
+          // Si hay hijos filtrados, retornar el item con solo esos hijos
+          if (filteredChildren.length > 0) {
+            return { ...item, children: filteredChildren };
+          }
+          
+          // Si no hay hijos filtrados pero el label del padre coincide, retornar todos los hijos
+          return item;
+        }
+
+        return item;
+      });
+
+      return {
+        ...section,
+        items: filteredItems
+      };
+    }).filter(section => section.items.length > 0); // Eliminar secciones vacías
+  }, [searchQuery]);
 
   return (
     <div className="left-side-menu">
@@ -92,6 +140,50 @@ const Menu = ({ session, hasRole }) => {
         </div>
         {hasRole("Admin", "Root") && (
           <div id="sidebar-menu" className="show">
+            {/* Buscador de menú */}
+            <div className="px-3 py-2">
+              <div className="position-relative">
+                <input
+                  type="text"
+                  className="form-control form-control-md"
+                  placeholder="Buscar en el menú..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    paddingLeft: '32px',
+                    borderRadius: '4px',
+                    backgroundColor: '#f8f9fa'
+                  }}
+                />
+                <i 
+                  className="mdi mdi-magnify position-absolute" 
+                  style={{
+                    left: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#98a6ad'
+                  }}
+                ></i>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="btn btn-sm position-absolute"
+                    style={{
+                      right: '5px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      padding: '2px 6px',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#98a6ad'
+                    }}
+                  >
+                    <i className="mdi mdi-close"></i>
+                  </button>
+                )}
+              </div>
+            </div>
+
             <ul id="side-menu">
               {hasRole("Admin", "Root") && (
                 <>
@@ -162,7 +254,7 @@ const Menu = ({ session, hasRole }) => {
                   <MenuItem href="/admin/profile" icon="mdi mdi-account-box">Mi perfil</MenuItem>
                   <MenuItem href="/admin/account" icon="mdi mdi-account-key">Mi cuenta</MenuItem> */}
 
-                  {menus.map((section) => {
+                  {filteredMenus.map((section) => {
                     const sectionKey = section.id || section.title || JSON.stringify(section);
                     return (
                       <React.Fragment key={sectionKey}>

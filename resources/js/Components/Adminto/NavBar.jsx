@@ -70,7 +70,7 @@ const NavBar = ({ session = {}, title = 'Pagina' }) => {
             }} />
           </span>
           <span className="logo-lg">
-            <img src="/assets/resources/logo.png" alt="" style={{ height: '32px', aspectRatio: 13 / 4 }} onError={(e) => {
+            <img src="/assets/resources/logo.png" alt="" style={{ height: '32px' }} onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/img/logo-bk.svg';
             }} />
@@ -84,7 +84,7 @@ const NavBar = ({ session = {}, title = 'Pagina' }) => {
             }} />
           </span>
           <span className="logo-lg">
-            <img src="/assets/resources/logo.png" alt="" style={{ height: '32px', aspectRatio: 13 / 4 }} onError={(e) => {
+            <img src="/assets/resources/logo.png" alt="" style={{ height: '32px' }} onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/img/logo-bk.svg';
             }} />
