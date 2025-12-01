@@ -44,3 +44,4 @@ composer.lock
 /public/sitemap.xml
 /.env-useTunnel
 /vite.config-useTunnel.js
+/lapetaca

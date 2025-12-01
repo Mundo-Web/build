@@ -515,6 +515,19 @@
                     "message_whatsapp",
                     "address"
                 ]
+            },
+            {
+                "id": "HeaderLaPetaca",
+                "name": "Header - La Petaca Hotel",
+                "image": "header-lapetaca.png",
+                "data": [
+                    "menuItems",
+                    "logo",
+                    "logoAlt",
+                    "bgColor",
+                    "accentColor"
+                ],
+                "generals": []
             }
         ]
     },
@@ -966,6 +979,25 @@
                 "using": {
                     "model": "Slider"
                 }
+            },
+            {
+                "id": "SliderLaPetaca",
+                "name": "Slider - La Petaca Hotel",
+                "image": "slider-lapetaca.png",
+                "data": [
+                    "class_slider",
+                    "accentColor",
+                    "btnPrimaryText",
+                    "btnSecondaryText",
+                    "autoplayDelay",
+                    "showNavigation",
+                    "showIndicators"
+                ],
+                "using": {
+                    "model": "Slider"
+                  
+                },
+                "generals": []
             }
         ]
     },
@@ -2014,6 +2046,27 @@
                 "generals": [
                     "phone_whatsapp"
                 ]
+            },
+            {
+                "id": "IndicatorLaPetaca",
+                "name": "Indicadores - La Petaca Hotel",
+                "image": "indicator-lapetaca.png",
+                "data": [
+                    "accentColor",
+                    "showDirectBooking"
+                ],
+                "using": {
+                    "model": "Indicator",
+                    "fields": [
+                        "symbol",
+                        "name",
+                        "description",
+                        "button_text",
+                        "button_link",
+                        "order_index"
+                    ]
+                },
+                "generals": []
             }
         ]
     },
@@ -2522,6 +2575,19 @@
                     ],
                     "limit": 8
                 }
+            },
+            {
+                "id": "ProductLaPetaca",
+                "name": "Productos - La Petaca Hotel",
+                "image": "products-lapetaca.png",
+                "data": [
+                    "rooms",
+                    "showFeatured",
+                    "accentColor",
+                    "title",
+                    "subtitle"
+                ],
+                "generals": []
             }
         ]
     },
@@ -3245,6 +3311,18 @@
                 "using": {
                     "model": "Social"
                 }
+            },
+            {
+                "id": "ContactLaPetaca",
+                "name": "Contact - La Petaca Hotel",
+                "image": "contact-lapetaca.png",
+                "data": [
+                    "contactInfo",
+                    "socials",
+                    "accentColor",
+                    "locationImage"
+                ],
+                "generals": []
             }
         ]
     },
@@ -3725,6 +3803,19 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+            {
+                "id": "AboutLaPetaca",
+                "name": "About - La Petaca Hotel",
+                "image": "about-lapetaca.png",
+                "data": [
+                    "stats",
+                    "values",
+                    "accentColor",
+                    "mainImage",
+                    "ctaImage"
+                ],
+                "generals": []
             }
         ]
     },
@@ -4085,6 +4176,23 @@
                     "email_contact",
                     "site_description"
                 ]
+            },
+            {
+                "id": "FooterLaPetaca",
+                "name": "Footer - La Petaca Hotel",
+                "image": "footer-lapetaca.png",
+                "data": [
+                    "menuItems",
+                    "services",
+                    "contactInfo",
+                    "socials",
+                    "logo",
+                    "logoAlt",
+                    "description",
+                    "tagline",
+                    "accentColor"
+                ],
+                "generals": []
             }
         ]
     },
@@ -4225,6 +4333,16 @@
                 "using": {
                     "model": "Testimony"
                 }
+            },
+            {
+                "id": "TestimonialsLaPetaca",
+                "name": "Testimonials - La Petaca Hotel",
+                "image": "testimonials-lapetaca.png",
+                "data": [
+                    "testimonials",
+                    "accentColor"
+                ],
+                "generals": []
             }
         ]
     },
@@ -4545,6 +4663,23 @@
                     "model": "Service",
                     "type": "many"
                 }
+            },
+            {
+                "id": "ServiceLaPetaca",
+                "name": "Servicios - La Petaca Hotel",
+                "image": "service-lapetaca.png",
+                "data": [
+                    "services",
+                    "showPreview",
+                    "accentColor",
+                    "title",
+                    "subtitle"
+                ],
+                 "using": {
+                    "model": "Service"
+               
+                },
+                "generals": []
             }
         ]
     },

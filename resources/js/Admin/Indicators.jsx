@@ -23,10 +23,13 @@ const Indicators = () => {
   // Form elements ref
   const idRef = useRef()
   const symbolRef = useRef()
+  const bgImageRef = useRef()
   const nameRef = useRef()
   const descriptionRef = useRef()
   const buttonTextRef = useRef()
   const buttonLinkRef = useRef()
+  const badgeRef = useRef()
+  const subtitleRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -34,17 +37,23 @@ const Indicators = () => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
-    // Reset delete flag when opening modal
+    // Reset delete flags when opening modal
     if (symbolRef.resetDeleteFlag) symbolRef.resetDeleteFlag();
+    if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
 
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
     buttonTextRef.current.value = data?.button_text ?? ''
     buttonLinkRef.current.value = data?.button_link ?? ''
+    badgeRef.current.value = data?.badge ?? ''
+    subtitleRef.current.value = data?.subtitle ?? ''
 
     symbolRef.current.value = null
     symbolRef.image.src = data?.symbol ? `/storage/images/indicator/${data.symbol}` : ''
+
+    bgImageRef.current.value = null
+    bgImageRef.image.src = data?.bg_image ? `/storage/images/indicator/${data.bg_image}` : ''
 
     $(modalRef.current).modal('show')
   }
@@ -58,6 +67,8 @@ const Indicators = () => {
       description: descriptionRef.current.value,
       button_text: buttonTextRef.current.value,
       button_link: buttonLinkRef.current.value,
+      badge: badgeRef.current.value,
+      subtitle: subtitleRef.current.value,
     }
 
     const formData = new FormData()
@@ -70,16 +81,25 @@ const Indicators = () => {
       formData.append('symbol', symbol)
     }
 
-    // Check for image deletion flag
+    const bgImage = bgImageRef.current.files[0]
+    if (bgImage) {
+      formData.append('bg_image', bgImage)
+    }
+
+    // Check for image deletion flags
     if (symbolRef.getDeleteFlag && symbolRef.getDeleteFlag()) {
       formData.append('symbol_delete', 'DELETE');
+    }
+    if (bgImageRef.getDeleteFlag && bgImageRef.getDeleteFlag()) {
+      formData.append('bg_image_delete', 'DELETE');
     }
 
     const result = await indicatorsRest.save(formData)
     if (!result) return
 
-    // Reset delete flag after successful save
+    // Reset delete flags after successful save
     if (symbolRef.resetDeleteFlag) symbolRef.resetDeleteFlag();
+    if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -171,16 +191,17 @@ const Indicators = () => {
         },
         {
           dataField: 'symbol',
-          caption: 'Símbolo',
+          caption: 'Icono',
           width: 100,
           cellTemplate: (container, { data }) => {
-            ReactAppend(container, <img src={`/storage/images/indicator/${data.symbol}`} style={{ width: '60px', height: '60px', objectFit: 'contain', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+            const imageUrl = data.symbol ? `/storage/images/indicator/${data.symbol}` : '/api/cover/thumbnail/null'
+            ReactAppend(container, <img src={imageUrl} style={{ width: '60px', height: '60px', objectFit: 'contain', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
           }
         },
         {
           dataField: 'name',
-          caption: 'Número',
-          width: 100,
+          caption: 'Título',
+          width: 150,
         },
         {
           dataField: 'description',
@@ -229,47 +250,67 @@ const Indicators = () => {
       <div className='row' id='indicators-container'>
         <input ref={idRef} type='hidden' />
 
-        {/* Información Principal (Izquierda) e Imagen (Derecha) */}
+        {/* Información Principal (Izquierda) */}
         <div className="col-md-7 mb-3">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body">
-
               <InputFormGroup
                 eRef={nameRef}
                 label='Título'
                 col='col-12'
                 required
-                placeholder="Ej: 100+"
+                placeholder="Ej: Oferta Especial"
+              />
+              <InputFormGroup
+                eRef={subtitleRef}
+                label='Subtítulo (Opcional)'
+                col='col-12'
+                placeholder="Ej: 20% de descuento"
               />
               <TextareaFormGroup
                 eRef={descriptionRef}
                 label='Descripción'
                 col='col-12'
-                rows={4}
+                rows={3}
                 placeholder="Descripción del indicador"
+              />
+              <InputFormGroup
+                eRef={badgeRef}
+                label='Badge (Opcional)'
+                col='col-12'
+                placeholder="Ej: ¡Limitado!"
               />
             </div>
           </div>
         </div>
 
-        {/* Símbolo (Derecha) */}
+        {/* Imágenes (Derecha) */}
         <div className="col-md-5 mb-3">
           <div className="card border-0 shadow-sm h-100">
-            <div className="card-body d-flex flex-column">
-
-              <div className="flex-grow-1 d-flex align-items-center justify-content-center">
-                <ImageFormGroup
-                  eRef={symbolRef}
-                  name="symbol"
-                  label='Imagen del símbolo'
-                  col='col-12'
-                  required={!isEditing}
-                  aspect='1/1'
-                />
-              </div>
-              <small className="text-muted mt-2">
+            <div className="card-body">
+              <ImageFormGroup
+                eRef={symbolRef}
+                name="symbol"
+                label='Icono/Símbolo'
+                col='col-12'
+                required={!isEditing}
+                aspect='1/1'
+              />
+              <small className="text-muted d-block mb-3">
                 <i className="mdi mdi-information me-1"></i>
-                Recomendado: imagen cuadrada (1:1)
+                Recomendado: 100x100px (1:1)
+              </small>
+              
+              <ImageFormGroup
+                eRef={bgImageRef}
+                name="bg_image"
+                label='Imagen de Fondo'
+                col='col-12'
+                aspect='16/9'
+              />
+              <small className="text-muted">
+                <i className="mdi mdi-information me-1"></i>
+                Recomendado: 1200x675px (16:9)
               </small>
             </div>
           </div>

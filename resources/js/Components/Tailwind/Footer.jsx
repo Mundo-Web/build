@@ -19,6 +19,7 @@ const FooterDental = React.lazy(() => import("./Footer/FooterDental"));
 const FooterIbergruas = React.lazy(() => import("./Footer/FooterIbergruas"));
 const FooterHuaillys = React.lazy(() => import("./Footer/FooterHuaillys"));
 const FooterFirstClass = React.lazy(() => import("./Footer/FooterFirstClass"));
+const FooterLaPetaca = React.lazy(() => import("./Footer/FooterLaPetaca"));
 const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
     const getFooter = () => {
         switch (which) {
@@ -147,6 +148,15 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
             case "FooterIbergruas":
                 return (
                     <FooterIbergruas
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterLaPetaca":
+                return (
+                    <FooterLaPetaca
                         socials={items}
                         pages={pages}
                         generals={generals}

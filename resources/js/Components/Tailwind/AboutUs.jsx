@@ -9,6 +9,7 @@ const AboutKatya = React.lazy(() => import('./AboutUs/AboutKatya'))
 const AboutHuaillys = React.lazy(() => import('./AboutUs/AboutHuaillys'))
 const AboutModern = React.lazy(() => import('./AboutUs/AboutModern'))
 const AboutSidebar = React.lazy(() => import('./AboutUs/AboutSidebar'))
+const AboutLaPetaca = React.lazy(() => import('./AboutUs/AboutLaPetaca'))
 const AboutUs = ({ data, which, filteredData, items }) => {
     const getAboutUs = () => {
         switch (which) {
@@ -33,6 +34,8 @@ const AboutUs = ({ data, which, filteredData, items }) => {
                 return <AboutModern data={data} filteredData={filteredData} items={items} />
             case 'AboutSidebar':
                 return <AboutSidebar data={data} filteredData={filteredData} items={items} />
+            case 'AboutLaPetaca':
+                return <AboutLaPetaca data={data} filteredData={filteredData} items={items} />
 
             default:
                 return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
