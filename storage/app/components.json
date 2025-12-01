@@ -986,9 +986,7 @@
                 "image": "slider-lapetaca.png",
                 "data": [
                     "class_slider",
-                    "accentColor",
-                    "btnPrimaryText",
-                    "btnSecondaryText",
+                  
                     "autoplayDelay",
                     "showNavigation",
                     "showIndicators"

@@ -12,9 +12,6 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
     const sortedSlides = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
 
     // Configuraciones desde data
-    const accentColor = data?.accentColor || '#78673A';
-    const btnPrimaryText = data?.btnPrimaryText || 'Reservar Ahora';
-    const btnSecondaryText = data?.btnSecondaryText || 'Explorar';
     const autoplayDelay = parseInt(data?.autoplayDelay) || 5000;
     const showNavigation = data?.showNavigation === 'true' || data?.showNavigation === true;
     const showIndicators = data?.showIndicators !== 'false' && data?.showIndicators !== false;
@@ -58,7 +55,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                     <div className="absolute inset-0 z-20 flex items-center justify-center">
                         <div className="text-center px-4 max-w-4xl animate-fade-in">
                             <div className="flex items-center justify-center mb-6">
-                                <svg className="w-8 h-8 animate-pulse" style={{ color: accentColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-8 h-8 animate-pulse customtext-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                                 </svg>
                             </div>
@@ -71,34 +68,27 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                             </h2>
 
                             <p 
-                                className="text-xl md:text-2xl text-gray-200 mb-8 font-light tracking-wide drop-shadow-lg"
+                                className="text-xl md:text-2xl text-white mb-8 font-light tracking-wide drop-shadow-lg"
                                 style={{ color: slide.description_color || '#E5E7EB' }}
                             >
                                 {slide.description}
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                {slide.button_link && (
+                                {slide.button_link && slide.button_text && (
                                     <a
                                         href={slide.button_link}
-                                        className="px-8 py-4 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
-                                        style={{ backgroundColor: accentColor }}
+                                        className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
                                     >
-                                        {slide.button_text || btnPrimaryText}
+                                        {slide.button_text}
                                     </a>
                                 )}
-                                {slide.secondary_button_link && (
+                                {slide.secondary_button_link && slide.secondary_button_text && (
                                     <a
                                         href={slide.secondary_button_link}
-                                        className="px-8 py-4 bg-transparent border-2 font-semibold rounded-lg hover:text-white transform hover:scale-105 transition-all duration-300"
-                                        style={{ 
-                                            borderColor: accentColor, 
-                                            color: accentColor 
-                                        }}
-                                        onMouseEnter={(e) => e.target.style.backgroundColor = accentColor}
-                                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                        className="px-8 py-4 bg-transparent border-2 border-secondary customtext-secondary font-semibold rounded-lg hover:bg-secondary hover:text-white transform hover:scale-105 transition-all duration-300"
                                     >
-                                        {slide.secondary_button_text || btnSecondaryText}
+                                        {slide.secondary_button_text}
                                     </a>
                                 )}
                             </div>
@@ -112,10 +102,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                 <>
                     <button
                         onClick={prevSlide}
-                        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 group"
-                        style={{ backgroundColor: `${accentColor}cc` }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = accentColor}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = `${accentColor}cc`}
+                        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
                         <svg className="w-6 h-6 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -124,10 +111,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
 
                     <button
                         onClick={nextSlide}
-                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 group"
-                        style={{ backgroundColor: `${accentColor}cc` }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = accentColor}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = `${accentColor}cc`}
+                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
                         <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -145,10 +129,9 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                             onClick={() => setCurrentSlide(index)}
                             className={`transition-all duration-300 rounded-full ${
                                 index === currentSlide
-                                    ? 'w-12 h-3'
+                                    ? 'w-12 h-3 bg-accent'
                                     : 'w-3 h-3 bg-white/50 hover:bg-white/80'
                             }`}
-                            style={index === currentSlide ? { backgroundColor: accentColor } : {}}
                         />
                     ))}
                 </div>
