@@ -17,6 +17,8 @@ class Indicator extends Model
         'symbol',
         'bg_image',
         'name',
+        'subtitle',
+        'badge',
         'description',
         'button_text',
         'button_link',

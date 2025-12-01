@@ -394,6 +394,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/indicators/paginate', [AdminIndicatorController::class, 'paginate']);
     Route::patch('/indicators/status', [AdminIndicatorController::class, 'status']);
     Route::patch('/indicators/{field}', [AdminIndicatorController::class, 'boolean']);
+    Route::delete('/indicators/{id}', [AdminIndicatorController::class, 'delete']);
     Route::put('/indicators/{id}/reorder', [AdminIndicatorController::class, 'reorder']);
 
     Route::post('/faqs', [AdminFaqController::class, 'save']);

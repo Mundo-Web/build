@@ -17,14 +17,13 @@ const IndicatorLaPetaca = ({ data, items }) => {
 
     // Configuraciones desde data
     const showDirectBooking = data?.showDirectBooking !== 'false' && data?.showDirectBooking !== false;
-    const accentColor = data?.accentColor || '#78673A';
 
     return (
-        <section className="py-12 px-4 bg-accent">
-            <div className="max-w-7xl mx-auto">
+        <section className="py-12 bg-accent">
+            <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
                 {/* Swiper Container */}
-                <div className="relative pb-16 overflow-hidden">
-                    <div className="px-4 md:px-20 py-8">
+                <div className="relative  overflow-hidden">
+                    <div className={`${sortedIndicators.length > 2 ? 'px-4 md:px-20 py-8' : ''}`}>
                         <Swiper
                             modules={[Navigation]}
                             spaceBetween={32}
@@ -54,10 +53,7 @@ const IndicatorLaPetaca = ({ data, items }) => {
                             return (
                                 <SwiperSlide key={indicator.id || index}>
                                     <div
-                                        className="group relative overflow-hidden rounded-2xl h-80 border transition-all duration-500"
-                                        style={{ borderColor: `${accentColor}33` }}
-                                        onMouseEnter={(e) => e.currentTarget.style.borderColor = `${accentColor}99`}
-                                        onMouseLeave={(e) => e.currentTarget.style.borderColor = `${accentColor}33`}
+                                        className="group relative overflow-hidden rounded-2xl h-80  transition-all duration-500"
                                     >
                                         {/* Background Image */}
                                         <div className="absolute inset-0">
@@ -88,10 +84,7 @@ const IndicatorLaPetaca = ({ data, items }) => {
                                             </h3>
 
                                             {subtitle && (
-                                                <p 
-                                                    className="text-xl font-semibold mb-3"
-                                                    style={{ color: accentColor }}
-                                                >
+                                                <p className="text-xl font-semibold mb-3 customtext-secondary">
                                                     {subtitle}
                                                 </p>
                                             )}
@@ -103,8 +96,7 @@ const IndicatorLaPetaca = ({ data, items }) => {
                                             {indicator.button_link && (
                                                 <a
                                                     href={indicator.button_link}
-                                                    className="w-fit px-6 py-3 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 shadow-lg"
-                                                    style={{ backgroundColor: accentColor }}
+                                                    className="w-fit px-6 py-3 bg-secondary text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 shadow-lg"
                                                 >
                                                     {indicator.button_text || 'Ver más'}
                                                 </a>
@@ -114,10 +106,7 @@ const IndicatorLaPetaca = ({ data, items }) => {
                                         {/* Badge */}
                                         {badge && (
                                             <div className="absolute top-4 right-4 z-10">
-                                                <div 
-                                                    className="text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse"
-                                                    style={{ backgroundColor: accentColor }}
-                                                >
+                                                <div className="bg-secondary text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse">
                                                     {badge}
                                                 </div>
                                             </div>
@@ -131,21 +120,13 @@ const IndicatorLaPetaca = ({ data, items }) => {
                     {/* Navigation Arrows */}
                     {sortedIndicators.length > 2 && (
                         <>
-                            <button className="indicator-swiper-prev absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 group"
-                                style={{ backgroundColor: `${accentColor}cc` }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = `${accentColor}cc`}
-                            >
+                            <button className="indicator-swiper-prev absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-secondary/80 hover:bg-secondary text-white transition-all duration-300 hover:scale-110 group">
                                 <svg className="w-6 h-6 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                 </svg>
                             </button>
 
-                            <button className="indicator-swiper-next absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 group"
-                                style={{ backgroundColor: `${accentColor}cc` }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = `${accentColor}cc`}
-                            >
+                            <button className="indicator-swiper-next absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-secondary/80 hover:bg-secondary text-white transition-all duration-300 hover:scale-110 group">
                                 <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                 </svg>
@@ -166,10 +147,9 @@ const IndicatorLaPetaca = ({ data, items }) => {
                                     }}
                                     className={`transition-all duration-300 rounded-full ${
                                         index === currentSlide
-                                            ? 'w-12 h-3'
+                                            ? 'w-12 h-3 bg-secondary'
                                             : 'w-3 h-3 bg-white/50 hover:bg-white/80'
                                     }`}
-                                    style={index === currentSlide ? { backgroundColor: accentColor } : {}}
                                 />
                             ))}
                         </div>
