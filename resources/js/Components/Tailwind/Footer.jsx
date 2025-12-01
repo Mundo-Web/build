@@ -157,7 +157,7 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
             case "FooterLaPetaca":
                 return (
                     <FooterLaPetaca
-                        socials={items}
+                        items={items}
                         pages={pages}
                         generals={generals}
                         data={data}

@@ -4192,7 +4192,21 @@
                     "tagline",
                     "accentColor"
                 ],
-                "generals": []
+                 "generals": [
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "footer_description",
+                    "copyright",
+                    "terms_conditions",
+                    "privacy_policy",
+                    "email_contact",
+                    "site_description"
+                ],
+                "using": {
+                    "model": "Service"
+               
+                }
             }
         ]
     },
@@ -4342,7 +4356,10 @@
                     "testimonials",
                     "accentColor"
                 ],
-                "generals": []
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
             }
         ]
     },

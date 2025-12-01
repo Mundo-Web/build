@@ -3,45 +3,12 @@ import React, { useState, useEffect } from 'react';
 const TestimonialsLaPetaca = ({ data, items }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Data de prueba
-    const testimonials = items || [
-        {
-            name: 'María González',
-            location: 'Lima, Perú',
-            rating: 5,
-            text: 'Una experiencia absolutamente mágica. La atención del personal es excepcional y las habitaciones son hermosas. Despertar con los sonidos de la selva es indescriptible.',
-            image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400',
-        },
-        {
-            name: 'Carlos Mendoza',
-            location: 'Bogotá, Colombia',
-            rating: 5,
-            text: 'El hotel perfecto para desconectar. La combinación de lujo y naturaleza es impecable. Los tours por la selva fueron increíbles. Definitivamente volveremos.',
-            image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400',
-        },
-        {
-            name: 'Ana Martínez',
-            location: 'Buenos Aires, Argentina',
-            rating: 5,
-            text: 'Nuestra luna de miel fue perfecta gracias a La Petaca. El restaurante es exquisito y las instalaciones impecables. Un lugar donde se respira paz y tranquilidad.',
-            image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400',
-        },
-        {
-            name: 'Roberto Silva',
-            location: 'São Paulo, Brasil',
-            rating: 5,
-            text: 'La mejor experiencia hotelera que he tenido. El compromiso ambiental del hotel es admirable y la conexión con la cultura local es auténtica.',
-            image: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=400',
-        },
-        {
-            name: 'Laura Fernández',
-            location: 'Madrid, España',
-            rating: 5,
-            text: 'Vine desde España y valió cada kilómetro. El personal es cálido, las habitaciones cómodas y la naturaleza que te rodea es simplemente espectacular.',
-            image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
-        },
-    ];
+    // No mostrar la sección si no hay items
+    if (!items || items.length === 0) {
+        return null;
+    }
 
+    const testimonials = items;
     const accentColor = data?.accentColor || '#78673A';
 
     useEffect(() => {
@@ -86,11 +53,11 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                     {/* Header */}
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: accentColor }}>
-                            Lo Que Dicen Nuestros Huéspedes
+                            {data?.title || 'Lo Que Dicen Nuestros Huéspedes'}
                         </h2>
                         <div className="w-24 h-1 mx-auto mb-6" style={{ backgroundColor: accentColor }}></div>
                         <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-                            Las experiencias de quienes nos visitaron hablan por sí solas
+                            {data?.subtitle || 'Las experiencias de quienes nos visitaron hablan por sí solas'}
                         </p>
                     </div>
 
@@ -99,7 +66,7 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                         <div className="hidden md:grid md:grid-cols-3 gap-8">
                             {getVisibleTestimonials().map((testimonial, index) => (
                                 <div
-                                    key={index}
+                                    key={testimonial.id || index}
                                     className={`transition-all duration-500 ${
                                         index === 1 ? 'scale-105' : 'scale-95 opacity-70'
                                     }`}
@@ -107,38 +74,41 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                     <div 
                                         className="bg-gradient-to-br from-[#281409]/80 to-[#281409]/40 p-8 rounded-2xl border transition-all duration-300 h-full"
                                         style={{ borderColor: `${accentColor}33` }}
-                                        onMouseEnter={(e) => e.currentTarget.style.borderColor = `${accentColor}99`}
-                                        onMouseLeave={(e) => e.currentTarget.style.borderColor = `${accentColor}33`}
                                     >
-                                        <svg className="w-12 h-12 mb-6" style={{ color: `${accentColor}4d` }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-quote w-12 h-12 text-[#78673A]/30 mb-6"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path></svg>
 
-                                        <div className="flex items-center mb-4">
-                                            {[...Array(testimonial.rating)].map((_, i) => (
-                                                <svg key={i} className="w-5 h-5" style={{ fill: accentColor, color: accentColor }} viewBox="0 0 24 24">
-                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                                </svg>
-                                            ))}
-                                        </div>
+                                        {testimonial.rating && (
+                                            <div className="flex items-center mb-4">
+                                                {[...Array(Number(testimonial.rating) || 5)].map((_, i) => (
+                                                    <svg key={i} className="w-5 h-5" style={{ fill: accentColor, color: accentColor }} viewBox="0 0 24 24">
+                                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                    </svg>
+                                                ))}
+                                            </div>
+                                        )}
 
                                         <p className="text-gray-300 mb-6 leading-relaxed italic">
-                                            "{testimonial.text}"
+                                            "{testimonial.testimonial || testimonial.text || testimonial.description}"
                                         </p>
 
                                         <div 
                                             className="flex items-center gap-4 pt-6 border-t"
                                             style={{ borderColor: `${accentColor}33` }}
                                         >
-                                            <img
-                                                src={testimonial.image}
-                                                alt={testimonial.name}
-                                                className="w-14 h-14 rounded-full object-cover border-2"
-                                                style={{ borderColor: accentColor }}
-                                            />
+                                            {testimonial.image && (
+                                                <img
+                                                    src={`/storage/images/testimony/${testimonial.image}`}
+                                                    alt={testimonial.name}
+                                                    className="w-14 h-14 rounded-full object-cover border-2"
+                                                    style={{ borderColor: accentColor }}
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                />
+                                            )}
                                             <div>
                                                 <h4 className="text-white font-semibold">{testimonial.name}</h4>
-                                                <p className="text-gray-400 text-sm">{testimonial.location}</p>
+                                                {testimonial.location && (
+                                                    <p className="text-gray-400 text-sm">{testimonial.location}</p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -148,51 +118,58 @@ const TestimonialsLaPetaca = ({ data, items }) => {
 
                         {/* Mobile View - 1 card */}
                         <div className="md:hidden">
-                            <div 
-                                className="bg-gradient-to-br from-[#281409]/80 to-[#281409]/40 p-8 rounded-2xl border"
-                                style={{ borderColor: `${accentColor}33` }}
-                            >
-                                <svg className="w-12 h-12 mb-6" style={{ color: `${accentColor}4d` }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-
-                                <div className="flex items-center mb-4">
-                                    {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                                        <svg key={i} className="w-5 h-5" style={{ fill: accentColor, color: accentColor }} viewBox="0 0 24 24">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
-                                    ))}
-                                </div>
-
-                                <p className="text-gray-300 mb-6 leading-relaxed italic">
-                                    "{testimonials[currentIndex].text}"
-                                </p>
-
+                            {testimonials[currentIndex] && (
                                 <div 
-                                    className="flex items-center gap-4 pt-6 border-t"
+                                    className="bg-gradient-to-br from-[#281409]/80 to-[#281409]/40 p-8 rounded-2xl border"
                                     style={{ borderColor: `${accentColor}33` }}
                                 >
-                                    <img
-                                        src={testimonials[currentIndex].image}
-                                        alt={testimonials[currentIndex].name}
-                                        className="w-14 h-14 rounded-full object-cover border-2"
-                                        style={{ borderColor: accentColor }}
-                                    />
-                                    <div>
-                                        <h4 className="text-white font-semibold">{testimonials[currentIndex].name}</h4>
-                                        <p className="text-gray-400 text-sm">{testimonials[currentIndex].location}</p>
+                                    <svg className="w-12 h-12 mb-6 opacity-30" fill="none" stroke="currentColor" style={{ color: accentColor }} viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+
+                                    {testimonials[currentIndex].rating && (
+                                        <div className="flex items-center mb-4">
+                                            {[...Array(Number(testimonials[currentIndex].rating) || 5)].map((_, i) => (
+                                                <svg key={i} className="w-5 h-5" style={{ fill: accentColor, color: accentColor }} viewBox="0 0 24 24">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <p className="text-gray-300 mb-6 leading-relaxed italic">
+                                        "{testimonials[currentIndex].testimonial || testimonials[currentIndex].text || testimonials[currentIndex].description}"
+                                    </p>
+
+                                    <div 
+                                        className="flex items-center gap-4 pt-6 border-t"
+                                        style={{ borderColor: `${accentColor}33` }}
+                                    >
+                                        {testimonials[currentIndex].image && (
+                                            <img
+                                                src={`/storage/images/testimony/${testimonials[currentIndex].image}`}
+                                                alt={testimonials[currentIndex].name}
+                                                className="w-14 h-14 rounded-full object-cover border-2"
+                                                style={{ borderColor: accentColor }}
+                                                onError={(e) => e.target.style.display = 'none'}
+                                            />
+                                        )}
+                                        <div>
+                                            <h4 className="text-white font-semibold">{testimonials[currentIndex].name}</h4>
+                                            {testimonials[currentIndex].location && (
+                                                <p className="text-gray-400 text-sm">{testimonials[currentIndex].location}</p>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Navigation buttons */}
                         <button
                             onClick={prevTestimonial}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 z-20"
-                            style={{ backgroundColor: `${accentColor}cc` }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = accentColor}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = `${accentColor}cc`}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 z-20 hover:opacity-100 opacity-80"
+                            style={{ backgroundColor: accentColor }}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -201,10 +178,8 @@ const TestimonialsLaPetaca = ({ data, items }) => {
 
                         <button
                             onClick={nextTestimonial}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 z-20"
-                            style={{ backgroundColor: `${accentColor}cc` }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = accentColor}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = `${accentColor}cc`}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 z-20 hover:opacity-100 opacity-80"
+                            style={{ backgroundColor: accentColor }}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
