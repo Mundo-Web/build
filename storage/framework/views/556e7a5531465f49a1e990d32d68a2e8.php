@@ -172,6 +172,10 @@
     ?>
     <?php $__currentLoopData = $data['colors']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <style>
+            :root {
+                --bg-<?php echo e($color->name); ?>: <?php echo e($color->description); ?>;
+            }
+            
             .stroke-<?php echo e($color->name); ?> {
                 stroke: <?php echo e($color->description); ?>;
             }

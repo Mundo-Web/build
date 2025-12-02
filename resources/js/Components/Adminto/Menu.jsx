@@ -263,23 +263,29 @@ const Menu = ({ session, hasRole }) => {
                           const itemKey = item.id || item.href || `${sectionKey}-${item.label}`;
 
                           if (item.children) {
+                            // Filtrar hijos con acceso
+                            const accessibleChildren = item.children.filter((child) => CanAccess[child.href]);
+                            
+                            // Si no hay hijos con acceso, no mostrar el menú padre
+                            if (accessibleChildren.length === 0) {
+                              return null;
+                            }
+
                             return (
                               <MenuItemContainer
                                 key={itemKey}
                                 title={item.label}
                                 icon={item.icon}
                               >
-                                {item.children
-                                  .filter((child) => CanAccess[child.href])
-                                  .map((child) => (
-                                    <MenuItem
-                                      key={child.id || child.href || `${itemKey}-${child.label}`}
-                                      href={child.href}
-                                      icon={child.icon}
-                                    >
-                                      {child.label}
-                                    </MenuItem>
-                                  ))}
+                                {accessibleChildren.map((child) => (
+                                  <MenuItem
+                                    key={child.id || child.href || `${itemKey}-${child.label}`}
+                                    href={child.href}
+                                    icon={child.icon}
+                                  >
+                                    {child.label}
+                                  </MenuItem>
+                                ))}
                               </MenuItemContainer>
                             );
                           }
