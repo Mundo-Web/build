@@ -18,6 +18,7 @@ class Item extends Model
 
     protected $fillable = [
         // 'id',
+        'type', // 'product' o 'room'
         'slug',
         'name',
         'summary',
@@ -50,7 +51,14 @@ class Item extends Model
         'size',
         'grouper',
         'weight',
-        'store_id'
+        'store_id',
+        
+        // Campos para habitaciones
+        'max_occupancy',
+        'beds_count',
+        'size_m2',
+        'room_type',
+        'total_rooms',
     ];
 
     protected $casts = [
@@ -157,6 +165,61 @@ class Item extends Model
     public function features()
     {
         return $this->hasMany(ItemFeature::class);
+    }
+
+    /**
+     * Amenidades de la habitación (relación muchos a muchos)
+     */
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'item_amenity');
+    }
+
+    /**
+     * Reservas de la habitación
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Disponibilidad de la habitación
+     */
+    public function availability()
+    {
+        return $this->hasMany(RoomAvailability::class);
+    }
+
+    // ============ SCOPES ============
+
+    /**
+     * Scope para filtrar solo productos
+     */
+    public function scopeProducts($query)
+    {
+        return $query->where('type', 'product');
+    }
+
+    /**
+     * Scope para filtrar solo habitaciones
+     */
+    public function scopeRooms($query)
+    {
+        return $query->where('type', 'room');
+    }
+
+    /**
+     * Scope para habitaciones disponibles en un rango de fechas
+     */
+    public function scopeAvailableRooms($query, $checkIn, $checkOut)
+    {
+        return $query->rooms()
+            ->whereHas('availability', function($q) use ($checkIn, $checkOut) {
+                $q->whereBetween('date', [$checkIn, $checkOut])
+                  ->where('available_rooms', '>', 0)
+                  ->where('is_blocked', false);
+            });
     }
 
     protected static function booted()

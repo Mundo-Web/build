@@ -32,6 +32,8 @@ use App\Http\Controllers\Admin\AdController as AdminAdController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesController;
+use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 
 use App\Http\Controllers\Admin\DeliveryPriceController as AdminDeliveryPriceController;
 use App\Http\Controllers\Admin\TypesDeliveryController as AdminTypesDeliveryController;
@@ -184,6 +186,7 @@ Route::get('/partners/media/{uuid}', [AdminCertificationController::class, 'medi
 Route::get('/ads/media/{uuid}', [AdminAdController::class, 'media'])->withoutMiddleware('throttle');
 Route::get('/stores/media/{uuid}', [AdminStoreController::class, 'media']);
 Route::get('/job-applications/media/{uuid}', [AdminJobApplicationController::class, 'media']);
+Route::get('/amenities/media/{uuid}', [AdminAmenityController::class, 'media']);
 
 Route::post('/posts/paginate', [PostController::class, 'paginate']);
 Route::post('/items/paginate', [ItemController::class, 'paginate']);
@@ -526,6 +529,22 @@ Route::middleware('auth')->group(function () {
     Route::patch('/socials/status', [AdminSocialController::class, 'status']);
     Route::patch('/socials/{field}', [AdminSocialController::class, 'boolean']);
     Route::delete('/socials/{id}', [AdminSocialController::class, 'delete']);
+
+    // Amenities (Amenidades para habitaciones)
+    Route::post('/amenities', [AdminAmenityController::class, 'save']);
+    Route::post('/amenities/paginate', [AdminAmenityController::class, 'paginate']);
+    Route::patch('/amenities/status', [AdminAmenityController::class, 'status']);
+    Route::patch('/amenities/{field}', [AdminAmenityController::class, 'boolean']);
+    Route::delete('/amenities/{id}', [AdminAmenityController::class, 'delete']);
+
+    // Bookings (Reservas de habitaciones)
+    Route::post('/bookings', [AdminBookingController::class, 'save']);
+    Route::post('/bookings/paginate', [AdminBookingController::class, 'paginate']);
+    Route::post('/bookings/{id}/confirm', [AdminBookingController::class, 'confirm']);
+    Route::post('/bookings/{id}/complete', [AdminBookingController::class, 'complete']);
+    Route::post('/bookings/{id}/cancel', [AdminBookingController::class, 'cancel']);
+    Route::post('/bookings/{id}/no-show', [AdminBookingController::class, 'noShow']);
+    Route::delete('/bookings/{id}', [AdminBookingController::class, 'delete']);
 
 
     //JOB APLICATIONS

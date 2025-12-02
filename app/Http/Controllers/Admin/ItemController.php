@@ -33,7 +33,7 @@ class ItemController extends BasicController
     public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
-    public $with4get = ['tags'];
+    public $with4get = ['tags', 'amenities'];
 
     public function mediaGallery(Request $request, string $uuid)
     {
@@ -127,6 +127,13 @@ class ItemController extends BasicController
                     'description' => $request->input('description'),
                     'weight' => $request->input('weight'),
                     'stock' => $request->input('stock'),
+                    // Campos específicos para habitaciones (hotel)
+                    'type' => $request->input('type', 'product'),
+                    'room_type' => $request->input('room_type'),
+                    'max_occupancy' => $request->input('max_occupancy'),
+                    'beds_count' => $request->input('beds_count'),
+                    'size_m2' => $request->input('size_m2'),
+                    'total_rooms' => $request->input('total_rooms'),
                 ]
             );
 
@@ -446,6 +453,14 @@ class ItemController extends BasicController
                     'tag_id' => $tagId
                 ]);
             }
+
+            // Manejo de Amenidades (solo para habitaciones)
+            if ($request->has('amenities') && $request->input('type') === 'room') {
+                $amenities = $request->input('amenities', []);
+                if (is_array($amenities)) {
+                    $jpa->amenities()->sync($amenities);
+                }
+            }
         });
         
         // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
@@ -515,5 +530,22 @@ class ItemController extends BasicController
                 'line' => $e->getLine()
             ], 500);
         }
+    }
+
+    /**
+     * Vista React para gestión de habitaciones (rooms)
+     */
+    public function roomsView(Request $request)
+    {
+        // Cambiar temporalmente el reactView a Rooms
+        $originalView = $this->reactView;
+        $this->reactView = 'Admin/Rooms';
+        
+        $response = $this->reactView($request);
+        
+        // Restaurar el reactView original
+        $this->reactView = $originalView;
+        
+        return $response;
     }
 }

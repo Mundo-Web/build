@@ -20,6 +20,15 @@
           { "label": "Etiquetas", "href": "/admin/tags", "icon": "mdi mdi-label-multiple" }
         ]
       },
+      {
+        "label": "Hotel",
+        "icon": "mdi mdi-bed",
+        "children": [
+          { "label": "Habitaciones", "href": "/admin/rooms", "icon": "mdi mdi-bed-double" },
+          { "label": "Amenidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
+          { "label": "Reservas", "href": "/admin/bookings", "icon": "mdi mdi-calendar-check" }
+        ]
+      },
       { "label": "Sucursales", "href": "/admin/stores", "icon": "mdi mdi-office-building-marker" },
       { "label": "Costos de envío", "href": "/admin/prices", "icon": "mdi mdi-moped" },
       { "label": "Mensajes", "href": "/admin/messages", "icon": "mdi mdi-message-text" },
