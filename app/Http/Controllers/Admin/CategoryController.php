@@ -15,6 +15,7 @@ class CategoryController extends BasicController
     public $model = Category::class;
     public $reactView = 'Admin/Categories';
     public $imageFields = ['banner', 'image'];
+    public $defaultOrderBy = 'order_index'; // Ordenar por order_index por defecto
     public $booleanLimits = [
         'featured' => [
             'max' => 10,

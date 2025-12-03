@@ -111,6 +111,21 @@ const Collections = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+
+        try {
+            const result = await collectionsRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering collection:', error);
+        }
+    };
+
     return (
         <>
             <Table
@@ -141,11 +156,26 @@ const Collections = () => {
                         },
                     });
                 }}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 columns={[
                     {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     {
                         dataField: "name",
@@ -175,8 +205,8 @@ const Collections = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />
                             );
@@ -195,7 +225,7 @@ const Collections = () => {
                                     onChange={() =>
                                         onFeaturedChange({
                                             id: data.id,
-                                            value: data.featured == 1? 0 : 1,
+                                            value: data.featured == 1 ? 0 : 1,
                                         })
                                     }
                                 />

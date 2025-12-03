@@ -430,6 +430,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/categories/paginate', [AdminCategoryController::class, 'paginate']);
     Route::patch('/categories/status', [AdminCategoryController::class, 'status']);
     Route::patch('/categories/{field}', [AdminCategoryController::class, 'boolean']);
+    Route::put('/categories/{id}/reorder', [AdminCategoryController::class, 'reorder']);
     Route::delete('/categories/{id}', [AdminCategoryController::class, 'delete']);
 
 
@@ -444,18 +445,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/collections/paginate', [AdminCollectionController::class, 'paginate']);
     Route::patch('/collections/status', [AdminCollectionController::class, 'status']);
     Route::patch('/collections/{field}', [AdminCollectionController::class, 'boolean']);
+    Route::put('/collections/{id}/reorder', [AdminCollectionController::class, 'reorder']);
     Route::delete('/collections/{id}', [AdminCollectionController::class, 'delete']);
 
     Route::post('/subcategories', [AdminSubCategoryController::class, 'save']);
     Route::post('/subcategories/paginate', [AdminSubCategoryController::class, 'paginate']);
     Route::patch('/subcategories/status', [AdminSubCategoryController::class, 'status']);
     Route::patch('/subcategories/{field}', [AdminSubCategoryController::class, 'boolean']);
+    Route::put('/subcategories/{id}/reorder', [AdminSubCategoryController::class, 'reorder']);
     Route::delete('/subcategories/{id}', [AdminSubCategoryController::class, 'delete']);
 
     Route::post('/brands', [AdminBrandController::class, 'save']);
     Route::post('/brands/paginate', [AdminBrandController::class, 'paginate']);
     Route::patch('/brands/status', [AdminBrandController::class, 'status']);
     Route::patch('/brands/{field}', [AdminBrandController::class, 'boolean']);
+    Route::put('/brands/{id}/reorder', [AdminBrandController::class, 'reorder']);
     Route::delete('/brands/{id}', [AdminBrandController::class, 'delete']);
 
     Route::post('/prices', [AdminDeliveryPriceController::class, 'save']);
@@ -484,6 +488,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/tags/update-promotional-status', [AdminTagController::class, 'updatePromotionalStatus']);
     Route::patch('/tags/status', [AdminTagController::class, 'status']);
     Route::patch('/tags/{field}', [AdminTagController::class, 'boolean']);
+    Route::put('/tags/{id}/reorder', [AdminTagController::class, 'reorder']);
     Route::delete('/tags/{id}', [AdminTagController::class, 'delete']);
 
     // Post Tags routes

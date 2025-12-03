@@ -104,6 +104,21 @@ const Brands = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  // Función para manejar el reordering remoto
+  const onReorder = async (e) => {
+    // e.toIndex es la nueva posición donde se quiere insertar el elemento
+    const newOrderIndex = e.toIndex;
+
+    try {
+      const result = await brandsRest.reorder(e.itemData.id, newOrderIndex);
+      if (result) {
+        await e.component.refresh();
+      }
+    } catch (error) {
+      console.error('Error reordering brand:', error);
+    }
+  };
+
   return (<>
     <Table gridRef={gridRef} title='Marcas' rest={brandsRest}
       toolBar={(container) => {
@@ -125,11 +140,26 @@ const Brands = () => {
           }
         });
       }}
+      rowDragging={{
+        allowReordering: true,
+        onReorder: onReorder,
+        dropFeedbackMode: 'push'
+      }}
+      sorting={{
+        mode: 'single'
+      }}
       columns={[
         {
           dataField: 'id',
           caption: 'ID',
           visible: false
+        },
+        {
+          dataField: 'order_index',
+          caption: 'Orden',
+          visible: false,
+          sortOrder: 'asc',
+          sortIndex: 0
         },
         {
           dataField: 'name',

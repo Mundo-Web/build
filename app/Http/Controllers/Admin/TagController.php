@@ -11,6 +11,7 @@ class TagController extends BasicController
     public $model = Tag::class;
     public $reactView = 'Admin/Tags';
     public $imageFields = ['image','icon'];
+    public $defaultOrderBy = 'order_index'; // Ordenar por order_index por defecto
     public $manageFillable = [Tag::class];
 
     /**

@@ -13,4 +13,5 @@ class CollectionController extends BasicController
     public $model = Collection::class;
     public $reactView = 'Admin/Collections';
     public $imageFields = ['image'];
+    public $defaultOrderBy = 'order_index'; // Ordenar por order_index por defecto
 }

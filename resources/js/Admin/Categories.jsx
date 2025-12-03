@@ -41,7 +41,7 @@ const Categories = () => {
         console.log('Full data object:', data);
         console.log('data.banners specifically:', data?.banners);
         console.log('typeof data.banners:', typeof data?.banners);
-        
+
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
@@ -76,7 +76,7 @@ const Categories = () => {
                 console.log(`Attempt ${attempt} to load banner images...`);
                 const imageRefs = bannersJsonRef.current.getImageRefs();
                 console.log('imageRefs:', imageRefs);
-                
+
                 let allLoaded = true;
                 banners.forEach((banner, index) => {
                     if (banner.image) {
@@ -84,7 +84,7 @@ const Categories = () => {
                         console.log(`Banner ${index} - Full ref:`, imgRef);
                         console.log(`Banner ${index} - imgRef.image:`, imgRef?.image);
                         console.log(`Banner ${index} - All properties:`, Object.keys(imgRef || {}));
-                        
+
                         if (imgRef?.image) {
                             imgRef.image.src = `/storage/images/category/${banner.image}`;
                             console.log(`✓ Loaded image for banner ${index}:`, banner.image);
@@ -94,13 +94,13 @@ const Categories = () => {
                         }
                     }
                 });
-                
+
                 // Retry if not all loaded and less than 5 attempts
                 if (!allLoaded && attempt < 5) {
                     setTimeout(() => tryLoadImages(attempt + 1), 300);
                 }
             };
-            
+
             setTimeout(() => tryLoadImages(), 500);
         }
 
@@ -140,7 +140,7 @@ const Categories = () => {
         // Add banners JSON
         if (bannersJsonRef.current) {
             formData.append('banners', bannersJsonRef.current.getValue());
-            
+
             // Add banner images
             const bannerImages = bannersJsonRef.current.getImageFiles();
             Object.keys(bannerImages).forEach(key => {
@@ -253,6 +253,21 @@ const Categories = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+
+        try {
+            const result = await categoriesRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering category:', error);
+        }
+    };
+
     return (
         <>
             <Table
@@ -283,11 +298,26 @@ const Categories = () => {
                         },
                     });
                 }}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 columns={[
                     {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     {
                         dataField: "name",

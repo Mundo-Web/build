@@ -15,6 +15,7 @@ class Tag extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'order_index',
         'name',
         'description',
         'background_color',

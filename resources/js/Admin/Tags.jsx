@@ -152,6 +152,21 @@ const Tags = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  // Función para manejar el reordering remoto
+  const onReorder = async (e) => {
+    // e.toIndex es la nueva posición donde se quiere insertar el elemento
+    const newOrderIndex = e.toIndex;
+
+    try {
+      const result = await tagsRest.reorder(e.itemData.id, newOrderIndex);
+      if (result) {
+        await e.component.refresh();
+      }
+    } catch (error) {
+      console.error('Error reordering tag:', error);
+    }
+  };
+
   return (<>
     <Table gridRef={gridRef} title='Tags de Productos' rest={tagsRest}
       toolBar={(container) => {
@@ -239,11 +254,26 @@ const Tags = () => {
           }
         });
       }}
+      rowDragging={{
+        allowReordering: true,
+        onReorder: onReorder,
+        dropFeedbackMode: 'push'
+      }}
+      sorting={{
+        mode: 'single'
+      }}
       columns={[
         {
           dataField: 'id',
           caption: 'ID',
           visible: false
+        },
+        {
+          dataField: 'order_index',
+          caption: 'Orden',
+          visible: false,
+          sortOrder: 'asc',
+          sortIndex: 0
         },
         Fillable.has('tags', 'name') && {
           dataField: 'name',
@@ -328,18 +358,18 @@ const Tags = () => {
                   <span>{data.name}</span>
                 </span>
                 {/* Mostrar fechas si es promocional */}
-           {Fillable.has('tags', 'start_date') && Fillable.has('tags', 'end_date') && 
-                 (data.start_date || data.end_date) && (
-                  <div style={{ fontSize: '10px', color: '#6c757d', marginTop: '2px' }}>
-                    {data.start_date && (
-                      <div>📅 Inicio: {new Date(data.start_date).toLocaleDateString()}</div>
-                    )}
-                    {data.end_date && (
-                      <div>🏁 Fin: {new Date(data.end_date).toLocaleDateString()}</div>
-                    )}
-                  </div>
-                )}
-             
+                {Fillable.has('tags', 'start_date') && Fillable.has('tags', 'end_date') &&
+                  (data.start_date || data.end_date) && (
+                    <div style={{ fontSize: '10px', color: '#6c757d', marginTop: '2px' }}>
+                      {data.start_date && (
+                        <div>📅 Inicio: {new Date(data.start_date).toLocaleDateString()}</div>
+                      )}
+                      {data.end_date && (
+                        <div>🏁 Fin: {new Date(data.end_date).toLocaleDateString()}</div>
+                      )}
+                    </div>
+                  )}
+
               </div>
             )
             ReactAppend(container, content)
@@ -492,21 +522,21 @@ const Tags = () => {
           </div>
         </div>
 
-      <div className='row col-md-6'>
+        <div className='row col-md-6'>
           <div className='col-md-6' hidden={!Fillable.has('tags', 'background_color')}>
-          <div className="form-group mb-2">
-            <label className="form-label">Color de Fondo</label>
-            <input ref={backgroundColorRef} type="color" className="form-control form-control-color" defaultValue="#3b82f6" />
+            <div className="form-group mb-2">
+              <label className="form-label">Color de Fondo</label>
+              <input ref={backgroundColorRef} type="color" className="form-control form-control-color" defaultValue="#3b82f6" />
+            </div>
           </div>
-        </div>
 
-        <div className='col-md-6' hidden={!Fillable.has('tags', 'text_color')}>
-          <div className="form-group mb-2">
-            <label className="form-label">Color de Texto</label>
-            <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
+          <div className='col-md-6' hidden={!Fillable.has('tags', 'text_color')}>
+            <div className="form-group mb-2">
+              <label className="form-label">Color de Texto</label>
+              <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
+            </div>
           </div>
         </div>
-      </div>
 
 
         <ImageFormGroup eRef={imageRef} name="image" label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
