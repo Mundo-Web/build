@@ -84,6 +84,8 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemImportController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\RoomAvailabilityController;
 use App\Http\Controllers\MercadoPagoController;
 use App\Http\Controllers\OpenPayController;
 use App\Http\Controllers\PersonController;
@@ -210,6 +212,26 @@ Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->w
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
 Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
+
+// ====================================
+// Hotel Public APIs
+// ====================================
+Route::prefix('hotels')->group(function () {
+    // Buscar habitaciones disponibles
+    Route::post('/rooms/search', [BookingController::class, 'search']);
+    
+    // Verificar disponibilidad de una habitación específica
+    Route::post('/rooms/{id}/availability', [RoomAvailabilityController::class, 'check']);
+    
+    // Obtener calendario de disponibilidad
+    Route::get('/rooms/{id}/calendar', [RoomAvailabilityController::class, 'calendar']);
+    
+    // Crear reserva (pre-venta)
+    Route::post('/bookings', [BookingController::class, 'create']);
+    
+    // Rastrear reserva por código
+    Route::get('/bookings/{code}/track', [BookingController::class, 'track']);
+});
 
 // Combos API para carrito
 Route::get('/combos-as-products', [App\Http\Controllers\Api\ComboApiController::class, 'index']);

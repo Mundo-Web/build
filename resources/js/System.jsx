@@ -55,6 +55,7 @@ const Agradecimientos = React.lazy(() => import("./Components/Tailwind/Agradecim
 const Support = React.lazy(() => import("./Components/Tailwind/Support"));
 const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
 const Store = React.lazy(() => import("./Components/Tailwind/Store"));
+const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
 
 // Componente de carga para usar con Suspense
 const LoadingFallback = () => {
@@ -402,6 +403,8 @@ const System = ({
                 return <FirstClass {...componentProps} />
             case "store":
                 return <Store {...componentProps} />
+            case "hotel":
+                return <Hotel {...componentProps} filteredData={filteredData} favorites={favorites} setFavorites={setFavorites} />
             default:
                 return <NoComponent which={value} />
         }

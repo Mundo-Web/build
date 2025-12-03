@@ -2588,8 +2588,24 @@
                     "title",
                     "subtitle"
                 ],
+                  "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 8
+                },
                 "generals": []
             }
+          
         ]
     },
     {
@@ -5013,6 +5029,105 @@
                         "visible"
                     ]
                 }
+            }
+        ]
+    },
+    {
+        "id": "hotel",
+        "name": "Hotel",
+        "icon": "mdi mdi-bed",
+        "options": [
+            {
+                "id": "SearchWidget",
+                "name": "Buscador de Habitaciones",
+                "image": "hotel-search.png",
+                "data": [
+                    "title",
+                    "backgroundColor",
+                    "class_container",
+                    "class_title",
+                    "class_input",
+                    "class_button"
+                ],
+                "generals": []
+            },
+            {
+                "id": "RoomCard",
+                "name": "Tarjeta de Habitación",
+                "image": "hotel-room-card.png",
+                "data": [
+                    "class_card",
+                    "class_image",
+                    "class_title",
+                    "class_price",
+                    "class_button"
+                ],
+                "generals": []
+            },
+            {
+                "id": "RoomsList",
+                "name": "Listado de Habitaciones",
+                "image": "hotel-rooms-list.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_container",
+                    "class_grid",
+                    "show_search"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "type:room",
+                        "visible"
+                    ]
+                },
+                "generals": []
+            },
+            {
+                "id": "RoomDetail",
+                "name": "Detalle de Habitación",
+                "image": "hotel-room-detail.png",
+                "data": [
+                    "class_container",
+                    "class_gallery",
+                    "class_sidebar",
+                    "class_button_reserve",
+                    "show_amenities",
+                    "show_description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": [
+                        "images",
+                        "amenities"
+                    ]
+                },
+                "generals": []
+            },
+            {
+                "id": "BookingSummary",
+                "name": "Resumen de Reserva (Carrito)",
+                "image": "hotel-booking-summary.png",
+                "data": [
+                    "class_card",
+                    "class_dates",
+                    "class_price",
+                    "show_remove_button"
+                ],
+                "generals": []
+            },
+            {
+                "id": "BookingCartCard",
+                "name": "Tarjeta de Reserva en Carrito",
+                "image": "hotel-booking-cart.png",
+                "data": [
+                    "class_card",
+                    "class_dates",
+                    "class_actions",
+                    "show_edit_button"
+                ],
+                "generals": []
             }
         ]
     }
