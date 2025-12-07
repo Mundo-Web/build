@@ -11,17 +11,7 @@ const ProductIbergruas = ({ items, data }) => {
     // Filter visible items
     const visibleItems = items?.filter(item => item.visible) || [];
 
-    // Obtener el color de fondo de la sección
-    const getBgColor = () => {
-        // Intentar obtener el color del elemento raíz cuando se monte
-        if (typeof window !== 'undefined') {
-            const secondaryColor = getComputedStyle(document.documentElement)
-                .getPropertyValue('--color-secondary')?.trim();
-            if (secondaryColor) return secondaryColor;
-        }
-        // Fallback: intentar extraer de las clases CSS generadas dinámicamente
-        return '#1a1a1a'; // Color oscuro por defecto
-    };
+
 
     if (!visibleItems || visibleItems.length === 0) {
         return null;
@@ -108,7 +98,7 @@ const ProductIbergruas = ({ items, data }) => {
                                     {/* Product Image */}
                                     <div className="relative">
                                         <img
-                                            src={`/api/items/media/${product.image}`}
+                                            src={`/storage/images/item/${product.banner}`}
                                             alt={product.name}
                                             className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                                             onError={(e) => {

@@ -316,18 +316,23 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             // 7️⃣ Crear/Actualizar el producto según el modo
             if ($this->importMode === 'add_update') {
                 // Modo: Agregar/Actualizar - Buscar por SKU
-                $item = $this->createOrUpdateItem($itemData, $sku);
+                $result = $this->createOrUpdateItem($itemData, $sku);
+                $item = $result['item'];
+                $shouldProcessImages = $result['shouldProcessNewImages'];
             } else {
                 // Modo: Reset - Crear siempre nuevo
                 $item = Item::create($itemData);
+                $shouldProcessImages = true;
             }
 
             if ($item) {
                 // 8️⃣ Guardar especificaciones si existen
                 $this->saveSpecificationsIfExists($item, $row);
                 
-                // 9️⃣ Guardar imágenes de galería
-                $this->saveGalleryImages($item, $row, 'sku');
+                // 9️⃣ Guardar imágenes de galería (solo si hay nuevas imágenes o es un item nuevo)
+                if ($shouldProcessImages) {
+                    $this->saveGalleryImages($item, $row, 'sku');
+                }
                 
                 // 🔟 Asociar regla de descuento si existe
                 $this->associateDiscountRule($item, $row);
@@ -859,8 +864,10 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
     /**
      * Crear o actualizar un item basado en el SKU
+     * 
+     * @return array ['item' => Item, 'shouldProcessNewImages' => bool]
      */
-    private function createOrUpdateItem(array $itemData, string $sku): ?Item
+    private function createOrUpdateItem(array $itemData, string $sku): array
     {
         // Buscar el item existente por SKU
         $existingItem = Item::where('sku', $sku)->first();
@@ -872,9 +879,30 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'item_id' => $existingItem->id
             ]);
 
-            // Eliminar especificaciones e imágenes anteriores para reemplazarlas
+            // Verificar si hay nuevas imágenes disponibles para importar
+            $newImages = $this->getSkuBasedImages($sku);
+            $hasNewImages = !empty($newImages);
+
+            // Solo eliminar especificaciones (siempre se reemplazan del Excel)
             ItemSpecification::where('item_id', $existingItem->id)->delete();
-            ItemImage::where('item_id', $existingItem->id)->delete();
+            
+            // Solo eliminar imágenes de galería si hay nuevas imágenes para reemplazar
+            if ($hasNewImages) {
+                ItemImage::where('item_id', $existingItem->id)->delete();
+                Log::info("Reemplazando imágenes del producto", [
+                    'sku' => $sku,
+                    'nuevas_imagenes' => count($newImages)
+                ]);
+            } else {
+                // Preservar la imagen principal existente si no hay nuevas imágenes
+                if ($existingItem->image) {
+                    $itemData['image'] = $existingItem->image;
+                }
+                Log::info("Preservando imágenes existentes del producto (no hay nuevas imágenes)", [
+                    'sku' => $sku,
+                    'imagen_preservada' => $existingItem->image
+                ]);
+            }
             
             // Desasociar tags antiguos
             $existingItem->tags()->detach();
@@ -882,14 +910,22 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             // Actualizar los datos del item
             $existingItem->update($itemData);
             
-            return $existingItem;
+            return [
+                'item' => $existingItem,
+                'shouldProcessNewImages' => $hasNewImages
+            ];
         } else {
             // Crear nuevo item
             Log::info("Creando nuevo producto", [
                 'sku' => $sku
             ]);
             
-            return Item::create($itemData);
+            $newItem = Item::create($itemData);
+            
+            return [
+                'item' => $newItem,
+                'shouldProcessNewImages' => true
+            ];
         }
     }
 

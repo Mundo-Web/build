@@ -182,12 +182,20 @@ class SystemController extends BasicController
                 //         );
                 // }
 
-                // Ordenar por updated_at para respetar los cambios más recientes en campos booleanos
-                // Solo si no hay un ordenamiento por 'views' previamente definido
-                if (!$hasViewsOrder && Schema::hasColumn($table, 'updated_at')) {
-                    $query->orderBy($table . '.updated_at', 'desc');
+                // Priorizar orden por 'order_index' si existe (orden primario),
+                // y luego por 'updated_at' como orden secundario si está disponible.
+                if (Schema::hasColumn($table, 'order_index')) {
+                    $query->orderBy($table . '.order_index', 'asc');
+                    if (Schema::hasColumn($table, 'updated_at')) {
+                        $query->orderBy($table . '.updated_at', 'desc');
+                    }
+                } else {
+                    // Ordenar por updated_at para respetar los cambios más recientes en campos booleanos
+                    // Solo si no hay un ordenamiento por 'views' previamente definido
+                    if (!$hasViewsOrder && Schema::hasColumn($table, 'updated_at')) {
+                        $query->orderBy($table . '.updated_at', 'desc');
+                    }
                 }
-
                 $shortID = Crypto::short();
                 $system->itemsId = $shortID;
                 $props['systemItems'][$shortID] = $query->get();

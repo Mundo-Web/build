@@ -5,7 +5,8 @@ import 'swiper/css';
 
 const IndicatorIbergruas = ({ items, data, generals }) => {
     // Filter only visible indicators
-    const visibleIndicators = items?.filter(item => item.visible) || [];
+    const visibleIndicators = items|| [];
+    console.log("Visible Indicators:", visibleIndicators);
 
     if (!visibleIndicators || visibleIndicators.length === 0) {
         return null;
