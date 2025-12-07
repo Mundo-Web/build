@@ -82,7 +82,7 @@ const ProductIbergruas = ({ items, data }) => {
                                     rotate: 0,
                                     stretch: 80,
                                     depth: 200,
-                                    modifier: 1,
+                                    modifier: 1, 
                                     slideShadows: false,
                                 },
                             },
