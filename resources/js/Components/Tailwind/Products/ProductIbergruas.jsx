@@ -15,7 +15,7 @@ const ProductIbergruas = ({ items, data }) => {
 
     if (!visibleItems || visibleItems.length === 0) {
         return null;
-    }
+    } 
 
     return (
         <section className="relative bg-sections-color py-16 bg-secondary">
