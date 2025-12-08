@@ -5,6 +5,7 @@ import { ShoppingCart, Eye, Download, FileText, ChevronDown } from "lucide-react
 
 import CartModal from "../Components/CartModal";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import CartModalIbergruas from "../Components/CartModalIbergruas";
 
 const ProductCardIbergruas = ({
     data,
@@ -176,7 +177,7 @@ const ProductCardIbergruas = ({
                 </div>
             </motion.a>
 
-            <CartModal
+            <CartModalIbergruas
                 data={data}
                 cart={cart}
                 setCart={setCart}
