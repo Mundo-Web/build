@@ -286,7 +286,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
 
         try {
             const filters = transformFilters(selectedFilters);
-            const itemsPerPage = 24;
+            const itemsPerPage = 16;
             const specialSortFields = ['featured', 'offering', 'is_new', 'recommended'];
             const filteredSort = selectedFilters.sort.filter(sortItem => !specialSortFields.includes(sortItem.selector));
             const finalSort = filteredSort.length > 0 ? filteredSort : [{ selector: "final_price", desc: true }];
@@ -741,9 +741,9 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                                 <button
                                     key={page}
                                     onClick={() => handlePageChange(page)}
-                                    className={`w-10 h-10 rounded-xl font-bold transition-all ${pagination.currentPage === page
+                                    className={`w-10 h-10 font-bold transition-all ${pagination.currentPage === page
                                         ? "bg-primary text-white shadow-lg scale-110"
-                                        : "bg-white text-white hover:bg-gray-50"
+                                        : " text-white hover:bg-gray-50 hover:customtext-neutral-dark"
                                         }`}
                                 >
                                     {page}
