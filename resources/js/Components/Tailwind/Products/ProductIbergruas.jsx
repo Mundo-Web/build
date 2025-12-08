@@ -15,10 +15,10 @@ const ProductIbergruas = ({ items, data }) => {
 
     if (!visibleItems || visibleItems.length === 0) {
         return null;
-    } 
+    }
 
     return (
-        <section className="relative bg-sections-color py-16 bg-secondary">
+        <section className="relative bg-sections-color py-16 bg-secondary overflow-hidden">
             <div className="relative mx-auto px-4 sm:px-6 lg:px-8 2xl:max-w-7xl">
                 {/* Header */}
                 {data?.title && (
@@ -37,13 +37,13 @@ const ProductIbergruas = ({ items, data }) => {
                 {/* Swiper with Coverflow Effect */}
                 <div className="relative">
                     {/* Gradient Overlays - Desktop only */}
-                    <div 
+                    <div
                         className="hidden md:block absolute left-0 top-0 bottom-0 w-32 lg:w-48 z-10 pointer-events-none gradient-overlay-left"
                     ></div>
-                    <div 
+                    <div
                         className="hidden md:block absolute right-0 top-0 bottom-0 w-32 lg:w-48 z-10 pointer-events-none gradient-overlay-right"
                     ></div>
-                    
+
                     <Swiper
                         modules={[EffectCoverflow, Autoplay]}
                         effect="coverflow"
@@ -82,7 +82,7 @@ const ProductIbergruas = ({ items, data }) => {
                                     rotate: 0,
                                     stretch: 80,
                                     depth: 200,
-                                    modifier: 1, 
+                                    modifier: 1,
                                     slideShadows: false,
                                 },
                             },
@@ -148,7 +148,8 @@ const ProductIbergruas = ({ items, data }) => {
 
             <style jsx>{`
                 .coverflow-swiper {
-                    padding: 0px 0 0px;
+                    padding: 90px 0;
+                   
                 }
                 
                 .coverflow-swiper .swiper-slide {
