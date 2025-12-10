@@ -320,6 +320,65 @@ export default function ShippingStepIbergruas({
     const [paymentCommission, setPaymentCommission] = useState(0);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
+    // Calcular métodos de pago disponibles
+    const getAvailablePaymentMethods = () => {
+        const methods = [];
+        
+        const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
+        const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
+        const ischeckculqiobject = contacts?.find(x => x.correlative === 'checkout_culqi');
+        
+        if (ischeckmpobject?.description === "true") {
+            methods.push({
+                id: 'tarjeta',
+                name: 'Pago con Tarjeta (MercadoPago)',
+                commission: parseFloat(General.get("checkout_mercadopago_commission") || 0)
+            });
+        }
+        if (ischeckopenpayobject?.description === "true") {
+            methods.push({
+                id: 'openpay',
+                name: 'Pago con Tarjeta (OpenPay)',
+                commission: parseFloat(General.get("checkout_openpay_commission") || 0)
+            });
+        }
+        if (ischeckculqiobject?.description === "true") {
+            methods.push({
+                id: 'culqi',
+                name: 'Pago con Tarjeta (Culqi)',
+                commission: parseFloat(General.get("checkout_culqi_commission") || 0)
+            });
+        }
+        if (General.get("checkout_dwallet") === "true") {
+            methods.push({
+                id: 'yape',
+                name: 'Yape / Plin',
+                commission: parseFloat(General.get("checkout_dwallet_commission") || 0)
+            });
+        }
+        if (General.get("checkout_transfer") === "true") {
+            methods.push({
+                id: 'transferencia',
+                name: 'Transferencia Bancaria',
+                commission: parseFloat(General.get("checkout_transfer_commission") || 0)
+            });
+        }
+        
+        return methods;
+    };
+
+    const availablePaymentMethods = getAvailablePaymentMethods();
+    const hasSinglePaymentMethod = availablePaymentMethods.length === 1;
+    const singlePaymentMethod = hasSinglePaymentMethod ? availablePaymentMethods[0] : null;
+
+    // Auto-seleccionar método de pago si solo hay uno disponible
+    useEffect(() => {
+        if (hasSinglePaymentMethod && singlePaymentMethod && !selectedPaymentMethod) {
+            setSelectedPaymentMethod(singlePaymentMethod.id);
+            setPaymentCommission(singlePaymentMethod.commission);
+        }
+    }, [hasSinglePaymentMethod, singlePaymentMethod]);
+
     // Cargar los departamentos al iniciar el componente
     const numericSubTotal = typeof subTotal === 'number' ? subTotal : parseFloat(subTotal) || 0;
     const numericIgv = typeof igv === 'number' ? igv : parseFloat(igv) || 0;
@@ -860,6 +919,13 @@ export default function ShippingStepIbergruas({
             return;
         }
         
+        // Si solo hay un método de pago, ejecutarlo directamente sin modal
+        if (hasSinglePaymentMethod && singlePaymentMethod) {
+            handlePaymentComplete(singlePaymentMethod.id);
+            return;
+        }
+        
+        // Si hay múltiples métodos, mostrar el modal de selección
         setShowPaymentModal(true);
     };
 
@@ -1587,7 +1653,11 @@ export default function ShippingStepIbergruas({
         }
     }, [appliedCoupon, couponDiscount, setParentCouponDiscount]);
 
+    // Total final CON comisión incluida (siempre usar este para mostrar)
     const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBeforeCommission + calculatedCommission));
+    
+    // Total final para mostrar (siempre incluye comisión si hay)
+    const displayTotal = calculatedCommission > 0 ? finalTotalWithCoupon : (appliedCoupon ? finalTotalWithCoupon : totalFinal);
 
     // Componente Modal de Login
     const LoginModal = () => {
@@ -2430,7 +2500,9 @@ export default function ShippingStepIbergruas({
                         {/* Mostrar comisión del método de pago */}
                         {paymentCommission > 0 && selectedPaymentMethod && (
                             <div className="flex justify-between text-yellow-600">
-                                <span>Comisión ({paymentCommission}%)</span>
+                                <span>
+                                    Comisión {hasSinglePaymentMethod && singlePaymentMethod ? `${singlePaymentMethod.name} ` : ''}({paymentCommission}%)
+                                </span>
                                 <span className="font-semibold">
                                     +{CurrencySymbol()} {Number2Currency(calculatedCommission)}
                                 </span>
@@ -2450,7 +2522,7 @@ export default function ShippingStepIbergruas({
                         <div className="py-3 border-y-2 mt-6">
                             <div className="flex justify-between font-bold text-[20px] items-center">
                                 <span>Total</span>
-                                <span>{CurrencySymbol()} {Number2Currency(appliedCoupon ? finalTotalWithCoupon : totalFinal)}</span>
+                                <span>{CurrencySymbol()} {Number2Currency(displayTotal)}</span>
                             </div>
                         </div>
                         <div className="space-y-2 pt-4">
@@ -2458,7 +2530,7 @@ export default function ShippingStepIbergruas({
                                 className={`w-full py-3 px-6 !rounded-none  font-semibold text-lg transition-all duration-300 hover:opacity-90 bg-primary ${data?.class_button ||' customtext-neutral-dark'}`}
                                 onClick={handleContinueClick}
                             >
-                                Continuar
+                                {hasSinglePaymentMethod ? 'Comprar' : 'Continuar'}
                             </button>
                             <div id="mercadopago-button-container" ></div>
                             <ButtonSecondary className="!rounded-none" onClick={noContinue}>
@@ -2498,7 +2570,7 @@ export default function ShippingStepIbergruas({
                 cart={cart}
                 subTotal={subTotal}
                 igv={igv}
-                totalFinal={appliedCoupon ? finalTotalWithCoupon : totalFinal}
+                totalFinal={displayTotal}
                 envio={envio}
                 request={paymentRequest}
                 onClose={() => setShowVoucherModal(false)}
@@ -2514,7 +2586,7 @@ export default function ShippingStepIbergruas({
                 cart={cart}
                 subTotal={subTotal}
                 igv={igv}
-                totalFinal={appliedCoupon ? finalTotalWithCoupon : totalFinal}
+                totalFinal={displayTotal}
                 envio={envio}
                 contacts={contacts}
                 request={paymentRequest}
