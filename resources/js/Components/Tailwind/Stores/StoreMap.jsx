@@ -106,14 +106,15 @@ const StoreMap = ({ data, stores = [] }) => {
 
         // Offset aproximado para que el InfoWindow se vea completo (mover el centro un poco hacia abajo)
         // Cuanto mayor el zoom, menor el offset necesario en grados
+        const currentZoom = mapRef.current?.getZoom() || zoom;
         const offset = 0.005;
 
         setMapCenter({
-            lat: lat + (offset * (15 / zoom)), // Ajuste dinámico según zoom
+            lat: lat + (offset * (15 / currentZoom)), // Ajuste dinámico según zoom actual
             lng: lng
         });
 
-        if (zoom < 14) setZoom(15);
+        // NO hacer zoom automático - mantener el zoom actual
     };
 
     return (
