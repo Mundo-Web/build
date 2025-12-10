@@ -1,4 +1,4 @@
-name: 🚀 Deploy website on push
+name: 🚀 Deploy FTP Automatico
 
 on:
   push:
@@ -6,28 +6,20 @@ on:
       - main
 
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  ftp-deploy:
+    name: 📂 Deploy a servidor Arcys (ibergruas.com.pe)
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: 📂 Sync files
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            .env
-            .env.example
-            storage/logs/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/views/**
+          server-dir: ${{ secrets.FTP_PATH }}
+          local-dir: ./
+          log-level: verbose
