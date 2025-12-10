@@ -757,194 +757,204 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
 
         {/* Contact Section - Cotización */}
         <motion.section
-            className="bg-secondary"
+            className="bg-secondary relative overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
         >
-            <div className="">
-                <motion.div
-                    className="bg-transparent overflow-hidden"
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.6 }}
-                >
-                    <div className="grid lg:grid-cols-3 gap-0">
-                        {/* Image Section - 1/3 width */}
-                        <div className="relative h-64 lg:h-auto bg-gradient-to-br from-primary to-primary/80 order-1 lg:col-span-1">
-                            {contextData.category?.image ? (
-                                <>
-                                    <img
-                                        src={`/storage/images/category/${contextData.category.image}`}
-                                        alt={contextData.category.name}
-                                        className="absolute inset-0 w-full h-full object-cover opacity-80"
-                                    />
-                                   
-                                </>
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="text-center text-white">
-                                        <Building2 size={80} className="mx-auto mb-4 opacity-50" />
-                                        <p className="text-2xl font-bold">
-                                            {contextData.category?.name || "Maquinaria de Construcción"}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
+            {/* Image - Absolute positioned on left for desktop */}
+            <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-1/3 z-0">
+                {contextData.category?.image ? (
+                    <img
+                        src={`/storage/images/category/${contextData.category.image}`}
+                        alt={contextData.category.name}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                        <div className="text-center text-white">
+                            <Building2 size={80} className="mx-auto mb-4 opacity-50" />
+                            <p className="text-2xl font-bold">
+                                {contextData.category?.name || "Maquinaria de Construcción"}
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Mobile Image */}
+            <div className="lg:hidden relative h-64 bg-gradient-to-br from-primary to-primary/80">
+                {contextData.category?.image ? (
+                    <img
+                        src={`/storage/images/category/${contextData.category.image}`}
+                        alt={contextData.category.name}
+                        className="w-full h-full object-cover opacity-80"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-center text-white">
+                            <Building2 size={80} className="mx-auto mb-4 opacity-50" />
+                            <p className="text-2xl font-bold">
+                                {contextData.category?.name || "Maquinaria de Construcción"}
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Content Container */}
+            <div className="relative z-10 mx-auto px-[5%] 2xl:px-0 2xl:max-w-7xl">
+                <div className="flex justify-end">
+                    {/* Form Section - Aligned to end */}
+                    <div className="w-full lg:w-2/3 text-white lg:py-12 ">
+                        <div className="mb-8">
+                            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+                                ¡Cotiza con los N° 1 en el mundo!
+                            </h2>
+                            <p className="text-white">
+                                Cotizar nuestras maquinarias de construcción es muy fácil, déjanos tus datos a través del siguiente formulario.
+                            </p>
                         </div>
 
-                        {/* Form Section - 2/3 width */}
-                        <div className="text-white p-8 lg:p-12 lg:pr-20 order-2 lg:col-span-2">
-                            <div className="mb-8">
-                                <h2 className="text-3xl lg:text-4xl font-bold text-white mb-3">
-                                    ¡Cotiza con los N° 1 en el mundo!
-                                </h2>
-                                <p className="text-white">
-                                    Cotizar nuestras maquinarias de construcción es muy fácil, déjanos tus datos a través del siguiente formulario.
-                                </p>
+                        <form onSubmit={onSubmitQuote} className="space-y-6">
+                            {/* Nombre completo */}
+                            <div>
+                                <label className="block text-sm font-semibold text-white mb-2">
+                                    Nombre completo <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    ref={nameRef}
+                                    type="text"
+                                    placeholder="Nombre y apellido"
+                                    required
+                                    className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
+                                />
                             </div>
 
-                            <form onSubmit={onSubmitQuote} className="space-y-6">
-                                {/* Nombre completo */}
+                            {/* Email y Teléfono */}
+                            <div className="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-white mb-2">
-                                        Nombre completo <span className="text-red-500">*</span>
+                                        Correo electrónico <span className="text-red-500">*</span>
                                     </label>
                                     <input
-                                        ref={nameRef}
-                                        type="text"
-                                        placeholder="Nombre y apellido"
+                                        ref={emailRef}
+                                        type="email"
+                                        placeholder="hola@mail.com.pe"
                                         required
                                         className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
                                     />
                                 </div>
-
-                                {/* Email y Teléfono */}
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-white mb-2">
-                                            Correo electrónico <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            ref={emailRef}
-                                            type="email"
-                                            placeholder="hola@mail.com.pe"
-                                            required
-                                            className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-white mb-2">
-                                            Celular o Whatsapp <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            ref={phoneRef}
-                                            type="tel"
-                                            placeholder="+51..."
-                                            value={phoneValue}
-                                            onChange={handlePhoneChange}
-                                            required
-                                            className={`w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border focus:ring-2 focus:ring-white/50 focus:border-white transition-all ${
-                                                phoneError ? 'border-red-500' : 'border-white/30'
-                                            }`}
-                                        />
-                                        {phoneError && (
-                                            <p className="mt-1 text-sm text-red-500">{phoneError}</p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Empresa y RUC */}
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-white mb-2">
-                                            Empresa
-                                        </label>
-                                        <input
-                                            ref={companyRef}
-                                            type="text"
-                                            placeholder="Razón Social"
-                                            className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-white mb-2">
-                                            RUC
-                                        </label>
-                                        <input
-                                            ref={rucRef}
-                                            type="text"
-                                            placeholder="Número de RUC"
-                                            maxLength={11}
-                                            className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Maquinaria - Select o Input disabled */}
                                 <div>
                                     <label className="block text-sm font-semibold text-white mb-2">
-                                        {contextData.category?.name || 'Maquinarias'} <span className="text-red-500">*</span>
+                                        Celular o Whatsapp <span className="text-red-500">*</span>
                                     </label>
-                                    {contextData.subcategories && contextData.subcategories.length > 0 ? (
-                                        <SelectForm
-                                            options={contextData.subcategories}
-                                            valueKey="name"
-                                            labelKey="name"
-                                            value={selectedSubcategory || contextData.current_subcategory?.name || ''}
-                                            placeholder="Seleccionar maquinaria"
-                                            className="bg-transparent text-white   "
-                                            classNameDropdown="!rounded-none "
-                                            classNameIcon="text-white"
-
-                                            onChange={setSelectedSubcategory}
-                                        />
-                                    ) : (
-                                        <input
-                                            type="text"
-                                            value={contextData.category?.name || "Categoría"}
-                                            disabled
-                                            className="w-full px-4 py-3 border border-white/30 bg-transparent text-white/60 cursor-not-allowed"
-                                        />
+                                    <input
+                                        ref={phoneRef}
+                                        type="tel"
+                                        placeholder="+51..."
+                                        value={phoneValue}
+                                        onChange={handlePhoneChange}
+                                        required
+                                        className={`w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border focus:ring-2 focus:ring-white/50 focus:border-white transition-all ${
+                                            phoneError ? 'border-red-500' : 'border-white/30'
+                                        }`}
+                                    />
+                                    {phoneError && (
+                                        <p className="mt-1 text-sm text-red-500">{phoneError}</p>
                                     )}
                                 </div>
+                            </div>
 
-                                {/* Comentario */}
+                            {/* Empresa y RUC */}
+                            <div className="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-white mb-2">
-                                        Comentario <span className="text-red-500">*</span>
+                                        Empresa
                                     </label>
-                                    <textarea
-                                        ref={descriptionRef}
-                                        placeholder="Consideraciones a tomar en cuenta"
-                                        rows={4}
-                                        required
-                                        className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all resize-none"
+                                    <input
+                                        ref={companyRef}
+                                        type="text"
+                                        placeholder="Razón Social"
+                                        className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
                                     />
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-white mb-2">
+                                        RUC
+                                    </label>
+                                    <input
+                                        ref={rucRef}
+                                        type="text"
+                                        placeholder="Número de RUC"
+                                        maxLength={11}
+                                        className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all"
+                                    />
+                                </div>
+                            </div>
 
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    disabled={sending}
-                                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {sending ? (
-                                        <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                            Enviando...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Send size={20} />
-                                            Enviar
-                                        </>
-                                    )}
-                                </button>
-                            </form>
-                        </div>
+                            {/* Maquinaria - Select o Input disabled */}
+                            <div>
+                                <label className="block text-sm font-semibold text-white mb-2">
+                                    {contextData.category?.name || 'Maquinarias'} <span className="text-red-500">*</span>
+                                </label>
+                                {contextData.subcategories && contextData.subcategories.length > 0 ? (
+                                    <SelectForm
+                                        options={contextData.subcategories}
+                                        valueKey="name"
+                                        labelKey="name"
+                                        value={selectedSubcategory || contextData.current_subcategory?.name || ''}
+                                        placeholder="Seleccionar maquinaria"
+                                        className="bg-transparent text-white"
+                                        classNameDropdown="!rounded-none"
+                                        classNameIcon="text-white"
+                                        onChange={setSelectedSubcategory}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={contextData.category?.name || "Categoría"}
+                                        disabled
+                                        className="w-full px-4 py-3 border border-white/30 bg-transparent text-white/60 cursor-not-allowed"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Comentario */}
+                            <div>
+                                <label className="block text-sm font-semibold text-white mb-2">
+                                    Comentario <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    ref={descriptionRef}
+                                    placeholder="Consideraciones a tomar en cuenta"
+                                    rows={4}
+                                    required
+                                    className="w-full px-4 py-3 bg-transparent text-white placeholder-white/60 border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white transition-all resize-none"
+                                />
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={sending}
+                                className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {sending ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        Enviando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send size={20} />
+                                        Enviar
+                                    </>
+                                )}
+                            </button>
+                        </form>
                     </div>
-                </motion.div>
+                </div>
             </div>
         </motion.section>
 
