@@ -4,10 +4,14 @@ const SearchWidget = React.lazy(() => import("./Hotel/SearchWidget"));
 const RoomCard = React.lazy(() => import("./Hotel/RoomCard"));
 const RoomsList = React.lazy(() => import("./Hotel/RoomsList"));
 const RoomDetail = React.lazy(() => import("./Hotel/RoomDetail"));
+const RoomDetailLaPetaca = React.lazy(() => import("./Hotel/RoomDetailLaPetaca"));
 const BookingSummary = React.lazy(() => import("./Hotel/BookingSummary"));
 const BookingCartCard = React.lazy(() => import("./Hotel/BookingCartCard"));
 
-const Hotel = ({ which, ...props }) => {
+const Hotel = ({ which, filteredData, ...props }) => {
+    // Obtener el item de filteredData (puede ser Item o Room según la página)
+    const item = filteredData?.Item || filteredData?.Room || null;
+    
     const getComponent = () => {
         switch (which) {
             case "SearchWidget":
@@ -17,7 +21,9 @@ const Hotel = ({ which, ...props }) => {
             case "RoomsList":
                 return <RoomsList {...props} />;
             case "RoomDetail":
-                return <RoomDetail {...props} />;
+                return <RoomDetail room={item} {...props} />;
+            case "RoomDetailLaPetaca":
+                return <RoomDetailLaPetaca item={item} {...props} />;
             case "BookingSummary":
                 return <BookingSummary {...props} />;
             case "BookingCartCard":

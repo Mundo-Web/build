@@ -143,7 +143,8 @@
                     "showCategories",
                     "description",
                     "icon",
-                    "class_container"
+                    "class_container",
+                    "type_order"
                 ],
                 "using": {
                     "model": "Category",
@@ -765,21 +766,12 @@
                     "class_icon_primary",
                     "class_title",
                     "class_description",
-                    "class_overlay"
+                    "class_overlay",
+                    "class_content_slider"
                 ],
                 "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "name",
-                        "description",
-                        "bg_image",
-                        "bg_image_mobile",
-                        "button_text",
-                        "button_link",
-                        "order_index",
-                        "title_color",
-                        "description_color"
-                    ]
+                    "model": "Slider"
+                  
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -1182,7 +1174,14 @@
                     "type_card_product",
                     "class_product_card_container",
                     "class_clear_button",
-                    "class_title"
+                    "class_title",
+                      "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description"
                 ],
                 "options": [
                     {
@@ -2596,10 +2595,12 @@
                         "offering",
                         "is_new"
                     ],
-                    "with": [
+                   "with": [
                         "category",
                         "subcategory",
-                        "brand"
+                        "brand",
+                        "images",
+                        "amenities"
                     ],
                     "limit": 8
                 },
@@ -5080,6 +5081,25 @@
                     "class_button"
                 ],
                 "generals": []
+            },
+              {
+                "id": "RoomDetailLaPetaca",
+                "name": "Detalle de Habitación - La Petaca",
+                "image": "hotel-room-detail-lapetaca.png",
+                "data": [
+                    "accentColor"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": [
+                        "images",
+                        "amenities",
+                        "features"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp"
+                ]
             },
             {
                 "id": "RoomCard",

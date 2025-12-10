@@ -28,6 +28,10 @@ class Slider extends Model
         'secondary_button_link',
         'title_color',
         'description_color',
+        'show_overlay',
+        'overlay_color',
+        'overlay_opacity',
+        'overlay_direction',
         'visible',
         'status',
         'order_index',
@@ -37,5 +41,6 @@ class Slider extends Model
        
         'visible' => 'boolean',
         'status' => 'boolean',
+        'show_overlay' => 'boolean',
     ];
 }

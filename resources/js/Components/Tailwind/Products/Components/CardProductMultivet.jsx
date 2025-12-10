@@ -67,15 +67,15 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
 
     return (
         <div
-            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer flex flex-col h-full"
+            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer flex flex-col w-full"
             onClick={goToDetail}
         >
             {/* Imagen del producto */}
-            <div className="relative overflow-hidden bg-gray-50 h-64 flex items-center justify-center ">
+            <div className="relative overflow-hidden bg-gray-50 w-full aspect-square">
                 <img
                     src={product?.image ? `/api/items/media/${product.image}` : '/assets/img/noimage/no_img.jpg'}
                     alt={product?.name || 'Producto'}
-                    className="w-full h-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                         e.target.src = '/assets/img/noimage/no_img.jpg';
                     }}

@@ -300,7 +300,13 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                                                 <div className="swiper-container relative ">
                                                                     {/* Grid de categorías con subcategorías */}
                                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                                        {[...items].sort((a, b) => a.name.localeCompare(b.name)).map((category, index) => (
+                                                                        {[...items].sort((a, b) => {
+                                                                            // Ordenar por order_index si type_order es 'order_index', sino alfabéticamente
+                                                                            if (data?.type_order === 'order_index') {
+                                                                                return (a.order_index || 0) - (b.order_index || 0);
+                                                                            }
+                                                                            return a.name.localeCompare(b.name);
+                                                                        }).map((category, index) => (
                                                                             <div key={index} className="group">
                                                                                 {/* Categoría principal */}
                                                                                 <a
@@ -341,7 +347,13 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
                                                                                     <div className="space-y-2">
 
                                                                                         <div className="grid grid-cols-1 gap-2">
-                                                                                            {category.subcategories.slice(0, 3).map((subcategory, subIndex) => (
+                                                                                            {[...category.subcategories].sort((a, b) => {
+                                                                                                // Ordenar subcategorías igual que las categorías
+                                                                                                if (data?.type_order === 'order_index') {
+                                                                                                    return (a.order_index || 0) - (b.order_index || 0);
+                                                                                                }
+                                                                                                return a.name.localeCompare(b.name);
+                                                                                            }).slice(0, 3).map((subcategory, subIndex) => (
                                                                                                 <a
                                                                                                     key={subIndex}
                                                                                                     href={`/catalogo?subcategory=${subcategory.slug}`}

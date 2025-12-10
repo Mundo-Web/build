@@ -257,14 +257,34 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
             </AnimatePresence>
 
             {/* Overlays */}
-          
-              <div className={`absolute inset-0 ${data?.class_overlay || 'bg-gradient-to-b from-transparent to-white'}`}></div>
+            {(slide?.show_overlay !== false && slide?.show_overlay !== 0) && (
+              <div 
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(${
+                    slide?.overlay_direction === 'to-r' ? 'to right' :
+                    slide?.overlay_direction === 'to-l' ? 'to left' :
+                    slide?.overlay_direction === 'to-t' ? 'to top' :
+                    slide?.overlay_direction === 'to-b' ? 'to bottom' :
+                    slide?.overlay_direction === 'to-tr' ? 'to top right' :
+                    slide?.overlay_direction === 'to-tl' ? 'to top left' :
+                    slide?.overlay_direction === 'to-br' ? 'to bottom right' :
+                    slide?.overlay_direction === 'to-bl' ? 'to bottom left' :
+                    'to bottom'
+                  }, ${slide?.overlay_color || '#000000'}${Math.round((slide?.overlay_opacity ?? 50) * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                }}
+              ></div>
+            )}
+            {/* Default gradient overlay from data config if overlay is disabled */}
+            {(slide?.show_overlay === false || slide?.show_overlay === 0) && data?.class_overlay && (
+              <div className={`absolute inset-0 ${data?.class_overlay}`}></div>
+            )}
         
           
 
             {/* Content */}
             {index === currentSlide && (
-              <div className={`relative z-10 h-full flex items-center`}>
+              <div className={`relative z-10 h-full flex items-center ${data?.class_content_slider}`}>
                 <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
                   <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
                     {/* Text Content */}

@@ -2429,7 +2429,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                 </motion.div>
                             ) : (
                                 <motion.div
-                                    className="flex items-center flex-wrap gap-y-8 transition-all duration-300 ease-in-out relative"
+                                    className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-6 transition-all duration-300 ease-in-out relative"
                                     key="products"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -2458,13 +2458,13 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                     {Array.isArray(products) && products.length > 0 ? (
                                         products.map((product, index) => (
                                             <motion.div
-                                                className={`w-1/2 px-1 lg:w-1/3 xl:w-1/3 lg:h-[460px] lg:max-h-[500px] xl:h-[450px] xl:max-h-[450px] 2xl:h-[450px] 2xl:max-h-[450px] flex items-center justify-center ${data?.class_product_card_container || ''}`}
+                                                className={`w-full ${data?.class_product_card_container || ''}`}
                                                 key={product.id}
                                                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 transition={{
-                                                    delay: index * 0.1,
-                                                    duration: 0.5,
+                                                    delay: index * 0.05,
+                                                    duration: 0.4,
                                                     type: "spring",
                                                     stiffness: 100
                                                 }}
