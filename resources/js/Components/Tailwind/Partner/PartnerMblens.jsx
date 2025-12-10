@@ -103,11 +103,14 @@ const PartnerMblens = ({ items = [], data = {} }) => {
                 </div>
 
                 {/* Footer */}
-                <div className="text-center mt-8">
+                {data?.footer_text && (
+                      <div className="text-center mt-8">
                     <p className="text-lg customtext-neutral-light">
-                        {data?.footer_text || "Y muchas marcas más disponibles en nuestro catálogo"}
+                        {data?.footer_text}
                     </p>
                 </div>
+                    )}
+              
             </section>
         </>
     );

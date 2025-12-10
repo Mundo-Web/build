@@ -420,8 +420,8 @@
       "_Number2Currency-jIsa99f9.js"
     ]
   },
-  "_ProductCardSelector-5NeVU2SG.js": {
-    "file": "assets/ProductCardSelector-5NeVU2SG.js",
+  "_ProductCardSelector-D_gbRriz.js": {
+    "file": "assets/ProductCardSelector-D_gbRriz.js",
     "name": "ProductCardSelector",
     "imports": [
       "_preload-helper-BfFHrpNk.js",
@@ -6333,7 +6333,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Brands.jsx": {
-    "file": "assets/Brands-CaoN1mnI.js",
+    "file": "assets/Brands-v2e4zIQh.js",
     "name": "Brands",
     "src": "resources/js/Components/Tailwind/Brands.jsx",
     "isDynamicEntry": true,
@@ -8205,7 +8205,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-DTq38Q_8.js",
+    "file": "assets/Filter-BIe-hHpy.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -8509,7 +8509,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-CPsR0FfD.js",
+    "file": "assets/CatalogoFiltrosDental-CGcAJ14d.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -8521,7 +8521,7 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-DbFcgKj2.js",
       "_main-B6F2O9-U.js",
-      "_ProductCardSelector-5NeVU2SG.js",
+      "_ProductCardSelector-D_gbRriz.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
@@ -8578,7 +8578,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx": {
-    "file": "assets/CatalogoFiltrosKatya-DeAfwwEh.js",
+    "file": "assets/CatalogoFiltrosKatya-BcXVjal_.js",
     "name": "CatalogoFiltrosKatya",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
     "isDynamicEntry": true,
@@ -8844,7 +8844,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
-    "file": "assets/FilterHuaillys-IKwY0d7b.js",
+    "file": "assets/FilterHuaillys-DA9c6qYk.js",
     "name": "FilterHuaillys",
     "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
     "isDynamicEntry": true,
@@ -8856,7 +8856,7 @@
       "_autoplay-CBGBjE2B.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "_ProductCardSelector-5NeVU2SG.js",
+      "_ProductCardSelector-D_gbRriz.js",
       "_ItemsRest-Dp5IKigO.js",
       "_Loading-B-FwDSWi.js",
       "_NoResult-DlL_OOrq.js",
@@ -10783,7 +10783,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-Cbx9ZX-H.js",
+    "file": "assets/Menu-o83_AZpx.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -10967,7 +10967,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Partner.jsx": {
-    "file": "assets/Partner-_6f34cnB.js",
+    "file": "assets/Partner-CPhP_1oU.js",
     "name": "Partner",
     "src": "resources/js/Components/Tailwind/Partner.jsx",
     "isDynamicEntry": true,
@@ -11041,7 +11041,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-CDpZUMur.js",
+    "file": "assets/Product-Cyl1DJJD.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -11074,7 +11074,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-3xLr1onz.js",
+    "file": "assets/ProductDetail-1ZSdDMRl.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -11359,7 +11359,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-Bi1d6vHK.js",
+    "file": "assets/ProductDetailHuaillys-DSI7hBCv.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -12076,7 +12076,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx": {
-    "file": "assets/ProductCardSelector-E53GPGHT.js",
+    "file": "assets/ProductCardSelector-j_AH_hj3.js",
     "name": "ProductCardSelector",
     "src": "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx",
     "isEntry": true,
@@ -14256,7 +14256,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-xBNmDC2m.js",
+    "file": "assets/System-CC4HaW3m.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

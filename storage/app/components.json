@@ -1182,7 +1182,14 @@
                     "type_card_product",
                     "class_product_card_container",
                     "class_clear_button",
-                    "class_title"
+                    "class_title",
+                      "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description"
                 ],
                 "options": [
                     {

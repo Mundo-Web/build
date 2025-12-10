@@ -140,14 +140,16 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
           >
             {data?.title || "Productos Destacados"}
           </motion.h2>
+          {data?.description && (
           <motion.p
             variants={headerVariants}
             initial="hidden"
             animate={headerInView ? "visible" : "hidden"}
             className="customtext-neutral-light text-lg max-w-2xl mx-auto"
           >
-            {data?.description || "Descubre nuestra selección de productos veterinarios de las mejores marcas nacionales e internacionales"}
+            {data?.description }
           </motion.p>
+          )}
         </motion.div>
 
         {/* Category filters */}
