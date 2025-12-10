@@ -42,6 +42,10 @@ const Sliders = () => {
   const [activeTab, setActiveTab] = useState('image')
   const [activeFormTab, setActiveFormTab] = useState('content')
   const [iframeSrc, setIframeSrc] = useState('')
+  const [showOverlay, setShowOverlay] = useState(true)
+  const [overlayOpacity, setOverlayOpacity] = useState(50)
+  const [overlayDirection, setOverlayDirection] = useState('to-b')
+  const [overlayColor, setOverlayColor] = useState('#000000')
 
   const onModalOpen = (data) => {
     if (data?.id) setIsEditing(true)
@@ -67,6 +71,12 @@ const Sliders = () => {
     secondaryButtonLinkRef.current.value = data?.secondary_button_link ?? ''
     titleColorRef.current.value = data?.title_color ?? '#000000'
     descriptionColorRef.current.value = data?.description_color ?? '#000000'
+    
+    // Overlay settings
+    setShowOverlay(data?.show_overlay !== false && data?.show_overlay !== 0)
+    setOverlayColor(data?.overlay_color ?? '#000000')
+    setOverlayOpacity(data?.overlay_opacity ?? 50)
+    setOverlayDirection(data?.overlay_direction ?? 'to-b')
 
     $(modalRef.current).modal('show')
   }
@@ -85,6 +95,10 @@ const Sliders = () => {
       secondary_button_link: secondaryButtonLinkRef.current.value,
       title_color: titleColorRef.current.value,
       description_color: descriptionColorRef.current.value,
+      show_overlay: showOverlay ? 1 : 0,
+      overlay_color: overlayColor,
+      overlay_opacity: overlayOpacity,
+      overlay_direction: overlayDirection,
       bg_type: activeTab,
       bg_video: activeTab == 'video' ? iframeSrc : null
     }
@@ -468,6 +482,99 @@ const Sliders = () => {
                 title='Seleccionar color de la descripción'
               />
             </div>
+            
+            {/* Overlay Settings */}
+            <div className='col-12 mt-4 mb-3'>
+              <h6 className='text-muted border-bottom pb-2'>Configuración del Overlay (Gradiente)</h6>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Mostrar Overlay</label>
+              <div className='form-check form-switch'>
+                <input 
+                  className='form-check-input' 
+                  type='checkbox' 
+                  checked={showOverlay}
+                  onChange={(e) => setShowOverlay(e.target.checked)}
+                  style={{ width: '50px', height: '25px' }}
+                />
+                <label className='form-check-label ms-2'>
+                  {showOverlay ? 'Sí' : 'No'}
+                </label>
+              </div>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Color del Gradiente</label>
+              <input 
+                type='color' 
+                className='form-control form-control-color w-100' 
+                value={overlayColor}
+                onChange={(e) => setOverlayColor(e.target.value)}
+                title='Seleccionar color del gradiente'
+                disabled={!showOverlay}
+              />
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Dirección</label>
+              <select 
+                className='form-select'
+                value={overlayDirection}
+                onChange={(e) => setOverlayDirection(e.target.value)}
+                disabled={!showOverlay}
+              >
+                <option value="to-r">→ Izquierda a Derecha</option>
+                <option value="to-l">← Derecha a Izquierda</option>
+                <option value="to-b">↓ Arriba a Abajo</option>
+                <option value="to-t">↑ Abajo a Arriba</option>
+                <option value="to-tr">↗ Diagonal Arriba-Derecha</option>
+                <option value="to-tl">↖ Diagonal Arriba-Izquierda</option>
+                <option value="to-br">↘ Diagonal Abajo-Derecha</option>
+                <option value="to-bl">↙ Diagonal Abajo-Izquierda</option>
+              </select>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Intensidad: {overlayOpacity}%</label>
+              <input 
+                type='range' 
+                className='form-range' 
+                min='0' 
+                max='100' 
+                value={overlayOpacity}
+                onChange={(e) => setOverlayOpacity(parseInt(e.target.value))}
+                disabled={!showOverlay}
+              />
+            </div>
+            
+            {/* Preview del overlay con gradiente */}
+            {showOverlay && (
+              <div className='col-12 mt-3'>
+                <label className='form-label'>Vista previa del gradiente</label>
+                <div 
+                  className='rounded border position-relative overflow-hidden' 
+                  style={{ 
+                    height: '80px',
+                    background: `linear-gradient(${
+                      overlayDirection === 'to-r' ? 'to right' :
+                      overlayDirection === 'to-l' ? 'to left' :
+                      overlayDirection === 'to-t' ? 'to top' :
+                      overlayDirection === 'to-b' ? 'to bottom' :
+                      overlayDirection === 'to-tr' ? 'to top right' :
+                      overlayDirection === 'to-tl' ? 'to top left' :
+                      overlayDirection === 'to-br' ? 'to bottom right' :
+                      'to bottom left'
+                    }, ${overlayColor}${Math.round(overlayOpacity * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                  }}
+                >
+                  <div className='position-absolute w-100 h-100' style={{
+                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'10\' height=\'10\' fill=\'%23ccc\'/%3E%3Crect x=\'10\' y=\'10\' width=\'10\' height=\'10\' fill=\'%23ccc\'/%3E%3C/svg%3E")',
+                    backgroundSize: '20px 20px',
+                    zIndex: -1
+                  }}></div>
+                </div>
+                <small className='text-muted'>
+                  El gradiente irá desde el color seleccionado hasta transparente
+                </small>
+              </div>
+            )}
           </div>
         </div>
 

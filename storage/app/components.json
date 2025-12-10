@@ -765,21 +765,12 @@
                     "class_icon_primary",
                     "class_title",
                     "class_description",
-                    "class_overlay"
+                    "class_overlay",
+                    "class_content_slider"
                 ],
                 "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "name",
-                        "description",
-                        "bg_image",
-                        "bg_image_mobile",
-                        "button_text",
-                        "button_link",
-                        "order_index",
-                        "title_color",
-                        "description_color"
-                    ]
+                    "model": "Slider"
+                  
                 },
                 "generals": [
                     "phone_whatsapp",
