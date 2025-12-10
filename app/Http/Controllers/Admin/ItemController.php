@@ -35,6 +35,27 @@ class ItemController extends BasicController
     public $manageFillable = [Item::class, Brand::class];
     public $with4get = ['tags', 'amenities'];
 
+    /**
+     * Override paginate to always include amenities relation
+     */
+    public function paginate(Request $request): HttpResponse|ResponseFactory
+    {
+        // Agregar amenities a las relaciones si no está ya incluido
+        $with = $request->has('with') ? $request->with : '';
+        $relations = array_filter(explode(',', $with));
+        
+        if (!in_array('amenities', $relations)) {
+            $relations[] = 'amenities';
+        }
+        if (!in_array('tags', $relations)) {
+            $relations[] = 'tags';
+        }
+        
+        $request->merge(['with' => implode(',', $relations)]);
+        
+        return parent::paginate($request);
+    }
+
     public function mediaGallery(Request $request, string $uuid)
     {
         try {
@@ -65,12 +86,12 @@ class ItemController extends BasicController
         try {
             // Validar los datos recibidos
             $validated = $request->validate([
-                'category_id' => 'required|exists:categories,id',
+                'category_id' => 'nullable|exists:categories,id',
                 'subcategory_id' => 'nullable|exists:sub_categories,id',
                 'brand_id' => 'nullable|exists:brands,id',
                 'name' => 'required|string|max:255',
                 'summary' => 'nullable|string',
-                'price' => 'required|numeric',
+                'price' => 'nullable|numeric',
                 'discount' => 'nullable|numeric',
                 'tags' => 'nullable|array',
                 'description' => 'nullable|string',
@@ -436,32 +457,34 @@ class ItemController extends BasicController
             return !empty(trim($tag));
         });
 
-        DB::transaction(function () use ($jpa, $tags, $request) {
-            // Manejo de Tags
-            ItemTag::where('item_id', $jpa->id)->whereNotIn('tag_id', $tags)->delete();
+        // Manejo de Tags (ya estamos dentro de una transacción del método save)
+        ItemTag::where('item_id', $jpa->id)->whereNotIn('tag_id', $tags)->delete();
 
-            foreach ($tags as $tag) {
-                if (Uuid::isValid($tag)) {
-                    $tagId = $tag;
-                } else {
-                    $tagJpa = Tag::firstOrCreate(['name' => $tag]);
-                    $tagId = $tagJpa->id;
-                }
-
-                ItemTag::updateOrCreate([
-                    'item_id' => $jpa->id,
-                    'tag_id' => $tagId
-                ]);
+        foreach ($tags as $tag) {
+            if (Uuid::isValid($tag)) {
+                $tagId = $tag;
+            } else {
+                $tagJpa = Tag::firstOrCreate(['name' => $tag]);
+                $tagId = $tagJpa->id;
             }
 
-            // Manejo de Amenidades (solo para habitaciones)
-            if ($request->has('amenities') && $request->input('type') === 'room') {
-                $amenities = $request->input('amenities', []);
-                if (is_array($amenities)) {
-                    $jpa->amenities()->sync($amenities);
-                }
+            ItemTag::updateOrCreate([
+                'item_id' => $jpa->id,
+                'tag_id' => $tagId
+            ]);
+        }
+
+        // Manejo de Amenidades (solo para habitaciones)
+        if ($request->has('amenities')) {
+            $amenities = $request->input('amenities', []);
+            // Log para debug
+            Log::info('Amenities recibidos:', ['amenities' => $amenities, 'type' => $request->input('type'), 'item_id' => $jpa->id]);
+            
+            if (is_array($amenities) && count($amenities) > 0) {
+                $jpa->amenities()->sync($amenities);
+                Log::info('Amenities sincronizados correctamente', ['count' => count($amenities)]);
             }
-        });
+        }
         
         // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
 

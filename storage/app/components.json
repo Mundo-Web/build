@@ -2596,10 +2596,12 @@
                         "offering",
                         "is_new"
                     ],
-                    "with": [
+                   "with": [
                         "category",
                         "subcategory",
-                        "brand"
+                        "brand",
+                        "images",
+                        "amenities"
                     ],
                     "limit": 8
                 },
@@ -5080,6 +5082,25 @@
                     "class_button"
                 ],
                 "generals": []
+            },
+              {
+                "id": "RoomDetailLaPetaca",
+                "name": "Detalle de Habitación - La Petaca",
+                "image": "hotel-room-detail-lapetaca.png",
+                "data": [
+                    "accentColor"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": [
+                        "images",
+                        "amenities",
+                        "features"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp"
+                ]
             },
             {
                 "id": "RoomCard",

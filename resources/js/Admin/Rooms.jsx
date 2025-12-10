@@ -11,10 +11,10 @@ import TextareaFormGroup from '../Components/Adminto/form/TextareaFormGroup';
 import ImageFormGroup from '../Components/Adminto/form/ImageFormGroup';
 import SwitchFormGroup from '../Components/Adminto/form/SwitchFormGroup';
 import QuillFormGroup from '../Components/Adminto/form/QuillFormGroup';
+import DynamicField from '../Components/Adminto/form/DynamicField';
 import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
-import Fillable from '../Utils/Fillable';
 import Swal from 'sweetalert2';
 
 const Rooms = () => {
@@ -42,8 +42,14 @@ const Rooms = () => {
   const pdfRef = useRef();
   const videoUrlRef = useRef();
 
+  // Features refs
+  const featuresRef = useRef([]);
+
   const [isEditing, setIsEditing] = useState(false);
   const [amenities, setAmenities] = useState([]);
+
+  // Features state (como en Items.jsx)
+  const [features, setFeatures] = useState([]);
 
   // Multimedia states
   const [gallery, setGallery] = useState([]);
@@ -259,11 +265,27 @@ const Rooms = () => {
       $(roomTypeRef.current).val(data?.room_type || 'standard').trigger('change');
     }, 100);
 
-    // Set amenities
+    // Set amenities - CORREGIDO
     const selectedAmenities = data?.amenities?.map(a => a.id.toString()) || [];
     setTimeout(() => {
       $(amenitiesRef.current).val(selectedAmenities).trigger('change');
     }, 100);
+
+    // Load features (características)
+    if (data?.features) {
+      try {
+        const featuresData = typeof data.features === 'string' ? JSON.parse(data.features) : data.features;
+        // Convertir a formato simple si viene como objeto
+        const formattedFeatures = Array.isArray(featuresData) 
+          ? featuresData.map(f => typeof f === 'object' ? f.feature || f : f)
+          : [];
+        setFeatures(formattedFeatures);
+      } catch (e) {
+        setFeatures([]);
+      }
+    } else {
+      setFeatures([]);
+    }
 
     // Load gallery
     if (data?.gallery) {
@@ -314,6 +336,13 @@ const Rooms = () => {
   const onModalSubmit = async (e) => {
     e.preventDefault();
 
+    // Limpiar características vacías (como en Items.jsx)
+    const cleanFeatures = features.filter(f => {
+      if (typeof f === 'string') return f.trim() !== '';
+      if (typeof f === 'object') return f.feature?.trim() !== '';
+      return false;
+    });
+
     const request = {
       id: idRef.current.value || undefined,
       type: 'room',
@@ -328,11 +357,16 @@ const Rooms = () => {
       total_rooms: totalRoomsRef.current.value,
       price: priceRef.current.value,
       discount: discountRef.current.value,
+      features: cleanFeatures,
     };
 
     const formData = new FormData();
     for (const key in request) {
-      formData.append(key, request[key]);
+      if (key === 'features') {
+        formData.append(key, JSON.stringify(request[key]));
+      } else {
+        formData.append(key, request[key]);
+      }
     }
 
     // Main image
@@ -349,30 +383,26 @@ const Rooms = () => {
     // Gallery - Separar imágenes nuevas y existentes con orden correcto
     let galleryIndex = 0;
     let galleryIdsIndex = 0;
-    
-    // Crear array con el orden de las imágenes (solo las no marcadas para eliminar)
     const galleryOrder = [];
     
     gallery.forEach((img, index) => {
       if (!img.toDelete) {
         if (img.file) {
-          formData.append(`gallery[${galleryIndex}]`, img.file); // Imágenes nuevas
+          formData.append(`gallery[${galleryIndex}]`, img.file);
           galleryOrder.push({ type: 'new', index: galleryIndex });
           galleryIndex++;
         } else if (img.id) {
-          formData.append(`gallery_ids[${galleryIdsIndex}]`, img.id); // IDs de imágenes existentes
+          formData.append(`gallery_ids[${galleryIdsIndex}]`, img.id);
           galleryOrder.push({ type: 'existing', id: img.id, index: galleryIdsIndex });
           galleryIdsIndex++;
         }
       }
     });
     
-    // Enviar el orden de la galería al backend
     if (galleryOrder.length > 0) {
       formData.append('gallery_order', JSON.stringify(galleryOrder));
     }
 
-    // Imágenes marcadas para eliminar
     const deletedImages = gallery
       .filter((img) => img.toDelete && img.id)
       .map((img) => img.id);
@@ -382,18 +412,16 @@ const Rooms = () => {
       });
     }
 
-    // PDFs - Con orden correcto
+    // PDFs
     const pdfFiles = pdfs.filter(pdf => !pdf.toDelete);
     let pdfIndex = 0;
     pdfFiles.forEach((pdf) => {
       if (pdf.file) {
-        // Nuevo archivo PDF
         formData.append(`pdf[${pdfIndex}]`, pdf.file);
         pdfIndex++;
       }
     });
     
-    // Enviar el orden de los PDFs
     const pdfOrder = pdfFiles.map((pdf, index) => ({
       index,
       order: index + 1,
@@ -403,7 +431,6 @@ const Rooms = () => {
       formData.append('pdf_order', JSON.stringify(pdfOrder));
     }
     
-    // PDFs marcados para eliminar
     const deletedPdfs = pdfs
       .map((pdf, index) => pdf.toDelete ? index : null)
       .filter(index => index !== null);
@@ -411,7 +438,7 @@ const Rooms = () => {
       formData.append('deleted_pdfs', JSON.stringify(deletedPdfs));
     }
 
-    // Videos - Con orden correcto
+    // Videos
     const videoLinks = videos.filter(video => !video.toDelete);
     const videoData = videoLinks.map((video, index) => ({
       url: video.url,
@@ -421,7 +448,6 @@ const Rooms = () => {
       formData.append('linkvideo', JSON.stringify(videoData));
     }
     
-    // Videos marcados para eliminar
     const deletedVideos = videos
       .map((video, index) => video.toDelete ? index : null)
       .filter(index => index !== null);
@@ -429,27 +455,31 @@ const Rooms = () => {
       formData.append('deleted_videos', JSON.stringify(deletedVideos));
     }
 
-    // Amenities
+    // Amenities - CORREGIDO: enviar como array, no como JSON string
     const selectedAmenities = $(amenitiesRef.current).val() || [];
-    formData.append('amenities', JSON.stringify(selectedAmenities));
+    if (selectedAmenities.length > 0) {
+      selectedAmenities.forEach((amenityId, index) => {
+        formData.append(`amenities[${index}]`, amenityId);
+      });
+    }
 
     const result = await itemsRest.save(formData);
     if (!result) return;
 
-    // Reset delete flag after successful save
     if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh();
     $(modalRef.current).modal('hide');
     
-    // Limpiar estados de multimedia
+    // Limpiar estados
     setGallery([]);
     setPdfs([]);
     setVideos([]);
+    setFeatures([]);
   };
 
-  const onVisibleChange = async ({ id, value }) => {
-    const result = await itemsRest.boolean({ id, field: 'visible', value });
+  const onBooleanChange = async ({ id, value, field }) => {
+    const result = await itemsRest.boolean({ id, field: field, value });
     if (!result) return;
     $(gridRef.current).dxDataGrid('instance').refresh();
   };
@@ -482,6 +512,8 @@ const Rooms = () => {
     'presidential': 'Presidencial',
     'family': 'Familiar',
     'executive': 'Ejecutiva',
+    'single': 'Individual',
+    'double': 'Doble',
   };
 
   return (
@@ -626,35 +658,67 @@ const Rooms = () => {
             }
           },
           {
-            dataField: 'visible',
-            caption: 'Visible',
+            dataField: 'amenities',
+            caption: 'Amenidades',
+            width: '15%',
+            allowFiltering: false,
+            cellTemplate: (container, { data }) => {
+              const amenitiesList = data.amenities || [];
+              ReactAppend(container,
+                <div>
+                  {amenitiesList.length > 0 ? (
+                    <div className="d-flex flex-wrap gap-1">
+                      {amenitiesList.slice(0, 3).map((a, i) => (
+                        <span key={i} className="badge badge-soft-success" style={{ fontSize: '10px' }}>
+                          {a.name}
+                        </span>
+                      ))}
+                      {amenitiesList.length > 3 && (
+                        <span className="badge badge-soft-secondary" style={{ fontSize: '10px' }}>
+                          +{amenitiesList.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted small">Sin amenidades</span>
+                  )}
+                </div>
+              );
+            }
+          },
+          {
+            dataField: 'featured',
+            caption: 'Destacado',
             dataType: 'boolean',
+            width: '80px',
             cellTemplate: (container, { data }) => {
               $(container).empty();
               ReactAppend(container,
                 <SwitchFormGroup
-                  checked={data.visible == 1}
-                  onChange={() => onVisibleChange({ id: data.id, value: !data.visible })}
+                  checked={data.featured == 1}
+                  onChange={() => onBooleanChange({ id: data.id, value: !data.featured, field: 'featured' })}
                 />
               );
             }
           },
           {
-            dataField: 'status',
-            caption: 'Activo',
+            dataField: 'visible',
+            caption: 'Visible',
             dataType: 'boolean',
+            width: '80px',
             cellTemplate: (container, { data }) => {
               $(container).empty();
               ReactAppend(container,
                 <SwitchFormGroup
-                  checked={data.status == 1}
-                  onChange={() => onStatusChange({ id: data.id, value: !data.status })}
+                  checked={data.visible == 1}
+                  onChange={() => onBooleanChange({ id: data.id, value: !data.visible, field: 'visible' })}
                 />
               );
             }
           },
           {
             caption: 'Acciones',
+            width: '100px',
             cellTemplate: (container, { data }) => {
               container.css('text-overflow', 'unset');
               container.append(DxButton({
@@ -673,11 +737,7 @@ const Rooms = () => {
             allowFiltering: false,
             allowExporting: false
           }
-        ].filter(col => {
-          if (!col) return false;
-          if (col.dataField === 'image' && !Fillable.has('items', 'image')) return false;
-          return true;
-        })}
+        ]}
       />
 
       <Modal
@@ -689,7 +749,7 @@ const Rooms = () => {
         <div id="rooms-container">
           <input ref={idRef} type="hidden" />
 
-          {/* Sistema de Pestañas */}
+          {/* Sistema de Pestañas - IGUAL QUE Items.jsx */}
           <ul className="nav nav-pills nav-justified mb-4" role="tablist" style={{
             backgroundColor: '#f8f9fa',
             borderRadius: '8px',
@@ -704,11 +764,9 @@ const Rooms = () => {
                 data-bs-target="#basic-info"
                 type="button"
                 role="tab"
-                style={{
-                  borderRadius: '6px',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
+                aria-controls="basic-info"
+                aria-selected="true"
+                style={{ borderRadius: '6px', fontWeight: '500', transition: 'all 0.3s ease' }}
               >
                 <i className="fas fa-info-circle me-2"></i>
                 Información Básica
@@ -722,32 +780,12 @@ const Rooms = () => {
                 data-bs-target="#details"
                 type="button"
                 role="tab"
-                style={{
-                  borderRadius: '6px',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
+                aria-controls="details"
+                aria-selected="false"
+                style={{ borderRadius: '6px', fontWeight: '500', transition: 'all 0.3s ease' }}
               >
-                <i className="fas fa-list-ul me-2"></i>
-                Detalles
-              </button>
-            </li>
-            <li className="nav-item" role="presentation">
-              <button
-                className="nav-link"
-                id="amenities-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#amenities"
-                type="button"
-                role="tab"
-                style={{
-                  borderRadius: '6px',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <i className="fas fa-star me-2"></i>
-                Amenidades
+                <i className="fas fa-bed me-2"></i>
+                Detalles y Precios
               </button>
             </li>
             <li className="nav-item" role="presentation">
@@ -758,14 +796,28 @@ const Rooms = () => {
                 data-bs-target="#multimedia"
                 type="button"
                 role="tab"
-                style={{
-                  borderRadius: '6px',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
+                aria-controls="multimedia"
+                aria-selected="false"
+                style={{ borderRadius: '6px', fontWeight: '500', transition: 'all 0.3s ease' }}
               >
                 <i className="fas fa-images me-2"></i>
                 Multimedia
+              </button>
+            </li>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="features-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#features"
+                type="button"
+                role="tab"
+                aria-controls="features"
+                aria-selected="false"
+                style={{ borderRadius: '6px', fontWeight: '500', transition: 'all 0.3s ease' }}
+              >
+                <i className="fas fa-list-ul me-2"></i>
+                Características
               </button>
             </li>
           </ul>
@@ -773,7 +825,7 @@ const Rooms = () => {
           {/* Contenido de las Pestañas */}
           <div className="tab-content">
             {/* Pestaña: Información Básica */}
-            <div className="tab-pane fade show active" id="basic-info" role="tabpanel">
+            <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
               <div className="row g-3">
                 <div className="col-md-6">
                   <div className="card border-0 shadow-sm h-100">
@@ -785,12 +837,11 @@ const Rooms = () => {
                         eRef={nameRef}
                         label="Nombre de la Habitación"
                         required
-                        placeholder="Ej: Habitación Doble Standard"
+                        placeholder="Ej: Suite Amazonas"
                       />
                       <InputFormGroup
                         eRef={skuRef}
                         label="SKU"
-                        required
                         placeholder="Ej: ROOM-001"
                       />
                       <div className="mb-3">
@@ -801,6 +852,8 @@ const Rooms = () => {
                           required
                         >
                           <option value="standard">Estándar</option>
+                          <option value="single">Individual</option>
+                          <option value="double">Doble</option>
                           <option value="suite">Suite</option>
                           <option value="deluxe">Deluxe</option>
                           <option value="presidential">Presidencial</option>
@@ -821,8 +874,8 @@ const Rooms = () => {
                       <TextareaFormGroup
                         eRef={summaryRef}
                         label="Resumen"
-                        rows={3}
-                        placeholder="Breve descripción..."
+                        rows={4}
+                        placeholder="Breve descripción de la habitación..."
                       />
                     </div>
                   </div>
@@ -841,8 +894,8 @@ const Rooms = () => {
               </div>
             </div>
 
-            {/* Pestaña: Detalles */}
-            <div className="tab-pane fade" id="details" role="tabpanel">
+            {/* Pestaña: Detalles y Precios */}
+            <div className="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
               <div className="row g-3">
                 <div className="col-md-6">
                   <div className="card border-0 shadow-sm h-100">
@@ -852,12 +905,11 @@ const Rooms = () => {
                     <div className="card-body">
                       <InputFormGroup
                         eRef={maxOccupancyRef}
-                        label="Capacidad Máxima"
+                        label="Capacidad Máxima (personas)"
                         type="number"
                         required
                         min="1"
                         max="10"
-                        specification="Número máximo de huéspedes"
                       />
                       <InputFormGroup
                         eRef={bedsCountRef}
@@ -876,11 +928,10 @@ const Rooms = () => {
                       />
                       <InputFormGroup
                         eRef={totalRoomsRef}
-                        label="Total de Habitaciones"
+                        label="Total de Habitaciones Disponibles"
                         type="number"
                         required
                         min="1"
-                        specification="Cantidad disponible de este tipo"
                       />
                     </div>
                   </div>
@@ -911,35 +962,37 @@ const Rooms = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Pestaña: Amenidades */}
-            <div className="tab-pane fade" id="amenities" role="tabpanel">
-              <div className="card border-0 shadow-sm">
-                <div className="card-header">
-                  <h6 className="mb-0"><i className="fas fa-star me-2"></i>Amenidades Incluidas</h6>
-                </div>
-                <div className="card-body">
-                  <SelectFormGroup
-                    eRef={amenitiesRef}
-                    label="Selecciona las amenidades"
-                    dropdownParent="#rooms-container"
-                    multiple
-                  >
-                    {amenities.map(amenity => (
-                      <option key={amenity.id} value={amenity.id}>
-                        {amenity.name}
-                      </option>
-                    ))}
-                  </SelectFormGroup>
-                  <small className="text-muted">Selecciona las amenidades incluidas en esta habitación</small>
+                <div className="col-12">
+                  <div className="card border-0 shadow-sm">
+                    <div className="card-header">
+                      <h6 className="mb-0"><i className="fas fa-star me-2"></i>Amenidades</h6>
+                    </div>
+                    <div className="card-body">
+                      <SelectFormGroup
+                        eRef={amenitiesRef}
+                        label="Selecciona las amenidades incluidas"
+                        dropdownParent="#rooms-container"
+                        multiple
+                      >
+                        {amenities.map(amenity => (
+                          <option key={amenity.id} value={amenity.id}>
+                            {amenity.name}
+                          </option>
+                        ))}
+                      </SelectFormGroup>
+                      <small className="text-muted">
+                        <i className="fas fa-info-circle me-1"></i>
+                        Mantén presionado Ctrl para seleccionar múltiples opciones
+                      </small>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Pestaña: Multimedia */}
-            <div className="tab-pane fade" id="multimedia" role="tabpanel">
+            <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
               <div className="row g-3">
                 <div className="col-md-6">
                   <div className="card border-0 shadow-sm h-100">
@@ -960,10 +1013,7 @@ const Rooms = () => {
                 <div className="col-md-6">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-header">
-                      <h6 className="mb-0"><i className="fas fa-images me-2"></i>Galería de Imágenes</h6>
-                    </div>
-                    <div className="card-body">
-                      <label className="form-label fw-semibold text-dark mb-3">
+                      <h6 className="mb-0">
                         <i className="fas fa-images me-2 text-primary"></i>
                         Galería de Imágenes
                         {gallery.filter(img => !img.toDelete).length > 0 && (
@@ -971,8 +1021,9 @@ const Rooms = () => {
                             {gallery.filter(img => !img.toDelete).length}
                           </span>
                         )}
-                      </label>
-
+                      </h6>
+                    </div>
+                    <div className="card-body">
                       <input
                         ref={galleryRef}
                         type="file"
@@ -984,17 +1035,16 @@ const Rooms = () => {
 
                       <div className="gallery-container" style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-                        gap: '16px',
-                        padding: '16px',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+                        gap: '12px',
+                        padding: '12px',
                         backgroundColor: '#f8f9fa',
                         borderRadius: '12px',
                         border: '2px dashed #dee2e6',
-                        minHeight: '160px'
+                        minHeight: '140px'
                       }}>
                         {gallery.filter(image => !image.toDelete).map((image, index) => {
                           const originalIndex = gallery.findIndex(img => img === image);
-                          const displayIndex = index + 1;
                           return (
                             <div
                               key={originalIndex}
@@ -1006,36 +1056,34 @@ const Rooms = () => {
                               onDrop={(e) => handleDropReorder(e, originalIndex)}
                               style={{
                                 aspectRatio: '1',
-                                borderRadius: '12px',
+                                borderRadius: '8px',
                                 overflow: 'hidden',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                                 transition: 'all 0.3s ease',
                                 cursor: 'grab',
                                 transform: draggedIndex === originalIndex ? 'scale(1.05)' : 'scale(1)',
                                 opacity: draggedIndex === originalIndex ? 0.8 : 1,
-                                border: '3px solid transparent',
                                 background: 'white'
                               }}
                             >
-                              <div className="position-absolute top-0 start-0 m-2">
-                                <span className="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style={{
-                                  width: '24px',
-                                  height: '24px',
-                                  fontSize: '11px',
-                                  fontWeight: 'bold'
+                              <div className="position-absolute top-0 start-0 m-1">
+                                <span className="badge bg-primary rounded-circle" style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  fontSize: '10px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
                                 }}>
-                                  {displayIndex}
+                                  {index + 1}
                                 </span>
                               </div>
 
                               <img
                                 src={image.url}
-                                alt={`Imagen ${displayIndex}`}
+                                alt={`Imagen ${index + 1}`}
                                 className="w-100 h-100"
-                                style={{
-                                  objectFit: 'cover',
-                                  pointerEvents: 'none'
-                                }}
+                                style={{ objectFit: 'cover', pointerEvents: 'none' }}
                               />
 
                               <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{
@@ -1043,17 +1091,15 @@ const Rooms = () => {
                                 opacity: 0,
                                 transition: 'opacity 0.3s ease'
                               }} onMouseEnter={(e) => e.currentTarget.style.opacity = 1} onMouseLeave={(e) => e.currentTarget.style.opacity = 0}>
-                                <div className="d-flex gap-2">
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                    style={{ width: '32px', height: '32px' }}
-                                    onClick={(e) => removeGalleryImage(e, originalIndex)}
-                                    title="Eliminar imagen"
-                                  >
-                                    <i className="fas fa-trash text-white"></i>
-                                  </button>
-                                </div>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-sm rounded-circle"
+                                  style={{ width: '28px', height: '28px', padding: 0 }}
+                                  onClick={(e) => removeGalleryImage(e, originalIndex)}
+                                  title="Eliminar"
+                                >
+                                  <i className="fas fa-trash text-white" style={{ fontSize: '12px' }}></i>
+                                </button>
                               </div>
                             </div>
                           );
@@ -1063,35 +1109,22 @@ const Rooms = () => {
                           className="gallery-add-button d-flex flex-column align-items-center justify-content-center"
                           style={{
                             aspectRatio: '1',
-                            border: '3px dashed #0d6efd',
-                            borderRadius: '12px',
+                            border: '2px dashed #0d6efd',
+                            borderRadius: '8px',
                             backgroundColor: 'rgba(13, 110, 253, 0.05)',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
-                            minHeight: '120px'
+                            minHeight: '100px'
                           }}
                           onClick={() => galleryRef.current.click()}
                           onDrop={handleDrop}
                           onDragOver={handleDragOver}
                         >
                           <div className="text-center">
-                            <div className="mb-2 bg-primary" style={{
-                              width: '48px',
-                              height: '48px',
-                              borderRadius: '50%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              margin: '0 auto'
-                            }}>
-                              <i className="fas fa-plus text-white fa-lg"></i>
-                            </div>
-                            <p className="mb-0 text-primary fw-semibold" style={{ fontSize: '12px' }}>
-                              Agregar Imagen
+                            <i className="fas fa-plus text-primary fa-lg mb-1"></i>
+                            <p className="mb-0 text-primary fw-semibold" style={{ fontSize: '10px' }}>
+                              Agregar
                             </p>
-                            <small className="text-muted" style={{ fontSize: '10px' }}>
-                              Arrastra o haz clic
-                            </small>
                           </div>
                         </div>
                       </div>
@@ -1099,22 +1132,20 @@ const Rooms = () => {
                   </div>
                 </div>
 
-                <div className="col-12">
+                <div className="col-md-6">
                   <div className="card border-0 shadow-sm">
                     <div className="card-header">
-                      <h6 className="mb-0"><i className="fas fa-file-pdf me-2 text-danger"></i>Documentos PDF</h6>
-                    </div>
-                    <div className="card-body">
-                      <label className="form-label fw-semibold text-dark mb-3">
+                      <h6 className="mb-0">
                         <i className="fas fa-file-pdf me-2 text-danger"></i>
-                        Archivos PDF (Folletos / Planos)
+                        Documentos PDF
                         {pdfs.filter(pdf => !pdf.toDelete).length > 0 && (
                           <span className="badge bg-danger ms-2">
                             {pdfs.filter(pdf => !pdf.toDelete).length}
                           </span>
                         )}
-                      </label>
-
+                      </h6>
+                    </div>
+                    <div className="card-body">
                       <input
                         ref={pdfRef}
                         type="file"
@@ -1124,7 +1155,7 @@ const Rooms = () => {
                         onChange={handlePdfChange}
                       />
 
-                      <div className="list-group mb-3">
+                      <div className="list-group mb-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                         {pdfs.filter(pdf => !pdf.toDelete).map((pdf, index) => {
                           const originalIndex = pdfs.findIndex(p => p === pdf);
                           return (
@@ -1135,38 +1166,26 @@ const Rooms = () => {
                               onDragEnd={handlePdfDragEnd}
                               onDragOver={handlePdfDragOver}
                               onDrop={(e) => handlePdfDropReorder(e, originalIndex)}
-                              className="list-group-item d-flex align-items-center justify-content-between"
+                              className="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2"
                               style={{
                                 cursor: 'grab',
                                 opacity: draggedPdfIndex === originalIndex ? 0.5 : 1,
-                                backgroundColor: draggedPdfIndex === originalIndex ? '#f8f9fa' : 'white',
                                 transition: 'all 0.2s ease'
                               }}
                             >
-                              <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: 0 }}>
-                                <span className="badge bg-danger me-3" style={{ minWidth: '28px' }}>
-                                  {index + 1}
-                                </span>
-                                <i className="fas fa-grip-vertical text-muted me-3"></i>
+                              <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
+                                <span className="badge bg-danger me-2">{index + 1}</span>
+                                <i className="fas fa-grip-vertical text-muted me-2"></i>
                                 <i className="fas fa-file-pdf text-danger me-2"></i>
-                                <span className="text-truncate" style={{ maxWidth: '250px' }}>{pdf.name}</span>
+                                <span className="text-truncate" style={{ maxWidth: '150px' }}>{pdf.name}</span>
                               </div>
-                              <div className="d-flex gap-2 flex-shrink-0">
+                              <div className="d-flex gap-1">
                                 {!pdf.file && (
-                                  <a
-                                    href={pdf.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
+                                  <a href={pdf.url} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary py-0">
                                     <i className="fas fa-eye"></i>
                                   </a>
                                 )}
-                                <button
-                                  type="button"
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={(e) => removePdf(e, originalIndex)}
-                                >
+                                <button type="button" className="btn btn-sm btn-outline-danger py-0" onClick={(e) => removePdf(e, originalIndex)}>
                                   <i className="fas fa-trash"></i>
                                 </button>
                               </div>
@@ -1175,35 +1194,28 @@ const Rooms = () => {
                         })}
                       </div>
 
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger w-100"
-                        onClick={() => pdfRef.current.click()}
-                      >
-                        <i className="fas fa-plus me-2"></i>
-                        Agregar PDFs
+                      <button type="button" className="btn btn-outline-danger btn-sm w-100" onClick={() => pdfRef.current.click()}>
+                        <i className="fas fa-plus me-2"></i>Agregar PDFs
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="col-12">
+                <div className="col-md-6">
                   <div className="card border-0 shadow-sm">
                     <div className="card-header">
-                      <h6 className="mb-0"><i className="fas fa-video me-2 text-success"></i>Videos</h6>
-                    </div>
-                    <div className="card-body">
-                      <label className="form-label fw-semibold text-dark mb-3">
+                      <h6 className="mb-0">
                         <i className="fas fa-video me-2 text-success"></i>
-                        Links de Videos (Tour Virtual)
+                        Videos (Tour Virtual)
                         {videos.filter(video => !video.toDelete).length > 0 && (
                           <span className="badge bg-success ms-2">
                             {videos.filter(video => !video.toDelete).length}
                           </span>
                         )}
-                      </label>
-
-                      <div className="list-group mb-3">
+                      </h6>
+                    </div>
+                    <div className="card-body">
+                      <div className="list-group mb-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                         {videos.filter(video => !video.toDelete).map((video, index) => {
                           const originalIndex = videos.findIndex(v => v === video);
                           return (
@@ -1214,47 +1226,26 @@ const Rooms = () => {
                               onDragEnd={handleVideoDragEnd}
                               onDragOver={handleVideoDragOver}
                               onDrop={(e) => handleVideoDropReorder(e, originalIndex)}
-                              className="list-group-item d-flex align-items-center justify-content-between"
+                              className="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2"
                               style={{
                                 cursor: 'grab',
                                 opacity: draggedVideoIndex === originalIndex ? 0.5 : 1,
-                                backgroundColor: draggedVideoIndex === originalIndex ? '#f8f9fa' : 'white',
                                 transition: 'all 0.2s ease'
                               }}
                             >
-                              <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: 0, overflow: 'hidden' }}>
-                                <span className="badge bg-success me-3 flex-shrink-0" style={{ minWidth: '28px' }}>
-                                  {index + 1}
-                                </span>
-                                <i className="fas fa-grip-vertical text-muted me-3 flex-shrink-0"></i>
-                                <i className="fas fa-video text-success me-2 flex-shrink-0"></i>
-                                <span
-                                  className="small"
-                                  style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                    maxWidth: '100%'
-                                  }}
-                                  title={video.url}
-                                >
+                              <div className="d-flex align-items-center" style={{ minWidth: 0, overflow: 'hidden' }}>
+                                <span className="badge bg-success me-2">{index + 1}</span>
+                                <i className="fas fa-grip-vertical text-muted me-2"></i>
+                                <i className="fas fa-video text-success me-2"></i>
+                                <span className="text-truncate small" style={{ maxWidth: '150px' }} title={video.url}>
                                   {video.url}
                                 </span>
                               </div>
-                              <div className="d-flex gap-2 flex-shrink-0 ms-2">
-                                <a
-                                  href={video.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-outline-primary"
-                                >
+                              <div className="d-flex gap-1">
+                                <a href={video.url} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary py-0">
                                   <i className="fas fa-external-link-alt"></i>
                                 </a>
-                                <button
-                                  type="button"
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={(e) => removeVideo(e, originalIndex)}
-                                >
+                                <button type="button" className="btn btn-sm btn-outline-danger py-0" onClick={(e) => removeVideo(e, originalIndex)}>
                                   <i className="fas fa-trash"></i>
                                 </button>
                               </div>
@@ -1263,22 +1254,43 @@ const Rooms = () => {
                         })}
                       </div>
 
-                      <div className="input-group">
+                      <div className="input-group input-group-sm">
                         <input
                           ref={videoUrlRef}
                           type="url"
                           className="form-control"
                           placeholder="https://youtube.com/watch?v=..."
                         />
-                        <button
-                          type="button"
-                          className="btn btn-success"
-                          onClick={addVideo}
-                        >
-                          <i className="fas fa-plus me-2"></i>
-                          Agregar
+                        <button type="button" className="btn btn-success" onClick={addVideo}>
+                          <i className="fas fa-plus me-1"></i>Agregar
                         </button>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pestaña: Características */}
+            <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
+              <div className="row g-3">
+                <div className="col-12">
+                  <div className="card border-0 shadow-sm">
+                    <div className="card-header">
+                      <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Lista de Características</h6>
+                    </div>
+                    <div className="card-body">
+                      <DynamicField
+                        ref={featuresRef}
+                        label="Características de la Habitación"
+                        structure=""
+                        value={features}
+                        onChange={setFeatures}
+                      />
+                      <small className="text-muted">
+                        <i className="fas fa-info-circle me-1"></i>
+                        Agrega características como: "Vista al río", "Balcón privado", "Servicio 24 horas", etc.
+                      </small>
                     </div>
                   </div>
                 </div>
