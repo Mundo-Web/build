@@ -239,7 +239,12 @@ Route::get('/combos-as-products/{id}', [App\Http\Controllers\Api\ComboApiControl
 Route::get('/items/{id}/combos', [ItemController::class, 'getItemCombos']);
 
 Route::post('/pago', [PaymentController::class, 'charge']);
+Route::post('/pago/charge-completed', [PaymentController::class, 'chargeCompleted']);
+Route::post('/pago/3ds', [PaymentController::class, 'charge3DS']);
 Route::get('/pago/{sale_id}', [PaymentController::class, 'getPaymentStatus']);
+
+// Ruta para crear orden de Culqi (habilita Yape, bancaMovil, etc.)
+Route::post('/culqi/checkout-order', [\App\Http\Controllers\CulqiController::class, 'createCheckoutOrder']);
 
 // Nuevas rutas para MercadoPago
 Route::post('/mercadopago/preference', [MercadoPagoController::class, 'createPreference']);
@@ -654,4 +659,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/{field}', [CustomerSaleController::class, 'boolean']);
     Route::delete('/sales/{id}', [CustomerSaleController::class, 'delete']);
   });
+});
+
+// TEST: Verificar claves RSA de Culqi (ELIMINAR EN PRODUCCIÓN)
+Route::get('/test-culqi-keys', function () {
+    return response()->json([
+        'public_key' => \App\Helpers\CulqiConfig::getPublicKey(),
+        'rsa_id' => \App\Helpers\CulqiConfig::getRsaId(),
+        'rsa_public_key' => \App\Helpers\CulqiConfig::getRsaPublicKey(),
+        'rsa_public_key_length' => strlen(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? ''),
+        'has_newlines' => strpos(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? '', "\n") !== false,
+    ]);
 });

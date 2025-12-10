@@ -9,6 +9,7 @@ use App\Models\General;
 use App\Models\Slider;
 use App\Models\Social;
 use App\Models\User;
+use App\Models\ExchangeRate;
 use App\Helpers\CulqiConfig;
 use App\Models\RoleHasMenu;
 use Exception;
@@ -461,6 +462,11 @@ class BasicController extends Controller
         'CULQI_API' => CulqiConfig::getApiUrl(),
         'CULQI_ENABLED' => CulqiConfig::isEnabled(),
         'CULQI_NAME' => CulqiConfig::getName(),
+        'CULQI_RSA_ID' => CulqiConfig::getRsaId(),
+        'CULQI_RSA_PUBLIC_KEY' => CulqiConfig::getRsaPublicKey(),
+        'CULQI_SUPPORTS_USD' => General::where('correlative', 'checkout_culqi_supports_usd')->first()?->description === 'true',
+        'EXCHANGE_RATE' => General::where('correlative', 'exchange_rate_usd_pen')->first()?->description ?? 
+                          (ExchangeRate::where('currency', 'USD')->orderBy('date', 'desc')->first()?->rate ?? 3.75),
         'API_KEY_TINYMCE' => env('API_KEY_TINYMCE',"xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
       ],
       'can_access' => $menus,

@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import CartModal from "../Components/CartModal";
 import Logout from "../../../Actions/Logout";
-import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
@@ -550,8 +549,8 @@ const HeaderIbergruas = ({
                                 <img
                                     src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                                     alt={Global.APP_NAME}
-                                    className={`h-16 w-auto object-contain ${data?.class_logo || ""}`}
-                                    onError={(e) => {
+                                    className={`h-10 lg:h-16 w-auto object-contain ${data?.class_logo || ""}`}
+                                    onError={(e)  => {
                                         e.target.onerror = null;
                                         e.target.src = "/assets/img/logo-bk.svg";
                                     }}
@@ -617,48 +616,24 @@ const HeaderIbergruas = ({
                                 return null;
                             })}
                             
-                                {/* Right Section: Cart & Mobile Menu */}
-                        <div className="flex items-center gap-4">
-                            {/* User Profile / Login */}
-                            {/*** 
-                           * 
-                           *   <div className="hidden lg:block">
-                                {isUser ? (
-                                    <div className="relative group">
-                                        <button className="flex items-center gap-2">
-                                            <ProfileImage
-                                                uuid={isUser.uuid}
-                                                name={isUser.name}
-                                                lastname={isUser.lastname}
-                                                className="w-8 h-8 rounded-full border-2 border-black"
-                                            />
-                                        </button>
-                             
-                                        <div className="absolute top-full right-0 w-48 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2 z-50">
-                                            <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-gray-100">
-                                                {menuItems.map((item, index) => (
-                                                    <a
-                                                        key={index}
-                                                        href={item.href || '#'}
-                                                        onClick={item.onClick}
-                                                        className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors border-b border-gray-50 last:border-0"
-                                                    >
-                                                        {item.icon}
-                                                        {item.label}
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <a href="/iniciar-sesion" className="customtext-neutral-dark font-bold hover:text-black">
-                                        <User size={24} />
-                                    </a>
+                            {/* Cart Button - Desktop */}
+                            <button
+                                onClick={() => setModalOpen(true)}
+                                className="relative bg-black text-white p-2.5 hover:bg-gray-900 transition-colors group"
+                                aria-label="Carrito de compras"
+                            >
+                                <ShoppingCart size={20} className="text-white" />
+                                {totalCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-white text-black text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-black">
+                                        {totalCount}
+                                    </span>
                                 )}
-                            </div>
-                          ***/}
+                            </button>
+                        </nav>
 
-                            {/* Cart Button */}
+                        {/* Right Section: Cart & Mobile Menu */}
+                        <div className="flex lg:hidden items-center gap-4">
+                            {/* Cart Button - Mobile */}
                             <button
                                 onClick={() => setModalOpen(true)}
                                 className="relative bg-black text-white p-2.5 hover:bg-gray-900 transition-colors group"
@@ -675,7 +650,7 @@ const HeaderIbergruas = ({
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setOpenMenu(!openMenu)}
-                                className="lg:hidden p-2 text-black hover:bg-black/5 rounded-lg transition-colors"
+                                className="p-2 text-black hover:bg-black/5 rounded-lg transition-colors"
                             >
                                 {openMenu ? <XIcon size={24} /> : (
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -686,31 +661,98 @@ const HeaderIbergruas = ({
                                 )}
                             </button>
                         </div>
-                        </nav>
-
-                    
                     </div>
                 </div>
 
                 {/* Mobile Menu Overlay */}
                 <AnimatePresence>
                     {openMenu && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.2 }}
-                            className="lg:hidden bg-transparent text-textWhite shadow-lg w-full min-h-screen absolute z-10 top-20"
-                        >
-                            <MobileMenu
-                                search={search}
-                                setSearch={setSearch}
-                                pages={pages}
-                                items={items}
-                                onClose={() => setOpenMenu(false)}
-                                data={data}
+                        <>
+                            {/* Backdrop */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="lg:hidden fixed inset-0 bg-black/50 z-40"
+                                onClick={() => setOpenMenu(false)}
                             />
-                        </motion.div>
+                            
+                            {/* Menu Panel */}
+                            <motion.div
+                                initial={{ x: "100%" }}
+                                animate={{ x: 0 }}
+                                exit={{ x: "100%" }}
+                                transition={{ type: "tween", duration: 0.3 }}
+                                className="lg:hidden fixed right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl z-50 overflow-y-auto"
+                            >
+                                {/* Header del menú */}
+                                <div className={`flex items-center justify-between p-4 border-b ${data.backgroundColor || 'bg-primary'}`}>
+                                    <span className="text-lg font-bold text-white">Menú</span>
+                                    <button
+                                        onClick={() => setOpenMenu(false)}
+                                        className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+                                    >
+                                        <XIcon size={24} />
+                                    </button>
+                                </div>
+
+                                {/* Contenido del menú */}
+                                <div className="p-4">
+                                    {/* Menu Items - Mismo estilo que desktop */}
+                                    <nav className="space-y-2">
+                                        {orderedMenuItems.map((menuItem, index) => {
+                                            if (menuItem.type === 'category') {
+                                                const category = menuItem.data;
+                                                return (
+                                                    <div key={`mobile-cat-${category.id}`} className="border-b border-gray-100 last:border-0">
+                                                        <a
+                                                            href={`/catalogo?category=${category.slug}`}
+                                                            className={`
+                                                                block py-3 px-4 text-base font-semibold transition-colors rounded-lg
+                                                                ${category.alias
+                                                                    ? 'bg-secondary text-white mb-2'
+                                                                    : 'text-gray-800 hover:bg-gray-50'
+                                                                }
+                                                            `}
+                                                        >
+                                                            {category.alias || category.name}
+                                                        </a>
+                                                        
+                                                        {/* Subcategorías */}
+                                                        {category.subcategories?.length > 0 && (
+                                                            <div className="ml-4 mb-2 space-y-1">
+                                                                {category.subcategories.map((sub) => (
+                                                                    <a
+                                                                        key={sub.id}
+                                                                        href={`/catalogo?subcategory=${sub.slug}`}
+                                                                        className="block py-2 px-3 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
+                                                                    >
+                                                                        {sub.name}
+                                                                    </a>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            } else if (menuItem.type === 'page') {
+                                                const page = menuItem.data;
+                                                return (
+                                                    <a
+                                                        key={`mobile-page-${index}`}
+                                                        href={page.path}
+                                                        className="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-100 last:border-0"
+                                                    >
+                                                        {page.name}
+                                                    </a>
+                                                );
+                                            }
+                                            return null;
+                                        })}
+                                    </nav>
+                                </div>
+                            </motion.div>
+                        </>
                     )}
                 </AnimatePresence>
             </header>

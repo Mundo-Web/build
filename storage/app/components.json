@@ -3234,6 +3234,31 @@
                     "checkout_transfer_name",
                     "checkout_transfer_description"
                 ]
+            },
+              {
+                "id": "CheckoutStepsIbegruas",
+                "name": "StepsIbegruas",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "json": {
+                    "prefixes": "./prefijocelular.json"
+                },
+                "generals": [
+                    "igv_checkout",
+                    "checkout_culqi",
+                    "checkout_culqi_name",
+                    "checkout_culqi_public_key",
+                    "checkout_dwallet",
+                    "checkout_dwallet_qr",
+                    "checkout_dwallet_name",
+                    "checkout_dwallet_description",
+                    "checkout_transfer",
+                    "checkout_transfer_cci",
+                    "checkout_transfer_name",
+                    "checkout_transfer_description"
+                ]
             }
         ]
     },

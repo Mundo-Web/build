@@ -178,7 +178,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                 )}
 
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/90"></div>
+                <div className="absolute inset-0 bg-black/60"></div>
 
                 {/* Content */}
                 <div className="relative h-full flex items-center justify-center">

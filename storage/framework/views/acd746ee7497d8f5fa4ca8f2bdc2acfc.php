@@ -272,8 +272,10 @@
     <!-- Vendor js -->
     <script src="/lte/assets/js/vendor.min.js" defer></script>
 
-    <!-- Culqi Checkout v4 -->
-    <script src="https://checkout.culqi.com/js/v4"></script>
+    <!-- Culqi Custom Checkout v4 -->
+    <script src="https://js.culqi.com/checkout-js"></script>
+    <!-- Culqi 3DS para autenticación segura -->
+    <script src="https://3ds.culqi.com" defer></script>
 
     <!-- OpenPay SDK -->
     <?php

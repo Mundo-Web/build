@@ -30,6 +30,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
     const isButtonDisabled = saving || !paymentMethod;
     const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
     const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
+    const ischeckculqiobject = contacts?.find(x => x.correlative === 'checkout_culqi');
 
     return (
         <ReactModal
@@ -70,6 +71,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                         // General.get("checkout_mercadopago") !== "true" &&
                         ischeckmpobject?.description !== "true" &&
                         ischeckopenpayobject?.description !== "true" &&
+                        ischeckculqiobject?.description !== "true" &&
                         General.get("checkout_dwallet") !== "true" &&
                         General.get("checkout_transfer") !== "true" ? (
                             <div className="text-gray-500 text-center py-4">Sin opciones de pago</div>
@@ -162,6 +164,52 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                 }`}>
                                                     <div className={`h-2 w-2 rounded-full ${
                                                         paymentMethod === "openpay" ? "bg-white" : ""
+                                                    }`}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+                                }
+                                {/* Opción Tarjeta - Culqi */}
+                                {
+                                ischeckculqiobject?.description == "true" &&
+                                    <div
+                                        className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
+                                            paymentMethod === "culqi"
+                                                ? "border-primary bg-[#f8f5f2]"
+                                                : "border-gray-200 hover:border-2 hover:border-primary"
+                                        }`}
+                                        onClick={() => setPaymentMethod("culqi")}
+                                    >
+                                        <div className="flex flex-row items-center justify-between gap-2">
+                                            <div className="flex flex-col items-start justify-center space-x-2">
+                                                <input
+                                                    type="radio"
+                                                    id="culqi"
+                                                    name="paymentMethod"
+                                                    checked={paymentMethod === "culqi"}
+                                                    onChange={() => setPaymentMethod("culqi")}
+                                                    className="h-5 w-5 text-primary focus:ring-primary hidden"
+                                                />
+                                                <label
+                                                    htmlFor="culqi"
+                                                    className="font-medium text-base 2xl:text-lg"
+                                                >
+                                                    Pago con Tarjeta (Culqi)
+                                                </label>
+                                                <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
+                                                    Paga de forma segura con tarjeta de crédito, débito, Yape y más.
+                                                </p>
+                                            </div>
+                                            <div className="min-w-5 flex items-center justify-center">
+                                                <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
+                                                    paymentMethod === "culqi" 
+                                                        ? "bg-primary" 
+                                                        : "border-2 border-[#d0ccca]"
+                                                }`}>
+                                                    <div className={`h-2 w-2 rounded-full ${
+                                                        paymentMethod === "culqi" ? "bg-white" : ""
                                                     }`}></div>
                                                 </div>
                                             </div>
@@ -270,6 +318,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                     {/* {(General.get("checkout_mercadopago") === "true" || */}
                     {(ischeckmpobject?.description === "true" ||
                       ischeckopenpayobject?.description === "true" ||
+                      ischeckculqiobject?.description === "true" ||
                       General.get("checkout_dwallet") === "true" ||
                       General.get("checkout_transfer") === "true") && (
                         <button

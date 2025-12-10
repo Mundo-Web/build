@@ -56,11 +56,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'excel_import_template'],//footer_description
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
-    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
+    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy', 'politica_sistema_gestion', 'alcance_sistema_gestion'],
     'location': ['location'],
-    'shippingfree': ['shipping_free', 'igv_checkout', 'currency'],
+    'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen'],
     'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'],
 
     'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts'],
@@ -308,6 +308,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     currency:
       generals.find((x) => x.correlative == "currency")
         ?.description ?? "",
+    exchange_rate_usd_pen:
+      generals.find((x) => x.correlative == "exchange_rate_usd_pen")
+        ?.description ?? "3.75",
     location: {
       lat: Number(location.split(",").map((x) => x.trim())[0]),
       lng: Number(location.split(",").map((x) => x.trim())[1]),
@@ -316,6 +319,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     checkout_culqi_name: generals.find(x => x.correlative == 'checkout_culqi_name')?.description ?? "",
     checkout_culqi_public_key: generals.find(x => x.correlative == 'checkout_culqi_public_key')?.description ?? "",
     checkout_culqi_private_key: generals.find(x => x.correlative == 'checkout_culqi_private_key')?.description ?? "",
+    checkout_culqi_rsa_id: generals.find(x => x.correlative == 'checkout_culqi_rsa_id')?.description ?? "",
+    checkout_culqi_rsa_public_key: generals.find(x => x.correlative == 'checkout_culqi_rsa_public_key')?.description ?? "",
+    checkout_culqi_supports_usd: generals.find(x => x.correlative == 'checkout_culqi_supports_usd')?.description ?? "false",
     checkout_mercadopago: generals.find(x => x.correlative == 'checkout_mercadopago')?.description ?? "",
     checkout_mercadopago_name: generals.find(x => x.correlative == 'checkout_mercadopago_name')?.description ?? "",
     checkout_mercadopago_public_key: generals.find(x => x.correlative == 'checkout_mercadopago_public_key')?.description ?? "",
@@ -561,6 +567,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   const handleCulqiPrivateKeyChange = useCallback((e) => {
     handleFieldChange('checkout_culqi_private_key', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleCulqiRsaIdChange = useCallback((e) => {
+    handleFieldChange('checkout_culqi_rsa_id', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleCulqiRsaPublicKeyChange = useCallback((e) => {
+    handleFieldChange('checkout_culqi_rsa_public_key', e.target.value);
   }, [handleFieldChange]);
 
   const [activeTab, setActiveTab] = useState("general");
@@ -977,6 +991,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.currency || "",
       },
       {
+        correlative: 'exchange_rate_usd_pen',
+        name: 'Tipo de Cambio USD a PEN',
+        description: formData.exchange_rate_usd_pen || "3.75",
+      },
+      {
         correlative: "shipping_free",
         name: "Envio gratis a partir de",
         description: formData.shippingFree || "",
@@ -1020,6 +1039,21 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: 'checkout_culqi_private_key',
         name: 'Llave privada de Culqi',
         description: formData.checkout_culqi_private_key || "",
+      },
+      {
+        correlative: 'checkout_culqi_rsa_id',
+        name: 'RSA ID de Culqi',
+        description: formData.checkout_culqi_rsa_id || "",
+      },
+      {
+        correlative: 'checkout_culqi_rsa_public_key',
+        name: 'RSA Public Key de Culqi',
+        description: formData.checkout_culqi_rsa_public_key || "",
+      },
+      {
+        correlative: 'checkout_culqi_supports_usd',
+        name: 'Culqi soporta USD',
+        description: formData.checkout_culqi_supports_usd || "false",
       },
       {
         correlative: "checkout_mercadopago",
@@ -2115,6 +2149,50 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           onChange={handleCulqiPrivateKeyChange}
                         />
                       </div>
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Configuración RSA (Custom Checkout v4)</h6>
+                        <small className="text-muted d-block mb-2">Estas claves RSA son necesarias para el nuevo Custom Checkout de Culqi. Obténlas desde el panel de Culqi en la sección de claves RSA.</small>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">RSA ID</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Ej: 12345678-abcd-1234-efgh-123456789012"
+                          value={formData.checkout_culqi_rsa_id}
+                          onChange={handleCulqiRsaIdChange}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">RSA Public Key</label>
+                        <textarea
+                          className="form-control"
+                          rows="4"
+                          placeholder="-----BEGIN PUBLIC KEY-----&#10;MIGfMA0GCSqGSIb3DQEBAQUAA4GN...&#10;-----END PUBLIC KEY-----"
+                          value={formData.checkout_culqi_rsa_public_key}
+                          onChange={handleCulqiRsaPublicKeyChange}
+                        />
+                        <small className="text-muted">Copia la clave RSA pública completa desde el panel de Culqi</small>
+                      </div>
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Configuración de Moneda</h6>
+                        <small className="text-muted d-block mb-2">Configura si tu cuenta de Culqi soporta pagos en dólares (USD).</small>
+                      </div>
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="checkout-culqi-supports-usd"
+                            checked={formData.checkout_culqi_supports_usd === 'true'}
+                            onChange={(e) => setFormData({ ...formData, checkout_culqi_supports_usd: String(e.target.checked) })}
+                          />
+                          <label className="form-check-label form-label" htmlFor="checkout-culqi-supports-usd">
+                            Mi cuenta Culqi soporta USD
+                            <small className="text-muted d-block">Si tienes una cuenta en dólares en Culqi, activa esta opción para procesar pagos directamente en USD sin conversión a soles.</small>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </ConditionalField>
                   <ConditionalField correlative="checkout_mercadopago">
@@ -3002,6 +3080,48 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   </select>
                 </div>
               </ConditionalField>
+              
+              {/* Campo de tipo de cambio - Solo visible cuando la moneda es USD */}
+              {formData.currency === 'usd' && (
+                <div className="mb-2">
+                  <label
+                    htmlFor="exchange_rate_usd_pen"
+                    className="form-label"
+                  >
+                    <i className="mdi mdi-currency-usd me-1"></i>
+                    Tipo de Cambio (USD → PEN)
+                    <small className="d-block text-muted" style={{ fontWeight: 'lighter' }}>
+                      <strong>⚠️ Importante:</strong> Culqi solo procesa pagos en Soles (PEN). 
+                      Este tipo de cambio se usará para convertir el monto de dólares a soles al procesar pagos con tarjeta.
+                    </small>
+                  </label>
+                  <div className="input-group">
+                    <span className="input-group-text">1 USD =</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      className="form-control"
+                      id="exchange_rate_usd_pen"
+                      value={formData.exchange_rate_usd_pen}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          exchange_rate_usd_pen: e.target.value,
+                        })
+                      }
+                      placeholder="3.75"
+                    />
+                    <span className="input-group-text">PEN</span>
+                  </div>
+                  <small className="text-info">
+                    <i className="mdi mdi-information-outline me-1"></i>
+                    Ejemplo: Si un producto cuesta $100 USD y el tipo de cambio es 3.75, 
+                    Culqi cobrará S/ 375.00 PEN.
+                  </small>
+                </div>
+              )}
+              
               <ConditionalField correlative="shipping_free">
                 <div className="mb-2">
                   <label className="form-label">Envio gratis a partir de:</label>

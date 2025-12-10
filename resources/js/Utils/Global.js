@@ -13,6 +13,8 @@ class Global {
     static CULQI_API = null;
     static CULQI_ENABLED = null;
     static CULQI_NAME = null;
+    static CULQI_RSA_ID = null;
+    static CULQI_RSA_PUBLIC_KEY = null;
     static OPENPAY_MERCHANT_ID = null;
     static OPENPAY_PUBLIC_KEY = null;
     static OPENPAY_PRIVATE_KEY = null;

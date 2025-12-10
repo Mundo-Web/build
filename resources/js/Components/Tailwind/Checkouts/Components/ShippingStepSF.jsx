@@ -1046,6 +1046,120 @@ export default function ShippingStepSF({
                         position: 'bottom-center',
                     });
                 }
+            } else if (paymentMethod === "culqi") {
+                // Procesar pago con Culqi
+                setPaymentLoading(true);
+                
+                try {
+                    // Verificar que Culqi esté habilitado
+                    if (!Global.CULQI_ENABLED) {
+                        toast.error("Método de pago no disponible", {
+                            description: "El procesamiento de pagos con Culqi está temporalmente deshabilitado",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 4000,
+                            position: "top-center",
+                        });
+                        setPaymentLoading(false);
+                        return;
+                    }
+
+                    if (!Global.CULQI_PUBLIC_KEY) {
+                        toast.error("Error de configuración", {
+                            description: "El sistema de pagos Culqi no está configurado correctamente",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 4000,
+                            position: "top-center",
+                        });
+                        setPaymentLoading(false);
+                        return;
+                    }
+
+                    // Obtener el delivery_type del shipping option seleccionado
+                    const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
+                    const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
+
+                    const request = {
+                        user_id: user?.id || "",
+                        name: formData?.name || "",
+                        lastname: formData?.lastname || "",
+                        fullname: `${formData?.name} ${formData?.lastname}`,
+                        phone_prefix: formData?.phone_prefix || "51",
+                        email: formData?.email || "",
+                        phone: formatPhoneNumber(formData.phone_prefix || "51", formData.phone),
+                        country: "Perú",
+                        department: formData?.department || "",
+                        province: formData?.province || "",
+                        district: formData?.district || "",
+                        ubigeo: formData?.ubigeo || "",
+                        address: formData?.address || "",
+                        number: formData?.number || "",
+                        comment: formData?.comment || "",
+                        reference: formData?.reference || "",
+                        amount: finalTotalWithCoupon || 0,
+                        delivery: envio,
+                        delivery_type: deliveryType,
+                        cart: cart,
+                        invoiceType: formData.invoiceType || "",
+                        documentType: formData.documentType || "",
+                        document: formData.document || "",
+                        businessName: formData.businessName || "",
+                        payment_method: "culqi",
+                        // Cupón aplicado
+                        coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                        coupon_discount: calculatedCouponDiscount || 0,
+                        // Descuentos automáticos
+                        automatic_discounts: autoDiscounts,
+                        automatic_discount_total: autoDiscountTotal,
+                        applied_promotions: autoDiscounts,
+                        promotion_discount: autoDiscountTotal || 0,
+                        total_amount: finalTotalWithCoupon || 0,
+                    };
+
+                    const response = await processCulqiPayment(request);
+
+                    if (response.status) {
+                        setSale(response.sale);
+                        setDelivery(response.delivery);
+                        setCode(response.code);
+
+                        // Capturar scripts de conversión si están disponibles
+                        if (response.conversion_scripts) {
+                            setConversionScripts(response.conversion_scripts);
+
+                            // Llamar al callback de compra completada si está disponible
+                            if (onPurchaseComplete) {
+                                try {
+                                    await onPurchaseComplete(response.sale_id, response.conversion_scripts);
+                                } catch (callbackError) {
+                                    console.error('❌ Error en callback onPurchaseComplete:', callbackError);
+                                }
+                            }
+                        }
+
+                        setCart([]);
+                        onContinue();
+                    } else {
+                        toast.error("Error en el pago", {
+                            description: response.message || "Pago rechazado",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: "bottom-center",
+                        });
+                    }
+                } catch (error) {
+                    console.error('💥 Error en pago Culqi:', error);
+                    // No mostrar error si el usuario canceló el pago
+                    if (error !== "Pago cancelado por el usuario") {
+                        toast.error("Error en el Pago", {
+                            description: error.message || error || "No se pudo procesar el pago",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: "bottom-center",
+                        });
+                    }
+                } finally {
+                    setPaymentLoading(false);
+                }
             }else if(paymentMethod === "yape") {
 
                 // Obtener el delivery_type del shipping option seleccionado
