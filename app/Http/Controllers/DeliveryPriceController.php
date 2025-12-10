@@ -63,13 +63,33 @@ class DeliveryPriceController extends BasicController
             // 1. Buscar el precio de envío
             $deliveryPrice = DeliveryPrice::with(['type'])
                 ->where('ubigeo', $ubigeo)
-                ->firstOrFail();
+                ->first();
             
-            // 2. Valida Cobertura
+            // 2. Si NO hay cobertura, devolver opción de agencia para consultar
             if (!$deliveryPrice) {
-                $response->status = 400;
-                $response->message = 'No hay cobertura para esta ubicación';
-              //dump($deliveryPrice);
+                $agencyType = TypeDelivery::where('slug', 'delivery-agencia')->first();
+                
+                $result = [
+                    'is_free' => false,
+                    'is_agency' => true,
+                    'is_express' => false,
+                    'is_store_pickup' => false,
+                    'qualifies_free_shipping' => false,
+                    'free_shipping_threshold' => 0,
+                    'cart_total' => $cartTotal,
+                    'needs_consultation' => true, // Flag para indicar que necesita consultar
+                    'agency' => [
+                        'price' => 0,
+                        'description' => $agencyType->description ?? 'Envío por agencia de transporte',
+                        'type' => $agencyType->name ?? 'Envío por Agencia',
+                        'characteristics' => $agencyType->characteristics ?? ['Consultar costo de envío con nuestros asesores'],
+                        'payment_on_delivery' => true, // El cliente paga en la agencia
+                    ],
+                ];
+                
+                $response->data = $result;
+                $response->status = 200;
+                $response->message = 'Zona sin cobertura directa - Envío por agencia disponible';
                 return;
             }
           //  dump($deliveryPrice);

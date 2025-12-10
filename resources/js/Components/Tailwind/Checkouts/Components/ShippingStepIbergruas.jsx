@@ -505,6 +505,7 @@ export default function ShippingStepIbergruas({
             if (response.data.is_agency && response.data.agency) {
                 const agencyPrice = response.data.agency.price || 0;
                 const isPaymentOnDelivery = response.data.agency.payment_on_delivery || false;
+                const needsConsultation = response.data.needs_consultation || false;
                 
                 options.push({
                     type: "agency",
@@ -513,6 +514,7 @@ export default function ShippingStepIbergruas({
                     deliveryType: response.data.agency.type,
                     characteristics: response.data.agency.characteristics,
                     paymentOnDelivery: isPaymentOnDelivery,
+                    showConsultButton: needsConsultation, // Mostrar botón de consulta si no tiene cobertura
                 });
             }
 
@@ -1841,7 +1843,7 @@ export default function ShippingStepIbergruas({
                                                         country: prefix.country
                                                     }))
                                                 }
-                                                formatOptionLabel={({ flag, code, country }) => {
+                                                formatOptionLabel={({ flag, code, country }, { context }) => {
                                                     // Buscar el país en el array de prefijos para obtener el código ISO
                                                     const prefix = prefixes.find(p => p.country === country);
                                                     const countryCode = prefix?.isoCode?.ISO1?.toLowerCase() || country.toLowerCase().substring(0, 2);
@@ -1871,19 +1873,23 @@ export default function ShippingStepIbergruas({
                                                         }
                                                     };
                                                     
+                                                    // context === 'value' es cuando está seleccionado (en el control)
+                                                    // context === 'menu' es cuando está en el listado de opciones
+                                                    const isSelected = context === 'value';
+                                                    
                                                     return (
                                                         <div className="flex items-center gap-2 !rounded-none">
                                                             <img 
                                                                 src={flagServices[0]}
                                                                 alt={`Bandera de ${country}`}
-                                                                className="w-6 h-4 object-cover  flex-shrink-0 border border-white"
+                                                                className={`w-6 h-4 object-cover flex-shrink-0 border ${isSelected ? 'border-white' : 'border-gray-300'}`}
                                                                 onError={handleImageError}
                                                                 style={{ minWidth: '24px', minHeight: '16px' }}
                                                             />
-                                                            <div className="flag-fallback w-6 h-4 bg-gray-200  flex items-center justify-center flex-shrink-0 border border-gray-300" style={{ display: 'none', minWidth: '24px', minHeight: '16px' }}>
+                                                            <div className="flag-fallback w-6 h-4 bg-gray-200 flex items-center justify-center flex-shrink-0 border border-gray-300" style={{ display: 'none', minWidth: '24px', minHeight: '16px' }}>
                                                                 <span className="text-xs text-gray-500">{countryCode.toUpperCase()}</span>
                                                             </div>
-                                                            <span className="font-medium text-sm text-white">{code}</span>
+                                                            <span className={`font-medium text-sm ${isSelected ? 'text-white' : 'customtext-neutral-dark'}`}>{code}</span>
                                                           
                                                         </div>
                                                     );
@@ -2005,14 +2011,20 @@ export default function ShippingStepIbergruas({
                                     }
                                     isLoading={loading}
                                     styles={selectStyles(!!errors.ubigeo)}
-                                    formatOptionLabel={({ data }) => (
-                                        <div className="text-sm py-1">
-                                            <div className="font-medium">{data.distrito}</div>
-                                            <div className="text-gray-500">
-                                                {data.provincia}, {data.departamento}
+                                    formatOptionLabel={({ data }, { context }) => {
+                                        // context === 'value' es cuando está seleccionado (en el control)
+                                        // context === 'menu' es cuando está en el listado de opciones
+                                        const isSelected = context === 'value';
+                                        
+                                        return (
+                                            <div className="text-sm py-1">
+                                                <div className={`font-medium ${isSelected ? 'text-white' : 'customtext-neutral-dark'}`}>{data.distrito}</div>
+                                                <div className={isSelected ? 'text-gray-300' : 'text-gray-500'}>
+                                                    {data.provincia}, {data.departamento}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        );
+                                    }}
                                     className="w-full !!rounded-none transition-all duration-300"
                                     menuPortalTarget={document.body}
                                     isClearable={true}
@@ -2077,29 +2089,41 @@ export default function ShippingStepIbergruas({
                                         Método de envío
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {shippingOptions.map((option) => (
-                                            <OptionCard
-                                                key={option.type}
-                                                title={option.deliveryType}
-                                                price={option.price}
-                                                description={option.description}
-                                                selected={selectedOption === option.type}
-                                                paymentOnDelivery={option.paymentOnDelivery || false}
-                                                onSelect={() => {
-                                                    setSelectedOption(option.type);
-                                                    setEnvio(option.price);
-                                                    
-                                                    // Si selecciona retiro en tienda, mostrar selector
-                                                    if (option.type === "store_pickup") {
-                                                        setShowStoreSelector(true);
-                                                    } else {
-                                                        setShowStoreSelector(false);
-                                                        setSelectedStore(null);
-                                                    }
-                                                }}
-                                                className="!rounded-none"
-                                            />
-                                        ))}
+                                        {shippingOptions.map((option) => {
+                                            // Generar mensaje personalizado para consulta de envío
+                                            const ubigeoInfo = selectedUbigeo?.data;
+                                            const location = ubigeoInfo 
+                                                ? `${ubigeoInfo.distrito}, ${ubigeoInfo.provincia}, ${ubigeoInfo.departamento}`
+                                                : 'mi ubicación';
+                                            const consultMessage = `Hola, necesito consultar el costo de envío para: ${location}. ¿Me pueden ayudar?`;
+                                            
+                                            return (
+                                                <OptionCard
+                                                    key={option.type}
+                                                    title={option.deliveryType}
+                                                    price={option.price}
+                                                    description={option.description}
+                                                    selected={selectedOption === option.type}
+                                                    paymentOnDelivery={option.paymentOnDelivery || false}
+                                                    showConsultButton={option.showConsultButton || false}
+                                                    advisors={General.whatsapp_advisors || []}
+                                                    consultMessage={consultMessage}
+                                                    onSelect={() => {
+                                                        setSelectedOption(option.type);
+                                                        setEnvio(option.price);
+                                                        
+                                                        // Si selecciona retiro en tienda, mostrar selector
+                                                        if (option.type === "store_pickup") {
+                                                            setShowStoreSelector(true);
+                                                        } else {
+                                                            setShowStoreSelector(false);
+                                                            setSelectedStore(null);
+                                                        }
+                                                    }}
+                                                    className="!rounded-none"
+                                                />
+                                            );
+                                        })}
                                     </div>
                                
 
