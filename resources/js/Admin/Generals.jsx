@@ -2179,11 +2179,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           onChange={handleCulqiPrivateKeyChange}
                         />
                       </div>
-                      <div className="mt-4 mb-2">
+                      <div className="mt-4 mb-2" hidden>
                         <h6 className="text-muted">Configuración RSA (Custom Checkout v4)</h6>
                         <small className="text-muted d-block mb-2">Estas claves RSA son necesarias para el nuevo Custom Checkout de Culqi. Obténlas desde el panel de Culqi en la sección de claves RSA.</small>
                       </div>
-                      <div className="mb-2">
+                      <div className="mb-2" hidden>
                         <label className="form-label">RSA ID</label>
                         <input
                           type="text"
@@ -2193,7 +2193,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           onChange={handleCulqiRsaIdChange}
                         />
                       </div>
-                      <div className="mb-2">
+                      <div className="mb-2" hidden>
                         <label className="form-label">RSA Public Key</label>
                         <textarea
                           className="form-control"
