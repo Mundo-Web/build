@@ -909,7 +909,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
-                    {
+                      Fillable.has('items', 'views') && { 
                         dataField: "views",
                         caption: "Vistas",
                         dataType: "number",
@@ -926,6 +926,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+
                     Fillable.has('items', 'most_view') && {
                         dataField: "most_view",
                         caption: "Más visto",
