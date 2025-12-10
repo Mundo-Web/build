@@ -10,6 +10,8 @@ use App\Observers\ItemPriceObserver;
 use App\Observers\SaleCreationObserver;
 use App\Observers\SaleStatusObserver;
 use App\Observers\UserSyncObserver;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Auto-migrate en producción si existe el archivo flag
+        $this->runPendingMigrations();
+        
         // Observar cambios en Item para actualizar precios
         Item::observe(ItemPriceObserver::class);
         
@@ -49,5 +54,27 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('generals', $generals);
             }
         });
+    }
+
+    /**
+     * Ejecutar migraciones pendientes automáticamente en producción
+     * Solo se ejecuta si existe el archivo storage/migrate.flag
+     */
+    protected function runPendingMigrations(): void
+    {
+        // Solo ejecutar en producción y si existe el archivo flag
+        if (app()->environment('production') && file_exists(storage_path('migrate.flag'))) {
+            try {
+                Artisan::call('migrate', ['--force' => true]);
+                
+                // Eliminar el flag después de ejecutar
+                unlink(storage_path('migrate.flag'));
+                
+                // Log opcional
+                Log::info('Auto-migrate ejecutado correctamente: ' . Artisan::output());
+            } catch (\Exception $e) {
+                Log::error('Error en auto-migrate: ' . $e->getMessage());
+            }
+        }
     }
 }
