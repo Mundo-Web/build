@@ -181,3 +181,30 @@ Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function 
 if (env('APP_ENV') === 'local') {
     Route::get('/cloud/{uuid}', [RepositoryController::class, 'media']);
 }
+
+// Ruta para ejecutar migraciones manualmente (protegida con token secreto)
+Route::get('/deploy/migrate/{token}', function ($token) {
+    // Token secreto para proteger la ruta
+    $secretToken = env('DEPLOY_TOKEN', 'ibergruas-migrate-2025');
+    
+    if ($token !== $secretToken) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Migraciones ejecutadas correctamente',
+            'output' => $output
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al ejecutar migraciones',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
