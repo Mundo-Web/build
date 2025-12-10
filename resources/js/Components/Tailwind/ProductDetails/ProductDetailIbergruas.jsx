@@ -497,25 +497,81 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
 
                         {/* Miniaturas */}
                         {allImages.length > 1 && (
-                            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                                {allImages.map((img, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => setSelectedImage(img)}
-                                        className={`aspect-square bg-white rounded-lg overflow-hidden border-2 transition-all hover:border-primary ${selectedImage.url === img.url ? 'border-primary' : 'border-gray-200'
-                                            }`}
-                                    >
-                                        <img
-                                            src={`/storage/images/item/${img.url}`}
-                                            alt={img.alt}
-                                            className="w-full h-full object-contain p-2"
-                                            onError={(e) => {
-                                                e.target.src = '/api/cover/thumbnail/null';
+                            <>
+                                {allImages.length <= 5 ? (
+                                    // Grid normal para 5 o menos imágenes
+                                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                                        {allImages.map((img, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => setSelectedImage(img)}
+                                                className={`aspect-square bg-white rounded-none overflow-hidden border-2 transition-all hover:border-primary ${selectedImage.url === img.url ? 'border-primary' : 'border-gray-200'
+                                                    }`}
+                                            >
+                                                <img
+                                                    src={`/storage/images/item/${img.url}`}
+                                                    alt={img.alt}
+                                                    className="w-full h-full object-contain"
+                                                    onError={(e) => {
+                                                        e.target.src = '/api/cover/thumbnail/null';
+                                                    }}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    // Swiper para más de 5 imágenes
+                                    <div className="relative">
+                                        <Swiper
+                                            modules={[Navigation, FreeMode]}
+                                            spaceBetween={8}
+                                            slidesPerView={4}
+                                            freeMode={true}
+                                            watchSlidesProgress={true}
+                                            navigation={{
+                                                nextEl: '.thumb-swiper-next',
+                                                prevEl: '.thumb-swiper-prev',
                                             }}
-                                        />
-                                    </button>
-                                ))}
-                            </div>
+                                            breakpoints={{
+                                                640: {
+                                                    slidesPerView: 5,
+                                                },
+                                                768: {
+                                                    slidesPerView: 5,
+                                                },
+                                            }}
+                                            className="thumbs-swiper"
+                                        >
+                                            {allImages.map((img, index) => (
+                                                <SwiperSlide key={index}>
+                                                    <button
+                                                        onClick={() => setSelectedImage(img)}
+                                                        className={`w-full aspect-square bg-white rounded-none overflow-hidden border-2 transition-all hover:border-primary ${selectedImage.url === img.url ? 'border-primary' : 'border-gray-200'
+                                                            }`}
+                                                    >
+                                                        <img
+                                                            src={`/storage/images/item/${img.url}`}
+                                                            alt={img.alt}
+                                                            className="w-full h-full object-contain"
+                                                            onError={(e) => {
+                                                                e.target.src = '/api/cover/thumbnail/null';
+                                                            }}
+                                                        />
+                                                    </button>
+                                                </SwiperSlide>
+                                            ))}
+                                        </Swiper>
+                                        
+                                        {/* Botones de navegación */}
+                                        <button className="thumb-swiper-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-50 -ml-2">
+                                            <ChevronLeft className="w-4 h-4 text-gray-700" />
+                                        </button>
+                                        <button className="thumb-swiper-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-50 -mr-2">
+                                            <ChevronRight className="w-4 h-4 text-gray-700" />
+                                        </button>
+                                    </div>
+                                )}
+                            </>
                         )}
 
                         {/* Botón de Fichas Técnicas - Desktop */}
@@ -568,12 +624,12 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                     {/* Precio Mobile - Debajo de la galería */}
                     <div className="lg:hidden ">
                         <div className="text-start">
-                            <div className="text-3xl sm:text-4xl font-bold font-title customtext-neutral-dark">
+                            <div className="text-3xl sm:text-4xl font-bold font-title text-white">
                                 {formatPrice(item?.final_price || item?.price)}
                             </div>
                             {hasDiscount && (
                                 <div className="flex items-center justify-start space-x-2 mt-2">
-                                    <span className="text-base customtext-neutral-light line-through">
+                                    <span className="text-base text-white line-through">
                                         {formatPrice(item.price)}
                                     </span>
                                     <span className="bg-red-100 customtext-secondary px-2 py-1 rounded-full text-xs font-bold">
@@ -919,10 +975,10 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                     </div>
 
                     {/* Botón de Comprar Mobile - Solo si buyButton es true */}
-                    {data?.buyButton && (
+                   {item?.price > 0  && (  data?.buyButton && (
                         <button
                             onClick={() => onAddClicked(item)}
-                            className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
+                            className={`flex-1 py-3 px-4 rounded-none font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
                                 ? 'bg-secondary text-white'
                                 : 'bg-primary customtext-neutral-dark hover:bg-accent'
                                 }`}
@@ -932,14 +988,14 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                                 {inCart ? `En carrito (${cartQuantity})` : 'Comprar'}
                             </span>
                         </button>
-                    )}
+                    ))}
 
                     {/* Botón de Cotizar Mobile */}
                     <button
                         ref={refsMobile.setReference}
                         {...getReferencePropsM()}
                         onClick={handleClickWhatsAppCotizarMobile}
-                        className={`${data?.buyButton ? 'w-auto' : 'flex-1'} bg-secondary text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95`}
+                        className={`${data?.buyButton ? 'w-auto' : 'flex-1'} bg-secondary text-white py-3 px-4 !rounded-none font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95`}
                     >
                         <Quote className="w-4 h-4" />
                         {!data?.buyButton && <span className="text-sm">Solicitar Cotización</span>}

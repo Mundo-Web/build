@@ -51,18 +51,44 @@ const WhatsApp = () => {
         <div ref={dropdownRef} className="flex justify-end w-full mx-auto z-[100] relative">
             <div className="fixed bottom-[5%] right-[5%] z-20">
                 {/* Botón de WhatsApp */}
-                <button
+                <motion.button
                     onClick={handleClick}
-                    className="relative group"
+                    className="relative group w-16 h-16 flex items-center justify-center"
                     aria-label="Contactar por WhatsApp"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                    <img
+                    {/* Anillo de pulso suave y elegante */}
+                    <motion.div
+                        className="absolute inset-0 bg-green-500 rounded-full opacity-70"
+                        animate={{
+                            scale: [1, 1.6],
+                            opacity: [0.7, 0],
+                        }}
+                        transition={{
+                            duration: 2.5,
+                            repeat: Infinity,
+                            ease: [0.4, 0, 0.2, 1], // cubic-bezier para suavidad
+                            repeatDelay: 0.5,
+                        }}
+                    />
+
+                    {/* Imagen de WhatsApp con movimiento flotante muy suave */}
+                    <motion.img
                         src="/assets/img/whatsapp.svg"
                         alt="whatsapp"
-                        className="w-16 h-16 animate-bounce duration-300 group-hover:scale-110 transition-transform cursor-pointer"
+                        className="w-16 h-16 relative z-10 cursor-pointer drop-shadow-xl"
+                        animate={{
+                            y: [0, -4, 0],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
                     />
-                  
-                </button>
+                </motion.button>
 
                 {/* Dropdown de asesores */}
                 <AnimatePresence>

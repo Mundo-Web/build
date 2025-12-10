@@ -684,7 +684,7 @@ const HeaderIbergruas = ({
                                 animate={{ x: 0 }}
                                 exit={{ x: "100%" }}
                                 transition={{ type: "tween", duration: 0.3 }}
-                                className="lg:hidden fixed right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl z-50 overflow-y-auto"
+                                className="lg:hidden fixed right-0 top-0 h-full w-[85%] max-w-sm bg-neutral-dark shadow-2xl z-50 overflow-y-auto"
                             >
                                 {/* Header del menú */}
                                 <div className={`flex items-center justify-between p-4 border-b ${data.backgroundColor || 'bg-primary'}`}>
@@ -698,7 +698,7 @@ const HeaderIbergruas = ({
                                 </div>
 
                                 {/* Contenido del menú */}
-                                <div className="p-4">
+                                <div className="p-4 text-white">
                                     {/* Menu Items - Mismo estilo que desktop */}
                                     <nav className="space-y-2">
                                         {orderedMenuItems.map((menuItem, index) => {
@@ -711,8 +711,8 @@ const HeaderIbergruas = ({
                                                             className={`
                                                                 block py-3 px-4 text-base font-semibold transition-colors rounded-none
                                                                 ${category.alias
-                                                                    ? 'bg-secondary text-white mb-2'
-                                                                    : 'text-gray-800 hover:bg-gray-50'
+                                                                    ? 'bg-primary customtext-neutral-dark mb-2'
+                                                                    : 'text-white hover:bg-gray-50'
                                                                 }
                                                             `}
                                                         >
@@ -726,7 +726,7 @@ const HeaderIbergruas = ({
                                                                     <a
                                                                         key={sub.id}
                                                                         href={`/catalogo?subcategory=${sub.slug}`}
-                                                                        className="block py-2 px-3 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
+                                                                        className="block py-2 px-3 text-sm text-white hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
                                                                     >
                                                                         {sub.name}
                                                                     </a>
@@ -741,7 +741,7 @@ const HeaderIbergruas = ({
                                                     <a
                                                         key={`mobile-page-${index}`}
                                                         href={page.path}
-                                                        className="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-100 last:border-0"
+                                                        className="block py-3 px-4 text-base font-semibold text-white hover:bg-gray-50 rounded-none transition-colors border-b border-gray-100 last:border-0"
                                                     >
                                                         {page.name}
                                                     </a>
