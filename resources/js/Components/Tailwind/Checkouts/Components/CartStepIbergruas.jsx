@@ -8,6 +8,7 @@ import FreeItemsDisplay from "./FreeItemsDisplay";
 import PromotionSuggestion from "./PromotionSuggestion";
 import PromotionModal from "./PromotionModal";
 import CardItemIbergruas from './CardItemIbergruas.jsx';
+import General from "../../../../Utils/General";
 
 export default function CartStepIbergruas({
     data,
@@ -226,7 +227,9 @@ export default function CartStepIbergruas({
                         <span className="font-semibold">{CurrencySymbol()} {Number2Currency(subTotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-white">IGV</span>
+                        <span className="text-white">
+                            IGV{parseFloat(General.igv_checkout || 0) > 0 ? ` (${General.igv_checkout}%)` : ''}
+                        </span>
                         <span className="font-semibold">{CurrencySymbol()} {Number2Currency(igv)}</span>
                     </div>
                     <div className="flex justify-between">

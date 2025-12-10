@@ -56,7 +56,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'excel_import_template'],//footer_description
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
-    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description'],
+    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy', 'politica_sistema_gestion', 'alcance_sistema_gestion'],
     'location': ['location'],
@@ -322,23 +322,28 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     checkout_culqi_rsa_id: generals.find(x => x.correlative == 'checkout_culqi_rsa_id')?.description ?? "",
     checkout_culqi_rsa_public_key: generals.find(x => x.correlative == 'checkout_culqi_rsa_public_key')?.description ?? "",
     checkout_culqi_supports_usd: generals.find(x => x.correlative == 'checkout_culqi_supports_usd')?.description ?? "false",
+    checkout_culqi_commission: generals.find(x => x.correlative == 'checkout_culqi_commission')?.description ?? "",
     checkout_mercadopago: generals.find(x => x.correlative == 'checkout_mercadopago')?.description ?? "",
     checkout_mercadopago_name: generals.find(x => x.correlative == 'checkout_mercadopago_name')?.description ?? "",
     checkout_mercadopago_public_key: generals.find(x => x.correlative == 'checkout_mercadopago_public_key')?.description ?? "",
     checkout_mercadopago_private_key: generals.find(x => x.correlative == 'checkout_mercadopago_private_key')?.description ?? "",
+    checkout_mercadopago_commission: generals.find(x => x.correlative == 'checkout_mercadopago_commission')?.description ?? "",
     checkout_openpay: generals.find(x => x.correlative == 'checkout_openpay')?.description ?? "",
     checkout_openpay_name: generals.find(x => x.correlative == 'checkout_openpay_name')?.description ?? "",
     checkout_openpay_merchant_id: generals.find(x => x.correlative == 'checkout_openpay_merchant_id')?.description ?? "",
     checkout_openpay_public_key: generals.find(x => x.correlative == 'checkout_openpay_public_key')?.description ?? "",
     checkout_openpay_private_key: generals.find(x => x.correlative == 'checkout_openpay_private_key')?.description ?? "",
+    checkout_openpay_commission: generals.find(x => x.correlative == 'checkout_openpay_commission')?.description ?? "",
     checkout_dwallet: generals.find(x => x.correlative == 'checkout_dwallet')?.description ?? "",
     checkout_dwallet_qr: generals.find(x => x.correlative == 'checkout_dwallet_qr')?.description ?? "",
     checkout_dwallet_name: generals.find(x => x.correlative == 'checkout_dwallet_name')?.description ?? "",
     checkout_dwallet_description: generals.find(x => x.correlative == 'checkout_dwallet_description')?.description ?? "",
+    checkout_dwallet_commission: generals.find(x => x.correlative == 'checkout_dwallet_commission')?.description ?? "",
     checkout_transfer: generals.find(x => x.correlative == 'checkout_transfer')?.description ?? "",
     checkout_transfer_cci: generals.find(x => x.correlative == 'checkout_transfer_cci')?.description ?? "",
     checkout_transfer_name: generals.find(x => x.correlative == 'checkout_transfer_name')?.description ?? "",
     checkout_transfer_description: generals.find(x => x.correlative == 'checkout_transfer_description')?.description ?? "",
+    checkout_transfer_commission: generals.find(x => x.correlative == 'checkout_transfer_commission')?.description ?? "",
     transfer_accounts: generals.find(x => x.correlative == 'transfer_accounts')?.description
       ? JSON.parse(generals.find(x => x.correlative == 'transfer_accounts')?.description)
       : [
@@ -1056,6 +1061,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.checkout_culqi_supports_usd || "false",
       },
       {
+        correlative: 'checkout_culqi_commission',
+        name: 'Comisión Culqi (%)',
+        description: formData.checkout_culqi_commission || "",
+      },
+      {
         correlative: "checkout_mercadopago",
         name: "Habilitar Mercadopago",
         description: formData.checkout_mercadopago || "",
@@ -1074,6 +1084,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: 'checkout_mercadopago_private_key',
         name: 'Llave privada de Mercadopago',
         description: formData.checkout_mercadopago_private_key || "",
+      },
+      {
+        correlative: 'checkout_mercadopago_commission',
+        name: 'Comisión MercadoPago (%)',
+        description: formData.checkout_mercadopago_commission || "",
       },
       {
         correlative: "checkout_openpay",
@@ -1101,6 +1116,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.checkout_openpay_private_key || "",
       },
       {
+        correlative: 'checkout_openpay_commission',
+        name: 'Comisión OpenPay (%)',
+        description: formData.checkout_openpay_commission || "",
+      },
+      {
         correlative: 'checkout_dwallet',
         name: 'Habilitar Yape/Plin',
         description: formData.checkout_dwallet || "",
@@ -1119,6 +1139,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: 'checkout_dwallet_description',
         name: 'Descripción Yape/Plin',
         description: formData.checkout_dwallet_description || "",
+      },
+      {
+        correlative: 'checkout_dwallet_commission',
+        name: 'Comisión Yape/Plin (%)',
+        description: formData.checkout_dwallet_commission || "",
       },
       {
         correlative: 'checkout_transfer',
@@ -1144,6 +1169,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: 'checkout_transfer_description',
         name: 'Descripción Transferencia',
         description: formData.checkout_transfer_description || "",
+      },
+      {
+        correlative: 'checkout_transfer_commission',
+        name: 'Comisión Transferencia (%)',
+        description: formData.checkout_transfer_commission || "",
       },
       {
         correlative: "location",
@@ -2193,6 +2223,23 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           </label>
                         </div>
                       </div>
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Comisión del Método de Pago</h6>
+                        <small className="text-muted d-block mb-2">Configura la comisión (en porcentaje) que se añadirá al total cuando el cliente elija este método de pago.</small>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Comisión (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          className="form-control"
+                          placeholder="Ej: 3.5"
+                          value={formData.checkout_culqi_commission}
+                          onChange={(e) => setFormData({ ...formData, checkout_culqi_commission: e.target.value })}
+                        />
+                        <small className="text-muted">Dejar en 0 si no desea aplicar comisión. Ejemplo: 3.5 = 3.5%</small>
+                      </div>
                     </div>
                   </ConditionalField>
                   <ConditionalField correlative="checkout_mercadopago">
@@ -2247,6 +2294,22 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                             checkout_mercadopago_private_key: e.target.value
                           })}
                         />
+                      </div>
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Comisión del Método de Pago</h6>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Comisión (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          className="form-control"
+                          placeholder="Ej: 3.5"
+                          value={formData.checkout_mercadopago_commission}
+                          onChange={(e) => setFormData({ ...formData, checkout_mercadopago_commission: e.target.value })}
+                        />
+                        <small className="text-muted">Dejar en 0 si no desea aplicar comisión</small>
                       </div>
                     </div>
                   </ConditionalField>
@@ -2307,6 +2370,22 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           onChange={handleOpenpayPrivateKeyChange}
                           placeholder="sk_xxxxxxxxxxxxx"
                         />
+                      </div>
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Comisión del Método de Pago</h6>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Comisión (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          className="form-control"
+                          placeholder="Ej: 3.5"
+                          value={formData.checkout_openpay_commission}
+                          onChange={(e) => setFormData({ ...formData, checkout_openpay_commission: e.target.value })}
+                        />
+                        <small className="text-muted">Dejar en 0 si no desea aplicar comisión</small>
                       </div>
                       <div className="alert alert-info mt-3">
                         <h6><i className="mdi mdi-information me-2"></i>Configuración de OpenPay</h6>
@@ -2406,6 +2485,22 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                             checkout_dwallet_description: e.target.value
                           })}
                         />
+                      </div>
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Comisión del Método de Pago</h6>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Comisión (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          className="form-control"
+                          placeholder="Ej: 3.5"
+                          value={formData.checkout_dwallet_commission}
+                          onChange={(e) => setFormData({ ...formData, checkout_dwallet_commission: e.target.value })}
+                        />
+                        <small className="text-muted">Dejar en 0 si no desea aplicar comisión</small>
                       </div>
                     </div>
                   </ConditionalField>
@@ -2627,6 +2722,23 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       >
                         Agregar Otra Cuenta
                       </button>
+                      
+                      <div className="mt-4 mb-2">
+                        <h6 className="text-muted">Comisión del Método de Pago</h6>
+                      </div>
+                      <div className="mb-2">
+                        <label className="form-label">Comisión (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          className="form-control"
+                          placeholder="Ej: 3.5"
+                          value={formData.checkout_transfer_commission}
+                          onChange={(e) => setFormData({ ...formData, checkout_transfer_commission: e.target.value })}
+                        />
+                        <small className="text-muted">Dejar en 0 si no desea aplicar comisión</small>
+                      </div>
                     </div>
                   </ConditionalField>
                 </div>

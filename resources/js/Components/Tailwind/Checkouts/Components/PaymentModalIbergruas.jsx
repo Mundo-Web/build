@@ -128,6 +128,11 @@ export default function PaymentModalIbergruas({ isOpen, onClose, onPaymentComple
                                                 <p className={`text-sm 2xl:text-base mt-1 ${textMutedClass}`}>
                                                     Visa, Mastercard, American Express y más.
                                                 </p>
+                                                {parseFloat(General.get("checkout_mercadopago_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-400 font-medium">
+                                                        + Comisión {General.get("checkout_mercadopago_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-6 flex items-center justify-center">
                                                 <div className={`h-5 w-5 flex items-center justify-center border-2 rounded-none ${
@@ -173,6 +178,11 @@ export default function PaymentModalIbergruas({ isOpen, onClose, onPaymentComple
                                                 <p className={`text-sm 2xl:text-base mt-1 ${textMutedClass}`}>
                                                     Paga de forma segura con tu tarjeta de crédito o débito.
                                                 </p>
+                                                {parseFloat(General.get("checkout_openpay_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-400 font-medium">
+                                                        + Comisión {General.get("checkout_openpay_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-6 flex items-center justify-center">
                                                 <div className={`h-5 w-5 flex items-center justify-center border-2 rounded-none ${
@@ -218,6 +228,11 @@ export default function PaymentModalIbergruas({ isOpen, onClose, onPaymentComple
                                                 <p className={`text-sm 2xl:text-base mt-1 ${textMutedClass}`}>
                                                     Paga con tarjeta de crédito, débito, Yape y más.
                                                 </p>
+                                                {parseFloat(General.get("checkout_culqi_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-400 font-medium">
+                                                        + Comisión {General.get("checkout_culqi_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-6 flex items-center justify-center">
                                                 <div className={`h-5 w-5 flex items-center justify-center border-2 rounded-none ${
@@ -261,8 +276,15 @@ export default function PaymentModalIbergruas({ isOpen, onClose, onPaymentComple
                                                     Yape / Plin
                                                 </label>
                                                 <p className={`text-sm 2xl:text-base mt-1 ${textMutedClass}`}>
-                                                    Realiza el pago desde tu celular sin comisiones.
+                                                    {parseFloat(General.get("checkout_dwallet_commission") || 0) > 0 
+                                                        ? "Pago rápido desde tu celular." 
+                                                        : "Realiza el pago desde tu celular sin comisiones."}
                                                 </p>
+                                                {parseFloat(General.get("checkout_dwallet_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-400 font-medium">
+                                                        + Comisión {General.get("checkout_dwallet_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-6 flex items-center justify-center">
                                                 <div className={`h-5 w-5 flex items-center justify-center border-2 rounded-none ${
@@ -308,6 +330,11 @@ export default function PaymentModalIbergruas({ isOpen, onClose, onPaymentComple
                                                 <p className={`text-sm 2xl:text-base mt-1 ${textMutedClass}`}>
                                                     Haz una transferencia bancaria desde tu app o banca por internet.
                                                 </p>
+                                                {parseFloat(General.get("checkout_transfer_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-400 font-medium">
+                                                        + Comisión {General.get("checkout_transfer_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-6 flex items-center justify-center">
                                                 <div className={`h-5 w-5 flex items-center justify-center border-2 rounded-none ${

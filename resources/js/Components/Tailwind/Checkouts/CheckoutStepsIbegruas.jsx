@@ -13,13 +13,14 @@ import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import CartStepIbergruas from "./Components/CartStepIbergruas";
 import ShippingStepIbergruas from "./Components/ShippingStepIbergruas";
 import ConfirmationStepIbergruas from "./Components/ConfirmationStepIbergruas";
+import General from "../../../Utils/General";
 
 export default function CheckoutStepsIbegruas({ cart, setCart, user, prefixes, ubigeos, items, contacts, data, generals = [] }) {
    
     const [currentStep, setCurrentStep] = useState(1);
     const [descuentofinal, setDescuentoFinal] = useState(0);
     
-    // Calcular el precio total incluyendo IGV
+    // Calcular el precio total
     const totalPrice = cart.reduce((acc, item) => {
         // Use the correct price based on item type
         const finalPrice = item.type === 'combo' 
@@ -31,9 +32,21 @@ export default function CheckoutStepsIbegruas({ cart, setCart, user, prefixes, u
     // Estado para el costo de envío
     const [envio, setEnvio] = useState(0);
 
-    // Corregir cálculo del IGV y subtotal como en CheckoutSteps
-    const subTotal = parseFloat((totalPrice / 1.18).toFixed(2));
-    const igv = parseFloat((totalPrice - subTotal).toFixed(2));
+    // Obtener configuración de IGV desde General (correlativo: igv_checkout)
+    const igvRate = parseFloat(General.igv_checkout || 0);
+    
+    // Calcular IGV y subtotal según configuración
+    // SIEMPRE mostramos el IGV, solo cambia cómo se calcula
+    let subTotal, igv;
+    if (igvRate > 0) {
+        // IGV NO incluido en el precio - ADICIONAR el IGV
+        subTotal = totalPrice; // El precio es el subtotal
+        igv = parseFloat((totalPrice * (igvRate / 100)).toFixed(2)); // Adicionar IGV
+    } else {
+        // IGV YA incluido en el precio - SEPARAR el IGV
+        subTotal = parseFloat((totalPrice / 1.18).toFixed(2)); // Sacar el IGV
+        igv = parseFloat((totalPrice - subTotal).toFixed(2)); // El IGV que ya estaba incluido
+    }
 
     // Estados para cupones y descuentos automáticos
     const [couponDiscount, setCouponDiscount] = useState(0);

@@ -3257,7 +3257,12 @@
                     "checkout_transfer",
                     "checkout_transfer_cci",
                     "checkout_transfer_name",
-                    "checkout_transfer_description"
+                    "checkout_transfer_description",
+                    "checkout_culqi_commission",
+                    "checkout_mercadopago_commission",
+                    "checkout_openpay_commission",
+                    "checkout_dwallet_commission",
+                    "checkout_dwallet_commission"
                 ]
             }
         ]

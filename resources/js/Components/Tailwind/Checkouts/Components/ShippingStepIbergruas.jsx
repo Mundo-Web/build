@@ -29,6 +29,7 @@ import Tippy from "@tippyjs/react";
 import ReactModal from "react-modal";
 import DiscountRulesRest from "../../../../Actions/DiscountRulesRest";
 import { color } from "framer-motion";
+import General from "../../../../Utils/General";
 
 
 
@@ -314,6 +315,10 @@ export default function ShippingStepIbergruas({
 
     // Estado para modal de login
     const [showLoginModal, setShowLoginModal] = useState(false);
+    
+    // Estado para la comisión del método de pago
+    const [paymentCommission, setPaymentCommission] = useState(0);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     // Cargar los departamentos al iniciar el componente
     const numericSubTotal = typeof subTotal === 'number' ? subTotal : parseFloat(subTotal) || 0;
@@ -948,6 +953,29 @@ export default function ShippingStepIbergruas({
 
     const handlePaymentComplete = async (paymentMethod) => {  // Cambiado de 'method' a 'paymentMethod'
         try {
+            // Establecer la comisión según el método de pago seleccionado
+            let commission = 0;
+            switch(paymentMethod) {
+                case 'tarjeta':
+                    commission = parseFloat(General.get("checkout_mercadopago_commission") || 0);
+                    break;
+                case 'culqi':
+                    commission = parseFloat(General.get("checkout_culqi_commission") || 0);
+                    break;
+                case 'openpay':
+                    commission = parseFloat(General.get("checkout_openpay_commission") || 0);
+                    break;
+                case 'yape':
+                    commission = parseFloat(General.get("checkout_dwallet_commission") || 0);
+                    break;
+                case 'transferencia':
+                    commission = parseFloat(General.get("checkout_transfer_commission") || 0);
+                    break;
+                default:
+                    commission = 0;
+            }
+            setPaymentCommission(commission);
+            setSelectedPaymentMethod(paymentMethod);
             
             setShowPaymentModal(false);
             setCurrentPaymentMethod(paymentMethod);
@@ -969,6 +997,12 @@ export default function ShippingStepIbergruas({
                 const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                 const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                // Calcular el total con comisión
+                const mercadopagoCommission = parseFloat(General.get("checkout_mercadopago_commission") || 0);
+                const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (mercadopagoCommission / 100));
+                const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                 const request = {
                     user_id: user?.id || "",
                     name: formData?.name || "",
@@ -986,7 +1020,7 @@ export default function ShippingStepIbergruas({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
+                    amount: finalTotalWithCommission,
                     delivery: envio,
                     delivery_type: deliveryType, // Agregar delivery_type
                     cart: cart,
@@ -1003,7 +1037,7 @@ export default function ShippingStepIbergruas({
                     automatic_discount_total: autoDiscountTotal,
                     applied_promotions: autoDiscounts,
                     promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
+                    total_amount: finalTotalWithCommission,
                 };
                 
                 try {
@@ -1079,6 +1113,12 @@ export default function ShippingStepIbergruas({
                     const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                     const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                    // Calcular el total con comisión
+                    const culqiCommission = parseFloat(General.get("checkout_culqi_commission") || 0);
+                    const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                    const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (culqiCommission / 100));
+                    const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                     const request = {
                         user_id: user?.id || "",
                         name: formData?.name || "",
@@ -1096,7 +1136,7 @@ export default function ShippingStepIbergruas({
                         number: formData?.number || "",
                         comment: formData?.comment || "",
                         reference: formData?.reference || "",
-                        amount: finalTotalWithCoupon || 0,
+                        amount: finalTotalWithCommission,
                         delivery: envio,
                         delivery_type: deliveryType,
                         cart: cart,
@@ -1113,7 +1153,7 @@ export default function ShippingStepIbergruas({
                         automatic_discount_total: autoDiscountTotal,
                         applied_promotions: autoDiscounts,
                         promotion_discount: autoDiscountTotal || 0,
-                        total_amount: finalTotalWithCoupon || 0,
+                        total_amount: finalTotalWithCommission,
                     };
 
                     const response = await processCulqiPayment(request);
@@ -1167,6 +1207,12 @@ export default function ShippingStepIbergruas({
                 const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                 const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                // Calcular el total con comisión
+                const yapeCommission = parseFloat(General.get("checkout_dwallet_commission") || 0);
+                const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (yapeCommission / 100));
+                const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                 const request = {
                     user_id: user?.id || "",
                     name: formData?.name || "",
@@ -1184,7 +1230,7 @@ export default function ShippingStepIbergruas({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
+                    amount: finalTotalWithCommission,
                     delivery: envio,
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
@@ -1205,7 +1251,7 @@ export default function ShippingStepIbergruas({
                     automatic_discount_total: autoDiscountTotal,
                     applied_promotions: autoDiscounts,
                     promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
+                    total_amount: finalTotalWithCommission,
                 };
 
                 setPaymentRequest(request);
@@ -1216,6 +1262,12 @@ export default function ShippingStepIbergruas({
                 const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                 const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                // Calcular el total con comisión
+                const transferenciaCommission = parseFloat(General.get("checkout_transfer_commission") || 0);
+                const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (transferenciaCommission / 100));
+                const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                 const request = {
                     user_id: user?.id || "",
                     name: formData?.name || "",
@@ -1233,7 +1285,7 @@ export default function ShippingStepIbergruas({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
+                    amount: finalTotalWithCommission,
                     delivery: envio,
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
@@ -1254,7 +1306,7 @@ export default function ShippingStepIbergruas({
                     automatic_discount_total: autoDiscountTotal,
                     applied_promotions: autoDiscounts,
                     promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
+                    total_amount: finalTotalWithCommission,
                 };
                 setPaymentRequest(request);
                 setShowVoucherModalBancs(true);
@@ -1282,6 +1334,12 @@ export default function ShippingStepIbergruas({
             const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
             const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
             
+            // Calcular el total con comisión
+            const openpayCommission = parseFloat(General.get("checkout_openpay_commission") || 0);
+            const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+            const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (openpayCommission / 100));
+            const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+            
             const request = {
                 user_id: user?.id || "",
                 name: formData?.name || "",
@@ -1299,7 +1357,7 @@ export default function ShippingStepIbergruas({
                 number: formData?.number || "",
                 comment: formData?.comment || "",
                 reference: formData?.reference || "",
-                amount: finalTotalWithCoupon || 0,
+                amount: finalTotalWithCommission,
                 delivery: envio,
                 delivery_type: deliveryType,
                 cart: cart,
@@ -1318,7 +1376,7 @@ export default function ShippingStepIbergruas({
                 automatic_discount_total: autoDiscountTotal,
                 applied_promotions: autoDiscounts,
                 promotion_discount: autoDiscountTotal || 0,
-                total_amount: finalTotalWithCoupon || 0,
+                total_amount: finalTotalWithCommission,
             };
             
             console.log("📤 Enviando request al backend:", request);
@@ -1516,6 +1574,10 @@ export default function ShippingStepIbergruas({
     // El descuento del cupón ya viene calculado desde el backend
     let calculatedCouponDiscount = couponDiscount || 0;
     
+    // Calcular comisión del método de pago (sobre el total antes de la comisión)
+    const totalBeforeCommission = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+    const calculatedCommission = roundToTwoDecimals(totalBeforeCommission * (paymentCommission / 100));
+    
     // Sincronizar el estado para mantener compatibilidad visual
     useEffect(() => {
         if (setParentCouponDiscount) {
@@ -1523,7 +1585,7 @@ export default function ShippingStepIbergruas({
         }
     }, [appliedCoupon, couponDiscount, setParentCouponDiscount]);
 
-    const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+    const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBeforeCommission + calculatedCommission));
 
     // Componente Modal de Login
     const LoginModal = () => {
@@ -2314,7 +2376,9 @@ export default function ShippingStepIbergruas({
                             </span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="c">IGV</span>
+                            <span className="c">
+                                IGV{parseFloat(General.igv_checkout || 0) > 0 ? ` (${General.igv_checkout}%)` : ''}
+                            </span>
                             <span className="font-semibold">
                                 {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
@@ -2338,6 +2402,17 @@ export default function ShippingStepIbergruas({
                                 </span>
                             </div>
                         )}
+                        
+                        {/* Mostrar comisión del método de pago */}
+                        {paymentCommission > 0 && selectedPaymentMethod && (
+                            <div className="flex justify-between text-yellow-600">
+                                <span>Comisión ({paymentCommission}%)</span>
+                                <span className="font-semibold">
+                                    +{CurrencySymbol()} {Number2Currency(calculatedCommission)}
+                                </span>
+                            </div>
+                        )}
+                        
                         <div className="flex justify-between">
                             <span className="c">Envío</span>
                             <span className="font-semibold">

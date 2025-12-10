@@ -669,7 +669,7 @@ export const processCulqiPayment = async (request, options = {}) => {
                 modal: true,
                 paymentMethods: paymentMethods,
                 paymentMethodsSort: hasOrder 
-                    ? ['yape', 'tarjeta', 'bancaMovil', 'billetera', 'agente'] 
+                    ? [ 'tarjeta','yape', 'bancaMovil', 'billetera', 'agente'] 
                     : ['tarjeta'],
             };
 
