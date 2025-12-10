@@ -255,7 +255,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         {data?.job_button && (
                             <button
                                 onClick={() => setJobModalOpen(true)}
-                                className={`mt-6 font-bold hover:underline transition-all duration-300 cursor-pointer ${data?.class_menu_item || 'text-white'}`}
+                                className="mt-6 px-5 py-2.5 bg-white customtext-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer shadow-md"
                             >
                                 Trabaja con nosotros
                             </button>
