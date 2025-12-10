@@ -183,6 +183,24 @@ class StoreController extends BasicController
         return response($response->toArray(), $response->status);
     }
 
+    // Método para obtener la tienda principal
+    public function getMainStore()
+    {
+        $response = Response::simpleTryCatch(function () {
+            $store = Store::active()
+                ->where('type', 'tienda_principal')
+                ->select([
+                    'id', 'name', 'address', 'phone', 'email', 'image',
+                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'ubigeo', 'type', 'status', 'link'
+                ])
+                ->first();
+
+            return $store;
+        });
+        
+        return response($response->toArray(), $response->status);
+    }
+
     // Método para obtener información de una tienda específica
     public function show(string $id)
     {

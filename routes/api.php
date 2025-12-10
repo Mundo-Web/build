@@ -115,6 +115,7 @@ Route::get('/type-delivery/{slug}', [TypeDeliveryController::class, 'getBySlug']
 
 // Rutas públicas para tiendas (checkout)
 Route::get('/stores', [AdminStoreController::class, 'getActiveStores']);
+Route::get('/stores/main', [AdminStoreController::class, 'getMainStore']);
 Route::get('/stores/by-ubigeo/{ubigeo}', [AdminStoreController::class, 'getByUbigeo']);
 
 Route::post('/scrap', [ScrapController::class, 'scrap']);

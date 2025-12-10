@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import ReactModal from "react-modal";
 
 import Tippy from "@tippyjs/react";
@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
-import { CircleCheckBig, X } from "lucide-react";
+import { CircleCheckBig, X, MapPin, Clock, Phone } from "lucide-react";
 import { toast } from "sonner";
 import JobApplicationModal from "../Modals/JobApplicationModal";
 
@@ -17,6 +17,23 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
     const [modalOpen, setModalOpen] = useState(null);
     const [saving, setSaving] = useState();
     const [jobModalOpen, setJobModalOpen] = useState(false);
+    const [mainStore, setMainStore] = useState(null);
+
+    // Fetch main store on mount
+    useEffect(() => {
+        const fetchMainStore = async () => {
+            try {
+                const response = await fetch('/api/stores/main');
+                const result = await response.json();
+                if (result.data) {
+                    setMainStore(result.data);
+                }
+            } catch (error) {
+                console.error('Error fetching main store:', error);
+            }
+        };
+        fetchMainStore();
+    }, []);
 
     const policyItems = {
         privacy_policy: "Políticas de privacidad",
@@ -66,7 +83,7 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:col-span-4 justify-between md:mr-6">
                     {/* Logo Column */}
                     <div>
-                        <div className={` -ml-8 md:ml-0 h-14 ${data?.logo_footer_content || 'aspect-[13/4] '}`}>
+                        <div className={` -ml-8 md:ml-0 h-auto ${data?.logo_footer_content || 'aspect-[13/4] '}`}>
                             {data?.logo_footer ?
 
                                 <img src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className="h-20 lg:h-36 object-contain" onError={(e) => {
@@ -84,14 +101,41 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                                 />
                             }
                         </div>
+                        
+                        {/* Ubicación debajo del logo */}
+                        {mainStore && (
+                            <div className="mt-6">
+                                <h3 className={`customtext-primary font-bold mb-4 text-base ${data?.class_menu || ''}`}>
+                                    Ubicación
+                                </h3>
+                                <div className={`space-y-2 text-white text-sm ${data?.class_menu_item || ''}`}>
+                                    {mainStore.address && (
+                                        <a 
+                                            href={mainStore.link || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mainStore.address)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-start gap-2 hover:customtext-neutral-dark transition-colors"
+                                        >
+                                            <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                            <span>{mainStore.address}</span>
+                                        </a>
+                                    )}
+                                    {mainStore.phone && (
+                                        <a 
+                                            href={`tel:${mainStore.phone}`}
+                                            className="flex items-center gap-2 hover:customtext-neutral-dark transition-colors"
+                                        >
+                                            <Phone className="w-4 h-4 flex-shrink-0" />
+                                            <span>{mainStore.phone}</span>
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Menu Column */}
-                    <div>
-
-                 
-
-                    </div>
+                    {/* Empty Column */}
+                    <div></div>
                     {/* Policies Column */}
                     <div >
                         <h3 className={`customtext-primary font-bold mb-6 text-base ${data?.class_menu || ''}`}>
@@ -121,7 +165,7 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(2)}
-                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    className={`hidden cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
                                     Políticas de cambio
                                 </a>
@@ -141,8 +185,8 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 512 512"
-                                                    width="34"
-                                                    height="34"
+                                                    width="60"
+                                                    height="60"
                                                 >
                                                     <path
                                                         className="s0"
@@ -150,7 +194,7 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                                                     />
                                                 </svg>
                                             </div>
-                                            <p className={`text-[6px]  w-1/2 leading-3 ${data?.class_description || 'text-white'}`}>
+                                            <p className={`text-[12px]  w-1/2 leading-3 ${data?.class_description || 'text-white'}`}>
                                                 Conforme a lo establecido en el Código
                                                 de Protección y Defensa del consumidor
                                                 este sitio web cuenta con un Libro de
@@ -221,12 +265,25 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                                 </Tippy>
                             ))}
                         </div>
-                          <h3 className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ''}`}>
+                          <h3 className={`customtext-primary font-bold mb-4 text-base mt-8 ${data?.class_menu || ''}`}>
                             Horarios de atención
                         </h3>
 
-                        <p className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>  {generals.find((contact) => contact.correlative === "opening_hours")
-                            ?.description || ""}</p>
+                        {/* Horarios de tienda principal o generals */}
+                        {mainStore?.business_hours && Array.isArray(mainStore.business_hours) ? (
+                            <div className={`space-y-1 text-white text-sm ${data?.class_menu_item || ''}`}>
+                                {mainStore.business_hours.map((schedule, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                        <span className="capitalize font-medium">{schedule.day}:</span>
+                                        <span>{schedule.closed ? 'Cerrado' : `${schedule.open} - ${schedule.close}`}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
+                                {generals.find((contact) => contact.correlative === "opening_hours")?.description || ""}
+                            </p>
+                        )}
 
                         {/* Trabaja con nosotros button */}
                         {data?.job_button && (

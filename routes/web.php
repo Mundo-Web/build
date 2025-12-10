@@ -185,7 +185,7 @@ if (env('APP_ENV') === 'local') {
 // Ruta para ejecutar migraciones manualmente (protegida con token secreto)
 Route::get('/deploy/migrate/{token}', function ($token) {
     // Token secreto para proteger la ruta
-    $secretToken = env('DEPLOY_TOKEN', 'ibergruas-migrate-2025');
+    $secretToken = env('DEPLOY_TOKEN', 'mundoweb-admin-2025-fsdreweaaqwsrdatypoe4532013848752ddsd2cxcafgveras');
     
     if ($token !== $secretToken) {
         return response()->json(['error' => 'Unauthorized'], 401);
