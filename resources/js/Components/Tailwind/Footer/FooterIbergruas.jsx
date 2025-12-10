@@ -272,12 +272,53 @@ const FooterIbergruas = ({ pages, generals, data, socials = [] }) => {
                         {/* Horarios de tienda principal o generals */}
                         {mainStore?.business_hours && Array.isArray(mainStore.business_hours) ? (
                             <div className={`space-y-1 text-white text-sm ${data?.class_menu_item || ''}`}>
-                                {mainStore.business_hours.map((schedule, idx) => (
-                                    <div key={idx} className="flex gap-2">
-                                        <span className="capitalize font-medium">{schedule.day}:</span>
-                                        <span>{schedule.closed ? 'Cerrado' : `${schedule.open} - ${schedule.close}`}</span>
-                                    </div>
-                                ))}
+                                {(() => {
+                                    // Filtrar días cerrados y agrupar por horario
+                                    const openDays = mainStore.business_hours.filter(s => !s.closed);
+                                    if (openDays.length === 0) return <span>Cerrado</span>;
+                                    
+                                    // Agrupar días consecutivos con mismo horario
+                                    const groups = [];
+                                    let currentGroup = null;
+                                    
+                                    openDays.forEach((schedule, idx) => {
+                                        const timeKey = `${schedule.open}-${schedule.close}`;
+                                        
+                                        if (!currentGroup || currentGroup.timeKey !== timeKey) {
+                                            // Nuevo grupo
+                                            if (currentGroup) groups.push(currentGroup);
+                                            currentGroup = {
+                                                timeKey,
+                                                open: schedule.open,
+                                                close: schedule.close,
+                                                days: [schedule.day]
+                                            };
+                                        } else {
+                                            // Mismo horario, agregar día
+                                            currentGroup.days.push(schedule.day);
+                                        }
+                                    });
+                                    if (currentGroup) groups.push(currentGroup);
+                                    
+                                    // Formatear grupos
+                                    return groups.map((group, idx) => {
+                                        let dayLabel;
+                                        if (group.days.length === 1) {
+                                            dayLabel = group.days[0];
+                                        } else if (group.days.length === 2) {
+                                            dayLabel = `${group.days[0]} y ${group.days[group.days.length - 1]}`;
+                                        } else {
+                                            dayLabel = `${group.days[0]} a ${group.days[group.days.length - 1]}`;
+                                        }
+                                        
+                                        return (
+                                            <div key={idx} className="flex gap-2">
+                                                <span className="font-medium">{dayLabel}:</span>
+                                                <span>{group.open} - {group.close}</span>
+                                            </div>
+                                        );
+                                    });
+                                })()}
                             </div>
                         ) : (
                             <p className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
