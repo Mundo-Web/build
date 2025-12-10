@@ -709,7 +709,7 @@ const HeaderIbergruas = ({
                                                         <a
                                                             href={`/catalogo?category=${category.slug}`}
                                                             className={`
-                                                                block py-3 px-4 text-base font-semibold transition-colors rounded-lg
+                                                                block py-3 px-4 text-base font-semibold transition-colors rounded-none
                                                                 ${category.alias
                                                                     ? 'bg-secondary text-white mb-2'
                                                                     : 'text-gray-800 hover:bg-gray-50'

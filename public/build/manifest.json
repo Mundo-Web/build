@@ -1618,7 +1618,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-vzGP3Mjv.js",
+    "file": "assets/About-DqJCHlMS.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -4036,7 +4036,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-BH68wzyg.js",
+    "file": "assets/Blog-BOrEYrsl.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -4081,7 +4081,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-BL-itlek.js",
+    "file": "assets/BlogArticle-DjQBSsH9.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5937,7 +5937,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-DUwULKda.js",
+    "file": "assets/Base-BX5-fak2.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -9618,7 +9618,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-C4x41fjH.js",
+    "file": "assets/Header-Dez9Nvwp.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -9844,7 +9844,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Headers/HeaderIbergruas.jsx": {
-    "file": "assets/HeaderIbergruas-Bkr6D0cU.js",
+    "file": "assets/HeaderIbergruas-B9RIiLBj.js",
     "name": "HeaderIbergruas",
     "src": "resources/js/Components/Tailwind/Headers/HeaderIbergruas.jsx",
     "isDynamicEntry": true,
@@ -13752,7 +13752,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-DjOzM3EQ.js",
+    "file": "assets/Contact-qMP3uslt.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -13797,7 +13797,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-WttxMY8r.js",
+    "file": "assets/CourseDetails-DwtSvdUr.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -13833,7 +13833,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-BIjlxMFp.js",
+    "file": "assets/Courses-BeH5etN8.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -13928,7 +13928,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-DX2uOMse.js",
+    "file": "assets/Home-vXtCHeZM.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -14136,7 +14136,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DruWVTlo.js",
+    "file": "assets/System-BVnDqV3a.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
