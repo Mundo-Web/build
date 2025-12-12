@@ -3309,7 +3309,9 @@
                     "class_card_container",
                     "title_ubication",
                     "description_ubication",
-                    "stores_support"
+                    "stores_support",
+                    "description"
+                    
                 ]
             },
             {
@@ -3489,7 +3491,9 @@
                     "second_description",
                     "bool:show_seen",
                     "class_title",
-                    "class_second_title"
+                    "class_second_title",
+                    "placeholder_search",
+                    "class_badge_category"
                 ]
             },
             {

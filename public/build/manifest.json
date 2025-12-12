@@ -5978,7 +5978,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-BwIqws82.js",
+    "file": "assets/Blog-eD6GBUzq.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -6039,7 +6039,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx": {
-    "file": "assets/BlogMultivet-BZYVhcNQ.js",
+    "file": "assets/BlogMultivet-B46nVHqi.js",
     "name": "BlogMultivet",
     "src": "resources/js/Components/Tailwind/Blogs/BlogMultivet.jsx",
     "isEntry": true,
@@ -7939,7 +7939,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-aPJzl8kH.js",
+    "file": "assets/Contact-BuzpSHxH.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -7990,7 +7990,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact/ContactGrid.jsx": {
-    "file": "assets/ContactGrid-DCRybn-V.js",
+    "file": "assets/ContactGrid-C0RZqFIQ.js",
     "name": "ContactGrid",
     "src": "resources/js/Components/Tailwind/Contact/ContactGrid.jsx",
     "isDynamicEntry": true,
@@ -14256,7 +14256,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Bn3puIAx.js",
+    "file": "assets/System-De4qlKS1.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

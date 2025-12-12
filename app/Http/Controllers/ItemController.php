@@ -957,6 +957,8 @@ class ItemController extends BasicController
             $relatedItems = Item::where('category_id', $product->category_id)
                 ->where('id', '!=', $product->id) // Excluir el producto actual
                 ->with(['category', 'brand']) // Cargar relaciones necesarias
+                ->where('status', true)
+                ->where('visible', true)
                 ->take(10) // Limitar a 10 productos
                 ->get();
             ////dump($relatedItems);
