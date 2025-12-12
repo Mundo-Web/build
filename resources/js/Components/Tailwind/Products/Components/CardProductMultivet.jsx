@@ -129,7 +129,7 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                 {/* Badge de categoría sobre el nombre */}
                 {data?.badge_category_up_name && product?.category && (
                     <div className="mb-2">
-                        <span className="bg-accent customtext-primary bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold">
+                        <span className={`bg-accent customtext-primary bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold ${data?.class_badge_category || ''}`}>
                             {product.category.name || product.category}
                         </span>
                     </div>
@@ -161,7 +161,8 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                 <div className="flex-1"></div>
 
                 {/* Precios */}
-                <div className="flex items-center justify-between mb-4">
+               { product?.final_price && product?.final_price > 0 && (
+                 <div className="flex items-center justify-between mb-4">
                     {data?.badge_offer_percent && hasDiscount ? (
                         <div className="flex items-center space-x-3">
                             <div className="text-xl font-bold customtext-secondary font-title">
@@ -189,6 +190,7 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                         </div>
                     )}
                 </div>
+               )}
 
                 {/* Botones de acción */}
                 <div className="flex space-x-2">

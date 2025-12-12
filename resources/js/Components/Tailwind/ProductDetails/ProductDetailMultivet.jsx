@@ -61,6 +61,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
         type: "main",
     });
 
+ console.log(data)
     // Estados para zoom de imagen
     const [isZoomEnabled, setIsZoomEnabled] = useState(false);
     const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
@@ -406,6 +407,9 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
         ? Math.round(((parseFloat(item.price) - parseFloat(item.final_price)) / parseFloat(item.price)) * 100)
         : 0;
 
+    // Verificar si hay precio válido (mayor a 0)
+    const hasValidPrice = (item?.final_price && parseFloat(item.final_price) > 0) || (item?.price && parseFloat(item.price) > 0);
+
     // Verificar si el producto está en el carrito
     const inCart = cart?.find((x) => x.id == item?.id);
     const cartQuantity = inCart?.quantity || 0;
@@ -422,6 +426,8 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
             alt: `Imagen ${index + 1}`
         }))
     ];
+
+   
 
     return (
         <div className="bg-gray-50 min-h-screen overflow-x-hidden">
@@ -519,78 +525,35 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                             </div>
                         )}
 
-                        {/* Botón de Fichas Técnicas - Desktop */}
-                        {item?.pdf && Array.isArray(item.pdf) && item.pdf.length > 0 && (
-                            <div className="relative mt-4 hidden lg:block">
-                                <button
-                                    onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
-                                    className="w-full sm:w-auto bg-white border-2 border-primary text-primary py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all shadow-md hover:shadow-lg group"
-                                >
-                                    <FileText className="w-5 h-5" />
-                                    <span className="text-sm">Fichas Técnicas</span>
-                                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isPdfDropdownOpen ? 'rotate-180' : ''}`} />
-                                </button>
-
-                                {/* Dropdown de PDFs Desktop */}
-                                {isPdfDropdownOpen && (
-                                    <div className="absolute top-full left-0 right-0 sm:right-auto sm:min-w-[320px] mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-20">
-                                        <div className="bg-primary p-3 text-white">
-                                            <h4 className="font-bold text-sm">Documentos disponibles</h4>
-                                            <p className="text-xs text-white opacity-90 mt-0.5">{item.pdf.length} {item.pdf.length === 1 ? 'archivo' : 'archivos'}</p>
-                                        </div>
-                                        <div className="max-h-64 overflow-y-auto">
-                                            {item.pdf.map((pdf, index) => (
-                                                <a
-                                                    key={index}
-                                                    href={`/storage/images/item/${pdf.url || pdf}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-3 p-3 transition-colors border-b  last:border-b-0 group"
-                                                >
-                                                    <div className="flex-shrink-0 w-10 h-10  rounded-lg flex items-center justify-center transition-colors">
-                                                        <FileText className="w-5 h-5 customtext-secondary" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-semibold max-w-36 customtext-neutral-dark text-sm truncate">
-                                                            {pdf.name || (typeof pdf === 'string' ? pdf.split('/').pop().replace('.pdf', '') : 'Documento')}
-                                                        </p>
-                                                        <p className="text-xs cusomtext-neutral-light">Documento PDF</p>
-                                                    </div>
-                                                    <Download className="w-4 h-4 customtext-neutral-light group-hover:text-primary transition-colors" />
-                                                </a>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
 
                     {/* Precio Mobile - Debajo de la galería */}
-                    <div className="lg:hidden ">
-                        <div className="text-start">
-                            <div className="text-3xl sm:text-4xl font-bold font-title customtext-neutral-dark">
-                                {formatPrice(item?.final_price || item?.price)}
-                            </div>
-                            {hasDiscount && (
-                                <div className="flex items-center justify-start space-x-2 mt-2">
-                                    <span className="text-base customtext-neutral-light line-through">
-                                        {formatPrice(item.price)}
-                                    </span>
-                                    <span className="bg-red-100 customtext-secondary px-2 py-1 rounded-full text-xs font-bold">
-                                        Ahorras {formatPrice(parseFloat(item.price) - parseFloat(item.final_price))}
-                                    </span>
+                    {hasValidPrice && (
+                        <div className="lg:hidden ">
+                            <div className="text-start">
+                                <div className="text-3xl sm:text-4xl font-bold font-title customtext-neutral-dark">
+                                    {formatPrice(item?.final_price || item?.price)}
                                 </div>
-                            )}
+                                {hasDiscount && (
+                                    <div className="flex items-center justify-start space-x-2 mt-2">
+                                        <span className="text-base customtext-neutral-light line-through">
+                                            {formatPrice(item.price)}
+                                        </span>
+                                        <span className="bg-red-100 customtext-secondary px-2 py-1 rounded-full text-xs font-bold">
+                                            Ahorras {formatPrice(parseFloat(item.price) - parseFloat(item.final_price))}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Información del producto */}
-                    <div className="space-y-4 lg:space-y-6 pb-20 lg:pb-0 overflow-x-hidden">
+                    <div className="space-y-4 lg:space-y-6 pb-20 lg:pb-0">
                         {/* Header con categoría y marca */}
                         <div className="flex flex-row  items-center justify-between gap-3">
                             {item?.category && (
-                                <span className="bg-accent bg-opacity-10 customtext-primary font-bold px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm">
+                                <span className={`bg-accent bg-opacity-10 customtext-primary font-bold px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm ${data?.class_badge_category}`}>
                                     {item.category.name}
                                 </span>
                             )}
@@ -625,7 +588,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
 
                         <div className=" ">
-
+{item?.description && (
                             <div
                                 ref={descriptionRef}
                                 className={`prose max-w-none customtext-neutral-light transition-all duration-300 `}
@@ -633,7 +596,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                     __html: item?.description || '<p>Sin descripción disponible.</p>'
                                 }}
                             />
-
+)}
                         </div>
 
 
@@ -675,6 +638,55 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                                 }`}
                                         />
                                     </button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Botón de Fichas Técnicas - Desktop */}
+                        {item?.pdf && Array.isArray(item.pdf) && item.pdf.length > 0 && (
+                            <div className="relative hidden lg:flex justify-end mt-4">
+                                <button
+                                    onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                    className="bg-white border-2 border-primary text-primary py-3 px-5 rounded-xl font-bold flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-md hover:shadow-lg"
+                                >
+                                    <FileText className="w-5 h-5" />
+                                    <span className="text-sm">Fichas Técnicas</span>
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isPdfDropdownOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {/* Dropdown de PDFs Desktop */}
+                                {isPdfDropdownOpen && (
+                                    <div className="fixed inset-0 z-[9998]" onClick={() => setIsPdfDropdownOpen(false)} />
+                                )}
+                                {isPdfDropdownOpen && (
+                                    <div className="absolute top-full right-0 min-w-[300px] mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[9999]">
+                                        <div className="bg-primary p-3 text-white">
+                                            <h4 className="font-bold text-sm">Documentos disponibles</h4>
+                                            <p className="text-xs text-white opacity-90 mt-0.5">{item.pdf.length} {item.pdf.length === 1 ? 'archivo' : 'archivos'}</p>
+                                        </div>
+                                        <div className="max-h-64 overflow-y-auto">
+                                            {item.pdf.map((pdf, index) => (
+                                                <a
+                                                    key={index}
+                                                    href={`/storage/images/item/${pdf.url || pdf}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b last:border-b-0 group"
+                                                >
+                                                    <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                                                        <FileText className="w-5 h-5 text-red-600" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold customtext-neutral-dark text-sm truncate">
+                                                            {pdf.name || (typeof pdf === 'string' ? pdf.split('/').pop().replace('.pdf', '') : 'Documento')}
+                                                        </p>
+                                                        <p className="text-xs text-gray-400">Documento PDF</p>
+                                                    </div>
+                                                    <Download className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         )}
@@ -721,53 +733,55 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                         )}
                         {/* Precio - Desktop */}
                         <div className="hidden lg:block bg-white rounded-lg p-6 shadow-xl">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <div className="text-4xl font-bold font-title customtext-neutral-dark">
-                                        {formatPrice(item?.final_price || item?.price)}
-                                    </div>
-                                    {hasDiscount && (
-                                        <div className="flex items-center space-x-2 mt-1">
-                                            <span className="text-lg customtext-neutral-light line-through">
-                                                {formatPrice(item.price)}
-                                            </span>
-                                            <span className="bg-red-100 customtext-secondary px-2 py-1 rounded-full text-sm font-bold">
-                                                Ahorras {formatPrice(parseFloat(item.price) - parseFloat(item.final_price))}
-                                            </span>
+                            {hasValidPrice && (
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <div className="text-4xl font-bold font-title customtext-neutral-dark">
+                                            {formatPrice(item?.final_price || item?.price)}
                                         </div>
-                                    )}
-                                </div>
-                                {/* Selector de Cantidad Desktop */}
-                                <div className="space-y-4 mt-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
-                                            <button
-                                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl"
-                                                disabled={quantity <= 1}
-                                            >
-                                                −
-                                            </button>
-                                            <div className="w-16 h-10 flex items-center justify-center">
-                                                <span className="customtext-neutral-dark font-bold text-lg">
-                                                    {quantity}
+                                        {hasDiscount && (
+                                            <div className="flex items-center space-x-2 mt-1">
+                                                <span className="text-lg customtext-neutral-light line-through">
+                                                    {formatPrice(item.price)}
+                                                </span>
+                                                <span className="bg-red-100 customtext-secondary px-2 py-1 rounded-full text-sm font-bold">
+                                                    Ahorras {formatPrice(parseFloat(item.price) - parseFloat(item.final_price))}
                                                 </span>
                                             </div>
-                                            <button
-                                                onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl"
-                                                disabled={quantity >= 10}
-                                            >
-                                                +
-                                            </button>
+                                        )}
+                                    </div>
+                                    {/* Selector de Cantidad Desktop */}
+                                    <div className="space-y-4 mt-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
+                                                <button
+                                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl"
+                                                    disabled={quantity <= 1}
+                                                >
+                                                    −
+                                                </button>
+                                                <div className="w-16 h-10 flex items-center justify-center">
+                                                    <span className="customtext-neutral-dark font-bold text-lg">
+                                                        {quantity}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl"
+                                                    disabled={quantity >= 10}
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                             {/* Botones de acción Desktop */}
                             <div className="space-y-3 mt-6">
-                                {/* Botón de Comprar Ahora - Solo si buyButton es true */}
-                                {data?.buyButton && (
+                                {/* Botón de Comprar Ahora - Solo si buyButton es true y hay precio válido */}
+                                {data?.buyButton && hasValidPrice && (
                                     <button
                                         onClick={() => onAddClicked(item)}
                                         className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
@@ -787,7 +801,8 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                                     ref={refs.setReference}
                                     {...getReferenceProps()}
                                     onClick={handleClickWhatsAppCotizar}
-                                    className="w-full bg-secondary text-white py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg hover:shadow-xl transform duration-500"
+                                   className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500  bg-secondary text-white
+                                            `}
                                 >
                                     <Quote className="w-5 h-5" />
                                     <span>Solicitar Cotización</span>
@@ -871,14 +886,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                 {relationsItems && relationsItems.length > 0 && (
                     <ProductMultivet
                         items={relationsItems}
-                        data={{
-                            title: "Productos relacionados",
-                            description: "Descubre otros productos cuidadosamente seleccionados que complementan perfectamente tu compra. Nuestra selección incluye productos de alta calidad de las mejores marcas veterinarias para el cuidado integral de tu mascota.",
-                            link_catalog: "/catalogo",
-                            class_content: "",
-                            class_header: "",
-                            class_button: "bg-secondary text-white hover:bg-accent hover:customtext-primary",
-                        }}
+                        data={data}
                         setCart={setCart}
                         cart={cart}
                     />
@@ -888,31 +896,33 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
             {/* Botón Flotante Mobile */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40 shadow-lg">
                 <div className="flex items-center gap-3">
-                    {/* Selector de Cantidad Mobile */}
-                    <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
-                        <button
-                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
-                            disabled={quantity <= 1}
-                        >
-                            −
-                        </button>
-                        <div className="w-12 h-8 flex items-center justify-center">
-                            <span className="customtext-neutral-dark font-bold text-sm">
-                                {quantity}
-                            </span>
+                    {/* Selector de Cantidad Mobile - Solo si hay precio válido */}
+                    {hasValidPrice && (
+                        <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
+                            <button
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
+                                disabled={quantity <= 1}
+                            >
+                                −
+                            </button>
+                            <div className="w-12 h-8 flex items-center justify-center">
+                                <span className="customtext-neutral-dark font-bold text-sm">
+                                    {quantity}
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
+                                disabled={quantity >= 10}
+                            >
+                                +
+                            </button>
                         </div>
-                        <button
-                            onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
-                            disabled={quantity >= 10}
-                        >
-                            +
-                        </button>
-                    </div>
+                    )}
 
-                    {/* Botón de Comprar Mobile - Solo si buyButton es true */}
-                    {data?.buyButton && (
+                    {/* Botón de Comprar Mobile - Solo si buyButton es true y hay precio válido */}
+                    {data?.buyButton && hasValidPrice && (
                         <button
                             onClick={() => onAddClicked(item)}
                             className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
@@ -932,10 +942,10 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                         ref={refsMobile.setReference}
                         {...getReferencePropsM()}
                         onClick={handleClickWhatsAppCotizarMobile}
-                        className={`${data?.buyButton ? 'w-auto' : 'flex-1'} bg-secondary text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95`}
+                        className={`${data?.buyButton && hasValidPrice ? 'w-auto' : 'flex-1'} bg-secondary text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary transition-all shadow-lg active:scale-95`}
                     >
                         <Quote className="w-4 h-4" />
-                        {!data?.buyButton && <span className="text-sm">Solicitar Cotización</span>}
+                        <span className="text-sm">Solicitar Cotización</span>
                     </button>
 
                     {/* Dropdown de asesores Mobile */}

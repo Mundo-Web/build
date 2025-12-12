@@ -1181,7 +1181,8 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
-                    "is_card_content_description"
+                    "is_card_content_description",
+                    "class_badge_category"
                 ],
                 "options": [
                     {
@@ -2263,7 +2264,8 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
-                    "is_card_content_description"
+                    "is_card_content_description",
+                    "class_badge_category"
                 ],
                 "using": {
                     "model": "Item",
@@ -3004,7 +3006,23 @@
                 "data": [
                     "link_cart",
                     "background",
-                    "buyButton"
+                    "buyButton",
+                    "class_badge_category",
+                     "title",
+                    "class_title",
+                    "description",
+                    "link_catalog",
+                    "text_button",
+                    "class_section",
+                    "class_button",
+                    "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description",
+                    "class_badge_category"
                 ],
                 "using": {
                     "model": "Item",
@@ -3583,40 +3601,13 @@
                     "title",
                     "subtitle",
                     "posts_per_page",
-                    "show_preview",
-                    "show_view_all",
-                    "view_all_text",
                     "blog_url",
                     "read_more_text",
-                    "prev_text",
-                    "next_text",
-                    "section_background",
-                    "title_color",
-                    "subtitle_color",
-                    "post_title_color",
-                    "post_excerpt_color",
-                    "read_more_color",
-                    "nav_active_bg",
-                    "nav_active_color",
-                    "nav_disabled_bg",
-                    "nav_disabled_color",
-                    "indicator_active",
-                    "indicator_inactive",
-                    "view_all_bg",
+                    "view_all_text",
                     "class_section",
-                    "class_header",
-                    "class_title",
-                    "class_subtitle",
-                    "class_grid",
                     "class_card",
-                    "class_preview_card",
-                    "class_post_title",
-                    "class_post_excerpt",
-                    "class_read_more",
-                    "class_navigation",
-                    "class_nav_button",
-                    "class_view_all_container",
-                    "class_view_all"
+                    "class_button",
+                    "class_badge_category"
                 ],
                 "using": {
                     "model": "Post",
