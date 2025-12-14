@@ -334,7 +334,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
 
                                                                                     {/* Texto centrado */}
                                                                                     <div className="absolute inset-0 flex items-center justify-center">
-                                                                                        <h3 className=" bg-accent rounded-full text-sm font-bold text-center px-4 py-2 transform group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
+                                                                                        <h3 className={`bg-accent rounded-full text-sm font-bold text-center px-4 py-2 transform group-hover:scale-110 transition-transform duration-300 drop-shadow-lg ${data?.class_badge_category || ''}`}>
                                                                                             {category.name}
                                                                                         </h3>
                                                                                     </div>

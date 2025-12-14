@@ -144,7 +144,16 @@
                     "description",
                     "icon",
                     "class_container",
-                    "type_order"
+                    "type_order",
+                       "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                     "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Category",
@@ -1182,7 +1191,8 @@
                     "badge_offer_percent",
                     "badge_category_up_name",
                     "is_card_content_description",
-                    "class_badge_category"
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "options": [
                     {
@@ -2265,7 +2275,8 @@
                     "badge_offer_percent",
                     "badge_category_up_name",
                     "is_card_content_description",
-                    "class_badge_category"
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Item",
@@ -3022,7 +3033,8 @@
                     "badge_offer_percent",
                     "badge_category_up_name",
                     "is_card_content_description",
-                    "class_badge_category"
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Item",

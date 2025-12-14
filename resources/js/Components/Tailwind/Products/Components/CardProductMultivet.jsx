@@ -201,7 +201,7 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                         }}
                         type="button"
                         disabled={!product?.stock && !product?.stock > 0}
-                        className="flex-1 bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={`flex-1 bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary disabled:opacity-50 disabled:cursor-not-allowed ${data?.class_button_card_detail || ''}`}
                     >
 
                         <span>Ver detalle</span>
