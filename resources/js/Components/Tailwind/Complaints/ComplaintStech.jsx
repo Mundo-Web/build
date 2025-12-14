@@ -49,6 +49,15 @@ export default function ComplaintSimple({ generals = [],data }) {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        
+        // Validar campos de fecha para limitar el año a 4 dígitos
+        if (type === "date" && value) {
+            const [year] = value.split("-");
+            if (year && year.length > 4) {
+                return; // No permitir más de 4 dígitos en el año
+            }
+        }
+        
         setFormData({
             ...formData,
             [name]: type === "checkbox" ? checked : value,
@@ -536,6 +545,8 @@ export default function ComplaintSimple({ generals = [],data }) {
                                             name="fecha_ocurrencia"
                                             value={formData.fecha_ocurrencia}
                                             onChange={handleChange}
+                                            max={new Date().toISOString().split('T')[0]}
+                                            min="2000-01-01"
                                         />
                                     </div>
                                     <div className="space-y-2">
