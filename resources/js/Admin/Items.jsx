@@ -757,6 +757,11 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+                    Fillable.has('items', 'sku') && {
+                        dataField: "sku",
+                        caption: "SKU",
+                        width: "120px",
+                    },
                     {
                         dataField: "final_price",
                         caption: "Precio",

@@ -223,7 +223,8 @@ class ItemController extends BasicController
                             $q->orWhere(function($subQ) use ($word) {
                                 $subQ->whereRaw('LOWER(items.name) LIKE ?', ["%{$word}%"])
                                      ->orWhereRaw('LOWER(items.summary) LIKE ?', ["%{$word}%"])
-                                     ->orWhereRaw('LOWER(items.description) LIKE ?', ["%{$word}%"]);
+                                     ->orWhereRaw('LOWER(items.description) LIKE ?', ["%{$word}%"])
+                                     ->orWhereRaw('LOWER(items.sku) LIKE ?', ["%{$word}%"]);
                             });
                         }
                     });
@@ -231,7 +232,8 @@ class ItemController extends BasicController
                     // Ordenar por relevancia: productos con MÁS coincidencias aparecen primero
                     $caseStatements = [];
                     foreach ($allWords as $word) {
-                        // Name vale 3 puntos, summary 2, description 1
+                        // SKU vale 4 puntos (prioridad máxima), Name vale 3 puntos, summary 2, description 1
+                        $caseStatements[] = "(CASE WHEN LOWER(items.sku) LIKE '%{$word}%' THEN 4 ELSE 0 END)";
                         $caseStatements[] = "(CASE WHEN LOWER(items.name) LIKE '%{$word}%' THEN 3 ELSE 0 END)";
                         $caseStatements[] = "(CASE WHEN LOWER(items.summary) LIKE '%{$word}%' THEN 2 ELSE 0 END)";
                         $caseStatements[] = "(CASE WHEN LOWER(items.description) LIKE '%{$word}%' THEN 1 ELSE 0 END)";
