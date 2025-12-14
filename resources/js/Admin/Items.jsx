@@ -972,6 +972,29 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+                    Fillable.has('items', 'sold_out') && {
+                        dataField: "sold_out",
+                        caption: "Agotado",
+                        dataType: "boolean",
+                        width: "85px",
+                        cellTemplate: (container, { data }) => {
+                            const soldOutValue = data.sold_out === 1 || data.sold_out === '1' || data.sold_out === true;
+
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={soldOutValue}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "sold_out",
+                                            value: e.target.checked ? 1 : 0,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
                     Fillable.has('items', 'visible') && {
                         dataField: "visible",
                         caption: "Visible",

@@ -83,7 +83,14 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
 
                 {/* Badges */}
 
-                {data?.badge_offer_percent ? (
+                {/* Prioridad: Agotado > Descuento > Categoría */}
+                {product?.sold_out ? (
+                    <div className="absolute top-3 left-3 bg-danger text-white rounded-full text-sm font-bold shadow-lg z-10">
+                        <span className="bg-danger text-white px-3 py-2 rounded-full text-xs font-bold">
+                            Agotado
+                        </span>
+                    </div>
+                ) : data?.badge_offer_percent ? (
                     hasDiscount && (
                         <div className="absolute top-3 left-3 bg-danger text-white rounded-full text-sm font-bold shadow-lg z-10">
                             <span className="bg-danger text-white bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold">

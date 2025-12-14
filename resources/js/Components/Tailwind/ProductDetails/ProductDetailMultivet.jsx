@@ -331,7 +331,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
     const handleAdvisorSelect = (advisor) => {
         const phoneNumber = advisor?.phone || numeroWhatsApp;
         const mensaje = encodeURIComponent(
-            `¡Hola! Me gustaría cotizar este producto para mi mascota: ${item?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
+            `¡Hola! Me gustaría cotizar este producto: ${item?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
         );
         const link = `https://wa.me/${phoneNumber}?text=${mensaje}`;
         window.open(link, '_blank');
@@ -782,18 +782,28 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                             <div className="space-y-3 mt-6">
                                 {/* Botón de Comprar Ahora - Solo si buyButton es true y hay precio válido */}
                                 {data?.buyButton && hasValidPrice && (
-                                    <button
-                                        onClick={() => onAddClicked(item)}
-                                        className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
-                                            ? 'bg-accent text-white'
-                                            : 'bg-primary text-white'
-                                            }`}
-                                    >
-                                        <ShoppingCart className="w-5 h-5" />
-                                        <span>
-                                            {inCart ? `En carrito (${cartQuantity})` : 'Comprar ahora'}
-                                        </span>
-                                    </button>
+                                    item?.sold_out ? (
+                                        <button
+                                            disabled
+                                            className="w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 bg-danger text-white "
+                                        >
+                                            <XCircle className="w-5 h-5" />
+                                            <span>Agotado</span>
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => onAddClicked(item)}
+                                            className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
+                                                ? 'bg-accent text-white'
+                                                : 'bg-primary text-white'
+                                                }`}
+                                        >
+                                            <ShoppingCart className="w-5 h-5" />
+                                            <span>
+                                                {inCart ? `En carrito (${cartQuantity})` : 'Comprar ahora'}
+                                            </span>
+                                        </button>
+                                    )
                                 )}
 
                                 {/* Botón de Cotizar */}
@@ -923,18 +933,28 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
 
                     {/* Botón de Comprar Mobile - Solo si buyButton es true y hay precio válido */}
                     {data?.buyButton && hasValidPrice && (
-                        <button
-                            onClick={() => onAddClicked(item)}
-                            className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
-                                ? 'bg-secondary text-white'
-                                : 'bg-primary customtext-neutral-dark hover:bg-accent'
-                                }`}
-                        >
-                            <ShoppingCart className="w-4 h-4" />
-                            <span className="text-sm">
-                                {inCart ? `En carrito (${cartQuantity})` : 'Comprar'}
-                            </span>
-                        </button>
+                        item?.sold_out ? (
+                            <button
+                                disabled
+                                className="flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 bg-gray-400 text-white cursor-not-allowed opacity-75"
+                            >
+                                <XCircle className="w-4 h-4" />
+                                <span className="text-sm">Agotado</span>
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => onAddClicked(item)}
+                                className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
+                                    ? 'bg-secondary text-white'
+                                    : 'bg-primary customtext-neutral-dark hover:bg-accent'
+                                    }`}
+                            >
+                                <ShoppingCart className="w-4 h-4" />
+                                <span className="text-sm">
+                                    {inCart ? `En carrito (${cartQuantity})` : 'Comprar'}
+                                </span>
+                            </button>
+                        )
                     )}
 
                     {/* Botón de Cotizar Mobile */}

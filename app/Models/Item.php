@@ -44,6 +44,7 @@ class Item extends Model
         'views',
         'sku',
         'stock',
+        'sold_out',
         'color',
         'texture',
         'pdf',
@@ -68,6 +69,7 @@ class Item extends Model
         'featured'=>'boolean',
         'most_view'=>'boolean',
         'is_detail'=>'boolean',
+        'sold_out' => 'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',
         'views' => 'integer',
@@ -227,6 +229,20 @@ class Item extends Model
         static::creating(function ($item) {
             if (empty($item->sku)) {
                 $item->sku = 'PROD-' . strtoupper(substr($item->categoria_id, 0, 3)) . '-' . strtoupper(substr($item->name, 0, 3)) . '-' . uniqid();
+            }
+            
+            // Auto marcar como agotado si stock es 0 (solo para productos)
+            if ($item->type === 'product' && isset($item->stock) && $item->stock <= 0) {
+                $item->sold_out = true;
+            }
+        });
+
+        static::updating(function ($item) {
+            // Auto marcar como agotado si stock cambia a 0 (solo para productos)
+            if ($item->type === 'product' && $item->isDirty('stock')) {
+                if ($item->stock <= 0) {
+                    $item->sold_out = true;
+                }
             }
         });
     }
