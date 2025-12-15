@@ -10,9 +10,26 @@ import TextWithHighlight from "../../../Utils/TextWithHighlight";
 const PartnerSimple = ({ data, items }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
+    const [imagesLoaded, setImagesLoaded] = useState(false);
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const swiperRef = useRef(null);
+
+    // Handle image loading and height calculation
+    const handleImagesLoad = () => {
+        const imageElements = document.querySelectorAll('.partner-logo');
+        let loadedImages = 0;
+
+        imageElements.forEach(img => {
+            if (img.complete) {
+                loadedImages++;
+            }
+        });
+
+        if (loadedImages === imageElements.length) {
+            setImagesLoaded(true);
+        }
+    };
 
     // Calcular slidesPerView basado en el tamaño de pantalla actual
     const getSlidesPerView = () => {
@@ -79,7 +96,7 @@ const PartnerSimple = ({ data, items }) => {
 
     return (
         <section className={`${data.background ? data.background : 'bg-[#F2F2F2]'}  customtext-primary font-paragraph bg-cover bg-center mt-10`}>
-            <div className="overflow-hidden px-primary 2xl:px-0">
+            <div className="overflow-hidden px-primary 2xl:px-0 ">
                 <div className="grid grid-cols-1 gap-8 xl:gap-10 pt-12 pb-16 2xl:py-12 2xl:max-w-7xl mx-auto">
                     {/* Text Content */}
                     <div className="flex flex-row justify-center items-center h-full max-w-xl 2xl:max-w-2xl mx-auto">
@@ -90,7 +107,7 @@ const PartnerSimple = ({ data, items }) => {
 
                     {/* Center Image */}
                     <div className="flex flex-row justify-end items-center relative">
-                        <div className="h-max w-full max-w-6xl 2xl:max-w-none mx-auto relative">
+                        <div className="h-max w-full max-w-6xl 2xl:max-w-none mx-auto relative lg:px-12">
                             <Swiper
                                 ref={swiperRef}
                                 modules={[Autoplay, Navigation]}
@@ -99,81 +116,72 @@ const PartnerSimple = ({ data, items }) => {
                                     disableOnInteraction: false,
                                 }}
                                 navigation={{
-                                    prevEl: '.partner-nav-prev',
-                                    nextEl: '.partner-nav-next',
+                                    prevEl: prevRef.current,
+                                    nextEl: nextRef.current,
                                 }}
                                 onSwiper={(swiper) => {
-                                    // Configurar navegación después de que Swiper esté listo
-                                    setTimeout(() => {
-                                        swiper.params.navigation.prevEl = prevRef.current;
-                                        swiper.params.navigation.nextEl = nextRef.current;
-                                        swiper.navigation.destroy();
-                                        swiper.navigation.init();
-                                        swiper.navigation.update();
-                                    }, 100);
+                                    swiperRef.current = swiper;
                                 }}
                                 onSlideChange={(swiper) => {
                                     setCurrentSlide(swiper.realIndex);
-                                    // Calcular página actual basándose en el slide y slidesPerView
                                     const slidesPerView = getSlidesPerView();
                                     const currentPageIndex = Math.floor(swiper.realIndex / slidesPerView);
                                     setCurrentPage(currentPageIndex);
                                 }}
                                 loop={true}
+                                spaceBetween={10}
+                                slidesPerView="auto"
                                 breakpoints={{
-                                    0: {
-                                        slidesPerView: 2,
-                                        spaceBetween: 10,
+                                    640: { 
+                                        slidesPerView: "auto",
+                                        spaceBetween: 10
                                     },
-                                    640: {
-                                        slidesPerView: 3,
-                                        spaceBetween: 10,
-                                    },
-                                    850: {
-                                        slidesPerView: 4,
-                                        spaceBetween: 10,
-                                    },
-                                    1200: {
-                                        slidesPerView: 5,
-                                        spaceBetween: 10,
-                                    },
-                                    1550: {
-                                        slidesPerView: 6,
-                                        spaceBetween: 10,
+                                    1024: {
+                                        slidesPerView: "auto",
+                                        centeredSlides: false,
+                                        spaceBetween: 10
                                     },
                                 }}
                                 className="flex items-center"
                             >
                                 {items.map((item, index) => (
-                                    <SwiperSlide
-                                        key={index}
-                                        className="w-full h-full flex items-center"
-                                    >
-                                        <div className="flex flex-col justify-center items-center w-full h-full">
+                                    <SwiperSlide key={index} className="!w-auto">
+                                        <div
+                                            className={`flex items-center justify-center px-6 ${
+                                                imagesLoaded ? 'h-[60px] lg:h-[100px]' : 'auto'
+                                            }`}
+                                        >
                                             <img 
                                                 src={`/storage/images/partner/${item.image}`}
                                                 onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
                                                 alt={item.description}
-                                                className="w-auto 2xl:w-36 object-contain mx-auto my-auto object-center"
+                                                className="partner-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain"
+                                                onLoad={handleImagesLoad}
+                                                style={{
+                                                    objectFit: 'contain',
+                                                    objectPosition: 'center',
+                                                    minWidth: '100px',
+                                                    maxWidth: '300px'
+                                                }}
                                             />
                                         </div>
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
 
-                            {/* Botones de navegación mejorados */}
+                            {/* Botones de navegación contenidos */}
                             <button
                                 ref={prevRef}
-                                className="partner-nav-prev hidden lg:flex absolute top-1/2 -left-4 lg:-left-8 xl:-left-12 z-20 w-12 h-12 xl:w-12 xl:h-12 bg-secondary backdrop-blur-sm border rounded-full items-center justify-center text-white hover:bg-primary transition-all duration-300 hover:scale-105 -translate-y-1/2"
+                                className="partner-nav-prev hidden lg:flex absolute top-1/2 left-0 z-20 w-10 h-10 bg-secondary backdrop-blur-sm border rounded-full items-center justify-center text-white hover:bg-primary transition-all duration-300 hover:scale-105 -translate-y-1/2"
                             >
-                                <ArrowLeft className="w-6 h-6 " />
+                                <ArrowLeft className="w-5 h-5" />
                             </button>
 
                             <button
                                 ref={nextRef}
-                                className="partner-nav-next hidden lg:flex absolute top-1/2 -right-4 lg:-right-8 xl:-right-12 z-20 w-12 h-12 xl:w-12 xl:h-12 bg-secondary backdrop-blur-sm border rounded-full items-center justify-center text-white hover:bg-primary transition-all duration-300 hover:scale-105 -translate-y-1/2"
+                                className="partner-nav-next hidden lg:flex absolute top-1/2 right-0 z-20 w-10 h-10 bg-secondary backdrop-blur-sm border rounded-full items-center justify-center text-white hover:bg-primary transition-all duration-300 hover:scale-105 -translate-y-1/2"
                             >
-                                <ArrowRight className="w-6 h-6" />
+                                <ArrowRight className="w-5 h-5" />
                             </button>
                             
                             {/* Paginación glassmorphism para móvil */}

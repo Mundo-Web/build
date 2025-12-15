@@ -8,7 +8,7 @@ import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { X } from "lucide-react";
 
-const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
+const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts, data = {} }) => {
   const subscriptionsRest = new SubscriptionsRest();
   const emailRef = useRef();
 
@@ -54,8 +54,8 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
     emailRef.current.value = null;
   };
   return (
-    <footer className="bg-primary text-white py-12 !font-paragraph text-sm px-[5%]">
-      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5">
+    <footer className="bg-primary text-white py-12 !font-paragraph text-sm px-primary 2xl:px-0 ">
+      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5 2xl:max-w-7xl mx-auto">
 
         {/* Logo Column */}
         <div className="max-w-xs">
@@ -197,12 +197,41 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
             </p>
             <form onSubmit={onEmailSubmit} className="max-w-sm">
               <div className="relative customtext-primary">
-                <input ref={emailRef} type="email" placeholder="Ingresa tu e-mail"
-                  className="w-full bg-transparent text-white font-medium py-4 pl-2 border-2 border-white rounded-xl focus:ring-0 focus:outline-none placeholder:text-white placeholder:opacity-65" />
+                <input 
+                  ref={emailRef} 
+                  type="email" 
+                  placeholder="Ingresa tu e-mail"
+                  disabled={saving}
+                  className="w-full bg-transparent text-white font-medium py-4 pl-2 border-2 border-white rounded-xl focus:ring-0 focus:outline-none placeholder:text-white placeholder:opacity-65" 
+                />
                 <button
-                  className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-secondary customtext-neutral-dark rounded-lg"
-                  aria-label="Suscribite">
-                  Suscribirme
+                  disabled={saving}
+                  className={`absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 rounded-lg transition-all duration-200 ${data?.class_button || 'bg-secondary customtext-neutral-dark'}`}
+                  aria-label="Suscribite"
+                >
+                  {saving ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                      </svg>
+                      Enviando...
+                    </span>
+                  ) : (
+                    "Suscribirme"
+                  )}
                 </button>
               </div>
             </form>
@@ -231,15 +260,45 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
           generals.find((x) => x.correlative == key)?.description ??
           "";
         return (
-          <ReactModal key={index} isOpen={modalOpen === index} onRequestClose={closeModal} contentLabel={title}
-            className="absolute left-1/2 -translate-x-1/2 bg-white p-6 rounded-xl shadow-lg w-[95%] max-w-4xl my-8"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50">
-            <button onClick={closeModal}
-              className="float-right text-red-500 hover:text-red-700 transition-all duration-300 ">
-              <X width="2rem" strokeWidth="4px" />
-            </button>
-            <h2 className="text-2xl font-bold mb-4">{title}</h2>
-            <HtmlContent className="prose" html={content} />
+          <ReactModal
+            key={index}
+            isOpen={modalOpen === index}
+            onRequestClose={closeModal}
+            contentLabel={title}
+            className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+            ariaHideApp={false}
+          >
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
+                <button
+                  onClick={closeModal}
+                  className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                  aria-label="Cerrar modal"
+                >
+                  <X size={24} strokeWidth={2} />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="prose prose-gray max-w-none">
+                  <HtmlContent html={content} />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex justify-end p-6 border-t border-gray-200">
+                <button
+                  onClick={closeModal}
+                  className="px-6 py-2 bg-primary text-white rounded-lg transition-colors duration-200 font-medium"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
           </ReactModal>
         );
       })}
