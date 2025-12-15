@@ -97,8 +97,8 @@
       { "label": "Menus", "href": "/admin/menus", "icon": "mdi mdi-menu", "role": "Root"},
       { "label": "Configuraciones", "href": "/admin/system", "icon": "mdi mdi-cog", "target": "_blank", "role": "Root" },
       { "label": "Datos Generales", "href": "/admin/generals", "icon": "mdi mdi-credit-card-settings" },
-      { "label": "Mi perfil", "href": "/admin/profile", "icon": "mdi mdi-account-box" },
-      { "label": "Mi cuenta", "href": "/admin/account", "icon": "mdi mdi-account-key" }
+      { "label": "Mi perfil", "href": "/profile", "icon": "mdi mdi-account-box" },
+      { "label": "Mi cuenta", "href": "/account", "icon": "mdi mdi-account-key" }
     ]
   }
 ]
