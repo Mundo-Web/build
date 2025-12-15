@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\General;
 use App\Models\Post;
 use App\Models\Subscription;
 use App\Models\WebDetail;
@@ -25,9 +26,14 @@ class BlogController extends BasicController
             ->where('categories.status', true)
             ->get();
         $details = WebDetail::where('page', 'blog')->get();
+        
+        // Get all generals including SEO data
+        $generals = General::where('status', true)->get()->keyBy('correlative');
+        
         return [
             'categories' => $categories,
-            'details' => $details
+            'details' => $details,
+            'generals' => $generals,
         ];
     }
 

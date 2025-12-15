@@ -1,4 +1,4 @@
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 
@@ -49,7 +49,7 @@ const DeliveryZonesKuchara = ({ data, items }) => {
                 {districts.map((district, index) => (
                     <div key={index} className="flex justify-between py-2 border-b border-black/10 last:border-0">
                         <span>{district.district}</span>
-                        <span>S/ {Number2Currency(district.price)}</span>
+                        <span>{CurrencySymbol()} {Number2Currency(district.price)}</span>
                     </div>
                 ))}
             </div>
@@ -108,7 +108,7 @@ const DeliveryZonesKuchara = ({ data, items }) => {
                                                     {zonesByNumber[zone]?.[index]?.district || ''}
                                                 </td>
                                                 <td className={`p-3 border-l border-black text-start ${index == (maxLength - 1) && Object.keys(zonesByNumber || {}).length == (jndex + 1) && 'rounded-br-2xl'}`}>
-                                                    {zonesByNumber[zone]?.[index] ? `S/ ${Number2Currency(zonesByNumber[zone][index].price)}` : ''}
+                                                    {zonesByNumber[zone]?.[index] ? `${CurrencySymbol()} ${Number2Currency(zonesByNumber[zone][index].price)}` : ''}
                                                 </td>
                                             </>
                                         ))}

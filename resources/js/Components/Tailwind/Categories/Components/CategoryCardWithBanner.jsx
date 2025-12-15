@@ -11,7 +11,7 @@ const CategoryCardWithBanner = ({
 }) => {
     return (
         <section
-            className={`relative font-font-general text-white w-full h-full p-[3%]`}
+            className={`relative font-paragraph text-white w-full h-full p-[3%]`}
             style={{
                 aspectRatio,
                 backgroundImage: `url(/storage/images/category/${category?.banner})`,
@@ -38,7 +38,7 @@ const CategoryCardWithBanner = ({
                         </p>
                     }
                 </div>
-                <a href={href} className={`${buttonBackground || 'bg-primary'} ${buttonColor || 'text-white'} rounded-full px-4 py-1`}>Ver más productos</a>
+                <a href={href} className={`${buttonBackground || 'bg-primary'} ${buttonColor || 'text-white'} rounded-full px-6 py-3`}>Ver más productos</a>
             </div>
             {
                 !mainContainer &&

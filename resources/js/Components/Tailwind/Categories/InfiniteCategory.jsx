@@ -28,8 +28,8 @@ const InfiniteCategory = ({ items, data }) => {
     }, [swiperInstance]);
 
     return (
-        <section className="py-12">
-            <div className="w-full px-[5%] py-[2.5%] mx-auto">
+        <section className={`${data?.backgroundColor ? data.backgroundColor : 'bg-white'} py-12`}>
+            <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl py-[2.5%] mx-auto">
                 <h2 className="text-[28px] md:text-4xl font-bold pb-4 mb-8 font-font-secondary border-b customborder-neutral-light">
                     {data?.title}
                 </h2>

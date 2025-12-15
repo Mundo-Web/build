@@ -15,11 +15,18 @@ class Collection extends Model
 
     protected $fillable = [
         'slug',
+        'order_index',
         'name',
         'description',
         'image',
         'featured',
         'visible',
         'status',
+    ];
+
+    protected $casts = [
+        'featured'=>'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
     ];
 }

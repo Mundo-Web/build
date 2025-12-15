@@ -3,7 +3,7 @@ import React from 'react';
 
 const OurBrandsScraping = ({ brands }) => {
     return (
-        <div className=' px-primary mx-auto font-font-general customtext-neutral-dark'>
+        <div className=' px-primary mx-auto font-paragraph customtext-neutral-dark'>
             <div className="bg-primary text-center py-16 rounded-3xl p-6 ">
                 <h1 className="text-[40px] font-bold mb-4">Nuestras Marcas</h1>
                 <p className=" mb-8 w-9/12 mx-auto">

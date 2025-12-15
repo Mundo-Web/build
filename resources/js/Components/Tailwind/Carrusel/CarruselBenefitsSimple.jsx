@@ -32,11 +32,11 @@ const CarruselBenefitsSimple = ({ items, data }) => {
     return (
         <div
             className={`${
-                data.background ? data.background : "bg-secondary"
-            } py-6 overflow-hidden customtext-primary font-paragraph mt-12 lg:mt-16`}
+                data?.background ? data?.background : "bg-secondary"
+            } py-6 overflow-hidden customtext-primary font-paragraph `}
         >
             <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto relative">
-                <div className="flex flex-col md:flex-row w-full gap-8 whitespace-nowrap transition-none">
+                <div className="flex flex-col md:flex-row justify-between w-full gap-8 whitespace-nowrap transition-none">
                     {items.map((benefit, index) => (
                         <div
                             key={index}
@@ -44,7 +44,7 @@ const CarruselBenefitsSimple = ({ items, data }) => {
                         >
                             {" "}
                             {/*para infinito usa esto flex-shrink-0*/}
-                            <div className="relative w-16 h-16 rounded-full bg-white flex items-center justify-center">
+                            <div className="relative min-w-16 min-h-16 max-w-16 max-h-16 rounded-full bg-white flex items-center justify-center">
                                 {/* Ícono */}
                                 <div className="relative z-10 text-3xl">
                                     <img
@@ -57,8 +57,8 @@ const CarruselBenefitsSimple = ({ items, data }) => {
                                     />
                                 </div>
                             </div>
-                            <p className="text-lg break-words whitespace-normal w-full max-w-[250px]">
-                                <span className="font-bold">
+                            <p className={`text-lg break-words whitespace-normal w-full max-w-[350px] ${data?.class_content || ""}`}>
+                                <span className={`font-bold   ${data?.class_title || ""}`}>
                                     {benefit.name}
                                 </span>{" "}
                                 {benefit.description}

@@ -17,12 +17,21 @@ class SubCategory extends Model
     protected $fillable = [
         'category_id',
         'slug',
+        'order_index',
         'name',
         'description',
+        'banners',
         'image',
         'featured',
         'visible',
         'status',
+    ];
+
+    protected $casts = [
+        'banners' => 'array',
+        'featured'=>'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
     ];
 
     public function category(): BelongsTo

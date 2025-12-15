@@ -7,6 +7,10 @@ const HeaderSearchContact = React.lazy(() =>
 const HeaderSearch = React.lazy(() => import("./Headers/HeaderSearch"));
 const HeaderSimple = React.lazy(() => import("./Headers/HeaderSimple"));
 const HeaderSearchB = React.lazy(() => import("./Headers/HeaderSearchB"));
+const HeaderIbergruas = React.lazy(() => import("./Headers/HeaderIbergruas"));
+const HeaderSearchDental = React.lazy(() => import("./Headers/HeaderSearchDental"));
+
+const HeaderSearchPaani = React.lazy(() => import("./Headers/HeaderSearchPaani"));
 const HeaderBananaLab = React.lazy(() => import("./Headers/HeaderBananaLab"));
 const HeaderSearchMenu = React.lazy(() => import("./Headers/HeaderSearchMenu"));
 const HeaderSearchMenuSF = React.lazy(() =>
@@ -16,6 +20,11 @@ const HeaderScraping = React.lazy(() =>
     import("./Scraping/Components/HeaderScraping")
 );
 const HeaderMakita = React.lazy(() => import("./Headers/HeaderMakita"));
+const HeaderPidelo = React.lazy(() => import("./Headers/HeaderPidelo"));
+const HeaderSearchKatya = React.lazy(() => import("./Headers/HeaderSearchKatya"));
+const HeaderHuaillys = React.lazy(() => import("./Headers/HeaderHuaillys"));
+const HeaderFirstClass = React.lazy(() => import("./Headers/HeaderFirstClass"));
+const HeaderLaPetaca = React.lazy(() => import("./Headers/HeaderLaPetaca"));
 
 const Header = ({
     data,
@@ -73,7 +82,67 @@ const Header = ({
                         generals={generals}
                     />
                 );
-             case "HeaderMakita":
+            case "HeaderIbergruas":
+                return (
+                    <HeaderIbergruas
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderSearchKatya":
+                return (
+                    <HeaderSearchKatya
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderPidelo":
+                return (
+                    <HeaderPidelo
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderSearchDental":
+                return (
+                    <HeaderSearchDental
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderSearchPaani":
+                return (
+                    <HeaderSearchPaani
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderMakita":
                 return (
                     <HeaderMakita
                         data={data}
@@ -119,6 +188,7 @@ const Header = ({
                         isUser={isUser}
                         headerPosts={headerPosts}
                         contacts={contacts}
+                        generals={generals}
                     />
                 );
             case "HeaderScraping":
@@ -142,6 +212,38 @@ const Header = ({
                         pages={pages}
                         isUser={isUser}
                         generals={generals}
+                    />
+                );
+            case "HeaderHuaillys":
+                return (
+                    <HeaderHuaillys
+                        data={data}
+                        pages={pages}
+                        generals={generals}
+                    />
+                );
+            case "HeaderFirstClass":
+                return (
+                    <HeaderFirstClass
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderLaPetaca":
+                return (
+                    <HeaderLaPetaca
+                        data={data}
+                        items={items}
+                        pages={pages}
+                        generals={generals}
+                        cart={cart}
+                        setCart={setCart}
+                        isUser={isUser}
                     />
                 );
             default:

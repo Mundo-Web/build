@@ -73,7 +73,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
     return (
         <div
             key={product.id}
-            className={`flex flex-col lg:flex-row   w-full font-font-general customtext-primary`}
+            className={`flex flex-col lg:flex-row   w-full font-paragraph customtext-primary`}
         >
             <div
                 className="w-full lg:w-2/5 p-0 flex flex-col justify-end items-start"

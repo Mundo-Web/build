@@ -23,8 +23,13 @@ const Indicators = () => {
   // Form elements ref
   const idRef = useRef()
   const symbolRef = useRef()
+  const bgImageRef = useRef()
   const nameRef = useRef()
   const descriptionRef = useRef()
+  const buttonTextRef = useRef()
+  const buttonLinkRef = useRef()
+  const badgeRef = useRef()
+  const subtitleRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -32,12 +37,23 @@ const Indicators = () => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
-    idRef.current.value = data?.id ?? ''
+    // Reset delete flags when opening modal
+    if (symbolRef.resetDeleteFlag) symbolRef.resetDeleteFlag();
+    if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
 
+    idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
+    buttonTextRef.current.value = data?.button_text ?? ''
+    buttonLinkRef.current.value = data?.button_link ?? ''
+    badgeRef.current.value = data?.badge ?? ''
+    subtitleRef.current.value = data?.subtitle ?? ''
+
     symbolRef.current.value = null
-    symbolRef.image.src = `/storage/images/indicator/${data?.symbol ?? 'undefined'}`
+    symbolRef.image.src = data?.symbol ? `/storage/images/indicator/${data.symbol}` : ''
+
+    bgImageRef.current.value = null
+    bgImageRef.image.src = data?.bg_image ? `/storage/images/indicator/${data.bg_image}` : ''
 
     $(modalRef.current).modal('show')
   }
@@ -49,8 +65,12 @@ const Indicators = () => {
       id: idRef.current.value || undefined,
       name: nameRef.current.value,
       description: descriptionRef.current.value,
-
+      button_text: buttonTextRef.current.value,
+      button_link: buttonLinkRef.current.value,
+      badge: badgeRef.current.value,
+      subtitle: subtitleRef.current.value,
     }
+
     const formData = new FormData()
     for (const key in request) {
       formData.append(key, request[key])
@@ -61,10 +81,25 @@ const Indicators = () => {
       formData.append('symbol', symbol)
     }
 
+    const bgImage = bgImageRef.current.files[0]
+    if (bgImage) {
+      formData.append('bg_image', bgImage)
+    }
+
+    // Check for image deletion flags
+    if (symbolRef.getDeleteFlag && symbolRef.getDeleteFlag()) {
+      formData.append('symbol_delete', 'DELETE');
+    }
+    if (bgImageRef.getDeleteFlag && bgImageRef.getDeleteFlag()) {
+      formData.append('bg_image_delete', 'DELETE');
+    }
+
     const result = await indicatorsRest.save(formData)
     if (!result) return
 
-
+    // Reset delete flags after successful save
+    if (symbolRef.resetDeleteFlag) symbolRef.resetDeleteFlag();
+    if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -97,6 +132,21 @@ const Indicators = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  // Función para manejar el reordering remoto
+  const onReorder = async (e) => {
+    // e.toIndex es la nueva posición donde se quiere insertar el elemento
+    const newOrderIndex = e.toIndex
+    
+    try {
+      const result = await indicatorsRest.reorder(e.itemData.id, newOrderIndex)
+      if (result) {
+        await e.component.refresh()
+      }
+    } catch (error) {
+      console.error('Error reordering indicator:', error)
+    }
+  }
+
   return (<>
     <Table gridRef={gridRef} title='Indicadores' rest={indicatorsRest}
       toolBar={(container) => {
@@ -112,11 +162,19 @@ const Indicators = () => {
           widget: 'dxButton', location: 'after',
           options: {
             icon: 'plus',
-            text: 'Nuevo slider',
-            hint: 'Nuevo slider',
+            text: 'Nuevo indicador',
+            hint: 'Nuevo indicador',
             onClick: () => onModalOpen()
           }
         });
+      }}
+      rowDragging={{
+        allowReordering: true,
+        onReorder: onReorder,
+        dropFeedbackMode: 'push'
+      }}
+      sorting={{
+        mode: 'single'
       }}
       columns={[
         {
@@ -125,24 +183,39 @@ const Indicators = () => {
           visible: false
         },
         {
-          dataField: 'name',
-          caption: 'Número',
+          dataField: 'order_index',
+          caption: 'Orden',
+          visible: false,
+          sortOrder: 'asc',
+          sortIndex: 0
         },
         {
           dataField: 'symbol',
-          caption: 'Símbolo',
+          caption: 'Icono',
+          width: 100,
           cellTemplate: (container, { data }) => {
-            ReactAppend(container, <img src={`/storage/images/indicator/${data.symbol}`} style={{ width: '80px', height: '48px', objectFit: 'cover', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+            const imageUrl = data.symbol ? `/storage/images/indicator/${data.symbol}` : '/api/cover/thumbnail/null'
+            ReactAppend(container, <img src={imageUrl} style={{ width: '60px', height: '60px', objectFit: 'contain', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
           }
+        },
+        {
+          dataField: 'name',
+          caption: 'Título',
+          width: 150,
         },
         {
           dataField: 'description',
           caption: 'Descripción',
-
+        },
+        {
+          dataField: 'button_text',
+          caption: 'Texto del Botón',
+          width: 150,
         },
         {
           dataField: 'visible',
           caption: 'Visible',
+          width: 80,
           dataType: 'boolean',
           cellTemplate: (container, { data }) => {
             $(container).empty()
@@ -152,26 +225,9 @@ const Indicators = () => {
             })} />)
           }
         },
-        // {
-        //   dataField: 'status',
-        //   caption: 'Estado',
-        //   dataType: 'boolean',
-        //   cellTemplate: (container, { data }) => {
-        //     switch (data.status) {
-        //       case 1:
-        //         ReactAppend(container, <span className='badge bg-success rounded-pill'>Activo</span>)
-        //         break
-        //       case 0:
-        //         ReactAppend(container, <span className='badge bg-danger rounded-pill'>Inactivo</span>)
-        //         break
-        //       default:
-        //         ReactAppend(container, <span className='badge bg-dark rounded-pill'>Eliminado</span>)
-        //         break
-        //     }
-        //   }
-        // },
         {
           caption: 'Acciones',
+          width: 120,
           cellTemplate: (container, { data }) => {
             container.append(DxButton({
               className: 'btn btn-xs btn-soft-primary',
@@ -190,12 +246,105 @@ const Indicators = () => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar indicador' : 'Agregar indicador'} onSubmit={onModalSubmit} size='md'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar indicador' : 'Agregar indicador'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='indicators-container'>
         <input ref={idRef} type='hidden' />
-        <InputFormGroup eRef={nameRef} label='Número' col='col-sm-8' rows={2} required />
-        <ImageFormGroup eRef={symbolRef} label='Símbolo' col='col-sm-4' rows={2} required />
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
+
+        {/* Información Principal (Izquierda) */}
+        <div className="col-md-7 mb-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body">
+              <InputFormGroup
+                eRef={nameRef}
+                label='Título'
+                col='col-12'
+                required
+                placeholder="Ej: Oferta Especial"
+              />
+              <InputFormGroup
+                eRef={subtitleRef}
+                label='Subtítulo (Opcional)'
+                col='col-12'
+                placeholder="Ej: 20% de descuento"
+              />
+              <TextareaFormGroup
+                eRef={descriptionRef}
+                label='Descripción'
+                col='col-12'
+                rows={3}
+                placeholder="Descripción del indicador"
+              />
+              <InputFormGroup
+                eRef={badgeRef}
+                label='Badge (Opcional)'
+                col='col-12'
+                placeholder="Ej: ¡Limitado!"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Imágenes (Derecha) */}
+        <div className="col-md-5 mb-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body">
+              <ImageFormGroup
+                eRef={symbolRef}
+                name="symbol"
+                label='Icono/Símbolo'
+                col='col-12'
+                required={!isEditing}
+                aspect='1/1'
+              />
+              <small className="text-muted d-block mb-3">
+                <i className="mdi mdi-information me-1"></i>
+                Recomendado: 100x100px (1:1)
+              </small>
+              
+              <ImageFormGroup
+                eRef={bgImageRef}
+                name="bg_image"
+                label='Imagen de Fondo'
+                col='col-12'
+                aspect='16/9'
+              />
+              <small className="text-muted">
+                <i className="mdi mdi-information me-1"></i>
+                Recomendado: 1200x675px (16:9)
+              </small>
+            </div>
+          </div>
+        </div>
+
+        {/* Botón de Acción (Abajo, ancho completo) */}
+        <div className="col-12">
+          <div className="card border-0 shadow-sm">
+            <div className="card-body">
+              <h6 className="card-title text-muted mb-3">
+                <i className="mdi mdi-link-variant me-2"></i>
+                Botón de Acción (Opcional)
+              </h6>
+              <div className="row">
+                <InputFormGroup
+                  eRef={buttonTextRef}
+                  label='Texto del Botón'
+                  col='col-md-6'
+                  placeholder="Ej: Ver más"
+                />
+                <InputFormGroup
+                  eRef={buttonLinkRef}
+                  label='Enlace del Botón'
+                  col='col-md-6'
+                  placeholder="Ej: /productos"
+                />
+              </div>
+              <small className="text-muted">
+                <i className="mdi mdi-information me-1"></i>
+                El botón solo se mostrará si ambos campos están completos
+              </small>
+            </div>
+          </div>
+        </div>
       </div>
     </Modal>
   </>

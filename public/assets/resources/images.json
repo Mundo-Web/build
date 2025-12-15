@@ -1,16 +1,65 @@
 [
-  {
-    "name": "Ícono de página",
-    "description": "Ícono que se muestra en las pestañas de la página.",
-    "src": "icon.png",
-    "fit": "contain",
-    "aspect": "1"
-  },
-  {
-    "name": "Logo principal",
-    "description": "Logo que se muestra en el header y en el footer",
-    "src": "logo.png",
-    "fit": "contain",
-    "aspect": "13/4"
-  }
+    {
+        "name": "Imagen del Login",
+        "title": "Imagen del Login",
+        "filename": "login",
+        "description": "Imagen del formulario del login",
+        "src": "login.png",
+        "fit": "cover",
+        "aspect": "3\/5"
+    },
+    {
+        "name": "Imagen de Crear Cuenta",
+        "title": "Imagen de Crear Cuenta",
+        "filename": "signup",
+        "description": "Imagen del formulario de crear cuenta",
+        "src": "signup.png",
+        "fit": "cover",
+        "aspect": "3\/5"
+    },
+    {
+        "name": "Imagen Restablecer Contrase\u00f1a",
+        "title": "Imagen Restablecer Contrase\u00f1a",
+        "filename": "restore",
+        "description": "Imagen del formulario de restablecer contrase\u00f1a",
+        "src": "restore.png",
+        "fit": "cover",
+        "aspect": "2\/3"
+    },
+    {
+        "name": "Imagen de Olvidaste tu Contrase\u00f1a",
+        "title": "Imagen de Olvidaste tu Contrase\u00f1a",
+        "filename": "reset",
+        "description": "Imagen del formulario olvidaste tu contrase\u00f1a",
+        "src": "reset.png",
+        "fit": "cover",
+        "aspect": "3\/5"
+    },
+    {
+        "name": "Imagen M\u00e9todos de Pago",
+        "title": "Imagen M\u00e9todos de Pago",
+        "filename": "payments",
+        "description": "Imagen del formlario de m\u00e9teodos de pago",
+        "src": "payments.png",
+        "fit": "cover",
+        "aspect": "3\/5"
+    },
+    {
+        "name": "Imagen  Subscribete",
+        "title": "Imagen  Subscribete",
+        "filename": "subscribe",
+        "description": "Imagen Formulario Subscribete",
+        "src": "subscribe.png",
+        "fit": "cover",
+        "aspect": "2\/3"
+    },
+    {
+        "name": "Imagen Formulario de  Trabajo",
+        "title": "Imagen Formulario de  Trabajo",
+        "filename": "job-application",
+        "description": "Imagen de formulario de trabajo",
+        "src": "job-application.png",
+        "fit": "cover",
+        "aspect": "9\/16"
+    }
 ]

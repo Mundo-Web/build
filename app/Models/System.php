@@ -31,7 +31,8 @@ class System extends Model
     protected $casts = [
         'data' => 'array',
         'filters' => 'array',
-        'filters_method_values' => 'array'
+        'filters_method_values' => 'array',
+        'visible'=>'boolean',
     ];
 
     public function after()

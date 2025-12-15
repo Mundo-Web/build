@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircleIcon, Heart, ShoppingCart } from "lucide-react";
+import { CheckCircleIcon, ChevronRightCircle, Heart, ShoppingCart } from "lucide-react";
 import Swal from "sweetalert2";
 import ItemsRest from "../../../../Actions/ItemsRest";
 import CartModal from "../../Components/CartModal";
 import { toast, Toaster } from "sonner";
 import CartModalBananaLab from "../../Components/CartModalBananaLab";
 import Tippy from "@tippyjs/react";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardProductBananaLab = ({
     data,
@@ -21,7 +22,7 @@ const CardProductBananaLab = ({
     const [modalOpen, setModalOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [variationsItems, setVariationsItems] = useState([]);
-    const isFavorite = favorites.some((x) => x.id === product.id);
+    const isFavorite = favorites.some((x) => x.id === product?.id);
 
     // Mejorar lógica: por defecto "square"
     const styleOffer = data?.style_offer || "square";
@@ -31,7 +32,7 @@ const CardProductBananaLab = ({
         e.stopPropagation();
 
         const newCart = structuredClone(cart);
-        const index = newCart.findIndex((x) => x.id == product.id);
+        const index = newCart.findIndex((x) => x.id == product?.id);
 
         if (index == -1) {
             newCart.push({ ...product, quantity: 1 });
@@ -42,7 +43,7 @@ const CardProductBananaLab = ({
         setCart(newCart);
 
         toast.success("Producto agregado", {
-            description: `${product.name} se ha añadido al carrito.`,
+            description: `${product?.name} se ha añadido al carrito.`,
             icon: <CheckCircleIcon className="h-5 w-5 text-green-500" />,
             duration: 3000,
             position: "bottom-center",
@@ -54,12 +55,12 @@ const CardProductBananaLab = ({
         e.stopPropagation();
 
         const newFavorites = structuredClone(favorites);
-        const index = newFavorites.findIndex((x) => x.id == product.id);
+        const index = newFavorites.findIndex((x) => x.id == product?.id);
 
         if (index == -1) {
             newFavorites.push({ ...product, quantity: 1 });
             toast.success("Producto agregado", {
-                description: `${product.name} se ha añadido a los favoritos.`,
+                description: `${product?.name} se ha añadido a los favoritos.`,
                 icon: <CheckCircleIcon className="h-5 w-5 text-green-500" />,
                 duration: 3000,
                 position: "bottom-center",
@@ -67,7 +68,7 @@ const CardProductBananaLab = ({
         } else {
             newFavorites.splice(index, 1);
             toast.info("Producto removido", {
-                description: `${product.name} se ha quitado de los favoritos.`,
+                description: `${product?.name} se ha quitado de los favoritos.`,
                 icon: <CheckCircleIcon className="h-5 w-5 text-blue-500" />,
                 duration: 3000,
                 position: "bottom-center",
@@ -102,27 +103,25 @@ const CardProductBananaLab = ({
     return (
         <>
             <motion.a
-                href={`/product/${product.slug}`}
+                href={`/product/${product?.slug}`}
                 initial={{
                     scale: 1,
-                    boxShadow: "0px 0px 8px rgba(0, 0, 0, 0.1)",
                 }}
                 whileHover={{
                     scale: 1.02,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
                     transition: { duration: 0.3 },
                 }}
-                className={`group px-1 md:px-2 w-1/2 sm:w-1/3 ${widthClass} rounded-b-3xl overflow-visible flex-shrink-0 font-font-secondary cursor-pointer relative `}
+                className={`group px-3  bg-transparent  ${widthClass} rounded-b-3xl overflow-hidden flex-shrink-0 font-paragraph cursor-pointer relative `}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <div className="bg-white rounded-md lg:p-4 h-full flex flex-col ">
+                <div className="bg-transparent rounded-md  h-full  flex flex-col ">
                     {/* Imagen del producto y etiqueta de descuento */}
-                    <div className="relative">
-                        {product.discount != null &&
-                            !isNaN(product.discount) && (
+                    <div className="relative bg-white rounded-xl overflow-hidden">
+                        {product?.discount != null &&
+                            !isNaN(product?.discount) && (
                                 styleOffer === "square" ? (
-                                    <span className="absolute top-3 -right-1 lg:-right-2 bg-[#F93232] text-white text-xs font-bold px-2 py-2 shadow-md z-20">
+                                    <span className="absolute top-3 right-0 lg:right-0 bg-[#F93232] text-white text-xs font-bold px-2 py-2 shadow-md z-20">
                                         Oferta
                                     </span>
                                 ) : (
@@ -145,12 +144,12 @@ const CardProductBananaLab = ({
                             transition={{ duration: 0.3 }}
                         >
                             <img
-                                src={`/storage/images/item/${product.image}`}
+                                src={`/storage/images/item/${product?.image}`}
                                 onError={(e) =>
                                     (e.target.src = "/api/cover/thumbnail/null")
                                 }
-                                alt={product.name}
-                                className="w-full h-full object-cover"
+                                alt={product?.name}
+                                className="w-full h-full object-cover object-center"
                                 loading="lazy"
                             />
                         </motion.div>
@@ -159,7 +158,7 @@ const CardProductBananaLab = ({
                     {/* Información del producto */}
                     <div className="p-3 flex-grow flex flex-col">
                         <div className="flex gap-1">
-                            {variationsItems &&
+                            {data?.visible_variations && variationsItems &&
                                 variationsItems?.map((variant) => (
                                     <Tippy
                                         content={variant.color}
@@ -179,9 +178,11 @@ const CardProductBananaLab = ({
                                     </Tippy>
                                 ))}
                         </div>
+                        <h2 className="block customtext-accent font-semibold line-clamp-1">{product?.category?.name}</h2>
                         <div className="flex justify-between items-start w-full mt-2">
+
                             <h3 className={` customtext-neutral-dark text-xs lg:text-[15px] leading-4 font-semibold mb-2 line-clamp-3 ${data?.support_favorite ? "w-11/12 lg:w-10/12" : "w-full"}`}>
-                                {product.name}
+                                {product?.name}
                             </h3>
                             {data?.support_favorite &&
                                 <button
@@ -202,48 +203,59 @@ const CardProductBananaLab = ({
                                 </button>}
                         </div>
                         {/* Precio */}
-                        <div className="flex flex-col lg:flex-row lg:justify-between items-baseline mt-1">
-                            <span className="customtext-neutral-dark text-[20px] md:text-2xl font-bold">
-                                S/ {product.final_price}
-                            </span>
-                            {/*  <p className="text-[10px] lg:text-xs customtext-neutral-dark mt-1">
+                        {data?.show_price && (
+
+                            <div className="flex flex-col lg:flex-row items-center gap-4 mt-1">
+                                <span className="customtext-neutral-dark text-[20px] md:text-2xl font-bold">
+                                    {CurrencySymbol()} {product?.final_price}
+                                </span>
+                                {Number(product?.discount) > 0 && Number(product?.final_price) < Number(product?.price) && (
+                                    <span className="text-base lg:text-base customtext-neutral-light line-through font-semibold">
+                                        {CurrencySymbol()} {product?.price}
+                                    </span>
+                                )}
+                                {/*  <p className="text-[10px] lg:text-xs customtext-neutral-dark mt-1">
                                 Más vendidos (100)
                             </p> */}
-                        </div>
+                            </div>
+                        )}
 
                         <div className="mt-3 overflow-hidden block lg:hidden">
-                            <button
-                                onClick={(e) => onAddClicked(e, product)}
-                                className="w-full text-[10px] font-light lg:font-normal flex items-center justify-center bg-primary text-white lg:text-sm py-2 lg:py-3 px-4 rounded-full shadow-md hover:bg-primary-dark transition-all duration-300"
+                            <a
+                                href={`/product/${product?.slug}`}
+
+                                className={`w-full text-[10px] font-light lg:font-normal flex items-center justify-center bg-primary text-white lg:text-sm py-2 lg:py-3 px-4 rounded-full shadow-md hover:bg-primary-dark transition-all duration-300 ${data?.class_button || ""}`}
                             >
-                                <span className="mr-2">Agregar al carrito</span>
-                                <ShoppingCart
+                                <span className="mr-2">Ir a detalle</span>
+                                <ChevronRightCircle
                                     className="w-3 h-3 lg:w-4 lg:h-4"
                                     strokeWidth={2}
                                 />
-                            </button>
+                            </a>
                         </div>
-                        {/* Botón de acción - ahora con mejor manejo del hover */}
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{
-                                opacity: isHovered ? 1 : 0,
-                                height: isHovered ? "auto" : 0,
-                            }}
-                            transition={{ duration: 0.2 }}
-                            className="hidden lg:block mt-3 overflow-hidden"
-                        >
-                            <button
-                                onClick={(e) => onAddClicked(e, product)}
-                                className="w-full text-[10px] font-light lg:font-normal flex items-center justify-center bg-primary text-white lg:text-sm py-2 lg:py-3 px-4 rounded-full shadow-md hover:bg-primary-dark transition-all duration-300"
+                        {/* Botón de acción - reservar espacio para evitar layout shift */}
+                        <div className="hidden lg:block mt-3 h-[48px]">
+                            <motion.div
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{
+                                    opacity: isHovered ? 1 : 0,
+                                    y: isHovered ? 0 : 6,
+                                }}
+                                transition={{ duration: 0.18 }}
+                                className="w-full h-full flex items-center"
                             >
-                                <span className="mr-2">Agregar al carrito</span>
-                                <ShoppingCart
-                                    className="w-3 h-3 lg:w-4 lg:h-4"
-                                    strokeWidth={2}
-                                />
-                            </button>
-                        </motion.div>
+                                <a
+                                    href={`/product/${product?.slug}`}
+                                    className={`w-full text-[10px] font-light lg:font-normal flex items-center justify-center bg-primary  lg:text-sm py-2 lg:py-3 px-4 rounded-full shadow-md hover:bg-primary-dark transition-all duration-300 ${data?.class_button || "text-white"}`}
+                                >
+                                    <span className="mr-2">Ir a detalle</span>
+                                    <ChevronRightCircle
+                                        className="w-3 h-3 lg:w-4 lg:h-4"
+                                        strokeWidth={2}
+                                    />
+                                </a>
+                            </motion.div>
+                        </div>
                     </div>
                 </div>
             </motion.a>

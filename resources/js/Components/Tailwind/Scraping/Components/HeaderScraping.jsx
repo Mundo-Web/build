@@ -54,8 +54,8 @@ const HeaderScraping = ({
         }
     }, []); // Agrega `items` como dependencia
     return (
-        <header className="w-full font-font-general">
-            <div className="px-primary mx-auto py-4 font-font-general customtext-primary text-base font-semibold">
+        <header className="w-full font-paragraph">
+            <div className="px-primary mx-auto py-4 font-paragraph customtext-primary text-base font-semibold">
                 <div className="flex items-center justify-between gap-4 ">
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2">

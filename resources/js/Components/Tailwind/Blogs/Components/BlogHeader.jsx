@@ -4,10 +4,13 @@ import BlogPostCard from "./BlogPostCard";
 import DateFilter from "./DateFilter";
 import { useEffect, useState } from "react";
 import PostsRest from "../../../../Actions/PostsRest";
+
 import SelectForm from "./SelectForm";
 import Global from "../../../../Utils/Global";
+import BlogCategoriesRest from "../../../../Actions/BlogCategoriesRest";
 
 const postsRest = new PostsRest();
+const blogCategoriesRest = new BlogCategoriesRest();
 
 export default function BlogHeader({
   data,
@@ -20,7 +23,7 @@ export default function BlogHeader({
   isFilter,
   setIsFilter,
 }) {
-  const { categories } = filteredData;
+  const [categories, setCategories] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     category_id: "",
     post_date: "",
@@ -37,13 +40,11 @@ export default function BlogHeader({
     }
     // Fecha
     if (filters.post_date) {
-      console.log("Fecha seleccionada:", filters.post_date);
       transformedFilters.push(["post_date", "=", filters.post_date]);
     }
 
     // Búsqueda (asumiendo que se filtra por título o contenido)
     if (filters.name) {
-      console.log("Nombre seleccionado:", filters.name);
       transformedFilters.push(["name", "contains", filters.name]);
     }
 
@@ -66,9 +67,7 @@ export default function BlogHeader({
         filter: filters,
       };
 
-      console.log(params);
       const response = await postsRest.paginate(params);
-      console.log(response);
 
       setPosts(response.data);
 
@@ -80,6 +79,28 @@ export default function BlogHeader({
       setLoading(false);
     }
   };
+
+  // useEffect para cargar las categorías de posts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const params = {
+          filter: [
+            ["visible", "=", true],
+            ["status", "=", true]
+          ]
+        };
+        const response = await blogCategoriesRest.paginate(params);
+        if (response && response.data) {
+          setCategories(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (!initialLoad) {
@@ -96,20 +117,24 @@ export default function BlogHeader({
     }));
   };
   useEffect(() => {
-    console.log("BlogHeader - posts actualizados:", posts);
   }, [posts]);
   return (
-    <main className="bg-white !font-font-general">
+    <main className="bg-white font-title">
       {/* Hero Section */}
       <section
-        className={`px-primary ${isFilter ? "pt-8" : "py-8"
+        className={`px-primary 2xl:px-0 2xl:max-w-7xl mx-auto ${isFilter ? "pt-8" : "py-8"
           }`}
       >
         <div className="space-y-4">
-          <h1 className="customtext-primary font-title text-3xl md:text-5xl 2xl:text-6xl font-bold tracking-tight whitespace-break-spaces">
+          <span className="customtext-primary">BLOG</span>
+          <h1 className={`font-title text-3xl md:text-5xl 2xl:text-6xl font-bold tracking-tight ${data?.class_title || 'customtext-primary'}`}>
             {
               data?.title
-                ? data?.title
+                ? <span 
+                    dangerouslySetInnerHTML={{ __html: data.title }}
+                    className="leading-tight block"
+                    style={{ lineHeight: '1.1' }}
+                  ></span>
                 : <>
                   Descubre lo mejor:
                   <br />
@@ -119,7 +144,7 @@ export default function BlogHeader({
           </h1>
           {
             data?.description &&
-            <p className="customtext-neutral-dark opacity-80 text-base 2xl:text-xl">
+            <p className="customtext-neutral-dark opacity-80 text-base 2xl:text-xl font-title">
             { data?.description}
             </p>
           }

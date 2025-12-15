@@ -34,6 +34,9 @@ const SubCategories = () => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         SetSelectValue(
             categoryRef.current,
@@ -42,7 +45,7 @@ const SubCategories = () => {
         );
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = `/storage/images/subcategories/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/sub_category/${data.image}` : '';
         imageRef.current.value = null;
 
         $(modalRef.current).modal("show");
@@ -67,8 +70,16 @@ const SubCategories = () => {
             formData.append("image", file);
         }
 
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await subCategoriesRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -109,6 +120,21 @@ const SubCategories = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+
+        try {
+            const result = await subCategoriesRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering subcategory:', error);
+        }
+    };
+
     return (
         <>
             <Table
@@ -139,11 +165,26 @@ const SubCategories = () => {
                         },
                     });
                 }}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 columns={[
                     {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     {
                         dataField: "category.name",
@@ -167,7 +208,7 @@ const SubCategories = () => {
                             ReactAppend(
                                 container,
                                 <img
-                                    src={`/storage/images/subcategories/${data.image}`}
+                                    src={`/storage/images/sub_category/${data.image}`}
                                     style={{
                                         width: "80px",
                                         height: "48px",
@@ -176,8 +217,8 @@ const SubCategories = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />
                             );
@@ -260,6 +301,7 @@ const SubCategories = () => {
                 <input ref={idRef} type="hidden" />
                 <ImageFormGroup
                     eRef={imageRef}
+                    name="image"
                     label="Imagen"
                     col="col-12"
                     aspect={16 / 9}

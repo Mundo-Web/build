@@ -38,11 +38,14 @@ const Posts = ({ details }) => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
+    // Reset delete flag when opening modal
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     SetSelectValue(categoryRef.current, data?.category?.id, data?.category?.name);
     descriptionRef.editor.root.innerHTML = data?.description ?? ''
-    imageRef.image.src = `/storage/images/post/${data?.image}`
+    imageRef.image.src = data?.image ? `/storage/images/post/${data.image}` : ''
     imageRef.current.value = null
     SetSelectValue(tagsRef.current, data?.tags ?? [], 'id', 'name')
     postDateRef.current.value = data?.post_date ?? moment().format('YYYY-MM-DD')
@@ -72,8 +75,16 @@ const Posts = ({ details }) => {
       formData.append('image', file)
     }
 
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
     const result = await postsRest.save(formData)
     if (!result) return
+
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -173,12 +184,12 @@ const Posts = ({ details }) => {
       <div className='row' id='posts-container'>
         <input ref={idRef} type='hidden' />
 
-        <ImageFormGroup eRef={imageRef} label='Imagen' />
-        <SelectAPIFormGroup eRef={categoryRef} searchAPI='/api/admin/categories/paginate' searchBy='name' label='Categoría' required dropdownParent='#posts-container' />
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen' />
+        <SelectAPIFormGroup eRef={categoryRef} searchAPI='/api/admin/blog-categories/paginate' searchBy='name' label='Categoría' required dropdownParent='#posts-container' />
         <InputFormGroup eRef={nameRef} label='Título' rows={2} required />
         <QuillFormGroup eRef={descriptionRef} label='Contenido' />
         {/* <TextareaFormGroup eRef={tagsRef} label='Tags (Separado por comas)' rows={1} /> */}
-        <SelectAPIFormGroup id='tags' eRef={tagsRef} searchAPI={'/api/admin/tags/paginate'} searchBy='name' label='Tags' dropdownParent='#posts-container' tags multiple />
+        <SelectAPIFormGroup id='tags' eRef={tagsRef} searchAPI={'/api/admin/post-tags/paginate'} searchBy='name' label='Tags' dropdownParent='#posts-container' tags multiple />
         <InputFormGroup eRef={postDateRef} label='Fecha de publicación' type='date' required />
       </div>
     </Modal>

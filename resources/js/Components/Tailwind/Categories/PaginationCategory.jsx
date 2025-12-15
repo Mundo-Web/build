@@ -58,7 +58,7 @@ const PaginationCategory = ({
     };
 
     return (
-        <section className="pt-10 lg:pt-16 font-font-general">
+        <section className="pt-10 lg:pt-16 font-paragraph">
             <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl font-semibold pb-4 sm:pb-8 text-left sm:text-center tracking-normal customtext-neutral-dark max-w-5xl mx-auto 2xl:max-w-7xl">
                     {data?.title}
@@ -93,7 +93,7 @@ const PaginationCategory = ({
                                                     loading="lazy"
                                                 />
                                             </div>
-                                            <h3 className="text-center font-semibold text-base lg:text-lg 2xl:text-xl customtext-neutral-dark font-font-general">
+                                            <h3 className="text-center font-semibold text-base lg:text-lg 2xl:text-xl customtext-neutral-dark font-paragraph">
                                                 {category.name}
                                             </h3>
                                         </div>

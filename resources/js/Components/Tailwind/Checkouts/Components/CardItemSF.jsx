@@ -1,4 +1,5 @@
 import { Minus, Plus, PlusCircle, Trash2 } from "lucide-react";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardItemSF = ({ setCart, ...item }) => {
 
@@ -29,11 +30,11 @@ const CardItemSF = ({ setCart, ...item }) => {
             }).filter(Boolean)
         );
     }
-    console.log(item);
+
     return (
         <>  
             {/* Versión para desktop (tabla) */}
-            <tr key={item.id} className="hidden md:table-row border-b bg-gray-50 font-font-general">
+            <tr key={item.id} className="hidden md:table-row border-b bg-gray-50 font-paragraph">
                 {/* Columna Producto */}
                 <td className="px-4 py-3">
                     <div className="flex items-center">
@@ -87,18 +88,18 @@ const CardItemSF = ({ setCart, ...item }) => {
                 
                 {/* Columna Precio Unitario */}
                 <td className="px-4 py-4 text-right min-w-32">
-                    <div className="text-xs text-gray-500 line-through">S/ {Number(item.price).toFixed(2)}</div>
-                    <div className="font-bold">S/ {Number(item.final_price).toFixed(2)}</div>
+                    <div className="text-xs text-gray-500 line-through">{CurrencySymbol()} {Number(item.price).toFixed(2)}</div>
+                    <div className="font-bold">{CurrencySymbol()} {Number(item.final_price).toFixed(2)}</div>
                 </td>
                 
                 {/* Columna Subtotal */}
                 <td className="px-4 py-4 text-right font-bold">
-                    S/ {Number(item.final_price * item.quantity).toFixed(2)}
+                    {CurrencySymbol()} {Number(item.final_price * item.quantity).toFixed(2)}
                 </td>
             </tr>
 
             {/* Versión para mobile (tarjeta) */}
-            <div className="md:hidden bg-gray-50  rounded-lg shadow p-4 mb-4 w-full font-font-general">
+            <div className="md:hidden bg-gray-50  rounded-lg shadow p-4 mb-4 w-full font-paragraph">
                 <div className="flex items-start gap-4 relative">
                     <img
                         src={`/storage/images/item/${item.image}`}
@@ -124,13 +125,13 @@ const CardItemSF = ({ setCart, ...item }) => {
 
                             <div className="text-right mt-2">
                                 <div className="text-xs text-gray-500 line-through">
-                                    S/ {Number(item.price).toFixed(2)}
+                                    {CurrencySymbol()} {Number(item.price).toFixed(2)}
                                 </div>
                                 <div className="font-bold">
-                                    S/ {Number(item.final_price).toFixed(2)}
+                                    {CurrencySymbol()} {Number(item.final_price).toFixed(2)}
                                 </div>
                                 <div className="text-sm font-bold mt-1">
-                                    Subtotal: S/ {Number(item.final_price * item.quantity).toFixed(2)}
+                                    Subtotal: {CurrencySymbol()} {Number(item.final_price * item.quantity).toFixed(2)}
                                 </div>
                             </div>
                         </div>

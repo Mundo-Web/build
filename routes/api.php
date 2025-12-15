@@ -6,14 +6,23 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AboutusController as AdminAboutusController;
 use App\Http\Controllers\Admin\IndicatorController as AdminIndicatorController;
 use App\Http\Controllers\Admin\MessageController as AdminMessageController;
+use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
+use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
+
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\InnovationController as AdminInnovationController;
+use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
+use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
 use App\Http\Controllers\Admin\StrengthController as AdminStrengthController;
+use App\Http\Controllers\Admin\AppController as AdminAppController;
 use App\Http\Controllers\Admin\CertificationController as AdminCertificationController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\GeneralController as AdminGeneralController;
@@ -23,6 +32,8 @@ use App\Http\Controllers\Admin\AdController as AdminAdController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesController;
+use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 
 use App\Http\Controllers\Admin\DeliveryPriceController as AdminDeliveryPriceController;
 use App\Http\Controllers\Admin\TypesDeliveryController as AdminTypesDeliveryController;
@@ -30,14 +41,15 @@ use App\Http\Controllers\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Admin\GalleryController as AdminGalleryController;
 use App\Http\Controllers\Admin\ItemController as AdminItemController;
 use App\Http\Controllers\Admin\SaleController as AdminSaleController;
+use App\Http\Controllers\Admin\SaleExportController as AdminSaleExportController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Customer\SaleController as CustomerSaleController;
 
 use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
-use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\SystemColorController as AdminSystemColorController;
 use App\Http\Controllers\Admin\SystemController as AdminSystemController;
 use App\Http\Controllers\Admin\TagController as AdminTagController;
+use App\Http\Controllers\Admin\PostTagController as AdminPostTagController;
 use App\Http\Controllers\Admin\WebDetailController as AdminWebDetailController;
 
 use App\Http\Controllers\Admin\ItemImageController as AdminItemImageController;
@@ -49,11 +61,21 @@ use App\Http\Controllers\Admin\NotificationVariableController;
 use App\Http\Controllers\Api\NotificationVariablesController;
 use App\Http\Controllers\Admin\RepositoryController as AdminRepositoryController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
+use App\Http\Controllers\Admin\FillableController;
+use App\Http\Controllers\Admin\RoleHasMenuController;
 use App\Http\Controllers\AuthClientController;
+use App\Http\Controllers\JobApplicationController;
 // Public
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogCategoryController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\WhistleblowingController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DeliveryPriceController;
@@ -62,7 +84,10 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemImportController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\RoomAvailabilityController;
 use App\Http\Controllers\MercadoPagoController;
+use App\Http\Controllers\OpenPayController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SaleController;
@@ -83,6 +108,7 @@ use App\Http\Controllers\UnifiedImportController;
 */
 
 Route::get('/ubigeo/search', [DeliveryPriceController::class, 'search'])->name('ubigeo.search');
+Route::get('/ubigeo/find/{code}', [DeliveryPriceController::class, 'findByCode'])->name('ubigeo.find');
 
 // Type Delivery routes
 Route::get('/type-delivery/{slug}', [TypeDeliveryController::class, 'getBySlug']);
@@ -101,8 +127,15 @@ Route::post('/unified-import', [UnifiedImportController::class, 'import']);
 Route::post('/unified-import/preview', [UnifiedImportController::class, 'preview']);
 Route::get('/unified-import/field-mappings', [UnifiedImportController::class, 'getFieldMappings']);
 
-Route::post('/complaints', [ComplaintController::class, 'saveComplaint']);
+Route::post('/complaints', [ComplaintController::class, 'saveComplaint'])
+    ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
+Route::post('/whistleblowings', [WhistleblowingController::class, 'saveWhistleblowing'])
+    ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
 Route::get('/notification-variables/{type}', [NotificationVariablesController::class, 'getVariables']);
+
+// CAPTCHA routes (seguridad mejorada)
+Route::post('/captcha/generate', [App\Http\Controllers\CaptchaController::class, 'generate'])->middleware('throttle:30,1');
+Route::post('/captcha/verify', [App\Http\Controllers\CaptchaController::class, 'verify'])->middleware('throttle:20,1');
 
 // Tracking de ecommerce
 Route::post('/tracking/add-to-cart', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackAddToCart']);
@@ -114,8 +147,14 @@ Route::post('/signup', [AuthController::class, 'signup']);
 
 Route::post('/login-client', [AuthClientController::class, 'login']);
 Route::post('/signup-client', [AuthClientController::class, 'signup']);
+
+// Job Applications
+Route::post('/job-applications', [JobApplicationController::class, 'save']);
 Route::post('/forgot-password-client', [AuthClientController::class, 'forgotPassword']);
 Route::post('/reset-password-client', [AuthClientController::class, 'resetPassword']);
+
+// Google OAuth routes
+Route::post('/google-login', [App\Http\Controllers\GoogleAuthController::class, 'loginWithGoogle']);
 
 // Rutas públicas para cupones
 Route::post('/coupons/validate', [AdminCouponController::class, 'validateCoupon']);
@@ -131,6 +170,10 @@ Route::get('/subcategories/media/{uuid}', [AdminSubCategoryController::class, 'm
 Route::get('/brands/media/{uuid}', [AdminBrandController::class, 'media']);
 Route::get('/testimonies/media/{uuid}', [AdminTestimonyController::class, 'media']);
 Route::get('/posts/media/{uuid}', [AdminPostController::class, 'media']);
+Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'media']);
+Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
+Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
+Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
 Route::get('/item_images/media/{uuid}', [AdminItemImageController::class, 'media']);
@@ -139,10 +182,13 @@ Route::get('/indicators/media/{uuid}', [AdminIndicatorController::class, 'media'
 
 Route::get('/aboutuses/media/{uuid}', [AdminAboutusController::class, 'media']);
 Route::get('/strengths/media/{uuid}', [AdminStrengthController::class, 'media']);
+Route::get('/apps/media/{uuid}', [App\Http\Controllers\Admin\AppController::class, 'media']);
 Route::get('/certifications/media/{uuid}', [AdminCertificationController::class, 'media']);
 Route::get('/partners/media/{uuid}', [AdminCertificationController::class, 'media']);
 Route::get('/ads/media/{uuid}', [AdminAdController::class, 'media'])->withoutMiddleware('throttle');
 Route::get('/stores/media/{uuid}', [AdminStoreController::class, 'media']);
+Route::get('/job-applications/media/{uuid}', [AdminJobApplicationController::class, 'media']);
+Route::get('/amenities/media/{uuid}', [AdminAmenityController::class, 'media']);
 
 Route::post('/posts/paginate', [PostController::class, 'paginate']);
 Route::post('/items/paginate', [ItemController::class, 'paginate']);
@@ -160,18 +206,55 @@ Route::post('/items/verify-stock', [ItemController::class, 'verifyStock']);
 Route::post('/items/combo-items', [ItemController::class, 'verifyCombo']);
 Route::post('/items/update-items', [ItemController::class, 'updateViews']);
 Route::post('/items/relations-items', [ItemController::class, 'relationsItems']);
-Route::post('/items/variations-items', [ItemController::class, 'variationsItems']);
+Route::post('/items/variations-items', [ItemController::class, 'variationsItems'])->withoutMiddleware('throttle');
+Route::post('/items/sizes-items', [ItemController::class, 'getSizesItems'])->withoutMiddleware('throttle');
+Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->withoutMiddleware('throttle');
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
+Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
+
+// ====================================
+// Hotel Public APIs
+// ====================================
+Route::prefix('hotels')->group(function () {
+    // Buscar habitaciones disponibles
+    Route::post('/rooms/search', [BookingController::class, 'search']);
+    
+    // Verificar disponibilidad de una habitación específica
+    Route::post('/rooms/{id}/availability', [RoomAvailabilityController::class, 'check']);
+    
+    // Obtener calendario de disponibilidad
+    Route::get('/rooms/{id}/calendar', [RoomAvailabilityController::class, 'calendar']);
+    
+    // Crear reserva (pre-venta)
+    Route::post('/bookings', [BookingController::class, 'create']);
+    
+    // Rastrear reserva por código
+    Route::get('/bookings/{code}/track', [BookingController::class, 'track']);
+});
+
+// Combos API para carrito
+Route::get('/combos-as-products', [App\Http\Controllers\Api\ComboApiController::class, 'index']);
+Route::get('/combos-as-products/{id}', [App\Http\Controllers\Api\ComboApiController::class, 'show']);
+Route::get('/items/{id}/combos', [ItemController::class, 'getItemCombos']);
 
 Route::post('/pago', [PaymentController::class, 'charge']);
+Route::post('/pago/charge-completed', [PaymentController::class, 'chargeCompleted']);
+Route::post('/pago/3ds', [PaymentController::class, 'charge3DS']);
 Route::get('/pago/{sale_id}', [PaymentController::class, 'getPaymentStatus']);
+
+// Ruta para crear orden de Culqi (habilita Yape, bancaMovil, etc.)
+Route::post('/culqi/checkout-order', [\App\Http\Controllers\CulqiController::class, 'createCheckoutOrder']);
 
 // Nuevas rutas para MercadoPago
 Route::post('/mercadopago/preference', [MercadoPagoController::class, 'createPreference']);
 Route::get('/mercadopago/success', [MercadoPagoController::class, 'handleSuccess']);
 Route::get('/mercadopago/failure', [MercadoPagoController::class, 'handleFailure']);
 Route::get('/mercadopago/pending', [MercadoPagoController::class, 'handlePending']);
+
+// Rutas para OpenPay
+Route::post('/openpay/charge', [OpenPayController::class, 'createCharge']);
+Route::post('/openpay/webhook', [OpenPayController::class, 'webhook']);
 
 Route::post('/temporaly-image', [TemporalyImageController::class, 'save'])->name('save_temporaly_image');
 Route::post('/temporaly-image/{id}', [TemporalyImageController::class, 'delete'])->name('delete_temporaly_image');
@@ -187,11 +270,14 @@ Route::post('/coupons/is-first', [CouponController::class, 'isFirst']);
 Route::post('/orders', [MercadoPagoController::class, 'getOrder']);
 
 Route::post('/sales', [SaleController::class, 'save']);
+Route::get('/sales/track/{code}', [SaleController::class, 'track']);
 
 Route::get('/person/{dni}', [PersonController::class, 'find']);
 
 // Ruta pública para aplicar reglas de descuento al carrito
 Route::post('/discount-rules/apply-to-cart', [AdminDiscountRulesController::class, 'applyToCart']);
+
+    Route::post('/blog-categories/paginate', [BlogCategoryController::class, 'paginate']);
 
 Route::middleware('auth')->group(function () {
   Route::get('/notification-variables/{type}', [NotificationVariableController::class, 'variables']);
@@ -203,8 +289,14 @@ Route::middleware('auth')->group(function () {
   Route::post('/profile', [AdminProfileController::class, 'saveProfile']);
   Route::patch('/profile', [AdminProfileController::class, 'save']);
 
+  // Ruta de exportación sin middleware de permisos
+  Route::get('/admin/sales/export-data', [AdminSaleExportController::class, 'exportData']);
+
   Route::middleware('can:Admin')->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminHomeController::class, 'dashboard']);
+    Route::post('/dashboard/visibility', [AdminHomeController::class, 'updateDashboardVisibility']);
+    Route::post('/sales/export-config', [AdminSaleController::class, 'saveExportConfig']);
+    Route::get('/sales/export-config-get', [AdminSaleController::class, 'getExportConfig']);
     Route::get('/sales/{id}', [AdminSaleController::class, 'get']);
     Route::post('/sales', [AdminSaleController::class, 'save']);
     Route::post('/sales/paginate', [AdminSaleController::class, 'paginate']);
@@ -212,16 +304,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/{field}', [AdminSaleController::class, 'boolean']);
     Route::delete('/sales/{id}', [AdminSaleController::class, 'delete']);
 
-    //Route::get('/sale-statuses/by-sale/{id}', [AdminSaleStatusController::class, 'bySale']);
+    Route::get('/sale-statuses/by-sale/{id}', [AdminSaleStatusController::class, 'bySale']);
 
     Route::post('/web-details', [AdminWebDetailController::class, 'save']);
     Route::post('/gallery', [AdminGalleryController::class, 'save']);
+    Route::post('/gallery/config', [AdminGalleryController::class, 'saveConfig']);
 
     Route::post('/items', [AdminItemController::class, 'save']);
-    Route::post('/items/paginate', [AdminItemController::class, 'paginate']);
+    Route::post('/items/paginate', [AdminItemController::class, 'paginate'])->withoutMiddleware('throttle');
     Route::patch('/items/status', [AdminItemController::class, 'status']);
     Route::patch('/items/{field}', [AdminItemController::class, 'boolean']);
     Route::delete('/items/{id}', [AdminItemController::class, 'delete']);
+    Route::get('/items/export', [AdminItemController::class, 'export']);
 
     // Cupones
     Route::post('/coupons', [AdminCouponController::class, 'save']);
@@ -273,6 +367,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/messages/{field}', [AdminMessageController::class, 'boolean']);
     Route::delete('/messages/{id}', [AdminMessageController::class, 'delete']);
 
+    Route::post('/complaints', [AdminComplaintController::class, 'save']);
+    Route::post('/complaints/paginate', [AdminComplaintController::class, 'paginate']);
+    Route::patch('/complaints/status', [AdminComplaintController::class, 'status']);
+    Route::patch('/complaints/{field}', [AdminComplaintController::class, 'boolean']);
+    Route::delete('/complaints/{id}', [AdminComplaintController::class, 'delete']);
+
+    Route::post('/whistleblowings', [AdminWhistleblowingController::class, 'save']);
+    Route::post('/whistleblowings/paginate', [AdminWhistleblowingController::class, 'paginate']);
+    Route::patch('/whistleblowings/status', [AdminWhistleblowingController::class, 'status']);
+    Route::patch('/whistleblowings/{field}', [AdminWhistleblowingController::class, 'boolean']);
+    Route::delete('/whistleblowings/{id}', [AdminWhistleblowingController::class, 'delete']);
+
     Route::post('/subscriptions/paginate', [AdminSubscriptionController::class, 'paginate']);
     Route::patch('/subscriptions/status', [AdminSubscriptionController::class, 'status']);
     Route::delete('/subscriptions/{id}', [AdminSubscriptionController::class, 'delete']);
@@ -283,17 +389,43 @@ Route::middleware('auth')->group(function () {
     Route::patch('/posts/{field}', [AdminPostController::class, 'boolean']);
     Route::delete('/posts/{id}', [AdminPostController::class, 'delete']);
 
+    Route::post('/innovations', [AdminInnovationController::class, 'save']);
+    Route::post('/innovations/paginate', [AdminInnovationController::class, 'paginate']);
+    Route::patch('/innovations/status', [AdminInnovationController::class, 'status']);
+    Route::patch('/innovations/{field}', [AdminInnovationController::class, 'boolean']);
+    Route::delete('/innovations/{id}', [AdminInnovationController::class, 'delete']);
+
+    Route::post('/services', [AdminServiceController::class, 'save']);
+    Route::post('/services/paginate', [AdminServiceController::class, 'paginate']);
+    Route::patch('/services/status', [AdminServiceController::class, 'status']);
+    Route::patch('/services/{field}', [AdminServiceController::class, 'boolean']);
+    Route::delete('/services/{id}', [AdminServiceController::class, 'delete']);
+
+    Route::post('/service-categories', [AdminServiceCategoryController::class, 'save']);
+    Route::post('/service-categories/paginate', [AdminServiceCategoryController::class, 'paginate']);
+    Route::patch('/service-categories/status', [AdminServiceCategoryController::class, 'status']);
+    Route::patch('/service-categories/{field}', [AdminServiceCategoryController::class, 'boolean']);
+    Route::delete('/service-categories/{id}', [AdminServiceCategoryController::class, 'delete']);
+
+    Route::post('/service-subcategories', [AdminServiceSubCategoryController::class, 'save']);
+    Route::post('/service-subcategories/paginate', [AdminServiceSubCategoryController::class, 'paginate']);
+    Route::patch('/service-subcategories/status', [AdminServiceSubCategoryController::class, 'status']);
+    Route::patch('/service-subcategories/{field}', [AdminServiceSubCategoryController::class, 'boolean']);
+    Route::delete('/service-subcategories/{id}', [AdminServiceSubCategoryController::class, 'delete']);
+
     Route::post('/aboutus', [AdminAboutusController::class, 'save']);
     Route::post('/aboutus/paginate', [AdminAboutusController::class, 'paginate']);
     Route::patch('/aboutus/status', [AdminAboutusController::class, 'status']);
     Route::patch('/aboutus/{field}', [AdminAboutusController::class, 'boolean']);
     Route::delete('/aboutus/{id}', [AdminAboutusController::class, 'delete']);
+    Route::put('/aboutus/{id}/reorder', [AdminAboutusController::class, 'reorder']);
 
     Route::post('/indicators', [AdminIndicatorController::class, 'save']);
     Route::post('/indicators/paginate', [AdminIndicatorController::class, 'paginate']);
     Route::patch('/indicators/status', [AdminIndicatorController::class, 'status']);
     Route::patch('/indicators/{field}', [AdminIndicatorController::class, 'boolean']);
     Route::delete('/indicators/{id}', [AdminIndicatorController::class, 'delete']);
+    Route::put('/indicators/{id}/reorder', [AdminIndicatorController::class, 'reorder']);
 
     Route::post('/faqs', [AdminFaqController::class, 'save']);
     Route::post('/faqs/paginate', [AdminFaqController::class, 'paginate']);
@@ -312,6 +444,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/sliders/paginate', [AdminSliderController::class, 'paginate']);
     Route::patch('/sliders/status', [AdminSliderController::class, 'status']);
     Route::patch('/sliders/{field}', [AdminSliderController::class, 'boolean']);
+    Route::put('/sliders/{id}/reorder', [AdminSliderController::class, 'reorder']);
     Route::delete('/sliders/{id}', [AdminSliderController::class, 'delete']);
 
     Route::post('/testimonies', [AdminTestimonyController::class, 'save']);
@@ -324,24 +457,36 @@ Route::middleware('auth')->group(function () {
     Route::post('/categories/paginate', [AdminCategoryController::class, 'paginate']);
     Route::patch('/categories/status', [AdminCategoryController::class, 'status']);
     Route::patch('/categories/{field}', [AdminCategoryController::class, 'boolean']);
+    Route::put('/categories/{id}/reorder', [AdminCategoryController::class, 'reorder']);
     Route::delete('/categories/{id}', [AdminCategoryController::class, 'delete']);
+
+
+ Route::post('/blog-categories', [AdminBlogCategoryController::class, 'save']);
+    Route::post('/blog-categories/paginate', [AdminBlogCategoryController::class, 'paginate']);
+    Route::patch('/blog-categories/status', [AdminBlogCategoryController::class, 'status']);
+    Route::patch('/blog-categories/{field}', [AdminBlogCategoryController::class, 'boolean']);
+    Route::delete('/blog-categories/{id}', [AdminBlogCategoryController::class, 'delete']);
+
 
     Route::post('/collections', [AdminCollectionController::class, 'save']);
     Route::post('/collections/paginate', [AdminCollectionController::class, 'paginate']);
     Route::patch('/collections/status', [AdminCollectionController::class, 'status']);
     Route::patch('/collections/{field}', [AdminCollectionController::class, 'boolean']);
+    Route::put('/collections/{id}/reorder', [AdminCollectionController::class, 'reorder']);
     Route::delete('/collections/{id}', [AdminCollectionController::class, 'delete']);
 
     Route::post('/subcategories', [AdminSubCategoryController::class, 'save']);
     Route::post('/subcategories/paginate', [AdminSubCategoryController::class, 'paginate']);
     Route::patch('/subcategories/status', [AdminSubCategoryController::class, 'status']);
     Route::patch('/subcategories/{field}', [AdminSubCategoryController::class, 'boolean']);
+    Route::put('/subcategories/{id}/reorder', [AdminSubCategoryController::class, 'reorder']);
     Route::delete('/subcategories/{id}', [AdminSubCategoryController::class, 'delete']);
 
     Route::post('/brands', [AdminBrandController::class, 'save']);
     Route::post('/brands/paginate', [AdminBrandController::class, 'paginate']);
     Route::patch('/brands/status', [AdminBrandController::class, 'status']);
     Route::patch('/brands/{field}', [AdminBrandController::class, 'boolean']);
+    Route::put('/brands/{id}/reorder', [AdminBrandController::class, 'reorder']);
     Route::delete('/brands/{id}', [AdminBrandController::class, 'delete']);
 
     Route::post('/prices', [AdminDeliveryPriceController::class, 'save']);
@@ -367,9 +512,19 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tags', [AdminTagController::class, 'save']);
     Route::post('/tags/paginate', [AdminTagController::class, 'paginate']);
+    Route::post('/tags/update-promotional-status', [AdminTagController::class, 'updatePromotionalStatus']);
     Route::patch('/tags/status', [AdminTagController::class, 'status']);
     Route::patch('/tags/{field}', [AdminTagController::class, 'boolean']);
+    Route::put('/tags/{id}/reorder', [AdminTagController::class, 'reorder']);
     Route::delete('/tags/{id}', [AdminTagController::class, 'delete']);
+
+    // Post Tags routes
+    Route::post('/post-tags', [AdminPostTagController::class, 'save']);
+    Route::post('/post-tags/paginate', [AdminPostTagController::class, 'paginate']);
+    Route::post('/post-tags/update-promotional-status', [AdminPostTagController::class, 'updatePromotionalStatus']);
+    Route::patch('/post-tags/status', [AdminPostTagController::class, 'status']);
+    Route::patch('/post-tags/{field}', [AdminPostTagController::class, 'boolean']);
+    Route::delete('/post-tags/{id}', [AdminPostTagController::class, 'delete']);
 
     Route::post('/delivery-zones', [AdminDeliveryZoneController::class, 'save']);
     Route::post('/delivery-zones/paginate', [AdminDeliveryZoneController::class, 'paginate']);
@@ -382,6 +537,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/strengths/status', [AdminStrengthController::class, 'status']);
     Route::patch('/strengths/{field}', [AdminStrengthController::class, 'boolean']);
     Route::delete('/strengths/{id}', [AdminStrengthController::class, 'delete']);
+
+    Route::post('/apps', [AdminAppController::class, 'save']);
+    Route::post('/apps/paginate', [AdminAppController::class, 'paginate']);
+    Route::patch('/apps/status', [AdminAppController::class, 'status']);
+    Route::patch('/apps/{field}', [AdminAppController::class, 'boolean']);
+    Route::delete('/apps/{id}', [AdminAppController::class, 'delete']);
 
     Route::post('/certifications', [AdminCertificationController::class, 'save']);
     Route::post('/certifications/paginate', [AdminCertificationController::class, 'paginate']);
@@ -401,22 +562,70 @@ Route::middleware('auth')->group(function () {
     Route::patch('/socials/{field}', [AdminSocialController::class, 'boolean']);
     Route::delete('/socials/{id}', [AdminSocialController::class, 'delete']);
 
+    // Amenities (Amenidades para habitaciones)
+    Route::post('/amenities', [AdminAmenityController::class, 'save']);
+    Route::post('/amenities/paginate', [AdminAmenityController::class, 'paginate']);
+    Route::patch('/amenities/status', [AdminAmenityController::class, 'status']);
+    Route::patch('/amenities/{field}', [AdminAmenityController::class, 'boolean']);
+    Route::delete('/amenities/{id}', [AdminAmenityController::class, 'delete']);
+
+    // Bookings (Reservas de habitaciones)
+    Route::post('/bookings', [AdminBookingController::class, 'save']);
+    Route::post('/bookings/paginate', [AdminBookingController::class, 'paginate']);
+    Route::post('/bookings/{id}/confirm', [AdminBookingController::class, 'confirm']);
+    Route::post('/bookings/{id}/complete', [AdminBookingController::class, 'complete']);
+    Route::post('/bookings/{id}/cancel', [AdminBookingController::class, 'cancel']);
+    Route::post('/bookings/{id}/no-show', [AdminBookingController::class, 'noShow']);
+    Route::delete('/bookings/{id}', [AdminBookingController::class, 'delete']);
+
+
+    //JOB APLICATIONS
+    Route::post('/job-applications', [AdminJobApplicationController::class, 'save']);
+    Route::post('/job-applications/paginate', [AdminJobApplicationController::class, 'paginate']);
+    Route::patch('/job-applications/status', [AdminJobApplicationController::class, 'status']);
+    Route::patch('/job-applications/{field}', [AdminJobApplicationController::class, 'boolean']);
+    Route::delete('/job-applications/{id}', [AdminJobApplicationController::class, 'delete']);
+
+   Route::post('/statuses', [AdminSaleStatusController::class, 'save']);
+    Route::post('/statuses/paginate', [AdminSaleStatusController::class, 'paginate']);
+    Route::patch('/statuses/status', [AdminSaleStatusController::class, 'status']);
+    Route::patch('/statuses/{field}', [AdminSaleStatusController::class, 'boolean']);
+    Route::delete('/statuses/{id}', [AdminSaleStatusController::class, 'delete']);
+
+    // Users management
+    Route::post('/users', [AdminUserController::class, 'save']);
+    Route::post('/users/paginate', [AdminUserController::class, 'paginate']);
+    Route::patch('/users/{field}', [AdminUserController::class, 'boolean']);
+    Route::delete('/users/{id}', [AdminUserController::class, 'delete']);
+
+    // Clients management
+    Route::post('/clients/paginate', [AdminClientController::class, 'paginate']);
+    Route::patch('/clients/{field}', [AdminClientController::class, 'boolean']);
+
+
+    // System routes - accessible by Admin and Root
+    Route::post('/system', [AdminSystemController::class, 'save']);
+    Route::post('/system/page', [AdminSystemController::class, 'savePage']);
+    Route::delete('/system/page/{id}', [AdminSystemController::class, 'deletePage']);
+    Route::patch('/system/order', [AdminSystemController::class, 'updateOrder']);
+    Route::delete('/system/{id}', [AdminSystemController::class, 'delete']);
+    Route::get('/system/related/{model}/{method}', [AdminSystemController::class, 'getRelatedFilter']);
+
+    // Root-only routes - sensitive operations
     Route::middleware(['can:Root'])->group(function () {
-      Route::post('/system', [AdminSystemController::class, 'save']);
-      Route::post('/system/page', [AdminSystemController::class, 'savePage']);
-      Route::delete('/system/page/{id}', [AdminSystemController::class, 'deletePage']);
-      Route::patch('/system/order', [AdminSystemController::class, 'updateOrder']);
-      Route::delete('/system/{id}', [AdminSystemController::class, 'delete']);
+      Route::post('/fillable/{model}', [FillableController::class, 'save']);
 
       Route::get('/system/backup', [AdminSystemController::class, 'exportBK']);
       Route::post('/system/backup', [AdminSystemController::class, 'importBK']);
 
       Route::post('/colors', [AdminSystemColorController::class, 'save']);
 
+      Route::post('/role-has-menus', [RoleHasMenuController::class, 'save']);
+
+  Route::post('/boolean-limits', [AdminGeneralController::class, 'saveBooleanLimits']);
+
       Route::get('/system/fetch-remote-changes', [AdminSystemController::class, 'fetchRemoteChanges']);
       Route::get('/system/has-remote-changes', [AdminSystemController::class, 'hasRemoteChanges']);
-
-      Route::get('/system/related/{model}/{method}', [AdminSystemController::class, 'getRelatedFilter']);
     });
 
     Route::post('/repository', [AdminRepositoryController::class, 'save']);
@@ -430,6 +639,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/generals', [AdminGeneralController::class, 'save']);
     Route::post('/generals/paginate', [AdminGeneralController::class, 'paginate']);
+    Route::post('/generals/visibility', [AdminGeneralController::class, 'updateVisibility']);
     Route::patch('/generals/status', [AdminGeneralController::class, 'status']);
     Route::patch('/generals/{field}', [AdminGeneralController::class, 'boolean']);
     Route::delete('/generals/{id}', [AdminGeneralController::class, 'delete']);
@@ -449,4 +659,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/{field}', [CustomerSaleController::class, 'boolean']);
     Route::delete('/sales/{id}', [CustomerSaleController::class, 'delete']);
   });
+});
+
+// TEST: Verificar claves RSA de Culqi (ELIMINAR EN PRODUCCIÓN)
+Route::get('/test-culqi-keys', function () {
+    return response()->json([
+        'public_key' => \App\Helpers\CulqiConfig::getPublicKey(),
+        'rsa_id' => \App\Helpers\CulqiConfig::getRsaId(),
+        'rsa_public_key' => \App\Helpers\CulqiConfig::getRsaPublicKey(),
+        'rsa_public_key_length' => strlen(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? ''),
+        'has_newlines' => strpos(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? '', "\n") !== false,
+    ]);
 });

@@ -18,10 +18,20 @@ class Message extends Model
         'name',
         'phone',
         'email',
+        'company',
+        'ruc',
         'subject',
+        'category',
+        'subcategory',
+        'machinery',
         'description',
         'seen',
         'status',
+    ];
+    protected $casts = [
+        'seen'=>'boolean',
+      
+        'status' => 'boolean',
     ];
     /**
      * Route notifications for the mail channel.

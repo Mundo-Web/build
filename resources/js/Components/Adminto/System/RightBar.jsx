@@ -185,19 +185,53 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
         <div className='d-flex flex-column gap-1'>
           {
             colors.map((color, index) => {
-              return <div className="input-group input-group-sm" key={index}>
-                <span className="input-group-text px-1" >
-                  <input type="color" name='description' data-color-id={color.id} className='p-0' style={{
-                    width: '20px',
-                    height: '20px',
-                    border: '1px solid #ced4da',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }} defaultValue={color.description} onBlur={onColorChange} />
-                </span>
-                <input type="text" name='name' data-color-id={color.id} className={`form-control form-control-sm`} placeholder="Color" defaultValue={color.name} onBlur={onColorChange} disabled={color.name == 'primary'} style={{
-                  cursor: color.name == 'primary' ? 'not-allowed' : 'text'
-                }} />
+              const isGradient = color.description?.startsWith('linear-gradient') || color.description?.startsWith('radial-gradient');
+              return <div key={index}>
+                <div className="input-group input-group-sm">
+                  {!isGradient && (
+                    <span className="input-group-text px-1" >
+                      <input type="color" name='description' data-color-id={color.id} className='p-0' style={{
+                        width: '20px',
+                        height: '20px',
+                        border: '1px solid #ced4da',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }} defaultValue={color.description} onBlur={onColorChange} />
+                    </span>
+                  )}
+                  <input type="text" name='name' data-color-id={color.id} className={`form-control form-control-sm`} placeholder="Color" defaultValue={color.name} onBlur={onColorChange} disabled={color.name == 'primary'} style={{
+                    cursor: color.name == 'primary' ? 'not-allowed' : 'text'
+                  }} />
+                </div>
+                {isGradient ? (
+                  <textarea 
+                    name='description' 
+                    data-color-id={color.id} 
+                    className='form-control form-control-sm mt-1' 
+                    placeholder='Gradiente: linear-gradient(...)' 
+                    defaultValue={color.description || ''} 
+                    onBlur={onColorChange}
+                    rows={2}
+                    style={{
+                      fontSize: '11px',
+                      minHeight: 27,
+                      fieldSizing: 'content'
+                    }}
+                  />
+                ) : (
+                  <input 
+                    type="text" 
+                    name='description' 
+                    data-color-id={color.id} 
+                    className='form-control form-control-sm mt-1' 
+                    placeholder='Hex color' 
+                    defaultValue={color.description} 
+                    onBlur={onColorChange}
+                    style={{
+                      fontSize: '11px'
+                    }}
+                  />
+                )}
               </div>
             })
           }

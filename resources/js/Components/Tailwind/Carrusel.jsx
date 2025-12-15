@@ -3,6 +3,9 @@ import React from "react";
 const CarruselBenefitsInifinite = React.lazy(() =>
     import("./Carrusel/CarruselBenefitsInifinite")
 );
+const CarruselBenefitsInifinite2dn1 = React.lazy(() =>
+    import("./Carrusel/CarruselBenefitsInifinite2dn1")
+);
 const CarruselBenefitsPaani = React.lazy(() =>
     import("./Carrusel/CarruselBenefitsPaani")
 );
@@ -15,12 +18,17 @@ const CarruselBananaLab = React.lazy(() =>
 const CarruselBenefitsSwiper = React.lazy(() =>
     import("./Carrusel/CarruselBenefitsSwiper")
 );
+const CarruselBenefitsMultivet = React.lazy(() =>
+    import("./Carrusel/CarruselBenefitsMultivet")
+);
 const Carrusel = ({ which, data, items }) => {
     const getCarrusel = () => {
         switch (which) {
             case "CarruselBenefitsInifinite":
                 return <CarruselBenefitsInifinite data={data} items={items} />;
-                  case "CarruselBenefitsPaani":
+            case "CarruselBenefitsInifinite2dn1":
+                return <CarruselBenefitsInifinite2dn1 data={data} items={items} />;
+            case "CarruselBenefitsPaani":
                 return <CarruselBenefitsPaani data={data} items={items} />;
             case "CarruselBenefitsSimple":
                 return <CarruselBenefitsSimple data={data} items={items} />;
@@ -28,6 +36,8 @@ const Carrusel = ({ which, data, items }) => {
                 return <CarruselBananaLab data={data} items={items} />;
             case "CarruselBenefitsSwiper":
                 return <CarruselBenefitsSwiper data={data} items={items} />;
+            case "CarruselBenefitsMultivet":
+                return <CarruselBenefitsMultivet data={data} items={items} />;
 
             default:
                 return (

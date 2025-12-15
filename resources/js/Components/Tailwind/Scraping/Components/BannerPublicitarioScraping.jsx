@@ -4,7 +4,7 @@ import { Tag } from "lucide-react";
 const BannerPublicitarioScraping = ({ data }) => {
 
     return (
-        <div className=" px-primary mx-auto py-16 font-font-general">
+        <div className=" px-primary mx-auto py-16 font-paragraph">
             <div className=" flex  justify-between gap-8  w-full  rounded-3xl h-[500px] bg-secondary ">
                 <div className="relative w-6/12">
                     <div className="h-full relative  overflow-hidden ">

@@ -1,21 +1,32 @@
-import React from "react";
+import React from 'react';
+import { resolveSystemAsset } from './bannerUtils';
 
 const BannerFullWidth = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
+    const imageUrl = resolveSystemAsset(data?.image);
     return (
         <section
-            className="bg-gray-50"
+            className="bg-gray-50 overflow-hidden max-h-max relative"
             style={{
-                backgroundImage: `url('/storage/images/system/${data?.background}')`,
+                backgroundImage: `url('${backgroundUrl}')`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
             }}
         >
-            <div className="px-[5%] replace-max-w-here w-full mx-auto py-[5%] md:py-[2.5%]">
+            <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
+
+            <div className="px-[5%] 2xl:px-0 2xl:max-w-7xl w-full mx-auto py-[5%] md:py-[2.5%] relative z-20">
                 <div className="grid grid-cols-2 aspect-[3/1]">
                     <div className="w-full flex flex-col items-start justify-center">
-                        <h1 className="text-6xl text-white font-bold mb-6">
-                            {data?.name}
+                        <h1 className="text-6xl text-white font-bold mb-6 whitespace-pre-line">
+                            {data?.name?.split('*').map((part, index) => 
+                                index % 2 === 0 ? (
+                                    <span key={index}>{part}</span>
+                                ) : (
+                                    <span key={index} className="customtext-primary">{part}</span>
+                                )
+                            )}
                         </h1>
                         <p className="text-white mb-4">{data?.description}</p>
                         {data?.button_link && data?.button_text && (
@@ -29,9 +40,9 @@ const BannerFullWidth = ({ data }) => {
                         )}
                     </div>
                     <div className="flex items-center justify-center">
-                        {data?.image && (
+                        {imageUrl && (
                             <img
-                                src={`/storage/images/system/${data?.image}`}
+                                src={imageUrl}
                                 className="w-full aspect-auto object-contain object-bottom"
                                 alt=""
                             />

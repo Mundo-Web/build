@@ -1,19 +1,18 @@
 .swiper-pagination-bullet {
     opacity: 1 !important;
     background: transparent !important;
-}
-
-.swiper-pagination-bullet-active div {
+  }
+  
+  .swiper-pagination-bullet-active div {
     position: relative;
-    background-color: #310619 !important;
-    border: 1px solid #310619!important;
+    background-color: #879d1f !important;
+    border: 1px solid #879d1f!important;
     padding: 2px!important;
-    /* transform: scale(1); */
-}
-
-.swiper-pagination-bullet-active div::after {
+  }
+  
+  .swiper-pagination-bullet-active div::after {
     content: '';
-    border: 1px solid #310619!important;
+    border: 1px solid #879d1f!important;
     top: 50%;
     left: 50%;
     position: absolute;
@@ -24,4 +23,4 @@
     height: 22px;
     display: block;
     border-radius: 50%;
-}
+  }

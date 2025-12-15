@@ -37,7 +37,7 @@ const Register = ({ PUBLIC_RSA_KEY, RECAPTCHA_SITE_KEY, token, terms = 'Terminos
 
   useEffect(() => {
     setLoading(false)
-  }, [null])
+  }, [])
 
   const onRegisterSubmit = async (e) => {
     e.preventDefault()

@@ -54,13 +54,13 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
     emailRef.current.value = null;
   };
   return (
-    <footer className="bg-primary text-white py-12 !font-font-general text-sm px-[5%]">
+    <footer className="bg-primary text-white py-12 !font-paragraph text-sm px-[5%]">
       <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5">
 
         {/* Logo Column */}
         <div className="max-w-xs">
           <div className="h-14 ">
-            <img src="/assets/resources/logo.png" alt="Sala Fabulosa"
+            <img src="/assets/resources/logo-footer.png" alt="Sala Fabulosa"
               className=" object-cover  h-14 w-auto" onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/assets/img/logo-bk.svg';
@@ -200,7 +200,7 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
                 <input ref={emailRef} type="email" placeholder="Ingresa tu e-mail"
                   className="w-full bg-transparent text-white font-medium py-4 pl-2 border-2 border-white rounded-xl focus:ring-0 focus:outline-none placeholder:text-white placeholder:opacity-65" />
                 <button
-                  className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-secondary customtext-neutral-light rounded-lg"
+                  className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-secondary customtext-neutral-dark rounded-lg"
                   aria-label="Suscribite">
                   Suscribirme
                 </button>
@@ -215,7 +215,7 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts }) => {
             <ul className="flex text-white gap-2">
               {socials.map((social, index) => (
                 <Tippy key={index} content={`Ver ${social.name} en ${social.description}`}>
-                  <a href={social.link} className={`text-base flex bg-white customtext-primary ${social.icon} w-8
+                  <a href={social.link} target="_blank" rel="noopener noreferrer" className={`text-base flex bg-white customtext-primary ${social.icon} w-8
                             h-8 pt-0.5 items-center justify-center rounded-full`} />
                 </Tippy>
               ))}

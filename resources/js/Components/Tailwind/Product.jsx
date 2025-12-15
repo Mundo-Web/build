@@ -4,14 +4,20 @@ const ProductCarousel = React.lazy(() => import("./Products/ProductCarousel"));
 const ProductList = React.lazy(() => import("./Products/ProductList"));
 const ProductSlider = React.lazy(() => import("./Products/ProductSlider"));
 const ProductInfinite = React.lazy(() => import("./Products/ProductInfinite"));
+const ProductIbergruas = React.lazy(() => import("./Products/ProductIbergruas"));
 const ProductNavigation = React.lazy(() => import("./Products/ProductNavigation"));
 const ProductNavigationSwiper = React.lazy(() => import("./Products/ProductNavigationSwiper"));
 const ProductNavigationSwiperSimple = React.lazy(() => import("./Products/ProductNavigationSwiperSimple"));
 const ProductNavigationSwiperPaani = React.lazy(() => import("./Products/ProductNavigationSwiperPaani"));
 const ProductFeaturedSwiper = React.lazy(() => import("./Products/ProductFeaturedSwiper"));
+const ProductFeaturedVerticalSlider = React.lazy(() => import("./Products/ProductFeaturedVerticalSlider"));
 const ProductBananaLab = React.lazy(() => import("./Products/ProductBananaLab"));
 const ScrapingSimple = React.lazy(() => import("./Scraping/ScrapingSimple"));
 const ProductMakita = React.lazy(() => import("./Products/ProductMakita"));
+const ProductMultivet = React.lazy(() => import("./Products/ProductMultivet"));
+const ProductInfiniteSlider = React.lazy(() => import("./Products/ProductInfiniteSlider"));
+const ProductIbergruasSwiper = React.lazy(() => import("./Products/ProductIbergruasSwiper"));
+const ProductLaPetaca = React.lazy(() => import("./Products/ProductLaPetaca"));
 
 const Product = ({
     which,
@@ -57,6 +63,15 @@ const Product = ({
             case "ProductInfinite":
                 return (
                     <ProductInfinite
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductIbergruas":
+                return (
+                    <ProductIbergruas
                         data={data}
                         items={items}
                         cart={cart}
@@ -109,6 +124,15 @@ const Product = ({
                         contacts={contacts}
                     />
                 );
+            case "ProductFeaturedVerticalSlider":
+                return (
+                    <ProductFeaturedVerticalSlider
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
             case "ProductBananaLab":
                 return (
                     <ProductBananaLab
@@ -116,7 +140,7 @@ const Product = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
-                        favorites={favorites}   
+                        favorites={favorites}
                         setFavorites={setFavorites}
                     />
                 );
@@ -134,6 +158,42 @@ const Product = ({
             case "ProductMakita":
                 return (
                     <ProductMakita
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductMultivet":
+                return (
+                    <ProductMultivet
+                        data={data}
+                        items={items}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
+                    />
+                );
+            case "ProductInfiniteSlider":
+                return (
+                    <ProductInfiniteSlider
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductIbergruasSwiper":
+                return (
+                    <ProductIbergruasSwiper
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductLaPetaca":
+                return (
+                    <ProductLaPetaca
                         data={data}
                         items={items}
                         cart={cart}

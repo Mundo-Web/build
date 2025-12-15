@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { CurrencySymbol } from '../Utils/Number2Currency';
 
 const API_BASE_URL = '/api';
 
@@ -35,7 +36,9 @@ export default class DiscountRulesRest {
                         quantity: parseInt(item.quantity) || 1,
                         price: parseFloat(item.price || item.final_price || 0),
                         name: String(item.name || item.description || 'Producto sin nombre'),
-                        category_id: item.category_id ? String(item.category_id) : null // Keep as string for UUID
+                        category_id: item.category_id ? String(item.category_id) : null, // Keep as string for UUID
+                        type: item.type || 'item', // Preservar tipo para combos
+                        combo_id: item.type === 'combo' ? item.id : null // ID del combo si es combo
                     };
                     
                     // Debug: Log cada item procesado
@@ -103,7 +106,7 @@ export default class DiscountRulesRest {
             free_items: discount.free_items || [],
             formatted_amount: discount.discount_type === 'percentage' 
                 ? `${discount.discount_amount}%` 
-                : `S/ ${parseFloat(discount.discount_amount || 0).toFixed(2)}`
+                : `${CurrencySymbol()} ${parseFloat(discount.discount_amount || 0).toFixed(2)}`
         }));
     }
 

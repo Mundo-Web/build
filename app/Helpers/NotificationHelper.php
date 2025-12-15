@@ -6,9 +6,13 @@ use App\Models\General;
 use App\Notifications\AdminPurchaseNotification;
 use App\Notifications\AdminContactNotification;
 use App\Notifications\AdminClaimNotification;
+use App\Notifications\AdminJobApplicationNotification;
+use App\Notifications\AdminWhistleblowingNotification;
 use App\Notifications\PurchaseSummaryNotification;
 use App\Notifications\MessageContactNotification;
+use App\Notifications\JobApplicationNotification;
 use App\Notifications\ClaimNotification;
+use App\Notifications\WhistleblowingNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
@@ -177,12 +181,26 @@ class NotificationHelper
                 
                 return new AdminContactNotification($message);
                 
+            } elseif ($originalNotification instanceof JobApplicationNotification) {
+                $jobApplicationProperty = $reflection->getProperty('jobApplication');
+                $jobApplicationProperty->setAccessible(true);
+                $jobApplication = $jobApplicationProperty->getValue($originalNotification);
+                
+                return new AdminJobApplicationNotification($jobApplication);
+                
             } elseif ($originalNotification instanceof ClaimNotification) {
                 $complaintProperty = $reflection->getProperty('complaint');
                 $complaintProperty->setAccessible(true);
                 $complaint = $complaintProperty->getValue($originalNotification);
                 
                 return new AdminClaimNotification($complaint);
+                
+            } elseif ($originalNotification instanceof WhistleblowingNotification) {
+                $whistleblowingProperty = $reflection->getProperty('whistleblowing');
+                $whistleblowingProperty->setAccessible(true);
+                $whistleblowing = $whistleblowingProperty->getValue($originalNotification);
+                
+                return new AdminWhistleblowingNotification($whistleblowing);
             }
             
             return null;

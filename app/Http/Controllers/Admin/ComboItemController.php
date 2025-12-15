@@ -41,7 +41,7 @@ class ComboItemController extends BasicController
                         'item_id' => $item['item_id'],
                     ],
                     [
-                        'is_main_item' => $item['is_main_item'],
+                        'is_main_item' => (bool) ($item['is_main_item'] ?? 0), // Convertir explícitamente a boolean
                     ]
                 );
             }

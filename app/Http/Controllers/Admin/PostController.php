@@ -49,7 +49,10 @@ class PostController extends BasicController
                     $tagId = $tag;
                 } else {
                     // Es un nuevo tag
-                    $tagJpa = Tag::firstOrCreate(['name' => $tag]);
+                    $tagJpa = Tag::firstOrCreate(
+                        ['name' => $tag, 'tag_type' => 'post'],
+                        ['tag_type' => 'post']
+                    );
                     $tagId = $tagJpa->id;
                 }
 

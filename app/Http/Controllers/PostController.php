@@ -16,7 +16,7 @@ class PostController extends BasicController
     {
         return $model::select(['posts.*'])
             ->with(['category'])
-            ->join('categories AS category', 'category.id', 'posts.category_id')
+            ->join('blog_categories AS category', 'category.id', 'posts.category_id')
             ->where('posts.status', true)
             ->where('category.status', true);
     }

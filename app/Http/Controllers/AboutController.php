@@ -20,12 +20,16 @@ class AboutController extends BasicController
         $aboutus = Aboutus::all();
         $strengths = Strength::where('status', true)->where('visible', true)->get();
         $details = WebDetail::whereIn('page', ['about', 'testimonies', 'values'])->get();
+        
+        // Get all generals including SEO data
+        $generals = General::where('status', true)->get()->keyBy('correlative');
 
         return [
             'testimonies' => $testimonies,
             'aboutus' => $aboutus,
             'strengths' => $strengths,
             'details' => $details,
+            'generals' => $generals,
         ];
     }
 }

@@ -38,7 +38,7 @@ const Strengths = ({ details }) => {
     descriptionRef.current.value = data?.description ?? ''
 
     imageRef.current.value = null
-    imageRef.image.src = `/storage/images/strength/${data?.image ?? 'undefined'}`
+    imageRef.image.src = data?.image ? `/storage/images/strength/${data.image}` : ''
 
     $(modalRef.current).modal('show')
   }
@@ -61,10 +61,16 @@ const Strengths = ({ details }) => {
     if (image) {
       formData.append('image', image)
     }
+   
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
 
     const result = await strengthsRest.save(formData)
     if (!result) return
 
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
   }
@@ -172,7 +178,7 @@ const Strengths = ({ details }) => {
         <input ref={idRef} type='hidden' />
         <InputFormGroup eRef={nameRef} label='Fortaleza' col='col-12' required />
         <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
-        <ImageFormGroup eRef={imageRef} label='Imagen' col='col-12' rows={3} />
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-12' rows={3} />
       </div>
     </Modal>
   </>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import AsyncSelect from "react-select/async";
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import DeliveryPricesRest from "../../../../Actions/DeliveryPricesRest";
 import CouponsRest from "../../../../Actions/CouponsRest";
 import { processCulqiPayment } from "../../../../Actions/culqiPayment";
@@ -16,8 +16,10 @@ import { Notify } from "sode-extend-react";
 import { debounce } from "lodash";
 import { toast } from "sonner";
 import Global from "../../../../Utils/Global";
+import Tippy from "@tippyjs/react";
 
 export default function ShippingStep({
+    data,
     cart,
     setSale,
     setCode,
@@ -27,167 +29,39 @@ export default function ShippingStep({
     noContinue,
     subTotal,
     igv,
+    fleteTotal,
+    seguroImportacionTotal,
+    derechoArancelarioTotal,
     totalFinal,
     user,
     setEnvio,
     envio,
     ubigeos = [],
     openModal,
+    categorias,
     setCouponDiscount: setParentCouponDiscount,
     setCouponCode: setParentCouponCode,
-    automaticDiscounts = [], // Se usará como reglas, no como descuentos ya calculados
-    automaticDiscountTotal = 0,
+    automaticDiscounts = [], // Descuentos del padre
+    automaticDiscountTotal = 0, // Total de descuentos del padre
+    setAutomaticDiscounts, // Función para actualizar descuentos en el padre
+    setAutomaticDiscountTotal, // Función para actualizar total en el padre
     totalWithoutDiscounts,
     conversionScripts,
     setConversionScripts,
     onPurchaseComplete,
+    generals
 }) {
     const [selectedUbigeo, setSelectedUbigeo] = useState(null);
     const [defaultUbigeoOption, setDefaultUbigeoOption] = useState(null);
     
-
-    // Estados para los descuentos automáticos calculados
-    const [autoDiscounts, setAutoDiscounts] = useState([]);
-    const [autoDiscountTotal, setAutoDiscountTotal] = useState(0);
-
-    // Get free items from automatic discounts calculados
-    const freeItems = autoDiscounts.reduce((items, discount) => {
+    // Get free items from automatic discounts del padre
+    const freeItems = automaticDiscounts.reduce((items, discount) => {
         if (discount.free_items && Array.isArray(discount.free_items)) {
             return [...items, ...discount.free_items];
         }
         return items;
     }, []);
 
-    // Función para calcular todos los descuentos automáticos
-    const calculateAutomaticDiscounts = (cart, rules) => {
-        let discounts = [];
-        let totalDiscount = 0;
-
-        for (const rule of rules) {
-            switch (rule.type) {
-                case 'buy_x_get_y': {
-                    // Ejemplo: compra 2 lleva 1 gratis
-                    cart.forEach(item => {
-                        if (rule.product_ids?.includes(item.id)) {
-                            const sets = Math.floor(item.quantity / (rule.buy + rule.get));
-                            if (sets > 0 && rule.get > 0) {
-                                const freeQty = sets * rule.get;
-                                const discount = freeQty * item.final_price;
-                                discounts.push({
-                                    name: rule.name,
-                                    amount: discount,
-                                    description: rule.description,
-                                    free_items: [{ ...item, quantity: freeQty }],
-                                });
-                                totalDiscount += discount;
-                            }
-                        }
-                    });
-                    break;
-                }
-                case 'quantity_discount': {
-                    // Ejemplo: 2x1, 3x2 (paga menos por comprar más)
-                    cart.forEach(item => {
-                        if (rule.product_ids?.includes(item.id)) {
-                            const sets = Math.floor(item.quantity / rule.buy);
-                            if (sets > 0 && rule.pay < rule.buy) {
-                                const discount = sets * (rule.buy - rule.pay) * item.final_price;
-                                discounts.push({
-                                    name: rule.name,
-                                    amount: discount,
-                                    description: rule.description,
-                                });
-                                totalDiscount += discount;
-                            }
-                        }
-                    });
-                    break;
-                }
-                case 'tiered_discount': {
-                    // Ejemplo: compra 5 lleva 6 (1 gratis por cada 5)
-                    cart.forEach(item => {
-                        if (rule.product_ids?.includes(item.id)) {
-                            const sets = Math.floor(item.quantity / rule.tier);
-                            if (sets > 0 && rule.free > 0) {
-                                const freeQty = sets * rule.free;
-                                const discount = freeQty * item.final_price;
-                                discounts.push({
-                                    name: rule.name,
-                                    amount: discount,
-                                    description: rule.description,
-                                    free_items: [{ ...item, quantity: freeQty }],
-                                });
-                                totalDiscount += discount;
-                            }
-                        }
-                    });
-                    break;
-                }
-                case 'category_discount': {
-                    // Descuento por categoría
-                    cart.forEach(item => {
-                        if (rule.category_ids?.includes(item.category_id)) {
-                            const discount = item.final_price * item.quantity * (rule.percent / 100);
-                            if (discount > 0) {
-                                discounts.push({
-                                    name: rule.name,
-                                    amount: discount,
-                                    description: rule.description,
-                                });
-                                totalDiscount += discount;
-                            }
-                        }
-                    });
-                    break;
-                }
-                case 'cart_discount': {
-                    // Descuento por total del carrito
-                    const cartTotal = cart.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
-                    if (cartTotal >= (rule.min_total || 0)) {
-                        const discount = rule.percent ? cartTotal * (rule.percent / 100) : (rule.amount || 0);
-                        if (discount > 0) {
-                            discounts.push({
-                                name: rule.name,
-                                amount: discount,
-                                description: rule.description,
-                            });
-                            totalDiscount += discount;
-                        }
-                    }
-                    break;
-                }
-                case 'bundle_discount': {
-                    // Descuento por paquete/combo
-                    const hasAll = rule.product_ids?.every(pid => cart.some(item => item.id === pid));
-                    if (hasAll && rule.amount > 0) {
-                        discounts.push({
-                            name: rule.name,
-                            amount: rule.amount,
-                            description: rule.description,
-                        });
-                        totalDiscount += rule.amount;
-                    }
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-        return { discounts, totalDiscount };
-    };
-
-    // Recalcular descuentos automáticos cuando cambie el carrito o las reglas
-    useEffect(() => {
-        if (automaticDiscounts && Array.isArray(automaticDiscounts) && automaticDiscounts.length > 0) {
-            const { discounts, totalDiscount } = calculateAutomaticDiscounts(cart, automaticDiscounts);
-            setAutoDiscounts(discounts);
-            setAutoDiscountTotal(totalDiscount);
-        } else {
-            setAutoDiscounts([]);
-            setAutoDiscountTotal(0);
-        }
-    }, [cart, automaticDiscounts]);
-    
     // Tipos de documentos como en ComplaintStech
     const typesDocument = [
         { value: "dni", label: "DNI" },
@@ -213,20 +87,59 @@ export default function ShippingStep({
         ubigeo: user?.ubigeo || null,    });
    
     useEffect(() => {
-        if (user?.ubigeo && user?.district && user?.province && user?.department) {
-          const defaultOption = {
-            value: user.ubigeo,
-            label: `${user.district}, ${user.province}, ${user.department}`,
-            data: {
-              reniec: user.ubigeo,
-              departamento: user.department,
-              provincia: user.province,
-              distrito: user.district
+       
+        
+        if (user?.ubigeo) {
+            // Si tiene ubigeo pero no tiene los campos de texto, buscarlos
+            if (!user?.district || !user?.province || !user?.department) {
+                
+                // Buscar la ubicación usando el ubigeo
+                fetch(`/api/ubigeo/find/${user.ubigeo}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.distrito) {
+                            const defaultOption = {
+                                value: user.ubigeo,
+                                label: `${data.distrito}, ${data.provincia}, ${data.departamento}`,
+                                data: {
+                                    reniec: user.ubigeo,
+                                    departamento: data.departamento,
+                                    provincia: data.provincia,
+                                    distrito: data.distrito
+                                }
+                            };
+                            
+                            
+                            setDefaultUbigeoOption(defaultOption);
+                            setSelectedUbigeo(defaultOption);
+                            handleUbigeoChange(defaultOption);
+                        } else {
+                            console.log('❌ ShippingStep - No se encontró ubicación para ubigeo:', user.ubigeo);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ ShippingStep - Error al buscar ubicación:', error);
+                    });
+            } else {
+                // Si tiene todos los datos, usarlos directamente
+                const defaultOption = {
+                    value: user.ubigeo,
+                    label: `${user.district}, ${user.province}, ${user.department}`,
+                    data: {
+                        reniec: user.ubigeo,
+                        departamento: user.department,
+                        provincia: user.province,
+                        distrito: user.district
+                    }
+                };
+                
+                
+                setDefaultUbigeoOption(defaultOption);
+                setSelectedUbigeo(defaultOption);
+                handleUbigeoChange(defaultOption);
             }
-          };
-          setDefaultUbigeoOption(defaultOption);
-          setSelectedUbigeo(defaultOption); // Actualiza el estado del ubigeo seleccionado
-          handleUbigeoChange(defaultOption);
+        } else {
+            console.log('❌ ShippingStep - Usuario sin ubigeo registrado');
         }
     }, [user]);
 
@@ -531,39 +444,19 @@ export default function ShippingStep({
         try {
             // Calcular el total del carrito para la lógica condicional
             const cartTotal = cart.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
-            
-            console.log('🛒 ShippingStep - Cart total calculado:', cartTotal);
-            console.log('🛒 ShippingStep - Cart items:', cart.map(item => ({
-                name: item.name,
-                price: item.final_price,
-                quantity: item.quantity,
-                total: item.final_price * item.quantity
-            })));
-            console.log('💰 ShippingStep - Comparación de totales:');
-            console.log('   - Cart total (solo productos):', cartTotal);
-            console.log('   - SubTotal prop:', subTotal);
-            console.log('   - IGV prop:', igv);
-            console.log('   - Total con IGV:', subTotal + igv);
-            console.log('   - Total final prop:', totalFinal);
+           
             
             const response = await DeliveryPricesRest.getShippingCost({
                 ubigeo: data.reniec,
                 cart_total: cartTotal, // Enviar el total del carrito
             });
 
-            console.log('📦 ShippingStep - Respuesta del backend:', response.data);
-            console.log('✅ ShippingStep - Califica para envío gratis?', response.data.qualifies_free_shipping);
-            console.log('💰 ShippingStep - Umbral requerido:', response.data.free_shipping_threshold);
-            console.log('🔍 ShippingStep - is_free:', response.data.is_free);
-            console.log('🔍 ShippingStep - Descripción standard:', response.data.standard?.description);
-            console.log('🔍 ShippingStep - Tipo standard:', response.data.standard?.type);
-
+         
             const options = [];
             let hasStorePickup = false;
 
             // 1. ENVÍO GRATIS: SOLO para zonas con is_free=true Y que califiquen por monto
             if (response.data.is_free && response.data.qualifies_free_shipping) {
-                console.log('✅ ShippingStep - Es zona is_free=true Y califica por monto - Agregando envío GRATIS');
                 options.push({
                     type: "free",
                     price: 0,
@@ -577,7 +470,6 @@ export default function ShippingStep({
             if (response.data.standard) {
                 // Solo agregar envío normal si NO es zona gratis que califica, o si es zona gratis que NO califica
                 if (!response.data.is_free || (response.data.is_free && !response.data.qualifies_free_shipping)) {
-                    console.log('📦 ShippingStep - Agregando envío NORMAL');
                     
                     // Limpiar cualquier mención de "envío gratis" en la descripción si NO es zona is_free
                     let cleanDescription = response.data.standard.description;
@@ -610,7 +502,6 @@ export default function ShippingStep({
 
             // 3. ENVÍO EXPRESS: Si existe express, siempre agregarlo
             if (response.data.express && response.data.express.price > 0) {
-                console.log('⚡ ShippingStep - Agregando envío EXPRESS');
                 options.push({
                     type: "express",
                     price: response.data.express.price,
@@ -622,7 +513,6 @@ export default function ShippingStep({
 
             // 4. ENVÍO AGENCIA: Si existe agency, agregarlo
             if (response.data.is_agency && response.data.agency) {
-                console.log('🏢 ShippingStep - Agregando envío por AGENCIA');
                 options.push({
                     type: "agency",
                     price: response.data.agency.price || 0,
@@ -634,7 +524,6 @@ export default function ShippingStep({
 
             // 5. RETIRO EN TIENDA: Si está disponible, marcar para agregar después
             if (response.data.is_store_pickup) {
-                console.log('🏪 ShippingStep - Retiro en tienda disponible');
                 hasStorePickup = true;
             }
 
@@ -674,8 +563,6 @@ export default function ShippingStep({
             setEnvio(options[0]?.price || 0);
             setExpandedCharacteristics(false); // Reset expansion state when location changes
             
-            console.log('📋 ShippingStep - Opciones finales de envío:', options);
-            console.log('🚚 ShippingStep - Precio de envío seleccionado:', options[0]?.price || 0);
         } catch (error) {
             //console.error("Error al obtener precios de envío:", error);
             toast.error("Sin cobertura", {
@@ -759,6 +646,29 @@ export default function ShippingStep({
         setPaymentLoading(true);
 
         try {
+            // ✅ Verificar que Culqi esté habilitado antes de procesar el pago
+            if (!Global.CULQI_ENABLED) {
+                toast.error("Método de pago no disponible", {
+                    description: "El procesamiento de pagos con tarjeta está temporalmente deshabilitado",
+                    icon: <XCircle className="h-5 w-5 text-red-500" />,
+                    duration: 4000,
+                    position: "top-center",
+                });
+                setPaymentLoading(false);
+                return;
+            }
+
+            if (!Global.CULQI_PUBLIC_KEY) {
+                toast.error("Error de configuración", {
+                    description: "El sistema de pagos no está configurado correctamente",
+                    icon: <XCircle className="h-5 w-5 text-red-500" />,
+                    duration: 4000,
+                    position: "top-center",
+                });
+                setPaymentLoading(false);
+                return;
+            }
+
             const request = {
                 user_id: user.id,
                 ...formData,
@@ -767,6 +677,10 @@ export default function ShippingStep({
                 document_type: formData.documentType, // Cambiar a document_type para que coincida con lo que espera el backend
                 amount: roundToTwoDecimals(finalTotalWithCoupon),
                 delivery: roundToTwoDecimals(envio),
+                // Campos de importación
+                seguro_importacion_total: roundToTwoDecimals(seguroImportacionTotal || 0),
+                derecho_arancelario_total: roundToTwoDecimals(derechoArancelarioTotal || 0),
+                flete_total: roundToTwoDecimals(fleteTotal || 0),
                 delivery_type: selectedOption, // Agregar tipo de entrega
                 store_id: selectedOption === "store_pickup" ? selectedStore?.id : null, // ID de tienda si es retiro en tienda
                 cart: cart,
@@ -779,17 +693,12 @@ export default function ShippingStep({
                 promotion_discount: roundToTwoDecimals(automaticDiscountTotal || 0),
             };
 
-            console.log("📦 Request completo a enviar:", request);
-            console.log("💰 Monto final con cupón:", finalTotalWithCoupon);
-            console.log("🎟️ Descuento del cupón:", couponDiscount);
-            console.log("🚚 Costo de envío:", envio);
+       
 
             const response = await processCulqiPayment(request);
 
-            console.log('📋 Respuesta completa del procesamiento:', response);
 
             if (response.status) {
-                console.log('✅ Pago exitoso, procesando respuesta...');
                 
                 setSale(response.sale);
                 setDelivery(response.delivery);
@@ -797,15 +706,12 @@ export default function ShippingStep({
                 
                 // Capturar scripts de conversión si están disponibles
                 if (response.conversion_scripts) {
-                    console.log('Scripts de conversión recibidos:', response.conversion_scripts);
                     setConversionScripts(response.conversion_scripts);
                     
                     // Llamar al callback de compra completada si está disponible
                     if (onPurchaseComplete) {
-                        console.log('🎯 Ejecutando callback onPurchaseComplete...');
                         try {
                             await onPurchaseComplete(response.sale_id, response.conversion_scripts);
-                            console.log('✅ Callback onPurchaseComplete ejecutado exitosamente');
                         } catch (callbackError) {
                             console.error('❌ Error en callback onPurchaseComplete:', callbackError);
                             // No lanzar el error para que continúe el flujo
@@ -813,11 +719,9 @@ export default function ShippingStep({
                     }
                 }
                 
-                console.log('🛒 Limpiando carrito y continuando...');
                 setCart([]);
                 onContinue();
             } else {
-                console.log('❌ Pago rechazado:', response);
                 toast.error("Error en el pago", {
                     description: response.message || "Pago rechazado",
                     icon: <XOctagonIcon className="h-5 w-5 text-red-500" />,
@@ -942,12 +846,7 @@ export default function ShippingStep({
             const categoryIds = [...new Set(cart.map(item => item.category_id).filter(Boolean))];
             const productIds = cart.map(item => item.id);
 
-            console.log("Validando cupón:", {
-                code: couponCode.trim(),
-                cart_total: subTotal,
-                category_ids: categoryIds,
-                product_ids: productIds
-            });
+       
 
             const response = await CouponsRest.validateCoupon({
                 code: couponCode.trim(),
@@ -956,7 +855,7 @@ export default function ShippingStep({
                 product_ids: productIds
             });
 
-            console.log("Respuesta del cupón:", response);
+           
 
             // Manejar diferentes estructuras de respuesta
             const data = response.data || response; // response.data para nueva estructura, response para estructura anterior
@@ -1035,7 +934,7 @@ export default function ShippingStep({
     };
 
     // Calcular el total base antes de cupón
-    const totalBase = roundToTwoDecimals(subTotal) + roundToTwoDecimals(igv) + roundToTwoDecimals(envio) - roundToTwoDecimals(autoDiscountTotal);
+    const totalBase = roundToTwoDecimals(subTotal) + roundToTwoDecimals(igv) + roundToTwoDecimals(envio) + roundToTwoDecimals(seguroImportacionTotal) + roundToTwoDecimals(derechoArancelarioTotal) - roundToTwoDecimals(automaticDiscountTotal);
 
     // Calcular el descuento del cupón sobre el total base
     let calculatedCouponDiscount = 0;
@@ -1050,7 +949,7 @@ export default function ShippingStep({
     useEffect(() => {
         setCouponDiscount(roundToTwoDecimals(calculatedCouponDiscount));
         if (setParentCouponDiscount) setParentCouponDiscount(roundToTwoDecimals(calculatedCouponDiscount));
-    }, [appliedCoupon, subTotal, igv, envio, autoDiscountTotal]);
+    }, [appliedCoupon, subTotal, igv, envio, automaticDiscountTotal]);
 
     const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
 
@@ -1434,7 +1333,7 @@ export default function ShippingStep({
                     {cart.map((item) => (
                         <div key={item.id} className="flex items-center gap-4">
                             <img
-                                src={`/storage/images/item/${item.image}`}
+                                src={item.type === 'combo' ? `/storage/images/combo/${item.image}` : `/storage/images/item/${item.image}`}
                                 alt={item.name}
                                 className="w-16 h-16 object-cover rounded-lg"
                                 onError={(e) =>
@@ -1444,8 +1343,8 @@ export default function ShippingStep({
                             />
                             <div>
                                 <h4 className="font-medium">{item.name}</h4>
-                                <p className="text-sm customtext-neutral-light">Cantidad: {item.quantity}</p>
-                                <p className="text-sm customtext-neutral-light">S/ {Number2Currency(item.final_price)}</p>
+                                <p className="text-sm customtext-neutral-dark">Cantidad: {item.quantity}</p>
+                                <p className="text-sm customtext-neutral-dark">{CurrencySymbol()}{Number2Currency(item.final_price)}</p>
                             </div>
                         </div>
                     ))}
@@ -1454,15 +1353,43 @@ export default function ShippingStep({
                 <div className="space-y-4 mt-6">
                     <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>S/ {Number2Currency(roundToTwoDecimals(subTotal))}</span>
+                        <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(subTotal))}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span>IGV (18%):</span>
-                        <span>S/ {Number2Currency(roundToTwoDecimals(igv))}</span>
+                        <span>IGV ({Number(generals?.find(x => x.correlative === 'igv_checkout')?.description || 18)}%):</span>
+                        <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(igv))}</span>
                     </div>
+                    {
+                        Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
+                        <div className="flex justify-between">
+                            <span>Seguro ({Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0).toFixed(2)}%):</span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(seguroImportacionTotal))}</span>
+                        </div>
+                    }
+                    {
+                        Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 &&
+                        <div className="flex justify-between">
+                            <span>
+                                Derecho arancelario
+                                {
+                                    generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(derechoArancelarioTotal))}</span>
+                        </div>
+                    }
                     <div className="flex justify-between">
                         <span>Envío:</span>
-                        <span>S/ {Number2Currency(roundToTwoDecimals(envio))}</span>
+                        <span className="font-semibold">
+                            {selectedOption === "free" || selectedOption === "store_pickup" || envio === 0 ? (
+                                <span className="customtext-neutral-dark">Gratis</span>
+                            ) : (
+                                `${CurrencySymbol()} ${Number2Currency(envio)}`
+                            )}
+                        </span>
                     </div>
 
                     {/* Sección de cupón */}
@@ -1534,7 +1461,7 @@ export default function ShippingStep({
                                                 <p className="customtext-primary font-semibold text-sm">
                                                     Descto. {appliedCoupon.type === 'percentage' 
                                                         ? `${appliedCoupon.value}%` 
-                                                        : `S/${Number2Currency(appliedCoupon.value)}`}
+                                                        : `${CurrencySymbol()}${Number2Currency(appliedCoupon.value)}`}
                                                 </p>
                                                 <p className="customtext-primary text-xs mt-1">
                                                     {appliedCoupon.code}
@@ -1543,7 +1470,7 @@ export default function ShippingStep({
                                         </div>
                                         <div className="text-right w-4/12">
                                             <span className="customtext-primary font-bold text-base">
-                                                -S/ {Number2Currency(roundToTwoDecimals(couponDiscount))}
+                                                -{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(couponDiscount))}
                                             </span>
                                            {/* <p className="customtext-primary text-xs">Descuento aplicado</p> */}
                                         </div>
@@ -1554,13 +1481,13 @@ export default function ShippingStep({
                     </div>
 
                     {/* Sección de descuentos automáticos */}
-                    {autoDiscounts && autoDiscounts.length > 0 && (
+                    {automaticDiscounts && automaticDiscounts.length > 0 && (
                         <div className="space-y-4 border-t pt-4">
                             <div className="space-y-3">
                                 <div className="text-sm font-medium customtext-neutral-dark mb-2">
                                     🎉 Descuentos automáticos aplicados:
                                 </div>
-                                {autoDiscounts.map((discount, index) => (
+                                {automaticDiscounts.map((discount, index) => (
                                     <div key={index} className=" border-2  rounded-xl p-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3 w-8/12">
@@ -1582,18 +1509,18 @@ export default function ShippingStep({
                                             </div>
                                             <div className="text-right w-4/12">
                                                 <span className="customtext-neutral-dark font-bold text-base">
-                                                    -S/ {Number2Currency(discount.amount)}
+                                                    -{CurrencySymbol()}{Number2Currency(discount.amount)}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
-                                {autoDiscountTotal > 0 && (
+                                {automaticDiscountTotal > 0 && (
                                     <div className="l p-3">
                                         <div className="flex justify-between items-center">
                                             <span className="customtext-neutral-dark font-semibold">Total descuentos automáticos:</span>
                                             <span className="customtext-neutral-dark font-bold text-lg">
-                                                -S/ {Number2Currency(autoDiscountTotal)}
+                                                -{CurrencySymbol()}{Number2Currency(automaticDiscountTotal)}
                                             </span>
                                         </div>
                                     </div>
@@ -1611,17 +1538,39 @@ export default function ShippingStep({
                     <div className="pt-4 border-t-2">
                         <div className="flex justify-between font-bold text-lg">
                             <span>Total:</span>
-                            <span>S/ {Number2Currency(roundToTwoDecimals(finalTotalWithCoupon))}</span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(finalTotalWithCoupon))}</span>
                         </div>
                     </div>
 
+                    {!Global.CULQI_ENABLED && (
+                        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div className="flex items-center">
+                                <InfoIcon className="h-5 w-5 text-yellow-600 mr-2" />
+                                <span className="text-sm text-yellow-800">
+                                    El procesamiento de pagos con tarjeta está temporalmente deshabilitado
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {Global.CULQI_ENABLED && !Global.CULQI_PUBLIC_KEY && (
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div className="flex items-center">
+                                <XCircle className="h-5 w-5 text-red-600 mr-2" />
+                                <span className="text-sm text-red-800">
+                                    Error de configuración: Sistema de pagos no configurado
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
                     <ButtonPrimary 
                         onClick={handlePayment} 
-                        className="w-full mt-6"
-                        disabled={paymentLoading}
+                        disabled={paymentLoading || !Global.CULQI_ENABLED || !Global.CULQI_PUBLIC_KEY}
                         loading={paymentLoading}
+                        className={`w-full mt-6 ${data?.class_button || 'text-white'} ${(!Global.CULQI_ENABLED || !Global.CULQI_PUBLIC_KEY) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        {paymentLoading ? "Procesando..." : `Pagar S/ ${Number2Currency(roundToTwoDecimals(finalTotalWithCoupon))}`}
+                        {paymentLoading ? "Procesando..." : !Global.CULQI_ENABLED ? "Pago no disponible" : !Global.CULQI_PUBLIC_KEY ? "Configuración pendiente" : `Pagar ${CurrencySymbol()}${Number2Currency(roundToTwoDecimals(finalTotalWithCoupon))}`}
                     </ButtonPrimary>
 
                     <ButtonSecondary 

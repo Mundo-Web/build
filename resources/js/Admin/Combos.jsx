@@ -15,7 +15,7 @@ import SelectAPIFormGroup from '../Components/Adminto/form/SelectAPIFormGroup';
 import SelectFormGroup from '../Components/Adminto/form/SelectFormGroup';
 import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
-import Number2Currency from '../Utils/Number2Currency';
+import Number2Currency, { CurrencySymbol } from '../Utils/Number2Currency';
 import ReactAppend from '../Utils/ReactAppend';
 import SetSelectValue from '../Utils/SetSelectValue';
 import ItemsGalleryRest from '../Actions/Admin/ItemsGalleryRest';
@@ -38,6 +38,7 @@ const Combos = ({ items }) => {
   const priceRef = useRef();
   const discountRef = useRef();
   const itemsRef = useRef();
+  const imageRef = useRef();
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -50,26 +51,24 @@ const Combos = ({ items }) => {
 
   useEffect(() => {
     const newTotalPrice = calculateTotalPrice(selectedProducts);
-    console.log(newTotalPrice)
     setTotalPrice(newTotalPrice);
   }, [selectedProducts]);
 
-
-
   useEffect(() => {
     if (priceRef.current) {
-      priceRef.current.value = totalPrice.toFixed(2); // Actualiza el campo con el precio acumulado
+      priceRef.current.value = totalPrice.toFixed(2);
     }
   }, [totalPrice]);
 
-  useEffect(() => {
-    if (itemsRef.current) {
-      const selectedIds = selectedProducts.map((product) => product.id.toString());
-      $(itemsRef.current)
-        .val(selectedIds)
-        .trigger("change");
-    }
-  }, [selectedProducts]);
+  // Comentamos este useEffect que causaba bucle infinito
+  // useEffect(() => {
+  //   if (itemsRef.current) {
+  //     const selectedIds = selectedProducts.map((product) => product.id.toString());
+  //     $(itemsRef.current)
+  //       .val(selectedIds)
+  //       .trigger("change");
+  //   }
+  // }, [selectedProducts]);
 
   // Manejador para cuando se selecciona un producto
   const handleProductChange = (event) => {
@@ -88,8 +87,11 @@ const Combos = ({ items }) => {
     const updatedProducts = selectedProducts.filter((p) => p.id !== productId);
     setSelectedProducts(updatedProducts);
 
-    const selectedIds = updatedProducts.map((p) => p.id.toString());
-    $(itemsRef.current).val(selectedIds).trigger("change");
+    // Actualizar el select2 sin trigger para evitar bucles
+    if (itemsRef.current) {
+      const selectedIds = updatedProducts.map((p) => p.id.toString());
+      $(itemsRef.current).val(selectedIds);
+    }
 
     if (mainProduct?.id === productId) {
       setMainProduct(null);
@@ -119,28 +121,51 @@ const Combos = ({ items }) => {
       nameRef.current.value = comboData.name || '';
       priceRef.current.value = comboData.price || 0;
       discountRef.current.value = comboData.discount || 0;
+      imageRef.current.value = null
+      imageRef.image.src = comboData?.image ? `/storage/images/combo/${comboData.image}` : ''
+      
+      // Reset delete flag when opening modal
+      if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
       // Cargar los productos asociados
       const products = comboData.items || [];
+    
+
+      // Detectar el producto principal desde el pivot
+      const mainProductFromPivot = products.find(product => {
+        const pivotValue = product.pivot?.is_main_item;
+        return pivotValue === 1 || pivotValue === '1' || pivotValue === true || pivotValue === 'true';
+      });
+      setMainProduct(mainProductFromPivot || null);
       setSelectedProducts(products);
 
-      // Seleccionar los productos en el campo SelectAPIFormGroup
+      // Seleccionar los productos en el campo SelectAPIFormGroup sin trigger
       setTimeout(() => {
-        const productIds = products.map((product) => product.id.toString());
-        itemsRef.current.setValue(productIds); // Asegúrate de que `setValue` sea un método válido en `SelectAPIFormGroup`
-      }, 0);
-
-      // Establecer el producto principal si existe
-      const mainItemId = comboData.items.find((item) => item.pivot.is_main_item)?.id;
-      if (mainItemId) {
-        setMainProduct(products.find((product) => product.id === mainItemId));
-      }
+        if (itemsRef.current) {
+          const productIds = products.map((product) => product.id.toString());
+          $(itemsRef.current).val(productIds);
+        }
+      }, 100);
     } else {
       setIsEditing(false);
+      // Limpiar todos los estados
+      setSelectedProducts([]);
+      setMainProduct(null);
+      setTotalPrice(0);
+      
+      // Limpiar el formulario
       idRef.current.value = '';
       nameRef.current.value = '';
       priceRef.current.value = 0;
       discountRef.current.value = 0;
+      
+      // Reset delete flag when opening modal for new combo
+      if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+      
+      // Limpiar el select2
+      if (itemsRef.current) {
+        $(itemsRef.current).val([]);
+      }
     }
 
     // Mostrar el modal
@@ -149,6 +174,27 @@ const Combos = ({ items }) => {
 
   const onModalSubmit = async (e) => {
     e.preventDefault()
+
+    // Validar que haya productos seleccionados
+    if (selectedProducts.length === 0) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Debes seleccionar al menos un producto para crear el combo.',
+        icon: 'error'
+      });
+      return;
+    }
+
+    // Validar que haya un producto principal seleccionado
+    if (!mainProduct) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Debes marcar un producto como principal antes de guardar el combo.',
+        icon: 'error'
+      });
+      return;
+    }
+
     const request = {
       id: idRef.current.value || undefined,
       name: nameRef.current.value,
@@ -156,19 +202,51 @@ const Combos = ({ items }) => {
       discount: discountRef.current.value,
       final_price: discountRef.current.value > 0 && discountRef.current.value < totalPrice ? discountRef.current.value : totalPrice,
       discount_percent: 100 - (discountRef.current.value / priceRef.current.value) * 100,
-      items: selectedProducts.map((product) => ({
-        item_id: product.id,
-        is_main_item: mainProduct?.id === product.id,
-      })),
-
     }
-    const result = await combosRest.save(request)
+
+    const formData = new FormData()
+    
+    // Agregar campos básicos
+    for (const key in request) {
+      if (request[key] !== undefined) {
+        formData.append(key, request[key])
+      }
+    }
+
+    // Agregar items de manera correcta
+    selectedProducts.forEach((product, index) => {
+      formData.append(`items[${index}][item_id]`, product.id);
+      formData.append(`items[${index}][is_main_item]`, mainProduct?.id === product.id ? 1 : 0);
+    });
+
+    const symbol = imageRef.current.files[0]
+    if (symbol) {
+      formData.append('image', symbol)
+    }
+
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
+    const result = await combosRest.save(formData)
     if (!result) return;
+    
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+    
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
+    
+    // Limpiar todos los estados
     setSelectedProducts([]);
     setMainProduct(null);
     setTotalPrice(0);
+    
+    // Limpiar el select2
+    if (itemsRef.current) {
+      $(itemsRef.current).val([]);
+    }
   }
 
 
@@ -186,8 +264,8 @@ const Combos = ({ items }) => {
 
   const onDeleteClicked = async (id) => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Eliminar curso',
-      text: '¿Estás seguro de eliminar este curso?',
+      title: 'Eliminar combo',
+      text: '¿Estás seguro de eliminar este combo?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
@@ -241,15 +319,24 @@ const Combos = ({ items }) => {
           }
         },
         {
+          dataField: 'image',
+          caption: 'Imagen',
+          width: '80px',
+          cellTemplate: (container, { data }) => {
+            ReactAppend(container, <img src={`/storage/images/combo/${data.image}`} style={{ width: '80px', height: '48px', objectFit: 'cover', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+          }
+        },
+        {
           dataField: 'final_price',
           caption: 'Precio',
           dataType: 'number',
-          width: '75px',
+          width: '100px',
           cellTemplate: (container, { data }) => {
 
             container.html(renderToString(<>
-              {data.discount > 0 && <small className='d-block text-muted' style={{ textDecoration: 'line-through' }}>S/.{Number2Currency(data.price)}</small>}
-              <span>S/.{Number2Currency(data.discount > 0 ? data.discount : data.price)}</span>
+              {data.discount > 0 && <small className='d-block text-muted' style={{ textDecoration: 'line-through' }}>
+                {CurrencySymbol()} {Number2Currency(data.price)}</small>}
+              <span>{CurrencySymbol()} {Number2Currency(data.discount > 0 ? data.discount : data.price)}</span>
             </>))
           }
         },
@@ -284,11 +371,15 @@ const Combos = ({ items }) => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar curso' : 'Agregar curso'} onSubmit={onModalSubmit} size='lg'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar combo' : 'Agregar combo'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='combo-container'>
         <input ref={idRef} type='hidden' />
+
         <div className="col-md-6">
+
           <InputFormGroup eRef={nameRef} label='Nombre' required />
+          <InputFormGroup label="Precio" eRef={priceRef} type="number" readOnly />
+          <InputFormGroup eRef={discountRef} label='Precio con Descuento' type='number' step='0.01' onChange={handleDiscountChange} />
           <SelectAPIFormGroup
             id="items"
             eRef={itemsRef}
@@ -302,45 +393,45 @@ const Combos = ({ items }) => {
 
         </div>
         <div className="col-md-6">
-          <InputFormGroup label="Precio" eRef={priceRef} type="number" readOnly />
-          <InputFormGroup eRef={discountRef} label='Descuento' type='number' step='0.01' onChange={handleDiscountChange} />
+          <ImageFormGroup eRef={imageRef} name="image" label='Imagen del Combo' col='col-12' aspect='4/3' required />
+
         </div >
         {/* Lista de productos seleccionados */}
         <div className="col-md-12 row">
           <h4 className="col-md-12">Productos Seleccionados</h4>
           <ul className="list-unstyled col-md-12 row">
-            {selectedProducts.map((product) => (
-              <li key={product.id} className="col-md-6" >
-                <input
-                  type="radio"
-                  name="mainProduct"
-                  checked={mainProduct?.id === product.id}
-                  onChange={() => setMainProduct(product)}
-                />
-                <div>
-
-                  <div class="card mb-3">
-                    <div class="row g-0">
-                      <div class="col-md-4">
-                        <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} class="img-thumbnail rounded-start" alt={product.name} />
-                      </div>
-                      <div class="col-md-8">
-                        <div class="card-body">
-                          <h5 class="card-title">{product?.name} </h5>
-                          <p class="card-text small line-clamp-2">{product?.summary} </p>
-                          <p class="card-text"><strong>Precio: S/.{product?.final_price}</strong></p>
-
-                          <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
+            {selectedProducts.map((product) => {
+              const isMainProduct = mainProduct && (`${mainProduct.id}` === `${product.id}`);
+              return (
+                <li key={product.id} className="col-md-6" >
+                  <input
+                    type="radio"
+                    name="mainProduct"
+                    checked={isMainProduct}
+                    onChange={() => {
+                      setMainProduct(product);
+                    }}
+                  />
+                  <div>
+                    <div class="card mb-3">
+                      <div class="row g-0">
+                        <div class="col-md-4">
+                          <img src={`/storage/images/item/${product?.image ?? 'undefined'}`} class="img-thumbnail rounded-start" alt={product.name} />
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body">
+                            <h5 class="card-title">{product?.name} </h5>
+                            <p class="card-text small line-clamp-2">{product?.summary} </p>
+                            <p class="card-text"><strong>Precio: {CurrencySymbol()} {product?.final_price}</strong></p>
+                            <button className='btn btn-sm btn-danger pull-left' type='button' onClick={() => removeProduct(product.id)}>Eliminar</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-
-
-              </li>
-            ))}
+                </li>
+              )
+            })}
           </ul>
         </div>
       </div>

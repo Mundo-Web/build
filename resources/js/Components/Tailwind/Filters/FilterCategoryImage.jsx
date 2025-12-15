@@ -17,6 +17,7 @@ import SelectForm from "./Components/SelectForm";
 import ProductCard from "../Components/ProductCard";
 import ProductCardSimple from "../Products/Components/ProductCardSimple";
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 const itemsRest = new ItemsRest();
 
 const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
@@ -311,7 +312,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
                 onClick={() => toggleSection("categoria")}
                 className="flex items-center justify-between w-full mb-4"
               >
-                <span className="font-bold">Categorias</span>
+                <span className="font-bold">Categorías</span>
                 <ChevronDown
                   className={`h-5 w-5 transform transition-transform ${sections.categoria ? "" : "-rotate-180"}`}
                 />
@@ -376,7 +377,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
                           selectedFilters.price.max === range.max
                         }
                       />
-                      <span>{`S/ ${range.min} - S/ ${range.max}`}</span>
+                      <span>{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
                     </label>
                   ))}
                 </div>
@@ -422,7 +423,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
               onClick={() => toggleSection("categoria")}
               className="flex items-center justify-between w-full mb-4"
             >
-              <span className="font-bold">Categorias</span>
+              <span className="font-bold">Categorías</span>
               <ChevronDown
                 className={`h-5 w-5 transform transition-transform ${sections.categoria ? "" : "-rotate-180"}`}
               />
@@ -484,7 +485,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
                         selectedFilters.price.max === range.max
                       }
                     />
-                    <span>{`S/ ${range.min} - S/ ${range.max}`}</span>
+                    <span>{`${CurrencySymbol()} ${range.min} - ${CurrencySymbol()} ${range.max}`}</span>
                   </label>
                 ))}
               </div>

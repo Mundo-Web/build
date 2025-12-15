@@ -1,6 +1,7 @@
 
 
 import { useState } from "react"
+import { CurrencySymbol } from "../../../Utils/Number2Currency"
 const CategoryB = () => {
     const [currentSlide, setCurrentSlide] = useState(0)
 
@@ -32,7 +33,7 @@ const CategoryB = () => {
                     <h2 className="text-2xl font-bold">Productos destacados</h2>
                     <a
                         href="#"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-600"
                     >
                         Ver todos
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,10 +76,10 @@ const CategoryB = () => {
                                         <p className="text-sm text-gray-500">{product.brand}</p>
                                         <h3 className="font-medium text-gray-900 mb-2">{product.name}</h3>
                                         <div className="flex items-baseline gap-2">
-                                            <span className="text-lg font-bold">S/ {product.price.toFixed(2)}</span>
+                                            <span className="text-lg font-bold">{CurrencySymbol()} {product.price.toFixed(2)}</span>
                                             {product.discount > 0 && (
                                                 <span className="text-sm text-gray-500 line-through">
-                                                    S/ {product.originalPrice.toFixed(2)}
+                                                    {CurrencySymbol()} {product.originalPrice.toFixed(2)}
                                                 </span>
                                             )}
                                         </div>

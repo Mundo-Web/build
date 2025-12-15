@@ -32,10 +32,13 @@ const Brands = () => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
+    // Reset delete flag when opening modal
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
-    imageRef.image.src = `/storage/images/brand/${data?.image}`
+    imageRef.image.src = data?.image ? `/storage/images/brand/${data.image}` : ''
     imageRef.current.value = null
 
     $(modalRef.current).modal('show')
@@ -59,8 +62,16 @@ const Brands = () => {
       formData.append('image', file)
     }
 
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
     const result = await brandsRest.save(formData)
     if (!result) return
+
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -93,6 +104,21 @@ const Brands = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  // Función para manejar el reordering remoto
+  const onReorder = async (e) => {
+    // e.toIndex es la nueva posición donde se quiere insertar el elemento
+    const newOrderIndex = e.toIndex;
+
+    try {
+      const result = await brandsRest.reorder(e.itemData.id, newOrderIndex);
+      if (result) {
+        await e.component.refresh();
+      }
+    } catch (error) {
+      console.error('Error reordering brand:', error);
+    }
+  };
+
   return (<>
     <Table gridRef={gridRef} title='Marcas' rest={brandsRest}
       toolBar={(container) => {
@@ -114,11 +140,26 @@ const Brands = () => {
           }
         });
       }}
+      rowDragging={{
+        allowReordering: true,
+        onReorder: onReorder,
+        dropFeedbackMode: 'push'
+      }}
+      sorting={{
+        mode: 'single'
+      }}
       columns={[
         {
           dataField: 'id',
           caption: 'ID',
           visible: false
+        },
+        {
+          dataField: 'order_index',
+          caption: 'Orden',
+          visible: false,
+          sortOrder: 'asc',
+          sortIndex: 0
         },
         {
           dataField: 'name',
@@ -185,7 +226,7 @@ const Brands = () => {
         }
       ]} />
     <Modal modalRef={modalRef} title={isEditing ? 'Editar marca' : 'Agregar marca'} onSubmit={onModalSubmit} size='sm'>
-      <ImageFormGroup eRef={imageRef} label='Imagen' col='col-12' aspect={16 / 9} />
+      <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-12' aspect={16 / 9} />
       <div className='row' id='faqs-container'>
         <input ref={idRef} type='hidden' />
         <InputFormGroup eRef={nameRef} label='Marca' col='col-12' required />

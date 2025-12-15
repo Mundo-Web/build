@@ -24,6 +24,7 @@ import "tippy.js/dist/tippy.css";
 import ProductNavigationSwiper from "../Products/ProductNavigationSwiper";
 import em from "../../../Utils/em";
 import ProductNavigationSwiperSimple from "../Products/ProductNavigationSwiperSimple";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 export default function ProductDetailAko({ item, data, setCart, cart, textstatic, contacts}) {
     
@@ -121,7 +122,6 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
             const request = {
                 id: item?.id,
             };
-            console.log(request);
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida
@@ -342,7 +342,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
 
                             {/* SKU and Availability */}
 
-                            {/* <div className="flex flex-wrap customtext-neutral-light items-center gap-y-2  gap-x-8 text-sm font-font-general">
+                            {/* <div className="flex flex-wrap customtext-neutral-light items-center gap-y-2  gap-x-8 text-sm font-paragraph">
                                 <span className="customtext-neutral-light text-sm 2xl:text-base">
                                     SKU:{" "}
                                     <span className="customtext-neutral-dark font-bold">
@@ -396,12 +396,12 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                             <p className="text-base 2xl:text-lg customtext-neutral-dark font-medium">
                                                 Precio:{" "}
                                                 <span className="line-through font-normal">
-                                                    S/ {item?.price}
+                                                    {CurrencySymbol()} {item?.price}
                                                 </span>
                                             </p>
                                             <div className="flex flex-row items-center gap-4 relative">
                                                 <span className="text-3xl md:text-4xl 2xl:text-5xl font-semibold customtext-neutral-dark">
-                                                    S/ {item?.final_price}
+                                                    {CurrencySymbol()} {item?.final_price}
                                                 </span>
                                                 <span className="bg-[#F93232] text-white font-semibold px-3 py-2 rounded-xl text-base">
                                                     -{Number(item?.discount_percent).toFixed(1)}%
@@ -410,7 +410,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                         </>
                                     ) : (
                                         <span className="text-3xl md:text-4xl 2xl:text-5xl font-semibold customtext-neutral-dark">
-                                            S/ {item?.price}
+                                            {CurrencySymbol()} {item?.price}
                                         </span>
                                     )}
                             </div>
@@ -509,11 +509,11 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                         onAddClicked(item);
                                         setModalOpen(!modalOpen);
                                     }}
-                                    className="w-full font-font-general text-base 2xl:text-lg bg-primary text-white py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-3"
+                                    className="w-full font-paragraph text-base 2xl:text-lg bg-primary text-white py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-3"
                                 >
                                     Agregar al carrito
                                 </button>
-                                <button className="w-full font-font-general text-base 2xl:text-lg customtext-neutral-dark border border-neutral-dark py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-4">
+                                <button className="w-full font-paragraph text-base 2xl:text-lg customtext-neutral-dark border border-neutral-dark py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-4">
                                     Comprar
                                 </button>
                             </div> */}
@@ -524,7 +524,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                             {/* {item?.specifications?.length > 0 && (
                                 <div className="flex-1 w-full">
                                     <div className="bg-[#F7F9FB] rounded-xl p-6">
-                                        <h3 className="font-semibold text-lg xl:text-xl 2xl:text-2xl mb-4 customtext-neutral-dark font-font-general">
+                                        <h3 className="font-semibold text-lg xl:text-xl 2xl:text-2xl mb-4 customtext-neutral-dark font-paragraph">
                                             Especificaciones principales
                                         </h3>
                                         <ul
@@ -549,7 +549,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
                                             )}
                                         </ul>
                                         <button
-                                            className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-font-general pb-2 border-b border-neutral-dark"
+                                            className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-paragraph pb-2 border-b border-neutral-dark"
                                             onClick={() =>
                                                 setExpanded(
                                                     !expandedSpecificationMain

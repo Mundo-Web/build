@@ -19,4 +19,9 @@ class Faq extends Model
 
         'status',
     ];
+
+    protected $casts = [
+        
+        'status' => 'boolean',
+    ];
 }

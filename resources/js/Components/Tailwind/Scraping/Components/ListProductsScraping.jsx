@@ -6,7 +6,7 @@ function ListProductsScraping({ title, products, cart, setCart }) {
 
 
     return (
-        <div className="px-primary mx-auto  py-12 font-font-general">
+        <div className="px-primary mx-auto  py-12 font-paragraph">
             {/* Header */}
             <div className="flex justify-between items-center mb-8 border-b pb-4">
                 {

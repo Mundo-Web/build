@@ -6,6 +6,8 @@ use App\Models\Faq;
 use App\Models\General;
 use App\Models\Post;
 use App\Models\Aboutus;
+use App\Models\Store;
+use App\Models\Category;
 use App\Models\Setting;
 use App\Models\System;
 use App\Models\SystemColor;
@@ -53,7 +55,7 @@ class SystemController extends BasicController
             $props['page'] = ['name' => 'Template base'];
             $this->reactData = $props['page'];
             $this->reactData['colors'] = SystemColor::all();
-            $generals = [];
+            $generals = ['currency'];
             foreach ($props['systems'] as $system) {
                 if ($system->component == 'content') continue;
                 $parent = collect($components)->firstWhere('id', $system->component);
@@ -94,7 +96,29 @@ class SystemController extends BasicController
             $systems = System::where('page_id', $page['id'])->get();
         }
 
-        $generals = [];
+        // Include all SEO generals by default plus currency
+        $generals = [
+            'currency',
+            'whatsapp_advisors',
+            'site_title',
+            'site_description', 
+            'site_keywords',
+            'og_title',
+            'og_description',
+            'og_image',
+            'og_url',
+            'twitter_title',
+            'twitter_description',
+            'twitter_image',
+            'twitter_card',
+            'favicon',
+            'canonical_url',
+            'importation_flete',
+            'importation_servicio',
+            'importation_seguro',
+            'importation_derecho_arancelario'
+        ];
+        
         $jsons = [];
         foreach ($systems as $key => $system) {
             if ($system->component == 'content') continue;
@@ -108,12 +132,14 @@ class SystemController extends BasicController
                     $query->with($component['using']['with']);
                 }
 
+                $hasViewsOrder = false;
                 if ($system->filters) {
                     foreach ($system->filters as $field) {
                         if (in_array($field, ['ignoreVisibility', 'ignoreStatus'])) continue;
                         if ($field === 'views') {
                             // Ordenar por vistas de manera descendente
                             $query->orderBy('views', 'desc');
+                            $hasViewsOrder = true;
                         } else {
                             // Aplicar filtro booleano para otros campos
                             $query->where($field, true);
@@ -156,7 +182,20 @@ class SystemController extends BasicController
                 //         );
                 // }
 
-
+                // Priorizar orden por 'order_index' si existe (orden primario),
+                // y luego por 'updated_at' como orden secundario si está disponible.
+                if (Schema::hasColumn($table, 'order_index')) {
+                    $query->orderBy($table . '.order_index', 'asc');
+                    if (Schema::hasColumn($table, 'updated_at')) {
+                        $query->orderBy($table . '.updated_at', 'desc');
+                    }
+                } else {
+                    // Ordenar por updated_at para respetar los cambios más recientes en campos booleanos
+                    // Solo si no hay un ordenamiento por 'views' previamente definido
+                    if (!$hasViewsOrder && Schema::hasColumn($table, 'updated_at')) {
+                        $query->orderBy($table . '.updated_at', 'desc');
+                    }
+                }
                 $shortID = Crypto::short();
                 $system->itemsId = $shortID;
                 $props['systemItems'][$shortID] = $query->get();
@@ -180,7 +219,9 @@ class SystemController extends BasicController
         $props['filteredData'] = [];
         $props['generals'] = General::whereIn('correlative', $generals)->get();
         $props['contacts'] = General::where('status', true)->get();
+        $props['stores'] = Store::where('status', true)->get();
         $props['faqs'] = Faq::where('status', true)->get();
+        $props['categorias'] = Category::where('status', true)->get();
         // Procesar el campo 'using'
         foreach ($page['using'] as $key => $using) {
             $model = $using['model'] ?? null;

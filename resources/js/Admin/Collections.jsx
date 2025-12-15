@@ -31,10 +31,13 @@ const Collections = () => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = `/storage/images/collection/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/collection/${data.image}` : '';
         imageRef.current.value = null;
 
         $(modalRef.current).modal("show");
@@ -58,8 +61,16 @@ const Collections = () => {
             formData.append("image", file);
         }
 
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await collectionsRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -100,6 +111,21 @@ const Collections = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+
+        try {
+            const result = await collectionsRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering collection:', error);
+        }
+    };
+
     return (
         <>
             <Table
@@ -130,11 +156,26 @@ const Collections = () => {
                         },
                     });
                 }}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 columns={[
                     {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     {
                         dataField: "name",
@@ -164,8 +205,8 @@ const Collections = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />
                             );
@@ -184,7 +225,7 @@ const Collections = () => {
                                     onChange={() =>
                                         onFeaturedChange({
                                             id: data.id,
-                                            value: data.featured == 1? 0 : 1,
+                                            value: data.featured == 1 ? 0 : 1,
                                         })
                                     }
                                 />
@@ -245,6 +286,7 @@ const Collections = () => {
             >
                 <ImageFormGroup
                     eRef={imageRef}
+                    name="image"
                     label="Imagen"
                     col="col-12"
                     aspect={16 / 9}

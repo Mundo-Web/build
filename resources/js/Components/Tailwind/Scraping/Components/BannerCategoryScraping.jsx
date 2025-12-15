@@ -2,7 +2,7 @@ import React from 'react';
 
 function BannerCategoryScraping() {
     return (
-        <div className="w-full font-font-general ">
+        <div className="w-full font-paragraph ">
             <a
                 href="#moda"
                 className="relative block overflow-hidden rounded-3xl group"

@@ -17,15 +17,16 @@ class DeliveryPrice extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'name',
-        'description',
-        'price',
         'ubigeo',
+        'name',
+        'price',
         'is_free',
-        'is_agency',
-        'is_store_pickup',
+        'is_express',
         'express_price',
+        'is_agency',
         'agency_price',
+        'agency_payment_on_delivery',
+        'is_store_pickup',
         'type_id',
         'selected_stores'
     ];
@@ -35,6 +36,7 @@ class DeliveryPrice extends Model
     ];
     protected $casts = [
         'is_free' => 'boolean',
+        'is_express' => 'boolean',
         'is_agency' => 'boolean',
         'is_store_pickup' => 'boolean',
         'selected_stores' => 'array'

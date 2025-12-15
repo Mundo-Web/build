@@ -16,11 +16,18 @@ class Testimony extends Model
     protected $fillable = [
         'image',
         'name',
+        'role',
+        'rating',
         'description',
         'country_id',
         'country',
         'visible',
         'status'
+    ];
+    protected $casts = [
+        
+        'visible' => 'boolean',
+        'status' => 'boolean',
     ];
 
     static function lastTen()
@@ -28,6 +35,8 @@ class Testimony extends Model
         return Testimony::select([
             'image',
             'name',
+            'role',
+            'rating',
             'country',
             'description'
         ])

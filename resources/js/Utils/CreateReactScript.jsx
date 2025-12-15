@@ -5,6 +5,20 @@ import 'swiper/css'
 import 'tippy.js/dist/tippy.css'
 import General from './General';
 import LaravelSession from './LaravelSession';
+import Fillable from './Fillable';
+import CanAccess from './CanAccess';
+import BooleanLimit from './BooleanLimit';
+
+let roles = [];
+export const hasRole = (...rolesIn) => {
+  const roles2validate = []
+  if (Array.isArray(rolesIn)) {
+    roles2validate.push(...rolesIn)
+  } else {
+    roles2validate.push(rolesIn)
+  }
+  return Boolean(roles.find(x => roles2validate.includes(x.name)))
+}
 
 const CreateReactScript = (render) => {
 
@@ -12,6 +26,18 @@ const CreateReactScript = (render) => {
     resolve: name => `/${name}.jsx`,
     setup: ({ el, props }) => {
       const properties = props.initialPage.props
+
+      for (const key in (properties.fillable ?? {})) {
+        if (!properties.fillable[key]) continue
+        Fillable.set(key, properties.fillable[key])
+      }
+
+      BooleanLimit.hydrate(properties.boolean_limits ?? {})
+
+      for (const menu of (properties.can_access ?? [])) {
+        CanAccess[menu.menu] = menu.can_access == 1
+      }
+
       if (properties?.global) {
         for (const name in properties.global) {
           Global.set(name, properties.global[name])
@@ -44,16 +70,18 @@ const CreateReactScript = (render) => {
         return false
       }
 
-      const hasRole = (...rolesIn) => {
-        const roles2validate = []
-        if (Array.isArray(rolesIn)) {
-          roles2validate.push(...rolesIn)
-        } else {
-          roles2validate.push(rolesIn)
-        }
-        const roles = properties?.session?.roles ?? []
-        return Boolean(roles.find(x => roles2validate.includes(x.name)))
-      }
+      roles = properties?.session?.roles ?? []
+
+      // const hasRole = (...rolesIn) => {
+      //   const roles2validate = []
+      //   if (Array.isArray(rolesIn)) {
+      //     roles2validate.push(...rolesIn)
+      //   } else {
+      //     roles2validate.push(rolesIn)
+      //   }
+      //   const roles = properties?.session?.roles ?? []
+      //   return Boolean(roles.find(x => roles2validate.includes(x.name)))
+      // }
 
       FetchParams.headers = {
         Accept: 'application/json',
@@ -62,10 +90,14 @@ const CreateReactScript = (render) => {
       }
       render(el, { ...properties, can, hasRole })
 
-      if (Global.APP_ENV == 'local') {
-        $('.modal-backdrop').each(function () {
-          if (!$(this).text()) $(this).remove()
-        })
+      if (Global.APP_ENV === 'local') {
+        const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+        modalBackdrops.forEach(backdrop => {
+       
+          if (!backdrop.textContent) {
+            backdrop.remove();
+          }
+        });
       }
     },
   });

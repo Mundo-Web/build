@@ -1,11 +1,11 @@
 import React from "react";
-import Number2Currency from "../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../Utils/Number2Currency";
 
 const CourseCard = ({id, name, category, created_at, summary, image, price, firstImage = false, showPrice = false, clickable = false, showCategory = false }) => (
   <div className={`flex flex-col ${firstImage && 'flex-col-reverse'} w-full gap-4`}>
     <div>
       {
-        showPrice && <p className="my-4 text-xl fotn-bold text-pink-600">S/.{Number2Currency(price)}</p>
+        showPrice && <p className="my-4 text-xl fotn-bold text-pink-600">{CurrencySymbol()} {Number2Currency(price)}</p>
       }
       <h3 className="text-xl md:text-2xl font-semibold tracking-tight line-clamp-2 h-16 text-ellipsis text-[#2B384F]">
         {name}

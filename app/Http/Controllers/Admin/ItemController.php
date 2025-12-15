@@ -11,6 +11,7 @@ use App\Models\ItemTag;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Routing\ResponseFactory;
@@ -19,18 +20,46 @@ use SoDe\Extend\Crypto;
 use SoDe\Extend\Text;
 use Exception;
 use App\Models\ItemSpecification;
+use App\Models\Store;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
+use App\Exports\UnifiedItemExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends BasicController
 {
     public $model = Item::class;
     public $reactView = 'Admin/Items';
-    public $imageFields = ['image', 'banner', 'texture', 'pdf'];
+    public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
+    public $manageFillable = [Item::class, Brand::class];
+    public $with4get = ['tags', 'amenities'];
+
+    /**
+     * Override paginate to always include amenities relation
+     */
+    public function paginate(Request $request): HttpResponse|ResponseFactory
+    {
+        // Agregar amenities a las relaciones si no está ya incluido
+        $with = $request->has('with') ? $request->with : '';
+        $relations = array_filter(explode(',', $with));
+        
+        if (!in_array('amenities', $relations)) {
+            $relations[] = 'amenities';
+        }
+        if (!in_array('tags', $relations)) {
+            $relations[] = 'tags';
+        }
+        
+        $request->merge(['with' => implode(',', $relations)]);
+        
+        return parent::paginate($request);
+    }
 
     public function mediaGallery(Request $request, string $uuid)
     {
         try {
-            $snake_case = 'item/gallery';
+            $snake_case = 'item';
             if (Text::has($uuid, '.')) {
                 $route = "images/{$snake_case}/{$uuid}";
             } else {
@@ -50,50 +79,167 @@ class ItemController extends BasicController
             ]);
         }
     }
-    /*
     public function save(Request $request): HttpResponse|ResponseFactory
     {
-
-
-//dump($request->all());
-
+        Log::info('ItemController save method called - Custom save executing');
         DB::beginTransaction();
         try {
             // Validar los datos recibidos
             $validated = $request->validate([
-                'category_id' => 'required|exists:categories,id',
+                'category_id' => 'nullable|exists:categories,id',
                 'subcategory_id' => 'nullable|exists:sub_categories,id',
                 'brand_id' => 'nullable|exists:brands,id',
                 'name' => 'required|string|max:255',
                 'summary' => 'nullable|string',
-                'price' => 'required|numeric',
+                'price' => 'nullable|numeric',
                 'discount' => 'nullable|numeric',
                 'tags' => 'nullable|array',
                 'description' => 'nullable|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'weight' => 'nullable|numeric',
+               
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+           
                 'gallery' => 'nullable|array',
-                'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'gallery_ids' => 'nullable|array',
-                'gallery_ids.*' => 'nullable|integer',
+                'gallery_ids.*' => 'nullable|string',
                 'deleted_images' => 'nullable|array',
-                'deleted_images.*' => 'nullable|integer',
+                'deleted_images.*' => 'nullable|string',
             ]);
+
+            // Procesar campos que pueden ser null
+            $storeId = $request->input('store_id');
+            if ($storeId === '' || $storeId === 'null' || $storeId === null) {
+                $storeId = null;
+            }
+            
+            $collectionId = $request->input('collection_id');
+            if ($collectionId === '' || $collectionId === 'null' || $collectionId === null) {
+                $collectionId = null;
+            }
+            
+            $subcategoryId = $request->input('subcategory_id');
+            if ($subcategoryId === '' || $subcategoryId === 'null' || $subcategoryId === null) {
+                $subcategoryId = null;
+            }
+            
+            $brandId = $request->input('brand_id');
+            if ($brandId === '' || $brandId === 'null' || $brandId === null) {
+                $brandId = null;
+            }
 
             // Crear o actualizar el elemento
             $item = Item::updateOrCreate(
                 ['id' => $request->input('id')],
                 [
                     'category_id' => $request->input('category_id'),
-                    'subcategory_id' => $request->input('subcategory_id'),
-                    'brand_id' => $request->input('brand_id'),
+                    'subcategory_id' => $subcategoryId,
+                    'brand_id' => $brandId,
+                    'collection_id' => $collectionId,
+                    'store_id' => $storeId,
                     'name' => $request->input('name'),
+                    'sku' => $request->input('sku'),
+                    'color' => $request->input('color'),
+                    'size' => $request->input('size'),
                     'summary' => $request->input('summary'),
                     'price' => $request->input('price'),
                     'discount' => $request->input('discount'),
                     'description' => $request->input('description'),
+                    'weight' => $request->input('weight'),
+                    'stock' => $request->input('stock'),
+                    // Campos específicos para habitaciones (hotel)
+                    'type' => $request->input('type', 'product'),
+                    'room_type' => $request->input('room_type'),
+                    'max_occupancy' => $request->input('max_occupancy'),
+                    'beds_count' => $request->input('beds_count'),
+                    'size_m2' => $request->input('size_m2'),
+                    'total_rooms' => $request->input('total_rooms'),
                 ]
             );
+
+            // Procesar PDFs (múltiples archivos con ordenamiento)
+            $pdfData = [];
+            
+            // Cargar PDFs existentes si hay
+            if ($item->pdf && is_array($item->pdf)) {
+                $pdfData = $item->pdf;
+            }
+            
+            // Agregar nuevos PDFs
+            if ($request->hasFile('pdf')) {
+                $pdfFiles = is_array($request->file('pdf')) ? $request->file('pdf') : [$request->file('pdf')];
+                
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+                foreach ($pdfFiles as $index => $file) {
+                    $uuid = Crypto::randomUUID();
+                    $ext = $file->getClientOriginalExtension();
+                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                    Storage::put($path, file_get_contents($file));
+                    
+                    $pdfData[] = [
+                        'url' => "{$uuid}.{$ext}",
+                        'name' => $file->getClientOriginalName(),
+                        'order' => count($pdfData) + 1
+                    ];
+                }
+            }
+            
+            // Eliminar PDFs marcados para eliminación
+            if ($request->has('deleted_pdfs')) {
+                $deletedPdfs = json_decode($request->input('deleted_pdfs'), true);
+                if (is_array($deletedPdfs)) {
+                    $pdfData = array_values(array_filter($pdfData, function($pdf, $index) use ($deletedPdfs) {
+                        return !in_array($index, $deletedPdfs);
+                    }, ARRAY_FILTER_USE_BOTH));
+                }
+            }
+            
+            // Reordenar PDFs
+            if (!empty($pdfData)) {
+                foreach ($pdfData as $index => $pdf) {
+                    $pdfData[$index]['order'] = $index + 1;
+                }
+            }
+            
+            $item->pdf = !empty($pdfData) ? $pdfData : null;
+            
+            // Procesar Videos (múltiples links con ordenamiento)
+            $videoData = [];
+            
+            if ($request->has('linkvideo')) {
+                $videos = json_decode($request->input('linkvideo'), true);
+                if (is_array($videos)) {
+                    foreach ($videos as $index => $video) {
+                        if (isset($video['url']) && !empty($video['url'])) {
+                            $videoData[] = [
+                                'url' => $video['url'],
+                                'order' => $index + 1
+                            ];
+                        }
+                    }
+                }
+            }
+            
+            // Eliminar videos marcados para eliminación
+            if ($request->has('deleted_videos')) {
+                $deletedVideos = json_decode($request->input('deleted_videos'), true);
+                if (is_array($deletedVideos)) {
+                    $videoData = array_values(array_filter($videoData, function($video, $index) use ($deletedVideos) {
+                        return !in_array($index, $deletedVideos);
+                    }, ARRAY_FILTER_USE_BOTH));
+                }
+            }
+            
+            // Reordenar videos
+            if (!empty($videoData)) {
+                foreach ($videoData as $index => $video) {
+                    $videoData[$index]['order'] = $index + 1;
+                }
+            }
+            
+            $item->linkvideo = !empty($videoData) ? $videoData : null;
+            $item->save();
 
             // Guardar la imagen principal
             if ($request->hasFile('image')) {
@@ -119,25 +265,76 @@ class ItemController extends BasicController
                 $item->save();
             }
 
-            // Guardar las imágenes nuevas de la galería
-            if ($request->hasFile('gallery')) {
+            // Guardar la textura
+            if ($request->hasFile('texture')) {
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+                $full = $request->file("texture");
+                $uuid = Crypto::randomUUID();
+                $ext = $full->getClientOriginalExtension();
+                $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                Storage::put($path, file_get_contents($full));
+                $item->texture = "{$uuid}.{$ext}";
+                $item->save();
+            }
 
-                foreach ($request->file('gallery') as $file) {
+            // Manejar eliminación de archivos
+            if ($request->has('image_delete') && $request->input('image_delete') === 'DELETE') {
+                $item->image = null;
+                $item->save();
+            }
+            if ($request->has('banner_delete') && $request->input('banner_delete') === 'DELETE') {
+                $item->banner = null;
+                $item->save();
+            }
+            if ($request->has('texture_delete') && $request->input('texture_delete') === 'DELETE') {
+                $item->texture = null;
+                $item->save();
+            }
+
+            // Guardar las imágenes nuevas de la galería
+            $newImagesCount = 0;
+            if ($request->hasFile('gallery')) {
+                // Obtener el último orden de las imágenes existentes
+                $lastOrder = $item->images()->max('order') ?? 0;
+                
+                foreach ($request->file('gallery') as $index => $file) {
                     $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                     $full = $file;
                     $uuid = Crypto::randomUUID();
                     $ext = $full->getClientOriginalExtension();
-                    $path = "images/{$snake_case}/gallery/{$uuid}.{$ext}";
+                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
                     Storage::put($path, file_get_contents($full));
-                    $item->images()->create(['url' => "{$uuid}.{$ext}"]);
+                    
+                    // Crear imagen con orden secuencial
+                    $item->images()->create([
+                        'url' => "{$uuid}.{$ext}",
+                        'order' => $lastOrder + $index + 1
+                    ]);
+                    $newImagesCount++;
                 }
             }
 
-            // Actualizar las imágenes existentes
-            if ($request->has('gallery_ids')) {
+            // Actualizar el orden de las imágenes existentes
+            if ($request->has('gallery_order')) {
+                $galleryOrder = json_decode($request->input('gallery_order'), true);
+                Log::info('Gallery order received:', ['gallery_order' => $galleryOrder]);
+                
+                foreach ($galleryOrder as $index => $imageData) {
+                    if (isset($imageData['id']) && $imageData['type'] === 'existing') {
+                        $item->images()->where('id', $imageData['id'])->update([
+                            'order' => $index + 1,
+                            'item_id' => $item->id
+                        ]);
+                    }
+                }
+            } else if ($request->has('gallery_ids')) {
+                // Fallback para compatibilidad (sin reordenamiento)
                 $existingImageIds = $request->input('gallery_ids');
-                foreach ($existingImageIds as $id) {
-                    $item->images()->where('id', $id)->update(['item_id' => $item->id]);
+                foreach ($existingImageIds as $index => $id) {
+                    $item->images()->where('id', $id)->update([
+                        'item_id' => $item->id,
+                        'order' => $index + 1
+                    ]);
                 }
             }
 
@@ -145,7 +342,20 @@ class ItemController extends BasicController
             if ($request->has('deleted_images')) {
                 $deletedImageIds = $request->input('deleted_images');
                 $item->images()->whereIn('id', $deletedImageIds)->delete();
+                
+                // Reordenar las imágenes restantes después de eliminar
+                $remainingImages = $item->images()->orderBy('order')->get();
+                foreach ($remainingImages as $index => $image) {
+                    $image->update(['order' => $index + 1]);
+                }
             }
+
+            // Generar slug como en BasicController
+            $this->generateSlug($item);
+
+            // Llamar al método afterSave para procesar tags y otros elementos
+            $isNew = !$request->has('id') || empty($request->input('id'));
+            $this->afterSave($request, $item, $isNew);
 
             DB::commit();
             return response(['message' => 'Elemento guardado correctamente'], 200);
@@ -154,62 +364,129 @@ class ItemController extends BasicController
             return response(['message' => 'Error al guardar el elemento: ' . $e->getMessage()], 500);
         }
     }
-*/
+    /*public function beforeSave(Request $request)
+    {
+        $body = $request->all();
+        
+        // Procesar campos que pueden ser null
+        $nullableFields = ['store_id', 'collection_id', 'subcategory_id', 'brand_id'];
+        
+        foreach ($nullableFields as $field) {
+            if (isset($body[$field]) && ($body[$field] === '' || $body[$field] === 'null')) {
+                $body[$field] = null;
+            }
+        }
+        
+        // Log para debug
+        Log::info('ItemController beforeSave - Processing store_id:', [
+            'original' => $request->input('store_id'),
+            'processed' => $body['store_id'] ?? 'not set'
+        ]);
+        
+        return $body;
+    }*/
+
     public function setReactViewProperties(Request $request)
     {
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
         $collections = Collection::where('status', 1)->get();
+        $stores = Store::where('status', 1)->get();
+        $generals = \App\Models\General::all();
 
         return [
             'categories' => $categories,
             'brands' => $brands,
-            'collections' => $collections
+            'collections' => $collections,
+            'stores' => $stores,
+            'generals' => $generals
         ];
     }
 
     public function setPaginationInstance(Request $request, string $model)
     {
         return $model::select(['items.*'])
-            ->with(['category', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features'])
-            ->leftJoin('categories AS category', 'category.id', 'items.category_id');
+            ->with(['category','tags' ,'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features'])
+            ->leftJoin('categories AS category', 'category.id', 'items.category_id')
+            ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
+            ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
+            ->leftJoin('stores AS store', 'store.id', 'items.store_id')
+            ->leftJoin('sub_categories AS subcategory', 'subcategory.id', 'items.subcategory_id');
     }
 
 
 
+    protected function generateSlug($item)
+    {
+        $table = (new $this->model)->getTable();
+        if (Schema::hasColumn($table, 'slug')) {
+            // Generar el slug base usando el nombre del producto
+            $slugBase = $item->name;
+            // Si existe el campo 'color' y tiene valor, añadirlo al slug
+            if (Schema::hasColumn($table, 'color') && !empty($item->color)) {
+                $slugBase .= '-' . $item->color;
+            }
+
+            if (Schema::hasColumn($table, 'size') && !empty($item->size)) {
+                $slugBase .= '-' . $item->size;
+            }
+
+            $slug = Str::slug($slugBase);
+            // Verificar si el slug ya existe para otro registro
+            $slugExists = $this->model::where('slug', $slug)
+                ->where('id', '<>', $item->id)
+                ->exists();
+            // Si existe, añadir un identificador único corto
+            if ($slugExists) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+            // Actualizar el slug
+            $item->update(['slug' => $slug]);
+        }
+    }
+
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
     {
-        $tags = explode(',', $request->tags ?? '');
-
-        DB::transaction(function () use ($jpa, $tags, $request) {
-            // Manejo de Tags
-            ItemTag::where('item_id', $jpa->id)->whereNotIn('tag_id', $tags)->delete();
-
-            foreach ($tags as $tag) {
-                if (Uuid::isValid($tag)) {
-                    $tagId = $tag;
-                } else {
-                    $tagJpa = Tag::firstOrCreate(['name' => $tag]);
-                    $tagId = $tagJpa->id;
-                }
-
-                ItemTag::updateOrCreate([
-                    'item_id' => $jpa->id,
-                    'tag_id' => $tagId
-                ]);
-            }
+        // Manejar tags como array o string separada por comas
+        $tags = $request->input('tags', []);
+        if (is_string($tags)) {
+            $tags = explode(',', $tags);
+        }
+        // Filtrar valores vacíos
+        $tags = array_filter($tags, function($tag) {
+            return !empty(trim($tag));
         });
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $file) {
-                if (!$file) continue;
 
-                $imageRequest = new Request();
-                $imageRequest->replace(['item_id' => $jpa->id]);
-                $imageRequest->files->set('url', $file);
+        // Manejo de Tags (ya estamos dentro de una transacción del método save)
+        ItemTag::where('item_id', $jpa->id)->whereNotIn('tag_id', $tags)->delete();
 
-                (new ItemImageController())->save($imageRequest);
+        foreach ($tags as $tag) {
+            if (Uuid::isValid($tag)) {
+                $tagId = $tag;
+            } else {
+                $tagJpa = Tag::firstOrCreate(['name' => $tag]);
+                $tagId = $tagJpa->id;
+            }
+
+            ItemTag::updateOrCreate([
+                'item_id' => $jpa->id,
+                'tag_id' => $tagId
+            ]);
+        }
+
+        // Manejo de Amenidades (solo para habitaciones)
+        if ($request->has('amenities')) {
+            $amenities = $request->input('amenities', []);
+            // Log para debug
+            Log::info('Amenities recibidos:', ['amenities' => $amenities, 'type' => $request->input('type'), 'item_id' => $jpa->id]);
+            
+            if (is_array($amenities) && count($amenities) > 0) {
+                $jpa->amenities()->sync($amenities);
+                Log::info('Amenities sincronizados correctamente', ['count' => count($amenities)]);
             }
         }
+        
+        // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
 
         // Decodificar features y specifications
         $features = json_decode($request->input('features'), true);
@@ -246,5 +523,52 @@ class ItemController extends BasicController
         //         );
         //     }
         // }
+    }
+
+    /**
+     * Exportar items en formato Excel compatible con importación
+     */
+    public function export(Request $request)
+    {
+        try {
+            Log::info('Iniciando exportación de items');
+            
+            $fileName = 'items_export_' . date('Y-m-d_His') . '.xlsx';
+            
+            Log::info('Creando archivo Excel', ['fileName' => $fileName]);
+            
+            return Excel::download(new UnifiedItemExport, $fileName);
+        } catch (\Exception $e) {
+            Log::error('Error al exportar items: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al exportar items: ' . $e->getMessage(),
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    }
+
+    /**
+     * Vista React para gestión de habitaciones (rooms)
+     */
+    public function roomsView(Request $request)
+    {
+        // Cambiar temporalmente el reactView a Rooms
+        $originalView = $this->reactView;
+        $this->reactView = 'Admin/Rooms';
+        
+        $response = $this->reactView($request);
+        
+        // Restaurar el reactView original
+        $this->reactView = $originalView;
+        
+        return $response;
     }
 }

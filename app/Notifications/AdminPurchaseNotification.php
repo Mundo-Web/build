@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Mail\RawHtmlMail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminPurchaseNotification extends Notification implements ShouldQueue
 {
@@ -50,6 +51,16 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             // Variables del cupón
             'cupon_codigo'    => 'Código del cupón aplicado',
             'cupon_descuento' => 'Descuento del cupón aplicado',
+            'cupon_aplicado'  => 'Indica si se aplicó un cupón (true/false)',
+            
+            // Variables de promociones/descuentos automáticos
+            'promocion_descuento' => 'Monto total de descuentos automáticos/promociones',
+            'promocion_aplicada'  => 'Indica si se aplicaron promociones (true/false)',
+            
+            // Variables del comprobante de pago
+            'comprobante_pago' => 'URL del comprobante de pago subido (Yape/Transferencia)',
+            'tiene_comprobante' => 'Indica si el cliente subió comprobante (true/false)',
+            'metodo_pago'      => 'Método de pago usado (tarjeta, yape, transferencia, etc.)',
             
             // Variables de facturación
             'invoice_type'    => 'Tipo de comprobante',
@@ -78,24 +89,50 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             $template = \App\Models\General::where('correlative', 'purchase_summary_email')->first();
         }
 
-        // Calcular valores monetarios - REPLICANDO LA LÓGICA DE PurchaseSummaryNotification
-        // amount ya es el total final (con IGV, envío y descuento de cupón aplicado)
-        $totalAmount = $this->sale->amount ?? 0;
+        // Calcular valores monetarios correctamente desde los detalles de venta
+        // IGUAL que en PurchaseSummaryNotification
         $deliveryCost = $this->sale->delivery ?? 0;
         $couponDiscount = $this->sale->coupon_discount ?? 0;
+        $promotionDiscount = $this->sale->promotion_discount ?? 0;
         
-        // Para mostrar el desglose correcto, necesitamos calcular el subtotal ORIGINAL
-        // (antes del descuento del cupón) para que coincida con lo que se muestra en web
+        // Calcular el subtotal REAL sumando los productos (price * quantity)
+        // Estos precios YA incluyen IGV porque vienen del carrito
+        $subtotalProductos = 0;
+        foreach ($this->details as $detail) {
+            $subtotalProductos += ($detail->price * $detail->quantity);
+        }
         
-        // Paso 1: Obtener el total sin envío
-        $totalSinEnvio = $totalAmount - $deliveryCost;
+        // Log para debug
+        Log::info('AdminPurchaseNotification - Cálculo de correo para admin:', [
+            'sale_id' => $this->sale->id,
+            'sale_amount' => $this->sale->amount,
+            'subtotal_productos_raw' => $subtotalProductos,
+            'coupon_discount' => $couponDiscount,
+            'promotion_discount' => $promotionDiscount,
+            'delivery_cost' => $deliveryCost,
+            'details_count' => count($this->details)
+        ]);
         
-        // Paso 2: Agregar el descuento del cupón para obtener el total original (antes del cupón)
-        $totalOriginalSinEnvio = $totalSinEnvio + $couponDiscount;
+        // Aplicar descuentos (cupón y promociones) al subtotal de productos
+        $subtotalConDescuentos = $subtotalProductos - $couponDiscount - $promotionDiscount;
         
-        // Paso 3: Separar subtotal e IGV del total original
-        $subtotalAmount = $totalOriginalSinEnvio / 1.18;  // Subtotal sin IGV
-        $igvAmount = $totalOriginalSinEnvio - $subtotalAmount;  // IGV del subtotal
+        // Separar el subtotal (sin IGV) y el IGV (18%)
+        // $subtotalConDescuentos ya incluye el IGV, entonces:
+        $subtotalAmount = $subtotalConDescuentos / 1.18;  // Subtotal sin IGV (base imponible)
+        $igvAmount = $subtotalConDescuentos - $subtotalAmount;  // IGV (18%)
+        
+        // Total final = subtotal con descuentos + envío
+        $totalAmount = $subtotalConDescuentos + $deliveryCost;
+        
+        // Log de valores finales
+        Log::info('AdminPurchaseNotification - Valores calculados para admin:', [
+            'subtotal_sin_igv' => $subtotalAmount,
+            'igv' => $igvAmount,
+            'subtotal_con_igv' => $subtotalConDescuentos,
+            'envio' => $deliveryCost,
+            'total_calculado' => $totalAmount,
+            'total_esperado' => $this->sale->amount
+        ]);
 
         // Crear dirección completa
         $direccion_completa = collect([
@@ -106,7 +143,31 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             $this->sale->departamento
         ])->filter()->implode(', ');
 
-        // Generar detalle de productos
+        // Armar array de productos para bloque repetible (con más detalles)
+        $productos = [];
+        foreach ($this->details as $detail) {
+            $imgPath = $detail->image ?? ($detail->item->image ?? '');
+            $imgUrl = '';
+            if (preg_match('/^https?:\\/\\//i', $imgPath)) {
+                $imgUrl = $imgPath;
+            } elseif ($imgPath) {
+                $imgUrl = url('storage/images/item/' . rawurlencode(ltrim($imgPath, '/')));
+            }
+            $precio_unitario = isset($detail->price) ? number_format($detail->price, 2) : '';
+            $cantidad = $detail->quantity ?? 1;
+            $precio_total = (isset($detail->price) && $cantidad) ? number_format($detail->price * $cantidad, 2) : $precio_unitario;
+            $productos[] = [
+                'nombre'          => $detail->name ?? '',
+                'cantidad'        => $cantidad,
+                'sku'             => $detail->sku ?? ($detail->item->sku ?? ''),
+                'precio_unitario' => $precio_unitario,
+                'precio_total'    => $precio_total,
+                'categoria'       => $detail->item->category->name ?? '',
+                'imagen'          => url('storage/images/item/' . rawurlencode($detail->item->image ?? '')),
+            ];
+        }
+
+        // Generar detalle de productos en texto plano (para plantillas simples)
         $productos_detalle = $this->details->map(function($detail) {
             return "• {$detail->name} (Cant: {$detail->quantity}) - S/ " . number_format($detail->price, 2);
         })->implode("\n");
@@ -120,21 +181,36 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
                 'customer_name'   => $this->sale->name . ' ' . $this->sale->lastname,
                 'customer_email'  => $this->sale->email,
                 'customer_phone'  => $this->sale->phone,
+                'nombre'          => $this->sale->name ?? '',
+                'email'           => $this->sale->email ?? '',
+                'telefono'        => $this->sale->phone ?? '',
                 'year'            => date('Y'),
-                'total'           => 'S/ ' . number_format($totalAmount, 2),
-                'subtotal'        => 'S/ ' . number_format($subtotalAmount, 2),
-                'igv'             => 'S/ ' . number_format($igvAmount, 2),
-                'costo_envio'     => 'S/ ' . number_format($deliveryCost, 2),
-                'direccion_envio' => $direccion_completa,
-                'distrito'        => $this->sale->district,
-                'provincia'       => $this->sale->province,
-                'departamento'    => $this->sale->department,
-                'referencia'      => $this->sale->reference,
-                'comentario'      => $this->sale->comment,
+                'total'           => number_format($totalAmount, 2),
+                'subtotal'        => number_format($subtotalAmount, 2),
+                'igv'             => number_format($igvAmount, 2),
+                'costo_envio'     => number_format($deliveryCost, 2),
+                'direccion_envio' => $this->sale->address ?? '',
+                'distrito'        => $this->sale->district ?? '',
+                'provincia'       => $this->sale->province ?? '',
+                'departamento'    => $this->sale->department ?? '',
+                'referencia'      => $this->sale->reference ?? '',
+                'comentario'      => $this->sale->comment ?? '',
                 
                 // Variables del cupón
                 'cupon_codigo'    => $this->sale->coupon_code ?? 'No aplicado',
-                'cupon_descuento' => 'S/ ' . number_format($couponDiscount, 2),
+                'cupon_descuento' => number_format($couponDiscount, 2),
+                'cupon_aplicado'  => !empty($this->sale->coupon_code),
+                
+                // Variables de descuentos automáticos/promociones
+                'promocion_descuento' => number_format($promotionDiscount, 2),
+                'promocion_aplicada'  => $promotionDiscount > 0,
+                
+                // Comprobante de pago (para Yape/Transferencia)
+                'comprobante_pago' => !empty($this->sale->payment_proof) 
+                    ? url('storage/images/sale/' . rawurlencode($this->sale->payment_proof))
+                    : '',
+                'tiene_comprobante' => !empty($this->sale->payment_proof),
+                'metodo_pago' => $this->sale->payment_method ?? 'Culqi',
                 
                 // Variables de facturación
                 'invoice_type'    => $this->sale->invoiceType ?? 'Boleta',
@@ -143,12 +219,13 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
                 'business_name'   => $this->sale->businessName ?? 'No aplica',
                 
                 // Variables de productos
+                'productos'         => $productos,
                 'productos_detalle' => $productos_detalle,
                 'productos_cantidad' => $this->details->sum('quantity'),
                 
                 // Variables de pago
-                'payment_method'  => 'Tarjeta de Crédito/Débito (Culqi)',
-                'payment_id'      => $this->sale->culqi_charge_id,
+                'payment_method'  => $this->sale->payment_method ?? 'Culqi',
+                'payment_id'      => $this->sale->culqi_charge_id ?? '',
             ])
             : 'Nueva compra realizada - Pedido #' . $this->sale->code;
 

@@ -6,8 +6,10 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Combo;
+use App\Models\General;
 use App\Models\Item;
 use App\Models\ItemTag;
+use App\Models\Store;
 use App\Models\SubCategory;
 use App\Models\Tag;
 use App\Models\WebDetail;
@@ -41,25 +43,34 @@ class ItemController extends BasicController
         try {
 
             $limite = $request->limit ?? 0;
+            
             // Obtener el producto principal por slug
-            $product = Item::with(['category', 'brand', 'images', 'specifications'])
+            $product = Item::with(['category',"store", 'brand', 'images', 'specifications'])
                 ->where('slug', $request->slug)
                 ->firstOrFail();
 
-            if ($limite > 0) {
-                $product->load(['variants' => function ($query) use ($limite) {
-                    $query->limit($limite);
-                }]);
-            }else{
-                $product->load(['variants']);
-            }
-            // Obtener las variantes (productos con el mismo nombre pero diferente ID)
-            // $variants = Item::where('name', $product->name)
-            //     ->where('id', '!=', $product->id)
-            //     ->get(['id', 'slug', 'color', 'texture', 'image', 'final_price']);
+            $product->load(['variants']);
 
-            // Agregar las variantes al producto principal
-            // $product->variants = $variants;
+            $uniqueVariants = $product->variants
+                ->groupBy('color')
+                ->map(function ($group) {
+                    return $group->first(); 
+                })
+                ->values(); 
+
+            $product->setRelation('variants', $uniqueVariants);
+
+
+            // if ($limite > 0) {
+            //     $product->load(['variants' => function ($query) use ($limite) {
+            //         $query->limit($limite);
+            //     }]);
+            // }else{
+            //     $product->load(['variants']);
+            // }
+
+
+
             $response->status = 200;
             $response->message = 'Producto obtenido correctamente';
             $response->data = $product;
@@ -72,6 +83,78 @@ class ItemController extends BasicController
         return response($response->toArray(), $response->status);
     }
 
+    public function getColorsItems(Request $request)
+    {
+        $response = new Response();
+
+        try {
+            $limite = $request->limit ?? 0;
+            
+            // Obtener el producto principal por slug
+            $product = Item::with(['category',"store", 'brand', 'images', 'specifications'])
+                ->where('slug', $request->slug)
+                ->firstOrFail();
+
+            // Obtener todas las variantes incluyendo el producto actual
+            $allVariants = Item::where('name', $product->name)
+                ->select(['id', 'slug', 'name', 'color', 'texture', 'image', 'final_price'])
+                ->get();
+
+            // Agrupar por color y quedarse con la primera de cada grupo
+            $uniqueVariants = $allVariants
+                ->groupBy('color')
+                ->map(function ($group) {
+                    return $group->first(); 
+                })
+                ->values(); 
+
+            $product->setRelation('variants', $uniqueVariants);
+
+            $response->status = 200;
+            $response->message = 'Producto obtenido correctamente';
+            $response->data = $product;
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            $response->status = 404;
+            $response->message = 'Producto no encontrado';
+        }
+
+        return response($response->toArray(), $response->status);
+    }
+
+    public function getSizesItems(Request $request)
+    {
+        $response = new Response();
+
+        try {
+          
+            // Obtener el producto principal por slug
+            $product = Item::with(['category',"store", 'brand', 'images', 'specifications'])
+            ->where('slug', $request->slug)
+            ->firstOrFail();
+
+            // Obtener las variantes (productos con el mismo nombre pero diferente ID)
+            $sizes = Item::where('name', $product->name)
+                ->where('color', $product->color)
+                ->where('visible', true)
+                ->where('status', true)
+                ->whereNotNull('size')
+                ->orderBy('size')
+                ->get();
+
+            // Agregar las variantes al producto principal
+            // $product->sizes = $sizes;
+
+            $response->status = 200;
+            $response->message = 'Tamaños obtenidos correctamente';
+            $response->data = $sizes;
+        } catch (\Throwable $th) {
+            $response->status = 404;
+            $response->message = 'Producto no encontrado';
+        }
+
+        return response($response->toArray(), $response->status);
+    }
 
     public function setReactViewProperties(Request $request)
     {
@@ -86,9 +169,14 @@ class ItemController extends BasicController
             ->where('items.visible', true)
             ->get();
         $details = WebDetail::where('page', 'courses')->get();
+        
+        // Get all generals including SEO data
+        $generals = General::where('status', true)->get()->keyBy('correlative');
+        
         return [
             'categories' => $categories,
-            'details' => $details
+            'details' => $details,
+            'generals' => $generals,
         ];
     }
     /*aqui agregar el codigo*/
@@ -98,15 +186,65 @@ class ItemController extends BasicController
         //dump('[STEP 1] setPaginationInstance INICIO', $request->all());
         //dump('[STEP 2] Antes de armar query base');
         $query = $model::select(['items.*'])
-            ->with(['collection', 'category', 'subcategory', 'brand', 'tags'])
+            ->distinct() // Agregar DISTINCT para evitar duplicados por múltiples tags
+            ->with(['collection', 'category', 'subcategory', 'brand', 'store', 'tags'])
             ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
             ->leftJoin('categories AS category', 'category.id', 'items.category_id')
             ->leftJoin('sub_categories AS subcategory', 'subcategory.id', 'items.subcategory_id')
             ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
+            ->leftJoin('stores AS store', 'store.id', 'items.store_id')
             ->leftJoin('item_tags AS item_tag', 'item_tag.item_id', 'items.id')
             ->where('items.status', true)
-            ->where('items.visible', true)
-            ->where(function ($query) {
+            ->where('items.visible', true);
+        
+        // Búsqueda inteligente con paráfrasis: detectar términos en cualquier orden
+        if ($request->has('filter') && is_array($request->filter)) {
+            $searchTerms = [];
+            $this->extractSearchTerms($request->filter, $searchTerms);
+            
+            if (!empty($searchTerms)) {
+                // Dividir cada término de búsqueda en palabras individuales
+                $allWords = [];
+                foreach ($searchTerms as $term) {
+                    $words = preg_split('/\s+/', trim($term));
+                    $allWords = array_merge($allWords, array_filter($words, fn($w) => strlen($w) >= 2));
+                }
+                
+                if (!empty($allWords)) {
+                    // Convertir todas las palabras a minúsculas para búsqueda case-insensitive
+                    $allWords = array_map('strtolower', $allWords);
+                    
+                    // Cambiar lógica: buscar que CUALQUIER palabra coincida (OR entre palabras)
+                    $query->where(function($q) use ($allWords) {
+                        foreach ($allWords as $word) {
+                            // Escapar caracteres especiales para evitar SQL injection
+                            $word = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $word);
+                            // OR entre cada palabra: si encuentra "lector" O "optico" muestra el resultado
+                            $q->orWhere(function($subQ) use ($word) {
+                                $subQ->whereRaw('LOWER(items.name) LIKE ?', ["%{$word}%"])
+                                     ->orWhereRaw('LOWER(items.summary) LIKE ?', ["%{$word}%"])
+                                     ->orWhereRaw('LOWER(items.description) LIKE ?', ["%{$word}%"])
+                                     ->orWhereRaw('LOWER(items.sku) LIKE ?', ["%{$word}%"]);
+                            });
+                        }
+                    });
+                    
+                    // Ordenar por relevancia: productos con MÁS coincidencias aparecen primero
+                    $caseStatements = [];
+                    foreach ($allWords as $word) {
+                        // SKU vale 4 puntos (prioridad máxima), Name vale 3 puntos, summary 2, description 1
+                        $caseStatements[] = "(CASE WHEN LOWER(items.sku) LIKE '%{$word}%' THEN 4 ELSE 0 END)";
+                        $caseStatements[] = "(CASE WHEN LOWER(items.name) LIKE '%{$word}%' THEN 3 ELSE 0 END)";
+                        $caseStatements[] = "(CASE WHEN LOWER(items.summary) LIKE '%{$word}%' THEN 2 ELSE 0 END)";
+                        $caseStatements[] = "(CASE WHEN LOWER(items.description) LIKE '%{$word}%' THEN 1 ELSE 0 END)";
+                    }
+                    $relevanceScore = implode(' + ', $caseStatements);
+                    $query->orderByRaw("({$relevanceScore}) DESC");
+                }
+            }
+        }
+        
+        $query->where(function ($query) {
                 $query->where('collection.status', true)
                     ->orWhereNull('collection.id');
             })
@@ -137,6 +275,14 @@ class ItemController extends BasicController
             ->where(function ($query) {
                 $query->where('brand.visible', true)
                     ->orWhereNull('brand.id');
+            })
+            ->where(function ($query) {
+                $query->where('store.status', true)
+                    ->orWhereNull('store.id');
+            })
+            ->where(function ($query) {
+                $query->where('store.visible', true)
+                    ->orWhereNull('store.id');
             });
         //dump('[STEP 3] Query base armada');
 
@@ -294,10 +440,11 @@ class ItemController extends BasicController
             $selectedCategories = $request->input('category_id', []);
             $selectedSubcategories = $request->input('subcategory_id', []);
             $selectedCollections = $request->input('collection_id', []);
+            $selectedStores = $request->input('store_id', []);
             $selectedTags = []; // Inicializar array para tags seleccionados
 
             // Extraer filtros del filtro complejo si no hay filtros directos
-            if ((empty($selectedBrands) && empty($selectedCategories) && empty($selectedSubcategories) && empty($selectedCollections)) && $request->filter) {
+            if ((empty($selectedBrands) && empty($selectedCategories) && empty($selectedSubcategories) && empty($selectedCollections) && empty($selectedStores)) && $request->filter) {
                 $filter = $request->filter;
                 if (is_array($filter)) {
                     foreach ($filter as $f1) {
@@ -314,6 +461,8 @@ class ItemController extends BasicController
                                         $selectedSubcategories[] = $f2[2];
                                     } elseif (($f2[0] === 'collection.slug' || $f2[0] === 'collection.id') && $f2[1] === '=') {
                                         $selectedCollections[] = $f2[2];
+                                    } elseif (($f2[0] === 'store.slug' || $f2[0] === 'store.id') && $f2[1] === '=') {
+                                        $selectedStores[] = $f2[2];
                                     } elseif ($f2[0] === 'item_tag.tag_id' && $f2[1] === '=') {
                                         $selectedTags[] = $f2[2];
                                     }
@@ -330,6 +479,8 @@ class ItemController extends BasicController
                                     $selectedSubcategories[] = $f1[2];
                                 } elseif (($f1[0] === 'collection.slug' || $f1[0] === 'collection.id') && $f1[1] === '=') {
                                     $selectedCollections[] = $f1[2];
+                                } elseif (($f1[0] === 'store.slug' || $f1[0] === 'store.id') && $f1[1] === '=') {
+                                    $selectedStores[] = $f1[2];
                                 } elseif ($f1[0] === 'item_tag.tag_id' && $f1[1] === '=') {
                                     $selectedTags[] = $f1[2];
                                 }
@@ -364,6 +515,7 @@ class ItemController extends BasicController
             $i4category = clone $originalBuilder;
             $i4subcategory = clone $originalBuilder;
             $i4brand = clone $originalBuilder;
+            $i4store = clone $originalBuilder;
             $i4tag = clone $originalBuilder;
             
             // PADRES: aplicar filtros cruzados para mejor UX
@@ -436,6 +588,48 @@ class ItemController extends BasicController
                     : Item::getForeign($i4brand, Brand::class, 'brand_id');
             }
 
+            // STORES: Filtrar tiendas según el contexto
+            if (!empty($selectedTags)) {
+                // FILTRADO DINÁMICO POR TAGS: Solo mostrar tiendas de productos que tienen el tag seleccionado
+                $storeBuilder = clone $originalBuilder;
+                $storeBuilder->whereIn('item_tag.tag_id', $selectedTags);
+                $stores = Item::getForeign($storeBuilder, Store::class, 'store_id');
+            } elseif ($parentCategoryId && !in_array('store_id', $filterSequence)) {
+                // Si hay subcategoría seleccionada, filtrar tiendas por la categoría padre
+                $storeBuilder = clone $originalBuilder;
+                $storeBuilder->whereIn('items.category_id', [$parentCategoryId]);
+                $stores = Item::getForeign($storeBuilder, Store::class, 'store_id');
+            } elseif (!empty($selectedCategories) && !in_array('store_id', $filterSequence)) {
+                // Si hay categorías seleccionadas directamente, filtrar tiendas por esas categorías
+                $storeBuilder = clone $originalBuilder;
+                if (!empty($selectedCategories)) {
+                    $storeBuilder->whereIn('items.category_id', $selectedCategories);
+                }
+                $stores = Item::getForeign($storeBuilder, Store::class, 'store_id');
+            } elseif (!empty($selectedBrands) && !in_array('store_id', $filterSequence)) {
+                // Si hay marcas seleccionadas, filtrar tiendas por esas marcas
+                $storeBuilder = clone $originalBuilder;
+                $brandIds = [];
+                foreach ($selectedBrands as $brandValue) {
+                    if (is_numeric($brandValue)) {
+                        $brandIds[] = $brandValue;
+                    } else {
+                        $brand = Brand::where('slug', $brandValue)->first();
+                        if ($brand) {
+                            $brandIds[] = $brand->id;
+                        }
+                    }
+                }
+                if (!empty($brandIds)) {
+                    $storeBuilder->whereIn('brand_id', $brandIds);
+                }
+                $stores = Item::getForeign($storeBuilder, Store::class, 'store_id');
+            } else {
+                $stores = in_array('store_id', $filterSequence)
+                    ? Item::getForeign($originalBuilder, Store::class, 'store_id')
+                    : Item::getForeign($i4store, Store::class, 'store_id');
+            }
+
             // CATEGORIAS: lógica mejorada con filtros cruzados
             if (!empty($selectedTags)) {
                 // FILTRADO DINÁMICO POR TAGS: Solo mostrar categorías de productos que tienen el tag seleccionado
@@ -449,23 +643,44 @@ class ItemController extends BasicController
                     ->where('visible', true)
                     ->first();
                 $categories = $parentCategory ? collect([$parentCategory]) : collect([]);
-            } elseif (!empty($selectedBrands) && !in_array('category_id', $filterSequence)) {
-                // Si hay marcas seleccionadas pero no categorías en secuencia, filtrar categorías por marcas
+            } elseif ((!empty($selectedBrands) || !empty($selectedStores)) && !in_array('category_id', $filterSequence)) {
+                // Si hay marcas o tiendas seleccionadas pero no categorías en secuencia, filtrar categorías por marcas/tiendas
                 $catBuilder = clone $originalBuilder;
                 
-                $brandIds = [];
-                foreach ($selectedBrands as $brandValue) {
-                    if (is_numeric($brandValue)) {
-                        $brandIds[] = $brandValue;
-                    } else {
-                        $brand = Brand::where('slug', $brandValue)->first();
-                        if ($brand) {
-                            $brandIds[] = $brand->id;
+                // Filtrar por marcas si existen
+                if (!empty($selectedBrands)) {
+                    $brandIds = [];
+                    foreach ($selectedBrands as $brandValue) {
+                        if (is_numeric($brandValue)) {
+                            $brandIds[] = $brandValue;
+                        } else {
+                            $brand = Brand::where('slug', $brandValue)->first();
+                            if ($brand) {
+                                $brandIds[] = $brand->id;
+                            }
                         }
                     }
+                    if (!empty($brandIds)) {
+                        $catBuilder->whereIn('brand_id', $brandIds);
+                    }
                 }
-                if (!empty($brandIds)) {
-                    $catBuilder->whereIn('brand_id', $brandIds);
+                
+                // Filtrar por tiendas si existen
+                if (!empty($selectedStores)) {
+                    $storeIds = [];
+                    foreach ($selectedStores as $storeValue) {
+                        if (is_numeric($storeValue)) {
+                            $storeIds[] = $storeValue;
+                        } else {
+                            $store = Store::where('slug', $storeValue)->first();
+                            if ($store) {
+                                $storeIds[] = $store->id;
+                            }
+                        }
+                    }
+                    if (!empty($storeIds)) {
+                        $catBuilder->whereIn('store_id', $storeIds);
+                    }
                 }
                 
                 $categories = Item::getForeign($catBuilder, Category::class, 'category_id');
@@ -499,7 +714,7 @@ class ItemController extends BasicController
                 } else {
                     $subcategories = collect([]);
                 }
-            } elseif (in_array('subcategory_id', $filterSequence) || !empty($selectedBrands) || !empty($selectedCategories)) {
+            } elseif (in_array('subcategory_id', $filterSequence) || !empty($selectedBrands) || !empty($selectedCategories) || !empty($selectedStores)) {
                 // Filtrar subcategorías cuando hay otros filtros activos
                 $subcatBuilder = clone $originalBuilder;
                 
@@ -518,6 +733,24 @@ class ItemController extends BasicController
                     }
                     if (!empty($brandIds)) {
                         $subcatBuilder->whereIn('brand_id', $brandIds);
+                    }
+                }
+                
+                // Aplicar filtro de tiendas si existe
+                if (!empty($selectedStores)) {
+                    $storeIds = [];
+                    foreach ($selectedStores as $storeValue) {
+                        if (is_numeric($storeValue)) {
+                            $storeIds[] = $storeValue;
+                        } else {
+                            $store = Store::where('slug', $storeValue)->first();
+                            if ($store) {
+                                $storeIds[] = $store->id;
+                            }
+                        }
+                    }
+                    if (!empty($storeIds)) {
+                        $subcatBuilder->whereIn('store_id', $storeIds);
                     }
                 }
                 
@@ -571,6 +804,7 @@ class ItemController extends BasicController
                 'categories' => $categories,
                 'subcategories' => $subcategories,
                 'brands' => $brands,
+                'stores' => $stores,
                 'tags' => $tags
             ];
         } catch (\Throwable $th) {
@@ -725,6 +959,8 @@ class ItemController extends BasicController
             $relatedItems = Item::where('category_id', $product->category_id)
                 ->where('id', '!=', $product->id) // Excluir el producto actual
                 ->with(['category', 'brand']) // Cargar relaciones necesarias
+                ->where('status', true)
+                ->where('visible', true)
                 ->take(10) // Limitar a 10 productos
                 ->get();
             ////dump($relatedItems);
@@ -948,9 +1184,19 @@ class ItemController extends BasicController
             }
 
             if ($request->filter) {
-                $instance->where(function ($query) use ($request) {
-                    dxDataGrid::filter($query, $request->filter ?? [], false, $this->prefix4filter);
-                });
+                // NO aplicar el filtro automático de DevExtreme para búsquedas
+                // porque ya lo manejamos en setPaginationInstance con búsqueda inteligente
+                // Solo aplicar si NO hay términos de búsqueda
+                $searchTerms = [];
+                $this->extractSearchTerms($request->filter, $searchTerms);
+                
+                if (empty($searchTerms)) {
+                    // No hay búsqueda de texto, aplicar filtros normales
+                    $instance->where(function ($query) use ($request) {
+                        dxDataGrid::filter($query, $request->filter ?? [], false, $this->prefix4filter);
+                    });
+                }
+                // Si hay términos de búsqueda, la lógica ya se aplicó en setPaginationInstance
             }
 
             // Custom filter handling for tags
@@ -1125,6 +1371,12 @@ class ItemController extends BasicController
                 $collectionIds = Collection::whereIn('slug', $collectionSlugs)->pluck('id')->toArray();
                 $result['collection_ids'] = $collectionIds;
             }
+
+            if ($request->has('store_slugs') && !empty($request->store_slugs)) {
+                $storeSlugs = is_array($request->store_slugs) ? $request->store_slugs : explode(',', $request->store_slugs);
+                $storeIds = Store::whereIn('slug', $storeSlugs)->pluck('id')->toArray();
+                $result['store_ids'] = $storeIds;
+            }
             
             $response->status = 200;
             $response->message = 'Slugs convertidos correctamente';
@@ -1152,14 +1404,46 @@ class ItemController extends BasicController
                 ->where('tags.visible', true)
                 ->where('items.status', true)
                 ->where('items.visible', true)
-                ->select('tags.id', 'tags.name', 'tags.description',"tags.icon","tags.background_color","tags.text_color","tags.image", DB::raw('COUNT(items.id) as items_count'))
-                ->groupBy('tags.id', 'tags.name', 'tags.description',"tags.icon","tags.background_color","tags.text_color","tags.image")
+                ->where('tags.menu',true)
+                // Solo tags activos: permanentes (sin fechas) o promocionales activos
+                ->where(function($query) {
+                    $query->where('tags.promotional_status', 'permanent')
+                          ->orWhere('tags.promotional_status', 'active');
+                })
+                ->select(
+                    'tags.id', 
+                    'tags.menu',
+                    'tags.name', 
+                    'tags.description',
+                    'tags.icon',
+                    'tags.background_color',
+                    'tags.text_color',
+                    'tags.image',
+                    'tags.promotional_status',
+                    'tags.start_date',
+                    'tags.end_date',
+                    DB::raw('COUNT(items.id) as items_count')
+                )
+                ->groupBy(
+                    'tags.id', 
+                    'tags.menu',
+                    'tags.name', 
+                    'tags.description',
+                    'tags.icon',
+                    'tags.background_color',
+                    'tags.text_color',
+                    'tags.image',
+                    'tags.promotional_status',
+                    'tags.start_date',
+                    'tags.end_date'
+                )
                 ->having('items_count', '>', 0)
+                ->orderBy('tags.promotional_status', 'desc') // Promocionales primero (active viene antes que permanent alfabéticamente)
                 ->orderBy('tags.name')
                 ->get();
 
             $response->status = 200;
-            $response->message = 'Tags obtenidos correctamente';
+            $response->message = 'Tags activos obtenidos correctamente';
             $response->data = $tags;
 
         } catch (\Throwable $th) {
@@ -1167,6 +1451,82 @@ class ItemController extends BasicController
             $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
         } finally {
             return response($response->toArray(), $response->status);
+        }
+    }
+
+    /**
+     * Get combos that contain a specific item
+     */
+    public function getItemCombos(Request $request, $itemId)
+    {
+        $response = new Response();
+        
+        try {
+            $combos = Combo::whereHas('items', function($query) use ($itemId) {
+                $query->where('item_id', $itemId)
+                      ->where('is_main_item', 1);
+            })
+            ->with(['items' => function($query) {
+                $query->select('items.id', 'items.name', 'items.image', 'items.final_price');
+            }])
+            ->where('visible', true)
+            ->where('status', 1)
+            ->get();
+
+            $formattedCombos = $combos->map(function ($combo) {
+                return [
+                    'id' => $combo->id,
+                    'name' => $combo->name,
+                    'price' => $combo->price,
+                    'discount' => $combo->discount ?? 0,
+                    'final_price' => $combo->final_price ?: $combo->price,
+                    'discount_percent' => $combo->discount_percent ?? 0,
+                    'image' => $combo->image ?: ($combo->items->first()->image ?? null),
+                    'type' => 'combo',
+                    'combo_items' => $combo->items->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'image' => $item->image,
+                            'price' => $item->final_price,
+                            'quantity' => $item->pivot->quantity ?? 1,
+                            'is_main_item' => $item->pivot->is_main_item ?? false
+                        ];
+                    }),
+                ];
+            });
+
+            $response->status = 200;
+            $response->message = 'Combos obtenidos correctamente';
+            $response->data = $formattedCombos;
+
+        } catch (\Throwable $th) {
+            $response->status = 400;
+            $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
+        } finally {
+            return response($response->toArray(), $response->status);
+        }
+    }
+    
+    /**
+     * Extraer términos de búsqueda del array de filtros de manera recursiva
+     */
+    private function extractSearchTerms($filter, &$searchTerms)
+    {
+        if (!is_array($filter)) return;
+        
+        foreach ($filter as $item) {
+            if (is_array($item)) {
+                // Si es un array de condición [campo, operador, valor]
+                if (count($item) === 3 && 
+                    ($item[1] === 'contains' || $item[1] === 'like') &&
+                    (in_array($item[0], ['name', 'summary', 'description']))) {
+                    $searchTerms[] = $item[2];
+                } else {
+                    // Recursión para arrays anidados
+                    $this->extractSearchTerms($item, $searchTerms);
+                }
+            }
         }
     }
 }

@@ -167,7 +167,7 @@ const RepositoryDropzone = ({ files: filesDB, height = 'calc(100vh - 240px)', se
 
   useEffect(() => {
     if (files.length == 0) getFiles()
-  }, [null])
+  }, [])
 
   const onSelectionChange = (e, file) => {
     const isChecked = e.target.checked

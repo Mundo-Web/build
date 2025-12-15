@@ -8,8 +8,10 @@ const TopBarPanni = React.lazy(() => import("./TopBars/TopBarPanni"));
 const TopBarCopyrightSocials = React.lazy(() =>
     import("./TopBars/TopBarCopyrightSocials")
 );
+const TopBarPages = React.lazy(() => import("./TopBars/TopBarPages"));
+const TopBarAddress = React.lazy(() => import("./TopBars/TopBarAddress"));
 
-const TopBar = ({ data, which, items, setCart, cart, isUser }) => {
+const TopBar = ({ data, which, items, setCart, cart, isUser,pages }) => {
     const getTopBar = () => {
         switch (which) {
             case "TopBarSimple":
@@ -55,6 +57,16 @@ const TopBar = ({ data, which, items, setCart, cart, isUser }) => {
                         isUser={isUser}
                     />
                 );
+            case "TopBarPages":
+                return (
+                    <TopBarPages
+                        items={items}
+                        data={data}
+                        pages={pages}
+                    />
+                );
+            case "TopBarAddress":
+                return <TopBarAddress key="TopBarAddress" data={data}/>;
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

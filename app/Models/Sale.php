@@ -43,6 +43,9 @@ class Sale extends Model
         'comment',
         'amount',
         'delivery',
+        'seguro_importacion_total',
+        'derecho_arancelario_total',
+        'flete_total',
         'delivery_type',
         'store_id',
         'status_id',
@@ -57,19 +60,25 @@ class Sale extends Model
         'businessName',
         'payment_method',
         'payment_proof',
-        'coupon_id',
-        'coupon_discount',
         'applied_promotions',
         'promotion_discount',
         'total_amount',
+        'bundle_discount',
+        'renewal_discount',
+        'zip_code',
     ];
 
     protected $casts = [
         'applied_promotions' => 'array',
         'promotion_discount' => 'decimal:2',
         'coupon_discount' => 'decimal:2',
+        'bundle_discount' => 'decimal:2',
+        'renewal_discount' => 'decimal:2',
         'amount' => 'decimal:2',
         'delivery' => 'decimal:2',
+        'seguro_importacion_total' => 'decimal:2',
+        'derecho_arancelario_total' => 'decimal:2',
+        'flete_total' => 'decimal:2',
     ];
 
     public function details()
@@ -79,12 +88,42 @@ class Sale extends Model
 
     public function status()
     {
-        return $this->belongsTo(SaleStatus::class);
+        return $this->belongsTo(SaleStatus::class, 'status_id');
+    }
+
+    public function tracking()
+    {
+        $usersTable = 'users';
+        
+        // Si MULTI_DB está habilitado, usar la tabla de usuarios de la DB compartida
+        if (env('MULTI_DB_ENABLED', false)) {
+            $usersTable = env('DB_DATABASE_SHARED', 'katya_users_shared') . '.users';
+        }
+        
+        return $this->hasManyThrough(SaleStatus::class, SaleStatusTrace::class, 'sale_id', 'id', 'id', 'status_id')
+            ->select([
+                'sale_statuses.id',
+                'sale_statuses.name',
+                'sale_statuses.description',
+                'sale_statuses.color',
+                'sale_statuses.icon',
+                'sale_status_traces.created_at',
+                $usersTable . '.id as user_id',
+                $usersTable . '.name as user_name',
+                $usersTable . '.lastname as user_lastname',
+            ])->join($usersTable, $usersTable . '.id', 'sale_status_traces.user_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        $relation = $this->belongsTo(User::class);
+        
+        // Si MULTI_DB está habilitado, buscar en la DB compartida
+        if (env('MULTI_DB_ENABLED', false)) {
+            $relation->getRelated()->setConnection('mysql_shared_users');
+        }
+        
+        return $relation;
     }
 
     public function coupon()

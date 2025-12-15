@@ -11,6 +11,18 @@ class Global {
     static APP_COLOR_PRIMARY = null;
     static CULQI_PUBLIC_KEY = null;
     static CULQI_API = null;
+    static CULQI_ENABLED = null;
+    static CULQI_NAME = null;
+    static CULQI_RSA_ID = null;
+    static CULQI_RSA_PUBLIC_KEY = null;
+    static OPENPAY_MERCHANT_ID = null;
+    static OPENPAY_PUBLIC_KEY = null;
+    static OPENPAY_PRIVATE_KEY = null;
+    static OPENPAY_ENABLED = null;
+    static OPENPAY_SANDBOX_MODE = null;
+    static GOOGLE_CLIENT_ID = null;
+    static GOOGLE_OAUTH_ENABLED = null;
+    static API_KEY_TINYMCE = null;
 
     static set = (name, value) => {
         Global[name] = value;

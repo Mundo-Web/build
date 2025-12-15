@@ -10,4 +10,5 @@ class BrandController extends BasicController
     public $model = Brand::class;
     public $reactView = 'Admin/Brands';
     public $imageFields = ['image'];
+    public $defaultOrderBy = 'order_index'; // Ordenar por order_index por defecto
 }

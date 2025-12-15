@@ -19,7 +19,7 @@ const ScrapingSimple = ({ pages, filteredData, items, cart, setCart }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    console.log(products)
+
     return (
         <>
 
@@ -112,11 +112,11 @@ export default ScrapingSimple;
                                         <div className="flex flex-col items-baseline gap-2 mb-4">
                                             {product?.discount != null && !isNaN(product?.discount) && (
                                                 <span className="text-xs customtext-neutral-light font-semibold1 line-through">
-                                                    S/ {product?.price}
+                                                    {CurrencySymbol()} {product?.price}
                                                 </span>
                                             )}
                                             <span className="customtext-neutral-dark text-2xl font-bold">
-                                                S/ {product?.price}
+                                                {CurrencySymbol()} {product?.price}
                                             </span>
                                         </div>
                                     </div>

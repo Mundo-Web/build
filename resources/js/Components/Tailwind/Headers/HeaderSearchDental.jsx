@@ -1,0 +1,955 @@
+import { useEffect, useRef, useState } from "react";
+import Global from "../../../Utils/Global";
+import {
+    CircleUser,
+    DoorClosed,
+    Search,
+    ShoppingCart,
+    XIcon,
+    User,
+    Settings,
+    CreditCard,
+    Home,
+} from "lucide-react";
+import CartModal from "../Components/CartModal";
+import Logout from "../../../Actions/Logout";
+import MobileMenuSearchDental from "./Components/MobileMenuSearchDental";
+import ProfileImage from "./Components/ProfileImage";
+import { motion, AnimatePresence } from "framer-motion";
+import TopBarPages from "../TopBars/TopBarPages";
+import TopBarSimple from "../TopBars/TopBarSimple";
+import TopBarSocials from "../TopBars/TopBarSocials";
+import TopBarCart from "../TopBars/TopBarCart";
+import TopBarCopyright from "../TopBars/TopBarCopyright";
+import TopBarPanni from "../TopBars/TopBarPanni";
+import TopBarCopyrightSocials from "../TopBars/TopBarCopyrightSocials";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
+
+const HeaderSearchDental = ({
+    items,
+    data,
+    cart,
+    setCart,
+    isUser,
+    pages,
+    generals = [],
+}) => {
+    const phoneWhatsappObj = generals.find(
+        (item) => item.correlative === "phone_whatsapp"
+    );
+    const messageWhatsappObj = generals.find(
+        (item) => item.correlative === "message_whatsapp"
+    );
+    
+    const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
+    const messageWhatsapp = messageWhatsappObj?.description ?? null;
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [openMenu, setOpenMenu] = useState(false);
+    const [searchMobile, setSearchMobile] = useState(false);
+    const [search, setSearch] = useState("");
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isFixed, setIsFixed] = useState(false);
+
+    // Estados para búsqueda predictiva
+    const [searchSuggestions, setSearchSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+    const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+    const suggestionItemsRef = useRef([]); // Ref para elementos de sugerencia
+
+
+    const menuRef = useRef(null);
+    const searchRef = useRef(null);
+    const mobileSearchInputRef = useRef(null);
+    const desktopSearchInputRef = useRef(null);
+    const suggestionsRef = useRef(null);
+    const searchTimeoutRef = useRef(null);
+
+    // refs para scroll automático en sugerencias
+    const suggestionRefs = useRef([]);
+
+    const totalCount = cart.reduce((acc, item) => Number(acc) + Number(item.quantity), 0);
+
+    // Función para verificar si estamos en rutas donde no queremos mostrar la búsqueda móvil
+    // Usando window.location directamente para máxima compatibilidad
+    const shouldHideMobileSearch = () => {
+        try {
+            const currentPath = window.location.pathname || '';
+            const hiddenRoutes = ['/cart', '/checkout'];
+            return hiddenRoutes.some(route => currentPath.includes(route));
+        } catch (error) {
+            // En caso de error, mostrar la búsqueda móvil por defecto
+            console.warn('Error checking path:', error);
+            return false;
+        }
+    };
+
+    // Función para obtener sugerencias de búsqueda
+    const fetchSearchSuggestions = async (query) => {
+        if (!query.trim() || query.length < 2) {
+            setSearchSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        setIsLoadingSuggestions(true);
+
+        try {
+            const response = await fetch('/api/items/paginate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    take: 8, // Máximo 8 sugerencias
+                    skip: 0,
+                    filter: [
+                        ['name', 'contains', query],
+                        'or',
+                        ['summary', 'contains', query],
+                        'or',
+                        ['description', 'contains', query]
+                    ],
+                    sort: [{ selector: 'name', desc: false }],
+                    requireTotalCount: false,
+                    with: 'category,brand' // Incluir relaciones necesarias
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la búsqueda');
+            }
+
+            const data = await response.json();
+
+            if (data.status === 200 && Array.isArray(data.data)) {
+                setSearchSuggestions(data.data);
+                setShowSuggestions(data.data.length > 0);
+            } else {
+                setSearchSuggestions([]);
+                setShowSuggestions(false);
+            }
+        } catch (error) {
+            console.error('Error fetching search suggestions:', error);
+            setSearchSuggestions([]);
+            setShowSuggestions(false);
+        } finally {
+            setIsLoadingSuggestions(false);
+        }
+    };
+
+    // Función para manejar cambios en el input de búsqueda
+    const handleSearchChange = (value) => {
+        setSearch(value);
+        setSelectedSuggestionIndex(-1);
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            fetchSearchSuggestions(value);
+        }, 300);
+    };
+
+    // Función para limpiar sugerencias
+    const clearSuggestions = () => {
+        setShowSuggestions(false);
+        setSearchSuggestions([]);
+        setSelectedSuggestionIndex(-1);
+    };
+
+    // Función para seleccionar una sugerencia
+    const selectSuggestion = (suggestion) => {
+        if (!suggestion) return;
+
+        setShowSuggestions(false);
+        setSearchMobile(false);
+
+        // Navegar a la página del producto
+        const url = suggestion.slug
+            ? `/product/${suggestion.slug}`
+            : `/catalogo?search=${encodeURIComponent(suggestion.name)}`;
+
+        window.location.href = url;
+    };
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsMenuOpen(false);
+            }
+            // Mejorar el manejo del click outside para la búsqueda móvil
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                // Solo cerrar si no se está escribiendo activamente
+                if (!search.trim()) {
+                    setSearchMobile(false);
+                }
+            }
+            // Manejar click fuera de las sugerencias
+            if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&
+                !desktopSearchInputRef.current?.contains(event.target) &&
+                !mobileSearchInputRef.current?.contains(event.target)) {
+                clearSuggestions();
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside); // Para dispositivos táctiles
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("touchstart", handleClickOutside);
+        };
+    }, [search]); // Agregar search como dependencia
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 0) {
+                setIsFixed(true);
+            } else {
+                setIsFixed(false);
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    // useEffect para manejar el escape en la búsqueda móvil
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') {
+                if (showSuggestions) {
+                    clearSuggestions();
+                } else if (searchMobile) {
+                    setSearchMobile(false);
+                    setSearch("");
+                }
+            }
+        };
+
+        if (searchMobile || showSuggestions) {
+            document.addEventListener("keydown", handleKeyPress);
+        }
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyPress);
+        };
+    }, [searchMobile, showSuggestions]);
+
+    // Cleanup timeout en unmount
+    useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Efecto para scroll automático al seleccionar sugerencias
+    useEffect(() => {
+        if (
+            selectedSuggestionIndex >= 0 &&
+            suggestionRefs.current[selectedSuggestionIndex] &&
+            suggestionsRef.current
+        ) {
+            // Usar scrollIntoView para asegurar que la sugerencia seleccionada esté visible
+            suggestionRefs.current[selectedSuggestionIndex].scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth',
+            });
+        }
+    }, [selectedSuggestionIndex]);
+
+    const menuVariants = {
+        hidden: {
+            opacity: 0,
+            y: -10,
+            scale: 0.95
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: {
+                type: "spring",
+                stiffness: 400,
+                damping: 25
+            }
+        },
+        exit: {
+            opacity: 0,
+            y: -10,
+            scale: 0.95,
+            transition: {
+                duration: 0.15
+            }
+        }
+    };
+
+    const menuItems = [
+        {
+            icon: <User size={16} />,
+            label: "Mi Perfil",
+            href: "/profile"
+        },
+        {
+            icon: <ShoppingCart size={16} />,
+            label: "Mis Pedidos",
+            href: "/customer/dashboard"
+        },
+        {
+            icon: <Settings size={16} />,
+            label: "Configuración",
+            href: "/account"
+        },
+        {
+            icon: <DoorClosed size={16} />,
+            label: "Cerrar Sesión",
+            onClick: Logout
+        }
+    ];
+
+    // Función para manejar el submit del form (mejorada)
+    const handleFormSubmit = (event) => {
+        event.preventDefault();
+        clearSuggestions();
+        if (search.trim()) {
+            const trimmedSearch = search.trim();
+            window.location.href = `/catalogo?search=${encodeURIComponent(trimmedSearch)}`;
+        }
+        return false; // Prevenir comportamiento por defecto adicional
+    };
+
+    // Función específica para el input móvil
+    const handleMobileSearch = (event) => {
+        event.preventDefault();
+        clearSuggestions();
+        if (search.trim()) {
+            const trimmedSearch = search.trim();
+            setSearchMobile(false); // Cerrar el input móvil
+            window.location.href = `/catalogo?search=${encodeURIComponent(trimmedSearch)}`;
+        }
+        return false;
+    };
+
+    // --- SUGERENCIAS Y SCROLL INTELIGENTE ---
+    function scrollToSuggestion(index) {
+        const container = suggestionsRef.current;
+        const el = suggestionItemsRef.current[index];
+        if (!container || !el) return;
+        const containerRect = container.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        if (elRect.top < containerRect.top) {
+            // Scroll up
+            container.scrollTop -= (containerRect.top - elRect.top);
+        } else if (elRect.bottom > containerRect.bottom) {
+            // Scroll down
+            container.scrollTop += (elRect.bottom - containerRect.bottom);
+        }
+    }
+
+    // --- HANDLER DE TECLADO ---
+    const handleKeyDown = (e) => {
+        if (!showSuggestions || searchSuggestions.length === 0) return;
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                setSelectedSuggestionIndex(prev => {
+                    const next = prev < searchSuggestions.length - 1 ? prev + 1 : prev;
+                    setTimeout(() => scrollToSuggestion(next), 0);
+                    return next;
+                });
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                setSelectedSuggestionIndex(prev => {
+                    const next = prev > 0 ? prev - 1 : 0;
+                    setTimeout(() => scrollToSuggestion(next), 0);
+                    return next;
+                });
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < searchSuggestions.length) {
+                    selectSuggestion(searchSuggestions[selectedSuggestionIndex]);
+                } else if (search.trim()) {
+                    handleFormSubmit(e);
+                }
+                break;
+            case 'Escape':
+                setShowSuggestions(false);
+                break;
+            default:
+                break;
+        }
+    };
+
+    // --- SUGERENCIAS DE BÚSQUEDA ---
+    const SearchSuggestions = ({ suggestions, isLoading, onSelect, selectedIndex }) => {
+        if (!showSuggestions) return null;
+        return (
+            <motion.div
+                ref={suggestionsRef}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-[60] max-h-80 overflow-y-auto mt-1"
+            >
+                {isLoading ? (
+                    <div className="p-4 text-center customtext-neutral-dark">
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            Buscando...
+                        </div>
+                    </div>
+                ) : suggestions.length > 0 ? (
+                    <ul className="py-2">
+                        {suggestions.map((suggestion, index) => (
+                            <li
+                                key={suggestion.id}
+                                ref={el => suggestionItemsRef.current[index] = el}
+                            >
+                                <button
+                                    data-suggestion-button
+                                    onMouseDown={e => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setTimeout(() => onSelect(suggestion), 0);
+                                    }}
+                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${index === selectedIndex ? 'bg-primary border-l-4 border-primary' : ''}`}
+                                    type="button"
+                                >
+                                    <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+                                        {suggestion.image ? (
+                                            <img
+                                                src={`/api/items/media/${suggestion.image}`}
+                                                alt={suggestion.name}
+                                                className="w-full h-full object-cover"
+                                                onError={e => {
+                                                    e.target.style.display = 'none';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center customtext-neutral-dark">
+                                                <Search size={16} />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-medium customtext-neutral-dark truncate">
+                                            {suggestion.name}
+                                        </div>
+                                        {suggestion.category && (
+                                            <div className="text-sm customtext-neutral-dark truncate">
+                                                {suggestion.category.name}
+                                            </div>
+                                        )}
+                                        {suggestion.final_price && (
+                                            <div className="text-sm font-semibold customtext-primary">
+                                                {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
+                                            </div>
+                                        )}
+                                    </div>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div className="p-4 text-center customtext-neutral-dark">
+                        No se encontraron productos
+                    </div>
+                )}
+            </motion.div>
+        );
+    };
+    // Determinar si el usuario es cliente (no admin ni superadmin, usando roles array)
+    let isCustomer = false;
+    if (isUser && Array.isArray(isUser.roles)) {
+        const roleNames = isUser.roles.map(r => r.name?.toLowerCase());
+        isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
+    }
+
+    // Función para renderizar el TopBar correcto según data.topBarType
+    const renderTopBar = () => {
+        if (!isFixed) return null;
+        
+        const topBarType = data?.topBarType || 'TopBarPages'; // default a 'TopBarPages'
+        
+        switch (topBarType) {
+            case 'TopBarSimple':
+                return <TopBarSimple data={data} />;
+            case 'TopBarSocials':
+                return <TopBarSocials items={items} data={data} />;
+            case 'TopBarCart':
+                return <TopBarCart data={data} items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarCopyright':
+                return <TopBarCopyright data={data} items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarPanni':
+                return <TopBarPanni data={data} items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarCopyrightSocials':
+                return <TopBarCopyrightSocials items={items} cart={cart} setCart={setCart} isUser={isUser} />;
+            case 'TopBarPages':
+            default:
+                return <TopBarPages items={items} data={data} pages={pages} />;
+        }
+    };
+
+    return (
+        <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-white shadow-lg" : "relative bg-white"}`}>
+           {renderTopBar()}
+            <div className="px-primary  bg-white 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
+                <div className="flex items-center justify-between gap-4">
+                    {/* Logo */}
+                    <a href="/" className="hidden md:flex items-center gap-2 z-[51]">
+                        <img
+                            src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                            alt={Global.APP_NAME}
+                            className="h-14 object-contain object-center"
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/assets/img/logo-bk.svg";
+                            }}
+                        />
+                    </a>
+
+                    {/* Mobile Layout - Hamburger | Logo | Search */}
+                    <div className="flex md:hidden items-center justify-between w-full">
+                        {/* Hamburger Menu - Left */}
+                        <button
+                            aria-label="Menú"
+                            onClick={() => setOpenMenu(!openMenu)}
+                            className="flex items-center justify-center bg-primary rounded-lg w-auto h-auto p-2 text-white fill-white transition-all duration-300"
+                        >
+                            {!openMenu ? (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M10 5H20"
+                                        stroke="white"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    <path
+                                        d="M4 12H20"
+                                        stroke="white"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    <path
+                                        d="M4 19H14"
+                                        stroke="white"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            ) : (
+                                <XIcon />
+                            )}
+                        </button>
+
+                        {/* Logo - Center */}
+                        <a href="/" className="flex items-center gap-2 z-[51]">
+                            <img
+                                src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                                alt={Global.APP_NAME}
+                                className="h-12 object-contain object-center"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/assets/img/logo-bk.svg";
+                                }}
+                            />
+                        </a>
+
+                        {/* Search Button - Right */}
+                        <button
+                            aria-label="Buscar productos"
+                            onClick={() => {
+                                setSearchMobile(true);
+                                setTimeout(() => {
+                                    if (mobileSearchInputRef.current) {
+                                        mobileSearchInputRef.current.focus();
+                                    }
+                                }, 100);
+                            }}
+                            className="flex items-center justify-center p-2"
+                        >
+                            <Search className="customtext-primary" size={24} />
+                        </button>
+                    </div>
+
+                    {/* Search Bar - Desktop */}
+                    <div className="hidden md:block relative w-full max-w-xl mx-auto">
+                        <form onSubmit={handleFormSubmit} role="search">
+                            <input
+                                ref={desktopSearchInputRef}
+                                type="search"
+                                name="search"
+                                placeholder="Estoy buscando..."
+                                value={search}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                onFocus={() => {
+                                    if (search.trim().length >= 2) {
+                                        fetchSearchSuggestions(search);
+                                    }
+                                }}
+                                className="w-full pr-14 py-4 pl-4 border rounded-full font-normal focus:ring-0 customtext-neutral-dark placeholder:customtext-neutral-dark focus:outline-none bg-white"
+                                enterKeyHint="search"
+                                inputMode="search"
+                                autoComplete="on"
+                                role="searchbox"
+                                aria-label="Estoy buscando..."
+                            />
+                            <button
+                                type="submit"
+                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-2 ${data?.backgroundColor ? data?.backgroundColor : "bg-primary"} text-white rounded-lg hover:bg-primary hover:scale-105  transition-all duration-300`}
+                                aria-label="Buscar"
+                            >
+                                <Search />
+                            </button>
+                        </form>
+
+                        <AnimatePresence>
+                            <SearchSuggestions
+                                suggestions={searchSuggestions}
+                                isLoading={isLoadingSuggestions}
+                                onSelect={selectSuggestion}
+                            />
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Account and Cart */}
+                    {data?.showLoginCart ? (
+                        <div className="hidden md:flex items-center gap-4 relative text-sm">
+                            <div ref={menuRef}>
+                                {isUser ? (
+                                    <button
+                                        aria-label="user"
+                                        className="customtext-neutral-dark flex items-center gap-2 hover:customtext-primary pr-6 transition-all duration-300 relative group"
+                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    >
+                                        <div className="relative transform group-hover:scale-105 transition-transform duration-200">
+                                            {isUser.uuid ? (
+                                                <div className="relative">
+                                                    <ProfileImage 
+                                                        uuid={isUser.uuid}
+                                                        name={isUser.name}
+                                                        lastname={isUser.lastname}
+                                                        className="w-8 h-8 rounded-full object-cover border-2 border-primary ring-secondary transition-all duration-300"
+                                                    />
+                                                    {/* Punto indicador online animado */}
+                                                    <div className="absolute -bottom-[-0.115rem] -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
+                                                        <div className="w-full h-full bg-primary rounded-full animate-ping opacity-75 absolute"></div>
+                                                        <div className="w-full h-full bg-primary rounded-full"></div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="relative">
+                                                    <CircleUser 
+                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300" 
+                                                    />
+                                                    {/* Punto indicador online animado */}
+                                                    <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
+                                                        <div className="w-full h-full bg-primary rounded-full animate-ping opacity-75 absolute"></div>
+                                                        <div className="w-full h-full bg-primary rounded-full"></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="hidden md:inline">{isUser.name}</span>
+                                    </button>
+                                ) : (
+                                    <a href="/iniciar-sesion" className="flex items-center gap-2 text-sm hover:customtext-primary transition-colors duration-300">
+                                        <CircleUser className="customtext-primary" />
+                                        <span className="hidden md:inline">Iniciar Sesión</span>
+                                    </a>
+                                )}
+
+                                <AnimatePresence>
+                                    {isMenuOpen && (
+                                        <motion.div
+                                            initial="hidden"
+                                            animate="visible"
+                                            exit="exit"
+                                            variants={menuVariants}
+                                            className="absolute z-50 top-full left-0 bg-white shadow-xl border-t rounded-xl w-48 mt-2"
+                                        >
+                                            <div className="p-4">
+                                                <ul className="space-y-4">
+                                                    {isCustomer ? (
+                                                        menuItems.map((item, index) => (
+                                                            <li key={index}>
+                                                                {item.onClick ? (
+                                                                    <button
+                                                                        aria-label="menu-items"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            setIsMenuOpen(false);
+                                                                            // Pequeño delay para que la animación se complete
+                                                                            setTimeout(() => {
+                                                                                item.onClick();
+                                                                            }, 150);
+                                                                        }}
+                                                                        className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                    >
+                                                                        {item.icon}
+                                                                        <span>{item.label}</span>
+                                                                    </button>
+                                                                ) : (
+                                                                    <a
+                                                                        href={item.href}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setIsMenuOpen(false);
+                                                                        }}
+                                                                        className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                    >
+                                                                        {item.icon}
+                                                                        <span>{item.label}</span>
+                                                                    </a>
+                                                                )}
+                                                            </li>
+                                                        ))
+                                                    ) : (
+                                                        <>
+                                                            <li>
+                                                                <a
+                                                                    href="/admin/home"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setIsMenuOpen(false);
+                                                                    }}
+                                                                    className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                >
+                                                                    <Home size={16} />
+                                                                    <span>Dashboard</span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        setIsMenuOpen(false);
+                                                                        // Pequeño delay para que la animación se complete
+                                                                        setTimeout(() => {
+                                                                            Logout();
+                                                                        }, 150);
+                                                                    }}
+                                                                    className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                >
+                                                                    <DoorClosed size={16} />
+                                                                    <span>Cerrar Sesión</span>
+                                                                </button>
+                                                            </li>
+                                                        </>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <button
+                                aria-label="cart"
+                                onClick={() => setModalOpen(true)}
+                                className="flex items-center gap-2 text-sm relative hover:customtext-primary transition-colors duration-300"
+                            >
+                                <div className="customtext-primary">
+                                    <ShoppingCart />
+                                </div>
+                                <span className="hidden md:inline">Mi Carrito</span>
+                                <span className="absolute -right-6 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs bg-primary text-white rounded-full">
+                                    {totalCount}
+                                </span>
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Desktop: botón "Haz tu Pedido" */}
+                            <a
+                                aria-label="primary-button"
+                                className={` hidden lg:block px-6 py-2.5 text-white font-medium rounded-3xl hover:brightness-125 transition-all duration-500 ${data.class_pedido || 'bg-primary'}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={
+                                    phoneWhatsapp && messageWhatsapp
+                                        ? `https://api.whatsapp.com/send?phone=${encodeURIComponent(phoneWhatsapp)}&text=${encodeURIComponent(messageWhatsapp)}`
+                                        : "#"
+                                }
+                            >
+                                Haz tu pedido
+                            </a>
+                        </>
+                    )}
+                </div>
+
+                {/* NUEVA SECCIÓN MÓVIL*/}
+                {data?.mobileSearch && !shouldHideMobileSearch() && (
+                    <div className="block md:hidden mt-6 space-y-4">
+                        <div className="w-full relative">
+                            <form onSubmit={handleMobileSearch} role="search" className="relative w-full">
+                                <input
+                                    type="search"
+                                    name="search"
+                                    placeholder="Buscar productos..."
+                                    value={search}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    onFocus={() => {
+                                        if (search.trim().length >= 2) {
+                                            fetchSearchSuggestions(search);
+                                        }
+                                    }}
+                                    className="w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50"
+                                    enterKeyHint="search"
+                                    inputMode="search"
+                                    autoComplete="off"
+                                    role="searchbox"
+                                    aria-label="Buscar productos"
+                                />
+                                <button
+                                    type="submit"
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                    aria-label="Buscar"
+                                >
+                                    <Search size={18} />
+                                </button>
+                            </form>
+
+                            <AnimatePresence>
+                                <SearchSuggestions
+                                    suggestions={searchSuggestions}
+                                    isLoading={isLoadingSuggestions}
+                                    onSelect={selectSuggestion}
+                                    selectedIndex={selectedSuggestionIndex}
+                                />
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <AnimatePresence>
+                {openMenu && (
+                    <MobileMenuSearchDental
+                        pages={pages}
+                        items={items}
+                        onClose={() => setOpenMenu(false)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Modal de búsqueda móvil - Replicando el diseño original */}
+            <AnimatePresence>
+                {searchMobile && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[60] bg-black/20 md:hidden"
+                        onClick={() => {
+                            setSearchMobile(false);
+                            setSearch("");
+                            clearSuggestions();
+                        }}
+                    >
+                        <motion.div
+                            initial={{ y: "-100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "-100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="bg-white shadow-xl border-b"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Header del modal */}
+                            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                                <h3 className="text-lg font-semibold customtext-neutral-dark">Buscar productos</h3>
+                                <button
+                                    onClick={() => {
+                                        setSearchMobile(false);
+                                        setSearch("");
+                                        clearSuggestions();
+                                    }}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    aria-label="Cerrar búsqueda"
+                                >
+                                    <XIcon size={20} className="customtext-neutral-dark" />
+                                </button>
+                            </div>
+
+                            {/* Contenido del modal - Replicando el diseño original */}
+                            <div className="p-4 space-y-4">
+                                <div className="w-full relative">
+                                    <form onSubmit={handleMobileSearch} role="search" className="relative w-full">
+                                        <input
+                                            ref={mobileSearchInputRef}
+                                            type="search"
+                                            name="search"
+                                            placeholder="Buscar productos..."
+                                            value={search}
+                                            onChange={(e) => handleSearchChange(e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                            onFocus={() => {
+                                                if (search.trim().length >= 2) {
+                                                    fetchSearchSuggestions(search);
+                                                }
+                                            }}
+                                            className="w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50"
+                                            autoFocus
+                                            enterKeyHint="search"
+                                            inputMode="search"
+                                            autoComplete="off"
+                                            role="searchbox"
+                                            aria-label="Buscar productos"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                            aria-label="Buscar"
+                                        >
+                                            <Search size={18} />
+                                        </button>
+                                    </form>
+
+                                    <AnimatePresence>
+                                        <SearchSuggestions
+                                            suggestions={searchSuggestions}
+                                            isLoading={isLoadingSuggestions}
+                                            onSelect={selectSuggestion}
+                                            selectedIndex={selectedSuggestionIndex}
+                                        />
+                                    </AnimatePresence>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <CartModal
+                data={data}
+                cart={cart}
+                setCart={setCart}
+                modalOpen={modalOpen}
+                setModalOpen={setModalOpen}
+            />
+
+        </header>
+    );
+};
+
+
+export default HeaderSearchDental;

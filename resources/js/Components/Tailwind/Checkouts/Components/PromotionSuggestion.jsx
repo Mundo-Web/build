@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Gift, Tag } from "lucide-react";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 export default function PromotionSuggestion({ suggestion, onAddToCart, cart, setCart }) {
     const [isAdding, setIsAdding] = useState(false);
@@ -66,7 +67,7 @@ export default function PromotionSuggestion({ suggestion, onAddToCart, cart, set
                         </p>
                         <p>
                             <span className="font-medium">Agrega:</span> {suggestion.suggested_quantity} más y 
-                            <span className="font-bold text-green-600"> ¡te ahorras S/ {suggestion.savings}!</span>
+                            <span className="font-bold text-green-600"> ¡te ahorras {CurrencySymbol()} {suggestion.savings}!</span>
                         </p>
                     </div>
                     

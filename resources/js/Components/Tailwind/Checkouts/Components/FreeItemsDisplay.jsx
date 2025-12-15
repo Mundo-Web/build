@@ -1,4 +1,4 @@
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 export default function FreeItemsDisplay({ freeItems }) {
     if (!freeItems || freeItems.length === 0) {
@@ -40,7 +40,7 @@ export default function FreeItemsDisplay({ freeItems }) {
                                     Cantidad gratuita: {freeItem.quantity}
                                 </p>
                                 <p className="text-green-600 text-xs">
-                                    Valor: S/ {Number2Currency(freeItem.item_price)} c/u
+                                    Valor: {CurrencySymbol()} {Number2Currency(freeItem.item_price)} c/u
                                 </p>
                                 {freeItem.buy_quantity && freeItem.get_quantity && (
                                     <p className="text-green-600 text-xs font-medium mt-1">
@@ -55,7 +55,7 @@ export default function FreeItemsDisplay({ freeItems }) {
                                     Ahorras
                                 </span>
                                 <div className="text-green-700 font-bold text-lg">
-                                    S/ {Number2Currency(freeItem.discount)}
+                                    {CurrencySymbol()} {Number2Currency(freeItem.discount)}
                                 </div>
                             </div>
                         </div>
@@ -71,7 +71,7 @@ export default function FreeItemsDisplay({ freeItems }) {
                             Total ahorro en productos gratis:
                         </span>
                         <span className="text-green-700 font-bold text-lg">
-                            S/ {Number2Currency(freeItems.reduce((total, item) => total + parseFloat(item.discount || 0), 0))}
+                            {CurrencySymbol()} {Number2Currency(freeItems.reduce((total, item) => total + parseFloat(item.discount || 0), 0))}
                         </span>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Number2Currency from "../../../../Utils/Number2Currency.jsx";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency.jsx";
 import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
 import CardItem from "./CardItem";
@@ -7,21 +7,28 @@ import DiscountRulesRest from "../../../../Actions/DiscountRulesRest";
 import FreeItemsDisplay from "./FreeItemsDisplay";
 import PromotionSuggestion from "./PromotionSuggestion";
 import PromotionModal from "./PromotionModal";
+import Tippy from "@tippyjs/react";
 
 export default function CartStep({ 
+    data,
     cart, 
     setCart, 
     onContinue, 
     subTotal, 
     envio, 
     igv, 
+    fleteTotal,
+    seguroImportacionTotal,
+    derechoArancelarioTotal,
     totalFinal, 
     openModal,
+    categorias,
     automaticDiscounts,
     setAutomaticDiscounts,
     automaticDiscountTotal,
     setAutomaticDiscountTotal,
-    totalWithoutDiscounts
+    totalWithoutDiscounts,
+    generals
 }) {
     const [appliedDiscounts, setAppliedDiscounts] = useState(automaticDiscounts || []);
     const [totalDiscount, setTotalDiscount] = useState(automaticDiscountTotal || 0);
@@ -33,9 +40,13 @@ export default function CartStep({
     const [selectedProduct, setSelectedProduct] = useState(null);
     
     const isCartEmpty = cart.length === 0;
-
+    
     // Apply discount rules when cart changes
     useEffect(() => {
+        const combosInCart = cart.filter(item => item.type === 'combo');
+        
+      
+        
         if (cart.length > 0 && subTotal > 0) {
             applyDiscountRules();
         } else {
@@ -56,33 +67,15 @@ export default function CartStep({
         try {
             // Debug: Log información detallada del carrito antes de enviar
             const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-            console.log('🛒 CartStep applying discounts:', {
-                cart,
-                subTotal,
-                totalWithoutDiscounts,
-                totalQuantity,
-                cartLength: cart.length,
-                cartItems: cart.map(item => ({
-                    id: item.id || item.item_id,
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price || item.final_price,
-                    category_id: item.category_id
-                }))
-            });
+            const combosInCart = cart.filter(item => item.type === 'combo');
+            
+          
             
             const result = await DiscountRulesRest.applyToCart(cart, totalWithoutDiscounts);
             
-            // Debug: Log respuesta completa del servidor
-            console.log('📥 Server response:', {
-                success: result.success,
-                data: result.data,
-                error: result.error,
-                fullResult: result
-            });
+        
             
             if (result.success && result.data) {
-                console.log('✅ Discounts found:', result.data.applied_discounts);
                 const discounts = DiscountRulesRest.formatDiscounts(result.data.applied_discounts);
                 const discountAmount = result.data.total_discount || 0;
                 const freeItemsData = DiscountRulesRest.getFreeItems(result.data.applied_discounts);
@@ -103,13 +96,13 @@ export default function CartStep({
                 // Update parent component state
                 if (setAutomaticDiscounts) setAutomaticDiscounts(discounts);
                 if (setAutomaticDiscountTotal) setAutomaticDiscountTotal(discountAmount);
+                
+                // IMPORTANTE: NO modificar el carrito aquí
+                // El servidor puede devolver cart_items modificados, pero no los usamos
+                // para actualizar el carrito del usuario
+                
             } else {
-                console.error('❌ Discount application failed:', {
-                    error: result.error,
-                    success: result.success,
-                    data: result.data,
-                    fullResult: result
-                });
+               
                 
                 // No discounts applied or error
                 const emptyDiscounts = [];
@@ -165,28 +158,22 @@ export default function CartStep({
     // Handle adding promotional item from modal
     const handleAddPromotionalItem = async (suggestion) => {
         try {
-            console.log('CartStep - handleAddPromotionalItem received:', suggestion);
-            console.log('CartStep - current cart:', cart);
+         
             
             // Buscar el item existente en el carrito y agregar la cantidad sugerida
             setCart(old => {
-                console.log('CartStep - old cart before update:', old);
                 const existingItemIndex = old.findIndex(item => 
                     (item.item_id || item.id) === suggestion.item_id
                 );
                 
-                console.log('CartStep - existingItemIndex:', existingItemIndex);
                 
                 if (existingItemIndex !== -1) {
                     // Actualizar cantidad existente
                     const updatedCart = [...old];
                     const quantityToAdd = suggestion.quantity || suggestion.suggested_quantity || 1;
-                    console.log('CartStep - adding quantity:', quantityToAdd);
                     updatedCart[existingItemIndex].quantity += quantityToAdd;
-                    console.log('CartStep - updated cart:', updatedCart);
                     return updatedCart;
                 } else {
-                    console.log('CartStep - item not found, creating new product');
                     // Si no existe, crear un nuevo producto (caso menos común)
                     const newProduct = {
                         id: suggestion.item_id,
@@ -246,6 +233,7 @@ export default function CartStep({
                             key={index} 
                             {...item} 
                             setCart={setCart}
+                            categorias={categorias}
                             hasPromotion={hasPromotionAvailable(item.id)}
                             onPromotionClick={handlePromotionClick}
                         />
@@ -259,15 +247,37 @@ export default function CartStep({
                 <div className="space-y-3 md:space-y-4">
                     <div className="flex justify-between">
                         <span className="customtext-neutral-dark">Subtotal</span>
-                        <span className="font-semibold">S/ {Number2Currency(subTotal)}</span>
+                        <span className="font-semibold">{CurrencySymbol()}{Number2Currency(subTotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="customtext-neutral-dark">IGV</span>
-                        <span className="font-semibold">S/ {Number2Currency(igv)}</span>
+                        <span className="customtext-neutral-dark">IGV ({Number(generals?.find(x => x.correlative === 'igv_checkout')?.description || 18)}%)</span>
+                        <span className="font-semibold">{CurrencySymbol()}{Number2Currency(igv)}</span>
                     </div>
+                    {
+                        Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) > 0 &&
+                        <div className="flex justify-between">
+                            <span className="customtext-neutral-dark">Seguro ({Number(generals?.find(x => x.correlative === 'importation_seguro')?.description || 0).toFixed(2)}%)</span>
+                            <span className="font-semibold">{CurrencySymbol()}{Number2Currency(seguroImportacionTotal)}</span>
+                        </div>
+                    }
+                    {
+                        Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) > 0 &&
+                        <div className="flex justify-between">
+                            <span className="customtext-neutral-dark">
+                                Derecho arancelario
+                                {
+                                    generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description &&
+                                    <Tippy content={<p className="whitespace-pre-line">{generals?.find(x => x.correlative === 'importation_derecho_arancelario_descripcion')?.description}</p>} allowHTML>
+                                        <i className="mdi mdi-information ms-1"></i>
+                                    </Tippy>
+                                }
+                            </span>
+                            <span className="font-semibold">{CurrencySymbol()}{Number2Currency(derechoArancelarioTotal)}</span>
+                        </div>
+                    }
                     <div className="flex justify-between">
                         <span className="customtext-neutral-dark">Envío</span>
-                        <span className="font-semibold">S/ {Number2Currency(envio)}</span>
+                        <span className="font-semibold">{CurrencySymbol()}{Number2Currency(envio)}</span>
                     </div>
                     
                     {/* Descuentos Automáticos */}
@@ -294,13 +304,13 @@ export default function CartStep({
                                         )}
                                     </span>
                                     <span className="customtext-neutral-dark font-semibold">
-                                        -S/ {Number2Currency(discount.amount)}
+                                        -{CurrencySymbol()}{Number2Currency(discount.amount)}
                                     </span>
                                 </div>
                             ))}
                             <div className="flex justify-between text-sm font-semibold customtext-neutral-dark pt-1">
                                 <span>Total descuentos:</span>
-                                <span>-S/ {Number2Currency(totalDiscount)}</span>
+                                <span>-{CurrencySymbol()}{Number2Currency(totalDiscount)}</span>
                             </div>
                         </div>
                     )}
@@ -311,13 +321,13 @@ export default function CartStep({
                     <div className="py-3 border-y-2 mt-4 md:mt-6">
                         <div className="flex justify-between font-bold text-lg md:text-[20px] items-center">
                             <span>Total</span>
-                            <span>S/ {Number2Currency(totalFinal)}</span>
+                            <span>{CurrencySymbol()}{Number2Currency(totalFinal)}</span>
                         </div>
                         {totalDiscount > 0 && (
                             <div className="text-sm text-gray-500 mt-1">
-                                <span className="line-through">S/ {Number2Currency(totalWithoutDiscounts || (totalFinal + totalDiscount))}</span>
+                                <span className="line-through">{CurrencySymbol()}{Number2Currency(totalWithoutDiscounts || (totalFinal + totalDiscount))}</span>
                                 <span className="ml-2 customtext-neutral-dark font-semibold">
-                                    Ahorras S/ {Number2Currency(totalDiscount)}
+                                    Ahorras {CurrencySymbol()}{Number2Currency(totalDiscount)}
                                 </span>
                             </div>
                         )}
@@ -325,8 +335,9 @@ export default function CartStep({
                     <div className="space-y-2 pt-3 md:pt-4">
                         <ButtonPrimary 
                             onClick={onContinue} 
-                            className="w-full"
+                          
                             disabled={isCartEmpty}
+                            className={`w-full ${data?.class_button || 'text-white'}`}
                         >
                             {isCartEmpty ? 'Carrito Vacío' : 'Continuar Compra'}
                         </ButtonPrimary>

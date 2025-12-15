@@ -7,16 +7,18 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use SoDe\Extend\JSON;
 
 class Item extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         // 'id',
+        'type', // 'product' o 'room'
         'slug',
         'name',
         'summary',
@@ -35,15 +37,44 @@ class Item extends Model
         'offering',
         'recommended',
         'featured',
+        'most_view',
+        'is_detail',
         'visible',
         'status',
+        'views',
         'sku',
         'stock',
+        'sold_out',
         'color',
         'texture',
         'pdf',
         'linkvideo',
+        'size',
+        'grouper',
+        'weight',
+        'store_id',
+        
+        // Campos para habitaciones
+        'max_occupancy',
+        'beds_count',
+        'size_m2',
+        'room_type',
+        'total_rooms',
+    ];
 
+    protected $casts = [
+        'is_new' => 'boolean',
+        'offering'=>'boolean',
+        'recommended'=>'boolean',
+        'featured'=>'boolean',
+        'most_view'=>'boolean',
+        'is_detail'=>'boolean',
+        'sold_out' => 'boolean',
+        'visible' => 'boolean',
+        'status' => 'boolean',
+        'views' => 'integer',
+        'pdf' => 'array',
+        'linkvideo' => 'array',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)
@@ -100,9 +131,21 @@ class Item extends Model
         return $this->hasOne(Brand::class, 'id', 'brand_id');
     }
 
+    public function store()
+    {
+        return $this->hasOne(Store::class,'id', 'store_id');
+    }
+
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'item_tags', 'item_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'item_tags', 'item_id', 'tag_id')
+                    ->where('status', true)
+                    ->where(function($query) {
+                        $query->where('tag_type', 'item')
+                              ->orWhereNull('tag_type');
+                    })
+                    ->whereNotNull('name')
+                    ->where('name', '!=', '');
     }
 
     public function combos()
@@ -113,7 +156,7 @@ class Item extends Model
 
     public function images()
     {
-        return $this->hasMany(ItemImage::class);
+        return $this->hasMany(ItemImage::class)->orderBy('order');
     }
 
     public function specifications()
@@ -126,11 +169,80 @@ class Item extends Model
         return $this->hasMany(ItemFeature::class);
     }
 
+    /**
+     * Amenidades de la habitación (relación muchos a muchos)
+     */
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'item_amenity');
+    }
+
+    /**
+     * Reservas de la habitación
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Disponibilidad de la habitación
+     */
+    public function availability()
+    {
+        return $this->hasMany(RoomAvailability::class);
+    }
+
+    // ============ SCOPES ============
+
+    /**
+     * Scope para filtrar solo productos
+     */
+    public function scopeProducts($query)
+    {
+        return $query->where('type', 'product');
+    }
+
+    /**
+     * Scope para filtrar solo habitaciones
+     */
+    public function scopeRooms($query)
+    {
+        return $query->where('type', 'room');
+    }
+
+    /**
+     * Scope para habitaciones disponibles en un rango de fechas
+     */
+    public function scopeAvailableRooms($query, $checkIn, $checkOut)
+    {
+        return $query->rooms()
+            ->whereHas('availability', function($q) use ($checkIn, $checkOut) {
+                $q->whereBetween('date', [$checkIn, $checkOut])
+                  ->where('available_rooms', '>', 0)
+                  ->where('is_blocked', false);
+            });
+    }
+
     protected static function booted()
     {
         static::creating(function ($item) {
             if (empty($item->sku)) {
                 $item->sku = 'PROD-' . strtoupper(substr($item->categoria_id, 0, 3)) . '-' . strtoupper(substr($item->name, 0, 3)) . '-' . uniqid();
+            }
+            
+            // Auto marcar como agotado si stock es 0 (solo para productos)
+            if ($item->type === 'product' && isset($item->stock) && $item->stock <= 0) {
+                $item->sold_out = true;
+            }
+        });
+
+        static::updating(function ($item) {
+            // Auto marcar como agotado si stock cambia a 0 (solo para productos)
+            if ($item->type === 'product' && $item->isDirty('stock')) {
+                if ($item->stock <= 0) {
+                    $item->sold_out = true;
+                }
             }
         });
     }

@@ -7,6 +7,7 @@ import { GET } from "sode-extend-react";
 import AuthClientRest from "../../../Actions/AuthClientRest";
 import InputForm from "../Checkouts/Components/InputForm";
 import { toast } from "sonner";
+import GoogleSignInButton from "../../Google/GoogleSignInButton";
 
 export default function LoginSimple() {
     const jsEncrypt = new JSEncrypt();
@@ -41,7 +42,7 @@ export default function LoginSimple() {
                 showConfirmButton: false,
                 timer: 3000,
             });
-    }, [null]);
+    }, []);
 
     const onLoginSubmit = async (e) => {
         e.preventDefault();
@@ -73,11 +74,14 @@ export default function LoginSimple() {
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row">
                         <div className="hidden lg:block lg:w-1/2 relative">
-                            <img
-                                src={`/assets/${Global.APP_CORRELATIVE}/login.png` || image}
-                                alt="Imagen decorativa"
+
+                            <img src={`/assets/resources/login.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME}
                                 className="absolute inset-0 w-full h-full object-cover"
-                            />
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/img/logo-bk.svg';
+                                }} />
+
                             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                         </div>
 
@@ -180,7 +184,7 @@ export default function LoginSimple() {
                                         </div>
                                         <a
                                             href="/forgot-password"
-                                            className="text-sm font-semibold customtext-primary hover:text-sky-600 flex items-center gap-1"
+                                            className="text-sm font-semibold customtext-primary hover:customtext-primary flex items-center gap-1"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -198,15 +202,35 @@ export default function LoginSimple() {
 
                                     <button
                                         type="submit"
-                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition duration-150 ease-in-out"
+                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary hover:scale-105  hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-300 ease-in-out"
                                     >
                                         {loading ? "Ingresando..." : "Ingresar"}
                                     </button>
 
+                                    {/* Mostrar Google Sign-In solo si está habilitado */}
+                                    {Global.GOOGLE_OAUTH_ENABLED && (
+                                        <>
+                                            <div className="relative mt-6">
+                                                <div className="absolute inset-0 flex items-center">
+                                                    <div className="w-full border-t border-gray-300" />
+                                                </div>
+                                                <div className="relative flex justify-center text-sm">
+                                                    <span className="px-2 bg-white text-gray-500">O continúa con</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Botón de Google */}
+                                            <GoogleSignInButton 
+                                                onSuccess={() => window.location.href = "/"} 
+                                                text="Continuar con Google"
+                                            />
+                                        </>
+                                    )}
+
                                     <div className="text-center mt-4">
                                         <p className="text-sm text-gray-600">
                                             ¿Eres nuevo por aquí?{" "}
-                                            <a href="/crear-cuenta" className="font-medium customtext-primary hover:text-sky-600">
+                                            <a href="/crear-cuenta" className="font-medium customtext-primary hover:customtext-primary">
                                                 Crea una cuenta
                                             </a>
                                         </p>

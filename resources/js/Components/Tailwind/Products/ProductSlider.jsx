@@ -1,6 +1,6 @@
 import React from "react"
 import { Swiper, SwiperSlide } from "swiper/react";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import Swal from "sweetalert2";
 import { Autoplay } from "swiper/modules";
 
@@ -49,7 +49,7 @@ const ProductSlider = ({ data, items = [], cart, setCart }) => {
               <h4 className="font-title font-bold text-2xl line-clamp-2 leading-tight max-h-[60px]">{item.name}</h4>
             </div>
             <div className="grid grid-cols-2 items-center">
-              <span className="text-2xl block w-full text-center font-medium">S/. {Number2Currency(item.price)}</span>
+              <span className="text-2xl block w-full text-center font-medium">{CurrencySymbol()} {Number2Currency(item.price)}</span>
               <button className="rounded-full w-max py-2 px-4 text-sm ms-auto" style={{
                 backgroundColor: 'rgba(0,0,0,.25)'
               }} onClick={() => onAddClicked(item)}>

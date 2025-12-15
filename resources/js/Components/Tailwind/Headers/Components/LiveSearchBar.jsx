@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import SearchProductPreview from "../../../../Actions/SearchProductPreview";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const LiveSearchBar = ({ search, setSearch }) => {
   const [filtered, setFiltered] = useState([]);
@@ -56,7 +57,7 @@ const LiveSearchBar = ({ search, setSearch }) => {
         placeholder="Buscar productos"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full pr-14 py-4 pl-4 border rounded-full focus:ring-0 focus:outline-none placeholder:text-gray-400"
+        className="w-full pr-14 py-4 pl-4 border rounded-full border-primary focus:ring-0 focus:outline-none placeholder:text-gray-400"
       />
       <a
         href={search.trim() ? `/catalogo?search=${encodeURIComponent(search)}` : "#"}
@@ -79,7 +80,7 @@ const LiveSearchBar = ({ search, setSearch }) => {
                 <a
                   key={product.id}
                   href={`/item/${product.slug}`}
-                  className="block px-1 py-1 hover:bg-gray-100 transition text-sm !font-font-general"
+                  className="block px-1 py-1 hover:bg-gray-100 transition text-sm !font-paragraph"
                 >
                   <div className="flex items-center gap-3 px-2 py-2">
                     {/* Imagen */}
@@ -103,11 +104,11 @@ const LiveSearchBar = ({ search, setSearch }) => {
                     {/* Precio */}
                     <div className="text-right text-sm min-w-[80px] customtext-neutral-dark">
                       <p className="text-primary font-semibold">
-                        S/ {discount > 0 ? discount.toFixed(2) : price.toFixed(2)}
+                        {CurrencySymbol()} {discount > 0 ? discount.toFixed(2) : price.toFixed(2)}
                       </p>
                       {discount > 0 && (
                         <p className="text-xs text-gray-500 line-through">
-                          S/ {price.toFixed(2)}
+                          {CurrencySymbol()} {price.toFixed(2)}
                         </p>
                       )}
                     </div>

@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -10,7 +10,7 @@ const SliderImagen = ({ items, data }) => {
     const nextSlideRef = useRef(null);
     const swiperRef = useRef(null);
     const [imagesLoaded, setImagesLoaded] = useState(false);
-    const [maxHeight, setMaxHeight] = useState(0);
+    const [, setMaxHeight] = useState(0);
 
     // Adjust button colors
     useEffect(() => {
@@ -38,20 +38,20 @@ const SliderImagen = ({ items, data }) => {
     };
 
     return (
-        <div>
-            <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-font-primary py-4 md:py-8 bg-[#F7F9FB]">
+        <div className={`${data?.class_section || "bg-[#F7F9FB]"}`}>
+            <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-title py-4 md:py-8 ">
                 {data?.title}
             </h2>
-            <div className="bg-primary py-6 md:py-8">
+            <div className={`py-6 md:py-8 ${data?.class_content || "bg-primary "}`}>
                 <div className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                     <div className="relative flex items-center justify-center">
                         <button
                             ref={prevSlideRef}
-                            className="absolute -left-2 z-10 p-2 bg-white rounded-lg shadow-lg hover:scale-105 transition-transform"
+                            className={`absolute -left-2 z-20 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white"}`}
                             aria-label="Previous brand"
                         >
                             <svg
-                                className="h-4 w-4 customtext-neutral-dark"
+                                className="h-4 w-4 "
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -66,53 +66,63 @@ const SliderImagen = ({ items, data }) => {
                         </button>
 
                         <Swiper
-                            modules={[Navigation]}
+                            modules={data?.autoplay ? [Navigation, Autoplay] : [Navigation]}
                             navigation={{
                                 prevEl: prevSlideRef.current,
                                 nextEl: nextSlideRef.current,
                             }}
+                            autoplay={data?.autoplay ? {
+                                delay: 3000,
+                                disableOnInteraction: false,
+                            } : false}
                             loop={true}
                             spaceBetween={30}
-                            slidesPerView={2}
+                            slidesPerView="auto"
                             onSwiper={(swiper) => (swiperRef.current = swiper)}
                             breakpoints={{
-                                640: { slidesPerView: 3 },
+                                640: { 
+                                    slidesPerView: "auto",
+                                    spaceBetween: 20
+                                },
                                 1024: {
-                                    slidesPerView: 5,
+                                    slidesPerView:"auto",
                                     centeredSlides: true,
+                                    spaceBetween: 0
                                 },
                             }}
-                            className="w-full !px-10 2xl:!px-4 !flex !justify-between"
+                            className="!mx-auto !w-11/12 !px-10 2xl:!px-0  relative z-10"
                         >
-                            {items.filter((brand) => brand.image).map((brand, index) => (
-                                <SwiperSlide key={index}>
-                                    <div 
-                                        className={`group w-full flex items-center justify-center px-2 font-font-secondary ${imagesLoaded ? 'h-[50px] lg:h-[80px]' : 'auto'}`}
-                             
-                                    >
-                                        <img
-                                            src={`/storage/images/brand/${brand.image}`}
-                                            alt={brand.name}
-                                            className="brand-logo max-h-[50px] lg:max-h-[60px] w-auto object-contain grayscale brightness-0 invert hover:scale-105 transition-transform cursor-pointer"
-                                            onLoad={handleImagesLoad}
-                                            style={{
-                                                maxWidth: '80%',
-                                                objectFit: 'contain',
-                                                objectPosition: 'center'
-                                            }}
-                                        />
-                                    </div>
+                            {[...items, ...items].filter((brand) => brand.image).map((brand, index) => (
+                                <SwiperSlide key={index} className="!w-auto">
+                                    <a href={`catalogo?brand=${brand?.slug}`}>
+                                        <div
+                                            className={`group flex items-center justify-center px-6 font-font-secondary ${imagesLoaded ? 'h-[60px] lg:h-[100px]' : 'auto'}`}
+                                        >
+                                            <img
+                                                src={`/storage/images/brand/${brand.image}`}
+                                                alt={brand.name}
+                                                className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image }`} //"grayscale brightness-0 invert"
+                                                onLoad={handleImagesLoad}
+                                                style={{
+                                                    objectFit: 'contain',
+                                                    objectPosition: 'center',
+                                                    minWidth: '100px',
+                                                    maxWidth: '300px'
+                                                }}
+                                            />
+                                        </div>
+                                    </a>
                                 </SwiperSlide>
                             ))}
                         </Swiper>
 
                         <button
                             ref={nextSlideRef}
-                            className="absolute -right-2 z-10 p-2 bg-white rounded-lg shadow-lg hover:scale-105 transition-transform"
+                            className={`absolute -right-2 z-20 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white customtext-neutral-dark"}`}
                             aria-label="Next brand"
                         >
                             <svg
-                                className="h-4 w-4 customtext-neutral-dark"
+                                className="h-4 w-4 "
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"

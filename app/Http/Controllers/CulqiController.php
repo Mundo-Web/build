@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CulqiConfig;
 use App\Jobs\SendSaleEmail;
 use App\Jobs\SendSaleWhatsApp;
 use App\Models\CulqiCharge;
 use App\Models\CulqiSubscription;
+use App\Models\General;
 use App\Models\Sale;
 use App\Models\Subscription;
 use App\Models\User;
@@ -15,6 +17,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use SoDe\Extend\Crypto;
 use SoDe\Extend\Fetch;
 use SoDe\Extend\JSON;
@@ -31,8 +34,132 @@ class CulqiController extends Controller
 
   public function __construct()
   {
-    $this->culqi = new Culqi(['api_key' => env('CULQI_PRIVATE_KEY')]);
-    $this->url = env('CULQI_API');
+    // Usar CulqiConfig para obtener las claves de la BD
+    $secretKey = CulqiConfig::getSecretKey();
+    $this->culqi = new Culqi(['api_key' => $secretKey]);
+    $this->url = CulqiConfig::getApiUrl();
+  }
+
+  /**
+   * Obtiene la moneda para Culqi
+   * Si Culqi soporta USD y el sistema usa USD, retorna USD
+   * Si no, retorna PEN
+   */
+  private function getCulqiCurrency()
+  {
+    $systemCurrency = General::where('correlative', 'currency')->first()?->description ?? 'pen';
+    $culqiSupportsUSD = General::where('correlative', 'checkout_culqi_supports_usd')->first()?->description === 'true';
+    
+    // Si Culqi soporta USD y el sistema usa USD, usar USD
+    if ($culqiSupportsUSD && strtolower($systemCurrency) === 'usd') {
+      return 'USD';
+    }
+    
+    return 'PEN';
+  }
+
+  /**
+   * Convierte el monto a la moneda de Culqi
+   * Si necesita conversión de USD a PEN, aplica el tipo de cambio
+   */
+  private function convertAmountForCulqi($amount)
+  {
+    $systemCurrency = General::where('correlative', 'currency')->first()?->description ?? 'pen';
+    $culqiSupportsUSD = General::where('correlative', 'checkout_culqi_supports_usd')->first()?->description === 'true';
+    
+    // Si el sistema usa USD y Culqi NO soporta USD, convertir a PEN
+    if (strtolower($systemCurrency) === 'usd' && !$culqiSupportsUSD) {
+      $exchangeRate = General::where('correlative', 'exchange_rate_usd_pen')->first()?->description ?? 3.75;
+      return $amount * floatval($exchangeRate);
+    }
+    
+    return $amount;
+  }
+
+  /**
+   * Crea una orden de Culqi para el checkout (sin crear venta)
+   * Esto habilita métodos de pago adicionales como Yape, bancaMovil, etc.
+   */
+  public function createCheckoutOrder(Request $request)
+  {
+    $response = Response::simpleTryCatch(function () use ($request) {
+      $data = $request->all();
+      
+      // Validar datos requeridos
+      if (!isset($data['amount']) || !isset($data['email'])) {
+        throw new Exception('Faltan datos requeridos: amount, email');
+      }
+      
+      $amount = floatval($data['amount']);
+      
+      // Convertir monto si es necesario
+      $amountForCulqi = $this->convertAmountForCulqi($amount);
+      $currency = $this->getCulqiCurrency();
+      
+      // Generar número de orden temporal
+      $orderNumber = 'CHK-' . time() . '-' . Str::random(6);
+      
+      $config = [
+        "amount" => Math::ceil(($amountForCulqi * 100)), // Culqi usa céntimos
+        "currency_code" => $currency,
+        "description" => "Compra en " . env('APP_NAME'),
+        "order_number" => $orderNumber,
+        "client_details" => [
+          "first_name" => $data['name'] ?? 'Cliente',
+          "last_name" => $data['lastname'] ?? '',
+          "email" => $data['email'],
+          "phone_number" => $data['phone'] ?? '',
+        ],
+        "expiration_date" => time() + (30 * 60), // 30 minutos para completar el pago
+        "confirm" => false
+      ];
+
+      Log::info('Culqi createCheckoutOrder config:', $config);
+      Log::info('Culqi Secret Key usado:', ['key' => substr(CulqiConfig::getSecretKey() ?? '', 0, 15) . '...']);
+
+      try {
+        $order = $this->culqi->Orders->create($config);
+      } catch (\Exception $culqiEx) {
+        Log::error('Culqi createCheckoutOrder exception:', [
+          'message' => $culqiEx->getMessage(),
+          'trace' => $culqiEx->getTraceAsString()
+        ]);
+        throw new Exception('Error de Culqi: ' . $culqiEx->getMessage());
+      }
+
+      // El SDK de Culqi puede devolver un string con el error JSON o un objeto
+      if (gettype($order) == 'string') {
+        Log::error('Culqi createCheckoutOrder string response:', ['response' => $order]);
+        
+        // Intentar parsear el JSON de error
+        $errorData = @json_decode((string) $order, true);
+        if ($errorData && isset($errorData['user_message'])) {
+          throw new Exception($errorData['user_message']);
+        } elseif ($errorData && isset($errorData['merchant_message'])) {
+          throw new Exception($errorData['merchant_message']);
+        } else {
+          throw new Exception('Error al crear orden en Culqi: ' . substr((string) $order, 0, 200));
+        }
+      }
+      
+      if (!$order || !isset($order->id)) {
+        Log::error('Culqi createCheckoutOrder invalid response:', ['order' => $order]);
+        throw new Exception('Respuesta inválida de Culqi');
+      }
+
+      Log::info('Culqi createCheckoutOrder success:', (array) $order);
+
+      return [
+        'order_id' => $order->id,
+        'order_number' => $orderNumber,
+        'amount' => $amountForCulqi,
+        'currency' => $currency,
+        'original_amount' => $amount,
+        'was_converted' => $currency === 'PEN' && strtolower(General::where('correlative', 'currency')->first()?->description ?? 'pen') === 'usd',
+      ];
+    });
+
+    return response($response->toArray(), $response->status);
   }
 
   public function order(Request $request)

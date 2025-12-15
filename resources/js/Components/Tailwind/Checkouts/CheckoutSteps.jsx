@@ -9,10 +9,35 @@ import HtmlContent from "../../../Utils/HtmlContent";
 import { X } from "lucide-react";
 import useEcommerceTracking from "../../../Hooks/useEcommerceTracking";
 
-export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items, generals }) {
+export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items, generals,data, categorias }) {
     const [currentStep, setCurrentStep] = useState(1);
-    const totalPrice = cart.reduce((acc, item) => acc + item.final_price * item.quantity, 0);
     
+    // Debug: Monitorear cambios en el carrito
+    useEffect(() => {
+        const combosInCart = cart.filter(item => item.type === 'combo');
+   
+        
+        // Si hay combos pero el carrito se vació repentinamente, alertar
+        if (combosInCart.length === 0 && cart.length === 0) {
+            console.warn('🚨 ALERT: Cart is empty - this might indicate combos were removed');
+        }
+    }, [cart, currentStep]);
+    
+    // Función para calcular precio correcto según tipo de producto
+    const getItemPrice = (item) => {
+        if (item.type === 'combo') {
+            return item.final_price || item.price;
+        } else {
+            return item.final_price;
+        }
+    };
+    
+    const totalPrice = cart.reduce((acc, item) => {
+        const itemPrice = getItemPrice(item);
+        return acc + (itemPrice * item.quantity);
+    }, 0);
+    
+  
     // Hook de tracking
     const { 
         trackCheckoutPageView, 
@@ -26,6 +51,27 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
     const igv = parseFloat((totalPrice - subTotal).toFixed(2));
     const [envio, setEnvio] = useState(0);
     
+    // Cálculos de importación
+    // Flete
+    const pesoTotal = cart.reduce((acc, item) => {
+        const weight = Number(item.weight) || 0;
+        return acc + weight * item.quantity; // Peso total considerando cantidad
+    }, 0);
+    
+    const costoxpeso = Number(generals?.find(x => x.correlative === 'importation_flete')?.description) || 0;
+    const fleteTotal = costoxpeso > 0 ? pesoTotal * costoxpeso : 0;
+    
+    // Seguro de importación
+    const seguroImportacion = (Number(generals?.find(x => x.correlative === 'importation_seguro')?.description) || 0) / 100;
+    const seguroImportacionTotal = subTotal * seguroImportacion;
+    
+    // CIF (Cost, Insurance, Freight)
+    const CIF = parseFloat(subTotal) + parseFloat(fleteTotal) + parseFloat(seguroImportacionTotal);
+    
+    // Derecho arancelario
+    const derechoArancelario = (Number(generals?.find(x => x.correlative === 'importation_derecho_arancelario')?.description) || 0) / 100;
+    const derechoArancelarioTotal = CIF * derechoArancelario;
+    
     // Estados para el cupón
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [couponCode, setCouponCode] = useState(null);
@@ -34,8 +80,8 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
     const [automaticDiscounts, setAutomaticDiscounts] = useState([]);
     const [automaticDiscountTotal, setAutomaticDiscountTotal] = useState(0);
     
-    // Calcular total final con todos los descuentos
-    const totalWithoutDiscounts = subTotal + igv + parseFloat(envio);
+    // Calcular total final con todos los descuentos e importaciones
+    const totalWithoutDiscounts = subTotal + igv + parseFloat(envio) + parseFloat(seguroImportacionTotal) + parseFloat(derechoArancelarioTotal);
     const totalAllDiscounts = couponDiscount + automaticDiscountTotal;
     const totalFinal = Math.max(0, totalWithoutDiscounts - totalAllDiscounts);
     
@@ -65,22 +111,6 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
         }
     }, [currentStep]);
 
-    useEffect(() => {
-        const script = document.createElement("script");
-        script.src = Global.CULQI_API;
-        script.async = true;
-        script.onload = () => {
-            window.culqi = function () {
-                if (window.Culqi.token) {
-                    //  console.log("✅ Token recibido:", window.Culqi.token.id);
-                } else if (window.Culqi.order) {
-                    // console.log("✅ Orden recibida:", window.Culqi.order);
-                }
-            };
-        };
-        document.body.appendChild(script);
-        return () => document.body.removeChild(script);
-    }, []);
 
     // Function to handle step changes and scroll to top
     const handleStepChange = (newStep) => {
@@ -105,21 +135,29 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
                 {/* Steps indicator */}
                 <div className="mb-4 md:mb-8">
                     <div className="flex items-center justify-between gap-1 md:gap-4 max-w-3xl mx-auto">
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 1 ? "customtext-primary font-medium" : "customtext-neutral-dark"}`}>
-                            <span className=" bg-primary text-white w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm">1</span>
+                        {/* Paso 1 - Clickeable solo si estamos en paso 2 */}
+                        <div 
+                            className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 1 ? "customtext-primary font-medium" : "customtext-neutral-dark"} ${currentStep === 2 ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+                            onClick={() => currentStep === 2 && handleStepChange(1)}
+                        >
+                            <span className="bg-primary text-white w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm">1</span>
                             <span className="text-[10px] md:text-sm text-center">Carrito</span>
                         </div>
-                        <div className="mb-4 lg:mb-0  flex-1 h-[2px] bg-gray-200 relative">
+                        <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
                             <div className="absolute inset-0 bg-primary transition-all duration-500" style={{ width: currentStep > 1 ? "100%" : "0%" }} />
                         </div>
+                        
+                        {/* Paso 2 - No clickeable */}
                         <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep > 1 ? "customtext-primary font-medium" : "customtext-neutral-dark"}`}>
                             <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep > 1 ? "bg-primary text-white" : "bg-white customtext-primary"}`}>2</span>
                             <span className="text-[10px] md:text-sm text-center">Envío</span>
                         </div>
-                        <div className="mb-4 lg:mb-0  flex-1 h-[2px] bg-gray-200 relative">
+                        <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
                             <div className="absolute inset-0 bg-primary transition-all duration-500" style={{ width: currentStep > 2 ? "100%" : "0%" }} />
                         </div>
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 3 ? "customtext-primary  font-medium" : "customtext-neutral-dark"}`}>
+                        
+                        {/* Paso 3 - No clickeable */}
+                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 3 ? "customtext-primary font-medium" : "customtext-neutral-dark"}`}>
                             <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep === 3 ? "bg-primary text-white" : "bg-white customtext-primary"}`}>3</span>
                             <span className="text-[10px] md:text-sm text-center">Confirmación</span>
                         </div>
@@ -129,24 +167,31 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
                 {/* Steps content */}
                 {currentStep === 1 && (
                     <CartStep
+                    data={data}
                         cart={cart}
                         setCart={setCart}
                         onContinue={() => handleStepChange(2)}
                         subTotal={subTotal}
                         envio={envio}
                         igv={igv}
+                        fleteTotal={fleteTotal}
+                        seguroImportacionTotal={seguroImportacionTotal}
+                        derechoArancelarioTotal={derechoArancelarioTotal}
                         totalFinal={totalFinal}
                         openModal={openModal}
+                        categorias={categorias}
                         automaticDiscounts={automaticDiscounts}
                         setAutomaticDiscounts={setAutomaticDiscounts}
                         automaticDiscountTotal={automaticDiscountTotal}
                         setAutomaticDiscountTotal={setAutomaticDiscountTotal}
                         totalWithoutDiscounts={totalWithoutDiscounts}
+                        generals={generals}
                     />
                 )}
 
                 {currentStep === 2 && (
                     <ShippingStep
+                    data={data}
                         items={items}
                         setCode={setCode}
                         setDelivery={setDelivery}
@@ -159,20 +204,27 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
                         envio={envio}
                         setEnvio={setEnvio}
                         igv={igv}
+                        fleteTotal={fleteTotal}
+                        seguroImportacionTotal={seguroImportacionTotal}
+                        derechoArancelarioTotal={derechoArancelarioTotal}
                         totalFinal={totalFinal}
                         user={user}
                         ubigeos={ubigeos}
+                        categorias={categorias}
                         openModal={openModal}
                         setCouponDiscount={setCouponDiscount}
                         setCouponCode={setCouponCode}
                         automaticDiscounts={automaticDiscounts}
+                        setAutomaticDiscounts={setAutomaticDiscounts}
                         automaticDiscountTotal={automaticDiscountTotal}
+                        setAutomaticDiscountTotal={setAutomaticDiscountTotal}
                         totalWithoutDiscounts={totalWithoutDiscounts}
                         conversionScripts={conversionScripts}
                         setConversionScripts={setConversionScripts}
                         onPurchaseComplete={(orderId, scripts) => {
                             trackPurchase(orderId, scripts);
                         }}
+                        generals={generals}
                     />
                 )}
 
@@ -184,6 +236,9 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
                         subTotal={subTotal}
                         envio={envio}
                         igv={igv}
+                        fleteTotal={fleteTotal}
+                        seguroImportacionTotal={seguroImportacionTotal}
+                        derechoArancelarioTotal={derechoArancelarioTotal}
                         totalFinal={totalFinal}
                         couponDiscount={couponDiscount}
                         couponCode={couponCode}
@@ -195,6 +250,7 @@ export default function CheckoutSteps({ cart, setCart, user, ubigeos = [], items
                         onPurchaseComplete={(orderId, scripts) => {
                             trackPurchase(orderId, scripts);
                         }}
+                        generals={generals}
                     />
                 )}
             </div>

@@ -16,6 +16,7 @@ import CartModal from "../Components/CartModal";
 import AuthRest from "../../../Actions/AuthRest";
 import Logout from "../../../Actions/Logout";
 import CartModalBananaLab from "../Components/CartModalBananaLab";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const HeaderBananaLab = ({
     items,
@@ -274,7 +275,7 @@ const HeaderBananaLab = ({
                         <div className="hidden md:block ml-2 text-left">
                             <p className="text-xs font-medium">Tu carrito</p>
                             <p className="text-sm font-bold">
-                                S/ {totalPrice.toFixed(2)}
+                                {CurrencySymbol()} {totalPrice.toFixed(2)}
                             </p>
                         </div>
                     </div>

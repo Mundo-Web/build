@@ -97,14 +97,30 @@ class AuthController extends Controller
       }
     }
 
+    $message = $request->query('message');
+
+    // Get Google OAuth configuration from database
+    $googleClientId = \App\Models\General::where('correlative', 'google_client_id')->first();
+    $googleOauthEnabled = \App\Models\General::where('correlative', 'google_oauth_enabled')->first();
+
+    // Get Culqi configuration from database
+    $culqiPublicKey = \App\Models\General::where('correlative', 'checkout_culqi_public_key')->first();
+    $culqiEnabled = \App\Models\General::where('correlative', 'checkout_culqi')->first();
+    $culqiName = \App\Models\General::where('correlative', 'checkout_culqi_name')->first();
+
     return Inertia::render('Login', [
       'message' => $message ?? null,
       'global' => [
         'PUBLIC_RSA_KEY' => Controller::$PUBLIC_RSA_KEY,
-        'APP_NAME' => env('APP_NAME', 'Trasciende'),
+        'APP_NAME' => env('APP_NAME'),
         'APP_URL' => env('APP_URL'),
         'APP_DOMAIN' => env('APP_DOMAIN'),
         'APP_PROTOCOL' => env('APP_PROTOCOL', 'https'),
+        'GOOGLE_CLIENT_ID' => $googleClientId ? $googleClientId->description : env('GOOGLE_CLIENT_ID'),
+        'GOOGLE_OAUTH_ENABLED' => $googleOauthEnabled ? ($googleOauthEnabled->description === 'true') : false,
+        'CULQI_PUBLIC_KEY' => $culqiPublicKey ? $culqiPublicKey->description : env('CULQI_PUBLIC_KEY'),
+        'CULQI_ENABLED' => $culqiEnabled ? ($culqiEnabled->description === 'true') : false,
+        'CULQI_NAME' => $culqiName ? $culqiName->description : 'Culqi',
       ],
     ])->rootView('auth');
   }

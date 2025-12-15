@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { Local } from "sode-extend-react";
 import General from "../../../Utils/General";
 
@@ -39,12 +39,12 @@ const ThankSimple = ({ data, item }) => {
 
   useEffect(() => {
     if (data['bool:send_whatsapp']) {
-      const itemsList = item.details.map(product => 
+      const itemsList = item?.details.map(product => 
         `- ${product.name} (${product.quantity} unidades)`
       ).join('\n');
       
       const message = encodeURIComponent(
-        `¡Hola! Acabo de realizar una compra con el código \`#${item.code}\`.\n` +
+        `¡Hola! Acabo de realizar una compra con el código \`#${item?.code}\`.\n` +
         `Me gustaría confirmar los siguientes productos:\n${itemsList}\n` +
         `¿Podrían indicarme el tiempo estimado de entrega?`
       );
@@ -54,7 +54,7 @@ const ThankSimple = ({ data, item }) => {
       
       window.open(whatsappUrl, '_blank');
     }
-  }, [null])
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
@@ -66,7 +66,7 @@ const ThankSimple = ({ data, item }) => {
           <h1 className="text-3xl font-bold mb-2">Tu orden ha sido recibida</h1>
           <div className="mb-4">
             <p className="text-sm text-gray-600">Código de pedido</p>
-            <p className="font-medium">#{item.code}</p>
+            <p className="font-medium">#{item?.code}</p>
           </div>
         </div>
 
@@ -81,27 +81,27 @@ const ThankSimple = ({ data, item }) => {
           </div>
 
           {/* Productos */}
-          {item.details.map((item) => (
-            <div key={item.id} className="border-t border-gray-200 py-4">
+          {item?.details.map((item) => (
+            <div key={item?.id} className="border-t border-gray-200 py-4">
               <div className="grid grid-cols-12 gap-4 items-center">
                 <div className="col-span-6 flex items-center">
                   <div className="w-20 h-auto mr-3 relative">
                     <img
-                      src={`/storage/images/item/${item.image}`}
+                      src={`/storage/images/item/${item?.image}`}
                       onError={(e) => e.target.src = "/assets/img/noimage/no_img.jpg"}
-                      alt={item.name}
+                      alt={item?.name}
                       fill
                       className="rounded-md aspect-[4/3] w-full h-auto object-cover object-center"
                     />
                   </div>
                   <div className="w-full">
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-xs text-gray-500">SKU: {item.sku}</p>
+                    <p className="font-medium">{item?.name}</p>
+                    <p className="text-xs text-gray-500">SKU: {item?.sku}</p>
                   </div>
                 </div>
-                <div className="col-span-2 text-center">{item.quantity}</div>
-                <div className="col-span-2 text-center">S/ {Number2Currency(item.price)}</div>
-                <div className="col-span-2 text-center">S/ {Number2Currency(item.price * item.quantity)}</div>
+                <div className="col-span-2 text-center">{item?.quantity}</div>
+                <div className="col-span-2 text-center">{CurrencySymbol()} {Number2Currency(item?.price)}</div>
+                <div className="col-span-2 text-center">{CurrencySymbol()} {Number2Currency(item?.price * item?.quantity)}</div>
               </div>
             </div>
           ))}

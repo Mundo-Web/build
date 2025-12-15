@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\General;
 use App\Models\Item;
 use Illuminate\Http\Request;
 
@@ -18,8 +19,12 @@ class ItemDetailController extends BasicController
 
         if (!$course) return redirect()->route('Courses.jsx');
 
+        // Get all generals including SEO data
+        $generals = General::where('status', true)->get()->keyBy('correlative');
+
         return [
             'course' => $course,
+            'generals' => $generals,
         ];
     }
 }

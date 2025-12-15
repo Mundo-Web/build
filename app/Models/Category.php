@@ -8,16 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids,HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'slug',
+        'order_index',
         // 'order',
         'name',
+        'alias',
         'description',
+        'banners',
+        'stores',
         'banner',
         'image',
         'featured',
@@ -26,6 +30,8 @@ class Category extends Model
     ];
 
     protected $casts = [
+        'banners' => 'array',
+        'stores' => 'array',
         'featured' => 'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',

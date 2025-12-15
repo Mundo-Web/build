@@ -10,18 +10,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $data['name'] ?? 'Página' }} | {{ env('APP_NAME', 'xcleretor') }}</title>
+    @php
+        // Obtener datos SEO de generals
+        $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? env('APP_NAME');
+        $siteDescription = $generals->where('correlative', 'site_description')->first()?->description ?? '';
+        $siteKeywords = $generals->where('correlative', 'site_keywords')->first()?->description ?? '';
+        $ogTitle = $generals->where('correlative', 'og_title')->first()?->description ?? ($data['name'] ?? $siteTitle);
+        $ogDescription = $generals->where('correlative', 'og_description')->first()?->description ?? ($data['description'] ?? $siteDescription);
+        $ogImage = $generals->where('correlative', 'og_image')->first()?->description ?? '';
+        $ogUrl = $generals->where('correlative', 'og_url')->first()?->description ?? url()->current();
+        $twitterTitle = $generals->where('correlative', 'twitter_title')->first()?->description ?? $ogTitle;
+        $twitterDescription = $generals->where('correlative', 'twitter_description')->first()?->description ?? $ogDescription;
+        $twitterImage = $generals->where('correlative', 'twitter_image')->first()?->description ?? $ogImage;
+        $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
+        $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
+    @endphp
 
-    <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ uniqid() }}" type="image/png">
-    <meta name="description" content="xcleretor">
-    @isset($data['description'])
-        <meta name="description" content="{{ $data['description'] }}">
-    @endisset
-    @isset($data['keywords'])
-        <meta name="keywords" content="{{ implode(', ', $data['keywords']) }}">
-    @endisset
+    <title>{{ $data['name'] ?? $ogTitle ?? $siteTitle }}</title>
 
+    <!-- Favicon -->
+      <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ uniqid() }}" type="image/png">
+
+    <!-- Meta básicas -->
+    <meta name="description" content="{{ $data['description'] ?? $ogDescription ?? $siteDescription }}">
+    @if($siteKeywords || (isset($data['keywords']) && $data['keywords']))
+        <meta name="keywords" content="{{ isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords }}">
+    @endif
     <meta name="author" content="Powered by Mundo Web">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ $ogUrl }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    @if($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+    @endif
+    <meta property="og:site_name" content="{{ $siteTitle }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="{{ $twitterCard }}">
+    <meta property="twitter:url" content="{{ $ogUrl }}">
+    <meta property="twitter:title" content="{{ $twitterTitle }}">
+    <meta property="twitter:description" content="{{ $twitterDescription }}">
+    @if($twitterImage)
+        <meta property="twitter:image" content="{{ $twitterImage }}">
+    @endif
 
     <!-- Carga diferida de select2 CSS -->
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -30,6 +69,9 @@
     <!-- Carga diferida de icons CSS -->
     <link rel="preload" href="/lte/assets/css/icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lte/assets/css/icons.min.css"></noscript>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
 
     <link rel="preload" href='https://fonts.googleapis.com/css?family=Poppins' as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -124,16 +166,39 @@
             }
         </style>
     @endif
+    @php
+        $gradientBg = $data['colors']->firstWhere('name', 'gradient-background');
+    @endphp
     @foreach ($data['colors'] as $color)
         <style>
+            :root {
+                --bg-{{ $color->name }}: {{ $color->description }};
+            }
+            
+            .stroke-{{ $color->name }} {
+                stroke: {{ $color->description }};
+            }
+
+            .background-{{ $color->name }} {
+                background-color: {{ $color->description }};
+            }
+
             .bg-{{ $color->name }} {
+                @if($color->name == 'primary' && $gradientBg)
+                background-image: {{ $gradientBg->description }} !important;
+                background-color: transparent !important;
+                background-repeat: no-repeat !important;
+                @else
+                background-color: {{ $color->description }};
+                @endif
+            }
+            .group:hover .group-hover\:bg-{{ $color->name }} {
                 background-color: {{ $color->description }};
             }
 
             .customtext-{{ $color->name }} {
                 color: {{ $color->description }};
             }
-
             /* Variantes de hover */
             .hover\:customtext-{{ $color->name }}:hover {
                 color: {{ $color->description }};
@@ -142,6 +207,9 @@
             .hover\:bg-{{ $color->name }}:hover {
                 background-color: {{ $color->description }};
 
+            }
+            .hover\:border-{{ $color->name }}:hover{
+                border-color: {{ $color->description }};
             }
 
             .placeholder\:customtext-{{ $color->name }}::placeholder {
@@ -174,6 +242,7 @@
             }
         </style>
     @endforeach
+
     <style>
         .font-emoji {
             font-family: "Noto Color Emoji", sans-serif;
@@ -184,7 +253,7 @@
             transform: translateY(-50%);
         }
     </style>
-
+    
 </head>
 
 <body class="font-general">
@@ -196,8 +265,64 @@
 
     @inertia
 
+    {{-- <div id="page-loader" class="fixed inset-0 flex flex-col justify-center items-center bg-white/90 backdrop-blur-sm z-50">
+
+        <div class="animate-bounce">
+            <img
+
+                src='/assets/resources/logo.png?v={{uniqid()}}'
+                alt={Global.APP_NAME}
+                onError="(e) => { e.target.onerror = null; e.target.src = '/assets/img/logo-bk.svg';}"
+
+                class=" w-64 lg:w-96 transition-all duration-300 transform hover:scale-105"
+            />
+        </div>
+    </div> --}}
+
     <!-- Vendor js -->
     <script src="/lte/assets/js/vendor.min.js" defer></script>
+
+    <!-- Culqi Custom Checkout v4 -->
+    <script src="https://js.culqi.com/checkout-js"></script>
+    <!-- Culqi 3DS para autenticación segura -->
+    <script src="https://3ds.culqi.com" defer></script>
+
+    <!-- OpenPay SDK -->
+    @php
+        $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
+        // Verificar múltiples formatos: 'true', '1', 'on', 'yes', etc.
+        $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+        $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
+        $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
+    @endphp
+    @if($openpayEnabled && $openpayMerchantId && $openpayPublicKey)
+        <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
+        <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
+        <script type="text/javascript">
+            // Configurar OpenPay globalmente ANTES de que React se monte
+            window.OPENPAY_MERCHANT_ID = "{{ $openpayMerchantId }}";
+            window.OPENPAY_PUBLIC_KEY = "{{ $openpayPublicKey }}";
+            window.OPENPAY_SANDBOX_MODE = true; // Cambiar a false en producción
+            
+            // Log de configuración (solo desarrollo)
+            console.log("✅ OpenPay configurado:", {
+                merchantId: window.OPENPAY_MERCHANT_ID,
+                publicKey: window.OPENPAY_PUBLIC_KEY ? window.OPENPAY_PUBLIC_KEY.substring(0, 8) + "..." : "N/A",
+                sandbox: window.OPENPAY_SANDBOX_MODE
+            });
+        </script>
+    @else
+        <script type="text/javascript">
+            console.warn("⚠️ OpenPay no está configurado correctamente:", {
+                enabledRaw: "{{ $openpayEnabledRaw }}",
+                enabled: {{ $openpayEnabled ? 'true' : 'false' }},
+                hasMerchantId: {{ $openpayMerchantId ? 'true' : 'false' }},
+                hasPublicKey: {{ $openpayPublicKey ? 'true' : 'false' }},
+                merchantId: "{{ $openpayMerchantId ? substr($openpayMerchantId, 0, 5) . '...' : 'VACÍO' }}",
+                publicKey: "{{ $openpayPublicKey ? substr($openpayPublicKey, 0, 5) . '...' : 'VACÍO' }}"
+            });
+        </script>
+    @endif
 
     <script src="/lte/assets/libs/select2/js/select2.full.min.js" defer></script>    <!-- App js -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
@@ -243,6 +368,8 @@
                     lazyImageObserver.observe(lazyImage);
                 });
             }
+
+            // document.body.removeChild(document.getElementById('page-loader'))
         });
     </script>
 

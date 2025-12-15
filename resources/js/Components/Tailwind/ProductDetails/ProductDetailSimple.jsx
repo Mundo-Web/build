@@ -1,7 +1,7 @@
 import Swal from "sweetalert2"
 import html2string from "../../../Utils/html2string"
 import HtmlContent from "../../../Utils/HtmlContent"
-import Number2Currency from "../../../Utils/Number2Currency"
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency"
 import { useRef } from "react"
 
 const ProductDetailSimple = ({ item, cart, setCart }) => {
@@ -55,7 +55,7 @@ const ProductDetailSimple = ({ item, cart, setCart }) => {
               </h2>
             </div>
             <div className="w-full xl:w-[30%] flex justify-start xl:justify-end items-start">
-              <p className="font-poppins font-bold text-3xl text-color3JL">S/. {Number2Currency(item?.final_price)}</p>
+              <p className="font-poppins font-bold text-3xl text-color3JL">{CurrencySymbol()} {Number2Currency(item?.final_price)}</p>
             </div>
           </div>
           <div>

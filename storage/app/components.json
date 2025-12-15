@@ -10,6 +10,10 @@
                 "image": "top-bar-simple.png",
                 "generals": [
                     "cintillo"
+                ],
+                "data": [
+                    "class_content",
+                    "class_text"
                 ]
             },
             {
@@ -19,8 +23,30 @@
                 "data": [
                     "background_color",
                     "color",
+                    "class_copyright",
+                    "class_icon",
                     "isCopyright",
                     "border_color"
+                ],
+                "using": {
+                    "model": "Social"
+                },
+                "generals": [
+                    "cintillo",
+                    "copyright"
+                ]
+            },
+            {
+                "id": "TopBarPages",
+                "name": "Con páginas",
+                "image": "top-bar-socials.png",
+                "data": [
+                    "background_color",
+                    "color",
+                    "isCopyright",
+                    "border_color",
+                    "pages_mobile",
+                    "cintillo_mobile"
                 ],
                 "using": {
                     "model": "Social"
@@ -51,7 +77,8 @@
                     "copyright"
                 ],
                 "data": [
-                    "background"
+                    "class_container",
+                    "showJobApplicationButton"
                 ]
             },
             {
@@ -68,7 +95,23 @@
                     "model": "Social"
                 },
                 "generals": [
+                    "phone_contact",
+                    "email_contact",
                     "cintillo"
+                ]
+            },
+            {
+                "id": "TopBarAddress",
+                "name": "Con dirección y WhatsApp",
+                "image": "top-bar-address.png",
+                "generals": [
+                    "address",
+                    "whatsapp_advisors"
+                ],
+                "data": [
+                    "class_content",
+                    "class_address",
+                    "class_button"
                 ]
             }
         ]
@@ -93,6 +136,44 @@
                 }
             },
             {
+                "id": "MenuMultivet",
+                "name": "Menu - Multivet",
+                "image": "top-bar-simple.png",
+                "data": [
+                    "showCategories",
+                    "description",
+                    "icon",
+                    "class_container",
+                    "type_order",
+                       "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                     "class_button_card_detail"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                }
+            },
+            {
+                "id": "MenuCategories",
+                "name": "Menu - Categorías",
+                "image": "top-bar-simple.png",
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                }
+            },
+            {
                 "id": "MenuBananaLab",
                 "name": "Menu - Banana Lab",
                 "image": "top-bar-simple.png",
@@ -101,6 +182,39 @@
                     "with": [
                         "subcategories"
                     ]
+                }
+            },
+            {
+                "id": "MenuExpertFarma",
+                "name": "Menu - Expert Farma",
+                "image": "top-bar-simple.png",
+                "data": [
+                    "showCategories",
+                    "backgroundColor"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                }
+            },
+            {
+                "id": "MenuKatya",
+                "name": "Menu - Katya",
+                "image": "top-bar-simple.png",
+                "data": [
+                    "showCategories"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ],
+                    "filters": [
+                        "featured"
+                    ],
+                    "limit": 5
                 }
             }
         ]
@@ -122,6 +236,133 @@
             {
                 "id": "HeaderSearchB",
                 "name": "HeaderSearchB",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "class_logo",
+                    "input_search_placeholder",
+                    "input_search_label",
+                    "input_search_class"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "HeaderIbergruas",
+                "name": "HeaderIbergruas",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "class_logo",
+                    "input_search_placeholder",
+                    "input_search_label",
+                    "input_search_class"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "header_menu_order "
+                ]
+            },
+            {
+                "id": "HeaderSearchKatya",
+                "name": "HeaderSearchKatya",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "class_logo"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "opening_hours",
+                    "support_phone"
+                ]
+            },
+            {
+                "id": "HeaderPidelo",
+                "name": "HeaderPidelo",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor"
+                ],
+                "using": {
+                    "model": "Store",
+                    "fields": [
+                        "name",
+                        "slug",
+                        "id"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "HeaderSearchDental",
+                "name": "HeaderSearchDental",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "class_text",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "topBarType",
+                    "class_pedido"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "HeaderSearchPaani",
+                "name": "HeaderSearchPaani",
                 "image": "header-with-search.png",
                 "data": [
                     "class",
@@ -155,7 +396,8 @@
                         "category",
                         "subcategory",
                         "brand",
-                        "collection"
+                        "collection",
+                        "variants"
                     ]
                 },
                 "generals": [
@@ -187,12 +429,24 @@
                 ]
             },
             {
-                "id": "Header - Sala Fabulosa",
+                "id": "HeaderSearchMenuSF",
                 "name": "Con busqueda y menu SF",
                 "image": "header-with-search.png",
                 "data": [
+                    "class_content",
+                    "class_text",
                     "class",
-                    "link_cart"
+                    "link_cart",
+                    "type_topbar"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "cintillo"
                 ]
             },
             {
@@ -233,6 +487,57 @@
                     "message_whatsapp",
                     "email_contact"
                 ]
+            },
+            {
+                "id": "HeaderHuaillys",
+                "name": "Header - Huaillys",
+                "image": "header-huaillys.png",
+                "data": [
+                    "class",
+                    "class_logo",
+                    "class_menu",
+                    "class_link",
+                    "class_link_mobile"
+                ],
+                "generals": [
+                    "address"
+                ]
+            },
+            {
+                "id": "HeaderFirstClass",
+                "name": "Header - FirstClass Courier",
+                "image": "header-firstclass.png",
+                "data": [
+                    "class",
+                    "class_logo",
+                    "class_menu",
+                    "class_link",
+                    "class_link_mobile"
+                ],
+                "using": {
+                    "model": "ServiceCategory",
+                    "with": [
+                        "services"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "address"
+                ]
+            },
+            {
+                "id": "HeaderLaPetaca",
+                "name": "Header - La Petaca Hotel",
+                "image": "header-lapetaca.png",
+                "data": [
+                    "menuItems",
+                    "logo",
+                    "logoAlt",
+                    "bgColor",
+                    "accentColor"
+                ],
+                "generals": []
             }
         ]
     },
@@ -247,8 +552,7 @@
                 "name": "WhatsApp",
                 "image": "floating-whatsapp.png",
                 "generals": [
-                    "phone_whatsapp",
-                    "message_whatsapp"
+                    "whatsapp_advisors"
                 ]
             }
         ]
@@ -261,6 +565,22 @@
             {
                 "id": "CarruselBenefitsInifinite",
                 "name": "Beneficios",
+                "data": [
+                    "background",
+                    "class_container",
+                    "class_content_swiper",
+                    "class_divisor"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+            {
+                "id": "CarruselBenefitsInifinite2dn1",
+                "name": "CarruselBenefitsInifinite2dn1",
+                "data": [
+                    "background"
+                ],
                 "using": {
                     "model": "Indicator"
                 }
@@ -276,7 +596,9 @@
                 "id": "CarruselBenefitsSimple",
                 "name": "Beneficios Simple",
                 "data": [
-                    "background"
+                    "background",
+                    "class_title",
+                    "class_content"
                 ],
                 "using": {
                     "model": "Indicator"
@@ -297,6 +619,28 @@
                 "name": "Beneficios Simple Swiper",
                 "data": [
                     "background"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+            {
+                "id": "CarruselBenefitsMultivet",
+                "name": "Beneficios Multivet",
+                "data": [
+                    "background",
+                    "background_image",
+                    "overlay",
+                    "title",
+                    "subtitle",
+                    "description",
+                    "accent_color",
+                    "accent_bg",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "button_text",
+                    "show_button"
                 ],
                 "using": {
                     "model": "Indicator"
@@ -380,11 +724,21 @@
                 "name": "Interactivo Loop Nav Pag",
                 "image": "slider-simple.png",
                 "data": [
+                    "class_slider",
                     "infiniteLoop",
                     "paginationAlignment",
                     "showNavigation",
                     "imageBgPosition",
-                    "overlayMobile"
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "overlayDesktop",
+                    "whatsapp_info",
+                    "class_button_primary",
+                    "class_icon_primary",
+                    "class_title",
+                    "class_description",
+                    "animation_slider",
+                    "only_image"
                 ],
                 "using": {
                     "model": "Slider",
@@ -392,10 +746,113 @@
                         "name",
                         "description",
                         "bg_image",
+                        "bg_image_mobile",
                         "button_text",
-                        "button_link"
+                        "button_link",
+                        "order_index",
+                        "title_color",
+                        "description_color"
                     ]
-                }
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "SliderMultivet",
+                "name": "Slider Multivet",
+                "image": "slider-simple.png",
+                "data": [
+                    "infiniteLoop",
+                    "paginationAlignment",
+                    "showNavigation",
+                    "imageBgPosition",
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "whatsapp_info",
+                    "class_button_primary",
+                    "class_icon_primary",
+                    "class_title",
+                    "class_description",
+                    "class_overlay",
+                    "class_content_slider"
+                ],
+                "using": {
+                    "model": "Slider"
+                  
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "SliderIbergruas",
+                "name": "Slider Ibergruas",
+                "image": "slider-simple.png",
+                "data": [
+                    "infiniteLoop",
+                    "paginationAlignment",
+                    "showNavigation",
+                    "imageBgPosition",
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "whatsapp_info",
+                    "class_button_primary",
+                    "class_icon_primary",
+                    "class_title",
+                    "class_description",
+                    "class_overlay"
+                ],
+                "using": {
+                    "model": "Slider",
+                    "fields": [
+                        "name",
+                        "description",
+                        "bg_image",
+                        "bg_image_mobile",
+                        "button_text",
+                        "button_link",
+                        "order_index",
+                        "title_color",
+                        "description_color",
+                        "bg_video"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "SliderProductBannerKatya",
+                "name": "Slider Productos con Banner - Katya",
+                "image": "slider-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "backgroundColor",
+                    "textColor",
+                    "autoPlay",
+                    "autoPlayInterval"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured"
+                    ],
+                    "fields": [
+                        "name",
+                        "banner",
+                        "slug",
+                        "featured"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
             },
             {
                 "id": "SliderFeaturedMakita",
@@ -432,18 +889,40 @@
                 }
             },
             {
+                "id": "SliderPideloPe",
+                "name": "SliderPideloPe",
+                "image": "slider-simple.png",
+                "using": {
+                    "model": "Slider",
+                    "fields": [
+                        "name",
+                        "description",
+                        "bg_image",
+                        "image",
+                        "button_text",
+                        "button_link"
+                    ]
+                }
+            },
+            {
                 "id": "SliderImagen",
                 "name": "Imagen",
                 "image": "slider-simple.png",
                 "data": [
-                    "title"
+                    "title",
+                    "class_section",
+                    "class_content",
+                    "class_button",
+                    "class_image",
+                    "autoplay"
                 ],
                 "using": {
                     "model": "Brand",
                     "fields": [
                         "name",
                         "description",
-                        "image"
+                        "image",
+                        "slug"
                     ]
                 }
             },
@@ -480,6 +959,44 @@
                         "button_link"
                     ]
                 }
+            },
+            {
+                "id": "SliderFirstClass",
+                "name": "Slider FirstClass Courier",
+                "image": "slider-firstclass.png",
+                "data": [
+                    "class_slider",
+                    "class_badge",
+                    "class_title",
+                    "class_highlight_title",
+                    "class_subtitle",
+                    "class_description",
+                    "class_button_primary",
+                    "class_button_secondary",
+                    "class_indicators",
+                    "class_arrows",
+                    "class_overlay"
+                ],
+                "using": {
+                    "model": "Slider"
+                }
+            },
+            {
+                "id": "SliderLaPetaca",
+                "name": "Slider - La Petaca Hotel",
+                "image": "slider-lapetaca.png",
+                "data": [
+                    "class_slider",
+                  
+                    "autoplayDelay",
+                    "showNavigation",
+                    "showIndicators"
+                ],
+                "using": {
+                    "model": "Slider"
+                  
+                },
+                "generals": []
             }
         ]
     },
@@ -510,7 +1027,13 @@
                     "path",
                     "title",
                     "description",
-                    "link_cart"
+                    "link_cart",
+                    "class_button",
+                    "is_short_description",
+                    "class_card_image",
+                    "class_card_title",
+                    "class_card_subtitle",
+                    "class_card_description"
                 ],
                 "options": [
                     {
@@ -546,7 +1069,245 @@
                             "with": [
                                 "category",
                                 "subcategory",
+                                "brand",
+                                "collection",
+                                "variants"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ],
+                            "group_by_name": true
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "CatalogoIbergruas",
+                "name": "Producto Catalogo Ibergruas",
+                "image": "products-list.png",
+                "data": [
+                    "path",
+                    "title",
+                    "description",
+                    "link_cart",
+                    "class_button",
+                    "is_short_description",
+                    "class_card_image",
+                    "class_card_title",
+                    "class_card_subtitle",
+                    "class_card_description"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Lista estándar",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
                                 "brand"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "with_variants",
+                        "name": "Lista con variantes",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand",
+                                "collection",
+                                "variants"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ],
+                            "group_by_name": true
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "CatalogoFiltrosDental",
+                "name": "Producto Catalogo Filtro Dental",
+                "image": "products-list.png",
+                "data": [
+                    "path",
+                    "title",
+                    "description",
+                    "link_cart",
+                    "class_button",
+                    "show_price",
+                    "section_collections",
+                    "section_brands",
+                    "section_categories",
+                    "section_subcategories",
+                    "section_prices",
+                    "section_stores",
+                    "type_card_product",
+                    "class_product_card_container",
+                    "class_clear_button",
+                    "class_title",
+                      "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Lista estándar",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "with_variants",
+                        "name": "Lista con variantes",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand",
+                                "collection",
+                                "variants"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ],
+                            "group_by_name": true
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "CatalogoFiltrosKatya",
+                "name": "Producto Catalogo Filtro Katya",
+                "image": "products-list.png",
+                "data": [
+                    "path",
+                    "title",
+                    "description",
+                    "link_cart",
+                    "class_button",
+                    "show_price",
+                    "section_collections",
+                    "section_brands",
+                    "section_categories",
+                    "section_subcategories",
+                    "section_prices",
+                    "section_stores",
+                    "type_card_product",
+                    "class_clear_button",
+                    "class_title"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Lista estándar",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "with_variants",
+                        "name": "Lista con variantes",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand",
+                                "collection",
+                                "variants"
                             ],
                             "relations": [
                                 "category",
@@ -610,11 +1371,81 @@
                             "with": [
                                 "category",
                                 "subcategory",
+                                "brand",
+                                "collection"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags",
+                                "collection"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ],
+                            "group_by_name": true
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "CatalagoFiltrosPaani",
+                "name": "Producto Catalogo Filtro - Paani",
+                "image": "products-list.png",
+                "data": [
+                    "path",
+                    "title",
+                    "description",
+                    "link_cart",
+                    "background",
+                    "backgroundboton"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Lista estándar",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
                                 "brand"
                             ],
                             "relations": [
                                 "category",
                                 "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "with_variants",
+                        "name": "Lista con variantes",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand",
+                                "collection"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags",
+                                "collection"
                             ],
                             "fields": [
                                 "id",
@@ -776,7 +1607,8 @@
                     "path",
                     "title",
                     "description",
-                    "link_cart"
+                    "link_cart",
+                    "show_price"
                 ],
                 "options": [
                     {
@@ -894,6 +1726,62 @@
                         }
                     }
                 ]
+            },
+            {
+                "id": "FilterHuaillys",
+                "name": "FilterHuaillys - Pollería Huaillys",
+                "image": "filters-huaillys.png",
+                "data": [
+                    "background_image",
+                    "hero_title",
+                    "hero_subtitle",
+                    "category_title",
+                    "category_description",
+                    "product_title",
+                    "product_description",
+                    "button_text",
+                    "type_card_product",
+                    "class_hero_title",
+                    "class_hero_subtitle",
+                    "class_category_title",
+                    "class_category_description",
+                    "class_product_title",
+                    "class_product_description",
+                    "class_category_card_title",
+                    "class_category_card_description",
+                    "class_category_card_selected"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Catálogo con categorías",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand",
+                                "images"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "discount",
+                                "final_price",
+                                "image",
+                                "summary",
+                                "description",
+                                "category_id"
+                            ]
+                        }
+                    }
+                ]
             }
         ]
     },
@@ -930,7 +1818,9 @@
                 "image": "categories-pretty-grid.png",
                 "data": [
                     "path",
-                    "borderRadius"
+                    "borderRadius",
+                    "title",
+                    "class_section"
                 ],
                 "using": {
                     "model": "Category",
@@ -947,11 +1837,47 @@
                 "image": "categories-simple.png",
                 "data": [
                     "title",
-                    "path"
+                    "path",
+                    "backgroundColor"
                 ],
                 "using": {
                     "model": "Category",
                     "limit": 10
+                }
+            },
+            {
+                "id": "CategoryPidelo",
+                "name": "category-pidelo",
+                "image": "categories-simple.png",
+                "data": [
+                    "title",
+                    "path",
+                    "backgroundColor"
+                ],
+                "using": {
+                    "model": "Category",
+                    "limit": 10
+                }
+            },
+            {
+                "id": "CategoryInfiniteSlider",
+                "name": "Slider Infinito con Hover",
+                "image": "category-infinite-slider.png",
+                "data": [
+                    "title",
+                    "description",
+                    "path",
+                    "link_catalog"
+                ],
+                "using": {
+                    "model": "Category",
+                    "fields": [
+                        "id",
+                        "name",
+                        "slug",
+                        "description",
+                        "image"
+                    ]
                 }
             },
             {
@@ -1029,7 +1955,9 @@
                     "path",
                     "title",
                     "description",
-                    "link_catalog"
+                    "link_catalog",
+                    "class_title",
+                    "class_container"
                 ],
                 "using": {
                     "model": "Category",
@@ -1068,11 +1996,18 @@
                 "image": "categories-simple.png",
                 "data": [
                     "title",
-                    "path"
+                    "centrado",
+                    "path",
+                    "shownavigation",
+                    "showPagination",
+                    "paginationAlignment"
                 ],
                 "using": {
                     "model": "Collection",
-                    "limit": 20
+                    "limit": 20,
+                    "filters": [
+                        "featured"
+                    ]
                 }
             }
         ]
@@ -1088,6 +2023,61 @@
                 "using": {
                     "model": "Indicator"
                 }
+            },
+            {
+                "id": "IndicatorIbergruas",
+                "name": "IndicatorIbergruas",
+                "image": "indicator-ibergruas.png",
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+            {
+                "id": "IndicatorHuaillys",
+                "name": "Indicator - Huaillys",
+                "image": "indicator-huaillys.png",
+                "data": [
+                    "class",
+                    "url_background",
+                    "url_image",
+                    "class_chicken",
+                    "class_icon",
+                    "class_title",
+                    "class_description",
+                    "class_whatsapp_text",
+                    "class_whatsapp_number",
+                    "class_whatsapp_subtitle"
+                ],
+                "using": {
+                    "model": "Indicator"
+                },
+                "generals": [
+                    "phone_whatsapp"
+                ]
+            },
+            {
+                "id": "IndicatorLaPetaca",
+                "name": "Indicadores - La Petaca Hotel",
+                "image": "indicator-lapetaca.png",
+                "data": [
+                    "accentColor",
+                    "showDirectBooking"
+                ],
+                "using": {
+                    "model": "Indicator",
+                    "fields": [
+                        "symbol",
+                        "bg_image",
+                        "name",
+                       "subtitle",
+                        "badge",
+                        "description",
+                        "button_text",
+                        "button_link",
+                        "order_index"
+                    ]
+                },
+                "generals": []
             }
         ]
     },
@@ -1180,6 +2170,43 @@
                     "path",
                     "description",
                     "link_catalog",
+                    "link_cart",
+                    "class_header",
+                    "class_content",
+                    "class_button",
+                    "class_card_title",
+                    "class_card_image",
+                    "is_short_description",
+                    "class_card_subtitle",
+                    "class_card_description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "views",
+                        "most_view"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
+                "id": "ProductIbergruas",
+                "name": "ProductIbergruas",
+                "image": "products-list.png",
+                "data": [
+                    "title",
+                    "path",
+                    "description",
+                    "link_catalog",
                     "link_cart"
                 ],
                 "using": {
@@ -1189,7 +2216,8 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
@@ -1217,7 +2245,8 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
@@ -1225,6 +2254,71 @@
                         "brand"
                     ],
                     "limit": 10
+                }
+            },
+            {
+                "id": "ProductMultivet",
+                "name": "Product Multivet",
+                "image": "products-carousel.png",
+                "data": [
+                    "title",
+                    "class_title",
+                    "description",
+                    "link_catalog",
+                    "text_button",
+                    "class_section",
+                    "class_button",
+                    "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
+                "id": "ProductIbergruasSwiper",
+                "name": "Product Ibergruas Swiper",
+                "image": "products-carousel.png",
+                "data": [
+                    "title",
+                    "description",
+                    "link_catalog",
+                    "class_button",
+                    "class_content_header"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
                 }
             },
             {
@@ -1245,7 +2339,8 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
@@ -1273,12 +2368,14 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
                         "subcategory",
-                        "brand"
+                        "brand",
+                        "variants"
                     ],
                     "limit": 20
                 }
@@ -1301,7 +2398,8 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
@@ -1332,7 +2430,8 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
@@ -1360,7 +2459,8 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
@@ -1369,6 +2469,66 @@
                         "specifications"
                     ],
                     "limit": 20
+                }
+            },
+            {
+                "id": "ProductFeaturedVerticalSlider",
+                "name": "Producto Destacado con Slider Vertical",
+                "image": "products-featured-vertical.png",
+                "data": [
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 10
+                }
+            },
+            {
+                "id": "ProductInfiniteSlider",
+                "name": "Slider Infinito de Productos",
+                "image": "product-infinite-slider.png",
+                "data": [
+                    "title",
+                    "description",
+                    "path",
+                    "link_catalog",
+                    "link_text"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "fields": [
+                        "id",
+                        "name",
+                        "slug",
+                        "price",
+                        "discount",
+                        "image",
+                        "summary",
+                        "description"
+                    ]
                 }
             },
             {
@@ -1383,7 +2543,13 @@
                     "description",
                     "text_button",
                     "link_catalog",
-                    "link_cart"
+                    "link_cart",
+                    "class_button_primary",
+                    "class_button",
+                    "is_use_category",
+                    "visible_variations",
+                    "class_section",
+                    "show_price"
                 ],
                 "using": {
                     "model": "Item",
@@ -1392,14 +2558,15 @@
                         "recommended",
                         "offering",
                         "is_new",
-                        "views"
+                        "views",
+                        "most_view"
                     ],
                     "with": [
                         "category",
                         "subcategory",
                         "brand"
                     ],
-                    "limit": 4
+                    "limit": 12
                 }
             },
             {
@@ -1421,7 +2588,38 @@
                     ],
                     "limit": 8
                 }
+            },
+            {
+                "id": "ProductLaPetaca",
+                "name": "Productos - La Petaca Hotel",
+                "image": "products-lapetaca.png",
+                "data": [
+                    "rooms",
+                    "showFeatured",
+                    "accentColor",
+                    "title",
+                    "subtitle"
+                ],
+                  "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                   "with": [
+                        "category",
+                        "subcategory",
+                        "brand",
+                        "images",
+                        "amenities"
+                    ],
+                    "limit": 8
+                },
+                "generals": []
             }
+          
         ]
     },
     {
@@ -1430,7 +2628,16 @@
         "options": [
             {
                 "id": "BannerSimple",
-                "name": "Simple"
+                "name": "Simple",
+                "data": [
+                    "overlay",
+                    "btn_secondary",
+                    "class_button"
+                ]
+            },
+            {
+                "id": "BannerSimpleD2",
+                "name": "Simple D2en1"
             },
             {
                 "id": "BannerAd",
@@ -1444,7 +2651,25 @@
                 "name": "BannerPublicitario",
                 "data": [
                     "title",
-                    "image_position"
+                    "image_position",
+                    "class_content",
+                    "class_image",
+                    "class_right",
+                    "class_button",
+                    "class_content_right"
+                ]
+            },
+            {
+                "id": "BannerPublicitarioKatya",
+                "name": "BannerPublicitarioKatya",
+                "data": [
+                    "title",
+                    "image_position",
+                    "class_content",
+                    "class_image",
+                    "class_right",
+                    "class_button",
+                    "class_content_right"
                 ]
             },
             {
@@ -1492,6 +2717,14 @@
                 "name": "Flex"
             },
             {
+                "id": "BannerIbergruas",
+                "name": "BannerIbergruas",
+                "data": [
+                    "title",
+                    "subtitle"
+                ]
+            },
+            {
                 "id": "BannerStatic",
                 "name": "Estatico",
                 "using": {
@@ -1513,29 +2746,63 @@
                 "name": "SimpleSF"
             },
             {
+                "id": "BannerMultivet",
+                "name": "Banner Multivet",
+                "image": "banner-multivet.png",
+                "data": [
+                    "section_background",
+                    "container_background",
+                    "title_color",
+                    "title_opacity",
+                    "description_color",
+                    "description_opacity",
+                    "button_background",
+                    "image_position",
+                    "show_image_overlay",
+                    "show_decorations",
+                    "decoration_color",
+                    "class_section",
+                    "class_container",
+                    "class_content",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "class_image_container",
+                    "class_image",
+                    "class_overlay"
+                ]
+            },
+            {
+                "id": "BannerBlogSectionKatya",
+                "name": "BannerBlogSectionKatya",
+                "using": {
+                    "model": "Post",
+                    "limit": 2,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+            {
                 "id": "BannerBananaLab",
                 "name": "BannerBananaLab"
-            }
-        ]
-    },
-    {
-        "id": "ads",
-        "name": "Pop-ups",
-        "icon": "mdi mdi-google-ads",
-        "options": [
+            },
             {
-                "id": "AdSubscription",
-                "name": "Suscripción",
+                "id": "BannerMobileApp",
+                "name": "Banner Mobile App - FirstClass",
+                "image": "banner-mobile-app.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_content",
+                    "class_title",
+                    "class_description",
+                    "class_stats",
+                    "class_phone_mockup"
+                ],
                 "using": {
-                    "model": "Ad",
-                    "fields": [
-                        "image",
-                        "name"
-                    ]
-                },
-                "generals": [
-                    "privacy_policy"
-                ]
+                    "model": "App"
+                }
             }
         ]
     },
@@ -1606,7 +2873,10 @@
                 "id": "ProductDetailB",
                 "name": "ProductDetailB",
                 "data": [
-                    "link_cart"
+                    "link_cart",
+                    "class_button",
+                    "class_header",
+                    "class_content"
                 ],
                 "using": {
                     "model": "Item",
@@ -1636,10 +2906,53 @@
                 ]
             },
             {
+                "id": "ProductDetailDental",
+                "name": "ProductDetailDental",
+                "data": [
+                    "link_cart",
+                    "background",
+                    "backgroundboton"
+                ],
+                "using": {
+                    "model": "Item",
+                    "flied": "slug"
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
                 "id": "ProductDetailSF",
                 "name": "ProductDetailSF",
                 "data": [
-                    "link_cart"
+                    "link_cart",
+                    "button_buy",
+                    "button_consultation",
+                    "show_additional_info"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "variants",
+                        "images",
+                        "specifications",
+                        "features"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                }
+            },
+            {
+                "id": "ProductDetailPidelo",
+                "name": "ProductDetailPidelo",
+                "data": [
+                    "link_cart",
+                    "class_badge"
                 ],
                 "using": {
                     "model": "Item",
@@ -1697,6 +3010,133 @@
                         "subcategory"
                     ]
                 }
+            },
+            {
+                "id": "ProductDetailMultivet",
+                "name": "ProductDetailMultivet - Tienda de Mascotas",
+                "data": [
+                    "link_cart",
+                    "background",
+                    "buyButton",
+                    "class_badge_category",
+                     "title",
+                    "class_title",
+                    "description",
+                    "link_catalog",
+                    "text_button",
+                    "class_section",
+                    "class_button",
+                    "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "images",
+                        "specifications"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+                {
+                "id": "ProductDetailIbergruas",
+                "name": "ProductDetailIbergruas - Ibergruas",
+                "data": [
+                    "link_cart",
+                    "background",
+                    "buyButton"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "images",
+                        "specifications"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "ProductDetailKatya",
+                "name": "ProductDetailKatya",
+                "data": [
+                    "link_cart",
+                    "background"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "images",
+                        "specifications"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp"
+                ]
+            },
+            {
+                "id": "ProductDetailHuaillys",
+                "name": "ProductDetailHuaillys - Pollería Huaillys",
+                "image": "product-detail-huaillys.png",
+                "data": [
+                    "link_cart",
+                    "background",
+                    "product_type_list",
+                    "title_related",
+                    "description_related",
+                    "link_text_related",
+                    "button_text_related"
+                ],
+                "using": {
+                    "model": "Item",
+                    "field": "slug",
+                    "with": [
+                        "images",
+                        "specifications",
+                        "features"
+                    ],
+                    "relations": [
+                        "category",
+                        "brand",
+                        "subcategory"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "address"
+                ]
             },
             {
                 "id": "ScrapingProductDetail",
@@ -1777,14 +3217,36 @@
                 "id": "CheckoutSteps",
                 "name": "Steps",
                 "data": [
-                    "title"
+                    "title",
+                    "class_button"
+                ],
+                "generals": [
+                    "importation_flete",
+                    "importation_seguro",
+                    "importation_derecho_arancelario",
+                    "importation_derecho_arancelario_descripcion"
+                ]
+            },
+            {
+                "id": "CheckoutStepsPidelo",
+                "name": "StepsPidelo",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "generals": [
+                    "importation_flete",
+                    "importation_seguro",
+                    "importation_derecho_arancelario",
+                    "importation_derecho_arancelario_descripcion"
                 ]
             },
             {
                 "id": "CheckoutStepsSF",
                 "name": "StepsSF",
                 "data": [
-                    "title"
+                    "title",
+                    "class_button"
                 ],
                 "json": {
                     "prefixes": "./prefijocelular.json"
@@ -1802,6 +3264,36 @@
                     "checkout_transfer_cci",
                     "checkout_transfer_name",
                     "checkout_transfer_description"
+                ]
+            },
+              {
+                "id": "CheckoutStepsIbegruas",
+                "name": "StepsIbegruas",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "json": {
+                    "prefixes": "./prefijocelular.json"
+                },
+                "generals": [
+                    "igv_checkout",
+                    "checkout_culqi",
+                    "checkout_culqi_name",
+                    "checkout_culqi_public_key",
+                    "checkout_dwallet",
+                    "checkout_dwallet_qr",
+                    "checkout_dwallet_name",
+                    "checkout_dwallet_description",
+                    "checkout_transfer",
+                    "checkout_transfer_cci",
+                    "checkout_transfer_name",
+                    "checkout_transfer_description",
+                    "checkout_culqi_commission",
+                    "checkout_mercadopago_commission",
+                    "checkout_openpay_commission",
+                    "checkout_dwallet_commission",
+                    "checkout_dwallet_commission"
                 ]
             }
         ]
@@ -1821,7 +3313,38 @@
                 "id": "ContactGrid",
                 "name": "Grid",
                 "data": [
-                    "redirect"
+                    "redirect",
+                    "class_title",
+                    "class_card_description",
+                    "class_card_title",
+                    "class_card_button",
+                    "class_card_container",
+                    "title_ubication",
+                    "description_ubication",
+                    "stores_support",
+                    "description"
+                    
+                ]
+            },
+            {
+                "id": "ContactKatya",
+                "name": "Katya",
+                "data": [
+                    "redirect",
+                    "class_title",
+                    "class_card_description",
+                    "class_card_title",
+                    "class_card_button",
+                    "class_card_container",
+                    "title_ubication",
+                    "description_ubication",
+                    "stores_support"
+                ],
+                "generals": [
+                    "email_contact",
+                    "address",
+                    "phone_contact",
+                    "location"
                 ]
             },
             {
@@ -1832,6 +3355,54 @@
                     "title",
                     "description"
                 ]
+            },
+            {
+                "id": "ContactHuaillys",
+                "name": "Contact Huaillys",
+                "image": "contact-huaillys.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "class_card_container",
+                    "class_card_title",
+                    "class_card_description",
+                    "class_card_data",
+                    "class_card_icon",
+                    "map_title",
+                    "map_description"
+                ],
+                "generals": [
+                    "email_contact",
+                    "phone_contact",
+                    "address",
+                    "location",
+                    "opening_hours"
+                ]
+            },
+            {
+                "id": "ThankContact",
+                "name": "ThankContact",
+                "data": [
+                    "url_catalog"
+                ],
+                "using": {
+                    "model": "Social"
+                }
+            },
+            {
+                "id": "ContactLaPetaca",
+                "name": "Contact - La Petaca Hotel",
+                "image": "contact-lapetaca.png",
+                "data": [
+                    "contactInfo",
+                    "socials",
+                    "accentColor",
+                    "locationImage"
+                ],
+                "generals": []
             }
         ]
     },
@@ -1863,7 +3434,10 @@
                 "id": "FaqSimple",
                 "name": "Simple",
                 "data": [
-                    "title"
+                    "title",
+                    "class_card_container",
+                    "class_faq_answer",
+                    "class_title"
                 ]
             },
             {
@@ -1872,6 +3446,32 @@
                 "data": [
                     "title",
                     "description"
+                ]
+            },
+            {
+                "id": "FaqModern",
+                "name": "FAQ Modern - Accordion Moderno",
+                "image": "faq-modern.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_faq_answer",
+                    "show_contact_cta"
+                ]
+            },
+            {
+                "id": "FaqChat",
+                "name": "FAQ Chat - Estilo Conversacional",
+                "image": "faq-chat.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_title",
+                    "class_description",
+                    "class_faq_answer",
+                    "show_contact_cta"
                 ]
             }
         ]
@@ -1888,7 +3488,37 @@
                     "description",
                     "second_title",
                     "second_description",
-                    "bool:show_seen"
+                    "bool:show_seen",
+                    "class_title"
+                ]
+            },
+            {
+                "id": "BlogMultivet",
+                "name": "Multivet",
+                "image": "blog-multivet.png",
+                "data": [
+                    "title",
+                    "description",
+                    "second_title",
+                    "second_description",
+                    "bool:show_seen",
+                    "class_title",
+                    "class_second_title",
+                    "placeholder_search",
+                    "class_badge_category"
+                ]
+            },
+            {
+                "id": "BlogKatya",
+                "name": "Katya",
+                "image": "blog-katya.png",
+                "data": [
+                    "title",
+                    "description",
+                    "second_title",
+                    "second_description",
+                    "bool:show_seen",
+                    "class_title"
                 ]
             },
             {
@@ -1961,6 +3591,47 @@
                         "category"
                     ]
                 }
+            },
+            {
+                "id": "BlogSectionDental",
+                "name": "BlogSectionDental",
+                "data": [
+                    "title",
+                    "description",
+                    "button_text",
+                    "link_blog"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 2,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+            {
+                "id": "BlogSectionMultivet",
+                "name": "BlogSectionMultivet",
+                "image": "blog-section-multivet.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "posts_per_page",
+                    "blog_url",
+                    "read_more_text",
+                    "view_all_text",
+                    "class_section",
+                    "class_card",
+                    "class_button",
+                    "class_badge_category"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 12,
+                    "with": [
+                        "category"
+                    ]
+                }
             }
         ]
     },
@@ -1995,6 +3666,35 @@
                 ],
                 "generals": [
                     "phone_whatsapp"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "track",
+        "name": "Tracking",
+        "options": [
+            {
+                "id": "TrackSimple",
+                "name": "Simple"
+            },
+            {
+                "id": "TrackingFirstClass",
+                "name": "Tracking FirstClass",
+                "image": "service-tracking.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_title",
+                    "class_subtitle",
+                    "class_input",
+                    "class_button",
+                    "class_status_grid",
+                    "class_help_text"
+                ],
+                "generals": [
+                    "tracking_help_phone",
+                    "tracking_help_email"
                 ]
             }
         ]
@@ -2060,6 +3760,19 @@
                 }
             },
             {
+                "id": "AboutMultivet",
+                "name": "AboutMultivet",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
                 "id": "AboutPaani",
                 "name": "AboutPaani",
                 "data": [
@@ -2071,6 +3784,93 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+            {
+                "id": "AboutKatya",
+                "name": "AboutKatya",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
+                "id": "AboutHuaillys",
+                "name": "AboutHuaillys - Pollería Huaillys",
+                "image": "about-huaillys.png",
+                "data": [
+                    "strengths_title"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
+                "id": "AboutModern",
+                "name": "About Modern - Completo con Secciones",
+                "image": "about-modern.png",
+                "data": [
+                    "class_hero_title",
+                    "class_hero_description",
+                    "class_historia_title",
+                    "class_historia_description",
+                    "class_valores_title",
+                    "class_valores_description",
+                    "class_mision_title",
+                    "class_mision_description",
+                    "class_vision_title",
+                    "class_vision_description",
+                    "class_equipo_title",
+                    "class_equipo_description"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
+                "id": "AboutBenefits",
+                "name": "Beneficios y Ventajas",
+                "image": "about-benefits.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_title",
+                    "class_subtitle",
+                    "class_benefits_grid",
+                    "class_benefit_card",
+                    "class_benefit_icon",
+                    "class_benefit_title",
+                    "class_benefit_description"
+                ]
+            },
+            {
+                "id": "AboutSidebar",
+                "name": "About con Sidebar - Estilo Service",
+                "image": "about-sidebar.png",
+                "data": [
+                    "strengths_title",
+                    "class_container"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
+                "id": "AboutLaPetaca",
+                "name": "About - La Petaca Hotel",
+                "image": "about-lapetaca.png",
+                "data": [
+                    "stats",
+                    "values",
+                    "accentColor",
+                    "mainImage",
+                    "ctaImage"
+                ],
+                "generals": []
             }
         ]
     },
@@ -2085,6 +3885,10 @@
             {
                 "id": "LoginSimpleSF",
                 "name": "SimpleSF"
+            },
+            {
+                "id": "LoginSimpleD2",
+                "name": "SimpleD2"
             },
             {
                 "id": "LoginBananaLab",
@@ -2103,6 +3907,10 @@
             {
                 "id": "SignUpSimpleSF",
                 "name": "SimpleSF"
+            },
+            {
+                "id": "SignUpSimpleD2",
+                "name": "SimpleD2"
             }
         ]
     },
@@ -2138,6 +3946,20 @@
                 "id": "FooterB",
                 "name": "FooterB",
                 "image": "footer-simple.png",
+                "data": [
+                    "type_button_subscriber",
+                    "sticker_book_reclamations",
+                    "class_footer",
+                    "logo_footer_content",
+                    "logo_footer",
+                    "class_logo_footer",
+                    "class_menu",
+                    "class_menu_list",
+                    "class_menu_item",
+                    "class_icon",
+                    "class_description",
+                    "class_button"
+                ],
                 "using": {
                     "model": "Social",
                     "limit": 10
@@ -2150,6 +3972,76 @@
                     "address",
                     "support_phone",
                     "support_email"
+                ]
+            },
+            {
+                "id": "FooterDental",
+                "name": "FooterDental",
+                "image": "footer-simple.png",
+                "data": [
+                    "class_footer",
+                    "logo_footer_content",
+                    "logo_footer",
+                    "class_menu",
+                    "class_menu_list",
+                    "class_menu_item",
+                    "class_icon",
+                    "class_description",
+                    "class_button",
+                    "link_denuncias",
+                    "job_button",
+                    "section_newsletter"
+                ],
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "generals": [
+                    "terms_conditions",
+                    "privacy_policy",
+                    "delivery_policy",
+                    "saleback_policy",
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "opening_hours",
+                    "politica_sistema_gestion",
+                    "alcance_sistema_gestion"
+                ]
+            },
+              {
+                "id": "FooterIbergruas",
+                "name": "FooterIbergruas",
+                "image": "footer-simple.png",
+                "data": [
+                    "class_footer",
+                    "logo_footer_content",
+                    "logo_footer",
+                    "class_menu",
+                    "class_menu_list",
+                    "class_menu_item",
+                    "class_icon",
+                    "class_description",
+                    "class_button",
+                    "link_denuncias",
+                    "job_button",
+                    "section_newsletter"
+                ],
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "generals": [
+                    "terms_conditions",
+                    "privacy_policy",
+                    "delivery_policy",
+                    "saleback_policy",
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "opening_hours",
+                    "politica_sistema_gestion",
+                    "alcance_sistema_gestion"
                 ]
             },
             {
@@ -2232,6 +4124,24 @@
                 ]
             },
             {
+                "id": "Footer2Den1",
+                "name": "Footer2Den1",
+                "image": "footer-simple.png",
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "generals": [
+                    "terms_conditions",
+                    "privacy_policy",
+                    "delivery_policy",
+                    "saleback_policy",
+                    "address",
+                    "support_phone",
+                    "support_email"
+                ]
+            },
+            {
                 "id": "FooterCallToAction",
                 "name": "Llamada a la acción",
                 "image": "footer-call-to-action.png",
@@ -2267,6 +4177,91 @@
                     "support_phone",
                     "support_email"
                 ]
+            },
+            {
+                "id": "FooterHuaillys",
+                "name": "Footer Huaillys",
+                "image": "footer-huaillys.png",
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "data": [
+                    "footer_background",
+                    "left_image",
+                    "right_image",
+                    "class_logo_footer"
+                ],
+                "generals": [
+                    "terms_conditions",
+                    "privacy_policy",
+                    "footer_description",
+                    "copyright"
+                ]
+            },
+            {
+                "id": "FooterFirstClass",
+                "name": "Footer FirstClass Courier",
+                "image": "footer-firstclass.png",
+                "using": {
+                    "model": "Social",
+                    "limit": 10
+                },
+                "data": [
+                    "class_footer",
+                    "class_container",
+                    "class_logo",
+                    "class_company_info",
+                    "class_services_section",
+                    "class_help_section",
+                    "class_contact_section",
+                    "class_social_links",
+                    "class_bottom_section",
+                    "class_copyright",
+                    "class_legal_links"
+                ],
+                "generals": [
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "footer_description",
+                    "copyright",
+                    "terms_conditions",
+                    "privacy_policy",
+                    "email_contact",
+                    "site_description"
+                ]
+            },
+            {
+                "id": "FooterLaPetaca",
+                "name": "Footer - La Petaca Hotel",
+                "image": "footer-lapetaca.png",
+                "data": [
+                    "menuItems",
+                    "services",
+                    "contactInfo",
+                    "socials",
+                    "logo",
+                    "logoAlt",
+                    "description",
+                    "tagline",
+                    "accentColor"
+                ],
+                 "generals": [
+                    "address",
+                    "support_phone",
+                    "support_email",
+                    "footer_description",
+                    "copyright",
+                    "terms_conditions",
+                    "privacy_policy",
+                    "email_contact",
+                    "site_description"
+                ],
+                "using": {
+                    "model": "Service"
+               
+                }
             }
         ]
     },
@@ -2279,7 +4274,9 @@
                 "name": "Stech",
                 "data": [
                     "steps",
-                    "selected"
+                    "selected",
+                    "class_title",
+                    "class_icon"
                 ],
                 "generals": [
                     "terms_conditions"
@@ -2299,6 +4296,25 @@
         ]
     },
     {
+        "id": "whistleblowings",
+        "icon": "mdi mdi-alert-decagram",
+        "name": "Whistleblowings",
+        "options": [
+            {
+                "id": "WhistleblowingStech",
+                "name": "Stech",
+                "data": [
+                    "class_base",
+                    "class_title",
+                    "class_icon"
+                ],
+                "generals": [
+                    "privacy_policy"
+                ]
+            }
+        ]
+    },
+    {
         "id": "testimonials",
         "name": "Testimonials",
         "options": [
@@ -2307,6 +4323,127 @@
                 "name": "Paani",
                 "using": {
                     "model": "Testimony"
+                }
+            },
+            {
+                "id": "TestimonialsMultivet",
+                "name": "Multivet",
+                "image": "testimonials-multivet.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "section_background",
+                    "testimonials_background",
+                    "testimonials_text_color",
+                    "title_color",
+                    "subtitle_color",
+                    "highlight_color",
+                    "star_color",
+                    "quote_color",
+                    "testimonial_color",
+                    "client_name_color",
+                    "client_title_color",
+                    "avatar_border",
+                    "nav_button_bg",
+                    "nav_button_color",
+                    "active_dot",
+                    "inactive_dot",
+                    "autoplay_delay",
+                    "show_stats",
+                    "stat1_number",
+                    "stat1_label",
+                    "stat2_number",
+                    "stat2_label",
+                    "stat3_number",
+                    "stat3_label",
+                    "stat4_number",
+                    "stat4_label",
+                    "stats_number_color",
+                    "stats_label_color",
+                    "class_section",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_testimonials_card",
+                    "class_testimonial_text",
+                    "class_client_name",
+                    "class_client_title",
+                    "class_stats"
+                ],
+                "using": {
+                    "model": "Testimony"
+                }
+            },
+            {
+                "id": "TestimonialsFirstClass",
+                "name": "Testimonials FirstClass Courier",
+                "image": "testimonials-firstclass.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "class_section",
+                    "class_container",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_card",
+                    "class_author",
+                    "class_image",
+                    "class_name",
+                    "class_role",
+                    "class_rating",
+                    "class_text",
+                    "class_button",
+                    "class_icon",
+                    "class_dots",
+                    "class_dot_active",
+                    "class_dot_inactive"
+                ],
+                "using": {
+                    "model": "Testimony"
+                }
+            },
+            {
+                "id": "TestimonialsLaPetaca",
+                "name": "Testimonials - La Petaca Hotel",
+                "image": "testimonials-lapetaca.png",
+                "data": [
+                    "testimonials",
+                    "accentColor"
+                ],
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
+            }
+        ]
+    },
+    {
+        "id": "strength",
+        "icon": "mdi mdi-shield-check",
+        "name": "Fortalezas",
+        "options": [
+            {
+                "id": "StrengthFirstClass",
+                "name": "Fortalezas FirstClass Courier",
+                "image": "strength-firstclass.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "class_section",
+                    "class_container",
+                    "class_header",
+                    "class_title",
+                    "class_subtitle",
+                    "class_grid",
+                    "class_card",
+                    "class_icon_container",
+                    "class_icon",
+                    "class_benefit_title",
+                    "class_benefit_description"
+                ],
+                "using": {
+                    "model": "Strength"
                 }
             }
         ]
@@ -2373,6 +4510,25 @@
             {
                 "id": "BrandMakita",
                 "name": "BrandMakita"
+            },
+            {
+                "id": "BrandMultivet",
+                "name": "Brand Multivet",
+                "image": "brand-carousel.png",
+                "data": [
+                    "title",
+                    "description",
+                    "footer_text"
+                ],
+                "using": {
+                    "model": "Brand",
+                    "fields": [
+                        "name",
+                        "image",
+                        "description",
+                        "slug"
+                    ]
+                }
             }
         ]
     },
@@ -2390,6 +4546,645 @@
                     "title",
                     "background"
                 ]
+            },
+            {
+                "id": "PartnerMblens",
+                "name": "PartnerMblens",
+                "image": "partner-carousel.png",
+                "data": [
+                    "title",
+                    "description",
+                    "footer_text"
+                ],
+                "using": {
+                    "model": "Partner"
+                }
+            }
+        ]
+    },
+    {
+        "id": "subscription",
+        "icon": "mdi mdi-email-newsletter",
+        "name": "Suscripciones",
+        "options": [
+            {
+                "id": "SubscriptionSimple",
+                "name": "Suscripción Simple",
+                "image": "subscription-simple.png",
+                "data": [
+                    "title",
+                    "description",
+                    "background_image",
+                    "placeholder",
+                    "button_text",
+                    "button_color",
+                    "default_name",
+                    "privacy_note"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "support",
+        "icon": "mdi mdi-lifebuoy",
+        "name": "Soporte Técnico",
+        "options": [
+            {
+                "id": "SupportDownloadCenter",
+                "name": "Centro de Descargas Premium",
+                "image": "support-download.png",
+                "data": [
+                    "backgroundColor",
+                    "textColor",
+                    "title",
+                    "subtitle"
+                ],
+                "using": {
+                    "model": "Item",
+                    "type": "many"
+                }
+            }
+        ]
+    },
+    {
+        "id": "innovation",
+        "icon": "mdi mdi-lightbulb-on",
+        "name": "Innovaciones",
+        "options": [
+            {
+                "id": "InnovationGrid",
+                "name": "Grid de Innovaciones",
+                "image": "innovation-grid.png",
+                "data": [
+                    "title",
+                    "title_color",
+                    "subtitle",
+                    "subtitle_color",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "InnovationSimple",
+                "name": "Lista Simple",
+                "image": "innovation-simple.png",
+                "data": [
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "InnovationCarousel",
+                "name": "Carrusel de Innovaciones",
+                "image": "innovation-carousel.png",
+                "data": [
+                    "title",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Innovation",
+                    "type": "many"
+                }
+            }
+        ]
+    },
+    {
+        "id": "service",
+        "icon": "mdi mdi-cog",
+        "name": "Servicios",
+        "options": [
+            {
+                "id": "ServiceGrid",
+                "name": "Grid de Servicios",
+                "image": "service-grid.png",
+                "data": [
+                    "title",
+                    "title_color",
+                    "subtitle",
+                    "subtitle_color",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceSimple",
+                "name": "Lista Simple",
+                "image": "service-simple.png",
+                "data": [
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceCarousel",
+                "name": "Carrusel de Servicios",
+                "image": "service-carousel.png",
+                "data": [
+                    "title",
+                    "bg_color"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceSelection",
+                "name": "Selección de Servicios",
+                "image": "service-selection.png",
+                "data": [
+                    "class_section",
+                    "class_container",
+                    "class_title",
+                    "class_subtitle",
+                    "class_cards_grid",
+                    "class_card_personas",
+                    "class_card_empresas",
+                    "class_card_header",
+                    "class_card_title",
+                    "class_card_description",
+                    "class_card_button",
+                    "class_bottom_cta"
+                ]
+            },
+            {
+                "id": "ServiceSidebar",
+                "name": "Servicios con Sidebar",
+                "image": "service-sidebar.png",
+                "data": [
+                    "title",
+                    "description",
+                    "sidebar_title",
+                    "class_container",
+                    "class_title",
+                    "class_description"
+                ],
+                "using": {
+                    "model": "Service",
+                    "type": "many"
+                }
+            },
+            {
+                "id": "ServiceLaPetaca",
+                "name": "Servicios - La Petaca Hotel",
+                "image": "service-lapetaca.png",
+                "data": [
+                    "services",
+                    "showPreview",
+                    "accentColor",
+                    "title",
+                    "subtitle"
+                ],
+                 "using": {
+                    "model": "Service"
+               
+                },
+                "generals": []
+            }
+        ]
+    },
+    {
+        "id": "firstclass",
+        "icon": "mdi mdi-package-variant",
+        "name": "FirstClass Pages",
+        "options": [
+            {
+                "id": "CasilleroVirtual",
+                "name": "Casillero Virtual",
+                "image": "casillero-virtual.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features"
+                ],
+                "generals": []
+            },
+            {
+                "id": "EnviosUSAPeru",
+                "name": "Envíos USA - Perú",
+                "image": "envios-usa-peru.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features"
+                ],
+                "generals": []
+            },
+            {
+                "id": "EnviosPeruUSA",
+                "name": "Envíos Perú - USA",
+                "image": "envios-peru-usa.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "products_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features",
+                    "class_products"
+                ],
+                "generals": []
+            },
+            {
+                "id": "ImportacionCourier",
+                "name": "Importación Modalidad Courier",
+                "image": "importacion-courier.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "import_types_title",
+                    "requirements_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features",
+                    "class_requirements"
+                ],
+                "generals": []
+            },
+            {
+                "id": "ExportacionCourier",
+                "name": "Exportación Modalidad Courier",
+                "image": "exportacion-courier.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "hero_cta_text",
+                    "how_it_works_title",
+                    "benefits_title",
+                    "features_title",
+                    "export_types_title",
+                    "requirements_title",
+                    "destinations_title",
+                    "class_hero",
+                    "class_steps",
+                    "class_benefits",
+                    "class_features",
+                    "class_requirements"
+                ],
+                "generals": []
+            },
+            {
+                "id": "TarifasNormativas",
+                "name": "Tarifas y Normativas",
+                "image": "tarifas-normativas.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "calculator_title",
+                    "requirements_title",
+                    "prohibited_title",
+                    "consequences_title",
+                    "benefits_title",
+                    "class_hero",
+                    "class_calculator",
+                    "class_requirements",
+                    "class_prohibited",
+                    "class_consequences",
+                    "class_benefits"
+                ],
+                "generals": []
+            },
+            {
+                "id": "PQRS",
+                "name": "PQRS - Atención al Cliente",
+                "image": "pqrs.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "types_title",
+                    "form_title",
+                    "process_title",
+                    "commitments_title",
+                    "class_hero",
+                    "class_types",
+                    "class_form",
+                    "class_process",
+                    "class_commitments"
+                ],
+                "generals": [
+                    "phone_contact",
+                    "email_contact"
+                ]
+            },
+            {
+                "id": "FAQ",
+                "name": "Preguntas Frecuentes",
+                "image": "faq.png",
+                "data": [
+                    "hero_title",
+                    "hero_subtitle",
+                    "search_placeholder",
+                    "categories_title",
+                    "cta_title",
+                    "cta_description",
+                    "class_hero",
+                    "class_categories",
+                    "class_faqs",
+                    "class_cta"
+                ],
+                "using": {
+                    "model": "Faq",
+                    "fields": [
+                        "id",
+                        "question",
+                        "answer",
+                        "category",
+                        "status"
+                    ],
+                    "filters": [
+                        "status"
+                    ]
+                },
+                "generals": [
+                    "phone_contact",
+                    "email_contact"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "ads",
+        "name": "Pop-ups",
+        "icon": "mdi mdi-google-ads",
+        "options": [
+            {
+                "id": "AdSubscription",
+                "name": "Suscripción",
+                "using": {
+                    "model": "Ad",
+                    "fields": [
+                        "image",
+                        "name"
+                    ]
+                },
+                "generals": [
+                    "privacy_policy"
+                ]
+            },
+            {
+                "id": "AdModal",
+                "name": "Pop-up / Modal",
+                "image": "ad-modal.png",
+                "using": {
+                    "model": "Ad",
+                    "fields": [
+                        "name",
+                        "description",
+                        "image",
+                        "link",
+                        "seconds",
+                        "date_begin",
+                        "date_end",
+                        "invasivo",
+                        "visible"
+                    ]
+                }
+            },
+            {
+                "id": "AdBanner",
+                "name": "Banner / Strip",
+                "image": "ad-banner.png",
+                "using": {
+                    "model": "Ad",
+                    "fields": [
+                        "name",
+                        "description",
+                        "image",
+                        "link",
+                        "visible"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": "store",
+        "name": "Tiendas",
+        "icon": "mdi mdi-store-outline",
+        "options": [
+            {
+                "id": "StoreMap",
+                "name": "Mapa de Ubicaciones",
+                "image": "store-map.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_container",
+                    "class_title",
+                    "class_description",
+                    "class_store_card",
+                    "class_button"
+                ],
+                "using": {
+                    "model": "Store",
+                    "fields": [
+                        "id",
+                        "name",
+                        "address",
+                        "phone",
+                        "email",
+                        "description",
+                        "latitude",
+                        "longitude",
+                        "image",
+                        "type",
+                        "business_hours",
+                        "link",
+                        "visible"
+                    ],
+                    "filters": [
+                        "visible"
+                    ]
+                }
+            },
+            {
+                "id": "StoreList",
+                "name": "Lista de Ubicaciones",
+                "image": "store-list.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_container",
+                    "class_title",
+                    "class_description",
+                    "class_store_card",
+                    "class_button"
+                ],
+                "using": {
+                    "model": "Store",
+                    "fields": [
+                        "id",
+                        "name",
+                        "address",
+                        "phone",
+                        "email",
+                        "description",
+                        "latitude",
+                        "longitude",
+                        "image",
+                        "type",
+                        "business_hours",
+                        "link",
+                        "visible"
+                    ],
+                    "filters": [
+                        "visible"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": "hotel",
+        "name": "Hotel",
+        "icon": "mdi mdi-bed",
+        "options": [
+            {
+                "id": "SearchWidget",
+                "name": "Buscador de Habitaciones",
+                "image": "hotel-search.png",
+                "data": [
+                    "title",
+                    "backgroundColor",
+                    "class_container",
+                    "class_title",
+                    "class_input",
+                    "class_button"
+                ],
+                "generals": []
+            },
+              {
+                "id": "RoomDetailLaPetaca",
+                "name": "Detalle de Habitación - La Petaca",
+                "image": "hotel-room-detail-lapetaca.png",
+                "data": [
+                    "accentColor"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": [
+                        "images",
+                        "amenities",
+                        "features"
+                    ]
+                },
+                "generals": [
+                    "phone_whatsapp"
+                ]
+            },
+            {
+                "id": "RoomCard",
+                "name": "Tarjeta de Habitación",
+                "image": "hotel-room-card.png",
+                "data": [
+                    "class_card",
+                    "class_image",
+                    "class_title",
+                    "class_price",
+                    "class_button"
+                ],
+                "generals": []
+            },
+            {
+                "id": "RoomsList",
+                "name": "Listado de Habitaciones",
+                "image": "hotel-rooms-list.png",
+                "data": [
+                    "title",
+                    "description",
+                    "class_container",
+                    "class_grid",
+                    "show_search"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "type:room",
+                        "visible"
+                    ]
+                },
+                "generals": []
+            },
+            {
+                "id": "RoomDetail",
+                "name": "Detalle de Habitación",
+                "image": "hotel-room-detail.png",
+                "data": [
+                    "class_container",
+                    "class_gallery",
+                    "class_sidebar",
+                    "class_button_reserve",
+                    "show_amenities",
+                    "show_description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": [
+                        "images",
+                        "amenities"
+                    ]
+                },
+                "generals": []
+            },
+            {
+                "id": "BookingSummary",
+                "name": "Resumen de Reserva (Carrito)",
+                "image": "hotel-booking-summary.png",
+                "data": [
+                    "class_card",
+                    "class_dates",
+                    "class_price",
+                    "show_remove_button"
+                ],
+                "generals": []
+            },
+            {
+                "id": "BookingCartCard",
+                "name": "Tarjeta de Reserva en Carrito",
+                "image": "hotel-booking-cart.png",
+                "data": [
+                    "class_card",
+                    "class_dates",
+                    "class_actions",
+                    "show_edit_button"
+                ],
+                "generals": []
             }
         ]
     }

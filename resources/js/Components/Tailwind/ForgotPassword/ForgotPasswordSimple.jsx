@@ -24,7 +24,7 @@ export default function ForgotPasswordSimple() {
                 showConfirmButton: false,
                 timer: 3000,
             });
-    }, [null]);
+    }, []);
 
     const onForgotSubmit = async (e) => {
         e.preventDefault();
@@ -103,11 +103,14 @@ export default function ForgotPasswordSimple() {
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row lg:min-h-[600px]">
                         <div className="hidden lg:block lg:w-1/2 relative">
-                            <img
-                                src={`/assets/${Global.APP_CORRELATIVE}/restore.png` || image}
-                                alt="Imagen decorativa"
+                           
+                           <img src={`/assets/resources/reset.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME}
                                 className="absolute inset-0 w-full h-full object-cover"
-                            />
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/img/logo-bk.svg';
+                                }} /> 
+                          
                             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                         </div>
 

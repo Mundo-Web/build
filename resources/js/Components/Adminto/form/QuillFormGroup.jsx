@@ -15,7 +15,7 @@ const QuillFormGroup = ({ col, label, eRef, value, required = false, rows = 3, t
 
     eRef.editor = quill
     quill.root.innerHTML = value ?? ''
-  }, [null])
+  }, [])
 
   return <div className={`form-group ${col} mb-2`} style={{ height: 'max-content' }}>
     <label htmlFor='' className="mb-1">

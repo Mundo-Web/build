@@ -2,6 +2,7 @@ import React from "react";
 import { ShoppingCart } from "lucide-react"; // Icono para la cesta
 import Swal from "sweetalert2";
 import { router } from "@inertiajs/react";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const ProductCardScraping = ({
     product,
@@ -52,7 +53,7 @@ const ProductCardScraping = ({
         <div
             onClick={() => handleClickGoTo(product?.name)}
             key={product?.id}
-            className={`group font-font-general w-full transition-transform duration-300 hover:scale-105  sm:w-1/3 ${widthClass} flex-shrink-0 font-font-general customtext-primary cursor-pointer`}
+            className={`group font-paragraph w-full transition-transform duration-300 hover:scale-105  sm:w-1/3 ${widthClass} flex-shrink-0 font-paragraph customtext-primary cursor-pointer`}
         >
             <div className=" px-4">
                 <div className="bg-white rounded-3xl">
@@ -100,12 +101,12 @@ const ProductCardScraping = ({
                         {/* Precio */}
                         <div className="flex customtext-neutral-dark text-2xl items-baseline gap-4 mt-4">
                             <span className=" text-2xl font-bold">
-                                S/ {product?.final_price}
+                                {CurrencySymbol()} {product?.final_price}
                             </span>
                             {product?.discount != null &&
                                 !isNaN(product?.discount) && (
                                     <span className="text-base font-bold line-through opacity-60">
-                                        S/ {product?.price}
+                                        {CurrencySymbol()} {product?.price}
                                     </span>
                                 )}
                         </div>

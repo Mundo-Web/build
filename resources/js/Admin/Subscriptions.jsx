@@ -21,8 +21,8 @@ const Subscriptions = () => {
 
   const onDeleteClicked = async (id) => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Eliminar subscripcion',
-      text: '¿Estas seguro de eliminar esta subscripcion?',
+      title: 'Eliminar suscripción',
+      text: '¿Estas seguro de eliminar esta suscripción?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Si, eliminar',
@@ -35,7 +35,7 @@ const Subscriptions = () => {
   }
 
   return (<>
-    <Table gridRef={gridRef} title='Subscripciones' rest={subscriptionsRest}
+    <Table gridRef={gridRef} title='Suscripciones' rest={subscriptionsRest}
       toolBar={(container) => {
         container.unshift({
           widget: 'dxButton', location: 'after',
@@ -72,16 +72,13 @@ const Subscriptions = () => {
           caption: 'Estado',
           dataType: 'boolean',
           cellTemplate: (container, { data }) => {
-            switch (data.status) {
-              case 1:
-                ReactAppend(container, <span className='badge bg-success rounded-pill'>Activo</span>)
-                break
-              case 0:
+            {
+              data.status ?
+
+              ReactAppend(container, <span className='badge bg-success rounded-pill'>Activo</span>)
+                :
                 ReactAppend(container, <span className='badge bg-danger rounded-pill'>Inactivo</span>)
-                break
-              default:
-                ReactAppend(container, <span className='badge bg-dark rounded-pill'>Eliminado</span>)
-                break
+               
             }
           }
         },
@@ -111,7 +108,7 @@ const Subscriptions = () => {
 
 CreateReactScript((el, properties) => {
 
-  createRoot(el).render(<BaseAdminto {...properties} title='Subscripciones'>
+  createRoot(el).render(<BaseAdminto {...properties} title='Suscripciones'>
     <Subscriptions {...properties} />
   </BaseAdminto>);
 })

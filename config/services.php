@@ -3,7 +3,11 @@
 return [
 
     /*
-    |--------------------------------------------------------------------------
+    |------------------    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('APP_URL') . '/auth/google/callback',
+    ],-------------------------------------
     | Third Party Services
     |--------------------------------------------------------------------------
     |
@@ -32,10 +36,7 @@ return [
     ],
 
     'culqi' => [
-        'api_url' => env(
-            'CULQI_API',
-            'https://api.culqi.com/v2'
-        ),
+        'api_url' => env('CULQI_API', 'https://api.culqi.com/v2'),
         'public_key' => env('CULQI_PUBLIC_KEY'),
         'secret_key' => env('CULQI_PRIVATE_KEY'),
     ],
@@ -43,6 +44,12 @@ return [
     'mercadopago' => [
         'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
         'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('APP_URL') . '/auth/google/callback',
     ],
 
 ];

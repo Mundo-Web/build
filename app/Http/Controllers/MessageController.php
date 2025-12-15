@@ -31,11 +31,14 @@ class MessageController extends BasicController
         $validatedData = $request->validate([
             'name' => 'required|string',
             'email' => 'nullable|email|max:320',
-            'phone' => 'numeric',
-            'subject' => 'string',
-            'description' => 'string',
-            // 'subject' => 'required|string',
-            // 'description' => 'required|string',
+            'phone' => 'nullable|string',
+            'company' => 'nullable|string',
+            'ruc' => 'nullable|string|max:11',
+            'subject' => 'nullable|string',
+            'category' => 'nullable|string',
+            'subcategory' => 'nullable|string',
+            'machinery' => 'nullable|string',
+            'description' => 'nullable|string',
         ], $messages);
 
         return $validatedData;

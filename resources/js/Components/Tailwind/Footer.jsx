@@ -11,11 +11,16 @@ const FooterPaani = React.lazy(() => import("./Footer/FooterPaani"));
 const FooterB = React.lazy(() => import("./Footer/FooterB"));
 const FooterTermsCTASocials = React.lazy(() => import("./Footer/FooterTermsCTASocials"));
 const FooterSalaFabulosa = React.lazy(() => import("./Footer/FooterSalaFabulosa"));
+const Footer2Den1 = React.lazy(() => import("./Footer/Footer2Den1"));
 const FooterBananaLab = React.lazy(() => import("./Footer/FooterBananaLab"));
 const FooterPideloPe = React.lazy(() => import("./Footer/FooterPideloPe"));
 const FooterMakita = React.lazy(() => import("./Footer/FooterMakita"));
-
-const Footer = ({ data, which, items, pages, generals, contacts }) => {
+const FooterDental = React.lazy(() => import("./Footer/FooterDental"));
+const FooterIbergruas = React.lazy(() => import("./Footer/FooterIbergruas"));
+const FooterHuaillys = React.lazy(() => import("./Footer/FooterHuaillys"));
+const FooterFirstClass = React.lazy(() => import("./Footer/FooterFirstClass"));
+const FooterLaPetaca = React.lazy(() => import("./Footer/FooterLaPetaca"));
+const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
     const getFooter = () => {
         switch (which) {
             case "FooterSimpleCallToAction":
@@ -48,6 +53,7 @@ const Footer = ({ data, which, items, pages, generals, contacts }) => {
                         socials={items}
                         pages={pages}
                         generals={generals}
+                        data={data}
                     />
                 );
                 case "FooterPaani":
@@ -77,6 +83,16 @@ const Footer = ({ data, which, items, pages, generals, contacts }) => {
                         contacts={contacts}
                     />
                 );
+            case "Footer2Den1":
+                return (
+                    <Footer2Den1
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        contacts={contacts}
+                        stores={stores}
+                    />
+                );
             case "FooterPideloPe":
                 return (
                     <FooterPideloPe
@@ -100,6 +116,51 @@ const Footer = ({ data, which, items, pages, generals, contacts }) => {
                         socials={items}
                         pages={pages}
                         generals={generals}
+                    />
+                );
+            case "FooterDental":
+                return (
+                  <FooterDental
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterHuaillys":
+                return (
+                    <FooterHuaillys
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterFirstClass":
+                return (
+                    <FooterFirstClass
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterIbergruas":
+                return (
+                    <FooterIbergruas
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterLaPetaca":
+                return (
+                    <FooterLaPetaca
+                        items={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
                     />
                 );
             default:

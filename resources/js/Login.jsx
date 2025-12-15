@@ -32,7 +32,7 @@ const Login = ({ }) => {
     })
     if (GET.service) history.pushState(null, null, `/login?service=${GET.service}`)
     else history.pushState(null, null, '/login')
-  }, [null])
+  }, [])
 
   const onLoginSubmit = async (e) => {
     e.preventDefault()

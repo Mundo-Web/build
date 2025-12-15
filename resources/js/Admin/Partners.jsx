@@ -33,12 +33,15 @@ const Partners = ({ details }) => {
     if (data?.id) setIsEditing(true)
     else setIsEditing(false)
 
+    // Reset delete flag when opening modal
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
     descriptionRef.current.value = data?.description ?? ''
 
     imageRef.current.value = null
-    imageRef.image.src = `/storage/images/partner/${data?.image ?? 'undefined'}`
+    imageRef.image.src = data?.image ? `/storage/images/partner/${data.image}` : ''
 
     $(modalRef.current).modal('show')
   }
@@ -62,8 +65,16 @@ const Partners = ({ details }) => {
       formData.append('image', image)
     }
 
+    // Check for image deletion flag
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
+
     const result = await partnersRest.save(formData)
     if (!result) return
+
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -172,7 +183,7 @@ const Partners = ({ details }) => {
         <input ref={idRef} type='hidden' />
         <InputFormGroup eRef={nameRef} label='Partner' col='col-12' required />
         <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
-        <ImageFormGroup eRef={imageRef} label='Imagen' col='col-12' rows={3} />
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-12' rows={3} />
       </div>
     </Modal>
   </>

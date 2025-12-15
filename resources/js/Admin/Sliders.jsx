@@ -13,6 +13,7 @@ import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
 import getYTVideoId from '../Utils/getYTVideoId';
+import Fillable from '../Utils/Fillable';
 
 const slidersRest = new SlidersRest()
 
@@ -24,17 +25,27 @@ const Sliders = () => {
   // Form elements ref
   const idRef = useRef()
   const nameRef = useRef()
+  const subtitleRef = useRef()
   const descriptionRef = useRef()
+  const imageRef = useRef()
   const bgImageRef = useRef()
+  const bgImageMobileRef = useRef()
   const bgVideoRef = useRef()
   const buttonTextRef = useRef()
   const buttonLinkRef = useRef()
-  const secondarybtnTextRef = useRef()
-  const secondarybtnUrlRef = useRef()
+  const secondaryButtonTextRef = useRef()
+  const secondaryButtonLinkRef = useRef()
+  const titleColorRef = useRef()
+  const descriptionColorRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('image')
+  const [activeFormTab, setActiveFormTab] = useState('content')
   const [iframeSrc, setIframeSrc] = useState('')
+  const [showOverlay, setShowOverlay] = useState(true)
+  const [overlayOpacity, setOverlayOpacity] = useState(50)
+  const [overlayDirection, setOverlayDirection] = useState('to-b')
+  const [overlayColor, setOverlayColor] = useState('#000000')
 
   const onModalOpen = (data) => {
     if (data?.id) setIsEditing(true)
@@ -42,14 +53,30 @@ const Sliders = () => {
 
     idRef.current.value = data?.id ?? ''
     nameRef.current.value = data?.name ?? ''
+    subtitleRef.current.value = data?.subtitle ?? ''
     descriptionRef.current.value = data?.description ?? ''
     setActiveTab(data?.bg_type ?? 'image')
+    setActiveFormTab('content')
     setIframeSrc(data?.bg_video ?? '')
+    imageRef.current.value = null
+    imageRef.image.src = data?.image ? `/storage/images/slider/${data.image}` : ''
     bgImageRef.current.value = null
-    bgImageRef.image.src = `/storage/images/slider/${data?.bg_image}`
+    bgImageRef.image.src = data?.bg_image ? `/storage/images/slider/${data.bg_image}` : ''
+    bgImageMobileRef.current.value = null
+    bgImageMobileRef.image.src = data?.bg_image_mobile ? `/storage/images/slider/${data.bg_image_mobile}` : ''
     bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
     buttonTextRef.current.value = data?.button_text ?? ''
     buttonLinkRef.current.value = data?.button_link ?? ''
+    secondaryButtonTextRef.current.value = data?.secondary_button_text ?? ''
+    secondaryButtonLinkRef.current.value = data?.secondary_button_link ?? ''
+    titleColorRef.current.value = data?.title_color ?? '#000000'
+    descriptionColorRef.current.value = data?.description_color ?? '#000000'
+    
+    // Overlay settings
+    setShowOverlay(data?.show_overlay !== false && data?.show_overlay !== 0)
+    setOverlayColor(data?.overlay_color ?? '#000000')
+    setOverlayOpacity(data?.overlay_opacity ?? 50)
+    setOverlayDirection(data?.overlay_direction ?? 'to-b')
 
     $(modalRef.current).modal('show')
   }
@@ -60,9 +87,18 @@ const Sliders = () => {
     const request = {
       id: idRef.current.value || undefined,
       name: nameRef.current.value,
+      subtitle: subtitleRef.current.value,
       description: descriptionRef.current.value,
       button_text: buttonTextRef.current.value,
       button_link: buttonLinkRef.current.value,
+      secondary_button_text: secondaryButtonTextRef.current.value,
+      secondary_button_link: secondaryButtonLinkRef.current.value,
+      title_color: titleColorRef.current.value,
+      description_color: descriptionColorRef.current.value,
+      show_overlay: showOverlay ? 1 : 0,
+      overlay_color: overlayColor,
+      overlay_opacity: overlayOpacity,
+      overlay_direction: overlayDirection,
       bg_type: activeTab,
       bg_video: activeTab == 'video' ? iframeSrc : null
     }
@@ -77,12 +113,40 @@ const Sliders = () => {
       if (file) {
         formData.append('bg_image', file)
       }
+
+      const mobileFile = bgImageMobileRef.current.files[0]
+      if (mobileFile) {
+        formData.append('bg_image_mobile', mobileFile)
+      }
+
+      const image = imageRef.current.files[0]
+      if (image) {
+        formData.append('image', image)
+      }
     } else {
       formData.append('bg_image', null)
+      formData.append('bg_image_mobile', null)
+    }
+
+      // Check for image deletion flags
+    if (bgImageRef.getDeleteFlag && bgImageRef.getDeleteFlag()) {
+        formData.append('bg_image_delete', 'DELETE');
+    }
+    if (bgImageMobileRef.getDeleteFlag && bgImageMobileRef.getDeleteFlag()) {
+        formData.append('bg_image_mobile_delete', 'DELETE');
+    }
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+        formData.append('image_delete', 'DELETE');
     }
 
     const result = await slidersRest.save(formData)
     if (!result) return
+
+
+    if (bgImageRef.resetDeleteFlag) bgImageRef.resetDeleteFlag();
+    if (bgImageMobileRef.resetDeleteFlag) bgImageMobileRef.resetDeleteFlag();
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -115,6 +179,21 @@ const Sliders = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  // Función para manejar el reordering remoto
+  const onReorder = async (e) => {
+    // e.toIndex es la nueva posición donde se quiere insertar el elemento
+    const newOrderIndex = e.toIndex
+    
+    try {
+      const result = await slidersRest.reorder(e.itemData.id, newOrderIndex)
+      if (result) {
+        await e.component.refresh()
+      }
+    } catch (error) {
+      console.error('Error reordering slider:', error)
+    }
+  }
+
   return (<>
     <Table gridRef={gridRef} title='Sliders' rest={slidersRest}
       toolBar={(container) => {
@@ -136,6 +215,14 @@ const Sliders = () => {
           }
         });
       }}
+      rowDragging={{
+        allowReordering: true,
+        onReorder: onReorder,
+        dropFeedbackMode: 'push'
+      }}
+      sorting={{
+        mode: 'single'
+      }}
       columns={[
         {
           dataField: 'id',
@@ -143,16 +230,59 @@ const Sliders = () => {
           visible: false
         },
         {
+          dataField: 'order_index',
+          caption: 'Orden',
+          visible: false,
+          sortOrder: 'asc',
+          sortIndex: 0
+        },
+        Fillable.has('sliders', 'name') && {
+
           dataField: 'name',
           caption: 'Titulo',
           width: '75%',
+
         },
+        Fillable.has('sliders', 'bg_image') &&
         {
           dataField: 'bg_image',
           caption: 'Imagen',
           width: '90px',
+          allowFiltering: false,
           cellTemplate: (container, { data }) => {
             ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
+              style={{
+                width: '80px', height: '48px',
+                objectFit: 'cover', objectPosition: 'center',
+                borderRadius: '4px'
+              }}
+              onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+          }
+        },
+          Fillable.has('sliders', 'bg_image_mobile') &&
+        {
+          dataField: 'bg_image_mobile',
+          caption: 'Imagen Mobile',
+          width: '90px',
+          allowFiltering: false,
+          cellTemplate: (container, { data }) => {
+            ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.bg_image_mobile}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
+              style={{
+                width: '80px', height: '48px',
+                objectFit: 'cover', objectPosition: 'center',
+                borderRadius: '4px'
+              }}
+              onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
+          }
+        },
+        Fillable.has('sliders', 'image') &&
+        {
+          dataField: 'image',
+          caption: 'Imagen',
+          width: '90px',
+          allowFiltering: false,
+          cellTemplate: (container, { data }) => {
+            ReactAppend(container, <img src={data.bg_type == 'image' ? `/storage/images/slider/${data.image}` : `//img.youtube.com/vi/${data.bg_video}/mqdefault.jpg`}
               style={{
                 width: '80px', height: '48px',
                 objectFit: 'cover', objectPosition: 'center',
@@ -212,27 +342,98 @@ const Sliders = () => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar slider' : 'Agregar slider'} onSubmit={onModalSubmit} size='md'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar slider' : 'Agregar slider'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='sliders-container'>
         <input ref={idRef} type='hidden' />
-        <div>
-          <ul class="nav nav-pills navtab-bg nav-justified">
-            <li class="nav-item">
-              <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" class={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
+        
+        {/* Form Tabs Navigation */}
+        <div className="col-12 mb-3">
+          <ul className="nav nav-pills nav-fill">
+            <li className="nav-item">
+              <a 
+                href="#form-tab-content" 
+                className={`nav-link ${activeFormTab === 'content' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('content')}
+              >
+                Contenido
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#form-tab-media" 
+                className={`nav-link ${activeFormTab === 'media' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('media')}
+              >
+                Multimedia
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#form-tab-buttons" 
+                className={`nav-link ${activeFormTab === 'buttons' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('buttons')}
+              >
+                Botones
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#form-tab-colors" 
+                className={`nav-link ${activeFormTab === 'colors' ? 'active' : ''}`}
+                onClick={() => setActiveFormTab('colors')}
+              >
+                Colores
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Content Tab */}
+        <div className={`col-12 ${activeFormTab !== 'content' ? 'd-none' : ''}`}>
+          <div className='row'>
+            <TextareaFormGroup eRef={nameRef} label='Título principal' col='col-12' rows={2} required />
+            <TextareaFormGroup eRef={subtitleRef} label='Subtítulo (aparecerá resaltado)' col='col-12' rows={2} />
+            <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} col='col-12' />
+          </div>
+        </div>
+
+        {/* Media Tab */}
+        <div className={`col-12 ${activeFormTab !== 'media' ? 'd-none' : ''}`}>
+          <ul hidden={!Fillable.has('sliders', 'image') || !Fillable.has('sliders', 'bg_image') || !Fillable.has('sliders', 'bg_video')} className="nav nav-pills navtab-bg nav-justified">
+            <li className="nav-item">
+              <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" className={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
                 Imagen
               </a>
             </li>
-            <li class="nav-item">
-              <a href="#tab-video" data-bs-toggle="tab" aria-expanded="true" class={`nav-link ${activeTab == 'video' && 'active'}`} onClick={() => setActiveTab('video')}>
+            <li className="nav-item">
+              <a href="#tab-video" data-bs-toggle="tab" aria-expanded="true" className={`nav-link ${activeTab == 'video' && 'active'}`} onClick={() => setActiveTab('video')}>
                 Video
               </a>
             </li>
           </ul>
-          <div class="tab-content">
-            <div class={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
-              <ImageFormGroup eRef={bgImageRef} label='Imagen' />
+          <div className="tab-content">
+            <div className={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
+              <div className='row'>
+                <ImageFormGroup 
+                  hidden={!Fillable.has('sliders', 'bg_image')} 
+                  eRef={bgImageRef} 
+                  name="bg_image" 
+                  aspect={Fillable.has('sliders', 'bg_image_mobile') ? '4/3' : '16/9'}
+                  label='Imagen de fondo (Desktop)' 
+                  col={Fillable.has('sliders', 'bg_image_mobile') ? 'col-md-8' : 'col-12'}
+                />
+                <ImageFormGroup 
+                  hidden={!Fillable.has('sliders', 'bg_image_mobile')} 
+                  eRef={bgImageMobileRef} 
+                  name="bg_image_mobile" 
+                  aspect='9/14'
+                  label='Imagen (Mobile)' 
+                  col="col-md-4"
+                />
+              </div>
+              <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} name="image" label='Imagen' />
             </div>
-            <div class={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
+            <div hidden={!Fillable.has('sliders', 'bg_video')} className={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
               <InputFormGroup eRef={bgVideoRef} label='URL (Youtube)' type='link' onChange={e => setIframeSrc(getYTVideoId(e.target.value))} />
               <iframe src={`https://www.youtube.com/embed/${iframeSrc}`} className='w-100 rounded border mb-2' style={{
                 aspectRatio: 21 / 9
@@ -240,10 +441,143 @@ const Sliders = () => {
             </div>
           </div>
         </div>
-        <TextareaFormGroup eRef={nameRef} label='Titulo' col='col-12' rows={2} required />
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
-        <InputFormGroup eRef={buttonTextRef} label='Texto botón primario' col='col-sm-6' required />
-        <InputFormGroup eRef={buttonLinkRef} label='URL botón primario' col='col-sm-6' required />
+
+        {/* Buttons Tab */}
+        <div className={`col-12 ${activeFormTab !== 'buttons' ? 'd-none' : ''}`}>
+          <div className='row'>
+            <div className='col-12 mb-3'>
+              <h6 className='text-muted'>Botón Principal</h6>
+            </div>
+            <InputFormGroup eRef={buttonTextRef} label='Texto del botón' col='col-sm-6' required />
+            <InputFormGroup eRef={buttonLinkRef} label='URL del botón' col='col-sm-6' required />
+            
+            <div className='col-12 mt-3 mb-3'>
+              <h6 className='text-muted'>Botón Secundario</h6>
+            </div>
+            <InputFormGroup eRef={secondaryButtonTextRef} label='Texto del botón secundario' col='col-sm-6' />
+            <InputFormGroup eRef={secondaryButtonLinkRef} label='URL del botón secundario' col='col-sm-6' />
+          </div>
+        </div>
+
+        {/* Colors Tab */}
+        <div className={`col-12 ${activeFormTab !== 'colors' ? 'd-none' : ''}`}>
+          <div className='row'>
+            <div className='col-sm-6'>
+              <label className='form-label'>Color del título</label>
+              <input 
+                ref={titleColorRef} 
+                type='color' 
+                className='form-control form-control-color' 
+                defaultValue='#000000'
+                title='Seleccionar color del título'
+              />
+            </div>
+            <div className='col-sm-6'>
+              <label className='form-label'>Color de la descripción</label>
+              <input 
+                ref={descriptionColorRef} 
+                type='color' 
+                className='form-control form-control-color' 
+                defaultValue='#000000'
+                title='Seleccionar color de la descripción'
+              />
+            </div>
+            
+            {/* Overlay Settings */}
+            <div className='col-12 mt-4 mb-3'>
+              <h6 className='text-muted border-bottom pb-2'>Configuración del Overlay (Gradiente)</h6>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Mostrar Overlay</label>
+              <div className='form-check form-switch'>
+                <input 
+                  className='form-check-input' 
+                  type='checkbox' 
+                  checked={showOverlay}
+                  onChange={(e) => setShowOverlay(e.target.checked)}
+                  style={{ width: '50px', height: '25px' }}
+                />
+                <label className='form-check-label ms-2'>
+                  {showOverlay ? 'Sí' : 'No'}
+                </label>
+              </div>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Color del Gradiente</label>
+              <input 
+                type='color' 
+                className='form-control form-control-color w-100' 
+                value={overlayColor}
+                onChange={(e) => setOverlayColor(e.target.value)}
+                title='Seleccionar color del gradiente'
+                disabled={!showOverlay}
+              />
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Dirección</label>
+              <select 
+                className='form-select'
+                value={overlayDirection}
+                onChange={(e) => setOverlayDirection(e.target.value)}
+                disabled={!showOverlay}
+              >
+                <option value="to-r">→ Izquierda a Derecha</option>
+                <option value="to-l">← Derecha a Izquierda</option>
+                <option value="to-b">↓ Arriba a Abajo</option>
+                <option value="to-t">↑ Abajo a Arriba</option>
+                <option value="to-tr">↗ Diagonal Arriba-Derecha</option>
+                <option value="to-tl">↖ Diagonal Arriba-Izquierda</option>
+                <option value="to-br">↘ Diagonal Abajo-Derecha</option>
+                <option value="to-bl">↙ Diagonal Abajo-Izquierda</option>
+              </select>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Intensidad: {overlayOpacity}%</label>
+              <input 
+                type='range' 
+                className='form-range' 
+                min='0' 
+                max='100' 
+                value={overlayOpacity}
+                onChange={(e) => setOverlayOpacity(parseInt(e.target.value))}
+                disabled={!showOverlay}
+              />
+            </div>
+            
+            {/* Preview del overlay con gradiente */}
+            {showOverlay && (
+              <div className='col-12 mt-3'>
+                <label className='form-label'>Vista previa del gradiente</label>
+                <div 
+                  className='rounded border position-relative overflow-hidden' 
+                  style={{ 
+                    height: '80px',
+                    background: `linear-gradient(${
+                      overlayDirection === 'to-r' ? 'to right' :
+                      overlayDirection === 'to-l' ? 'to left' :
+                      overlayDirection === 'to-t' ? 'to top' :
+                      overlayDirection === 'to-b' ? 'to bottom' :
+                      overlayDirection === 'to-tr' ? 'to top right' :
+                      overlayDirection === 'to-tl' ? 'to top left' :
+                      overlayDirection === 'to-br' ? 'to bottom right' :
+                      'to bottom left'
+                    }, ${overlayColor}${Math.round(overlayOpacity * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                  }}
+                >
+                  <div className='position-absolute w-100 h-100' style={{
+                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'10\' height=\'10\' fill=\'%23ccc\'/%3E%3Crect x=\'10\' y=\'10\' width=\'10\' height=\'10\' fill=\'%23ccc\'/%3E%3C/svg%3E")',
+                    backgroundSize: '20px 20px',
+                    zIndex: -1
+                  }}></div>
+                </div>
+                <small className='text-muted'>
+                  El gradiente irá desde el color seleccionado hasta transparente
+                </small>
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
     </Modal>
   </>

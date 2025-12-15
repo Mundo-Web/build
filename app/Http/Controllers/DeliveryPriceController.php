@@ -12,6 +12,7 @@ use App\Models\Person;
 use App\Models\PreUser;
 use App\Models\SpecialtiesByUser;
 use App\Models\Specialty;
+use App\Models\General;
 use App\Models\TypeDelivery;
 use App\Providers\RouteServiceProvider;
 use Exception;
@@ -38,7 +39,8 @@ class DeliveryPriceController extends BasicController
 
 
     public function getDeliveryPrice(Request $request): HttpResponse|ResponseFactory|RedirectResponse
-    {
+    {   
+        
         $response = Response::simpleTryCatch(function (Response $response) use ($request) {
 
 
@@ -51,7 +53,6 @@ class DeliveryPriceController extends BasicController
             $cartTotal = $validated['cart_total'] ?? 0;
 
 
-
             if (!$ubigeo) {
                 $response->status = 400;
                 $response->message = 'Ubigeo no encontrado';
@@ -62,19 +63,39 @@ class DeliveryPriceController extends BasicController
             // 1. Buscar el precio de envío
             $deliveryPrice = DeliveryPrice::with(['type'])
                 ->where('ubigeo', $ubigeo)
-                ->firstOrFail();
-
-            // 2. Valida Cobertura
+                ->first();
+            
+            // 2. Si NO hay cobertura, devolver opción de agencia para consultar
             if (!$deliveryPrice) {
-                $response->status = 400;
-                $response->message = 'No hay cobertura para esta ubicación';
-              //dump($deliveryPrice);
+                $agencyType = TypeDelivery::where('slug', 'delivery-agencia')->first();
+                
+                $result = [
+                    'is_free' => false,
+                    'is_agency' => true,
+                    'is_express' => false,
+                    'is_store_pickup' => false,
+                    'qualifies_free_shipping' => false,
+                    'free_shipping_threshold' => 0,
+                    'cart_total' => $cartTotal,
+                    'needs_consultation' => true, // Flag para indicar que necesita consultar
+                    'agency' => [
+                        'price' => 0,
+                        'description' => $agencyType->description ?? 'Envío por agencia de transporte',
+                        'type' => $agencyType->name ?? 'Envío por Agencia',
+                        'characteristics' => $agencyType->characteristics ?? ['Consultar costo de envío con nuestros asesores'],
+                        'payment_on_delivery' => true, // El cliente paga en la agencia
+                    ],
+                ];
+                
+                $response->data = $result;
+                $response->status = 200;
+                $response->message = 'Zona sin cobertura directa - Envío por agencia disponible';
                 return;
             }
           //  dump($deliveryPrice);
             
             // Obtener el mínimo para envío gratuito desde generals
-            $freeShippingThreshold = \App\Models\General::where('correlative', 'shipping_free')->first();
+            $freeShippingThreshold = General::where('correlative', 'shipping_free')->first();
             $minFreeShipping = $freeShippingThreshold ? floatval($freeShippingThreshold->description) : 0;
             
             // Debug logs
@@ -88,7 +109,7 @@ class DeliveryPriceController extends BasicController
             
             // Verificar si aplica envío gratuito por monto del carrito
             $qualifiesForFreeShipping = $minFreeShipping > 0 && $cartTotal >= $minFreeShipping;
-            
+           
             // Debug logs adicionales
             Log::info('Free Shipping Validation:', [
                 'min_free_shipping' => $minFreeShipping,
@@ -107,11 +128,13 @@ class DeliveryPriceController extends BasicController
                 'standard' => [
                     'price' => $deliveryPrice->price, // Siempre usar el precio base inicialmente
                     'description' => $deliveryPrice->type->description ?? 'Entrega estándar',
-                    'type' => $deliveryPrice->type->name,
-                    'characteristics' => $deliveryPrice->type->characteristics,
+                    'type' => $deliveryPrice->type->name ?? 'Entrega Estándar',
+                    'characteristics' => $deliveryPrice->type->characteristics ?? 'Sin caracteristicas',
                 ]
             ];
 
+            
+            
             // 4. Para ubicaciones con is_free=true, lógica condicional
             if ($deliveryPrice->is_free) {
                 $expressType = TypeDelivery::where('slug', 'delivery-express')->first();
@@ -182,24 +205,25 @@ class DeliveryPriceController extends BasicController
                 $agencyType = TypeDelivery::where('slug', 'delivery-agencia')->first();
 
                 $result['agency'] = [
-                    'price' => $deliveryPrice->agency_price,
+                    'price' => $deliveryPrice->agency_payment_on_delivery ? 0 : $deliveryPrice->agency_price,
                     'description' => $agencyType->description ?? 'Entrega en Agencia',
                     'type' => $agencyType->name,
                     'characteristics' => $agencyType->characteristics,
+                    'payment_on_delivery' => $deliveryPrice->agency_payment_on_delivery,
                 ];
             }
 
             // 5. Verificar si hay retiro en tienda disponible
-            // Obtener directamente el TypeDelivery de retiro en tienda
-            $storePickupType = TypeDelivery::where('slug', 'retiro-en-tienda')->first();
-
-            if ($storePickupType) {
+            if ($deliveryPrice->is_store_pickup) {
+                $storePickupType = TypeDelivery::where('slug', 'retiro-en-tienda')->first();
+                
                 $result['is_store_pickup'] = true;
                 $result['store_pickup'] = [
                     'price' => 0,
-                    'description' => $storePickupType->description,
-                    'type' => $storePickupType->name,
+                    'description' => $storePickupType->description ?? 'Retiro en Tienda',
+                    'type' => $storePickupType->name ?? 'Retiro en Tienda',
                     'characteristics' => $storePickupType->characteristics ?? ['Sin costo de envío', 'Horarios flexibles', 'Atención personalizada'],
+                    'selected_stores' => $deliveryPrice->selected_stores, // Array de IDs de tiendas específicas, o null/[] para todas
                 ];
             } else {
                 $result['is_store_pickup'] = false;
@@ -306,7 +330,7 @@ class DeliveryPriceController extends BasicController
 
                 $searchLower = Str::lower($search);
 
-                // Verificar si el término de búsqueda está presente en el departamento, provincia o distrito en minúsclas
+                // Verificar si el término de búsqueda está presente en el departamento, provincia o distrito en minúsculas
 
                 return Str::contains(Str::lower($item['departamento']), $searchLower) ||
                     Str::contains(Str::lower($item['provincia']), $searchLower) ||
@@ -317,11 +341,34 @@ class DeliveryPriceController extends BasicController
             ->map(function ($item) {
                 return [
                     'ieni' => $item['inei'],
-                    'reniec' => $item['reniec'],
+                    'reniec' => $item['reniec'] ?? $item['inei'],
                     'departamento' => $item['departamento'],
                     'provincia' => $item['provincia'],
                     'distrito' => $item['distrito']
                 ];
             });
+    }
+
+    public function findByCode($code)
+    {
+        $ubigeo = collect(config('app.ubigeo'))
+            ->first(function ($item) use ($code) {
+                return $item['reniec'] == $code || 
+                       $item['inei'] == $code;
+            });
+
+        if (!$ubigeo) {
+            return response()->json([
+                'error' => 'Ubigeo no encontrado'
+            ], 404);
+        }
+
+        return response()->json([
+            'inei' => $ubigeo['inei'],
+            'reniec' => $ubigeo['reniec'] ?? $ubigeo['inei'],
+            'departamento' => $ubigeo['departamento'],
+            'provincia' => $ubigeo['provincia'],
+            'distrito' => $ubigeo['distrito']
+        ]);
     }
 }

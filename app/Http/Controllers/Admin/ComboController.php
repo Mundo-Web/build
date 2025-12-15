@@ -20,7 +20,7 @@ class ComboController extends BasicController
     public $model = Combo::class;
     public $reactView = 'Admin/Combos';
 
-    //  public $imageFields = ['image'];
+    public $imageFields = ['image'];
 
 
     public function show($id)
@@ -52,15 +52,29 @@ class ComboController extends BasicController
 
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
     {
-
-
         // Decodificar features y specifications
         $items = $request->input('items');
 
         // Procesar features
         if ($items && is_array($items)) {
-
             (new ComboItemController())->saveComboItems($jpa, $items);
         }
+
+        // Crear/actualizar el combo como producto virtual en el sistema de carrito
+        $this->createComboAsProduct($jpa);
+    }
+
+    /**
+     * Crear o actualizar el combo como un producto virtual para el carrito
+     */
+    private function createComboAsProduct($combo)
+    {
+        // El combo ya actúa como producto a través de la API
+        // No necesitamos duplicar datos, solo asegurar consistencia
+        
+        // Opcional: Actualizar campos calculados si es necesario
+        $combo->update([
+            'final_price' => $combo->discount > 0 ? $combo->discount : $combo->price
+        ]);
     }
 }

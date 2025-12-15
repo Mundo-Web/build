@@ -13,6 +13,7 @@ class AboutusController extends BasicController
     public $model = Aboutus::class;
     public $reactView = 'Admin/About';
     public $imageFields = ['image'];
+    public $defaultOrderBy = 'order_index';
 
     public function setReactViewProperties(Request $request)
     {

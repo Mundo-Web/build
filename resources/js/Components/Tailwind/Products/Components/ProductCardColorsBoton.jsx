@@ -5,6 +5,7 @@ import ItemsRest from "../../../../Actions/ItemsRest";
 import { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import { CurrencySymbol } from '../../../../Utils/Number2Currency';
 
 const ProductCardColorsBoton = ({ product, setCart, cart, textcolor = "", fondo = "", fondoboton = "" }) => {
 
@@ -64,7 +65,7 @@ const ProductCardColorsBoton = ({ product, setCart, cart, textcolor = "", fondo 
     return (
         <div
             key={product.id}
-            className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 hover:scale-105 flex-shrink-0 font-font-general customtext-primary cursor-pointer relative`}
+            className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 hover:scale-105 flex-shrink-0 font-paragraph customtext-primary cursor-pointer relative`}
         >
             <div
                 className={`p-0 ${fondo !== "" ? fondo : 'bg-white'} rounded-xl lg:rounded-2xl`}
@@ -178,11 +179,11 @@ const ProductCardColorsBoton = ({ product, setCart, cart, textcolor = "", fondo 
                         {/* Precio */}
                         <div className="flex items-baseline gap-4 mt-2">
                             <span className="text-lg sm:text-xl md:text-2xl font-semibold">
-                                S/ {product.final_price}
+                                {CurrencySymbol()} {product.final_price}
                             </span>
                             {product.discount != null && !isNaN(product.discount) && (
                                 <span className="text-xs sm:text-base font-semibold line-through opacity-60">
-                                    S/ {product.price}
+                                    {CurrencySymbol()} {product.price}
                                 </span>
                             )}
                         </div>

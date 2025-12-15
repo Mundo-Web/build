@@ -1,16 +1,28 @@
 import { Cookies, Fetch } from "sode-extend-react";
 import { toast } from "sonner";
+import BooleanLimit from "../Utils/BooleanLimit";
 
 class BasicRest {
     is_use_notify = true;
     path = null;
     hasFiles = false;
     controller = null;
+    booleanLimitKey = null;
     constructor() {
         this.controller = new AbortController();
     }
 
-    simpleGet = async (url, params) => {
+    resolveBooleanLimitKey = () => {
+        if (this.booleanLimitKey) return this.booleanLimitKey;
+        if (!this.path) return null;
+        const segments = this.path.split("/").filter(Boolean);
+        if (segments.length === 0) return null;
+        const lastSegment = segments[segments.length - 1];
+        if (!lastSegment) return null;
+        return lastSegment.replace(/-/g, "_");
+    };
+
+    simpleGet = async (url, params, notify = true) => {
         try {
             const { status, result } = await Fetch(url, params);
             if (!status)
@@ -19,12 +31,12 @@ class BasicRest {
                 );
             return result.data ?? true;
         } catch (error) {
-           
-            toast.error("¡Error!", {
+
+            if (notify) toast.error("¡Error!", {
                 description: error.message,
                 duration: 3000,
                 position: "bottom-center",
-               richColors:true
+                richColors: true
             });
             return null;
         }
@@ -47,7 +59,7 @@ class BasicRest {
         return await res.json();
     };
 
-    save = async (request, callback = () => {}) => {
+    save = async (request, callback = () => { }) => {
         try {
             let status = false;
             let result = {};
@@ -77,27 +89,27 @@ class BasicRest {
                     result?.message || "Ocurrio un error inesperado"
                 );
 
-              if(this.is_use_notify){
+            if (this.is_use_notify) {
                 toast.success("¡Excelente!", {
                     description: result.message,
-                  
+
                     duration: 3000,
                     position: "bottom-center",
-                   richColors:true
+                    richColors: true
                 });
-              }
-                
-         
+            }
+
+
             callback?.();
             return result?.data ?? true;
         } catch (error) {
-            
-               toast.error("¡Error!", {
+
+            toast.error("¡Error!", {
                 description: error.message,
-              
+
                 duration: 3000,
                 position: "bottom-center",
-               richColors:true
+                richColors: true
             });
             return null;
         }
@@ -118,21 +130,21 @@ class BasicRest {
                 );
 
             toast.success("¡Excelente!", {
-                    description: result.message,
-                  
-                    duration: 3000,
-                    position: "bottom-center",
-                   richColors:true
-                });
+                description: result.message,
+
+                duration: 3000,
+                position: "bottom-center",
+                richColors: true
+            });
 
             return true;
         } catch (error) {
-               toast.error("¡Error!", {
+            toast.error("¡Error!", {
                 description: error.message,
-              
+
                 duration: 3000,
                 position: "bottom-center",
-               richColors:true
+                richColors: true
             });
 
             return false;
@@ -148,27 +160,31 @@ class BasicRest {
                     body: JSON.stringify({ id, field, value }),
                 }
             );
+            const limitKey = this.resolveBooleanLimitKey();
+            if (limitKey && result?.data?.limit) {
+                BooleanLimit.updateFromServer(limitKey, result.data);
+            }
             if (!fetchStatus)
                 throw new Error(
                     result?.message ?? "Ocurrio un error inesperado"
                 );
 
             toast.success("¡Excelente!", {
-                    description: result.message,
-                  
-                    duration: 3000,
-                    position: "bottom-center",
-                   richColors:true
-                });
+                description: result.message,
 
-            return true;
-        } catch (error) {
-               toast.error("¡Error!", {
-                description: error.message,
-              
                 duration: 3000,
                 position: "bottom-center",
-               richColors:true
+                richColors: true
+            });
+
+            return result?.data ?? true;
+        } catch (error) {
+            toast.error("¡Error!", {
+                description: error.message,
+
+                duration: 3000,
+                position: "bottom-center",
+                richColors: true
             });
 
             return false;
@@ -189,21 +205,21 @@ class BasicRest {
                 );
 
             toast.success("¡Excelente!", {
-                    description: result.message,
-                  
-                    duration: 3000,
-                    position: "bottom-center",
-                   richColors:true
-                });
+                description: result.message,
+
+                duration: 3000,
+                position: "bottom-center",
+                richColors: true
+            });
 
             return true;
         } catch (error) {
-               toast.error("¡Error!", {
+            toast.error("¡Error!", {
                 description: error.message,
-              
+
                 duration: 3000,
                 position: "bottom-center",
-               richColors:true
+                richColors: true
             });
 
             return false;
@@ -254,14 +270,56 @@ class BasicRest {
 
             return await response.json();
         } catch (error) {
-               toast.error("¡Error!", {
+            toast.error("¡Error!", {
                 description: error.message,
-              
+
                 duration: 3000,
                 position: "bottom-center",
-               richColors:true
+                richColors: true
             });
             return null;
+        }
+    };
+
+    reorder = async (id, orderIndex) => {
+        try {
+            const response = await fetch(`/api/${this.path}/${id}/reorder`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+                },
+                body: JSON.stringify({ order_index: orderIndex })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (this.is_use_notify && result.success) {
+                toast.success("¡Excelente!", {
+                    description: result.message,
+                    duration: 3000,
+                    position: "bottom-center",
+                    richColors: true
+                });
+            }
+            
+            return result;
+        } catch (error) {
+            if (this.is_use_notify) {
+                toast.error("¡Error!", {
+                    description: error.message,
+                    duration: 3000,
+                    position: "bottom-center",
+                    richColors: true
+                });
+            }
+            console.error('Error reordering:', error);
+            return false;
         }
     };
 }

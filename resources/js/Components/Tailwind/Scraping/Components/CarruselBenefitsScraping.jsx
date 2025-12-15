@@ -11,7 +11,7 @@ const CarruselBenefitsScraping = ({ items }) => {
     //va en el div incial ref = { benefitsRef }
     // va en el div antes de hacer el map ref={sliderRef}
     return (
-        <div className=" px-primary mx-auto   overflow-hidden customtext-neutral-dark font-font-general">
+        <div className=" px-primary mx-auto   overflow-hidden customtext-neutral-dark font-paragraph">
             <div className=" relative bg-secondary   rounded-3xl p-6 ">
                 <div
                     className="flex w-full gap-8 whitespace-nowrap transition-none"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\General;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -37,7 +38,24 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            //
+            // Compartir generals globalmente para SEO y configuraciones
+            'generals' => General::where('status', true)->get()->keyBy('correlative'),
         ]);
+    }
+
+    /**
+     * Sets the root template that's loaded on the first page visit.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return string
+     */
+    public function rootView(Request $request): string
+    {
+        // Use public template for public routes, admin template for admin routes
+        if ($request->is('admin/*') || $request->is('admin')) {
+            return 'app';
+        }
+        
+        return 'public';
     }
 }

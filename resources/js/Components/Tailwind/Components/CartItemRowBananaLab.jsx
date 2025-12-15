@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Minus, Plus, Trash2, X } from "lucide-react";
 import Tippy from "@tippyjs/react";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import "tippy.js/dist/tippy.css";
 
 const CartItemRowBananaLab = ({ setCart, ...item }) => {
@@ -35,7 +35,7 @@ const CartItemRowBananaLab = ({ setCart, ...item }) => {
 
   return (
     <motion.tr 
-      className="border-b border-gray-100 font-font-general hover:bg-gray-50 transition-colors"
+      className="border-b border-gray-100 font-paragraph hover:bg-gray-50 transition-colors"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 50 }}
@@ -113,11 +113,11 @@ const CartItemRowBananaLab = ({ setCart, ...item }) => {
           <div>
             {item?.discount > 0 && (
               <span className="block text-xs text-gray-400 line-through mb-1">
-               S/. {Number2Currency(item?.price)}
+               {CurrencySymbol()} {Number2Currency(item?.price)}
               </span>
             )}
             <p className="font-bold customtext-neutral-dark text-base">
-              S/. {Number2Currency(item?.final_price)}
+              {CurrencySymbol()} {Number2Currency(item?.final_price)}
             </p>
           </div>
           

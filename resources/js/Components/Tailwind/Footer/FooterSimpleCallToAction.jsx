@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import General from "../../../Utils/General";
 
+
 ReactModal.setAppElement('#app')
 
 const subscriptionsRest = new SubscriptionsRest();
@@ -74,7 +75,7 @@ const FooterSimpleCallToAction = ({ socials = [], generals = [], pages = [] }) =
                   </li>
                   <li className="flex flex-row gap-2">
                     <i className="mdi mdi-whatsapp"></i>
-                    <span>{General.get('support_phone')}</span>
+                 
                   </li>
                 </ul>
               </nav>

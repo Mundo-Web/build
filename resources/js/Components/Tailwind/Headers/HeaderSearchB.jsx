@@ -16,6 +16,7 @@ import Logout from "../../../Actions/Logout";
 import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const HeaderSearchB = ({
     items,
@@ -32,7 +33,7 @@ const HeaderSearchB = ({
     const messageWhatsappObj = generals.find(
         (item) => item.correlative === "message_whatsapp"
     );
-    
+
     const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
     const messageWhatsapp = messageWhatsappObj?.description ?? null;
 
@@ -102,9 +103,11 @@ const HeaderSearchB = ({
                         'or',
                         ['summary', 'contains', query],
                         'or',
-                        ['description', 'contains', query]
+                        ['description', 'contains', query],
+                         'or',
+                        ['sku', 'contains', query]
                     ],
-                    sort: [{ selector: 'name', desc: false }],
+                    // No enviar sort para usar el ordenamiento por relevancia del backend
                     requireTotalCount: false,
                     with: 'category,brand' // Incluir relaciones necesarias
                 })
@@ -381,6 +384,31 @@ const HeaderSearchB = ({
     // --- SUGERENCIAS DE BÚSQUEDA ---
     const SearchSuggestions = ({ suggestions, isLoading, onSelect, selectedIndex }) => {
         if (!showSuggestions) return null;
+
+        // Función para resaltar palabras coincidentes
+        const highlightMatches = (text, searchQuery) => {
+            if (!text || !searchQuery) return text;
+
+            // Dividir la búsqueda en palabras individuales
+            const searchWords = searchQuery.trim().toLowerCase().split(/\s+/).filter(w => w.length >= 2);
+
+            // Crear un pattern regex que encuentre cualquiera de las palabras
+            const pattern = new RegExp(`(${searchWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+
+            // Dividir el texto en partes, manteniendo las coincidencias
+            const parts = text.split(pattern);
+
+            return parts.map((part, index) => {
+                // Verificar si esta parte coincide con alguna palabra de búsqueda
+                const isMatch = searchWords.some(word => part.toLowerCase() === word);
+
+                if (isMatch) {
+                    return <strong key={index} className="font-bold customtext-primary">{part}</strong>;
+                }
+                return <span key={index}>{part}</span>;
+            });
+        };
+
         return (
             <motion.div
                 ref={suggestionsRef}
@@ -410,7 +438,7 @@ const HeaderSearchB = ({
                                         e.stopPropagation();
                                         setTimeout(() => onSelect(suggestion), 0);
                                     }}
-                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${index === selectedIndex ? 'bg-primary/10 border-l-4 border-primary' : ''}`}
+                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${index === selectedIndex ? 'bg-primary border-l-4 border-primary' : ''}`}
                                     type="button"
                                 >
                                     <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
@@ -431,7 +459,7 @@ const HeaderSearchB = ({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="font-medium customtext-neutral-dark truncate">
-                                            {suggestion.name}
+                                            {highlightMatches(suggestion.name, search)}
                                         </div>
                                         {suggestion.category && (
                                             <div className="text-sm customtext-neutral-dark truncate">
@@ -440,7 +468,7 @@ const HeaderSearchB = ({
                                         )}
                                         {suggestion.final_price && (
                                             <div className="text-sm font-semibold customtext-primary">
-                                                S/ {parseFloat(suggestion.final_price).toFixed(2)}
+                                                {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
                                         )}
                                     </div>
@@ -456,7 +484,6 @@ const HeaderSearchB = ({
             </motion.div>
         );
     };
-    console.log(isUser);
     // Determinar si el usuario es cliente (no admin ni superadmin, usando roles array)
     let isCustomer = false;
     if (isUser && Array.isArray(isUser.roles)) {
@@ -464,15 +491,15 @@ const HeaderSearchB = ({
         isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
     }
     return (
-        <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-white shadow-lg" : "relative bg-white"}`}>
-            <div className="px-primary  bg-white 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
+        <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed shadow-lg" : "relative "} ${data.backgroundColor || 'bg-white'}`}>
+            <div className={`px-primary   2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold ${data.backgroundColor || 'bg-white'}`}>
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2 z-[51]">
                         <img
                             src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                             alt={Global.APP_NAME}
-                            className="h-14 object-contain object-center"
+                            className={`h-14 object-contain object-center ${data?.class_logo || ""}`}
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = "/assets/img/logo-bk.svg";
@@ -492,16 +519,16 @@ const HeaderSearchB = ({
                                             <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                                 {isUser.uuid ? (
                                                     <div className="relative">
-                                                        <ProfileImage 
+                                                        <ProfileImage
                                                             uuid={isUser.uuid}
                                                             name={isUser.name}
                                                             lastname={isUser.lastname}
                                                             className="!w-6 !h-6 rounded-full object-cover border-2 border-primary ring-secondary transition-all duration-300"
                                                         />
                                                         <div className="relative" style={{ display: 'none' }}>
-                                                            <CircleUser 
-                                                                className="customtext-primary  border-primary rounded-full   ring-secondary transition-all duration-300" 
-                                                                width="1.5rem" 
+                                                            <CircleUser
+                                                                className="customtext-primary  border-primary rounded-full   ring-secondary transition-all duration-300"
+                                                                width="1.5rem"
                                                             />
                                                         </div>
                                                         {/* Punto indicador online animado */}
@@ -512,9 +539,9 @@ const HeaderSearchB = ({
                                                     </div>
                                                 ) : (
                                                     <div className="relative">
-                                                        <CircleUser 
-                                                            className="customtext-primary border-2 border-primary rounded-full  ring-secondary  transition-all duration-300" 
-                                                            width="1.5rem" 
+                                                        <CircleUser
+                                                            className="customtext-primary border-2 border-primary rounded-full  ring-secondary  transition-all duration-300"
+                                                            width="1.5rem"
                                                         />
                                                         {/* Punto indicador online animado */}
                                                         <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary border-2 border-white rounded-full animate-pulse">
@@ -679,7 +706,7 @@ const HeaderSearchB = ({
                                 ref={desktopSearchInputRef}
                                 type="search"
                                 name="search"
-                                placeholder="Estoy buscando..."
+                                placeholder={`${data?.input_search_placeholder || 'Estoy buscando...'}`}
                                 value={search}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 onKeyDown={handleKeyDown}
@@ -688,16 +715,16 @@ const HeaderSearchB = ({
                                         fetchSearchSuggestions(search);
                                     }
                                 }}
-                                className="w-full pr-14 py-4 pl-4 border rounded-full font-normal focus:ring-0 customtext-neutral-dark placeholder:customtext-neutral-dark focus:outline-none bg-[#DFF4FF]"
+                                className={`w-full pr-14 py-4 pl-4 border rounded-full font-normal focus:ring-0 customtext-neutral-dark placeholder:customtext-neutral-dark focus:outline-none bg-white ${data?.input_search_class}`}
                                 enterKeyHint="search"
                                 inputMode="search"
                                 autoComplete="on"
                                 role="searchbox"
-                                aria-label="Estoy buscando..."
+                                aria-label={`${data?.input_search_placeholder || 'Estoy buscando...'}`}
                             />
                             <button
                                 type="submit"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-2 ${data?.backgroundColor ? data?.backgroundColor : "bg-primary"} text-white rounded-lg hover:bg-primary hover:scale-105  transition-all duration-300`}
                                 aria-label="Buscar"
                             >
                                 <Search />
@@ -726,7 +753,7 @@ const HeaderSearchB = ({
                                         <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                             {isUser.uuid ? (
                                                 <div className="relative">
-                                                    <ProfileImage 
+                                                    <ProfileImage
                                                         uuid={isUser.uuid}
                                                         name={isUser.name}
                                                         lastname={isUser.lastname}
@@ -740,8 +767,8 @@ const HeaderSearchB = ({
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <CircleUser 
-                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300" 
+                                                    <CircleUser
+                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300"
                                                     />
                                                     {/* Punto indicador online animado */}
                                                     <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
@@ -881,7 +908,7 @@ const HeaderSearchB = ({
                             <div className="md:hidden relative w-full max-w-xl mx-auto">
                                 {!searchMobile ? (
                                     <button
-                                        aria-label="Buscar productos"
+                                        aria-label={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                         onClick={() => {
                                             setSearchMobile(true);
                                             // Pequeño delay para asegurar que el input se renderice antes del focus
@@ -902,7 +929,7 @@ const HeaderSearchB = ({
                                                 ref={mobileSearchInputRef}
                                                 type="search"
                                                 name="search"
-                                                placeholder="Buscar productos"
+                                                placeholder={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                                 value={search}
                                                 onChange={(e) => handleSearchChange(e.target.value)}
                                                 onKeyDown={handleKeyDown}
@@ -917,7 +944,7 @@ const HeaderSearchB = ({
                                                 inputMode="search"
                                                 autoComplete="off"
                                                 role="searchbox"
-                                                aria-label="Buscar productos"
+                                                aria-label={`${data?.input_search_label || 'Buscar productos'}`}
                                                 onBlur={() => {
                                                     // Solo cerrar si no hay búsqueda activa y no hay sugerencias
                                                     setTimeout(() => {
@@ -942,7 +969,7 @@ const HeaderSearchB = ({
                                                 </button>
                                                 <button
                                                     type="submit"
-                                                    className="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                                    className={`p-2 ${data?.backgroundColor || "bg-primary"} text-white rounded-lg hover:bg-primary transition-colors`}
                                                     aria-label="Buscar"
                                                 >
                                                     <Search size={16} />
@@ -973,7 +1000,7 @@ const HeaderSearchB = ({
                                 <input
                                     type="search"
                                     name="search"
-                                    placeholder="Buscar productos..."
+                                    placeholder={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onKeyDown={handleKeyDown}
@@ -982,12 +1009,12 @@ const HeaderSearchB = ({
                                             fetchSearchSuggestions(search);
                                         }
                                     }}
-                                    className="w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50"
+                                    className={`w-full pr-14 py-3 font-normal pl-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none bg-gray-50`}
                                     enterKeyHint="search"
                                     inputMode="search"
                                     autoComplete="off"
                                     role="searchbox"
-                                    aria-label="Buscar productos"
+                                    aria-label={`${data?.input_search_placeholder || 'Buscar productos'}`}
                                 />
                                 <button
                                     type="submit"
@@ -1026,6 +1053,7 @@ const HeaderSearchB = ({
                             pages={pages}
                             items={items}
                             onClose={() => setOpenMenu(!openMenu)}
+                            data={data}
                         />
                     </motion.div>
                 )}
@@ -1039,21 +1067,7 @@ const HeaderSearchB = ({
                 setModalOpen={setModalOpen}
             />
 
-            <div className="flex justify-end w-full mx-auto z-[100] relative">
-                <div className="block fixed bottom-6 sm:bottom-[2rem] lg:bottom-[4rem] z-20 cursor-pointer">
-                    <a
-                        target="_blank"
-                        id="whatsapp-toggle"
-                        href={`https://api.whatsapp.com/send?phone=${phoneWhatsapp}&text=${messageWhatsapp}`}
-                    >
-                        <img
-                            src="/assets/img/whatsapp.svg"
-                            alt="whatsapp"
-                            className="mr-3 w-12 h-12 md:w-[60px] md:h-[60px] animate-bounce duration-300"
-                        />
-                    </a>
-                </div>
-            </div>
+
         </header>
     );
 };

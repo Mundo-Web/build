@@ -7,6 +7,7 @@ import ItemsRest from "../../../../Actions/ItemsRest";
 import CartModal from "../../Components/CartModal";
 import { Local } from "sode-extend-react";
 import Global from "../../../../Utils/Global";
+import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 const CardHoverBtn = ({
@@ -45,7 +46,7 @@ const CardHoverBtn = ({
     return (
         <>
             <motion.a
-            href={`/product/${product.slug}`}
+                href={`/product/${product.slug}`}
                 key={product.id}
                 className={`group px-1 md:px-2 w-full flex-shrink-0 font-font-secondary cursor-pointer relative`}
                 initial={{ opacity: 0, y: 20 }}
@@ -89,9 +90,9 @@ const CardHoverBtn = ({
                                     (e.target.src = "/api/cover/thumbnail/null")
                                 }
                                 alt={product.name}
-                                className="w-full h-full object-cover bg-slate-100"
+                                className={`w-full h-full   ${data?.class_card_image || "object-cover bg-slate-100"}`}
                                 loading="lazy"
-                               
+
                                 transition={{ duration: 0.3 }}
                             />
                         </motion.div>
@@ -136,19 +137,19 @@ const CardHoverBtn = ({
                         <motion.div
                             className="absolute inset-0 flex gap-2 w-full"
                             initial={{ y: 60, opacity: 0 }}
-                            animate={{ 
-                                y: 0, 
+                            animate={{
+                                y: 0,
                                 opacity: 1,
-                                transition: { 
+                                transition: {
                                     delay: 0.1,
                                     duration: 0.4,
                                     ease: "easeOut"
                                 }
                             }}
-                            exit={{ 
-                                y: 60, 
+                            exit={{
+                                y: 60,
                                 opacity: 0,
-                                transition: { 
+                                transition: {
                                     duration: 0.3,
                                     ease: "easeIn"
                                 }
@@ -156,7 +157,7 @@ const CardHoverBtn = ({
                         >
                             <motion.a
                                 href={`/product/${product.slug}`}
-                                className="flex-1 inline-flex items-center justify-center font-bold text-sm bg-primary text-white py-0 rounded-xl shadow-lg transition-all duration-300 hover:opacity-90"
+                                className={`flex-1 inline-flex items-center justify-center font-bold text-sm bg-primary  py-0 rounded-xl shadow-lg transition-all duration-300 hover:opacity-90 ${data?.class_button || 'text-white'}`}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -234,12 +235,21 @@ const CardHoverBtn = ({
                     </motion.div>
                     {/* Información del producto */}
                     <div>
-                        <p className="text-xs customtext-neutral-light font-semibold mb-1">
-                            {product?.brand?.name}
+                        <p className={`text-xs  font-semibold mb-1 ${data?.class_card_subtitle || 'customtext-neutral-light'}`}>
+                            {product?.brand?.name || product?.category?.name}
                         </p>
-                        <h3 className="customtext-neutral-dark text-lg font-semibold mb-2 line-clamp-3 h-20">
+                        <h3 className={`customtext-neutral-dark text-lg font-semibold mb-2 line-clamp-3 h-20 ${data?.class_card_title}`}>
                             {product.name}
                         </h3>
+                        {/* Descripción corta del producto */}
+                        {data?.is_short_description && (
+                            <p className={`text-sm customtext-neutral-light mb-2 ${product.discount != null && !isNaN(product.discount) ? '!line-clamp-1 !h-4' : '!line-clamp-2'} ${data?.class_card_description}`} dangerouslySetInnerHTML={{ __html: product.description }}>
+                               
+                            </p>
+                        )}
+                    </div>
+                    {/* Precio y descuento */}
+                    <div className="flex items-center justify-between">
                         {/* Precio */}
                         <div className="flex flex-col items-baseline gap-2 md:mb-4">
                             {product.static_price ? (
@@ -250,7 +260,7 @@ const CardHoverBtn = ({
                                     </span>
                                     {product.discount != null && !isNaN(product.discount) && (
                                         <span className="text-xs customtext-neutral-light font-semibold1 line-through">
-                                            S/ {product.price}
+                                            {CurrencySymbol()} {product.price}
                                         </span>
                                     )}
                                 </div>
@@ -260,11 +270,11 @@ const CardHoverBtn = ({
                                     {product.discount != null &&
                                         !isNaN(product.discount) && (
                                             <span className="text-xs customtext-neutral-light font-semibold1 line-through">
-                                                S/ {product.price}
+                                                {CurrencySymbol()} {product.price}
                                             </span>
                                         )}
                                     <span className="customtext-neutral-dark text-[20px] md:text-2xl font-bold">
-                                        S/ {product.final_price}
+                                        {CurrencySymbol()} {product.final_price}
                                     </span>
                                 </>
                             )}

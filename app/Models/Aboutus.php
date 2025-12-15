@@ -21,6 +21,56 @@ class Aboutus extends Model
         'image',
         'visible',
         'status',
-        'link'
+        'link',
+
     ];
+
+    protected $casts = [
+        'visible' => 'boolean',
+        'status' => 'boolean',
+ 
+    ];
+
+    // Correlatives predefinidos para About
+    public static function getPredefinedCorrelatives()
+    {
+        return [
+            'section-hero' => [
+                'name' => 'Hero Principal',
+                'description' => 'Sección principal con título, descripción e imagen grande',
+                'icon' => '🦸‍♂️'
+            ],
+            'section-mision' => [
+                'name' => 'Misión',
+                'description' => 'Sección de misión de la empresa',
+                'icon' => '🎯'
+            ],
+            'section-vision' => [
+                'name' => 'Visión', 
+                'description' => 'Sección de visión de la empresa',
+                'icon' => '🔭'
+            ],
+            'section-valores' => [
+                'name' => 'Valores',
+                'description' => 'Grid de valores empresariales',
+                'icon' => '⭐'
+            ],
+            'section-equipo' => [
+                'name' => 'Nuestro Equipo',
+                'description' => 'Presentación del equipo de trabajo',
+                'icon' => '👥'
+            ],
+            'section-historia' => [
+                'name' => 'Nuestra Historia',
+                'description' => 'Historia y trayectoria de la empresa',
+                'icon' => '📚'
+            ],
+            'section-cta' => [
+                'name' => 'Llamada a la Acción',
+                'description' => 'Sección de contacto o acción final',
+                'icon' => '📞'
+            ]
+        ];
+    }
+
 }

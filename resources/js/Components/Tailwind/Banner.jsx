@@ -4,16 +4,24 @@ const BannerSimple = lazy(() => import("./Banners/BannerSimple"));
 const BannerAd = lazy(() => import("./Banners/BannerAd"));
 const BannerFullWidth = lazy(() => import("./Banners/BannerFullWidth"));
 const BannerFlex = lazy(() => import("./Banners/BannerFlex"));
+const BannerIbergruas = lazy(() => import("./Banners/BannerIbergruas"));
 const BannerPublicitario = lazy(() => import("./Banners/BannerPublicitario"));
 const BannerPublicitarioPaani = lazy(() => import("./Banners/BannerPublicitarioPaani"));
 const BannerPostSuscriptionPaani = lazy(() => import("./Banners/BannerPostSuscriptionPaani"));
 const BannerStatic = lazy(() => import("./Banners/BannerStatic"));
 const BannerStaticSecond = lazy(() => import("./Banners/BannerStaticSecond"));
 const BannerSimpleSF = lazy(() => import("./Banners/BannerSimpleSF"));
+const BannerSimpleD2 = lazy(() => import("./Banners/BannerSimpleD2"));
 const BannerBananaLab = lazy(() => import("./Banners/BannerBananaLab"));
 const BannerCTAMakita = lazy(() => import("./Banners/BannerCTAMakita"));
 const BannerContactMakita = lazy(() => import("./Banners/BannerContactMakita"));
-const Banner = ({ which, data, items }) => {
+const BannerPidelo = lazy(() => import("./Banners/BannerPidelo"));
+const BannerMultivet = lazy(() => import("./Banners/BannerMultivet"));
+const BannerPublicitarioKatya = lazy(() => import("./Banners/BannerPublicitarioKatya"));
+const BannerBlogSectionKatya = lazy(() => import("./Banners/BannerBlogSectionKatya"));
+const BannerMobileApp = lazy(() => import("./Banners/BannerMobileApp"));
+
+const Banner = ({ which, data, items, generals }) => {
     const getBanner = () => {
         switch (which) {
             case "BannerSimple":
@@ -22,6 +30,8 @@ const Banner = ({ which, data, items }) => {
                 return <BannerAd data={data} />;
             case "BannerPublicitario":
                 return <BannerPublicitario data={data} />;
+            case "BannerPublicitarioKatya":
+                return <BannerPublicitarioKatya data={data} />;
             case "BannerPublicitarioPaani":
                 return <BannerPublicitarioPaani data={data} />;
             case "BannerPostSuscriptionPaani":
@@ -30,10 +40,14 @@ const Banner = ({ which, data, items }) => {
                 return <BannerFullWidth data={data} />;
             case "BannerFlex":
                 return <BannerFlex data={data} />;
+            case "BannerIbergruas":
+                return <BannerIbergruas data={data} />;
             case "BannerStatic":
                 return <BannerStatic data={data} items={items} />;
             case "BannerSimpleSF":
                 return <BannerSimpleSF data={data} />;
+            case "BannerSimpleD2":
+                return <BannerSimpleD2 data={data} />;
             case "BannerBananaLab":
                 return <BannerBananaLab data={data} />;
             case "BannerCTAMakita":
@@ -42,7 +56,14 @@ const Banner = ({ which, data, items }) => {
                 return <BannerContactMakita data={data} />;
             case "BannerStaticSecond":
                 return <BannerStaticSecond data={data} items={items} />;
-
+            case "BannerPidelo":
+                return <BannerPidelo data={data} />;
+            case "BannerMultivet":
+                return <BannerMultivet data={data} />;
+            case "BannerBlogSectionKatya":
+                return <BannerBlogSectionKatya data={data} items={items} />;
+            case "BannerMobileApp":
+                return <BannerMobileApp data={data} generals={generals} items={items} />;
 
             default:
                 return (

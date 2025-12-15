@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CardHoverBtn from "../Products/Components/CardHoverBtn";
-import { 
-    ChevronDown, 
-    ChevronLeft, 
-    ChevronRight, 
-    Filter, 
-    Search, 
-    Tag, 
-    X, 
-    Zap, 
-    Sparkles, 
+import {
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    Filter,
+    Search,
+    Tag,
+    X,
+    Zap,
+    Sparkles,
     Star,
     ShoppingBag,
     TrendingUp,
@@ -29,6 +29,7 @@ import { Loading } from "../Components/Resources/Loading";
 import { NoResults } from "../Components/Resources/NoResult";
 import SelectForm from "./Components/SelectForm";
 import { GET } from "sode-extend-react";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
 const itemsRest = new ItemsRest();
 
@@ -58,12 +59,12 @@ const filterAnimations = {
         exit: { scale: 0, opacity: 0 },
         transition: { type: "spring", stiffness: 300, damping: 20 }
     },
-    hover: { 
-        scale: 1.02, 
+    hover: {
+        scale: 1.02,
         y: -2,
         transition: { duration: 0.2 }
     },
-    tap: { 
+    tap: {
         scale: 0.98,
         transition: { duration: 0.1 }
     },
@@ -100,40 +101,40 @@ const modernFilterStyles = {
 
 const SkeletonCard = ({ delay = 0 }) => {
     return (
-        <motion.div 
+        <motion.div
             className="group w-full h-full"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
+            transition={{
                 delay,
                 duration: 0.6,
                 ease: "easeOut"
             }}
         >
-            <div className="px-4 h-full">
+            <div className="px-2 h-full">
                 <div className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
                     {/* Contenedor principal con altura fija similar a las tarjetas reales */}
                     <div className="flex flex-col h-[400px] lg:h-[460px] xl:h-[400px] 2xl:h-[430px]">
-                        
+
                         {/* Imagen del producto skeleton */}
                         <div className="relative flex-1 bg-gray-100 rounded-t-3xl overflow-hidden">
                             {/* Efecto shimmer mejorado */}
                             <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200">
                                 {/* Shimmer principal */}
                                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_2.5s_infinite] bg-gradient-to-r from-transparent via-white/70 to-transparent transform skew-x-12"></div>
-                                
+
                                 {/* Shimmer secundario para más profundidad */}
                                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_3s_infinite] bg-gradient-to-r from-transparent via-blue-100/30 to-transparent transform skew-x-12" style={{ animationDelay: '0.5s' }}></div>
                             </div>
-                            
+
                             {/* Placeholder del icono de imagen */}
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <motion.div
-                                    animate={{ 
+                                    animate={{
                                         scale: [1, 1.1, 1],
                                         opacity: [0.5, 0.8, 0.5]
                                     }}
-                                    transition={{ 
+                                    transition={{
                                         duration: 2,
                                         repeat: Infinity,
                                         ease: "easeInOut"
@@ -158,7 +159,7 @@ const SkeletonCard = ({ delay = 0 }) => {
                         <div className="p-4 space-y-3 bg-white flex-shrink-0">
                             {/* Marca skeleton */}
                             <div className="h-3 w-20 bg-gray-200 rounded-full animate-pulse"></div>
-                            
+
                             {/* Título del producto skeleton */}
                             <div className="space-y-2">
                                 <div className="h-4 w-full bg-gray-300 rounded animate-pulse"></div>
@@ -171,7 +172,7 @@ const SkeletonCard = ({ delay = 0 }) => {
                                     <div className="h-3 w-16 bg-gray-200 rounded animate-pulse"></div>
                                     <div className="h-5 w-24 bg-gray-400 rounded animate-pulse"></div>
                                 </div>
-                                
+
                                 {/* Botón de agregar al carrito skeleton */}
                                 <div className="h-10 w-10 bg-gray-300 rounded-xl animate-pulse"></div>
                             </div>
@@ -193,6 +194,24 @@ const SkeletonCard = ({ delay = 0 }) => {
 
 
 const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
+    // Opciones de ordenación (mover al inicio para evitar problemas de hoisting)
+    const sortOptions = [
+        { value: "created_at:desc", label: "Más reciente" },
+        { value: "created_at:asc", label: "Mas antiguo" },
+        { value: "final_price:asc", label: "Precio: Menor a Mayor" },
+        { value: "final_price:desc", label: "Precio: Mayor a Menor" },
+        { value: "name:asc", label: "Nombre: A-Z" },
+        { value: "name:desc", label: "Nombre: Z-A" },
+        { value: "most_sold:desc", label: "Más vendidos" },
+        { value: "views:desc", label: "Más visitados" },
+        // { value: "discount_percent:desc", label: "Mayores descuentos" },
+        { value: "best_discount:desc", label: "Mejores ofertas" },
+        { value: "featured:desc", label: "Destacados" },
+        { value: "offering:desc", label: "En oferta" },
+        { value: "is_new:desc", label: "Nuevos productos" },
+        // { value: "recommended:desc", label: "Recomendados por expertos" },
+    ];
+
     // Estado para el filtro padre (independiente)
     const [independentFilter, setIndependentFilter] = useState(null);
     const [brands, setBrands] = useState([]);
@@ -205,14 +224,14 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
     // Rangos de precios estáticos
     const staticPriceRanges = [
-        { min: 0, max: 50, label: "Hasta s/ 50" },
-        { min: 50, max: 100, label: "S/ 50 - s/ 100" },
-        { min: 100, max: 250, label: "S/ 100 - s/ 250" },
-        { min: 250, max: 500, label: "S/ 250 - s/ 500" },
-        { min: 500, max: 1000, label: "S/ 500 - s/ 1.000" },
-        { min: 1000, max: 2000, label: "S/ 1.000 - s/ 2.000" },
-        { min: 2000, max: 5000, label: "S/ 2.000 - s/ 5.000" },
-        { min: 5000, max: 999999, label: "Desde s/ 5.000" }
+        { min: 0, max: 50, label: `Hasta ${CurrencySymbol()} 50` },
+        { min: 50, max: 100, label: `${CurrencySymbol()} 50 - ${CurrencySymbol()} 100` },
+        { min: 100, max: 250, label: `${CurrencySymbol()} 100 - ${CurrencySymbol()} 250` },
+        { min: 250, max: 500, label: `${CurrencySymbol()} 250 - ${CurrencySymbol()} 500` },
+        { min: 500, max: 1000, label: `${CurrencySymbol()} 500 - ${CurrencySymbol()} 1.000` },
+        { min: 1000, max: 2000, label: `${CurrencySymbol()} 1.000 - ${CurrencySymbol()} 2.000` },
+        { min: 2000, max: 5000, label: `${CurrencySymbol()} 2.000 - ${CurrencySymbol()} 5.000` },
+        { min: 5000, max: 999999, label: `Desde ${CurrencySymbol()} 5.000` }
     ];
 
     const [sections, setSections] = useState(() => {
@@ -242,47 +261,71 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         collection_id: [],
         category_id: [],
         brand_id: [],
-        subcategory_id:  [],
+        subcategory_id: [],
         tag_id: GET.tag ? GET.tag.split(',') : [], // Agregar soporte para tags
         price: [],
         name: GET.search || null,
-        sort: [
-            {
-                selector: "final_price",
-                desc: true,
-            },
-        ],
+        sort: (() => {
+            // Leer parámetro sortBy desde la URL
+            if (GET.sortBy) {
+                const sortValue = GET.sortBy;
+
+                // Primero buscar por valor exacto (ej: "final_price:desc")
+                let validSortOption = sortOptions.find(option => option.value === sortValue);
+
+                // Si no se encuentra, buscar por label (ej: "Destacados")
+                if (!validSortOption) {
+                    validSortOption = sortOptions.find(option =>
+                        option.label.toLowerCase() === sortValue.toLowerCase()
+                    );
+                }
+
+                if (validSortOption) {
+                    const [selector, order] = validSortOption.value.split(":");
+                    return [
+                        {
+                            selector: selector,
+                            desc: order === "desc",
+                        },
+                    ];
+                }
+            }
+            // Valor por defecto si no hay parámetro o es inválido
+            return [
+                {
+                    selector: "final_price",
+                    desc: true,
+                },
+            ];
+        })(),
     });
 
     // Función para convertir slugs a IDs
     const convertSlugsToIds = async () => {
         try {
             const params = {};
-            
+
             if (GET.category) {
                 params.category_slugs = GET.category;
             }
-            {/*if (GET.brand) {
+            if (GET.brand) {
                 params.brand_slugs = GET.brand;
-            } */}
-        if (GET.subcategory) {
+            }
+            if (GET.subcategory) {
                 params.subcategory_slugs = GET.subcategory;
             }
             if (GET.collection) {
                 params.collection_slugs = GET.collection;
             }
-            
+
             // Solo hacer la petición si hay slugs que convertir
             if (Object.keys(params).length > 0) {
                 const response = await itemsRest.convertSlugs(params);
-                            console.log("Estamos fuera de estatus 200")
                 if (response.status === 200) {
-                    console.log("Estamos dentro de estatus 200")
-                    console.log("Response data:", response.data);
                     setSelectedFilters(prev => ({
                         ...prev,
                         category_id: Array.isArray(response.data.category_ids) ? response.data.category_ids : (response.data.category_ids ? [response.data.category_ids] : []),
-                        brand_id: GET.brand || [],
+                        brand_id: GET.brand ? [GET.brand] : [],
                         subcategory_id: Array.isArray(response.data.subcategory_ids) ? response.data.subcategory_ids : (response.data.subcategory_ids ? [response.data.subcategory_ids] : []),
                         collection_id: Array.isArray(response.data.collection_ids) ? response.data.collection_ids : (response.data.collection_ids ? [response.data.collection_ids] : []),
                     }));
@@ -312,6 +355,22 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
     const transformFilters = (filters) => {
         const transformedFilters = [];
+
+        // Manejar campos especiales de sort que deben convertirse en filtros WHERE
+        if (filters.sort && Array.isArray(filters.sort)) {
+            const specialSortFields = ['featured', 'offering', 'is_new', 'recommended'];
+
+            filters.sort.forEach(sortItem => {
+                if (specialSortFields.includes(sortItem.selector)) {
+                    // Convertir campo de ordenamiento especial a filtro WHERE
+                    transformedFilters.push([
+                        sortItem.selector,
+                        "=",
+                        1  // Solo mostrar productos donde el campo = 1 (true)
+                    ]);
+                }
+            });
+        }
 
         if (filters.collection_id.length > 0) {
             const collectionConditions = filters.collection_id.map((slug) => [
@@ -344,7 +403,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             const brandConditions = filters.brand_id.map((slug) => {
                 // Buscar la marca en el array para obtener su ID
                 const brand = brands.find(b => b.slug === slug);
-                
+
                 if (brand) {
                     // Si encontramos la marca, usar su ID
                     return [
@@ -386,54 +445,391 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         }
 
         if (filters.name) {
-            transformedFilters.push(["name", "contains", filters.name]);
+            // Buscar en múltiples campos como HeaderSearchB
+            const searchConditions = [
+                ["name", "contains", filters.name],
+                "or",
+                ["summary", "contains", filters.name],
+                "or",
+                ["description", "contains", filters.name]
+            ];
+            transformedFilters.push(searchConditions);
         }
 
         return ArrayJoin(transformedFilters, 'and');
+    };
+
+    // Función de fallback para búsqueda simple (como HeaderSearchB)
+    const getSimpleSearchFilters = (query) => {
+        return [
+            ['name', 'contains', query],
+            'or',
+            ['summary', 'contains', query],
+            'or',
+            ['description', 'contains', query]
+        ];
+    };
+
+    // Estado para controlar la búsqueda inteligente - DESACTIVADA por defecto
+    const [intelligentSearchEnabled, setIntelligentSearchEnabled] = useState(false); // Cambiar a false
+    const [lastIntelligentSearch, setLastIntelligentSearch] = useState(null);
+
+    // Función para detectar si el query coincide con marcas, categorías o subcategorías
+    const detectIntelligentFilters = (query) => {
+        if (!query || query.length < 2 || !intelligentSearchEnabled) {
+            return null;
+        }
+
+        const lowerQuery = query.toLowerCase().trim();
+       
+
+        const detectedFilters = {
+            categories: [],
+            brands: [],
+            subcategories: [],
+            collections: []
+        };
+
+        // Buscar en categorías
+        const matchedCategories = categories.filter(cat => {
+            const match = cat.name.toLowerCase().includes(lowerQuery) ||
+                lowerQuery.includes(cat.name.toLowerCase());
+            return match;
+        });
+
+        // Buscar en marcas
+        const matchedBrands = brands.filter(brand => {
+            const match = brand.name.toLowerCase().includes(lowerQuery) ||
+                lowerQuery.includes(brand.name.toLowerCase());
+            return match;
+        });
+
+        // Buscar en subcategorías
+        const matchedSubcategories = subcategories.filter(subcat => {
+            const match = subcat.name.toLowerCase().includes(lowerQuery) ||
+                lowerQuery.includes(subcat.name.toLowerCase());
+            return match;
+        });
+
+        // Buscar en colecciones
+        const matchedCollections = collections.filter(collection => {
+            const match = collection.name.toLowerCase().includes(lowerQuery) ||
+                lowerQuery.includes(collection.name.toLowerCase());
+            return match;
+        });
+
+        const result = {
+            categories: matchedCategories,
+            brands: matchedBrands,
+            subcategories: matchedSubcategories,
+            collections: matchedCollections,
+            hasMatches: matchedCategories.length > 0 || matchedBrands.length > 0 ||
+                matchedSubcategories.length > 0 || matchedCollections.length > 0
+        };
+
+        return result;
+    };
+
+    // Función para verificar si los filtros actuales fueron aplicados por búsqueda inteligente
+    const isIntelligentSearchActive = (query) => {
+        const detected = detectIntelligentFilters(query);
+        if (!detected || !detected.hasMatches) return false;
+
+        // Verificar si algún filtro coincide con los detectados
+        const hasMatchingCategories = detected.categories.some(cat =>
+            selectedFilters.category_id.includes(cat.id)
+        );
+        const hasMatchingBrands = detected.brands.some(brand =>
+            selectedFilters.brand_id.includes(brand.slug)
+        );
+        const hasMatchingSubcategories = detected.subcategories.some(subcat =>
+            selectedFilters.subcategory_id.includes(subcat.id)
+        );
+        const hasMatchingCollections = detected.collections.some(collection =>
+            selectedFilters.collection_id.includes(collection.slug)
+        );
+
+        return hasMatchingCategories || hasMatchingBrands || hasMatchingSubcategories || hasMatchingCollections;
+    };
+
+    // Función para aplicar filtros inteligentes automáticamente
+    const applyIntelligentFilters = (query) => {
+        const detected = detectIntelligentFilters(query);
+
+        if (!detected || !detected.hasMatches) return;
+
+
+        setSelectedFilters(prev => {
+            const newFilters = { ...prev };
+
+            // Aplicar filtros de categorías detectadas
+            if (detected.categories.length > 0) {
+                const categoryIds = detected.categories.map(cat => cat.id);
+                newFilters.category_id = [...new Set([...newFilters.category_id, ...categoryIds])];
+            }
+
+            // Aplicar filtros de marcas detectadas
+            if (detected.brands.length > 0) {
+                const brandSlugs = detected.brands.map(brand => brand.slug);
+                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+            }
+
+            // Aplicar filtros de subcategorías detectadas
+            if (detected.subcategories.length > 0) {
+                const subcategoryIds = detected.subcategories.map(subcat => subcat.id);
+                newFilters.subcategory_id = [...new Set([...newFilters.subcategory_id, ...subcategoryIds])];
+            }
+
+            // Aplicar filtros de colecciones detectadas
+            if (detected.collections.length > 0) {
+                const collectionSlugs = detected.collections.map(collection => collection.slug);
+                newFilters.collection_id = [...new Set([...newFilters.collection_id, ...collectionSlugs])];
+            }
+
+            return newFilters;
+        });
+    };
+
+    // Función para aplicar búsqueda inteligente automáticamente
+    const handleIntelligentSearch = (query) => {
+        if (!query || query.length < 2) return;
+
+        // SOLO aplicar búsqueda de texto, SIN filtros automáticos
+        // La búsqueda inteligente está DESACTIVADA para evitar filtros no deseados
+        setSelectedFilters(prev => ({ ...prev, name: query }));
+        setLastIntelligentSearch(null);
+        
+        // NO aplicar detectIntelligentFilters ni agregar filtros automáticos
+    };
+
+    // Función para alternar la búsqueda inteligente
+    const toggleIntelligentSearch = () => {
+        setIntelligentSearchEnabled(!intelligentSearchEnabled);
+    };
+
+    // Función para limpiar filtros aplicados por búsqueda inteligente
+    const clearIntelligentFilters = () => {
+        if (lastIntelligentSearch && selectedFilters.name) {
+            const detected = detectIntelligentFilters(selectedFilters.name);
+            if (detected && detected.hasMatches) {
+                setSelectedFilters(prev => {
+                    const newFilters = { ...prev };
+
+                    // Remover categorías detectadas
+                    if (detected.categories.length > 0) {
+                        const categoryIds = detected.categories.map(cat => cat.id);
+                        newFilters.category_id = newFilters.category_id.filter(id => !categoryIds.includes(id));
+                    }
+
+                    // Remover marcas detectadas
+                    if (detected.brands.length > 0) {
+                        const brandSlugs = detected.brands.map(brand => brand.slug);
+                        newFilters.brand_id = newFilters.brand_id.filter(slug => !brandSlugs.includes(slug));
+                    }
+
+                    // Remover subcategorías detectadas
+                    if (detected.subcategories.length > 0) {
+                        const subcategoryIds = detected.subcategories.map(subcat => subcat.id);
+                        newFilters.subcategory_id = newFilters.subcategory_id.filter(id => !subcategoryIds.includes(id));
+                    }
+
+                    // Remover colecciones detectadas
+                    if (detected.collections.length > 0) {
+                        const collectionSlugs = detected.collections.map(collection => collection.slug);
+                        newFilters.collection_id = newFilters.collection_id.filter(slug => !collectionSlugs.includes(slug));
+                    }
+
+                    return newFilters;
+                });
+            }
+        }
+        setLastIntelligentSearch(null);
+    };
+
+    // Función de debug mejorada con búsqueda inteligente
+    const debugCompareWithHeaderSearch = async (query) => {
+
+        // Detectar filtros inteligentes
+        const intelligentFilters = detectIntelligentFilters(query);
+
+        // Crear filtros mejorados con detección inteligente
+        const enhancedFilters = { ...selectedFilters, name: query };
+
+        // Aplicar filtros inteligentes para la comparación
+        if (intelligentFilters && intelligentFilters.hasMatches) {
+            if (intelligentFilters.categories.length > 0) {
+                enhancedFilters.category_id = [...new Set([
+                    ...enhancedFilters.category_id,
+                    ...intelligentFilters.categories.map(cat => cat.id)
+                ])];
+            }
+
+            if (intelligentFilters.brands.length > 0) {
+                enhancedFilters.brand_id = [...new Set([
+                    ...enhancedFilters.brand_id,
+                    ...intelligentFilters.brands.map(brand => brand.slug)
+                ])];
+            }
+
+            if (intelligentFilters.subcategories.length > 0) {
+                enhancedFilters.subcategory_id = [...new Set([
+                    ...enhancedFilters.subcategory_id,
+                    ...intelligentFilters.subcategories.map(subcat => subcat.id)
+                ])];
+            }
+
+            if (intelligentFilters.collections.length > 0) {
+                enhancedFilters.collection_id = [...new Set([
+                    ...enhancedFilters.collection_id,
+                    ...intelligentFilters.collections.map(collection => collection.slug)
+                ])];
+            }
+        }
+
+        // Filtros de CatalagoFiltros (con mejora inteligente)
+        const catalogFilters = transformFilters(enhancedFilters);
+
+        // Filtros de HeaderSearchB (básicos)
+        const headerFilters = getSimpleSearchFilters(query);
+
+        try {
+            // Test con filtros de HeaderSearchB
+            const headerResponse = await fetch('/api/items/paginate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    take: 8,
+                    skip: 0,
+                    filter: headerFilters,
+                    sort: [{ selector: 'name', desc: false }],
+                    requireTotalCount: false,
+                    with: 'category,brand'
+                })
+            });
+
+            const headerData = await headerResponse.json();
+
+            // Test con filtros de CatalagoFiltros (mejorados)
+            const catalogResponse = await itemsRest.paginate({
+                filter: catalogFilters,
+                sort: [{ selector: 'name', desc: false }],
+                skip: 0,
+                take: 8,
+                requireTotalCount: false,
+                with: 'category,brand'
+            });
+
+
+            // Comparación de resultados
+            const headerCount = headerData?.data?.length || 0;
+            const catalogCount = catalogResponse?.data?.length || 0;
+
+
+         
+
+        } catch (error) {
+            console.error("Debug comparison error:", error);
+        }
+
+    };
+
+    // Exponer funciones globalmente para testing y uso externo
+    window.debugCatalogSearch = debugCompareWithHeaderSearch;
+    window.handleIntelligentSearch = handleIntelligentSearch;
+    window.toggleIntelligentSearch = toggleIntelligentSearch;
+    window.clearIntelligentFilters = clearIntelligentFilters;
+    window.isIntelligentSearchActive = isIntelligentSearchActive;
+    window.detectIntelligentFilters = detectIntelligentFilters;
+
+ 
+
+    // Función para simular búsqueda desde HeaderSearchB
+    window.simulateHeaderSearch = (query) => {
+
+        // Simular lo que haría el HeaderSearchB
+        setSelectedFilters(prev => ({
+            ...prev,
+            name: query
+        }));
+
+    };
+
+    // Función para forzar la búsqueda inteligente sin importar el estado
+    window.forceIntelligentSearch = (query) => {
+        const originalEnabled = intelligentSearchEnabled;
+        setIntelligentSearchEnabled(true);
+
+        setTimeout(() => {
+            handleIntelligentSearch(query);
+            setIntelligentSearchEnabled(originalEnabled);
+        }, 100);
     };
     // Obtener productos filtrados desde el backend
     const fetchProducts = async (page = 1, isNewFilter = false) => {
         // Resetear el estado de "sin resultados" al comenzar una nueva búsqueda
         setShowNoResults(false);
-        
+
         // Diferentes estados para carga inicial vs filtrado
         if (isNewFilter) {
             setIsFiltering(true);
         } else {
             setLoading(true);
         }
-        
+
         try {
             const filters = transformFilters(selectedFilters);
             const itemsPerPage = 24; // Valor constante para evitar problemas de estado
-            
+
+            // Debug: Log de los filtros transformados
+
+            // Filtrar el sort para remover campos especiales que ya se convirtieron en filtros WHERE
+            const specialSortFields = ['featured', 'offering', 'is_new', 'recommended'];
+            const filteredSort = selectedFilters.sort.filter(sortItem =>
+                !specialSortFields.includes(sortItem.selector)
+            );
+
+            // Si no queda ningún sort válido, usar ordenamiento por defecto
+            const finalSort = filteredSort.length > 0 ? filteredSort : [
+                { selector: "final_price", desc: true }
+            ];
+
             // Extraer los IDs de los filtros seleccionados (no slugs)
             const params = {
                 filter: filters,
-                sort: selectedFilters.sort,
+                sort: finalSort,
                 skip: (page - 1) * itemsPerPage,
                 take: itemsPerPage,
                 requireTotalCount: true,
                 filterSequence: filterSequence,
                 // Removido los filtros duplicados - solo usar el filtro complejo
             };
-            
+
+
             const response = await itemsRest.paginate(params);
-            
-            setProducts(response.data);
+
+
+            // Validar la respuesta del backend
+            if (response.status !== 200) {
+                throw new Error(`API returned status ${response.status}`);
+            }
+
+            setProducts(response.data || []);
             setHasSearched(true); // Marcamos que ya se hizo una búsqueda
-            
+
             // Si no hay productos, mostrar mensaje después de un pequeño delay
             if (!response.data || response.data.length === 0) {
                 setTimeout(() => {
                     setShowNoResults(true);
                 }, 300); // Delay de 300ms para evitar parpadeo
             }
-            
+
             // Actualizar paginación con los datos correctos del backend
             const totalCount = response.totalCount || 0;
             const totalPages = Math.ceil(totalCount / itemsPerPage);
-            
+
             setPagination({
                 currentPage: page,
                 totalPages: totalPages,
@@ -442,16 +838,68 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 from: totalCount > 0 ? (page - 1) * itemsPerPage + 1 : 0,
                 to: Math.min(page * itemsPerPage, totalCount),
             });
-            
+
             // Update all filter options from backend summary
-            setBrands(response?.summary.brands || []);
-            setCategories(response?.summary.categories || []);
-            setSubcategories(response?.summary.subcategories || []);
-            setCollections(response?.summary.collections || []);
-            setPriceRanges(response?.summary.priceRanges || []);
-            setTags(response?.summary.tags || []);
+            setBrands(response?.summary?.brands || []);
+            setCategories(response?.summary?.categories || []);
+            setSubcategories(response?.summary?.subcategories || []);
+            setCollections(response?.summary?.collections || []);
+            setPriceRanges(response?.summary?.priceRanges || []);
+            setTags(response?.summary?.tags || []);
         } catch (error) {
             console.error("Error fetching products:", error);
+
+            // Si hay un error y solo hay filtro de búsqueda, intentar con filtro simple
+            if (selectedFilters.name &&
+                selectedFilters.category_id.length === 0 &&
+                selectedFilters.brand_id.length === 0 &&
+                selectedFilters.subcategory_id.length === 0 &&
+                selectedFilters.collection_id.length === 0 &&
+                selectedFilters.tag_id.length === 0 &&
+                selectedFilters.price.length === 0) {
+
+
+                try {
+                    const simpleParams = {
+                        filter: getSimpleSearchFilters(selectedFilters.name),
+                        sort: selectedFilters.sort,
+                        skip: (page - 1) * 24,
+                        take: 24,
+                        requireTotalCount: true,
+                        with: 'category,brand'
+                    };
+
+                    const fallbackResponse = await itemsRest.paginate(simpleParams);
+
+                    if (fallbackResponse.status === 200) {
+                        setProducts(fallbackResponse.data || []);
+                        setHasSearched(true);
+
+                        if (!fallbackResponse.data || fallbackResponse.data.length === 0) {
+                            setTimeout(() => {
+                                setShowNoResults(true);
+                            }, 300);
+                        }
+
+                        const totalCount = fallbackResponse.totalCount || 0;
+                        const totalPages = Math.ceil(totalCount / 24);
+
+                        setPagination({
+                            currentPage: page,
+                            totalPages: totalPages,
+                            totalItems: totalCount,
+                            itemsPerPage: 24,
+                            from: totalCount > 0 ? (page - 1) * 24 + 1 : 0,
+                            to: Math.min(page * 24, totalCount),
+                        });
+
+                        return; // Salir exitosamente con fallback
+                    }
+                } catch (fallbackError) {
+                    console.error("Fallback search also failed:", fallbackError);
+                }
+            }
+
             // En caso de error, también mostrar el mensaje después de un delay
             setTimeout(() => {
                 setShowNoResults(true);
@@ -471,21 +919,78 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             setSubcategories(filteredData.subcategories || []);
             setPriceRanges(filteredData.priceRanges || []);
         }
-        
+
         // Convert slugs from GET parameters to IDs
         convertSlugsToIds();
-        
+
+        // Aplicar búsqueda inteligente si hay un término de búsqueda inicial
+        if (GET.search && intelligentSearchEnabled) {
+            // Pequeño delay para asegurar que las categorías, marcas, etc. estén cargadas
+            setTimeout(() => {
+                handleIntelligentSearch(GET.search);
+            }, 100);
+        }
+
         // Initial fetch to get products and update summary data (no es filtrado)
         fetchProducts(1, false);
-    }, [filteredData]);
+    }, [filteredData, intelligentSearchEnabled]); // Agregar intelligentSearchEnabled como dependencia
 
     useEffect(() => {
-        // Cuando cambian los filtros, volvemos a la primera página SIN hacer scroll
-        // Solo si ya se hizo la búsqueda inicial
-        if (hasSearched) {
-            fetchProducts(1, true); // Es un filtrado
+      
+
+        fetchProducts(1, hasSearched); // true si ya había búsqueda, false si es inicial
+    }, [selectedFilters]); // Eliminar hasSearched como dependencia
+
+    // useEffect para detectar cambios en el filtro de nombre y aplicar búsqueda inteligente
+    useEffect(() => {
+        if (selectedFilters.name && intelligentSearchEnabled && brands.length > 0) {
+
+            // Verificar si ya tiene filtros inteligentes aplicados
+            const isAlreadyIntelligent = isIntelligentSearchActive(selectedFilters.name);
+
+            if (!isAlreadyIntelligent) {
+
+                // Aplicar búsqueda inteligente automáticamente
+                setTimeout(() => {
+                    const detected = detectIntelligentFilters(selectedFilters.name);
+                    if (detected && detected.hasMatches) {
+
+                        setSelectedFilters(prev => {
+                            const newFilters = { ...prev };
+
+                            // Aplicar filtros de marcas detectadas
+                            if (detected.brands.length > 0) {
+                                const brandSlugs = detected.brands.map(brand => brand.slug);
+                                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+                            }
+
+                            // Aplicar filtros de categorías detectadas
+                            if (detected.categories.length > 0) {
+                                const categoryIds = detected.categories.map(cat => cat.id);
+                                newFilters.category_id = [...new Set([...newFilters.category_id, ...categoryIds])];
+                            }
+
+                            // Aplicar filtros de subcategorías detectadas
+                            if (detected.subcategories.length > 0) {
+                                const subcategoryIds = detected.subcategories.map(subcat => subcat.id);
+                                newFilters.subcategory_id = [...new Set([...newFilters.subcategory_id, ...subcategoryIds])];
+                            }
+
+                            // Aplicar filtros de colecciones detectadas
+                            if (detected.collections.length > 0) {
+                                const collectionSlugs = detected.collections.map(collection => collection.slug);
+                                newFilters.collection_id = [...new Set([...newFilters.collection_id, ...collectionSlugs])];
+                            }
+
+                            return newFilters;
+                        });
+
+                        setLastIntelligentSearch(selectedFilters.name);
+                    }
+                }, 100);
+            }
         }
-    }, [selectedFilters, hasSearched]);
+    }, [selectedFilters.name, intelligentSearchEnabled, brands, categories, subcategories, collections]);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= pagination.totalPages && page !== pagination.currentPage) {
@@ -523,25 +1028,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             return page !== "..." || array[index - 1] !== "...";
         });
     };
-    // Opciones de ordenación
-   const sortOptions = [
-    { value: "created_at:desc", label: "Más reciente" },
-    { value: "created_at:asc", label: "Mas antiguo" },
-    { value: "final_price:asc", label: "Precio: Menor a Mayor" },
-    { value: "final_price:desc", label: "Precio: Mayor a Menor" },
-    { value: "name:asc", label: "Nombre: A-Z" },
-    { value: "name:desc", label: "Nombre: Z-A" },
-    { value: "most_sold:desc", label: "Más vendidos" },
-    { value: "views:desc", label: "Más visitados" },
-   // { value: "discount_percent:desc", label: "Mayores descuentos" },
-    { value: "best_discount:desc", label: "Mejores ofertas" },
-   // { value: "offering:desc", label: "En oferta" },
- //   { value: "is_new:desc", label: "Nuevos productos" },
-   // { value: "featured:desc", label: "Destacados" },
-   
-   //{ value: "recommended:desc", label: "Recomendados por expertos" },
-];
-
 
     //}, [items]);
     // Manejar cambios en los filtros y mantener filterSequence
@@ -634,7 +1120,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     const filteredSubcategories = subcategories.filter((subcategory) => {
         // Si hay categorías seleccionadas en los filtros, solo mostrar subcategorías de esas categorías
         let categoryIds;
-        console.log("selectedFilters.category_id", selectedFilters.category_id);
         if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
             // Hay categorías seleccionadas, solo mostrar subcategorías de esas categorías
             categoryIds = categories
@@ -644,12 +1129,12 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             // No hay categorías seleccionadas, mostrar subcategorías de todas las categorías disponibles
             categoryIds = categories.map(cat => cat.id);
         }
-        
+
         return categoryIds.includes(subcategory.category_id) &&
             subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
     });
-    
- 
+
+
 
     // Filtrar marcas según el input
     const filteredBrands = brands.filter((brand) =>
@@ -669,7 +1154,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             document.body.classList.remove('filter-modal-open');
             document.body.style.overflow = 'unset';
         }
-        
+
         // Cleanup cuando el componente se desmonta
         return () => {
             document.body.classList.remove('filter-modal-open');
@@ -681,30 +1166,32 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         <section className="py-4 lg:py-12 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30">
             <div className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header mejorado con estadísticas y acciones rápidas */}
-                <motion.div 
+                <motion.div
                     className="flex flex-col md:flex-row md:justify-between items-start md:items-center mb-6 lg:mb-8 lg:pb-6 lg:border-b-2 border-gradient-to-r from-blue-200 via-indigo-200 to-purple-200"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <motion.div 
+                    <motion.div
                         className="md:w-6/12 mb-0 md:mb-0"
                         whileHover={{ scale: 1.02 }}
                     >
                         <h2 className="text-2xl lg:text-[32px] md:text-4xl font-bold customtext-primary  lg:mb-2">
                             {data?.title}
                         </h2>
-                      
+
+
+
                     </motion.div>
-                    
+
                     <div className="hidden md:flex flex-col w-full items-start md:items-center justify-end gap-4 md:flex-row md:w-5/12">
                         {/* Estadísticas mejoradas */}
-                      
-                        
+
+
                         {/* Selector de ordenación mejorado - Solo Desktop */}
-                        <motion.div 
+                        <motion.div
                             className="w-full md:w-6/12 relative"
-                         
+
                         >
                             <SelectForm
                                 options={sortOptions}
@@ -726,6 +1213,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         ...prev,
                                         sort,
                                     }));
+
+                                    // Actualizar la URL con el nuevo parámetro sortBy
+                                    const url = new URL(window.location);
+                                    url.searchParams.set('sortBy', value);
+                                    window.history.pushState({}, '', url);
                                 }}
                                 labelKey="label"
                                 valueKey="value"
@@ -755,11 +1247,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         animate={{ x: ['-100%', '100%'] }}
                                         transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                                     />
-                                    
+
                                     <div className="flex items-center gap-2 relative z-10">
                                         <motion.div
                                             className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm"
-                                            animate={{ 
+                                            animate={{
                                                 rotate: [0, 10, 0],
                                                 scale: [1, 1.1, 1]
                                             }}
@@ -774,7 +1266,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                         </motion.div>
 
                         {/* Selector de ordenación para móvil */}
-                        <motion.div 
+                        <motion.div
                             className="flex-1"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -800,6 +1292,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         ...prev,
                                         sort,
                                     }));
+
+                                    // Actualizar la URL con el nuevo parámetro sortBy
+                                    const url = new URL(window.location);
+                                    url.searchParams.set('sortBy', value);
+                                    window.history.pushState({}, '', url);
                                 }}
                                 labelKey="label"
                                 valueKey="value"
@@ -809,11 +1306,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                     </div>
 
                     {/* Panel de filtros mejorado */}
-                    <motion.div 
+                    <motion.div
                         className={`${filtersOpen
                             ? "fixed inset-0 backdrop-blur-md z-[999] flex flex-col mobile-filter-modal"
                             : "hidden"
-                        } lg:block lg:w-3/12 lg:bg-transparent lg:h-max lg:relative lg:z-auto`}
+                            } lg:block lg:w-3/12 lg:bg-transparent lg:h-max lg:relative lg:z-auto`}
                         {...(filtersOpen ? filterAnimations.container : {})}
                         initial={filtersOpen ? { opacity: 0 } : false}
                         animate={filtersOpen ? { opacity: 1 } : false}
@@ -826,360 +1323,129 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                         } : undefined}
                     >
                         {/* Contenedor principal de filtros - Estructura mejorada para mobile */}
-                        <div className={`${filtersOpen 
-                            ? "flex flex-col h-full bg-transparent" 
+                        <div className={`${filtersOpen
+                            ? "flex flex-col h-full bg-transparent"
                             : modernFilterStyles.filterContainer
-                        } lg:backdrop-blur-xl lg:border lg:border-gray-200/60 lg:rounded-2xl lg:shadow-2xl lg:shadow-gray-900/10`}>
-                            
+                            } lg:backdrop-blur-xl lg:border lg:border-gray-200/60 lg:rounded-2xl lg:shadow-2xl lg:shadow-gray-900/10`}>
+
                             {/* Contenido principal del modal mobile - ocupando todo excepto el footer */}
-                            <div className={`${filtersOpen 
+                            <div className={`${filtersOpen
                                 ? "mx-4 mt-4 mb-2 bg-white rounded-t-3xl shadow-2xl flex flex-col flex-1 overflow-hidden safe-area-top mobile-filter-content"
                                 : ""
-                            }`}>
-                            
-                            {/* Header mejorado */}
-                            <motion.div 
-                                className={`${modernFilterStyles.filterHeader} p-6 flex items-center justify-between lg:relative lg:p-4`}
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <motion.div 
-                                        className="p-2 bg-primary rounded-xl shadow-lg"
-                                        whileHover={{ rotate: 360 }}
-                                        transition={{ duration: 0.6 }}
-                                    >
-                                        <Filter className="h-5 w-5 text-white" />
-                                    </motion.div>
-                                    <div>
-                                        <h2 className="text-xl font-bold customtext-neutral-dark">
-                                            Filtros
-                                        </h2>
-                                        <p className="text-sm customtext-neutral-dark hidden lg:block">
-                                            Refina tu búsqueda con precisión
-                                        </p>
+                                }`}>
+
+                                {/* Header mejorado */}
+                                <motion.div
+                                    className={`${modernFilterStyles.filterHeader} p-6 flex items-center justify-between lg:relative lg:p-4`}
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1 }}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <motion.div
+                                            className="p-2 bg-primary rounded-xl shadow-lg"
+                                            whileHover={{ rotate: 360 }}
+                                            transition={{ duration: 0.6 }}
+                                        >
+                                            <Filter className="h-5 w-5 text-white" />
+                                        </motion.div>
+                                        <div>
+                                            <h2 className="text-xl font-bold customtext-neutral-dark">
+                                                Filtros
+                                            </h2>
+                                            <p className="text-sm customtext-neutral-dark hidden lg:block">
+                                                Refina tu búsqueda con precisión
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                              
-                            </motion.div>
 
-                            {/* Contenido principal con scroll mejorado - ajustado para footer móvil */}
-                            <div className="flex-1 overflow-y-auto p-3 space-y-6 custom-scrollbar" 
-                                 style={{ 
-                                     height: filtersOpen ? 'calc(100vh - 200px)' : 'auto',
-                                     paddingBottom: filtersOpen ? '1rem' : '1.5rem'
-                                 }}>
-                                {/* Sección Marcas Mejorada */}
-                                <motion.div 
-                                    className={modernFilterStyles.filterSection}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    <motion.button
-                                        onClick={() => toggleSection("marca")}
-                                        className={modernFilterStyles.filterButton}
-                                        whileHover={filterAnimations.hover}
-                                        whileTap={filterAnimations.tap}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <motion.div 
-                                                className="p-2 bg-primary rounded-lg shadow-md"
-                                                animate={{ rotate: sections.marca ? 360 : 0 }}
-                                                transition={{ duration: 0.3 }}
-                                            >
-                                                <Tag className="h-4 w-4 text-white" />
-                                            </motion.div>
-                                            <div className="text-left">
-                                                <span className="font-semibold customtext-neutral-dark">Marcas</span>
-                                                <p className="text-xs customtext-neutral-dark">Selecciona tus marcas favoritas</p>
-                                            </div>
-                                        </div>
-                                        <motion.div
-                                            animate={{ rotate: sections.marca ? 180 : 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
-                                        </motion.div>
-                                    </motion.button>
-                                    
-                                    <AnimatePresence>
-                                        {sections.marca && (
-                                            <motion.div 
-                                                className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
-                                                {...filterAnimations.section}
-                                            >
-                                                {/* Barra de búsqueda mejorada */}
-                                                <div className="relative mb-4">
-                                                    <motion.div
-                                                        className="absolute left-4 top-4 z-[99]"
-                                                    
-                                                    >
-                                                        <Search className="h-4 w-4" />
-                                                    </motion.div>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Buscar marcas..."
-                                                        className={modernFilterStyles.searchInput}
-                                                        value={searchBrand}
-                                                        onChange={(e) => setSearchBrand(e.target.value)}
-                                                    />
-                                                   
-                                                </div>
-                                                
-                                                {/* Lista de marcas mejorada */}
-                                                <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
-                                                    <AnimatePresence>
-                                                        {filteredBrands.map((brand, index) => (
-                                                            <motion.label
-                                                                key={brand.id}
-                                                                className={modernFilterStyles.label}
-                                                                {...filterAnimations.item}
-                                                                transition={{ delay: index * 0.05 }}
-                                                            >
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className={modernFilterStyles.checkbox}
-                                                                    onChange={() => handleFilterChange("brand_id", brand.slug)}
-                                                                    checked={selectedFilters.brand_id?.includes(brand.slug)}
-                                                                />
-                                                                <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
-                                                                    {brand.name}
-                                                                </span>
-                                                                {selectedFilters.brand_id?.includes(brand.slug) && (
-                                                                    <motion.div
-                                                                        className="ml-auto"
-                                                                        initial={{ scale: 0 }}
-                                                                        animate={{ scale: 1 }}
-                                                                        exit={{ scale: 0 }}
-                                                                    >
-                                                                        <CheckCircle2 className="h-4 w-4 customtext-primary" />
-                                                                    </motion.div>
-                                                                )}
-                                                            </motion.label>
-                                                        ))}
-                                                    </AnimatePresence>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+
                                 </motion.div>
 
-                                {/* Sección Categorías Mejorada */}
-                                <motion.div 
-                                    className={modernFilterStyles.filterSection}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                >
-                                    <motion.button
-                                        onClick={() => toggleSection("categoria")}
-                                        className={modernFilterStyles.filterButton}
-                                        whileHover={filterAnimations.hover}
-                                        whileTap={filterAnimations.tap}
+                                {/* Contenido principal con scroll mejorado - ajustado para footer móvil */}
+                                <div className="flex-1 overflow-y-auto p-3 space-y-6 custom-scrollbar"
+                                    style={{
+                                        height: filtersOpen ? 'calc(100vh - 200px)' : 'auto',
+                                        paddingBottom: filtersOpen ? '1rem' : '1.5rem'
+                                    }}>
+                                    {/* Sección Marcas Mejorada */}
+                                    <motion.div
+                                        className={modernFilterStyles.filterSection}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <motion.div 
-                                                className="p-2 bg-primary rounded-lg shadow-md"
-                                                animate={{ rotate: sections.categoria ? 360 : 0 }}
+                                        <motion.button
+                                            onClick={() => toggleSection("marca")}
+                                            className={modernFilterStyles.filterButton}
+                                            whileHover={filterAnimations.hover}
+                                            whileTap={filterAnimations.tap}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <motion.div
+                                                    className="p-2 bg-primary rounded-lg shadow-md"
+                                                    animate={{ rotate: sections.marca ? 360 : 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <Tag className="h-4 w-4 text-white" />
+                                                </motion.div>
+                                                <div className="text-left">
+                                                    <span className="font-semibold customtext-neutral-dark">Marcas</span>
+                                                    <p className="text-xs customtext-neutral-dark">Selecciona tus marcas favoritas</p>
+                                                </div>
+                                            </div>
+                                            <motion.div
+                                                animate={{ rotate: sections.marca ? 180 : 0 }}
                                                 transition={{ duration: 0.3 }}
                                             >
-                                                <Layers className="h-4 w-4 text-white" />
+                                                <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
                                             </motion.div>
-                                            <div className="text-left">
-                                                <span className="font-semibold customtext-neutral-dark">Categorías</span>
-                                                <p className="text-xs customtext-neutral-dark">Explora por categorías</p>
-                                            </div>
-                                        </div>
-                                        <motion.div
-                                            animate={{ rotate: sections.categoria ? 180 : 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
-                                        </motion.div>
-                                    </motion.button>
-                                    
-                                    <AnimatePresence>
-                                        {sections.categoria && (
-                                            <motion.div 
-                                                className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
-                                                {...filterAnimations.section}
-                                            >
-                                                {/* Barra de búsqueda */}
-                                                <div className="relative mb-4">
-                                                    <motion.div
-                                                         className="absolute left-4 top-4 z-[99]"
-                                                   
-                                                    >
-                                                        <Search className="h-4 w-4" />
-                                                    </motion.div>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Buscar categorías..."
-                                                        className={modernFilterStyles.searchInput}
-                                                        value={searchCategory}
-                                                        onChange={(e) => setSearchCategory(e.target.value)}
-                                                    />
-                                                </div>
-                                                
-                                                {/* Lista de categorías con subcategorías */}
-                                                <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                                    <AnimatePresence>
-                                                        {filteredCategories.map((category, index) => (
-                                                            <motion.div 
-                                                                key={category.id}
-                                                                className=" rounded-xl overflow-hidden"
-                                                                {...filterAnimations.item}
-                                                                transition={{ delay: index * 0.05 }}
-                                                            >
-                                                                <motion.label 
-                                                                    className={`${modernFilterStyles.label} `}
-                                                                  
-                                                                >
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        className={modernFilterStyles.checkbox}
-                                                                        onChange={() => handleFilterChange("category_id", category.id)}
-                                                                        checked={selectedFilters.category_id?.includes(category.id)}
-                                                                    />
-                                                                    <span className="text-sm line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
-                                                                        {category.name}
-                                                                    </span>
-                                                                    {selectedFilters.category_id?.includes(category.slug) && (
-                                                                        <motion.div
-                                                                            className="ml-auto"
-                                                                            initial={{ scale: 0 }}
-                                                                            animate={{ scale: 1 }}
-                                                                            exit={{ scale: 0 }}
-                                                                        >
-                                                                            <CheckCircle2 className="h-4 w-4 customtext-primary" />
-                                                                        </motion.div>
-                                                                    )}
-                                                                </motion.label>
+                                        </motion.button>
 
-                                                                {/* Subcategorías expandibles */}
-                                                                <AnimatePresence>
-                                                                    {selectedFilters.category_id?.includes(category.slug) && category.subcategories && (
-                                                                        <motion.div
-                                                                            className="bg-gradient-to-b from-purple-25 to-white/50 p-3"
-                                                                            initial={{ height: 0, opacity: 0 }}
-                                                                            animate={{ height: "auto", opacity: 1 }}
-                                                                            exit={{ height: 0, opacity: 0 }}
-                                                                            transition={{ duration: 0.3 }}
-                                                                        >
-                                                                            <div className="space-y-2 pl-4 border-l-2 border-purple-200">
-                                                                                {category.subcategories.map((sub) => (
-                                                                                    <motion.label 
-                                                                                        key={sub.id} 
-                                                                                        className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-purple-50/60 transition-colors duration-200 cursor-pointer group"
-                                                                                        whileHover={{ x: 3 }}
-                                                                                    >
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            className="h-4 w-4 rounded border-2 border-purple-300 text-purple-600 focus:ring-purple-500/30"
-                                                                                            onChange={() => handleFilterChange("subcategory_id", sub.slug)}
-                                                                                            checked={selectedFilters.subcategory_id?.includes(sub.slug)}
-                                                                                        />
-                                                                                        <span className="text-sm line-clamp-1 customtext-neutral-dark group-hover:text-purple-600 transition-colors duration-200">
-                                                                                            {sub.name}
-                                                                                        </span>
-                                                                                    </motion.label>
-                                                                                ))}
-                                                                            </div>
-                                                                        </motion.div>
-                                                                    )}
-                                                                </AnimatePresence>
-                                                            </motion.div>
-                                                        ))}
-                                                    </AnimatePresence>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-   {/* Sección Subcategorías Independiente */}
-                                <motion.div 
-                                    className={modernFilterStyles.filterSection}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.35 }}
-                                >
-                                    <motion.button
-                                        onClick={() => toggleSection("subcategoria")}
-                                        className={modernFilterStyles.filterButton}
-                                        whileHover={filterAnimations.hover}
-                                        whileTap={filterAnimations.tap}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <motion.div 
-                                                className="p-2 bg-primary rounded-lg shadow-md"
-                                                animate={{ rotate: sections.subcategoria ? 360 : 0 }}
-                                                transition={{ duration: 0.3 }}
-                                            >
-                                                <Grid3X3 className="h-4 w-4 text-white" />
-                                            </motion.div>
-                                            <div className="text-left">
-                                                <span className="font-semibold customtext-neutral-dark">Subcategorías</span>
-                                                <p className="text-xs customtext-neutral-dark">Busca por subcategorías específicas</p>
-                                            </div>
-                                        </div>
-                                        <motion.div
-                                            animate={{ rotate: sections.subcategoria ? 180 : 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
-                                        </motion.div>
-                                    </motion.button>
-                                    
-                                    <AnimatePresence>
-                                        {sections.subcategoria && (
-                                            <motion.div 
-                                                className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
-                                                {...filterAnimations.section}
-                                            >
-                                                {/* Barra de búsqueda para subcategorías */}
-                                                <div className="relative mb-4">
-                                                    <motion.div
-                                                       className="absolute left-4 top-4 z-[99]"
-                                                        animate={{ scale: [1, 1.1, 1] }}
-                                                        transition={{ duration: 2, repeat: Infinity }}
-                                                    >
-                                                        <Search className="h-4 w-4" />
-                                                    </motion.div>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Buscar subcategorías..."
-                                                        className={modernFilterStyles.searchInput}
-                                                        value={searchSubcategory}
-                                                        onChange={(e) => setSearchSubcategory(e.target.value)}
-                                                    />
-                                                
-                                                </div>
-                                                
-                                                {/* Lista de subcategorías mejorada */}
-                                                <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
-                                                    <AnimatePresence>
-                                                        {filteredSubcategories.length > 0 ? (
-                                                            filteredSubcategories.map((subcategory, index) => (
+                                        <AnimatePresence>
+                                            {sections.marca && (
+                                                <motion.div
+                                                    className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
+                                                    {...filterAnimations.section}
+                                                >
+                                                    {/* Barra de búsqueda mejorada */}
+                                                    <div className="relative mb-4">
+                                                        <motion.div
+                                                            className="absolute left-4 top-4 z-[99]"
+
+                                                        >
+                                                            <Search className="h-4 w-4" />
+                                                        </motion.div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Buscar marcas..."
+                                                            className={modernFilterStyles.searchInput}
+                                                            value={searchBrand}
+                                                            onChange={(e) => setSearchBrand(e.target.value)}
+                                                        />
+
+                                                    </div>
+
+                                                    {/* Lista de marcas mejorada */}
+                                                    <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
+                                                        <AnimatePresence>
+                                                            {filteredBrands.map((brand, index) => (
                                                                 <motion.label
-                                                                    key={subcategory.id}
+                                                                    key={brand.id}
                                                                     className={modernFilterStyles.label}
                                                                     {...filterAnimations.item}
                                                                     transition={{ delay: index * 0.05 }}
                                                                 >
                                                                     <input
-                                                                   
                                                                         type="checkbox"
                                                                         className={modernFilterStyles.checkbox}
-                                                                        onChange={() => handleFilterChange("subcategory_id", subcategory.id)}
-                                                                        checked={selectedFilters.subcategory_id?.includes(subcategory.id)}
+                                                                        onChange={() => handleFilterChange("brand_id", brand.slug)}
+                                                                        checked={selectedFilters.brand_id?.includes(brand.slug)}
                                                                     />
-                                                                    <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark transition-colors duration-200">
-                                                                        {subcategory.name}
+                                                                    <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
+                                                                        {brand.name}
                                                                     </span>
-                                                                    {selectedFilters.subcategory_id?.includes(subcategory.id) && (
+                                                                    {selectedFilters.brand_id?.includes(brand.slug) && (
                                                                         <motion.div
                                                                             className="ml-auto"
                                                                             initial={{ scale: 0 }}
@@ -1190,291 +1456,564 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                         </motion.div>
                                                                     )}
                                                                 </motion.label>
-                                                            ))
-                                                        ) : (
-                                                            <motion.div 
-                                                                className="text-center py-6 customtext-neutral-dark"
-                                                                initial={{ opacity: 0 }}
-                                                                animate={{ opacity: 1 }}
-                                                            >
-                                                                <Grid3X3 className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                                                <p className="text-sm">No se encontraron subcategorías</p>
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-                                {/* Sección Precio Mejorada */}
-                                <motion.div 
-                                    className={modernFilterStyles.filterSection}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 }}
-                                >
-                                    <motion.button
-                                        onClick={() => toggleSection("precio")}
-                                        className={modernFilterStyles.filterButton}
-                                        whileHover={filterAnimations.hover}
-                                        whileTap={filterAnimations.tap}
+                                                            ))}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+
+                                    {/* Sección Categorías Mejorada */}
+                                    <motion.div
+                                        className={modernFilterStyles.filterSection}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.3 }}
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <motion.div 
-                                                className="p-2 bg-primary rounded-lg shadow-md"
-                                                animate={{ rotate: sections.precio ? 360 : 0 }}
+                                        <motion.button
+                                            onClick={() => toggleSection("categoria")}
+                                            className={modernFilterStyles.filterButton}
+                                            whileHover={filterAnimations.hover}
+                                            whileTap={filterAnimations.tap}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <motion.div
+                                                    className="p-2 bg-primary rounded-lg shadow-md"
+                                                    animate={{ rotate: sections.categoria ? 360 : 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <Layers className="h-4 w-4 text-white" />
+                                                </motion.div>
+                                                <div className="text-left">
+                                                    <span className="font-semibold customtext-neutral-dark">Categorías</span>
+                                                    <p className="text-xs customtext-neutral-dark">Explora por categorías</p>
+                                                </div>
+                                            </div>
+                                            <motion.div
+                                                animate={{ rotate: sections.categoria ? 180 : 0 }}
                                                 transition={{ duration: 0.3 }}
                                             >
-                                                <TrendingUp className="h-4 w-4 text-white" />
+                                                <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
                                             </motion.div>
-                                            <div className="text-left">
-                                                <span className="font-semibold customtext-neutral-dark">Rango de Precio</span>
-                                                <p className="text-xs customtext-neutral-dark">Encuentra tu presupuesto ideal</p>
-                                            </div>
-                                        </div>
-                                        <motion.div
-                                            animate={{ rotate: sections.precio ? 180 : 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
-                                        </motion.div>
-                                    </motion.button>
-                                    
-                                    <AnimatePresence>
-                                        {sections.precio && (
-                                            <motion.div 
-                                                className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
-                                                {...filterAnimations.section}
-                                            >
-                                                <div className="space-y-3 max-h-[220px] overflow-y-auto custom-scrollbar">
-                                                    <AnimatePresence>
-                                                        {staticPriceRanges.map((range, index) => (
-                                                            <motion.label
-                                                                key={`${range.min}-${range.max}`}
-                                                                className={modernFilterStyles.label}
-                                                                {...filterAnimations.item}
-                                                                transition={{ delay: index * 0.05 }}
-                                                            >
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className={modernFilterStyles.checkbox}
-                                                                    onChange={() => handleFilterChange("price", range)}
-                                                                    checked={
-                                                                        selectedFilters.price?.some(
-                                                                            (priceRange) => 
-                                                                                priceRange.min === range.min && 
-                                                                                priceRange.max === range.max
-                                                                        ) || false
-                                                                    }
-                                                                />
-                                                                <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark  transition-colors duration-200">
-                                                                    {range.label}
-                                                                </span>
-                                                                {selectedFilters.price?.some(
-                                                                    (priceRange) => 
-                                                                        priceRange.min === range.min && 
-                                                                        priceRange.max === range.max
-                                                                ) && (
-                                                                    <motion.div
-                                                                        className="ml-auto"
-                                                                        initial={{ scale: 0 }}
-                                                                        animate={{ scale: 1 }}
-                                                                        exit={{ scale: 0 }}
+                                        </motion.button>
+
+                                        <AnimatePresence>
+                                            {sections.categoria && (
+                                                <motion.div
+                                                    className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
+                                                    {...filterAnimations.section}
+                                                >
+                                                    {/* Barra de búsqueda */}
+                                                    <div className="relative mb-4">
+                                                        <motion.div
+                                                            className="absolute left-4 top-4 z-[99]"
+
+                                                        >
+                                                            <Search className="h-4 w-4" />
+                                                        </motion.div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Buscar categorías..."
+                                                            className={modernFilterStyles.searchInput}
+                                                            value={searchCategory}
+                                                            onChange={(e) => setSearchCategory(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {/* Lista de categorías con subcategorías */}
+                                                    <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                        <AnimatePresence>
+                                                            {filteredCategories.map((category, index) => (
+                                                                <motion.div
+                                                                    key={category.id}
+                                                                    className=" rounded-xl overflow-hidden"
+                                                                    {...filterAnimations.item}
+                                                                    transition={{ delay: index * 0.05 }}
+                                                                >
+                                                                    <motion.label
+                                                                        className={`${modernFilterStyles.label} `}
+
                                                                     >
-                                                                        <CheckCircle2 className="h-4 w-4 customtext-primary" />
-                                                                    </motion.div>
-                                                                )}
-                                                            </motion.label>
-                                                        ))}
-                                                    </AnimatePresence>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className={modernFilterStyles.checkbox}
+                                                                            onChange={() => handleFilterChange("category_id", category.id)}
+                                                                            checked={selectedFilters.category_id?.includes(category.id)}
+                                                                        />
+                                                                        <span className="text-sm line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
+                                                                            {category.name}
+                                                                        </span>
+                                                                        {selectedFilters.category_id?.includes(category.slug) && (
+                                                                            <motion.div
+                                                                                className="ml-auto"
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1 }}
+                                                                                exit={{ scale: 0 }}
+                                                                            >
+                                                                                <CheckCircle2 className="h-4 w-4 customtext-primary" />
+                                                                            </motion.div>
+                                                                        )}
+                                                                    </motion.label>
 
-                             
-
-                                {/* Chips de filtros activos mejorados */}
-                                <motion.div
-                                    className="mt-6 pt-6 border-t border-gray-200/60"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 }}
-                                >
-                                    <AnimatePresence>
-                                        {(selectedFilters.brand_id?.length > 0 || 
-                                          selectedFilters.category_id?.length > 0 || 
-                                          selectedFilters.subcategory_id?.length > 0 || 
-                                          selectedFilters.tag_id?.length > 0 ||
-                                          (selectedFilters.price && selectedFilters.price.length > 0)) && (
-                                            <motion.div
-                                                className="mb-4"
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -10 }}
-                                            >
-                                                <h4 className="text-sm font-semibold customtext-neutral-dark mb-3 flex items-center gap-2">
-                                                    <Star className="h-4 w-4 customtext-primary" />
-                                                    Filtros Activos
-                                                </h4>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {/* Chips de marcas con AnimatedBadge */}
-                                                    {selectedFilters.brand_id?.map((brandSlug) => {
-                                                        const brand = brands.find(b => b.slug === brandSlug);
-                                                        return brand ? (
-                                                            <AnimatedBadge
-                                                                key={brandSlug}
-                                                             
-                                                                onClick={() => handleFilterChange("brand_id", brandSlug)}
-                                                                className="group"
-                                                            >
-                                                                <Tag className="h-3 w-3" />
-                                                                <span>{brand.name}</span>
-                                                                <motion.div
-                                                                    className="ml-1  rounded-full p-0.5 transition-colors duration-200"
-                                                                    whileHover={{ scale: 1.2 }}
-                                                                    whileTap={{ scale: 0.9 }}
-                                                                >
-                                                                    <X className="h-3 w-3" />
+                                                                    {/* Subcategorías expandibles */}
+                                                                    <AnimatePresence>
+                                                                        {selectedFilters.category_id?.includes(category.slug) && category.subcategories && (
+                                                                            <motion.div
+                                                                                className="bg-gradient-to-b from-purple-25 to-white/50 p-3"
+                                                                                initial={{ height: 0, opacity: 0 }}
+                                                                                animate={{ height: "auto", opacity: 1 }}
+                                                                                exit={{ height: 0, opacity: 0 }}
+                                                                                transition={{ duration: 0.3 }}
+                                                                            >
+                                                                                <div className="space-y-2 pl-4 border-l-2 border-purple-200">
+                                                                                    {category.subcategories.map((sub) => (
+                                                                                        <motion.label
+                                                                                            key={sub.id}
+                                                                                            className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-purple-50/60 transition-colors duration-200 cursor-pointer group"
+                                                                                            whileHover={{ x: 3 }}
+                                                                                        >
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                className="h-4 w-4 rounded border-2 border-purple-300 text-purple-600 focus:ring-purple-500/30"
+                                                                                                onChange={() => handleFilterChange("subcategory_id", sub.slug)}
+                                                                                                checked={selectedFilters.subcategory_id?.includes(sub.slug)}
+                                                                                            />
+                                                                                            <span className="text-sm line-clamp-1 customtext-neutral-dark group-hover:text-purple-600 transition-colors duration-200">
+                                                                                                {sub.name}
+                                                                                            </span>
+                                                                                        </motion.label>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </motion.div>
+                                                                        )}
+                                                                    </AnimatePresence>
                                                                 </motion.div>
-                                                            </AnimatedBadge>
-                                                        ) : null;
-                                                    })}
-                                                    
-                                                    {/* Chips de categorías con AnimatedBadge */}
-                                                    {selectedFilters.category_id?.map((categorySlug) => {
-                                                        const category = categories.find(c => c.id === categorySlug);
-                                                        return category ? (
-                                                            <AnimatedBadge
-                                                                key={categorySlug}
-                                                              
-                                                                onClick={() => handleFilterChange("category_id", categorySlug)}
-                                                            >
-                                                                <Layers className="h-3 w-3" />
-                                                                <span>{category.name}</span>
-                                                                <motion.div
-                                                                    className="ml-1  rounded-full p-0.5 transition-colors duration-200"
-                                                                    whileHover={{ scale: 1.2 }}
-                                                                    whileTap={{ scale: 0.9 }}
-                                                                >
-                                                                    <X className="h-3 w-3" />
-                                                                </motion.div>
-                                                            </AnimatedBadge>
-                                                        ) : null;
-                                                    })}
-
-                                                    {/* Chips de subcategorías con AnimatedBadge */}
-                                                    {selectedFilters.subcategory_id?.map((subcategorySlug) => {
-                                                        const subcategory = subcategories.find(sub => sub.id === subcategorySlug);
-                                                        return subcategory ? (
-                                                            <AnimatedBadge
-                                                                key={subcategorySlug}
-                                                                onClick={() => handleFilterChange("subcategory_id", subcategorySlug)}
-                                                            >
-                                                                <Grid3X3 className="h-3 w-3" />
-                                                                <span>{subcategory.name}</span>
-                                                                <motion.div
-                                                                    className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                    whileHover={{ scale: 1.2 }}
-                                                                    whileTap={{ scale: 0.9 }}
-                                                                >
-                                                                    <X className="h-3 w-3" />
-                                                                </motion.div>
-                                                            </AnimatedBadge>
-                                                        ) : null;
-                                                    })}
-
-                                                    {/* Chips de tags con AnimatedBadge */}
-                                                    {selectedFilters.tag_id?.map((tagId) => {
-                                                        const tag = tags.find(t => t.id === tagId);
-                                                        return tag ? (
-                                                            <AnimatedBadge
-                                                                key={tagId}
-                                                                onClick={() => handleFilterChange("tag_id", tagId)}
-                                                            >
-                                                                <Hash className="h-3 w-3" />
-                                                                <span>{tag.name}</span>
-                                                                <motion.div
-                                                                    className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                    whileHover={{ scale: 1.2 }}
-                                                                    whileTap={{ scale: 0.9 }}
-                                                                >
-                                                                    <X className="h-3 w-3" />
-                                                                </motion.div>
-                                                            </AnimatedBadge>
-                                                        ) : null;
-                                                    })}
-
-                                                    {/* Chips de precio con AnimatedBadge */}
-                                                    {selectedFilters.price?.map((priceRange, index) => {
-                                                        const staticRange = staticPriceRanges.find(range => 
-                                                            range.min === priceRange.min && 
-                                                            range.max === priceRange.max
-                                                        );
-                                                        return (
-                                                            <AnimatedBadge
-                                                                key={`price-${priceRange.min}-${priceRange.max}`}
-                                                                onClick={() => handleFilterChange("price", priceRange)}
-                                                            >
-                                                                <TrendingUp className="h-3 w-3" />
-                                                                <span>
-                                                                    {staticRange?.label || `S/ ${priceRange.min} - S/ ${priceRange.max}`}
-                                                                </span>
-                                                                <motion.div
-                                                                    className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                    whileHover={{ scale: 1.2 }}
-                                                                    whileTap={{ scale: 0.9 }}
-                                                                >
-                                                                    <X className="h-3 w-3" />
-                                                                </motion.div>
-                                                            </AnimatedBadge>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-
-                                {/* Botón de limpiar filtros mejorado */}
-                                <motion.div
-                                    className="mt-6 pt-6 border-t border-gray-200"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.6 }}
-                                >
-                                    <motion.button
-                                        className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
-                                        onClick={() => {
-                                            setSelectedFilters({
-                                                collection_id: [],
-                                                category_id: [],
-                                                brand_id: [],
-                                                subcategory_id: [],
-                                                tag_id: [],
-                                                price: [],
-                                                name: null,
-                                                sort_by: "created_at",
-                                                order: "desc",
-                                            });
-                                            setFilterSequence([]);
-                                        }}
-                                        whileHover={{ scale: 1.02, y: -2 }}
-                                        whileTap={{ scale: 0.98 }}
+                                                            ))}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+                                    {/* Sección Subcategorías Independiente */}
+                                    <motion.div
+                                        className={modernFilterStyles.filterSection}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.35 }}
                                     >
-                                        <div className="flex items-center justify-center gap-3">
-                                          
-                                                <Trash className="h-5 w-5" />
-                                            
-                                            <span>Limpiar todos los filtros</span>
-                                        </div>
-                                    </motion.button>
-                                </motion.div>
+                                        <motion.button
+                                            onClick={() => toggleSection("subcategoria")}
+                                            className={modernFilterStyles.filterButton}
+                                            whileHover={filterAnimations.hover}
+                                            whileTap={filterAnimations.tap}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <motion.div
+                                                    className="p-2 bg-primary rounded-lg shadow-md"
+                                                    animate={{ rotate: sections.subcategoria ? 360 : 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <Grid3X3 className="h-4 w-4 text-white" />
+                                                </motion.div>
+                                                <div className="text-left">
+                                                    <span className="font-semibold customtext-neutral-dark">Subcategorías</span>
+                                                    <p className="text-xs customtext-neutral-dark">Busca por subcategorías específicas</p>
+                                                </div>
+                                            </div>
+                                            <motion.div
+                                                animate={{ rotate: sections.subcategoria ? 180 : 0 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
+                                            </motion.div>
+                                        </motion.button>
+
+                                        <AnimatePresence>
+                                            {sections.subcategoria && (
+                                                <motion.div
+                                                    className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
+                                                    {...filterAnimations.section}
+                                                >
+                                                    {/* Barra de búsqueda para subcategorías */}
+                                                    <div className="relative mb-4">
+                                                        <motion.div
+                                                            className="absolute left-4 top-4 z-[99]"
+                                                            animate={{ scale: [1, 1.1, 1] }}
+                                                            transition={{ duration: 2, repeat: Infinity }}
+                                                        >
+                                                            <Search className="h-4 w-4" />
+                                                        </motion.div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Buscar subcategorías..."
+                                                            className={modernFilterStyles.searchInput}
+                                                            value={searchSubcategory}
+                                                            onChange={(e) => setSearchSubcategory(e.target.value)}
+                                                        />
+
+                                                    </div>
+
+                                                    {/* Lista de subcategorías mejorada */}
+                                                    <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
+                                                        <AnimatePresence>
+                                                            {filteredSubcategories.length > 0 ? (
+                                                                filteredSubcategories.map((subcategory, index) => (
+                                                                    <motion.label
+                                                                        key={subcategory.id}
+                                                                        className={modernFilterStyles.label}
+                                                                        {...filterAnimations.item}
+                                                                        transition={{ delay: index * 0.05 }}
+                                                                    >
+                                                                        <input
+
+                                                                            type="checkbox"
+                                                                            className={modernFilterStyles.checkbox}
+                                                                            onChange={() => handleFilterChange("subcategory_id", subcategory.id)}
+                                                                            checked={selectedFilters.subcategory_id?.includes(subcategory.id)}
+                                                                        />
+                                                                        <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark transition-colors duration-200">
+                                                                            {subcategory.name}
+                                                                        </span>
+                                                                        {selectedFilters.subcategory_id?.includes(subcategory.id) && (
+                                                                            <motion.div
+                                                                                className="ml-auto"
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1 }}
+                                                                                exit={{ scale: 0 }}
+                                                                            >
+                                                                                <CheckCircle2 className="h-4 w-4 customtext-primary" />
+                                                                            </motion.div>
+                                                                        )}
+                                                                    </motion.label>
+                                                                ))
+                                                            ) : (
+                                                                <motion.div
+                                                                    className="text-center py-6 customtext-neutral-dark"
+                                                                    initial={{ opacity: 0 }}
+                                                                    animate={{ opacity: 1 }}
+                                                                >
+                                                                    <Grid3X3 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                                                    <p className="text-sm">No se encontraron subcategorías</p>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+                                    {/* Sección Precio Mejorada */}
+                                    <motion.div
+                                        className={modernFilterStyles.filterSection}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 }}
+                                    >
+                                        <motion.button
+                                            onClick={() => toggleSection("precio")}
+                                            className={modernFilterStyles.filterButton}
+                                            whileHover={filterAnimations.hover}
+                                            whileTap={filterAnimations.tap}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <motion.div
+                                                    className="p-2 bg-primary rounded-lg shadow-md"
+                                                    animate={{ rotate: sections.precio ? 360 : 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <TrendingUp className="h-4 w-4 text-white" />
+                                                </motion.div>
+                                                <div className="text-left">
+                                                    <span className="font-semibold customtext-neutral-dark">Rango de Precio</span>
+                                                    <p className="text-xs customtext-neutral-dark">Encuentra tu presupuesto ideal</p>
+                                                </div>
+                                            </div>
+                                            <motion.div
+                                                animate={{ rotate: sections.precio ? 180 : 0 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
+                                            </motion.div>
+                                        </motion.button>
+
+                                        <AnimatePresence>
+                                            {sections.precio && (
+                                                <motion.div
+                                                    className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
+                                                    {...filterAnimations.section}
+                                                >
+                                                    <div className="space-y-3 max-h-[220px] overflow-y-auto custom-scrollbar">
+                                                        <AnimatePresence>
+                                                            {staticPriceRanges.map((range, index) => (
+                                                                <motion.label
+                                                                    key={`${range.min}-${range.max}`}
+                                                                    className={modernFilterStyles.label}
+                                                                    {...filterAnimations.item}
+                                                                    transition={{ delay: index * 0.05 }}
+                                                                >
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className={modernFilterStyles.checkbox}
+                                                                        onChange={() => handleFilterChange("price", range)}
+                                                                        checked={
+                                                                            selectedFilters.price?.some(
+                                                                                (priceRange) =>
+                                                                                    priceRange.min === range.min &&
+                                                                                    priceRange.max === range.max
+                                                                            ) || false
+                                                                        }
+                                                                    />
+                                                                    <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark  transition-colors duration-200">
+                                                                        {range.label}
+                                                                    </span>
+                                                                    {selectedFilters.price?.some(
+                                                                        (priceRange) =>
+                                                                            priceRange.min === range.min &&
+                                                                            priceRange.max === range.max
+                                                                    ) && (
+                                                                            <motion.div
+                                                                                className="ml-auto"
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1 }}
+                                                                                exit={{ scale: 0 }}
+                                                                            >
+                                                                                <CheckCircle2 className="h-4 w-4 customtext-primary" />
+                                                                            </motion.div>
+                                                                        )}
+                                                                </motion.label>
+                                                            ))}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+
+
+
+                                    {/* Chips de filtros activos mejorados */}
+                                    <motion.div
+                                        className="mt-6 pt-6 border-t border-gray-200/60"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.5 }}
+                                    >
+                                        <AnimatePresence>
+                                            {(selectedFilters.brand_id?.length > 0 ||
+                                                selectedFilters.category_id?.length > 0 ||
+                                                selectedFilters.subcategory_id?.length > 0 ||
+                                                selectedFilters.tag_id?.length > 0 ||
+                                                selectedFilters.name ||
+                                                (selectedFilters.price && selectedFilters.price.length > 0)) && (
+                                                    <motion.div
+                                                        className="mb-4"
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: -10 }}
+                                                    >
+                                                        <h4 className="text-sm font-semibold customtext-neutral-dark mb-3 flex items-center gap-2">
+                                                            <Star className="h-4 w-4 customtext-primary" />
+                                                            Filtros Activos
+                                                        </h4>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {/* Chips de marcas con AnimatedBadge */}
+                                                            {selectedFilters.brand_id?.map((brandSlug) => {
+                                                                const brand = brands.find(b => b.slug === brandSlug);
+                                                                return brand ? (
+                                                                    <AnimatedBadge
+                                                                        key={brandSlug}
+
+                                                                        onClick={() => handleFilterChange("brand_id", brandSlug)}
+                                                                        className="group"
+                                                                    >
+                                                                        <Tag className="h-3 w-3" />
+                                                                        <span>{brand.name}</span>
+                                                                        <motion.div
+                                                                            className="ml-1  rounded-full p-0.5 transition-colors duration-200"
+                                                                            whileHover={{ scale: 1.2 }}
+                                                                            whileTap={{ scale: 0.9 }}
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </motion.div>
+                                                                    </AnimatedBadge>
+                                                                ) : null;
+                                                            })}
+
+                                                            {/* Chips de categorías con AnimatedBadge */}
+                                                            {selectedFilters.category_id?.map((categorySlug) => {
+                                                                const category = categories.find(c => c.id === categorySlug);
+                                                                return category ? (
+                                                                    <AnimatedBadge
+                                                                        key={categorySlug}
+
+                                                                        onClick={() => handleFilterChange("category_id", categorySlug)}
+                                                                    >
+                                                                        <Layers className="h-3 w-3" />
+                                                                        <span>{category.name}</span>
+                                                                        <motion.div
+                                                                            className="ml-1  rounded-full p-0.5 transition-colors duration-200"
+                                                                            whileHover={{ scale: 1.2 }}
+                                                                            whileTap={{ scale: 0.9 }}
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </motion.div>
+                                                                    </AnimatedBadge>
+                                                                ) : null;
+                                                            })}
+
+                                                            {/* Chips de subcategorías con AnimatedBadge */}
+                                                            {selectedFilters.subcategory_id?.map((subcategorySlug) => {
+                                                                const subcategory = subcategories.find(sub => sub.id === subcategorySlug);
+                                                                return subcategory ? (
+                                                                    <AnimatedBadge
+                                                                        key={subcategorySlug}
+                                                                        onClick={() => handleFilterChange("subcategory_id", subcategorySlug)}
+                                                                    >
+                                                                        <Grid3X3 className="h-3 w-3" />
+                                                                        <span>{subcategory.name}</span>
+                                                                        <motion.div
+                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                            whileHover={{ scale: 1.2 }}
+                                                                            whileTap={{ scale: 0.9 }}
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </motion.div>
+                                                                    </AnimatedBadge>
+                                                                ) : null;
+                                                            })}
+
+                                                            {/* Chips de tags con AnimatedBadge */}
+                                                            {selectedFilters.tag_id?.map((tagId) => {
+                                                                const tag = tags.find(t => t.id === tagId);
+                                                                return tag ? (
+                                                                    <AnimatedBadge
+                                                                        key={tagId}
+                                                                        onClick={() => handleFilterChange("tag_id", tagId)}
+                                                                    >
+                                                                        <Hash className="h-3 w-3" />
+                                                                        <span>{tag.name}</span>
+                                                                        <motion.div
+                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                            whileHover={{ scale: 1.2 }}
+                                                                            whileTap={{ scale: 0.9 }}
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </motion.div>
+                                                                    </AnimatedBadge>
+                                                                ) : null;
+                                                            })}
+
+                                                            {/* Chips de precio con AnimatedBadge */}
+                                                            {selectedFilters.price?.map((priceRange, index) => {
+                                                                const staticRange = staticPriceRanges.find(range =>
+                                                                    range.min === priceRange.min &&
+                                                                    range.max === priceRange.max
+                                                                );
+                                                                return (
+                                                                    <AnimatedBadge
+                                                                        key={`price-${priceRange.min}-${priceRange.max}`}
+                                                                        onClick={() => handleFilterChange("price", priceRange)}
+                                                                    >
+                                                                        <TrendingUp className="h-3 w-3" />
+                                                                        <span>
+                                                                            {staticRange?.label || `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
+                                                                        </span>
+                                                                        <motion.div
+                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                            whileHover={{ scale: 1.2 }}
+                                                                            whileTap={{ scale: 0.9 }}
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </motion.div>
+                                                                    </AnimatedBadge>
+                                                                );
+                                                            })}
+
+                                                            {/* Chip de búsqueda (name) con AnimatedBadge */}
+                                                            {selectedFilters.name && (
+                                                                <AnimatedBadge
+                                                                    onClick={() => handleFilterChange("name", null)}
+                                                                >
+                                                                    <Search className="h-3 w-3" />
+                                                                    <span>{selectedFilters.name}</span>
+                                                                    <motion.div
+                                                                        className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                        whileHover={{ scale: 1.2 }}
+                                                                        whileTap={{ scale: 0.9 }}
+                                                                    >
+                                                                        <X className="h-3 w-3" />
+                                                                    </motion.div>
+                                                                </AnimatedBadge>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                        </AnimatePresence>
+                                    </motion.div>
+
+                                    {/* Botón de limpiar filtros mejorado */}
+                                    <AnimatePresence>
+                                        {(selectedFilters.brand_id?.length > 0 ||
+                                            selectedFilters.category_id?.length > 0 ||
+                                            selectedFilters.subcategory_id?.length > 0 ||
+                                            selectedFilters.tag_id?.length > 0 ||
+                                            selectedFilters.name ||
+                                            (selectedFilters.price && selectedFilters.price.length > 0)) && (
+                                                <motion.div
+                                                    className="mt-6 pt-6 border-t border-gray-200"
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <motion.button
+                                                        className="w-full p-4 bg-secondary customtext-neutral-dark rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
+                                                        onClick={() => {
+
+                                                            // Limpiar cada filtro individualmente usando setSelectedFilters con función
+                                                            // Esto simula el comportamiento de handleFilterChange que funciona correctamente
+                                                            setSelectedFilters((prev) => {
+
+                                                                const cleanFilters = {
+                                                                    collection_id: [],
+                                                                    category_id: [],
+                                                                    brand_id: [],
+                                                                    subcategory_id: [],
+                                                                    tag_id: [],
+                                                                    price: [],
+                                                                    name: null,
+                                                                    sort: [
+                                                                        {
+                                                                            selector: "final_price",
+                                                                            desc: true,
+                                                                        },
+                                                                    ],
+                                                                };
+
+                                                                return cleanFilters;
+                                                            });
+
+                                                            setFilterSequence([]);
+
+                                                        }}
+                                                        whileHover={{ scale: 1.02, y: -2 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                    >
+                                                        <div className="flex items-center justify-center gap-3">
+
+                                                            <Trash className="h-5 w-5" />
+
+                                                            <span>Limpiar todos los filtros</span>
+                                                        </div>
+                                                    </motion.button>
+                                                </motion.div>
+                                            )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
                         </div>
-</div>
                         {/* Footer móvil mejorado */}
                         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-white to-gray-50 border-t border-gray-200 p-4 shadow-2xl backdrop-blur-xl lg:hidden z-50">
                             <div className="flex items-center gap-3">
@@ -1492,7 +2031,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                         <span>Ver {pagination.totalItems} Productos</span>
                                     </div>
                                 </motion.button>
-                                
+
                                 <motion.button
                                     className="p-3 bg-gray-100 hover:bg-gray-200 customtext-neutral-dark rounded-xl transition-colors duration-200"
                                     onClick={() => setFiltersOpen(false)}
@@ -1506,19 +2045,19 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                     </motion.div>
 
                     {/* Área de productos mejorada */}
-                    <motion.div 
+                    <motion.div
                         className="w-full lg:w-9/12 py-4"
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                     >
-               
-                     
+
+
 
                         {/* Grid de productos con animaciones mejoradas */}
                         <AnimatePresence mode="wait">
                             {(loading && !hasSearched) || isFiltering ? (
-                                <motion.div 
+                                <motion.div
                                     className="w-full"
                                     key="loading"
                                     initial={{ opacity: 0, scale: 0.95 }}
@@ -1526,18 +2065,18 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                     exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.3 } }}
                                 >
                                     {/* Header de loading mejorado */}
-                                    <motion.div 
+                                    <motion.div
                                         className="mb-8 text-center"
                                         initial={{ opacity: 0, y: -20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.1 }}
                                     >
                                         <motion.div
-                                            animate={{ 
+                                            animate={{
                                                 rotate: [0, 360],
                                                 scale: [1, 1.1, 1]
                                             }}
-                                            transition={{ 
+                                            transition={{
                                                 rotate: { duration: 3, repeat: Infinity, ease: "linear" },
                                                 scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                                             }}
@@ -1554,7 +2093,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                     </motion.div>
 
                                     {/* Grid de skeleton cards */}
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-6  w-full">
                                         {Array.from({ length: 12 }, (_, index) => (
                                             <div key={index} className="h-[400px] lg:h-[460px] xl:h-[400px] 2xl:h-[430px]">
                                                 <SkeletonCard delay={index * 0.08} />
@@ -1563,7 +2102,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                     </div>
                                 </motion.div>
                             ) : (
-                                <motion.div 
+                                <motion.div
                                     className="flex items-center flex-wrap gap-y-8 transition-all duration-300 ease-in-out relative"
                                     key="products"
                                     initial={{ opacity: 0 }}
@@ -1589,7 +2128,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                             </div>
                                         </motion.div>
                                     )}
-                                    
+
                                     {Array.isArray(products) && products.length > 0 ? (
                                         products.map((product, index) => (
                                             <motion.div
@@ -1597,13 +2136,13 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                 key={product.id}
                                                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                transition={{ 
+                                                transition={{
                                                     delay: index * 0.1,
                                                     duration: 0.5,
                                                     type: "spring",
                                                     stiffness: 100
                                                 }}
-                                                whileHover={{ 
+                                                whileHover={{
                                                     y: -5,
                                                     transition: { duration: 0.2 }
                                                 }}
@@ -1625,8 +2164,8 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                             transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
                                         >
                                             <div className="text-center space-y-6">
-                                               
-                                                <motion.div 
+
+                                                <motion.div
                                                     className="space-y-3"
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
@@ -1634,30 +2173,50 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                 >
                                                     <h3 className="text-xl font-bold customtext-neutral-dark">¡Ups! No encontramos productos</h3>
                                                     <p className="customtext-neutral-dark max-w-md">Intenta ajustar tus filtros o buscar términos diferentes.</p>
-                                                    <motion.button
-                                                        className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                                                        onClick={() => {
-                                                            setSelectedFilters({
-                                                                collection_id: [],
-                                                                category_id: [],
-                                                                brand_id: [],
-                                                                subcategory_id: [],
-                                                                tag_id: [],
-                                                                price: [],
-                                                                name: null,
-                                                                sort_by: "created_at",
-                                                                order: "desc",
-                                                            });
-                                                            setFilterSequence([]);
-                                                        }}
-                                                        whileHover={{ scale: 1.05, y: -2 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        <div className="flex items-center gap-2">
-                                                            <Trash className="h-4 w-4" />
-                                                            <span>Limpiar filtros</span>
-                                                        </div>
-                                                    </motion.button>
+                                                    {(selectedFilters.brand_id?.length > 0 ||
+                                                        selectedFilters.category_id?.length > 0 ||
+                                                        selectedFilters.subcategory_id?.length > 0 ||
+                                                        selectedFilters.tag_id?.length > 0 ||
+                                                        selectedFilters.name ||
+                                                        (selectedFilters.price && selectedFilters.price.length > 0)) && (
+                                                            <motion.button
+                                                                className="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                                                                onClick={() => {
+
+                                                                    // Limpiar usando setSelectedFilters con función (como handleFilterChange)
+                                                                    setSelectedFilters((prev) => {
+
+                                                                        const cleanFilters = {
+                                                                            collection_id: [],
+                                                                            category_id: [],
+                                                                            brand_id: [],
+                                                                            subcategory_id: [],
+                                                                            tag_id: [],
+                                                                            price: [],
+                                                                            name: null,
+                                                                            sort: [
+                                                                                {
+                                                                                    selector: "final_price",
+                                                                                    desc: true,
+                                                                                },
+                                                                            ],
+                                                                        };
+
+                                                                        return cleanFilters;
+                                                                    });
+
+                                                                    setFilterSequence([]);
+
+                                                                }}
+                                                                whileHover={{ scale: 1.05, y: -2 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <Trash className="h-4 w-4" />
+                                                                    <span>Limpiar filtros</span>
+                                                                </div>
+                                                            </motion.button>
+                                                        )}
                                                 </motion.div>
                                             </div>
                                         </motion.div>
@@ -1667,85 +2226,83 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                         </AnimatePresence>
                         {/* Paginación mejorada */}
                         {Array.isArray(products) && products.length > 0 && (
-                        <motion.div
-                            className="flex flex-col md:flex-row justify-between items-center mb-4 w-full mt-12 gap-4 p-6 bg-gradient-to-r from-white via-gray-50/50 to-blue-50/50 rounded-2xl border border-gray-200/60 backdrop-blur-sm"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            {/* Navegación de páginas mejorada */}
-                            <div className="customtext-primary font-semibold w-full md:w-auto">
-                                <div className="overflow-x-auto pb-2">
-                                    <nav className="flex items-center gap-x-2 min-w-max">
-                                        <motion.button
-                                            className={`p-3 inline-flex items-center gap-2 rounded-xl transition-all duration-300 ${
-                                                pagination.currentPage === 1
-                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
-                                                    : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
-                                            }`}
-                                            onClick={() => handlePageChange(pagination.currentPage - 1)}
-                                            disabled={pagination.currentPage === 1}
-                                          
-                                            whileTap={pagination.currentPage !== 1 ? { scale: 0.95 } : {}}
-                                        >
-                                            <ChevronLeft className="h-4 w-4" />
-                                            <span className="hidden sm:inline">Anterior</span>
-                                        </motion.button>
-
-                                        {getPageNumbers().map((page, index) => (
-                                            <React.Fragment key={index}>
-                                                {page === "..." ? (
-                                                    <span className="w-10 h-10 bg-transparent p-2 inline-flex items-center justify-center rounded-full customtext-neutral-dark">
-                                                        ...
-                                                    </span>
-                                                ) : (
-                                                    <motion.button
-                                                        className={`w-10 h-10 p-2 inline-flex items-center justify-center rounded-xl transition-all duration-300 font-semibold
-                                                        ${page === pagination.currentPage
-                                                            ? " bg-primary text-white shadow-lg shadow-blue-500/25"
-                                                            : "bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 customtext-primary border border-gray-200 hover:border-blue-300"
-                                                        }`}
-                                                        onClick={() => handlePageChange(page)}
-                                                        whileHover={{ scale: 1.1, y: -2 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        {page}
-                                                    </motion.button>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-
-                                        <motion.button
-                                            className={`p-3 inline-flex items-center gap-2 rounded-xl transition-all duration-300 ${
-                                                pagination.currentPage === pagination.totalPages
-                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
-                                                    : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
-                                            }`}
-                                            onClick={() => handlePageChange(pagination.currentPage + 1)}
-                                            disabled={pagination.currentPage === pagination.totalPages}
-                                          
-                                            whileTap={pagination.currentPage !== pagination.totalPages ? { scale: 0.95 } : {}}
-                                        >
-                                            <span className="hidden sm:inline">Siguiente</span>
-                                            <ChevronRight className="h-4 w-4" />
-                                        </motion.button>
-                                    </nav>
-                                </div>
-                            </div>
-                            
-                            {/* Información de paginación mejorada */}
-                            <motion.div 
-                                className="w-full md:w-auto text-center md:text-right"
-                                whileHover={{ scale: 1.02 }}
+                            <motion.div
+                                className="flex flex-col md:flex-row justify-between items-center mb-4 w-full mt-12 gap-4 p-6 bg-gradient-to-r from-white via-gray-50/50 to-blue-50/50 rounded-2xl border border-gray-200/60 backdrop-blur-sm"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
                             >
-                                <div className="flex items-center justify-center md:justify-end gap-2 p-4">
-                                
-                                    <p className="font-semibold text-sm customtext-neutral-dark">
-                                        {pagination.from} - {pagination.to} de {pagination.totalItems} Resultados
-                                    </p>
+                                {/* Navegación de páginas mejorada */}
+                                <div className="customtext-primary font-semibold w-full md:w-auto">
+                                    <div className="overflow-x-auto pb-2">
+                                        <nav className="flex items-center gap-x-2 min-w-max">
+                                            <motion.button
+                                                className={`p-3 inline-flex items-center gap-2 rounded-xl transition-all duration-300 ${pagination.currentPage === 1
+                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                                    : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
+                                                    }`}
+                                                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                                                disabled={pagination.currentPage === 1}
+
+                                                whileTap={pagination.currentPage !== 1 ? { scale: 0.95 } : {}}
+                                            >
+                                                <ChevronLeft className="h-4 w-4" />
+                                                <span className="hidden sm:inline">Anterior</span>
+                                            </motion.button>
+
+                                            {getPageNumbers().map((page, index) => (
+                                                <React.Fragment key={index}>
+                                                    {page === "..." ? (
+                                                        <span className="w-10 h-10 bg-transparent p-2 inline-flex items-center justify-center rounded-full customtext-neutral-dark">
+                                                            ...
+                                                        </span>
+                                                    ) : (
+                                                        <motion.button
+                                                            className={`w-10 h-10 p-2 inline-flex items-center justify-center rounded-xl transition-all duration-300 font-semibold
+                                                        ${page === pagination.currentPage
+                                                                    ? " bg-primary text-white shadow-lg shadow-blue-500/25"
+                                                                    : "bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 customtext-primary border border-gray-200 hover:border-blue-300"
+                                                                }`}
+                                                            onClick={() => handlePageChange(page)}
+                                                            whileHover={{ scale: 1.1, y: -2 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                        >
+                                                            {page}
+                                                        </motion.button>
+                                                    )}
+                                                </React.Fragment>
+                                            ))}
+
+                                            <motion.button
+                                                className={`p-3 inline-flex items-center gap-2 rounded-xl transition-all duration-300 ${pagination.currentPage === pagination.totalPages
+                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                                    : "bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 customtext-primary border border-blue-200"
+                                                    }`}
+                                                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                                                disabled={pagination.currentPage === pagination.totalPages}
+
+                                                whileTap={pagination.currentPage !== pagination.totalPages ? { scale: 0.95 } : {}}
+                                            >
+                                                <span className="hidden sm:inline">Siguiente</span>
+                                                <ChevronRight className="h-4 w-4" />
+                                            </motion.button>
+                                        </nav>
+                                    </div>
                                 </div>
+
+                                {/* Información de paginación mejorada */}
+                                <motion.div
+                                    className="w-full md:w-auto text-center md:text-right"
+                                    whileHover={{ scale: 1.02 }}
+                                >
+                                    <div className="flex items-center justify-center md:justify-end gap-2 p-4">
+
+                                        <p className="font-semibold text-sm customtext-neutral-dark">
+                                            {pagination.from} - {pagination.to} de {pagination.totalItems} Resultados
+                                        </p>
+                                    </div>
+                                </motion.div>
                             </motion.div>
-                        </motion.div>
                         )}
                     </motion.div>
                 </div>
@@ -1832,16 +2389,16 @@ if (typeof document !== 'undefined') {
 // Componente de Tooltip personalizado para mejor UX
 const Tooltip = ({ children, text, position = "top" }) => {
     const [show, setShow] = useState(false);
-    
+
     const positionClasses = {
         top: "-top-10 left-1/2 -translate-x-1/2",
         bottom: "-bottom-10 left-1/2 -translate-x-1/2",
         left: "-left-2 top-1/2 -translate-y-1/2 -translate-x-full",
         right: "-right-2 top-1/2 -translate-y-1/2 translate-x-full"
     };
-    
+
     return (
-        <div 
+        <div
             className="relative inline-block"
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
@@ -1857,12 +2414,11 @@ const Tooltip = ({ children, text, position = "top" }) => {
                         transition={{ duration: 0.15 }}
                     >
                         {text}
-                        <div className={`absolute w-0 h-0 border-l-4 border-r-4 border-transparent ${
-                            position === 'top' ? 'border-t-4 border-t-gray-900 top-full left-1/2 -translate-x-1/2' :
+                        <div className={`absolute w-0 h-0 border-l-4 border-r-4 border-transparent ${position === 'top' ? 'border-t-4 border-t-gray-900 top-full left-1/2 -translate-x-1/2' :
                             position === 'bottom' ? 'border-b-4 border-b-gray-900 bottom-full left-1/2 -translate-x-1/2' :
-                            position === 'left' ? 'border-l-4 border-l-gray-900 left-full top-1/2 -translate-y-1/2' :
-                            'border-r-4 border-r-gray-900 right-full top-1/2 -translate-y-1/2'
-                        }`} />
+                                position === 'left' ? 'border-l-4 border-l-gray-900 left-full top-1/2 -translate-y-1/2' :
+                                    'border-r-4 border-r-gray-900 right-full top-1/2 -translate-y-1/2'
+                            }`} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1874,9 +2430,9 @@ const Tooltip = ({ children, text, position = "top" }) => {
 const AnimatedBadge = ({ children, color = "blue", onClick, className = "" }) => {
     const colorClasses = {
         blue: "bg-secondary border-blue-200 customtext-primary",
-      
+
     };
-    
+
     return (
         <motion.div
             className={`inline-flex items-center gap-2 px-3 py-1.5  ${colorClasses[color]} border rounded-full text-sm font-medium cursor-pointer select-none ${className}`}

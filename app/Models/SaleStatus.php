@@ -19,7 +19,16 @@ class SaleStatus extends Model
         'status',
         'color',
         'editable',
-        'reversible'
+        'reversible',
+        'icon',
+    ];
+
+    protected $casts = [
+       
+        'visible' => 'boolean',
+        'status' => 'boolean',
+        'editable'=>'boolean',
+        'reversible'=>'boolean',
     ];
 
     public static function getByName($name)

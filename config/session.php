@@ -77,7 +77,9 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION'),
+    'connection' => env('MULTI_DB_ENABLED', false) 
+        ? env('SESSION_CONNECTION', 'mysql_shared_users')
+        : env('SESSION_CONNECTION', null),
 
     /*
     |--------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import TextWithHighlight from "../../../Utils/TextWithHighlight";
+import TextWithHighlight_Second from "../../../Utils/TextWithHighlight_Second";
 
 export default function BannerStaticSecond({ data, items }) {
     const cleanDescription = (html) => {
@@ -9,19 +9,41 @@ export default function BannerStaticSecond({ data, items }) {
         return doc.body.textContent || "";
     };
 
-    // Si no hay items o el array está vacío, no renderizar nada
+    // Si no hay items o el array está vacío, mostrar mensaje de previsualización
     if (!items || items.length === 0) {
-        return null;
+        return (
+            <section className="customtext-primary bg-[#F2F2F2] font-paragraph bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerm.png)' }}>
+                <div className="overflow-hidden px-primary">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 xl:gap-40 py-10 2xl:py-12">
+                        <div className="flex flex-row justify-start items-center h-full">
+                            <h2 className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-medium tracking-normal customtext-neutral-dark leading-tight font-title">
+                                {data?.title || 'Título del banner'}
+                            </h2>
+                        </div>
+                        <div className="flex flex-row justify-end items-center relative">
+                            <div className="min-w-[300px] w-full max-w-[500px] 2xl:max-w-[700px] h-max bg-white rounded-lg p-8 text-center">
+                                <p className="text-gray-500 text-sm">
+                                    <i className="mdi mdi-information-outline text-2xl d-block mb-2"></i>
+                                    Este banner requiere items configurados.
+                                    <br />
+                                    Guarda el banner y luego agrega los items desde la configuración.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
     }
 
     return (
-        <section className="customtext-primary bg-[#F2F2F2] font-font-general bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerm.png)' }}>
+        <section className="customtext-primary bg-[#F2F2F2] font-paragraph bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerm.png)' }}>
             <div className="overflow-hidden px-primary">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 xl:gap-40 py-10 2xl:py-12">
                     {/* Text Content */}
                     <div className="flex flex-row justify-start items-center h-full">
                         <h2 className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-medium tracking-normal customtext-neutral-dark leading-tight font-title">
-                            <TextWithHighlight text={data?.title} ></TextWithHighlight>
+                            <TextWithHighlight_Second text={data?.title} ></TextWithHighlight_Second>
                         </h2>
                     </div>
 

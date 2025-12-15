@@ -13,7 +13,7 @@ import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import SelectAPIFormGroup from "../Components/Adminto/form/SelectAPIFormGroup";
 import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
-import Number2Currency from "../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 import ReactAppend from "../Utils/ReactAppend";
 import SetSelectValue from "../Utils/SetSelectValue";
 
@@ -288,7 +288,7 @@ const Coupons = ({ categories, products }) => {
                         cellTemplate: (container, { data }) => {
                             const value = data.type === 'percentage' 
                                 ? `${data.value}%` 
-                                : `S/. ${Number2Currency(data.value)}`;
+                                : `${CurrencySymbol()} ${Number2Currency(data.value)}`;
                             container.html(renderToString(<strong>{value}</strong>));
                         },
                     },
@@ -299,7 +299,7 @@ const Coupons = ({ categories, products }) => {
                         cellTemplate: (container, { data }) => {
                             container.html(
                                 renderToString(
-                                    <span>S/. {Number2Currency(data.minimum_amount)}</span>
+                                    <span>{CurrencySymbol()} {Number2Currency(data.minimum_amount)}</span>
                                 )
                             );
                         },
@@ -449,7 +449,7 @@ const Coupons = ({ categories, products }) => {
                    
                             <InputFormGroup
                                 eRef={maximumDiscountRef}
-                                label="Descuento máximo (S/.)"
+                                label={`Descuento máximo (${CurrencySymbol()})`}
                                 type="number"
                                 step="0.01"
                                 min="0"
@@ -459,7 +459,7 @@ const Coupons = ({ categories, products }) => {
 
                         <InputFormGroup
                             eRef={minimumAmountRef}
-                            label="Monto mínimo de compra (S/.)"
+                            label={`Monto mínimo de compra (${CurrencySymbol()})`}
                             type="number"
                             step="0.01"
                             min="0"

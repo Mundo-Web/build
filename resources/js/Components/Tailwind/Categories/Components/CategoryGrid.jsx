@@ -1,273 +1,164 @@
-export default function CategoryGrid({
-    categories
-}) {
+﻿import { motion } from "framer-motion";
 
+export default function CategoryGrid({ categories }) {
+    // Dividir categorias en grupos de 4
     const chunkSize = 4;
     const chunks = [];
     for (let i = 0; i < categories.length; i += chunkSize) {
-      chunks.push(categories.slice(i, i + chunkSize));
+        chunks.push(categories.slice(i, i + chunkSize));
     }
-  
-    // Processed categories tracker
-    const processedCategories = new Set();
+
+    // Variantes de animacion simplificadas
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                duration: 0.6,
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const chunkVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        }
+    };
+
+    // Componente para renderizar una categoria individual
+    const CategoryCard = ({ category, className = "" }) => (
+        <div 
+            className={`w-full h-full ${className} overflow-hidden`}
+        >
+            <a href={`/catalogo?category=${category.slug}`} className="block w-full h-full">
+                <div className="group font-paragraph text-white w-full h-full relative overflow-hidden rounded-2xl">
+                    <img
+                        src={`/storage/images/category/${category?.banner || category?.image}`}
+                        onError={e => e.target.src = "assets/img/noimage/noimagenslider.jpg"}
+                        alt={category?.name}
+                        className="object-cover w-full h-full max-w-full max-h-full transition-transform duration-300 group-hover:scale-105"
+                        style={{ 
+                            objectFit: 'cover',
+                            maxWidth: '100%',
+                            maxHeight: '100%'
+                        }}
+                    />
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background: "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
+                        }}
+                    ></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6 space-y-1 lg:space-y-2">
+                        <h3 className="text-lg md:text-xl 2xl:text-2xl font-semibold">
+                            {category?.name}
+                        </h3>
+                        <p className="text-sm sm:text-base line-clamp-2">
+                            {category?.description}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    );
+
+    // Funcion para renderizar cada chunk segun el numero de elementos
+    const renderChunk = (chunk, chunkIndex) => {
+        const count = chunk.length;
+        const marginClass = chunkIndex === 0 ? "mt-0" : "mt-10";
+        
+        if (count === 1) {
+            return (
+                <motion.div 
+                    key={`chunk-${chunkIndex}`}
+                    className={`w-full h-[400px] ${marginClass} overflow-hidden`}
+                    variants={chunkVariants}
+                >
+                    <CategoryCard category={chunk[0]} />
+                </motion.div>
+            );
+        } 
+        
+        if (count === 2) {
+            return (
+                <motion.div 
+                    key={`chunk-${chunkIndex}`}
+                    className={`grid grid-cols-2 gap-5 xl:gap-7 2xl:gap-10 h-[350px] ${marginClass} overflow-hidden`}
+                    variants={chunkVariants}
+                >
+                    <CategoryCard category={chunk[0]} />
+                    <CategoryCard category={chunk[1]} />
+                </motion.div>
+            );
+        } 
+        
+        if (count === 3) {
+            return (
+                <motion.div 
+                    key={`chunk-${chunkIndex}`}
+                    className={`flex gap-5 xl:gap-7 2xl:gap-10 h-[500px] ${marginClass} overflow-hidden`}
+                    variants={chunkVariants}
+                >
+                    <div className="w-[50%] h-full overflow-hidden">
+                        <CategoryCard category={chunk[0]} />
+                    </div>
+                    <div className="w-[50%] flex flex-col gap-5 xl:gap-7 2xl:gap-10 h-full overflow-hidden">
+                        <div className="h-1/2 overflow-hidden">
+                            <CategoryCard category={chunk[1]} />
+                        </div>
+                        <div className="h-1/2 overflow-hidden">
+                            <CategoryCard category={chunk[2]} />
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        } 
+        
+        if (count === 4) {
+            return (
+                <motion.div 
+                    key={`chunk-${chunkIndex}`}
+                    className={`grid grid-cols-2 gap-5 xl:gap-7 2xl:gap-10 h-[600px] ${marginClass} overflow-hidden`}
+                    variants={chunkVariants}
+                >
+                    <div className="flex flex-col gap-5 xl:gap-7 2xl:gap-10 h-full overflow-hidden">
+                        <div className="h-1/2 overflow-hidden">
+                            <CategoryCard category={chunk[0]} />
+                        </div>
+                        <div className="h-1/2 overflow-hidden">
+                            <CategoryCard category={chunk[1]} />
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-5 xl:gap-7 2xl:gap-10 h-full overflow-hidden">
+                        <div className="h-1/2 overflow-hidden">
+                            <CategoryCard category={chunk[2]} />
+                        </div>
+                        <div className="h-1/2 overflow-hidden">
+                            <CategoryCard category={chunk[3]} />
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        }
+        
+        return null;
+    };
 
     return (
-        <div className="">
-            {/* Process full chunks (4 items each) */}
-            {chunks.map((chunk, chunkIndex) => {
-                if (chunk.length === 4) {
-                chunk.forEach(cat => processedCategories.add(cat.id));
-                
-                return (
-                    <div key={`chunk-${chunkIndex}`} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 xl:gap-7 2xl:gap-10 pt-10">
-                    {chunk.map((category, index) => {
-                        if (index === 0) {
-                        // First item - spans 2 rows and 2 cols
-                        return (
-                            <div key={category.id} className="w-full lg:row-span-2 lg:col-span-2">
-                                <a href={`/catalogo?category=${category.slug}`}>
-                                    <section className="group font-font-general text-white w-full h-[250px] sm:h-full">
-                                        <div className="flex gap-4 h-full">
-                                            <div
-                                                className="relative w-full h-full overflow-hidden rounded-2xl"
-                                            >
-                                                <img
-                                                    src={`/storage/images/category/${category?.image}`}
-                                                    onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                                    alt={category?.name}
-                                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                <div
-                                                    className="absolute top-0 w-full h-full"
-                                                    style={{
-                                                        background:
-                                                            "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
-                                                    }}
-                                                ></div>
-                                                <div className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
-                                                    <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                                                        {category?.name}
-                                                    </h3>
-                                                    <p className="text-sm sm:text-base lg:text-lg 2xl:text-xl line-clamp-3">
-                                                        {category?.description}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-                                </a>
-                            </div>
-                        );
-                        } else if (index === 1) {
-                        // Second item - spans 2 cols
-                        return (
-                            <div key={category.id} className="w-full lg:col-span-2">
-                                <a href={`/catalogo?category=${category.slug}`}>
-                                    <section className="group font-font-general text-white w-full h-[250px] sm:h-full sm:max-h-[320px] 2xl:h-[350px]">
-                                        <div className="flex gap-4 h-full">
-                                            <div
-                                                className="relative w-full h-full overflow-hidden rounded-2xl"
-                                            >
-                                                <img
-                                                    src={`/storage/images/category/${category?.image}`}
-                                                    onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                                    alt={category?.name}
-                                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                <div
-                                                    className="absolute top-0 w-full h-full"
-                                                    style={{
-                                                        background:
-                                                            "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
-                                                    }}
-                                                ></div>
-                                                <div className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
-                                                    <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                                                        {category?.name}
-                                                    </h3>
-                                                    <p className="text-sm sm:text-base lg:text-lg 2xl:text-xl line-clamp-3">
-                                                        {category?.description}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-                                </a>
-                            </div>
-                        );
-                        } else {
-                        // Regular items
-                        return (
-                            <div key={category.id} className="w-full">
-                                <a href={`/catalogo?category=${category.slug}`}>
-                                    <section className="group font-font-general text-white w-full h-[250px] sm:h-full sm:min-h-[320px] 2xl:min-h-[350px] 2xl:max-h-[350px]">
-                                        <div className="flex gap-4 h-full">
-                                            <div
-                                                className="relative w-full h-full overflow-hidden rounded-2xl"
-                                            >
-                                                <img
-                                                    src={`/storage/images/category/${category?.image}`}
-                                                    onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                                    alt={category?.name}
-                                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                <div
-                                                    className="absolute top-0 w-full h-full"
-                                                    style={{
-                                                        background:
-                                                            "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
-                                                    }}
-                                                ></div>
-                                                <div className={`absolute p-4 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
-                                                    <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                                                        {category?.name}
-                                                    </h3>
-                                                    <p className="text-sm sm:text-base lg:text-lg 2xl:text-xl line-clamp-3">
-                                                        {category?.description}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-                                </a>
-                            </div>
-                        );
-                        }
-                    })}
-                    </div>
-                );
-                }
-                return null;
-            })}
-
-            {/* Handle remainder categories */}
-            {(() => {
-                const remainder = categories.length % 4;
-                const remainderCategories = categories.filter(cat => !processedCategories.has(cat.id));
-
-                if (remainder > 0) {
-                if (remainder === 1) {
-                    return (
-                        <div className="grid grid-cols-1 mt-5 xl:mt-7 2xl:mt-10">
-                            {remainderCategories.map(category => (
-                                <div key={category.id} className="w-full">
-                                    <a href={`/catalogo?category=${category.slug}`}>
-                                        <section className="group font-font-general text-white w-full h-[250px] sm:h-full max-h-[400px]">
-                                            <div className="flex gap-4 h-full">
-                                                <div
-                                                    className="relative w-full h-full overflow-hidden rounded-2xl"
-                                                >
-                                                    <img
-                                                        src={`/storage/images/category/${category?.image}`}
-                                                        onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                                        alt={category?.name}
-                                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                                    />
-                                                    <div
-                                                        className="absolute top-0 w-full h-full"
-                                                        style={{
-                                                            background:
-                                                                "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
-                                                        }}
-                                                    ></div>
-                                                    <div className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
-                                                        <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                                                            {category?.name}
-                                                        </h3>
-                                                        <p className="text-sm sm:text-base lg:text-lg 2xl:text-xl line-clamp-3">
-                                                            {category?.description}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                    </a>
-                                </div>
-                            ))}
-                        </div>
-                    );
-                } else if (remainder === 2) {
-                    return (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 xl:gap-7 2xl:gap-10 mt-5 xl:mt-7 2xl:mt-10">
-                            {remainderCategories.map(category => (
-                                <div key={category.id} className="w-full">
-                                    <a href={`/catalogo?category=${category.slug}`}>
-                                        <section className="group font-font-general text-white w-full h-[250px] sm:h-full max-h-[400px]">
-                                            <div className="flex gap-4 h-full">
-                                                <div
-                                                    className="relative w-full h-full overflow-hidden rounded-2xl"
-                                                >
-                                                    <img
-                                                        src={`/storage/images/category/${category?.image}`}
-                                                        onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                                        alt={category?.name}
-                                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                                    />
-                                                    <div
-                                                        className="absolute top-0 w-full h-full"
-                                                        style={{
-                                                            background:
-                                                                "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
-                                                        }}
-                                                    ></div>
-                                                    <div className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
-                                                        <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                                                            {category?.name}
-                                                        </h3>
-                                                        <p className="text-sm sm:text-base lg:text-lg 2xl:text-xl line-clamp-3">
-                                                            {category?.description}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                    </a>
-                                </div>
-                            ))}
-                        </div>
-                    );
-                } else if (remainder === 3) {
-                    return (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 xl:gap-7 2xl:gap-10 mt-5 xl:mt-7 2xl:mt-10">
-                            {remainderCategories.map((category, index) => (
-                                <section key={category.id} className={`group font-font-general text-white w-full h-[250px] ${index === 0 ? 'sm:row-span-2 sm:h-full' : 'sm:h-[320px] 2xl:h-[350px]'}`}>
-                                    <a href={`/catalogo?category=${category.slug}`}>
-                                        <div className="flex gap-4 h-full">
-                                            <div
-                                                className="relative w-full h-full overflow-hidden rounded-2xl"
-                                            >
-                                                <img
-                                                    src={`/storage/images/category/${category?.image}`}
-                                                    onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                                                    alt={category?.name}
-                                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                <div
-                                                    className="absolute top-0 w-full h-full"
-                                                    style={{
-                                                        background:
-                                                            "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
-                                                    }}
-                                                ></div>
-                                                <div className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
-                                                    <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                                                        {category?.name}
-                                                    </h3>
-                                                    <p className="text-sm sm:text-base lg:text-lg 2xl:text-xl line-clamp-3">
-                                                        {category?.description}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </section>
-                            ))}
-                        </div>
-                    );
-                }
-                }
-                return null;
-            })()}
-        </div>
+        <motion.div 
+            className="w-full overflow-hidden"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            {chunks.map((chunk, chunkIndex) => renderChunk(chunk, chunkIndex))}
+        </motion.div>
     );
 }

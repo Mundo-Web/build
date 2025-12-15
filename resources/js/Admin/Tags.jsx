@@ -13,6 +13,7 @@ import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
 import Global from '../Utils/Global';
+import Fillable from '../Utils/Fillable';
 
 const tagsRest = new TagsRest()
 
@@ -29,6 +30,8 @@ const Tags = () => {
   const textColorRef = useRef()
   const iconRef = useRef()
   const imageRef = useRef()
+  const startDateRef = useRef()
+  const endDateRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -41,16 +44,20 @@ const Tags = () => {
     descriptionRef.current.value = data?.description ?? ''
     backgroundColorRef.current.value = data?.background_color ?? Global.APP_COLOR_PRIMARY
     textColorRef.current.value = data?.text_color ?? '#ffffff'
-    
+
+    // Fechas promocionales
+    startDateRef.current.value = data?.start_date ? new Date(data.start_date).toISOString().slice(0, 16) : ''
+    endDateRef.current.value = data?.end_date ? new Date(data.end_date).toISOString().slice(0, 16) : ''
+
     // Para el icono (imagen pequeña que va al lado del texto)
-    if (iconRef.current && data?.icon) {
-      iconRef.current.src = `/storage/images/tag/${data.icon}`
-    }
-    
-    // Para la imagen principal (otros fines)
-    if (imageRef.current && data?.image) {
-      imageRef.current.src = `/storage/images/tag/${data.image}`
-    }
+
+
+    iconRef.image.src = data?.icon ? `/storage/images/tag/${data.icon}` : '';
+
+
+
+    imageRef.image.src = data?.image ? `/storage/images/tag/${data.image}` : '';
+
 
     $(modalRef.current).modal('show')
   }
@@ -58,25 +65,60 @@ const Tags = () => {
   const onModalSubmit = async (e) => {
     e.preventDefault()
 
+    // Validación de fechas
+    const startDate = startDateRef.current.value
+    const endDate = endDateRef.current.value
+
+    if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+      await Swal.fire({
+        title: 'Error de Validación',
+        text: 'La fecha de inicio debe ser anterior a la fecha de fin',
+        icon: 'error'
+      })
+      return
+    }
+
     const formData = new FormData()
     formData.append('id', idRef.current.value || '')
     formData.append('name', nameRef.current.value)
     formData.append('description', descriptionRef.current.value)
     formData.append('background_color', backgroundColorRef.current.value)
     formData.append('text_color', textColorRef.current.value)
-    
+    formData.append('tag_type', 'item') // Identificador para tags de items
+
+    // Fechas promocionales
+    if (startDateRef.current.value) {
+      formData.append('start_date', startDateRef.current.value)
+    }
+    if (endDateRef.current.value) {
+      formData.append('end_date', endDateRef.current.value)
+    }
+
     // Agregar icono (imagen pequeña) si se seleccionó una nueva
-    if (iconRef.current.src && iconRef.current.src) {
+    if (iconRef.current.files && iconRef.current.files[0]) {
       formData.append('icon', iconRef.current.files[0])
     }
-    
+
     // Agregar imagen principal si se seleccionó una nueva
     if (imageRef.current.files && imageRef.current.files[0]) {
       formData.append('image', imageRef.current.files[0])
     }
 
+
+    // Check for image deletion flag
+    if (iconRef.getDeleteFlag && iconRef.getDeleteFlag()) {
+      formData.append('icon_delete', 'DELETE');
+    }
+
+    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+      formData.append('image_delete', 'DELETE');
+    }
     const result = await tagsRest.save(formData)
     if (!result) return
+
+    // Reset delete flag after successful save
+    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+    if (iconRef.resetDeleteFlag) iconRef.resetDeleteFlag();
 
     $(gridRef.current).dxDataGrid('instance').refresh()
     $(modalRef.current).modal('hide')
@@ -87,6 +129,13 @@ const Tags = () => {
     if (!result) return
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
+
+  const onMenuChange = async ({ id, value }) => {
+    const result = await tagsRest.boolean({ id, field: 'menu', value })
+    if (!result) return
+    $(gridRef.current).dxDataGrid('instance').refresh()
+  }
+
 
   const onDeleteClicked = async (id) => {
     const { isConfirmed } = await Swal.fire({
@@ -103,8 +152,23 @@ const Tags = () => {
     $(gridRef.current).dxDataGrid('instance').refresh()
   }
 
+  // Función para manejar el reordering remoto
+  const onReorder = async (e) => {
+    // e.toIndex es la nueva posición donde se quiere insertar el elemento
+    const newOrderIndex = e.toIndex;
+
+    try {
+      const result = await tagsRest.reorder(e.itemData.id, newOrderIndex);
+      if (result) {
+        await e.component.refresh();
+      }
+    } catch (error) {
+      console.error('Error reordering tag:', error);
+    }
+  };
+
   return (<>
-    <Table gridRef={gridRef} title='Etiquetas' rest={tagsRest}
+    <Table gridRef={gridRef} title='Tags de Productos' rest={tagsRest}
       toolBar={(container) => {
         container.unshift({
           widget: 'dxButton', location: 'after',
@@ -117,12 +181,86 @@ const Tags = () => {
         container.unshift({
           widget: 'dxButton', location: 'after',
           options: {
+            icon: 'clock',
+            text: 'Actualizar Estados',
+            hint: 'Actualizar estados promocionales',
+            onClick: async () => {
+              const { isConfirmed } = await Swal.fire({
+                title: 'Actualizar Estados Promocionales',
+                text: '¿Deseas actualizar el estado de todas las etiquetas promocionales basado en sus fechas?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'Cancelar'
+              })
+              if (!isConfirmed) return
+
+              try {
+                Swal.fire({
+                  title: 'Actualizando...',
+                  text: 'Por favor espera mientras se actualizan los estados',
+                  allowOutsideClick: false,
+                  didOpen: () => Swal.showLoading()
+                })
+
+                const response = await fetch('/api/admin/tags/update-promotional-status', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                  }
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                  await Swal.fire({
+                    title: '¡Actualización completada!',
+                    html: `
+                      <div class="text-start">
+                        <p><strong>📊 Estadísticas:</strong></p>
+                        <ul class="list-unstyled">
+                          <li>🔄 Permanentes: ${result.data.permanent || 0}</li>
+                          <li>✅ Activos: ${result.data.active || 0}</li>
+                          <li>❌ Expirados: ${result.data.expired || 0}</li>
+                          <li>📝 Actualizados: ${result.data.updated || 0}</li>
+                        </ul>
+                      </div>
+                    `,
+                    icon: 'success'
+                  })
+                  $(gridRef.current).dxDataGrid('instance').refresh()
+                } else {
+                  throw new Error(result.message || 'Error al actualizar estados')
+                }
+              } catch (error) {
+                Swal.fire({
+                  title: 'Error',
+                  text: error.message || 'No se pudieron actualizar los estados',
+                  icon: 'error'
+                })
+              }
+            }
+          }
+        });
+        container.unshift({
+          widget: 'dxButton', location: 'after',
+          options: {
             icon: 'plus',
-            text: 'Nuevo registro',
-            hint: 'Nuevo registro',
+            text: 'Nuevo Tag de Producto',
+            hint: 'Nuevo Tag de Producto',
             onClick: () => onModalOpen()
           }
         });
+      }}
+      rowDragging={{
+        allowReordering: true,
+        onReorder: onReorder,
+        dropFeedbackMode: 'push'
+      }}
+      sorting={{
+        mode: 'single'
       }}
       columns={[
         {
@@ -131,15 +269,65 @@ const Tags = () => {
           visible: false
         },
         {
+          dataField: 'order_index',
+          caption: 'Orden',
+          visible: false,
+          sortOrder: 'asc',
+          sortIndex: 0
+        },
+        Fillable.has('tags', 'name') && {
           dataField: 'name',
           caption: 'Etiqueta',
           width: '25%',
         },
-        {
+        Fillable.has('tags', 'description') && {
           dataField: 'description',
-          caption: 'Descripción',
-          width: '25%',
+          caption: 'ToolTip',
+          width: '20%',
         },
+        Fillable.has('tags', 'promotional_status') && {
+          dataField: 'promotional_status',
+          caption: 'Estado Promocional',
+          width: '15%',
+          allowSorting: true,
+          allowFiltering: true,
+          cellTemplate: (container, { data }) => {
+            $(container).empty()
+
+            const statusConfig = {
+              'permanent': {
+                text: 'Permanente',
+                class: 'success',
+                icon: 'fas fa-infinity'
+              },
+              'active': {
+                text: 'Activo',
+                class: 'primary',
+                icon: 'fas fa-play-circle'
+              },
+              'expired': {
+                text: 'Expirado',
+                class: 'danger',
+                icon: 'fas fa-stop-circle'
+              }
+            }
+
+            const config = statusConfig[data.promotional_status] || {
+              text: 'Desconocido',
+              class: 'secondary',
+              icon: 'fas fa-question-circle'
+            }
+
+            const content = (
+              <span className={`badge bg-${config.class} d-flex align-items-center gap-1`} style={{ fontSize: '11px' }}>
+                <i className={config.icon}></i>
+                {config.text}
+              </span>
+            )
+            ReactAppend(container, content)
+          }
+        },
+        Fillable.has('tags', 'menu') &&
         {
           dataField: 'preview',
           caption: 'Vista Previa',
@@ -159,20 +347,36 @@ const Tags = () => {
               gap: '4px',
               maxWidth: '150px'
             }
-            
+
             const content = (
-              <span style={tagStyle}>
-                {data.icon && <img src={`/storage/images/tag/${data.icon}`} style={{width: '16px', height: '16px', borderRadius: '2px'}} alt="icon"   onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
-                                    } />}
-                <span>{data.name}</span>
-              </span>
+              <div>
+                <span style={tagStyle}>
+                  {data.icon && <img src={`/storage/images/tag/${data.icon}`} style={{ width: '16px', height: '16px', borderRadius: '2px' }} alt="icon" onError={(e) =>
+                  (e.target.src =
+                    "/api/cover/thumbnail/null")
+                  } />}
+                  <span>{data.name}</span>
+                </span>
+                {/* Mostrar fechas si es promocional */}
+                {Fillable.has('tags', 'start_date') && Fillable.has('tags', 'end_date') &&
+                  (data.start_date || data.end_date) && (
+                    <div style={{ fontSize: '10px', color: '#6c757d', marginTop: '2px' }}>
+                      {data.start_date && (
+                        <div>📅 Inicio: {new Date(data.start_date).toLocaleDateString()}</div>
+                      )}
+                      {data.end_date && (
+                        <div>🏁 Fin: {new Date(data.end_date).toLocaleDateString()}</div>
+                      )}
+                    </div>
+                  )}
+
+              </div>
             )
             ReactAppend(container, content)
           }
         },
-        {
+
+        Fillable.has('tags', 'image') && {
           dataField: 'image',
           caption: 'Imagen Principal',
           width: '15%',
@@ -182,16 +386,16 @@ const Tags = () => {
             $(container).empty()
             if (data.image) {
               const content = (
-                <img 
-                  src={`/storage/${data.image}`} 
+                <img
+                  src={`/storage/images/tag/${data.image}`}
                   style={{
-                    width: '40px', 
-                    height: '24px', 
-                    objectFit: 'cover', 
+                    width: '40px',
+                    height: '24px',
+                    objectFit: 'cover',
                     borderRadius: '4px',
                     border: '1px solid #ddd'
-                  }} 
-                  alt="imagen principal" 
+                  }}
+                  alt="imagen principal"
                 />
               )
               ReactAppend(container, content)
@@ -200,7 +404,19 @@ const Tags = () => {
             }
           }
         },
-        {
+        Fillable.has('tags', 'menu') && {
+          dataField: 'menu',
+          caption: 'Menú',
+          dataType: 'boolean',
+          cellTemplate: (container, { data }) => {
+            $(container).empty()
+            ReactAppend(container, <SwitchFormGroup checked={data.menu == 1} onChange={() => onMenuChange({
+              id: data.id,
+              value: !data.menu
+            })} />)
+          }
+        },
+        Fillable.has('tags', 'visible') && {
           dataField: 'visible',
           caption: 'Visible',
           dataType: 'boolean',
@@ -233,31 +449,97 @@ const Tags = () => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar etiqueta' : 'Agregar etiqueta'} onSubmit={onModalSubmit} size='lg'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar Tag de Producto' : 'Agregar Tag de Producto'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='tags-container'>
         <input ref={idRef} type='hidden' />
-        
-        <InputFormGroup eRef={nameRef} label='Nombre de la Etiqueta' col='col-12' required />
-        
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' col='col-12' rows={2} />
-        
-        <div className='col-md-6'>
+
+        <div className='row'>
+          <div className='col-md-8'>
+            <InputFormGroup eRef={nameRef} label='Nombre del Tag' col='col-12' required hidden={!Fillable.has('tags', 'name')} />
+
+            <InputFormGroup eRef={descriptionRef} label='ToolTip' col='col-12' hidden={!Fillable.has('tags', 'description')} />
+          </div>
+          <ImageFormGroup eRef={iconRef} name="icon" label='Icono' col='col-md-4' aspect='6/5' hidden={!Fillable.has('tags', 'icon')} />
+
+        </div>
+        {/* Sección de Fechas Promocionales */}
+        {Fillable.has('tags', 'start_date') && Fillable.has('tags', 'end_date') && (
+          <div className="col-12">
+            <div className="alert alert-info mb-3">
+              <h6 className="alert-heading mb-2">
+                <i className="fas fa-calendar-alt me-2"></i>
+                Configuración Promocional
+              </h6>
+              <div className="row small">
+                <div className="col-md-6">
+                  <p className="mb-1"><strong>🔄 Etiquetas Permanentes:</strong></p>
+                  <p className="mb-2">Sin fechas → Siempre visibles</p>
+                  <p className="mb-1"><strong>📅 Etiquetas Promocionales:</strong></p>
+                  <p className="mb-0">Con fechas → Solo activas en el período especificado</p>
+                </div>
+                <div className="col-md-6">
+                  <p className="mb-1"><strong>Ejemplos de uso:</strong></p>
+                  <ul className="mb-0 small">
+                    <li>Black Friday: 29/11/2024 - 02/12/2024</li>
+                    <li>Cyber Monday: 02/12/2024 - 03/12/2024</li>
+                    <li>Descuentos Navideños: 15/12/2024 - 25/12/2024</li>
+                    <li>Ofertas de Año Nuevo: 26/12/2024 - 05/01/2025</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>)}
+
+        <div className='col-md-6' hidden={!Fillable.has('tags', 'start_date')}>
           <div className="form-group mb-2">
-            <label className="form-label">Color de Fondo</label>
-            <input ref={backgroundColorRef} type="color" className="form-control form-control-color" defaultValue="#3b82f6" />
+            <label className="form-label">
+              <i className="fas fa-play-circle text-success me-1"></i>
+              Fecha y Hora de Inicio
+            </label>
+            <input
+              ref={startDateRef}
+              type="datetime-local"
+              className="form-control"
+              placeholder="Opcional: Fecha de inicio de la promoción"
+            />
+            <small className="text-muted">Opcional: Deja vacío para etiqueta permanente</small>
           </div>
         </div>
-        
-        <div className='col-md-6'>
+
+        <div className='col-md-6' hidden={!Fillable.has('tags', 'end_date')}>
           <div className="form-group mb-2">
-            <label className="form-label">Color de Texto</label>
-            <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
+            <label className="form-label">
+              <i className="fas fa-stop-circle text-danger me-1"></i>
+              Fecha y Hora de Fin
+            </label>
+            <input
+              ref={endDateRef}
+              type="datetime-local"
+              className="form-control"
+              placeholder="Opcional: Fecha de fin de la promoción"
+            />
+            <small className="text-muted">Opcional: Deja vacío para etiqueta permanente</small>
           </div>
         </div>
-        
-        <ImageFormGroup eRef={iconRef} label='Icono (imagen pequeña que aparece al lado del texto)' col='col-md-6' aspect='1/1' />
-        
-        <ImageFormGroup eRef={imageRef} label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' />
+
+        <div className='row col-md-6'>
+          <div className='col-md-6' hidden={!Fillable.has('tags', 'background_color')}>
+            <div className="form-group mb-2">
+              <label className="form-label">Color de Fondo</label>
+              <input ref={backgroundColorRef} type="color" className="form-control form-control-color" defaultValue="#3b82f6" />
+            </div>
+          </div>
+
+          <div className='col-md-6' hidden={!Fillable.has('tags', 'text_color')}>
+            <div className="form-group mb-2">
+              <label className="form-label">Color de Texto</label>
+              <input ref={textColorRef} type="color" className="form-control form-control-color" defaultValue="#ffffff" />
+            </div>
+          </div>
+        </div>
+
+
+        <ImageFormGroup eRef={imageRef} name="image" label='Imagen Principal (para otros fines)' col='col-md-6' aspect='16/9' hidden={!Fillable.has('tags', 'image')} />
       </div>
     </Modal>
   </>
@@ -265,7 +547,7 @@ const Tags = () => {
 }
 
 CreateReactScript((el, properties) => {
-  createRoot(el).render(<BaseAdminto {...properties} title='Etiquetas'>
+  createRoot(el).render(<BaseAdminto {...properties} title='Tags de Productos'>
     <Tags {...properties} />
   </BaseAdminto>);
 })

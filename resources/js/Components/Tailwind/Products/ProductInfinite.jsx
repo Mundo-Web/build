@@ -6,6 +6,7 @@ import "swiper/css/navigation";
 import "swiper/css/grid";
 import { useEffect, useRef, useState } from "react";
 import CardHoverBtn from "./Components/CardHoverBtn";
+import CardProductKatya from "./Components/CardProductKatya";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 
 const ProductInfinite = ({ items, data, setCart, cart }) => {
@@ -17,6 +18,37 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
     const navigationDesktopNextRef = useRef(null);
     const navigationMobilePrevRef = useRef(null);
     const navigationMobileNextRef = useRef(null);
+
+    // Función para renderizar el tipo de card correcto
+    const renderCard = (product, index) => {
+        const cardType = data?.type_card || 'default';
+        
+        switch (cardType) {
+            case 'katya':
+                return (
+                    <CardProductKatya
+                        product={product}
+                        data={data}
+                        favorites={[]} // Puedes pasar favoritos si está disponible
+                        setFavorites={() => {}} // Función para manejar favoritos
+                        setCart={setCart}
+                        cart={cart}
+                    />
+                );
+            case 'default':
+            default:
+                return (
+                    <CardHoverBtn
+                        product={product}
+                        setCart={setCart}
+                        cart={cart}
+                        data={data}
+                        isFirstCard={index === 0}
+                    />
+                );
+        }
+    };
+
     // Ajuste de colores para los botones
     useEffect(() => {
         [navigationDesktopPrevRef, navigationDesktopNextRef, navigationMobilePrevRef, navigationMobileNextRef].forEach(ref => {
@@ -62,16 +94,18 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
     }, [swiperInstance]);
 
     return (
-        <section className="relative bg-sections-color py-4">
-            <div className="relative mx-auto px-[5%] py-[2.5%]">
-                {/* Header */}
-                <div className="md:flex justify-between items-center mb-8 pb-4 border-b customborder-neutral-light">
+      items && items?.length > 0 && (
+  <section className="relative bg-sections-color py-4">
+            <div className={`relative mx-auto px-[5%] 2xl:px-0 2xl:max-w-7xl py-[2.5%]`}>
+                <div className={`${data?.class_content || ''}`}>
+                    {/* Header */}
+                <div className={`md:flex justify-between items-center mb-8 pb-4 border-b customborder-neutral-light ${data?.class_header || ''}`}>
                     <h2 className="text-[28px] md:text-4xl font-bold font-font-secondary mb-4 md:mb-0 animate-fadeIn">
                         {data?.title}
                     </h2>
                     <a
                         href={data?.link_catalog}
-                        className="hidden md:flex bg-primary animate-bounce transition-all duration-300 text-white border-none  justify-center flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold cursor-pointer hover:opacity-90 hover:scale-105 animate-slideIn"
+                        className={`hidden md:flex bg-primary animate-bounce transition-all duration-300  border-none  justify-center flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold cursor-pointer hover:opacity-90 hover:scale-105 animate-slideIn ${data?.class_button || 'text-white'}`}
                     >
                         Ver todos
                         <Tag width="1rem" className="rotate-90" />
@@ -88,8 +122,8 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
                                 nextEl: null, // Se configurará después
                                 enabled: true,
                             }}
-                            slidesPerView={2}
-                            grid={{
+                            slidesPerView={data?.swiper?.slidesPerView || 2}
+                            grid={data?.swiper?.grid || {
                                 fill: 'row',
                                 rows: 3,
                             }}
@@ -111,7 +145,7 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
                                     setSwiperInstance(swiper);
                                 }, 100);
                             }}
-                            breakpoints={{
+                            breakpoints={data?.swiper?.breakpoints || {
                                 640: { slidesPerView: 2, spaceBetween: 10 },
                                 768: { slidesPerView: 3, grid: { rows: 1 }, spaceBetween: 0 },
                                 1024: { slidesPerView: 4, grid: { rows: 1 }, spaceBetween: 0 },
@@ -124,13 +158,7 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
                                     key={`${product.id}-${index}`}
                                     className="mb-4 lg:mb-0 px-1 py-2  md:p-0 !h-full lg:!flex lg:items-center lg:justify-center animate-slideIn"
                                 >
-                                    <CardHoverBtn
-                                        product={product}
-                                        setCart={setCart}
-                                        cart={cart}
-                                        data={data}
-                                        isFirstCard={index === 0}
-                                    />
+                                    {renderCard(product, index)}
                                 </SwiperSlide>
                             ))}
                         </Swiper>
@@ -172,6 +200,7 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
                         </button>
                     </div>
                 </div>
+                </div>
             </div>
 
             <style jsx="true">{`
@@ -191,6 +220,7 @@ const ProductInfinite = ({ items, data, setCart, cart }) => {
                 }
             `}</style>
         </section>
+      )
     );
 };
 

@@ -11,15 +11,32 @@ import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
+import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import ArrayDetails2Object from "../Utils/ArrayDetails2Object";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
-import { title } from "framer-motion/client";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
 import QuillFormGroup from "../Components/Adminto/form/QuillFormGroup";
 
 const aboutusRest = new AboutusRest();
 const webDetailsRest = new WebDetailsRest();
+
+// Detectar si estamos en LOCAL
+const isLocal = window.location.hostname === 'localhost' || 
+               window.location.hostname === '127.0.0.1' || 
+               window.location.hostname.includes('.local') ||
+               window.location.hostname.includes('.test');
+
+// Opciones de correlativo predefinidas
+const CORRELATIVE_OPTIONS = [
+    { value: 'section-hero', text: '🦸‍♂️ Hero Principal - Sección principal con título e imagen' },
+    { value: 'section-mision', text: '🎯 Misión - Sección de misión de la empresa' },
+    { value: 'section-vision', text: '🔭 Visión - Sección de visión de la empresa' },
+    { value: 'section-valores', text: '⭐ Valores - Grid de valores empresariales' },
+    { value: 'section-equipo', text: '👥 Nuestro Equipo - Presentación del equipo' },
+    { value: 'section-historia', text: '📚 Nuestra Historia - Historia de la empresa' },
+    { value: 'section-cta', text: '📞 Call to Action - Sección de contacto final' }
+];
 
 const About = ({ details: detailsDB }) => {
     const gridRef = useRef();
@@ -27,6 +44,7 @@ const About = ({ details: detailsDB }) => {
 
     // Form elements ref
     const idRef = useRef();
+    const correlativeRef = useRef();
     const nameRef = useRef();
     const descriptionRef = useRef();
     const titleRef = useRef();
@@ -39,15 +57,17 @@ const About = ({ details: detailsDB }) => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
+        correlativeRef.current.value = data?.correlative ?? "";
         nameRef.current.value = data?.name ?? "";
         descriptionRef.editor.root.innerHTML = data?.description ?? "";
         titleRef.current.value = data?.title ?? "";
         linkRef.current.value = data?.link ?? "";
         imageRef.current.value = null;
-        imageRef.image.src = `/storage/images/aboutus/${
-            data?.image ?? "undefined"
-        }`;
+        imageRef.image.src = data?.image ? `/storage/images/aboutus/${data.image}` : '';
         $(modalRef.current).modal("show");
     };
 
@@ -56,6 +76,7 @@ const About = ({ details: detailsDB }) => {
 
         const request = {
             id: idRef.current.value || undefined,
+            correlative: correlativeRef.current.value,
             name: nameRef.current.value,
             description: descriptionRef.current.value,
             title: titleRef.current.value,
@@ -72,8 +93,16 @@ const About = ({ details: detailsDB }) => {
             formData.append("image", image);
         }
 
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
+
         const result = await aboutusRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -108,6 +137,21 @@ const About = ({ details: detailsDB }) => {
         const result = await aboutusRest.delete(id);
         if (!result) return;
         $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+        
+        try {
+            const result = await aboutusRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering about:', error);
+        }
     };
 
     const [details, setDetails] = useState(ArrayDetails2Object(detailsDB));
@@ -149,6 +193,14 @@ const About = ({ details: detailsDB }) => {
                     </>
                 }
                 rest={aboutusRest}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 toolBar={(container) => {
                     container.unshift({
                         widget: "dxButton",
@@ -162,15 +214,20 @@ const About = ({ details: detailsDB }) => {
                                     .refresh(),
                         },
                     });
-                    // container.unshift({
-                    //   widget: 'dxButton', location: 'after',
-                    //   options: {
-                    //     icon: 'plus',
-                    //     text: 'Nuevo about',
-                    //     hint: 'Nuevo about',
-                    //     onClick: () => onModalOpen()
-                    //   }
-                    // });
+                    
+                    // BOTÓN AGREGAR: Solo habilitado en LOCAL
+                    if (isLocal) {
+                        container.unshift({
+                            widget: 'dxButton', 
+                            location: 'after',
+                            options: {
+                                icon: 'plus',
+                                text: 'Nuevo About',
+                                hint: 'Agregar nuevo about',
+                                onClick: () => onModalOpen()
+                            }
+                        });
+                    }
                 }}
                 columns={[
                     {
@@ -179,12 +236,24 @@ const About = ({ details: detailsDB }) => {
                         visible: false,
                     },
                     {
+                        dataField: "order_index",
+                        caption: "Orden",
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
+                    },
+                    {
+                        dataField: "correlative",
+                        caption: "Correlativo",
+                        width: 150,
+                    },
+                    {
                         dataField: "name",
                         caption: "Sección",
                     },
                     {
                         dataField: "title",
-                        caption: "Titulo",
+                        caption: "Título",
                     },
                     {
                         dataField: "image",
@@ -256,29 +325,57 @@ const About = ({ details: detailsDB }) => {
             >
                 <div className="row" id="aboutuses-container">
                     <input ref={idRef} type="hidden" />
+                    
+                    {/* CORRELATIVO: Select en LOCAL, Input disabled en PRODUCCIÓN */}
+                    {isLocal ? (
+                        <SelectFormGroup
+                            eRef={correlativeRef}
+                            label="Tipo de Bloque (Correlativo)"
+                            col="col-12"
+                            required
+                            dropdownParent={"#aboutuses-container"}
+                            helpText="Selecciona el tipo de bloque que quieres crear"
+                        >
+                            <option value="">Selecciona un bloque</option>
+                            {CORRELATIVE_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.text}
+                                </option>
+                            ))}
+                        </SelectFormGroup>
+                    ) : (
+                        <InputFormGroup
+                            eRef={correlativeRef}
+                            label="Correlativo"
+                            col="col-12"
+                            required
+                        />
+                    )}
+                    
                     <InputFormGroup
                         eRef={nameRef}
                         label="Sección"
                         col="col-12"
-                        rows={2}
                         required
-                        disabled
                     />
+                    
                     <InputFormGroup
                         eRef={titleRef}
                         label="Título"
                         col="col-12"
-                        rows={2}
                     />
+                    
                     <InputFormGroup
                         eRef={linkRef}
                         label="Link"
                         col="col-12"
-                        rows={2}
                     />
+                    
                     <QuillFormGroup eRef={descriptionRef} label="Descripción" />
+                    
                     <ImageFormGroup
                         eRef={imageRef}
+                        name="image"
                         label="Imagen"
                         col="col-12"
                         rows={3}

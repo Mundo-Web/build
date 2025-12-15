@@ -9,7 +9,7 @@ import Modal from '../Components/Adminto/Modal';
 import Table from '../Components/Adminto/Table';
 import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
-import Number2Currency from '../Utils/Number2Currency';
+import Number2Currency, { CurrencySymbol } from '../Utils/Number2Currency';
 
 const deliveryZonesRest = new DeliveryZonesRest()
 
@@ -118,7 +118,7 @@ const DeliveryZones = () => {
           caption: 'Precio',
           width: '15%',
           cellTemplate: (container, { value }) => {
-            container.text(`S/. ${Number2Currency(value)}`)
+            container.text(`${CurrencySymbol()} ${Number2Currency(value)}`)
           }
         },
         {

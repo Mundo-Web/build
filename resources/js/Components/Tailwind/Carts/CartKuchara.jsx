@@ -1,5 +1,5 @@
 import React from "react";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import CartItemRow from "../Components/CartItemRow";
 import General from "../../../Utils/General";
 
@@ -69,15 +69,15 @@ const CartKuchara = ({ data, cart, setCart }) => {
                       <div>
                         {
                         item.discount_percent > 0 &&
-                        <span className="line-through text-xs text-gray-500">S/ {Number2Currency(item.price)}</span>
+                        <span className="line-through text-xs text-gray-500">{CurrencySymbol()} {Number2Currency(item.price)}</span>
                         }
-                        <span className="block">S/ {Number2Currency(item.final_price)}</span>
+                        <span className="block">{CurrencySymbol()} {Number2Currency(item.final_price)}</span>
                       </div>
                     </div>
 
                     <div>
                       <div className="font-medium mb-2">Sub Total</div>
-                      <div>S/ {Number2Currency(item.final_price * item.quantity)}</div>
+                      <div>{CurrencySymbol()} {Number2Currency(item.final_price * item.quantity)}</div>
                     </div>
                   </div>
                 </div>
@@ -105,20 +105,20 @@ const CartKuchara = ({ data, cart, setCart }) => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <p>Subtotal</p>
-              <span>S/. {Number2Currency(igv > 0 ? totalPrice * (1 - igv) : totalPrice)}</span>
+              <span>{CurrencySymbol()} {Number2Currency(igv > 0 ? totalPrice * (1 - igv) : totalPrice)}</span>
             </div>
 
             {
               igv > 0 &&
               <div className="flex justify-between items-center">
                 <p>IGV ({(igv * 100).toFixed(2)}%)</p>
-                <span>S/. {Number2Currency(totalPrice * igv)}</span>
+                <span>{CurrencySymbol()} {Number2Currency(totalPrice * igv)}</span>
               </div>
             }
 
             <div className="flex justify-between items-center font-semibold text-lg pt-2 border-t border-gray-200">
               <p>Total</p>
-              <span>S/. {Number2Currency(totalPrice)}</span>
+              <span>{CurrencySymbol()} {Number2Currency(totalPrice)}</span>
             </div>
 
             <a

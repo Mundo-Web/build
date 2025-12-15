@@ -1,28 +1,14 @@
-import React, { useEffect, useState, Suspense } from "react";
-import { createRoot } from "react-dom/client";
+import React, { useEffect, useState, Suspense, createContext } from "react";
+import { createRoot } from 'react-dom/client';
 import CreateReactScript from "./Utils/CreateReactScript";
-
-// Componente de carga para usar con Suspense
-const LoadingFallback = () => (
-    <div className="fixed inset-0 flex flex-col justify-center items-center bg-black/90 backdrop-blur-sm z-50">
-
-        <div className="animate-bounce">
-            <img
-
-                src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
-                alt={Global.APP_NAME}
-                onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/assets/img/logo-bk.svg";
-                }}
-
-                className=" w-64 lg:w-96 transition-all duration-300 transform hover:scale-105"
-            />
-        </div>
-    </div>
-);
+import { Local } from "sode-extend-react";
+import Global from "./Utils/Global";
+import ItemsRest from "./Actions/ItemsRest";
+import SortByAfterField from "./Utils/SortByAfterField";
+import { Toaster } from "sonner";
 
 // Importaciones lazy
+const NoComponent = React.lazy(() => import("./NoComponent"));
 const TopBar = React.lazy(() => import("./Components/Tailwind/TopBar"));
 const Header = React.lazy(() => import("./Components/Tailwind/Header"));
 const Footer = React.lazy(() => import("./Components/Tailwind/Footer"));
@@ -43,30 +29,167 @@ const Carrusel = React.lazy(() => import("./Components/Tailwind/Carrusel"));
 const Faq = React.lazy(() => import("./Components/Tailwind/Faq"));
 const PostDetail = React.lazy(() => import("./Components/Tailwind/PostDetail"));
 const Blog = React.lazy(() => import("./Components/Tailwind/Blog"));
+const Innovation = React.lazy(() => import("./Components/Tailwind/Innovation"));
+const Service = React.lazy(() => import("./Components/Tailwind/Service"));
 const AboutUs = React.lazy(() => import("./Components/Tailwind/AboutUs"));
 const Login = React.lazy(() => import("./Components/Tailwind/Login"));
 const Signup = React.lazy(() => import("./Components/Tailwind/Signup"));
 const ForgotPassword = React.lazy(() => import("./Components/Tailwind/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./Components/Tailwind/ResetPassword"));
 const Complaint = React.lazy(() => import("./Components/Tailwind/Complaint"));
+const Whistleblowing = React.lazy(() => import("./Components/Tailwind/Whistleblowing"));
 const Indicator = React.lazy(() => import("./Components/Tailwind/Indicator"));
 const ThankSimple = React.lazy(() => import("./Components/Tailwind/Thanks/ThankSimple"));
 const Image = React.lazy(() => import("./Components/Tailwind/Image"));
+const Track = React.lazy(() => import("./Components/Tailwind/Track"));
 const BananaLab = React.lazy(() => import("./Components/Tailwind/BananaLab"));
 const Floating = React.lazy(() => import("./Components/Tailwind/Floating"));
 const DeliveryZone = React.lazy(() => import("./Components/Tailwind/DeliveryZone"));
 const Ad = React.lazy(() => import("./Components/Tailwind/Ad"));
 const Testimonials = React.lazy(() => import("./Components/Tailwind/Testimonials"));
+const Strength = React.lazy(() => import("./Components/Tailwind/Strength"));
 const Brands = React.lazy(() => import("./Components/Tailwind/Brands"));
 const Partner = React.lazy(() => import("./Components/Tailwind/Partner"));
+const Subscription = React.lazy(() => import("./Components/Tailwind/Subscription"));
 const Agradecimientos = React.lazy(() => import("./Components/Tailwind/Agradecimientos"));
-import { Local } from "sode-extend-react";
-import Global from "./Utils/Global";
-import ItemsRest from "./Actions/ItemsRest";
-import SortByAfterField from "./Utils/SortByAfterField";
-import { Toaster } from "sonner";
+const Support = React.lazy(() => import("./Components/Tailwind/Support"));
+const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
+const Store = React.lazy(() => import("./Components/Tailwind/Store"));
+const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
+
+// Componente de carga para usar con Suspense
+const LoadingFallback = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [showFallback, setShowFallback] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
+    const [progress, setProgress] = useState(10);
+
+    useEffect(() => {
+        // Detectar mobile
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        // Simular progreso de carga más realista
+        const progressInterval = setInterval(() => {
+            setProgress(prev => {
+                if (prev >= 95) return prev;
+                // Progreso más lento al final
+                const increment = prev < 50 ? Math.random() * 15 + 5 : Math.random() * 5 + 1;
+                return Math.min(prev + increment, 95);
+            });
+        }, 200);
+
+        // Timeout diferenciado para mobile vs desktop
+        const timeout = setTimeout(() => {
+            setProgress(100);
+            setTimeout(() => setShowFallback(false), 300);
+        }, isMobile ? 1500 : 2500);
+
+        return () => {
+            clearTimeout(timeout);
+            clearInterval(progressInterval);
+            window.removeEventListener('resize', checkMobile);
+        };
+    }, [isMobile]);
+
+    // Si ya no mostrar fallback, hacer transición suave manteniendo la barra de progreso
+    if (!showFallback) {
+        return (
+            <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/95 backdrop-blur-sm z-50">
+                <div className="animate-bounce">
+                    <img
+                        src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                        alt={Global.APP_NAME}
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/assets/img/logo-bk.svg";
+                        }}
+                        className={`${isMobile ? 'w-36' : 'w-48 lg:w-64'
+                            } transition-all duration-300 opacity-50`}
+                        loading="eager"
+                        decoding="async"
+                    />
+                </div>
+
+                {/* Mantener barra de progreso pero más sutil */}
+                <div className={`mt-4 bg-gray-200 rounded-full h-1 ${isMobile ? 'w-32' : 'w-48'
+                    }`}>
+                    <div
+                        className="bg-primary h-1 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min(progress + 5, 100)}%` }}
+                    ></div>
+                </div>
+
+
+            </div>
+        );
+    }
+
+    return (
+        <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/95 backdrop-blur-sm z-50">
+            <div className="animate-bounce">
+                <img
+                    src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                    alt={Global.APP_NAME}
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/assets/img/logo-bk.svg";
+                    }}
+                    onLoad={() => {
+                        setIsLoaded(true);
+                        // En mobile, ocultar más rápido una vez cargado
+                        if (isMobile) {
+                            setTimeout(() => setShowFallback(false), 300);
+                        }
+                    }}
+                    className={`${isMobile ? 'w-32 sm:w-48' : 'w-64 lg:w-96'
+                        } transition-all duration-300 transform hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                    loading="eager"
+                    decoding="async"
+                />
+            </div>
+
+            {/* Spinner de respaldo si la imagen no carga */}
+            {!isLoaded && (
+                <div className={`animate-spin rounded-full border-b-2 border-primary mt-4 ${isMobile ? 'h-8 w-8' : 'h-12 w-12'
+                    }`}></div>
+            )}
+
+            {/* Indicador de progreso mejorado */}
+            {isMobile && (
+                <div className="mt-4 w-32 bg-gray-200 rounded-full h-1.5">
+                    <div
+                        className="bg-primary h-1.5 rounded-full transition-all duration-500 ease-out"
+                        style={{
+                            width: `${Math.max(progress, 10)}%`
+                        }}
+                    ></div>
+                </div>
+            )}
+
+            {/* Barra de progreso para desktop también */}
+            {!isMobile && (
+                <div className="mt-6 w-48 bg-gray-200 rounded-full h-2">
+                    <div
+                        className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
+                        style={{
+                            width: `${Math.max(progress, 10)}%`
+                        }}
+                    ></div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const itemsRest = new ItemsRest();
+
+export const SystemContext = createContext({});
 
 const System = ({
     session,
@@ -82,8 +205,11 @@ const System = ({
     contacts,
     faqs,
     headerPosts,
+    stores,
     postsLatest,
     textstatic,
+    categorias,
+    hasRole = () => { }
 }) => {
 
     const getItems = (itemsId) => {
@@ -107,20 +233,49 @@ const System = ({
     }, [favorites]);
 
     useEffect(() => {
-        itemsRest.verifyStock(cart.map((x) => x.id)).then((items) => {
-            const newCart = items.map((item) => {
-                const found = cart.find((x) => x.id == item.id);
-                if (!found) return;
-                found.price = item.price;
-                found.discount = item.discount;
-                found.name = item.name;
-                return found;
-            });
-            setCart(newCart);
-        });
-    }, [null]);
+        // Separar combos de productos normales
+        const regularItems = cart.filter(x => x.type !== 'combo');
+        const combos = cart.filter(x => x.type === 'combo');
 
-   
+        if (regularItems.length > 0) {
+            itemsRest.verifyStock(regularItems.map((x) => x.id)).then((items) => {
+                const verifiedRegularItems = items.map((item) => {
+                    const found = regularItems.find((x) => x.id == item.id);
+                    if (!found) return;
+                    found.price = item.price;
+                    found.discount = item.discount;
+                    found.name = item.name;
+                    return found;
+                }).filter(Boolean); // Filtrar undefined/null
+
+                // Combinar productos verificados con combos sin modificar
+                const newCart = [...verifiedRegularItems, ...combos];
+
+
+
+                setCart(newCart);
+            });
+        } else if (combos.length > 0) {
+            // Si solo hay combos, mantenerlos sin verificación
+        }
+    }, []);
+
+    // Preload crítico para mobile
+    useEffect(() => {
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Preload componentes críticos solo en mobile
+            const criticalComponents = ['Header', 'Footer', 'Product', 'Cart'];
+
+            criticalComponents.forEach(component => {
+                import(`./Components/Tailwind/${component}.jsx`).catch(() => {
+                    // Silenciar errores de preload
+                });
+            });
+        }
+    }, []);
+
     const getSystem = ({ component, value, data, itemsId, visible }) => {
         if (visible == 0) return <></>;
 
@@ -133,10 +288,12 @@ const System = ({
             pages,
             isUser: session,
             generals,
+            stores,
             headerPosts,
-            contacts
+            contacts,
+            categorias
         };
-        
+
         switch (component) {
             case "top_bar":
                 return (
@@ -150,6 +307,7 @@ const System = ({
                 return <Menu data={data} which={value} items={getItems(itemsId)} cart={cart} setCart={setCart} pages={pages} />
             case "content":
                 if (!page.id) {
+                    return null
                     return <div className="h-80 w-full bg-gray-300 flex items-center justify-center">
                         <div>- Tu contenido aquí -</div>
                     </div>
@@ -161,7 +319,7 @@ const System = ({
                 }
                 break;
             case "filter":
-                return <Filter which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} />
+                return <Filter which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} setFavorites={setFavorites} favorites={favorites} />
             case "product":
                 return <Product which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites}
                     setFavorites={setFavorites} contacts={contacts} />
@@ -170,13 +328,13 @@ const System = ({
             case "collection":
                 return <Collection which={value} data={data} items={getItems(itemsId)} />
             case "slider":
-                return <Slider which={value} data={data} sliders={getItems(itemsId)} />
+                return <Slider which={value} data={data} sliders={getItems(itemsId)} generals={generals} />
             case "carrusel":
                 return <Carrusel which={value} data={data} items={getItems(itemsId)} />
             case "indicator":
                 return <Indicator which={value} data={data} items={getItems(itemsId)} />
             case "banner":
-                return <Banner which={value} data={data} items={getItems(itemsId)} />
+                return <Banner which={value} data={data} items={getItems(itemsId)} generals={generals} />
             case "ads":
                 return <Ad which={value} data={data} items={getItems(itemsId)} />
             case "image":
@@ -190,19 +348,25 @@ const System = ({
             case "cart":
                 return <Cart which={value} data={data} cart={cart} setCart={setCart} />
             case "checkout":
-                return <Checkout which={value} data={data} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} />
+                return <Checkout which={value} data={data} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} categorias={categorias} />
             case "contact":
-                return <Contact which={value} data={data} contacts={contacts} />
+                return <Contact which={value} data={data} contacts={contacts} generals={generals} />
             case "faq":
                 return <Faq which={value} data={data} faqs={faqs} />
             case "thank":
                 return <ThankSimple which={value} data={data} item={filteredData.Sale} />
+            case "track":
+                return <Track which={value} data={data} />
             case "blog":
                 return <Blog which={value} data={data} items={getItems(itemsId)} headerPosts={headerPosts} postsLatest={postsLatest} filteredData={filteredData} />
+            case "innovation":
+                return <Innovation which={value} data={data} items={getItems(itemsId)} />
+            case "service":
+                return <Service which={value} data={data} items={getItems(itemsId)} />
             case "post-detail":
                 return <PostDetail which={value} data={data} item={filteredData.Post} />
             case "about":
-                return <AboutUs which={value} data={data} filteredData={filteredData} items={getItems(itemsId)}/>
+                return <AboutUs which={value} data={data} filteredData={filteredData} items={getItems(itemsId)} />
             case "login":
                 return <Login which={value} data={data} />
             case "signup":
@@ -214,25 +378,35 @@ const System = ({
             case "frame":
                 return <Frame which={value} data={data} />
             case "footer":
-                return <Footer {...componentProps} contacts={contacts} generals={generals} data={data} />
+                return <Footer {...componentProps} contacts={contacts} generals={generals} data={data} stores={stores} />
             case "complaints":
                 return <Complaint which={value} data={data} generals={generals} />
+            case "whistleblowings":
+                return <Whistleblowing which={value} data={data} generals={generals} />
             case "floating":
                 return <Floating which={value} data={data} />
             case "testimonials":
                 return <Testimonials which={value} data={data} items={getItems(itemsId)} />
+            case "strength":
+                return <Strength which={value} data={data} items={getItems(itemsId)} />
             case "brands":
                 return <Brands which={value} data={data} items={getItems(itemsId)} />
             case "partner":
                 return <Partner which={value} data={data} items={getItems(itemsId)} />
+            case "subscription":
+                return <Subscription which={value} data={data} />
             case "agradecimientos":
                 return <Agradecimientos which={value} data={data} items={getItems(itemsId)} contacts={contacts} />
+            case "support":
+                return <Support which={value} data={data} items={getItems(itemsId)} />
+            case "firstclass":
+                return <FirstClass {...componentProps} />
+            case "store":
+                return <Store {...componentProps} />
+            case "hotel":
+                return <Hotel {...componentProps} filteredData={filteredData} favorites={favorites} setFavorites={setFavorites} />
             default:
-                return (
-                    <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">
-                        - No Hay componente <b>{value}</b> -
-                    </div>
-                );
+                return <NoComponent which={value} />
         }
     };
 
@@ -241,24 +415,21 @@ const System = ({
     );
 
     return (
+        // <SystemContext.Provider value={{
+        //     hasRole
+        // }}>
         <main className="font-paragraph">
             {systemsSorted.map((system) => getSystem(system))}
             <Toaster />
         </main>
+        // </SystemContext.Provider>
     );
 };
 
 CreateReactScript((el, properties) => {
     createRoot(el).render(
-
-
         <Suspense fallback={<LoadingFallback />}>
             <System {...properties} />
         </Suspense>
-
-
     );
 });
-/* <Suspense fallback={<LoadingFallback />}>
-            <System {...properties} />
-        </Suspense> */

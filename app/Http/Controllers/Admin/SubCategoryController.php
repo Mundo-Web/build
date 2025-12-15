@@ -12,6 +12,8 @@ class SubCategoryController extends BasicController
     public $model = SubCategory::class;
     public $reactView = 'Admin/Subcategory';
     public $prefix4filter = 'sub_categories';
+    public $imageFields = ['image'];
+    public $defaultOrderBy = 'order_index'; // Ordenar por order_index por defecto
 
     public function setPaginationInstance(Request $request, string $model)
     {

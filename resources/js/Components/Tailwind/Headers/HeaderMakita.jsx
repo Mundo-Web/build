@@ -395,23 +395,7 @@ const HeaderMakita = ({
 
         <CartModal data={data} cart={cart} setCart={setCart} modalOpen={modalOpen} setModalOpen={setModalOpen} />
 
-        {/* WhatsApp floating button */}
-        <div className="flex justify-end w-full mx-auto z-[100] relative">
-          <div className="hidden lg:block fixed bottom-6 sm:bottom-[2rem] lg:bottom-[4rem] z-20 cursor-pointer">
-            <a
-              target="_blank"
-              id="whatsapp-toggle"
-              href={`https://api.whatsapp.com/send?phone=${phoneWhatsapp}&text=${messageWhatsapp}`}
-              rel="noreferrer"
-            >
-              <img
-                src="/assets/img/whatsapp.svg"
-                alt="whatsapp"
-                className="mr-3 w-16 h-16 md:w-[100px] md:h-[100px] animate-bounce duration-300"
-              />
-            </a>
-          </div>
-        </div>
+    
       </header>
 
       {/* Keep the desktop Mega Menu Modal */}

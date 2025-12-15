@@ -4,7 +4,8 @@ import { Cookies, JSON } from "sode-extend-react"
 const SelectAPIFormGroup = ({ id, col, label, eRef, required = false, dropdownParent, searchAPI, searchBy, multiple = false, filter = null, onChange = () => { },
   templateResult,
   templateSelection,
-  tags
+  tags,
+  hidden
 }) => {
   if (!eRef) eRef = useRef()
     if (!id) id = `select-${crypto.randomUUID()}`;
@@ -71,11 +72,11 @@ const SelectAPIFormGroup = ({ id, col, label, eRef, required = false, dropdownPa
     $(eRef.current).on('change', onChange)
   }, [filter])
 
-  return <div className={`form-group ${col} mb-2`}>
+  return <div className={`form-group ${col} mb-2`} hidden={hidden}>
     <label htmlFor={id} className="mb-1">
       {label} {required && <b className="text-danger">*</b>}
     </label>
-    <select ref={eRef} id={id} required={required} className='form-control' style={{ width: '100%' }} multiple={multiple}></select>
+    <select ref={eRef} id={id} required={required && !hidden} className='form-control' style={{ width: '100%' }} multiple={multiple}></select>
   </div>
 }
 

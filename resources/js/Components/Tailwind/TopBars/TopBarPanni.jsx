@@ -5,11 +5,19 @@ import Tippy from "@tippyjs/react";
 import Global from "../../../Utils/Global";
 
 
-const TopBarPanni = ({ items, data }) => {
+const TopBarPanni = ({ items, data, generals = [] }) => {
   const sectionRef = useRef(null);
   const [show, setShow] = useState(true);
   const lastScroll = useRef(0);
   
+  const phonetop = generals.find(
+    (item) => item.correlative === "phone_contact"
+  );
+
+  const emailtop = generals.find(
+    (item) => item.correlative === "email_contact"
+  );
+
   useEffect(() => {
     if (sectionRef.current) {
       adjustTextColor(sectionRef.current); // Llama a la función

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import ReactModal from "react-modal";
 import CartItemRow from "./CartItemRow";
-import Number2Currency from "../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { motion, AnimatePresence } from "framer-motion";
 
 ReactModal.setAppElement("#app");
@@ -91,7 +91,7 @@ const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
                     <div className="flex justify-between items-center mb-4">
                         <span className="text-lg font-semibold text-gray-900">Total:</span>
                         <span className="text-xl font-bold text-gray-900">
-                            S/. {Number2Currency(totalPrice)}
+                            {CurrencySymbol()} {Number2Currency(totalPrice)}
                         </span>
                     </div>
                     <a

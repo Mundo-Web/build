@@ -1,10 +1,9 @@
-"use client";
 
 import { useState, useEffect, useRef } from "react";
 import ReactModal from "react-modal";
 import Global from "../../../../Utils/Global";
 import Tippy from "@tippyjs/react";
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import VoucherUpload from './VoucherUpload';
 import General from "../../../../Utils/General";
 import SalesRest from "../../../../Actions/SalesRest";
@@ -20,14 +19,16 @@ export default function UploadVoucherModalYape({
     onClose, 
     onUpload, 
     paymentMethod,
-    cart,
+    cart = [],
     subTotal,
     igv,
     envio,
     totalFinal,
     request,
     coupon = null,
-    descuentofinal = 0
+    descuentofinal = 0,
+    autoDiscounts = [],
+    autoDiscountTotal = 0
 }) {
     const [file, setFile] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -75,15 +76,21 @@ export default function UploadVoucherModalYape({
             const updatedRequest = {
                 ...request,
                 payment_proof: voucher,
-                details: JSON.stringify(request.cart.map((item) => ({
-                    id: item.id,
-                    quantity: item.quantity
-                }))),
+                // Asegurar que delivery_type tenga un valor por defecto
+                delivery_type: request.delivery_type || 'domicilio',
+                // Asegurar que applied_promotions sea JSON string si existe
+                applied_promotions: request.applied_promotions 
+                    ? (typeof request.applied_promotions === 'string' 
+                        ? request.applied_promotions 
+                        : JSON.stringify(request.applied_promotions))
+                    : null
             };
             
             const formData = new FormData();
             Object.keys(updatedRequest).forEach(key => {
-                formData.append(key, updatedRequest[key]);
+                if (updatedRequest[key] !== null && updatedRequest[key] !== undefined) {
+                    formData.append(key, updatedRequest[key]);
+                }
             });
     
             const result = await salesRest.save(formData);
@@ -126,10 +133,6 @@ export default function UploadVoucherModalYape({
             const updatedRequest = {
                 ...request,
                 payment_proof: voucher,
-                details: JSON.stringify(request.cart.map((item) => ({
-                    id: item.id,
-                    quantity: item.quantity
-                }))),
             };
             
             const formData = new FormData();
@@ -172,7 +175,7 @@ export default function UploadVoucherModalYape({
         <ReactModal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-font-general"
+            className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-paragraph"
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
             ariaHideApp={false}
         >
@@ -207,7 +210,7 @@ export default function UploadVoucherModalYape({
                 </div>
 
                 {/* Resumen de compra */}
-                <div className="bg-[#EAE8E6] rounded-xl shadow-lg p-6 col-span-2 h-max font-font-general">
+                <div className="bg-[#EAE8E6] rounded-xl shadow-lg p-6 col-span-2 h-max font-paragraph">
                     <h3 className="text-xl 2xl:text-2xl font-semibold pb-6 customtext-neutral-dark">Detalle de compras</h3>
 
                     <div className="space-y-6 border-b-2 pb-6">
@@ -226,12 +229,15 @@ export default function UploadVoucherModalYape({
                                             {item.name}
                                         </h3>
 
-                                        <p className="text-xs 2xl:text-sm customtext-neutral-light opacity-70">
+                                       {item?.color && (
+
+                                         <p className="text-xs 2xl:text-sm customtext-neutral-light opacity-70">
                                             Color:{" "}
                                             <span className="customtext-neutral-dark">
                                                 {item.color}
                                             </span>
                                         </p>
+                                       )}
                                         <p className="text-xs 2xl:text-sm customtext-neutral-light opacity-70">
                                             Cantidad:{" "}
                                             <span className="customtext-neutral-dark">
@@ -250,13 +256,13 @@ export default function UploadVoucherModalYape({
                                 Subtotal
                             </span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(subTotal)}
+                                {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">IGV</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(igv)}
+                                {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
                         {coupon && (
@@ -272,7 +278,7 @@ export default function UploadVoucherModalYape({
                                             ></i>
                                         </Tippy>
                                         <small className="block text-xs font-light">
-                                            {coupon.name}{" "}
+                                            {coupon.code}{" "}
                                             <Tippy
                                                 content={
                                                     coupon.description
@@ -281,28 +287,36 @@ export default function UploadVoucherModalYape({
                                                 <i className="mdi mdi-information-outline ms-1"></i>
                                             </Tippy>{" "}
                                             ({coupon.type === 'percentage' 
-                                                ? `-${Math.round(coupon.amount * 100) / 100}%`
-                                                : `S/ -${Number2Currency(coupon.amount)}`})
+                                                ? `${coupon.value}%`
+                                                    : `${CurrencySymbol()} ${Number2Currency(coupon.value)}`})
                                         </small>
                                     </span>
                                     <span>
-                                        S/ -
-                                        {Number2Currency(
+                                        {CurrencySymbol()} -{Number2Currency(
                                             descuentofinal
                                         )}
                                     </span>
                                 </div>
                             )}
+                            {autoDiscounts && autoDiscounts.length > 0 && (
+                                <div className="mb-2 mt-2 border-b pb-2">
+                                   
+                                    <div className="flex justify-between items-center text-sm font-bold text-green-600 mt-1 pt-1 border-t">
+                                        <span>Total descuentos automáticos:</span>
+                                        <span>{CurrencySymbol()} -{Number2Currency(autoDiscountTotal)}</span>
+                                    </div>
+                                </div>
+                            )}
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">Envío</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(envio)}
+                                {CurrencySymbol()} {Number2Currency(envio)}
                             </span>
                         </div>
                         <div className="py-1 border-y">
                             <div className="flex justify-between font-bold text-lg 2xl:text-xl items-center">
                                 <span>Total</span>
-                                <span>S/ {Number2Currency(totalFinal)}</span>
+                                <span>{CurrencySymbol()} {Number2Currency(totalFinal)}</span>
                             </div>
                         </div>
                     </div>
@@ -377,7 +391,7 @@ export default function UploadVoucherModalYape({
                                 ? "Procesando..." 
                                 : voucher 
                                     ? "Confirmar pago" 
-                                    : "Subir comprobante"}
+                                    : "Subir la captura del pago"}
                         </button>
                         
                         <button

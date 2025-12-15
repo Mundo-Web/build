@@ -2,7 +2,11 @@ import { useEffect, useRef } from "react";
 import { Tag } from "lucide-react";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 
+import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
+
 const BannerFlex = ({ data }) => {
+    const imageUrl = resolveSystemAsset(data?.image);
     const buttonFirstRef = useRef();
 
     useEffect(() => {
@@ -10,14 +14,14 @@ const BannerFlex = ({ data }) => {
     });
 
     return (
-        <div className="px-primary mx-auto font-font-general">
-            <div className="flex flex-col lg:flex-row md:items-center rounded-3xl bg-[#F5F5F5] overflow-hidden h-full ">
-                
+        <div className="px-primary py-0 2xl:max-w-7xl 2xl:px-0 mx-auto font-paragraph h-full">
+            <div className="flex flex-col lg:flex-row md:items-center rounded-3xl bg-[#F5F5F5] overflow-hidden lg:max-h-[75vh]">
+
                 <div className="w-full lg:w-6/12 h-full relative">
                     <img
-                        src={`/storage/images/system/${data?.image}`} 
+                        src={imageUrl}
                         onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
-                        className="w-full h-full sm:max-h-96 lg:max-h-none lg:min-h-[85vh] object-cover rounded-3xl md:rounded-none "
+                        className="w-full h-full sm:max-h-96  lg:min-h-[75vh] rounded-3xl object-cover  "
                     />
                 </div>
 
@@ -31,17 +35,22 @@ const BannerFlex = ({ data }) => {
                     </p>
                     <div className="flex flex-wrap gap-4 lg:gap-8 customtext-primary font-semibold w-full py-5 md:py-0">
                         <a
-                            href="/catalogo"
-                            className="bg-primary text-white text-base 2xl:text-xl tracking-normal cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"
-                        >
-                            Ver Productos
-                        </a>
-                        <a
+
                             href={data?.button_link}
                             ref={buttonFirstRef}
-                            className="border-primary text-base 2xl:text-xl tracking-normal border cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"
+                            
+                            className="bg-accent text-white text-base 2xl:text-xl tracking-normal cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"
+                            
+
                         >
                             {data?.button_text}
+                        </a>
+                        <a
+                            href="/catalogo"
+                            className="border-primary text-base 2xl:text-xl tracking-normal border cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full  hover:opacity-90 transition-all duration-300 flex items-center justify-center"
+
+                        >
+                            Ver productos
                         </a>
                     </div>
                     <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold md:pt-6 lg:pt-4 xl:pt-6 customtext-primary">

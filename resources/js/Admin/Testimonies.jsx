@@ -25,6 +25,8 @@ const Testimonies = ({ countries, details }) => {
     // Form elements ref
     const idRef = useRef();
     const nameRef = useRef();
+    const roleRef = useRef();
+    const ratingRef = useRef();
     const descriptionRef = useRef();
     const imageRef = useRef();
     const countryRef = useRef();
@@ -35,13 +37,18 @@ const Testimonies = ({ countries, details }) => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
+        roleRef.current.value = data?.role ?? "";
+        ratingRef.current.value = data?.rating ?? "5";
         $(countryRef.current)
             .val(data?.country_id ?? "89")
             .trigger("change");
         descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = `/storage/images/testimony/${data?.image}`;
+        imageRef.image.src = data?.image ? `/storage/images/testimony/${data.image}` : '';
         imageRef.current.value = null;
 
         $(modalRef.current).modal("show");
@@ -55,6 +62,8 @@ const Testimonies = ({ countries, details }) => {
             country_id: $(countryRef.current).val(),
             country: $(countryRef.current).find("option:selected").text(),
             name: nameRef.current.value,
+            role: roleRef.current.value,
+            rating: ratingRef.current.value,
             description: descriptionRef.current.value,
         };
 
@@ -62,14 +71,22 @@ const Testimonies = ({ countries, details }) => {
         for (const key in request) {
             formData.append(key, request[key]);
         }
-     
-       const file = imageRef.current.files[0]
-    if (file) {
-      formData.append('image', file)
-    }
+
+        const file = imageRef.current.files[0]
+        if (file) {
+            formData.append('image', file)
+        }
+
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append('image_delete', 'DELETE');
+        }
 
         const result = await testimoniesRest.save(formData);
         if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -142,24 +159,32 @@ const Testimonies = ({ countries, details }) => {
                         dataField: "name",
                         caption: "Autor",
                         cellTemplate: (container, { data }) => {
-                            container.append(
-                                DxBox(
-                                    [
+                            // DevExtreme may give us a jQuery-wrapped element or a plain DOM node.
+                            const domElement = container instanceof HTMLElement
+                                ? container
+                                : (container.get ? container.get(0) : container[0]);
+                            // Ensure the container is empty before mounting React.
+                            if (domElement) {
+                                domElement.innerHTML = '';
+                                const root = createRoot(domElement);
+                                root.render(
+                                    <div className="d-flex align-items-center gap-2">
                                         <img
                                             className="avatar-xs rounded-circle"
                                             src={`/storage/images/testimony/${data.image}`}
                                             alt={data.name}
-                                        />,
-                                        <p
-                                            className="mb-0"
-                                            style={{ fontSize: "14px" }}
-                                        >
+                                            onError={(e) => {
+                                                e.target.onerror = null; // prevent loop
+                                                console.error('Image failed to load (admin):', data.image);
+                                                e.target.src = '/api/cover/thumbnail/null';
+                                            }}
+                                        />
+                                        <p className="mb-0" style={{ fontSize: '14px' }}>
                                             {data.name}
-                                        </p>,
-                                    ],
-                                    false
-                                )
-                            );
+                                        </p>
+                                    </div>
+                                );
+                            }
                         },
                     },
                     {
@@ -223,6 +248,7 @@ const Testimonies = ({ countries, details }) => {
                         <div className="row">
                             <ImageFormGroup
                                 eRef={imageRef}
+                                name="image"
                                 label="Imagen"
                                 col="col-sm-4 col-xs-12"
                                 aspect={1}
@@ -231,7 +257,11 @@ const Testimonies = ({ countries, details }) => {
                                 <InputFormGroup
                                     eRef={nameRef}
                                     label="Autor"
-                                    rows={2}
+                                    required
+                                />
+                                <InputFormGroup
+                                    eRef={roleRef}
+                                    label="Cargo/Rol"
                                     required
                                 />
                                 <SelectFormGroup
@@ -252,6 +282,14 @@ const Testimonies = ({ countries, details }) => {
                             </div>
                         </div>
                     </div>
+                    <InputFormGroup
+                        eRef={ratingRef}
+                        label="Rating (1-5)"
+                        type="number"
+                        min="1"
+                        max="5"
+                        required
+                    />
                     <TextareaFormGroup
                         eRef={descriptionRef}
                         label="Descripción"

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import ReactModal from "react-modal";
 import Global from "../../../../Utils/Global";
 import Tippy from "@tippyjs/react";
-import Number2Currency from "../../../../Utils/Number2Currency";
+import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import VoucherUpload from './VoucherUpload';
 import { Plus, Minus, SquarePlus, SquareMinus } from "lucide-react";
 import BancDropdown from "./BancDropDown";
@@ -21,15 +21,17 @@ export default function UploadVoucherModalBancs({
     onClose, 
     onUpload, 
     paymentMethod,
-    cart,
+    cart = [],
     subTotal,
     igv,
     envio,
     totalFinal,
     request,
-    contacts,
+    contacts = [],
     coupon = null,
-    descuentofinal = 0
+    descuentofinal = 0,
+    autoDiscounts = [],
+    autoDiscountTotal = 0
 }) {
     const [file, setFile] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -78,10 +80,6 @@ export default function UploadVoucherModalBancs({
             const updatedRequest = {
                 ...request,
                 payment_proof: voucher,
-                details: JSON.stringify(request.cart.map((item) => ({
-                    id: item.id,
-                    quantity: item.quantity
-                }))),
             };
             
             const formData = new FormData();
@@ -128,10 +126,6 @@ export default function UploadVoucherModalBancs({
             const updatedRequest = {
                 ...request,
                 payment_proof: voucher,
-                details: JSON.stringify(request.cart.map((item) => ({
-                    id: item.id,
-                    quantity: item.quantity
-                }))),
             };
             
             const formData = new FormData();
@@ -174,11 +168,11 @@ export default function UploadVoucherModalBancs({
         <ReactModal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-font-general"
+            className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-paragraph"
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
             ariaHideApp={false}
         >
-            <div className="py-6 px-10 flex flex-col gap-3 max-h-[90vh] md:max-h-[95vh] overflow-y-auto font-font-general">
+            <div className="py-6 px-10 flex flex-col gap-3 max-h-[90vh] md:max-h-[95vh] overflow-y-auto font-paragraph">
 
                 <div className="flex justify-center items-center z-40">
                     <a href="/" className="flex items-center gap-2">
@@ -196,9 +190,7 @@ export default function UploadVoucherModalBancs({
                 <p className="customtext-primary mb-1 text-sm 2xl:text-base text-center">Estás a un paso de completar tu compra, realiza la transferencia/depósito a nuestras cuentas.</p>
                 
                 <div className="p-4 rounded-3xl bg-[#EAE8E6] flex flex-col gap-3 items-center">
-                    <div className="flex flex-col gap-1 text-center customtext-primary font-semibold">
-                        <h2>SALA FABULOSA</h2>      
-                    </div> 
+                   
                     
                     <div className="flex flex-col gap-3 w-full">
                         <BancDropdown contacts={contacts} />
@@ -207,7 +199,7 @@ export default function UploadVoucherModalBancs({
                 </div>       
               
                 {/* Resumen de compra */}
-                <div className="bg-[#EAE8E6] rounded-xl shadow-lg p-6 col-span-2 h-max font-font-general">
+                <div className="bg-[#EAE8E6] rounded-xl shadow-lg p-6 col-span-2 h-max font-paragraph">
                     <h3 className="text-xl 2xl:text-2xl font-semibold pb-6 customtext-neutral-dark">Detalle de compras</h3>
 
                     <div className="space-y-6 border-b-2 pb-6">
@@ -250,13 +242,13 @@ export default function UploadVoucherModalBancs({
                                 Subtotal
                             </span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(subTotal)}
+                                {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">IGV</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(igv)}
+                                {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
                          {coupon && (
@@ -282,27 +274,51 @@ export default function UploadVoucherModalBancs({
                                         </Tippy>{" "}
                                         ({coupon.type === 'percentage' 
                                             ? `-${Math.round(coupon.amount * 100) / 100}%`
-                                            : `S/ -${Number2Currency(coupon.amount)}`})
+                                            : `${CurrencySymbol()} -${Number2Currency(coupon.amount)}`})
                                     </small>
                                 </span>
                                 <span>
-                                    S/ -
+                                    {CurrencySymbol()} -
                                     {Number2Currency(
                                         descuentofinal
                                     )}
                                 </span>
                             </div>
                         )}
+                        {autoDiscounts && autoDiscounts.length > 0 && (
+                            <div className="mb-2 mt-2 border-b pb-2">
+                                <div className="text-sm font-bold text-green-600 mb-1">
+                                    Descuentos automáticos aplicados:
+                                </div>
+                                {autoDiscounts.map((discount, index) => (
+                                    <div key={index} className="flex justify-between items-center text-sm">
+                                        <span className="text-green-700">
+                                            {discount.rule_name || discount.name || 'Descuento automático'}
+                                            <small className="block text-xs font-light text-gray-600">
+                                                {discount.description || 'Promoción especial'}
+                                            </small>
+                                        </span>
+                                        <span className="font-semibold text-green-600">
+                                            {CurrencySymbol()} -{Number2Currency(discount.discount_amount || discount.amount || 0)}
+                                        </span>
+                                    </div>
+                                ))}
+                                <div className="flex justify-between items-center text-sm font-bold text-green-600 mt-1 pt-1 border-t">
+                                    <span>Total descuentos automáticos:</span>
+                                    <span>{CurrencySymbol()} -{Number2Currency(autoDiscountTotal)}</span>
+                                </div>
+                            </div>
+                        )}
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">Envío</span>
                             <span className="font-semibold">
-                                S/ {Number2Currency(envio)}
+                                {CurrencySymbol()} {Number2Currency(envio)}
                             </span>
                         </div>
                         <div className="py-1 border-y">
                             <div className="flex justify-between font-bold text-lg 2xl:text-xl items-center">
                                 <span>Total</span>
-                                <span>S/ {Number2Currency(totalFinal)}</span>
+                                <span>{CurrencySymbol()} {Number2Currency(totalFinal)}</span>
                             </div>
                         </div>
                     </div>
@@ -376,7 +392,7 @@ export default function UploadVoucherModalBancs({
                                 ? "Procesando..." 
                                 : voucher 
                                     ? "Confirmar pago" 
-                                    : "Subir comprobante"}
+                                    : "Subir la captura del pago"}
                         </button>
                         
                         <button

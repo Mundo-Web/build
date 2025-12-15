@@ -7,10 +7,18 @@ use App\Models\Benefit;
 use App\Models\Item;
 use App\Models\Sale;
 use App\Models\SaleStatus;
+use App\Models\General;
+use App\Models\AnalyticsEvent;
+use App\Models\Category;
+use App\Models\Brand;
 use Carbon\Carbon;
 use Culqi\Culqi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends BasicController
 {
@@ -141,6 +149,91 @@ class HomeController extends BasicController
         // Satisfacción del cliente (dummy, si no hay tabla de feedback)
         $customerSatisfaction = 94.3;
 
+        // === NUEVAS FUNCIONALIDADES ANALÍTICAS ===
+        
+        // Productos más vistos usando analytics_events
+        $mostViewedProducts = DB::table('analytics_events')
+            ->select('item_id', DB::raw('COUNT(*) as view_count'))
+            ->where('event_type', 'product_view')
+            ->whereNotNull('item_id')
+            ->groupBy('item_id')
+            ->orderByDesc('view_count')
+            ->limit(10)
+            ->get()
+            ->map(function($row) {
+                $item = Item::find($row->item_id);
+                return [
+                    'id' => $row->item_id,
+                    'name' => $item ? $item->name : 'Producto Desconocido',
+                    'view_count' => $row->view_count,
+                    'image' => $item ? $item->image : null,
+                    'price' => $item ? $item->price : 0
+                ];
+            });
+
+        // Visitas por día del mes actual (para gráfica de barras)
+        $visitsThisMonth = [];
+        $daysInMonth = Carbon::now()->daysInMonth;
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::now()->startOfMonth()->addDays($day - 1);
+            $visits = AnalyticsEvent::whereDate('created_at', $date)
+                ->where('event_type', 'product_view')
+                ->count();
+            $visitsThisMonth[] = [
+                'date' => $date->format('Y-m-d'),
+                'day' => $day,
+                'visits' => $visits,
+                'label' => $date->format('d/m')
+            ];
+        }
+
+        // Categorías y cantidad de productos por categoría (para gráfico circular)
+        $categoriesWithProducts = DB::table('categories')
+            ->select('categories.name', 'categories.id', DB::raw('COUNT(items.id) as product_count'))
+            ->leftJoin('items', function($join) {
+                $join->on('categories.id', '=', 'items.category_id')
+                     ->where('items.status', 1)
+                     ->where('items.visible', true);
+            })
+            ->where('categories.status', 1)
+            ->where('categories.visible', true)
+            ->groupBy('categories.id', 'categories.name')
+            ->orderByDesc('product_count')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'name' => $row->name,
+                    'value' => $row->product_count,
+                    'percentage' => 0 // Se calculará en el frontend
+                ];
+            });
+
+        // Marcas y cantidad de productos por marca (para gráfico circular)
+        $brandsWithProducts = DB::table('brands')
+            ->select('brands.name', 'brands.id', DB::raw('COUNT(items.id) as product_count'))
+            ->leftJoin('items', function($join) {
+                $join->on('brands.id', '=', 'items.brand_id')
+                     ->where('items.status', 1)
+                     ->where('items.visible', true);
+            })
+            ->where('brands.status', 1)
+            ->where('brands.visible', true)
+            ->groupBy('brands.id', 'brands.name')
+            ->orderByDesc('product_count')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'name' => $row->name,
+                    'value' => $row->product_count,
+                    'percentage' => 0 // Se calculará en el frontend
+                ];
+            });
+
+        // KPIs adicionales
+        $totalCategories = Category::where('status', 1)->where('visible', true)->count();
+        $totalBrands = Brand::where('status', 1)->where('visible', true)->count();
+        $totalActiveProducts = Item::where('status', 1)->where('visible', true)->count();
+
         return [
             'totalProducts' => $totalProducts,
             'totalStock' => $totalStock,
@@ -164,6 +257,113 @@ class HomeController extends BasicController
             'usersMonth' => $usersMonth,
             'usersYear' => $usersYear,
             'customerSatisfaction' => $customerSatisfaction,
+            // Nuevas funcionalidades analíticas
+            'mostViewedProducts' => $mostViewedProducts,
+            'visitsThisMonth' => $visitsThisMonth,
+            'categoriesWithProducts' => $categoriesWithProducts,
+            'brandsWithProducts' => $brandsWithProducts,
+            'totalCategories' => $totalCategories,
+            'totalBrands' => $totalBrands,
+            'totalActiveProducts' => $totalActiveProducts,
+            'dashboardVisibility' => $this->getDashboardVisibility(),
+            'hasRootRole' => $this->hasRootRole(),
         ];
+    }
+
+    /**
+     * Obtiene la configuración de visibilidad del dashboard
+     */
+    private function getDashboardVisibility()
+    {
+        $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
+        
+        if (!$visibilityRecord) {
+            // Configuración por defecto si no existe el registro
+            return [
+                'total_orders' => true,
+                'total_revenue' => true,
+                'new_users' => true,
+                'customer_satisfaction' => true,
+                'statistics_chart' => true,
+                'orders_statistics' => true,
+                'sales_by_location' => true,
+                'top_selling_products' => true,
+                'new_featured_products' => true,
+                'most_used_coupons' => true,
+                'most_used_discount_rules' => true,
+                'brands_listing' => true,
+                'top_clients' => true,
+                // Nuevas funcionalidades analíticas
+                'most_viewed_products' => true,
+                'visits_chart' => true,
+                'categories_chart' => true,
+                'brands_chart' => true,
+                'analytics_kpis' => true
+            ];
+        }
+        
+        return json_decode($visibilityRecord->description, true) ?? [];
+    }
+
+    /**
+     * Verifica si el usuario actual tiene rol Root
+     */
+    private function hasRootRole()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return false;
+        }
+        
+        return $user->roles()->where('name', 'Root')->exists();
+    }
+
+    /**
+     * Actualiza la configuración de visibilidad del dashboard
+     */
+    public function updateDashboardVisibility(Request $request)
+    {
+        try {
+            // Verificar que el usuario tenga rol Root
+            if (!$this->hasRootRole()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permisos para realizar esta acción'
+                ], 403);
+            }
+
+            $visibilityConfig = $request->input('visibility', []);
+            
+            // Buscar o crear el registro de visibilidad
+            $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
+            
+            if (!$visibilityRecord) {
+                $visibilityRecord = new General();
+                $visibilityRecord->correlative = 'VisibilityDashboard';
+                $visibilityRecord->name = 'Configuración de Visibilidad del Dashboard';
+                $visibilityRecord->status = 1;
+            }
+            
+            $visibilityRecord->description = json_encode($visibilityConfig);
+            $visibilityRecord->save();
+            
+            Log::info('Dashboard visibility updated', [
+                'user_id' => Auth::id(),
+                'config' => $visibilityConfig
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Configuración de visibilidad actualizada correctamente'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error updating dashboard visibility: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la configuración: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

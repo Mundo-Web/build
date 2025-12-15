@@ -1,13 +1,15 @@
 import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerSimple = ({ data }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
     return (
         <section className="bg-gray-50">
-            <div className="px-primary replace-max-w-here w-full mx-auto py-[5%] md:py-[2.5%]">
+            <div className="px-primary 2xl:max-w-7xl 2xl:px-0  w-full mx-auto py-10 md:py-10">
                 <div
                     className="w-full aspect-[5/2] rounded-2xl flex flex-col items-center justify-center bg-white shadow-lg"
                     style={{
-                        backgroundImage: `url('/storage/images/system/${data?.background}')`,
+                        backgroundImage: `url(${backgroundUrl})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",

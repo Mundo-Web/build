@@ -8,7 +8,11 @@ import { toast } from "sonner";
 import Global from "../../../Utils/Global";
 import { CircleCheckBig } from "lucide-react";
 
+
+import { resolveSystemAsset } from './bannerUtils';
+
 const BannerPostSuscriptionPaani = ({ data, items }) => {
+    const backgroundUrl = resolveSystemAsset(data?.background);
     // Animaciones
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -106,42 +110,49 @@ const BannerPostSuscriptionPaani = ({ data, items }) => {
                     variants={itemVariants}
                     className="col-span-1 bg-secondary md:col-span-2 lg:col-span-3 rounded-2xl p-4 grid grid-cols-1 lg:grid-cols-2 gap-6"
                 >
-                    {items.map((item, index) => {
-                        const content = document.createElement("div");
-                        content.innerHTML = item?.description;
-                        const text = content.textContent || content.innerText || "";
+                    {items && items.length > 0 ? (
+                        items.map((item, index) => {
+                            const content = document.createElement("div");
+                            content.innerHTML = item?.description;
+                            const text = content.textContent || content.innerText || "";
 
-                        return (
-                            <motion.div
-                                key={index}
-                                variants={itemVariants}
-                                whileHover={hoverCard}
-                                className="bg-white rounded-lg overflow-hidden shadow-sm h-auto cursor-pointer"
-                            >
+                            return (
                                 <motion.div
-                                    className="overflow-hidden"
-                                    whileHover={hoverImage}
+                                    key={index}
+                                    variants={itemVariants}
+                                    whileHover={hoverCard}
+                                    className="bg-white rounded-lg overflow-hidden shadow-sm h-auto cursor-pointer"
                                 >
-                                    <img
-                                        src={`/storage/images/post/${item?.image}`}
-                                        alt={item?.title}
-                                        className="inset-0 h-[250px] w-full object-cover aspect-[4/3]"
-                                    />
-                                </motion.div>
-                                <div className="p-4">
-                                    <h3 className="text-2xl font-semibold mt-1 mb-2 leading-tight">
-                                        {item?.name}
-                                    </h3>
-                                    <motion.p
-                                        className="text-base line-clamp-2"
-                                        whileHover={{ color: "#555" }}
+                                    <motion.div
+                                        className="overflow-hidden"
+                                        whileHover={hoverImage}
                                     >
-                                        {text}
-                                    </motion.p>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                                        <img
+                                            src={`/storage/images/post/${item?.image}`}
+                                            alt={item?.title}
+                                            className="inset-0 h-[250px] w-full object-cover aspect-[4/3]"
+                                        />
+                                    </motion.div>
+                                    <div className="p-4">
+                                        <h3 className="text-2xl font-semibold mt-1 mb-2 leading-tight">
+                                            {item?.name}
+                                        </h3>
+                                        <motion.p
+                                            className="text-base line-clamp-2"
+                                            whileHover={{ color: "#555" }}
+                                        >
+                                            {text}
+                                        </motion.p>
+                                    </div>
+                                </motion.div>
+                            );
+                        })
+                    ) : (
+                        <div className="col-span-2 bg-white rounded-lg p-8 text-center text-gray-500">
+                            <i className="mdi mdi-information-outline text-3xl d-block mb-2"></i>
+                            <p className="text-sm">Este banner requiere posts/items configurados</p>
+                        </div>
+                    )}
                 </motion.div>
 
                 <motion.div
@@ -153,33 +164,33 @@ const BannerPostSuscriptionPaani = ({ data, items }) => {
                     }}
                     className="col-span-1 md:col-span-1 lg:col-span-1 rounded-2xl"
                 >
-                    <div className=" rounded-3xl overflow-hidden shadow-sm h-[500px] lg:h-full" style={{ backgroundImage: `url(/storage/images/system/${data?.background})`, backgroundSize: "cover", backgroundPosition: "top" }}>
-
-                        <div className="relative z-10 flex flex-col justify-end h-full px-6 py-10 w-full">
-                            <h2 className="text-3xl 2xl:text-4xl font-medium text-white mb-2 drop-shadow-lg">
-                                {data?.name}
-                            </h2>
-                            <p className="text-base 2xl:text-lg  text-white mb-3 max-w-2xl drop-shadow">
-                                {data?.description}
-                            </p>
-                            <form onSubmit={onEmailSubmit}>
-                                <div className="relative">
-                                    <input
-                                        ref={emailRef}
-                                        type="email"
-                                        placeholder="Ingresa tu e-mail"
-                                        className="w-full  bg-transparent text-sm   shadow-xl  py-4 pl-5 border  rounded-[20px] md:rounded-full focus:ring-0 focus:outline-none placeholder:text-white text-white"
-                                    />
-                                    <button
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 py-2  shadow-xl px-4 bg-[linear-gradient(90deg,_#003D52_0%,_#0075A7_118.41%)] text-white rounded-full"
-                                        aria-label="Suscribite"
-                                    >
-                                        Suscribirme
-                                    </button>
-                                </div>
-                            </form>
+                    <div className="w-full flex items-center justify-center">
+                        <div className="rounded-3xl overflow-hidden shadow-sm h-[500px] lg:h-full w-full" style={{ backgroundImage: `url(${backgroundUrl})`, backgroundSize: "cover", backgroundPosition: "top" }}>
+                            <div className="relative z-10 flex flex-col justify-end h-full px-6 py-10 w-full">
+                                <h2 className="text-3xl 2xl:text-4xl font-medium text-white mb-2 drop-shadow-lg">
+                                    {data?.name}
+                                </h2>
+                                <p className="text-base 2xl:text-lg text-white mb-3 max-w-2xl drop-shadow">
+                                    {data?.description}
+                                </p>
+                                <form onSubmit={onEmailSubmit}>
+                                    <div className="relative">
+                                        <input
+                                            ref={emailRef}
+                                            type="email"
+                                            placeholder="Ingresa tu e-mail"
+                                            className="w-full bg-transparent text-sm shadow-xl py-4 pl-5 border rounded-[20px] md:rounded-full focus:ring-0 focus:outline-none placeholder:text-white text-white"
+                                        />
+                                        <button
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 py-2 shadow-xl px-4 bg-[linear-gradient(90deg,_#003D52_0%,_#0075A7_118.41%)] text-white rounded-full"
+                                            aria-label="Suscribite"
+                                        >
+                                            Suscribirme
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-
                     </div>
                 </motion.div>
             </motion.div>

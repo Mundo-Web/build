@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aboutus;
+use App\Models\General;
 use App\Models\Indicator;
 use App\Models\Item;
 use App\Models\Post;
@@ -28,6 +29,9 @@ class HomeController extends BasicController
 
         $details = WebDetail::whereIn('page', ['courses', 'testimonies', 'blog', 'about'])->get();
 
+        // Get all generals including SEO data
+        $generals = General::where('status', true)->get()->keyBy('correlative');
+
         return [
             'sliders' => $sliders,
             'indicators' => $indicators,
@@ -36,6 +40,7 @@ class HomeController extends BasicController
             'articles' => $articles,
             'courses' => $courses,
             'details' => $details,
+            'generals' => $generals,
         ];
     }
 }
