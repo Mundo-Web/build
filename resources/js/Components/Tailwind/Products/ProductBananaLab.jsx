@@ -8,6 +8,7 @@ import { motion, useInView } from "framer-motion";
 import CardHoverBtn from "./Components/CardHoverBtn";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import CardProductBananaLab from "./Components/CardProductBananaLab";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites}) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -140,9 +141,10 @@ const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites})
                         variants={headerVariants}
                         initial="hidden"
                         animate={headerInView ? "visible" : "hidden"}
-                        className="text-[32px] customtext-neutral-dark leading-9 font-semibold   mb-2 md:mb-0"
+                        className={`text-[32px] customtext-neutral-dark leading-9 font-semibold   mb-2 md:mb-0 ${data?.class_title || ""}`}
                     >
-                        {data?.title}
+                        <TextWithHighlight text={data?.title} color="bg-secondary"></TextWithHighlight>
+                      
                     </motion.h2>
                     <motion.a
                         href={data?.link_catalog}

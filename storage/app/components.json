@@ -2539,6 +2539,7 @@
                     "style_offer",
                     "support_favorite",
                     "title",
+                    "class_title",
                     "path",
                     "description",
                     "text_button",
@@ -3753,7 +3754,8 @@
                     "url_imagen",
                     "title",
                     "description",
-                    "about_url"
+                    "about_url",
+                    "class_card"
                 ],
                 "using": {
                     "model": "Aboutus"

@@ -1,7 +1,7 @@
 import BaseAdminto from "@Adminto/Base";
 import SwitchFormGroup from "@Adminto/form/SwitchFormGroup";
 import TextareaFormGroup from "@Adminto/form/TextareaFormGroup";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import Swal from "sweetalert2";
 import AboutusRest from "../Actions/Admin/AboutusRest";
@@ -38,9 +38,18 @@ const CORRELATIVE_OPTIONS = [
     { value: 'section-cta', text: '📞 Call to Action - Sección de contacto final' }
 ];
 
-const About = ({ details: detailsDB }) => {
+const About = ({ details: detailsDB, session, hasRootRole: backendRootRole }) => {
     const gridRef = useRef();
     const modalRef = useRef();
+
+    // Función para verificar si el usuario tiene rol Root (igual que Generals.jsx)
+    const hasRootRole = useCallback(() => {
+        // Usar el valor del backend si está disponible, sino usar el método original
+        if (typeof backendRootRole !== 'undefined') {
+            return backendRootRole;
+        }
+        return session?.roles?.some(role => role.name === 'Root') || false;
+    }, [backendRootRole, session]);
 
     // Form elements ref
     const idRef = useRef();
@@ -311,6 +320,18 @@ const About = ({ details: detailsDB }) => {
                                     onClick: () => onModalOpen(data),
                                 })
                             );
+                            
+                            // Mostrar botón de eliminar solo si tiene rol Root
+                            if (hasRootRole()) {
+                                container.append(
+                                    DxButton({
+                                        className: "btn btn-xs btn-soft-danger ml-1",
+                                        title: "Eliminar",
+                                        icon: "fa fa-trash",
+                                        onClick: () => onDeleteClicked(data.id),
+                                    })
+                                );
+                            }
                         },
                         allowFiltering: false,
                         allowExporting: false,

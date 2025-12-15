@@ -9,6 +9,19 @@ use App\Http\Requests\UpdateStrengthRequest;
 class StrengthController extends Controller
 {
     /**
+     * Get all active and visible strengths
+     */
+    public function getStrengths()
+    {
+        $strengths = Strength::where('visible', true)
+            ->where('status', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return response()->json($strengths);
+    }
+    
+    /**
      * Display a listing of the resource.
      */
     public function index()

@@ -93,6 +93,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ScrapController;
+use App\Http\Controllers\StrengthController;
 use App\Http\Controllers\TemporalyImageController;
 use App\Http\Controllers\UnifiedImportController;
 
@@ -141,6 +142,9 @@ Route::post('/captcha/verify', [App\Http\Controllers\CaptchaController::class, '
 Route::post('/tracking/add-to-cart', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackAddToCart']);
 Route::post('/tracking/initiate-checkout', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackInitiateCheckout']);
 Route::get('/tracking/purchase/{orderId}', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackPurchase']);
+
+// Strengths API
+Route::get('/strengths', [StrengthController::class, 'getStrengths']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
