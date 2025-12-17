@@ -3347,15 +3347,7 @@
                     "location"
                 ]
             },
-            {
-                "id": "ContactAko",
-                "name": "ContactAko",
-                "data": [
-                    "redirect",
-                    "title",
-                    "description"
-                ]
-            },
+          
             {
                 "id": "ContactHuaillys",
                 "name": "Contact Huaillys",
@@ -3440,14 +3432,7 @@
                     "class_title"
                 ]
             },
-            {
-                "id": "FaqAko",
-                "name": "Faqs Ako",
-                "data": [
-                    "title",
-                    "description"
-                ]
-            },
+          
             {
                 "id": "FaqModern",
                 "name": "FAQ Modern - Accordion Moderno",

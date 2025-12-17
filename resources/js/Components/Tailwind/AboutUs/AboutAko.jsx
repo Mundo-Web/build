@@ -113,7 +113,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                     variants={fadeInUp} 
                     className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title"
                 >
-                    <TextWithHighlight text={history?.title} />
+                    <TextWithHighlight text={history?.title} color="bg-secondary" />
                 </motion.h2>
             </motion.section>
 
@@ -166,7 +166,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                     variants={fadeInUp} 
                     className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-medium tracking-normal customtext-neutral-dark leading-tight font-title"
                 >
-                    <TextWithHighlight text={values?.title} />
+                    <TextWithHighlight text={values?.title} color="bg-secondary" />
                 </motion.h2>
             </motion.section>
 
@@ -341,7 +341,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                                         className="text-2xl md:text-3xl 2xl:text-4xl font-semibold customtext-primary font-title"
                                    
                                     >
-                                        <TextWithHighlight text={mision?.title} />
+                                        <TextWithHighlight text={mision?.title} color="bg-secondary" />
                                     </motion.h2>
                                 </motion.div>
                                 <motion.div
@@ -367,7 +367,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                                         className="text-2xl md:text-3xl 2xl:text-4xl font-semibold customtext-primary font-title"
                                       
                                     >
-                                        <TextWithHighlight text={vision?.title} />
+                                        <TextWithHighlight text={vision?.title} color="bg-secondary" />
                                     </motion.h2>
                                 </motion.div>
                                 <motion.div
