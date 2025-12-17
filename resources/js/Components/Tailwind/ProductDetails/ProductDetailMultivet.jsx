@@ -899,6 +899,8 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
                         data={data}
                         setCart={setCart}
                         cart={cart}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
                     />
                 )}
             </div>

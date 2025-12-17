@@ -2,8 +2,9 @@ import React, { useState, useMemo, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import CardProductMultivet from './Components/CardProductMultivet';
 import CardProductKatya from './Components/CardProductKatya';
+import CardProductBananaLab from './Components/CardProductBananaLab';
 
-const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
+const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCart }) => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
   // Referencias para animaciones
@@ -204,6 +205,17 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
                   data={data}
                   favorites={favorites}
                   setFavorites={setFavorites}
+                />
+              ) : cardType === 'bananalab' ? (
+          
+                <CardProductBananaLab
+                  product={product}
+                  data={data}
+                  favorites={favorites}
+                  setFavorites={setFavorites}
+                  cart={cart}
+                  setCart={setCart}
+                  widthClass='!w-full'
                 />
               ) : (
                 <CardProductMultivet

@@ -279,30 +279,123 @@ const HeaderSimple = ({ data, cart, setCart, pages, generals = [] }) => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Sidebar */}
         <AnimatePresence>
           {mobileMenuOpen && (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={menuVariants}
-              className="lg:hidden bg-white border-t border-gray-200"
-            >
-              <nav className="px-primary py-4 space-y-3">
-                {pages
-                  .filter((x) => x.menuable)
-                  .map((page, index) => (
-                    <a
-                      key={index}
-                      href={page.pseudo_path || page.path}
-                      className="block py-2 customtext-neutral-dark hover:customtext-primary font-medium transition-colors duration-200"
-                    >
-                      {page.name}
-                    </a>
-                  ))}
-              </nav>
-            </motion.div>
+            <>
+              {/* Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 bg-black/50 z-[998] lg:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+              
+              {/* Sidebar Menu */}
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-[999] lg:hidden overflow-y-auto"
+              >
+                {/* Header del menú */}
+                <div className="sticky top-0 bg-primary text-white p-4 flex items-center justify-between shadow-md z-10">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`} 
+                      alt={Global.APP_NAME}
+                      className="h-10 w-auto object-contain"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/assets/img/logo-bk.svg';
+                      }}
+                    />
+                  </div>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Contenido del menú */}
+                <nav className="p-4">
+                  {/* Enlaces de contacto */}
+                  <div className="mb-6 pb-6 border-b border-gray-200">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Contacto</h3>
+                    <div className="space-y-3">
+                      <a 
+                        href={`mailto:${getContact('support_email')}`}
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="w-10 h-10 bg-accent/10 text-accent rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M1.66699 5L7.42784 8.26414C9.55166 9.4675 10.449 9.4675 12.5728 8.26414L18.3337 5" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+                            <path d="M1.68013 11.23C1.73461 13.7847 1.76185 15.0619 2.70446 16.0082C3.64706 16.9543 4.95893 16.9872 7.58268 17.0532C9.19974 17.0938 10.8009 17.0938 12.418 17.0532C15.0417 16.9872 16.3536 16.9543 17.2962 16.0082C18.2388 15.0619 18.2661 13.7847 18.3205 11.23C18.3381 10.4086 18.3381 9.59208 18.3205 8.77066C18.2661 6.21604 18.2388 4.93873 17.2962 3.99254C16.3536 3.04635 15.0417 3.01339 12.418 2.94747C10.8009 2.90683 9.19974 2.90683 7.58268 2.94746C4.95893 3.01338 3.64706 3.04633 2.70445 3.99253C1.76184 4.93873 1.73461 6.21603 1.68013 8.77066C1.66261 9.59208 1.66262 10.4086 1.68013 11.23Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">Email</p>
+                          <p className="text-xs text-gray-500 truncate">{getContact('support_email')}</p>
+                        </div>
+                      </a>
+                      
+                      <a 
+                        href={`tel:${getContact('support_phone')}`}
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="w-10 h-10 bg-accent/10 text-accent rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.63188 4.76019L7.29633 4.00521C7.07693 3.51157 6.96723 3.26473 6.80317 3.07584C6.59756 2.83912 6.32956 2.66495 6.02973 2.57321C5.79049 2.5 5.52038 2.5 4.98017 2.5C4.18992 2.5 3.7948 2.5 3.46311 2.65191C3.07239 2.83085 2.71953 3.2194 2.57894 3.6255C2.45959 3.97024 2.49378 4.32453 2.56215 5.03308C3.28992 12.5752 7.42485 16.7101 14.9669 17.4378C15.6755 17.5062 16.0298 17.5404 16.3745 17.4211C16.7806 17.2805 17.1691 16.9276 17.3481 16.5369C17.5 16.2052 17.5 15.8101 17.5 15.0198C17.5 14.4796 17.5 14.2095 17.4268 13.9702C17.335 13.6704 17.1609 13.4024 16.9241 13.1968C16.7353 13.0327 16.4885 12.9231 15.9948 12.7037L15.2398 12.3681C14.7052 12.1305 14.4379 12.0117 14.1663 11.9859C13.9063 11.9612 13.6442 11.9977 13.4009 12.0924C13.1466 12.1914 12.922 12.3787 12.4725 12.7532C12.0251 13.126 11.8015 13.3124 11.5281 13.4122C11.2858 13.5007 10.9655 13.5336 10.7103 13.4959C10.4224 13.4535 10.202 13.3358 9.76105 13.1001C8.38938 12.3671 7.63294 11.6107 6.89989 10.2389C6.66428 9.79808 6.54648 9.57758 6.50406 9.28975C6.46645 9.0345 6.49923 8.71417 6.58775 8.47192C6.6876 8.19857 6.87401 7.97488 7.24682 7.5275C7.62135 7.07807 7.80861 6.85335 7.90762 6.59909C8.00237 6.35578 8.03885 6.09367 8.01412 5.83373C7.98828 5.5621 7.86948 5.2948 7.63188 4.76019Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">Teléfono</p>
+                          <p className="text-xs text-gray-500 truncate">{getContact('support_phone')}</p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Enlaces del menú principal */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Navegación</h3>
+                    <div className="space-y-1">
+                      {pages
+                        .filter((x) => x.menuable)
+                        .map((page, index) => (
+                          <motion.a
+                            key={index}
+                            href={page.pseudo_path || page.path}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 customtext-neutral-dark hover:customtext-primary font-medium transition-all duration-200 group"
+                          >
+                            <span>{page.name}</span>
+                            <svg 
+                              xmlns="http://www.w3.org/2000/svg" 
+                              width="20" 
+                              height="20" 
+                              viewBox="0 0 20 20" 
+                              fill="none"
+                              className="opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all duration-200"
+                            >
+                              <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </motion.a>
+                        ))}
+                    </div>
+                  </div>
+                </nav>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </header>
