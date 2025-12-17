@@ -7,6 +7,36 @@ import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { X } from "lucide-react";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaYoutube,
+  FaTiktok,
+  FaWhatsapp,
+  FaTelegram,
+  FaDiscord,
+  FaSnapchat,
+  FaPinterest,
+  FaReddit
+} from 'react-icons/fa';
+
+// Redes sociales predefinidas (mismo mapeo que en Socials.jsx)
+const predefinedSocials = [
+  { id: 'facebook', name: 'Facebook', icon: FaFacebook, iconRef: 'fab fa-facebook' },
+  { id: 'instagram', name: 'Instagram', icon: FaInstagram, iconRef: 'fab fa-instagram' },
+  { id: 'twitter', name: 'Twitter/X', icon: FaTwitter, iconRef: 'fab fa-twitter' },
+  { id: 'linkedin', name: 'LinkedIn', icon: FaLinkedin, iconRef: 'fab fa-linkedin' },
+  { id: 'youtube', name: 'YouTube', icon: FaYoutube, iconRef: 'fab fa-youtube' },
+  { id: 'tiktok', name: 'TikTok', icon: FaTiktok, iconRef: 'fab fa-tiktok' },
+  { id: 'whatsapp', name: 'WhatsApp', icon: FaWhatsapp, iconRef: 'fab fa-whatsapp' },
+  { id: 'telegram', name: 'Telegram', icon: FaTelegram, iconRef: 'fab fa-telegram' },
+  { id: 'discord', name: 'Discord', icon: FaDiscord, iconRef: 'fab fa-discord' },
+  { id: 'snapchat', name: 'Snapchat', icon: FaSnapchat, iconRef: 'fab fa-snapchat' },
+  { id: 'pinterest', name: 'Pinterest', icon: FaPinterest, iconRef: 'fab fa-pinterest' },
+  { id: 'reddit', name: 'Reddit', icon: FaReddit, iconRef: 'fab fa-reddit' }
+];
 
 const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts, data = {} }) => {
   const subscriptionsRest = new SubscriptionsRest();
@@ -242,12 +272,33 @@ const FooterSalaFabulosa = ({ socials = [], pages, generals, contacts, data = {}
               Nuestras redes
             </h3>
             <ul className="flex text-white gap-2">
-              {socials.map((social, index) => (
-                <Tippy key={index} content={`Ver ${social.name} en ${social.description}`}>
-                  <a href={social.link} target="_blank" rel="noopener noreferrer" className={`text-base flex bg-white customtext-primary ${social.icon} w-8
-                            h-8 pt-0.5 items-center justify-center rounded-full`} />
-                </Tippy>
-              ))}
+              {socials.map((social, index) => {
+                // Buscar el icono correcto basado en la descripción o el iconRef
+                const socialData = predefinedSocials.find(s => 
+                  s.name === social.description || 
+                  s.iconRef === social.icon ||
+                  s.name.toLowerCase() === social.description?.toLowerCase()
+                );
+                
+                const IconComponent = socialData?.icon;
+
+                return (
+                  <Tippy key={index} content={`Ver ${social.name || social.description || 'Red social'}`}>
+                    <a 
+                      href={social.link || social.url || '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-xl w-8 h-8 flex items-center justify-center bg-white customtext-primary rounded-full hover:scale-110 transition-transform duration-200"
+                    >
+                      {IconComponent ? (
+                        <IconComponent className="w-5 h-5" />
+                      ) : (
+                        <i className={social.icon || 'fab fa-globe'} />
+                      )}
+                    </a>
+                  </Tippy>
+                );
+              })}
             </ul>
           </div>
         </div>

@@ -121,7 +121,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                                 (spec, index) =>
                                     spec.type === "icono" && (
                                         <div key={index} className="text-base 2xl:text-lg gap-2 customtext-primary flex flex-col items-center justify-center text-center">
-                                            <div className='bg-[#FF7F00] rounded-full overflow-hidden'>
+                                            <div className='bg-secondary rounded-full overflow-hidden'>
                                                 <img
                                                     src={`/storage/images${spec.title}`}
                                                     alt={spec.description}
@@ -142,7 +142,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                         <a target="_blank" href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
                             `Hola, deseo mayor información acerca del producto: ${product?.name}`
                             )}`}
-                         className='bg-secondary text-base lg:text-lg customtext-neutral-light px-10 py-3 rounded-full'>
+                         className='bg-secondary text-base lg:text-lg text-white px-10 py-3 rounded-full'>
                             Solicitar cotizacion
                         </a>
                     </div>

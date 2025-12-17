@@ -139,7 +139,7 @@ const BlogSectionAko = ({ data, items }) => {
                                         className="w-full bg-white/10 backdrop-blur-sm text-white font-medium py-4 pl-4 border-2 border-white/50 rounded-xl focus:ring-0 focus:outline-none focus:border-accent transition-all duration-300 placeholder:text-white placeholder:opacity-75" 
                                     />
                                     <button
-                                        className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-accent customtext-neutral-light rounded-lg transition-all duration-200"
+                                        className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-accent customtext-neutral-dark rounded-lg transition-all duration-200"
                                         aria-label="Suscribite">
                                         Suscribirme
                                     </button>
@@ -155,7 +155,7 @@ const BlogSectionAko = ({ data, items }) => {
             <motion.div variants={itemVariants} className="flex flex-row items-center justify-center w-full mt-8">
                 <a 
                     href={data?.link_blog} 
-                    className="bg-secondary text-base lg:text-lg customtext-neutral-light px-12 py-3.5 rounded-full shadow-lg"
+                    className="bg-secondary text-base lg:text-lg text-white px-12 py-3.5 rounded-full shadow-lg"
                 >
                    {data?.button_text}{" "}
                 </a>

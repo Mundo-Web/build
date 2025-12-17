@@ -2735,9 +2735,7 @@
             {
                 "id": "BannerStaticSecond",
                 "name": "Estatico 2",
-                "data": [
-                    "title"
-                ],
+              
                 "using": {
                     "model": "Certification"
                 }
@@ -4111,6 +4109,9 @@
                 "id": "FooterSalaFabulosa",
                 "name": "FooterSalaFabulosa",
                 "image": "footer-simple.png",
+                "data":[
+                    "class_button"
+                ],
                 "using": {
                     "model": "Social",
                     "limit": 10

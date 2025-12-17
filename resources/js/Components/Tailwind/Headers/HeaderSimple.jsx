@@ -215,7 +215,7 @@ const HeaderSimple = ({ data, cart, setCart, pages, generals = [] }) => {
             <div className="flex items-center space-x-3">
               
               {/* Icon mail */}
-              <a href={`mailto:${getContact('email_contact')}`} className="hidden lg:block">
+              <a href={`mailto:${getContact('support_email')}`} className="hidden lg:block">
                 <button 
                   type="button"
                   className="bg-accent customtext-neutral-dark  hover:scale-110 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
@@ -228,7 +228,7 @@ const HeaderSimple = ({ data, cart, setCart, pages, generals = [] }) => {
               </a>
 
               {/* Icon phone*/}
-              <a href={`tel:${getContact('phone_contact')}`} className="hidden lg:block">
+              <a href={`tel:${getContact('support_phone')}`} className="hidden lg:block">
                 <button 
                   type="button"
                   className="bg-accent customtext-neutral-dark  hover:scale-110 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
