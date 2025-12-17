@@ -1804,7 +1804,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                         <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
                             <div className="row g-3">
                                 {Fillable.has('items', 'is_features') && (
-                                    <div className="col-md-6">
+                                    <div className={`${Fillable.has('items', 'is_specifications') ? 'col-md-6' : 'col-12'}`}>
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
                                                 <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
@@ -1823,7 +1823,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                 )}
                                 
                                 {Fillable.has('items', 'is_specifications') && (
-                                    <div className="col-md-6">
+                                    <div className={`${Fillable.has('items', 'is_features') ? 'col-md-6' : 'col-12'}`}>
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
                                                 <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
