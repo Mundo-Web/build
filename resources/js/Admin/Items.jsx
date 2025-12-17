@@ -23,7 +23,10 @@ import DynamicField from "../Components/Adminto/form/DynamicField";
 import ModalImportItem from "./Components/ModalImportItem";
 import Fillable from "../Utils/Fillable";
 
+
 const itemsRest = new ItemsRest();
+
+
 
 const Items = ({ categories, brands, collections, stores, generals }) => {
     //!FALTA EDIT AND DELETEDE GALERIA
@@ -60,6 +63,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const featuresRef = useRef([]);
     const specificationsRef = useRef([]);
     const weightRef = useRef();
+    const amenitiesRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -75,6 +79,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const pdfRef = useRef();
     const [videos, setVideos] = useState([]);
     const videoUrlRef = useRef();
+    const [selectedAmenities, setSelectedAmenities] = useState([]);
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -366,6 +371,20 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
         setFeatures(data?.features?.map(f => typeof f === 'object' ? f : { feature: f }) || []);
         stockRef.current.value = data?.stock;
 
+        // Cargar amenidades seleccionadas
+        if (data?.amenities && Array.isArray(data.amenities)) {
+            const amenitiesIds = data.amenities.map(a => a.id || a);
+            setSelectedAmenities(amenitiesIds);
+            setTimeout(() => {
+                $(amenitiesRef.current).val(amenitiesIds).trigger('change');
+            }, 100);
+        } else {
+            setSelectedAmenities([]);
+            setTimeout(() => {
+                $(amenitiesRef.current).val([]).trigger('change');
+            }, 100);
+        }
+
         // Reset delete flags using direct references - only when opening modal
         if (bannerRef.deleteRef) bannerRef.deleteRef.value = '';
         if (imageRef.deleteRef) imageRef.deleteRef.value = '';
@@ -410,6 +429,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             specifications: cleanSpecs,
             weight: weightRef.current.value || 0,
             store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
+            amenities: $(amenitiesRef.current).val() || [],
         };
 
 
@@ -597,6 +617,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     };
     const [features, setFeatures] = useState([]); // Características
     const [specifications, setSpecifications] = useState([]); // Especificaciones
+    const [amenities, setAmenities] = useState([]); // Amenidades/Cualidades
 
     // Opciones del campo "type"
     const typeOptions = ["Principal", "General"];
@@ -604,6 +625,21 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const modalImportRef = useRef();
     const onModalImportOpen = () => {
         $(modalImportRef.current).modal("show");
+    };
+
+    useEffect(() => {
+        getAmenities();
+    }, []);
+
+    const getAmenities = async () => {
+        try {
+            const result = await amenitiesRest.paginate({ page: 1, pageSize: 1000 });
+            if (result?.data) {
+                setAmenities(result.data);
+            }
+        } catch (error) {
+            console.error('Error al cargar amenidades:', error);
+        }
     };
 
     const onExportItems = async () => {
@@ -914,7 +950,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
-                    {
+                    Fillable.has('items', 'views') && {
                         dataField: "views",
                         caption: "Vistas",
                         dataType: "number",
@@ -1293,6 +1329,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                                 searchAPI={"/api/admin/tags/paginate"}
                                                 searchBy="name"
                                                 label="Tags"
+                                                 hidden={!Fillable.has('items', 'is_tags')}
                                                 dropdownParent="#principal-container"
                                                 tags
                                                 multiple
@@ -1760,40 +1797,75 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                         {/* Pestaña: Características */}
                         <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
                             <div className="row g-3">
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <DynamicField
-                                                ref={featuresRef}
-                                                label="Lista de Características"
-                                                structure=""
-                                                value={features}
-                                                onChange={setFeatures}
-                                            />
+                                {Fillable.has('items', 'is_features') && (
+                                    <div className="col-md-6">
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <DynamicField
+                                                    ref={featuresRef}
+                                                    label="Lista de Características"
+                                                    structure=""
+                                                    value={features}
+                                                    onChange={setFeatures}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                                 
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <DynamicField
-                                                ref={specificationsRef}
-                                                label="Especificaciones Técnicas"
-                                                structure={{ type: "", title: "", description: "" }}
-                                                value={specifications}
-                                                onChange={setSpecifications}
-                                                typeOptions={typeOptions}
-                                            />
+                                {Fillable.has('items', 'is_specifications') && (
+                                    <div className="col-md-6">
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <DynamicField
+                                                    ref={specificationsRef}
+                                                    label="Especificaciones Técnicas"
+                                                    structure={{ type: "", title: "", description: "" }}
+                                                    value={specifications}
+                                                    onChange={setSpecifications}
+                                                    typeOptions={typeOptions}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+                                
+                                {Fillable.has('items', 'is_amenities') && (
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-star-circle me-2 text-warning"></i>
+                                                    Cualidades / Atributos
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <SelectFormGroup
+                                                    eRef={amenitiesRef}
+                                                    label="Seleccionar Cualidades"
+                                                    dropdownParent="#principal-container"
+                                                    multiple
+                                                >
+                                                    {amenities.map((amenity) => (
+                                                        <option key={amenity.id} value={amenity.id}>
+                                                            {amenity.name}
+                                                        </option>
+                                                    ))}
+                                                </SelectFormGroup>
+                                                <small className="text-muted">
+                                                    <i className="fas fa-info-circle me-1"></i>
+                                                    Selecciona las cualidades o atributos que destacan este producto
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 
                                 <div className="col-12">
                                     <div className="card border-0 shadow-sm">

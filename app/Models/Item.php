@@ -60,6 +60,12 @@ class Item extends Model
         'size_m2',
         'room_type',
         'total_rooms',
+        
+        // Campos de control de visibilidad
+        'is_amenities',
+        'is_features',
+        'is_specifications',
+        'is_tags',
     ];
 
     protected $casts = [
@@ -75,6 +81,10 @@ class Item extends Model
         'views' => 'integer',
         'pdf' => 'array',
         'linkvideo' => 'array',
+        'is_amenities' => 'boolean',
+        'is_features' => 'boolean',
+        'is_specifications' => 'boolean',
+        'is_tags' => 'boolean',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)

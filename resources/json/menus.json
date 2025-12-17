@@ -17,7 +17,8 @@
           { "label": "Categorías", "href": "/admin/categories", "icon": "mdi mdi-shape-outline" },
           { "label": "SubCategorías", "href": "/admin/subcategories", "icon": "mdi mdi-file-tree" },
           { "label": "Marcas", "href": "/admin/brands", "icon": "mdi mdi-label" },
-          { "label": "Etiquetas", "href": "/admin/tags", "icon": "mdi mdi-label-multiple" }
+          { "label": "Etiquetas", "href": "/admin/tags", "icon": "mdi mdi-label-multiple" },
+          { "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" }
         ]
       },
       {
@@ -25,7 +26,7 @@
         "icon": "mdi mdi-bed",
         "children": [
           { "label": "Habitaciones", "href": "/admin/rooms", "icon": "mdi mdi-bed-double" },
-          { "label": "Amenidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
+          { "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
           { "label": "Reservas", "href": "/admin/bookings", "icon": "mdi mdi-calendar-check" }
         ]
       },
