@@ -69,6 +69,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                 ?.description || ""
         );
     };
+    console.log('product in ProductCardFull:', product);
 
     return (
         <div
@@ -116,24 +117,24 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
 
                     <div className='grid grid-cols-2 gap-3 lg:gap-10'>
                        
-                        {product?.specifications?.length > 0 && (
-                            product.specifications.map(
-                                (spec, index) =>
-                                    spec.type === "icono" && (
+                        {product?.amenities?.length > 0 && (
+                            product.amenities.map(
+                                (amenity, index) =>(
+                                   
                                         <div key={index} className="text-base 2xl:text-lg gap-2 customtext-primary flex flex-col items-center justify-center text-center">
                                             <div className='bg-secondary rounded-full overflow-hidden'>
                                                 <img
-                                                    src={`/storage/images${spec.title}`}
-                                                    alt={spec.description}
+                                                    src={`/storage/images/amenity/${amenity.image}`}
+                                                    alt={amenity.name}
                                                     className="w-14 h-14 object-contain p-2" 
                                                     onError={e => e.target.src = '/assets/img/noimage/noicon.png'}
                                                 />
                                             </div>
-                                            <h2>{spec.description}</h2>
+                                            <h2>{amenity.name}</h2>
                                             
                                         </div>
-                                    )
-                                )
+                                    
+                                ))
                         )}
                     
                     </div>

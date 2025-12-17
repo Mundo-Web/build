@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import Swal from "sweetalert2";
 import ItemsRest from "../Actions/Admin/ItemsRest";
+import AmenitiesRest from "../Actions/Admin/AmenitiesRest";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
@@ -25,6 +26,7 @@ import Fillable from "../Utils/Fillable";
 
 
 const itemsRest = new ItemsRest();
+const amenitiesRest = new AmenitiesRest();
 
 
 
@@ -80,6 +82,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const [videos, setVideos] = useState([]);
     const videoUrlRef = useRef();
     const [selectedAmenities, setSelectedAmenities] = useState([]);
+    const [amenities, setAmenities] = useState([]);
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -98,6 +101,17 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             url: URL.createObjectURL(file),
         }));
         setGallery((prev) => [...prev, ...newImages]);
+    };
+
+    useEffect(() => {
+        getAmenities();
+    }, []);
+
+    const getAmenities = async () => {
+        const result = await amenitiesRest.paginate({ page: 1, pageSize: 1000 });
+        if (result?.data) {
+            setAmenities(result.data);
+        }
     };
 
     const handleDragOver = (e) => {
@@ -450,6 +464,14 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                     // Si no es array pero tiene valor, convertir a array
                     formData.append('tags[0]', tagsValue);
                 }
+            } else if (key === 'amenities') {
+                // Enviar amenities como array de items individuales (como en Rooms.jsx)
+                const amenitiesValue = request[key];
+                if (Array.isArray(amenitiesValue) && amenitiesValue.length > 0) {
+                    amenitiesValue.forEach((amenityId, index) => {
+                        formData.append(`amenities[${index}]`, amenityId);
+                    });
+                }
             } else {
                 formData.append(key, request[key]);
             }
@@ -617,7 +639,6 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     };
     const [features, setFeatures] = useState([]); // Características
     const [specifications, setSpecifications] = useState([]); // Especificaciones
-    const [amenities, setAmenities] = useState([]); // Amenidades/Cualidades
 
     // Opciones del campo "type"
     const typeOptions = ["Principal", "General"];
@@ -625,21 +646,6 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const modalImportRef = useRef();
     const onModalImportOpen = () => {
         $(modalImportRef.current).modal("show");
-    };
-
-    useEffect(() => {
-        getAmenities();
-    }, []);
-
-    const getAmenities = async () => {
-        try {
-            const result = await amenitiesRest.paginate({ page: 1, pageSize: 1000 });
-            if (result?.data) {
-                setAmenities(result.data);
-            }
-        } catch (error) {
-            console.error('Error al cargar amenidades:', error);
-        }
     };
 
     const onExportItems = async () => {
@@ -849,7 +855,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                     style={{
                                         width: "80px",
                                         height: "48px",
-                                        objectFit: "cover",
+                                        objectFit: "contain",
                                         objectPosition: "center",
                                         borderRadius: "4px",
                                     }}
@@ -1851,9 +1857,51 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                                     label="Seleccionar Cualidades"
                                                     dropdownParent="#principal-container"
                                                     multiple
+                                                    templateResult={(state) => {
+                                                        if (!state.id) return state.text;
+                                                        const $option = $(state.element);
+                                                        const image = $option.data('image');
+                                                        
+                                                        if (image) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #71b6f9; display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0;">
+                                                                        <img src="/storage/images/amenity/${image}" 
+                                                                             style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
+                                                                             onerror="this.style.display='none'" />
+                                                                    </div>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        }
+                                                        return state.text;
+                                                    }}
+                                                    templateSelection={(state) => {
+                                                        if (!state.id) return state.text;
+                                                        const $option = $(state.element);
+                                                        const image = $option.data('image');
+                                                        
+                                                        if (image) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #71b6f9; display: flex; align-items: center; justify-content: center; padding: 3px; flex-shrink: 0;">
+                                                                        <img src="/storage/images/amenity/${image}" 
+                                                                             style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
+                                                                             onerror="this.style.display='none'" />
+                                                                    </div>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        }
+                                                        return state.text;
+                                                    }}
                                                 >
                                                     {amenities.map((amenity) => (
-                                                        <option key={amenity.id} value={amenity.id}>
+                                                        <option 
+                                                            key={amenity.id} 
+                                                            value={amenity.id}
+                                                            data-image={amenity.image}
+                                                        >
                                                             {amenity.name}
                                                         </option>
                                                     ))}

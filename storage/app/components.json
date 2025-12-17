@@ -2466,7 +2466,8 @@
                         "category",
                         "subcategory",
                         "brand",
-                        "specifications"
+                        "specifications",
+                        "amenities"
                     ],
                     "limit": 20
                 }
