@@ -12,18 +12,20 @@ class AmenityController extends BasicController
     public $reactView = 'Admin/Amenities';
     public $imageFields = ['image'];
     
-    /**
-     * Método para validar datos antes de guardar
-     */
     public function beforeSave(Request $request)
     {
-        // Generar slug si no existe
-        $data = $request->all();
-        if (empty($data['slug']) && !empty($data['name'])) {
-            $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
-            $request->merge(['slug' => $data['slug']]);
-        }
+        $body = $request->all();
         
-        return true;
+        // Limpiar campos undefined o null innecesarios
+        $body = array_filter($body, function($value, $key) {
+            // Remover campos que vienen como 'undefined' string o están vacíos sin sentido
+            if ($value === 'undefined' || $value === 'null') {
+                return false;
+            }
+            // Mantener los campos necesarios aunque sean null
+            return true;
+        }, ARRAY_FILTER_USE_BOTH);
+        
+        return $body;
     }
 }
