@@ -118,8 +118,10 @@ const CardProductBananaLab = ({
                 <div className="bg-transparent rounded-md  h-full  flex flex-col ">
                     {/* Imagen del producto y etiqueta de descuento */}
                     <div className="relative bg-white rounded-xl overflow-hidden">
-                        {product?.discount != null &&
-                            !isNaN(product?.discount) && (
+                        {product?.final_price != null &&
+                            !isNaN(product?.final_price) &&
+                            Number(product?.final_price) > 0 &&
+                            Number(product?.final_price) < Number(product?.price) && (
                                 styleOffer === "square" ? (
                                     <span className="absolute top-3 right-0 lg:right-0 bg-[#F93232] text-white text-xs font-bold px-2 py-2 shadow-md z-20">
                                         Oferta
