@@ -20,6 +20,7 @@ const Bookings = ({ statuses = [] }) => {
   const gridRef = useRef();
   const modalRef = useRef();
   const notifyClientRef = useRef();
+  const isProcessingStatus = useRef(false); // Flag para evitar doble ejecución
   
   const [statusFilter, setStatusFilter] = useState('all');
   const [bookingLoaded, setBookingLoaded] = useState(null);
@@ -90,9 +91,13 @@ const Bookings = ({ statuses = [] }) => {
       if (result && result.data) {
         setBookingLoaded(result.data);
         setAllBookingsInSale(result.all_bookings || []);
+        
+        // Cargar historial de estados
+        await loadSaleStatusHistory(bookingId);
       } else if (result) {
         setBookingLoaded(result);
         setAllBookingsInSale([]);
+        setSaleStatuses([]);
       } else {
         Swal.fire('Error', 'No se pudo cargar la reserva', 'error');
       }
@@ -119,19 +124,17 @@ const Bookings = ({ statuses = [] }) => {
     $(gridRef.current).dxDataGrid('instance').refresh();
   };
 
-  // Efecto para mostrar modal y cargar historial de estados
+  // Efecto para mostrar modal cuando se carga un booking
   useEffect(() => {
     if (bookingLoaded && modalRef.current) {
       $(modalRef.current).modal('show');
-      // Cargar historial de estados del sale
-      loadSaleStatusHistory();
     }
   }, [bookingLoaded]);
 
-  const loadSaleStatusHistory = async () => {
-    if (!bookingLoaded?.id) return;
+  const loadSaleStatusHistory = async (bookingId) => {
+    if (!bookingId) return;
     try {
-      const history = await bookingsRest.getSaleStatusHistory(bookingLoaded.id);
+      const history = await bookingsRest.getSaleStatusHistory(bookingId);
       setSaleStatuses(history || []);
     } catch (error) {
       console.error('Error al cargar historial de estados:', error);
@@ -139,14 +142,15 @@ const Bookings = ({ statuses = [] }) => {
     }
   };
 
-  const onStatusChange = async (e) => {
-    const newStatusId = e.target.value;
-    const currentStatusId = bookingLoaded?.sale?.status_id;
+  const onStatusChange = async (e, booking) => {
+    // Usar el booking pasado como parámetro (igual que Sales.jsx)
+    const sale = booking?.sale || bookingLoaded?.sale;
+    const bookingId = booking?.id || bookingLoaded?.id;
     
-    // Evitar ejecutar si el estado no cambió o ya está procesando
-    if (!newStatusId || newStatusId == currentStatusId || statusLoading) return;
+    // Evitar doble ejecución con useRef (más confiable que useState)
+    if (isProcessingStatus.current) return;
     
-    const status = statuses.find((s) => s.id == newStatusId);
+    const status = statuses.find((s) => s.id == e.target.value);
     if (!status) return;
 
     if (status.reversible == 0) {
@@ -159,24 +163,38 @@ const Bookings = ({ statuses = [] }) => {
       if (!isConfirmed) return;
     }
 
+    isProcessingStatus.current = true;
     setStatusLoading(true);
+    
     try {
-      const result = await bookingsRest.updateSaleStatus(bookingLoaded.id, {
+      const result = await bookingsRest.updateSaleStatus(bookingId, {
         status_id: status.id,
         notify_client: notifyClientRef.current?.checked || false
       });
       
       if (result?.status) {
-        setBookingLoaded(result.data);
-        setAllBookingsInSale(result.all_bookings || []);
-        await loadSaleStatusHistory();
+        // Actualizar booking
+        const newBooking = await bookingsRest.get(bookingId);
+        if (newBooking?.data) {
+          setBookingLoaded(newBooking.data);
+          setAllBookingsInSale(newBooking.all_bookings || []);
+        }
+        
+        // Cargar historial de estados
+        await loadSaleStatusHistory(bookingId);
+        
         $(gridRef.current).dxDataGrid('instance').refresh();
       }
     } catch (error) {
       console.error('Error al cambiar estado:', error);
       Swal.fire('Error', 'No se pudo cambiar el estado', 'error');
     }
+    
     setStatusLoading(false);
+    // Dar tiempo a Select2 para estabilizarse antes de permitir otra ejecución
+    setTimeout(() => {
+      isProcessingStatus.current = false;
+    }, 500);
   };
 
   const onConfirmBooking = async (id) => {
@@ -911,7 +929,7 @@ const Bookings = ({ statuses = [] }) => {
                   minimumResultsForSearch={-1} 
                   templateResult={statusTemplate} 
                   templateSelection={statusTemplate} 
-                  onChange={onStatusChange} 
+                  onChange={(e) => onStatusChange(e, bookingLoaded)} 
                   value={bookingLoaded?.sale?.status_id} 
                   changeWith={[bookingLoaded]} 
                   disabled={statusLoading || bookingLoaded?.sale?.status?.reversible == 0}

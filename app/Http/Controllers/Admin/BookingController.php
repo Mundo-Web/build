@@ -184,15 +184,10 @@ class BookingController extends BasicController
             }
 
             // Actualizar el estado del sale
+            // NOTA: El Observer SaleStatusObserver ya registra automáticamente 
+            // el cambio de estado en el historial (SaleStatusTrace)
             $booking->sale->update([
                 'status_id' => $request->input('status_id')
-            ]);
-
-            // Registrar el cambio de estado en el historial
-            SaleStatusTrace::create([
-                'sale_id' => $booking->sale->id,
-                'status_id' => $request->input('status_id'),
-                'user_id' => Auth::id(),
             ]);
 
             // Notificar al cliente si se requiere
