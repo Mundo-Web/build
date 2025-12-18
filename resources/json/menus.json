@@ -26,8 +26,9 @@
         "icon": "mdi mdi-bed",
         "children": [
           { "label": "Habitaciones", "href": "/admin/rooms", "icon": "mdi mdi-bed-double" },
-          { "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
-          { "label": "Reservas", "href": "/admin/bookings", "icon": "mdi mdi-calendar-check" }
+          { "label": "Disponibilidad", "href": "/admin/room-availability", "icon": "mdi mdi-calendar-month" },
+          { "label": "Reservas", "href": "/admin/bookings", "icon": "mdi mdi-calendar-check" },
+          { "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" }
         ]
       },
       { "label": "Sucursales", "href": "/admin/stores", "icon": "mdi mdi-office-building-marker" },

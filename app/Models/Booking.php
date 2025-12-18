@@ -60,6 +60,14 @@ class Booking extends Model
         return $this->belongsTo(Item::class, 'item_id');
     }
 
+    /**
+     * Alias de room() para compatibilidad
+     */
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
     public function saleDetail()
     {
         return $this->hasOne(SaleDetail::class);
@@ -125,6 +133,14 @@ class Booking extends Model
             'status' => 'confirmed',
             'confirmed_at' => now()
         ]);
+
+        // Reservar habitación en el calendario de disponibilidad
+        RoomAvailability::reserveRooms(
+            $this->item_id,
+            $this->check_in,
+            $this->check_out,
+            1
+        );
     }
 
     /**
@@ -155,6 +171,14 @@ class Booking extends Model
         $this->update([
             'status' => 'completed'
         ]);
+
+        // Liberar disponibilidad después del check-out
+        RoomAvailability::releaseRooms(
+            $this->item_id,
+            $this->check_in,
+            $this->check_out,
+            1
+        );
     }
 
     /**

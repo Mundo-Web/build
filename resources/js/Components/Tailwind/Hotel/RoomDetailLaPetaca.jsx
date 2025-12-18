@@ -24,6 +24,70 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
     const [guests, setGuests] = useState(2);
     const [loading, setLoading] = useState(false);
     
+    // Estados para disponibilidad
+    const [blockedDates, setBlockedDates] = useState([]);
+    const [loadingAvailability, setLoadingAvailability] = useState(true);
+    
+    // Cargar fechas bloqueadas al montar el componente
+    useEffect(() => {
+        const loadBlockedDates = async () => {
+            if (!item?.id) return;
+            
+            setLoadingAvailability(true);
+            try {
+                const response = await fetch(`/api/hotels/rooms/${item.id}/blocked-dates`);
+                const result = await response.json();
+                
+                if (result.status === 200 && result.data?.blocked_dates) {
+                    // Convertir strings a objetos Date
+                    const dates = result.data.blocked_dates.map(dateStr => new Date(dateStr + 'T00:00:00'));
+                    setBlockedDates(dates);
+                }
+            } catch (error) {
+                console.error('Error al cargar fechas bloqueadas:', error);
+            }
+            setLoadingAvailability(false);
+        };
+        
+        loadBlockedDates();
+    }, [item?.id]);
+    
+    // Agregar estilos para fechas bloqueadas en DatePicker
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .react-datepicker__day--excluded,
+            .react-datepicker__day--disabled {
+                background-color: #fee2e2 !important;
+                color: #dc2626 !important;
+                text-decoration: line-through;
+                cursor: not-allowed !important;
+            }
+            .react-datepicker__day--excluded:hover,
+            .react-datepicker__day--disabled:hover {
+                background-color: #fecaca !important;
+            }
+            .blocked-date {
+                background-color: #fee2e2 !important;
+                color: #dc2626 !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
+    
+    // Verificar si una fecha está bloqueada
+    const isDateBlocked = (date) => {
+        const dateStr = date.toISOString().split('T')[0];
+        return blockedDates.some(blockedDate => {
+            const blockedStr = blockedDate.toISOString().split('T')[0];
+            return dateStr === blockedStr;
+        });
+    };
+    
     // Tipos de habitación
     const roomTypes = {
         'standard': 'Estándar',
@@ -63,6 +127,20 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
         }))
     ].filter(img => img.url);
 
+    // Verificar si hay fechas bloqueadas en el rango seleccionado
+    const hasBlockedDatesInRange = () => {
+        if (!checkIn || !checkOut || blockedDates.length === 0) return false;
+        
+        let current = new Date(checkIn);
+        while (current < checkOut) {
+            if (isDateBlocked(current)) {
+                return true;
+            }
+            current.setDate(current.getDate() + 1);
+        }
+        return false;
+    };
+
     // Handler para agregar al carrito/reservar
     const handleReserve = async () => {
         if (!checkIn || !checkOut) {
@@ -80,6 +158,17 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                 icon: 'warning',
                 title: 'Fechas inválidas',
                 text: 'La fecha de check-out debe ser posterior a la de check-in',
+                confirmButtonColor: accentColor,
+            });
+            return;
+        }
+
+        // Verificar que no haya fechas bloqueadas en el rango
+        if (hasBlockedDatesInRange()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Fechas no disponibles',
+                text: 'Algunas fechas en el rango seleccionado no están disponibles. Por favor elige otras fechas.',
                 confirmButtonColor: accentColor,
             });
             return;
@@ -380,6 +469,19 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                 <h3 className="text-lg font-semibold" style={{ color: accentColor }}>
                                     Reserva tu estadía
                                 </h3>
+                                
+                                {/* Indicador de disponibilidad */}
+                                {loadingAvailability ? (
+                                    <div className="text-sm text-gray-400 flex items-center gap-2">
+                                        <i className="fas fa-spinner fa-spin"></i>
+                                        Verificando disponibilidad...
+                                    </div>
+                                ) : blockedDates.length > 0 && (
+                                    <div className="text-sm text-yellow-500 flex items-center gap-2">
+                                        <i className="fas fa-info-circle"></i>
+                                        Las fechas en rojo no están disponibles
+                                    </div>
+                                )}
 
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     {/* Check-in */}
@@ -387,16 +489,26 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                         <label className="block text-sm text-gray-400 mb-1">Check-in</label>
                                         <DatePicker
                                             selected={checkIn}
-                                            onChange={(date) => setCheckIn(date)}
+                                            onChange={(date) => {
+                                                setCheckIn(date);
+                                                // Si la fecha de check-out es anterior o igual, resetearla
+                                                if (checkOut && date >= checkOut) {
+                                                    setCheckOut(null);
+                                                }
+                                            }}
                                             selectsStart
                                             startDate={checkIn}
                                             endDate={checkOut}
                                             minDate={new Date()}
+                                            excludeDates={blockedDates}
+                                            filterDate={(date) => !isDateBlocked(date)}
                                             locale={es}
                                             dateFormat="dd/MM/yyyy"
-                                            placeholderText="Selecciona fecha"
-                                            className="w-full bg-[#0a0604] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-opacity-100"
+                                            placeholderText={loadingAvailability ? "Cargando..." : "Selecciona fecha"}
+                                            disabled={loadingAvailability}
+                                            className="w-full bg-[#0a0604] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-opacity-100 disabled:opacity-50"
                                             style={{ borderColor: `${accentColor}50` }}
+                                            dayClassName={(date) => isDateBlocked(date) ? 'blocked-date' : undefined}
                                         />
                                     </div>
 
@@ -410,11 +522,15 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                             startDate={checkIn}
                                             endDate={checkOut}
                                             minDate={checkIn || new Date()}
+                                            excludeDates={blockedDates}
+                                            filterDate={(date) => !isDateBlocked(date)}
                                             locale={es}
                                             dateFormat="dd/MM/yyyy"
-                                            placeholderText="Selecciona fecha"
-                                            className="w-full bg-[#0a0604] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-opacity-100"
+                                            placeholderText={loadingAvailability ? "Cargando..." : "Selecciona fecha"}
+                                            disabled={loadingAvailability || !checkIn}
+                                            className="w-full bg-[#0a0604] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-opacity-100 disabled:opacity-50"
                                             style={{ borderColor: `${accentColor}50` }}
+                                            dayClassName={(date) => isDateBlocked(date) ? 'blocked-date' : undefined}
                                         />
                                     </div>
                                 </div>

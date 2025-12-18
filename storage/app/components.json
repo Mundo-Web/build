@@ -3295,6 +3295,36 @@
                     "checkout_dwallet_commission",
                     "checkout_dwallet_commission"
                 ]
+            },
+            {
+                "id": "CheckoutStepsRooms",
+                "name": "StepsRooms - Reservas de Habitaciones",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "json": {
+                    "prefixes": "./prefijocelular.json"
+                },
+                "generals": [
+                    "igv_checkout",
+                    "checkout_culqi",
+                    "checkout_culqi_name",
+                    "checkout_culqi_public_key",
+                    "checkout_dwallet",
+                    "checkout_dwallet_qr",
+                    "checkout_dwallet_name",
+                    "checkout_dwallet_description",
+                    "checkout_transfer",
+                    "checkout_transfer_cci",
+                    "checkout_transfer_name",
+                    "checkout_transfer_description",
+                    "checkout_culqi_commission",
+                    "checkout_mercadopago_commission",
+                    "checkout_openpay_commission",
+                    "checkout_dwallet_commission",
+                    "checkout_transfer_commission"
+                ]
             }
         ]
     },

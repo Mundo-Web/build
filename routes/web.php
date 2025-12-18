@@ -134,6 +134,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/amenities', [App\Http\Controllers\Admin\AmenityController::class, 'reactView'])->name('Admin/Amenities.jsx');
     Route::get('/rooms', [AdminItemController::class, 'roomsView'])->name('Admin/Rooms.jsx');
     Route::get('/bookings', [App\Http\Controllers\Admin\BookingController::class, 'reactView'])->name('Admin/Bookings.jsx');
+    Route::get('/room-availability', [App\Http\Controllers\Admin\RoomAvailabilityController::class, 'reactView'])->name('Admin/RoomAvailability.jsx');
     Route::get('/prices', [AdminDeliveryPriceController::class, 'reactView'])->name('Admin/DeliveryPricesType.jsx');
     Route::get('/stores', [AdminStoreController::class, 'reactView'])->name('Admin/Stores.jsx');
     Route::get('/messages', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Messages.jsx');
