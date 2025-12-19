@@ -284,7 +284,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
 
             {/* Content */}
             {index === currentSlide && (
-              <div className={`relative z-10 h-full flex items-center ${data?.class_content_slider}`}>
+              <div className={`relative text-shadow-none z-10 h-full flex items-center ${data?.class_content_slider}`}>
                 <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
                   <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
                     {/* Text Content */}
@@ -302,7 +302,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                         className={`text-4xl lg:text-7xl lg:max-w-2xl font-bold font-title ${data?.class_title}`}
                         style={{
                           color: slide?.title_color || (isDarkBg ? "#FFFFFF" : "#000000"),
-                          textShadow: "0 0 20px rgba(0, 0, 0, .25)"
+                      
                         }}
                       >
                         <TextWithHighlight text={slide?.name} color="" />
