@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
 const SliderLaPetaca = ({ items, data, generals = [] }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -54,22 +55,19 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
 
                     <div className="absolute inset-0 z-20 flex items-center justify-center">
                         <div className="text-center px-4 max-w-4xl animate-fade-in">
-                            <div className="flex items-center justify-center mb-6">
-                                <svg className="w-8 h-8 animate-pulse customtext-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                            </div>
+                        
 
                             <h2 
                                 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-2xl"
                                 style={{ color: slide.title_color || '#FFFFFF' }}
                             >
-                                {slide.name}
+                                <TextWithHighlight text={slide.name}  color="bg-secondary" />
+                             
                             </h2>
 
                             <p 
                                 className="text-xl md:text-2xl text-white mb-8 font-light tracking-wide drop-shadow-lg"
-                                style={{ color: slide.description_color || '#E5E7EB' }}
+                            
                             >
                                 {slide.description}
                             </p>
@@ -78,7 +76,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.button_link && slide.button_text && (
                                     <a
                                         href={slide.button_link}
-                                        className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                                        className="px-8 py-4 bg-secondary text-lg text-white font-semibold rounded-full transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
                                     >
                                         {slide.button_text}
                                     </a>
@@ -86,7 +84,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.secondary_button_link && slide.secondary_button_text && (
                                     <a
                                         href={slide.secondary_button_link}
-                                        className="px-8 py-4 bg-transparent border-2 border-secondary customtext-secondary font-semibold rounded-lg hover:bg-secondary hover:text-white transform hover:scale-105 transition-all duration-300"
+                                        className="px-8 py-4 bg-white text-lg border-2 border-secondary customtext-secondary hover:text-white font-semibold rounded-full hover:bg-secondary  transform hover:scale-105 transition-all duration-300"
                                     >
                                         {slide.secondary_button_text}
                                     </a>
@@ -104,16 +102,16 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                         onClick={prevSlide}
                         className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
-                        <svg className="w-6 h-6 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6  transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
 
                     <button
                         onClick={nextSlide}
-                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
+                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
-                        <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6  transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
@@ -130,7 +128,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                             className={`transition-all duration-300 rounded-full ${
                                 index === currentSlide
                                     ? 'w-12 h-3 bg-accent'
-                                    : 'w-3 h-3 bg-white/50 hover:bg-white/80'
+                                    : 'w-3 h-3 bg-white hover:bg-white/80'
                             }`}
                         />
                     ))}
