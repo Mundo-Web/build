@@ -13143,7 +13143,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-BhXZgbij.js",
+    "file": "assets/Service-Aq41RHKS.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -13194,15 +13194,21 @@
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx": {
-    "file": "assets/ServiceLaPetaca--pJTheE3.js",
+    "file": "assets/ServiceLaPetaca-WNtTpqAR.js",
     "name": "ServiceLaPetaca",
     "src": "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "resources/js/Components/About/Strengths.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceSelection.jsx": {
@@ -13753,7 +13759,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-Cm1SEYyf.js",
+    "file": "assets/Testimonials-CPiFwV6R.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -13784,15 +13790,21 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsLaPetaca.jsx": {
-    "file": "assets/TestimonialsLaPetaca--pJTheE3.js",
+    "file": "assets/TestimonialsLaPetaca-WNtTpqAR.js",
     "name": "TestimonialsLaPetaca",
     "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsLaPetaca.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "resources/js/Components/About/Strengths.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsMultivet.jsx": {
@@ -14617,7 +14629,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CPRWOLHB.js",
+    "file": "assets/System-H_SvckLv.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
