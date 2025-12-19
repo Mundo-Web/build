@@ -5169,7 +5169,7 @@
     ]
   },
   "resources/js/Components/Tailwind/AboutUs.jsx": {
-    "file": "assets/AboutUs-CLBnH4EH.js",
+    "file": "assets/AboutUs-DnwjCrgm.js",
     "name": "AboutUs",
     "src": "resources/js/Components/Tailwind/AboutUs.jsx",
     "isDynamicEntry": true,
@@ -5189,8 +5189,7 @@
       "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutHuaillys.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutModern.jsx",
-      "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx",
-      "resources/js/Components/Tailwind/AboutUs/AboutLaPetaca.jsx"
+      "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx"
     ]
   },
   "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx": {
@@ -5233,18 +5232,6 @@
     "file": "assets/AboutKatya--pJTheE3.js",
     "name": "AboutKatya",
     "src": "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx",
-    "isEntry": true,
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "_index-yBjzXJbu.js",
-      "__commonjsHelpers-D6-XlEtG.js"
-    ]
-  },
-  "resources/js/Components/Tailwind/AboutUs/AboutLaPetaca.jsx": {
-    "file": "assets/AboutLaPetaca--pJTheE3.js",
-    "name": "AboutLaPetaca",
-    "src": "resources/js/Components/Tailwind/AboutUs/AboutLaPetaca.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -14639,7 +14626,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-ZYYGp8rK.js",
+    "file": "assets/System-1VIM14nW.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

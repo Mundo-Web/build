@@ -3875,25 +3875,17 @@
                 "image": "about-sidebar.png",
                 "data": [
                     "strengths_title",
-                    "class_container"
+                    "class_container",
+                    "class_sidebar",
+                    "strengths_section",
+                    "class_title_banner",
+                    "class_content_banner"
                 ],
                 "using": {
                     "model": "Aboutus"
                 }
-            },
-            {
-                "id": "AboutLaPetaca",
-                "name": "About - La Petaca Hotel",
-                "image": "about-lapetaca.png",
-                "data": [
-                    "stats",
-                    "values",
-                    "accentColor",
-                    "mainImage",
-                    "ctaImage"
-                ],
-                "generals": []
             }
+           
         ]
     },
     {
