@@ -1178,6 +1178,8 @@
                     "section_brands",
                     "section_categories",
                     "section_subcategories",
+                    "section_amenities",
+                    "dat_prices",
                     "section_prices",
                     "section_stores",
                     "type_card_product",
@@ -1203,11 +1205,15 @@
                             "with": [
                                 "category",
                                 "subcategory",
-                                "brand"
+                                "brand",
+                                "images",
+                                "amenities"
                             ],
                             "relations": [
                                 "category",
-                                "tags"
+                                "tags",
+                                "images",
+                                "amenities"
                             ],
                             "fields": [
                                 "id",

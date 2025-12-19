@@ -12,10 +12,17 @@ const LaPetacaCard = ({ item, index = 0 }) => {
         return amenity?.name || '';
     };
 
-    // Helper para obtener el icono del amenity
-    const getAmenityIcon = (amenity) => {
-        if (typeof amenity === 'object' && amenity?.icon) {
-            return <i className={`${amenity.icon} text-xs`}></i>;
+    // Helper para obtener la imagen del amenity
+    const getAmenityImage = (amenity) => {
+        if (typeof amenity === 'object' && amenity?.image) {
+            return (
+                <img 
+                    src={`/storage/images/amenity/${amenity.image}`} 
+                    alt={amenity.name || ''}
+                    className="w-4 h-4 object-contain"
+                    onError={(e) => e.target.style.display = 'none'}
+                />
+            );
         }
         return <Coffee size={11} />;
     };
@@ -130,7 +137,7 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                                 key={typeof amenity === 'object' ? amenity.id : i}
                                 className="flex items-center gap-1 px-3 py-1 bg-sections-color rounded-full text-xs font-medium customtext-secondary"
                             >
-                                {getAmenityIcon(amenity)}
+                                {getAmenityImage(amenity)}
                                 <span>{getAmenityName(amenity)}</span>
                             </div>
                         ))}
