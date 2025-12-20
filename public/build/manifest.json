@@ -11334,7 +11334,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DSWov5-y.js",
+    "file": "assets/Product-CST3trWf.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -11367,7 +11367,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-CMW7uf_6.js",
+    "file": "assets/ProductDetail-DbcMyLzA.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -11657,7 +11657,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-BYme5u6N.js",
+    "file": "assets/ProductDetailHuaillys-ICzeDMXp.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -12661,32 +12661,45 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductMultivet.jsx": {
-    "file": "assets/ProductMultivet-S1yGSdfS.js",
+    "file": "assets/ProductMultivet-BKK4aFFz.js",
     "name": "ProductMultivet",
     "src": "resources/js/Components/Tailwind/Products/ProductMultivet.jsx",
-    "isEntry": true,
+    "isDynamicEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductMultivet.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
-      "_main-B6F2O9-U.js",
-      "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
-      "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductBananaLab.jsx",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_navigation-CnDykVkE.js",
+      "_autoplay-0wQFC6FP.js",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "_use-in-view-DtBxy-1R.js",
+      "_proxy-B0QLMKEh.js",
+      "_arrow-left-n6ltb6Cc.js",
+      "_arrow-right-MB8dWH_Y.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js",
+      "_circle-chevron-right-Cragr8lM.js",
+      "_createLucideIcon-DfjclApS.js",
+      "_Number2Currency-jIsa99f9.js",
+      "_General-apRuNwp7.js",
+      "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
+      "_ItemsRest-Dp5IKigO.js",
+      "_main-B6F2O9-U.js",
       "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_BasicRest-BML1C-ua.js",
+      "_BooleanLimit-D-OsQsek.js",
+      "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
       "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
       "_index-Chjiymov.js",
       "_CartItemRow-BVqwdS9q.js",
-      "_Number2Currency-jIsa99f9.js",
-      "_General-apRuNwp7.js",
       "_tippy-react.esm-DmkRJDEW.js",
-      "_proxy-B0QLMKEh.js",
       "_bed-D_dyLoh5.js",
-      "_createLucideIcon-DfjclApS.js",
       "_trash-2-DU7LB6-f.js",
       "_calendar-BSC6xbA7.js",
       "_moon-BU5XInRR.js",
@@ -12695,12 +12708,16 @@
       "_minus-Db6MFKEO.js",
       "_plus-CTIomuuF.js",
       "_index-BZvh78jk.js",
+      "resources/js/Components/Tailwind/Headers/HeaderBananaLab.jsx",
       "_shopping-bag-C59bLmNC.js",
       "_x-fof_H3Vv.js",
       "_shopping-cart-DLRnxGTD.js",
-      "_arrow-right-MB8dWH_Y.js"
+      "_heart-DG8R4_Y8.js",
+      "_circle-check-big-CYWUGR3Z.js",
+      "_create-element-if-not-defined-dvZas9uG.js"
     ],
     "css": [
+      "swiper.css",
       "tippy.css"
     ]
   },
@@ -14626,7 +14643,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CFyOqAM4.js",
+    "file": "assets/System-CypAZeT3.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
