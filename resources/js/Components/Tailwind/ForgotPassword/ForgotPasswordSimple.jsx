@@ -124,8 +124,7 @@ export default function ForgotPasswordSimple() {
                                         Ops, olvidé mi contraseña
                                     </h1>
                                     <p className="customtext-neutral-light">
-                                        Class aptent taciti sociosqu ad litora torquent
-                                        per conubia nostra, per inceptos himenaeos.
+                                      ¡No pasa nada! Dinos qué dirección de correo usaste para registrarte y en unos minutos tendrás las instrucciones en tu bandeja de entrada para volver a entrar.
                                     </p>
                                 </div>
                                 <form className="space-y-4" onSubmit={onForgotSubmit}>

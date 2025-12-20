@@ -9853,7 +9853,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ForgotPassword.jsx": {
-    "file": "assets/ForgotPassword-Bw7xzlPb.js",
+    "file": "assets/ForgotPassword-CCLKGrm1.js",
     "name": "ForgotPassword",
     "src": "resources/js/Components/Tailwind/ForgotPassword.jsx",
     "isDynamicEntry": true,
@@ -12923,7 +12923,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ResetPassword.jsx": {
-    "file": "assets/ResetPassword-BXssXk8q.js",
+    "file": "assets/ResetPassword-DRxaw96l.js",
     "name": "ResetPassword",
     "src": "resources/js/Components/Tailwind/ResetPassword.jsx",
     "isDynamicEntry": true,
@@ -14643,7 +14643,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CypAZeT3.js",
+    "file": "assets/System-BQWZhFjP.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
