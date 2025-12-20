@@ -113,27 +113,24 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
 
 
 
-                {/* Botón de favoritos */}
-                <p
-                    onClick={toggleFavorite}
-                    className="absolute top-3 right-3     flex items-center justify-center  transition-all duration-300  z-10"
-                >
-                    {product?.brand && (
+                {/* Badge de marca en la imagen (solo si NO se muestra arriba del nombre) */}
+                {!data?.badge_brand_up_name && product?.brand && (
+                    <div className="absolute top-3 right-3 flex items-center justify-center transition-all duration-300 z-10">
                         <img
                             src={product.brand.image ? `/api/brands/media/${product.brand.image}` : '/assets/img/noimage/no_img.jpg'}
                             alt={product.brand.name || 'Marca'}
                             className="max-h-14 max-w-14 object-contain"
                             onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
                         />
-
-                    )}
-                </p>
+                    </div>
+                )}
             </div>
 
             {/* Contenido del producto */}
             <div className="p-5 flex-1 flex flex-col">
 
-                {/* Badge de categoría sobre el nombre */}
+             <div className="flex justify-between">
+                   {/* Badge de categoría sobre el nombre */}
                 {data?.badge_category_up_name && product?.category && (
                     <div className="mb-2">
                         <span className={`bg-accent customtext-primary bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold ${data?.class_badge_category || ''}`}>
@@ -141,9 +138,20 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
                         </span>
                     </div>
                 )}
+                {data?.badge_brand_up_name && product?.brand && (
+                    <div className="mb-2">
+                        <img
+                            src={product.brand.image ? `/api/brands/media/${product.brand.image}` : '/assets/img/noimage/no_img.jpg'}
+                            alt={product.brand.name || 'Marca'}
+                            className="max-h-10 max-w-20 object-contain"
+                            onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
+                        />
+                    </div>
+                )}
 
+             </div>
                 {/* Nombre del producto */}
-                <h3 className="text-lg font-bold customtext-neutral-dark mb-2 group-hover:customtext-primary transition-colors duration-300 font-title line-clamp-2 min-h-[3.5rem]">
+                <h3 className="text-lg mt-2 font-bold customtext-neutral-dark mb-2 group-hover:customtext-primary transition-colors duration-300 font-title line-clamp-2 min-h-[3.5rem]">
                     {product?.name}
                 </h3>
 

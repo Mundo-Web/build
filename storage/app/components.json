@@ -151,6 +151,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                      "class_button_card_detail"
@@ -1192,6 +1193,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"
@@ -2280,6 +2282,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"
@@ -3038,6 +3041,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"

@@ -432,8 +432,8 @@
       "_Number2Currency-jIsa99f9.js"
     ]
   },
-  "_ProductCardSelector-7VHXYnmz.js": {
-    "file": "assets/ProductCardSelector-7VHXYnmz.js",
+  "_ProductCardSelector-D_Aj77ea.js": {
+    "file": "assets/ProductCardSelector-D_Aj77ea.js",
     "name": "ProductCardSelector",
     "imports": [
       "_preload-helper-BfFHrpNk.js",
@@ -8478,7 +8478,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-CAda_SEu.js",
+    "file": "assets/Filter-DH-9htGd.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -8787,7 +8787,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-DTKnunb1.js",
+    "file": "assets/CatalogoFiltrosDental-C_AXqCeN.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -8799,7 +8799,7 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-DbFcgKj2.js",
       "_main-B6F2O9-U.js",
-      "_ProductCardSelector-7VHXYnmz.js",
+      "_ProductCardSelector-D_Aj77ea.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
@@ -8858,7 +8858,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx": {
-    "file": "assets/CatalogoFiltrosKatya-Ivt64x5h.js",
+    "file": "assets/CatalogoFiltrosKatya-B2H1JkJW.js",
     "name": "CatalogoFiltrosKatya",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
     "isDynamicEntry": true,
@@ -9128,7 +9128,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
-    "file": "assets/FilterHuaillys-o7O2O1AN.js",
+    "file": "assets/FilterHuaillys-BSpY9QuN.js",
     "name": "FilterHuaillys",
     "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9140,7 +9140,7 @@
       "_autoplay-0wQFC6FP.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "_ProductCardSelector-7VHXYnmz.js",
+      "_ProductCardSelector-D_Aj77ea.js",
       "_ItemsRest-Dp5IKigO.js",
       "_Loading-B-FwDSWi.js",
       "_NoResult-DlL_OOrq.js",
@@ -11076,7 +11076,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Menu.jsx": {
-    "file": "assets/Menu-lsR_-zVY.js",
+    "file": "assets/Menu-SWK-snvu.js",
     "name": "Menu",
     "src": "resources/js/Components/Tailwind/Menu.jsx",
     "isDynamicEntry": true,
@@ -11334,7 +11334,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-O94bXJIs.js",
+    "file": "assets/Product-DSWov5-y.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -11367,7 +11367,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-DX6mVgBj.js",
+    "file": "assets/ProductDetail-CMW7uf_6.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -11657,7 +11657,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-CcDOH7jX.js",
+    "file": "assets/ProductDetailHuaillys-BYme5u6N.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -12396,7 +12396,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx": {
-    "file": "assets/ProductCardSelector-CsKUIwYQ.js",
+    "file": "assets/ProductCardSelector-4IaQjh_C.js",
     "name": "ProductCardSelector",
     "src": "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx",
     "isEntry": true,
@@ -14626,7 +14626,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-CoRzEIRo.js",
+    "file": "assets/System-CFyOqAM4.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
