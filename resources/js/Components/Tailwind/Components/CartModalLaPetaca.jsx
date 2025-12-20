@@ -129,10 +129,7 @@ const CartModalLaPetaca = ({ data, cart = [], setCart, modalOpen, setModalOpen }
                         transition={{ type: 'spring', damping: 28, stiffness: 350 }}
                         className="relative h-full bg-sections-color w-full max-w-md shadow-2xl flex flex-col overflow-hidden"
                     >
-                        {/* Decoración de fondo */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-
+                    
                         {/* Header Premium */}
                         <div className="relative bg-primary p-5 shadow-lg">
                             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
@@ -450,7 +447,7 @@ const CartModalLaPetaca = ({ data, cart = [], setCart, modalOpen, setModalOpen }
                                     <motion.a
                                         whileHover={{ scale: 1.01, y: -1 }}
                                         whileTap={{ scale: 0.99 }}
-                                        href="/checkout"
+                                        href="/cart"
                                         className="group flex items-center justify-center gap-3 w-full py-4 bg-primary rounded-full text-white font-bold transition-all shadow-lg shadow-secondary/25 hover:shadow-xl hover:shadow-secondary/30"
                                     >
                                         <CreditCard size={20} />
