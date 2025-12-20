@@ -109,34 +109,35 @@ export default function CheckoutStepsRooms({ cart, setCart, user, prefixes, ubig
     };
 
     return (
-        <div className="min-h-screen bg-[#F7F9FB] py-4 md:py-12 px-2 sm:px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
-            <div className="bg-white p-3 md:p-8 rounded-lg md:rounded-xl shadow-sm">
+       <div className="bg-sections-color">
+        <div className="min-h-screen  py-4 md:py-12 px-2 sm:px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
+            <div className="bg-white p-3 md:p-8 rounded-xl md:rounded-3xl shadow-sm">
                 {/* Steps indicator */}
-                <div className="mb-4 md:mb-8">
+                <div className="mb-6 md:mb-10">
                     <div className="flex items-center justify-between gap-1 md:gap-4 max-w-3xl mx-auto">
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep >=1 ? `customtext-primary font-medium` : "customtext-neutral-dark"}`}>
-                            <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm bg-primary text-white border-primary`}>1</span>
-                            <span className="text-[10px] md:text-sm text-center">Carrito</span>
+                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 transition-all duration-300 ${currentStep >=1 ? `customtext-primary font-bold` : "customtext-neutral-light"}`}>
+                            <span className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center text-sm md:text-base font-bold shadow-lg transition-all duration-300 ${currentStep >= 1 ? 'bg-primary text-white border-primary scale-110' : 'bg-white customtext-neutral-light border-gray-300'}`}>1</span>
+                            <span className="text-[10px] md:text-sm font-semibold text-center">Carrito</span>
                         </div>
-                        <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
+                        <div className="mb-4 lg:mb-0 flex-1 h-1 bg-gray-200 relative rounded-full overflow-hidden">
                             <div 
-                                className={`absolute inset-0 transition-all duration-500 bg-primary`} 
+                                className={`absolute inset-0 transition-all duration-700 bg-gradient-to-r from-primary to-secondary shadow-md`} 
                                 style={{ width: currentStep > 1 ? "100%" : "0%" }} 
                             />
                         </div>
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep > 1 ? `customtext-primary font-medium` : "customtext-neutral-dark"}`}>
-                            <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep > 1 ? "bg-primary text-white border-transparent" : "bg-white customtext-primary  border-primary"}`}>2</span>
-                            <span className="text-[10px] md:text-sm text-center">Pago</span>
+                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 transition-all duration-300 ${currentStep > 1 ? `customtext-primary font-bold` : "customtext-neutral-light"}`}>
+                            <span className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center text-sm md:text-base font-bold shadow-lg transition-all duration-300 ${currentStep > 1 ? "bg-primary text-white border-primary scale-110" : "bg-white customtext-neutral-light border-gray-300"}`}>2</span>
+                            <span className="text-[10px] md:text-sm font-semibold text-center">Pago</span>
                         </div>
-                        <div className="mb-4 lg:mb-0 flex-1 h-[2px] bg-gray-200 relative">
+                        <div className="mb-4 lg:mb-0 flex-1 h-1 bg-gray-200 relative rounded-full overflow-hidden">
                             <div 
-                                className={`absolute inset-0 transition-all duration-500 ${data?.gradient ? 'bg-gradient' : 'bg-primary'}`} 
+                                className={`absolute inset-0 transition-all duration-700 bg-gradient-to-r from-primary to-secondary shadow-md`} 
                                 style={{ width: currentStep > 2 ? "100%" : "0%" }} 
                             />
                         </div>
-                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 ${currentStep === 3 ? `${data?.gradient ? 'customtext-gradient' : 'customtext-primary'} font-medium` : "customtext-neutral-dark"}`}>
-                            <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs md:text-sm ${currentStep === 3 ? (data?.gradient ? "bg-gradient text-white border-transparent" : "bg-primary text-white border-primary") : (data?.gradient ? "bg-white customtext-gradient border-gradient" : "bg-white customtext-primary border-primary")}`}>3</span>
-                            <span className="text-[10px] md:text-sm text-center">Confirmación</span>
+                        <div className={`flex flex-col items-center md:flex-row md:items-center gap-1 md:gap-2 transition-all duration-300 ${currentStep === 3 ? `customtext-primary font-bold` : "customtext-neutral-light"}`}>
+                            <span className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center text-sm md:text-base font-bold shadow-lg transition-all duration-300 ${currentStep === 3 ? "bg-success text-white border-success scale-110" : "bg-white customtext-neutral-light border-gray-300"}`}>3</span>
+                            <span className="text-[10px] md:text-sm font-semibold text-center">Confirmación</span>
                         </div>
                     </div>
                 </div>
@@ -214,16 +215,16 @@ export default function CheckoutStepsRooms({ cart, setCart, user, prefixes, ubig
                         overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
                         ariaHideApp={false}
                     >
-                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col animate-fadeIn">
                             {/* Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                                <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
+                            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-primary to-secondary">
+                                <h2 className="text-2xl font-bold text-white pr-4">{title}</h2>
                                 <button
                                     onClick={closeModal}
-                                    className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                    className="flex-shrink-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
                                     aria-label="Cerrar modal"
                                 >
-                                    <X size={24} strokeWidth={2} />
+                                    <X size={20} strokeWidth={2.5} />
                                 </button>
                             </div>
                             
@@ -235,10 +236,10 @@ export default function CheckoutStepsRooms({ cart, setCart, user, prefixes, ubig
                             </div>
                             
                             {/* Footer */}
-                            <div className="flex justify-end p-6 border-t border-gray-200">
+                            <div className="flex justify-end gap-3 p-6 border-t border-gray-200 bg-sections-color">
                                 <button
                                     onClick={closeModal}
-                                    className="px-6 py-2 bg-primary text-white rounded-lg  transition-colors duration-200 font-medium"
+                                    className="px-8 py-3 bg-primary hover:bg-secondary text-white rounded-full transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
                                 >
                                     Cerrar
                                 </button>
@@ -248,5 +249,6 @@ export default function CheckoutStepsRooms({ cart, setCart, user, prefixes, ubig
                 );
             })}
         </div>
+         </div>
     );
 }

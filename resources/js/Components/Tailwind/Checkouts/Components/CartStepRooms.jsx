@@ -44,7 +44,7 @@ export default function CartStepRooms({
                             </div>
                             <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay habitaciones seleccionadas</h3>
                             <p className="text-gray-500 mb-6">Explora nuestras opciones de alojamiento</p>
-                            <a href="/habitaciones" className="px-6 py-3 bg-primary text-white rounded-full hover:opacity-90 transition-all">
+                            <a href="/habitaciones" className="px-8 py-3 bg-primary hover:bg-secondary text-white rounded-full hover:shadow-xl transition-all duration-300 font-bold hover:scale-105 active:scale-95">
                                 Ver habitaciones disponibles
                             </a>
                         </div>
@@ -59,32 +59,7 @@ export default function CartStepRooms({
                     )}
                 </div>
 
-                {/* Trust Badges */}
-                {!isCartEmpty && (
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
-                            <ShieldCheck className="w-6 h-6 text-green-600 flex-shrink-0" />
-                            <div>
-                                <p className="font-semibold text-sm text-green-900">Reserva segura</p>
-                                <p className="text-xs text-green-700">Pago 100% protegido</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
-                            <Clock className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                            <div>
-                                <p className="font-semibold text-sm text-blue-900">Confirmación inmediata</p>
-                                <p className="text-xs text-blue-700">Por email y SMS</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
-                            <Award className="w-6 h-6 text-purple-600 flex-shrink-0" />
-                            <div>
-                                <p className="font-semibold text-sm text-purple-900">Mejor precio</p>
-                                <p className="text-xs text-purple-700">Garantizado</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
+          
             </div>
 
             {/* Checkout Summary - Sticky Sidebar */}
@@ -150,10 +125,10 @@ export default function CartStepRooms({
                         <button
                             onClick={onContinue}
                             disabled={isCartEmpty}
-                            className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-300 ${
+                            className={`w-full py-4 px-6 rounded-full font-bold text-base transition-all duration-300 shadow-lg ${
                                 isCartEmpty 
                                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                                    : 'bg-primary text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                                    : 'bg-primary hover:bg-secondary text-white hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]'
                             } ${data?.class_button || ''}`}
                         >
                             {isCartEmpty ? 'Carrito vacío' : 'Continuar con la reserva'}
@@ -161,26 +136,13 @@ export default function CartStepRooms({
                         
                         <a 
                             href="/habitaciones" 
-                            className="block w-full py-3 px-6 text-center rounded-xl font-medium text-gray-700 border-2 border-gray-300 hover:border-primary hover:text-primary transition-all"
+                            className="block w-full py-3 px-6 text-center rounded-full font-semibold customtext-primary border-2 border-accent hover:bg-accent hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
                         >
                             {isCartEmpty ? 'Explorar habitaciones' : 'Agregar más habitaciones'}
                         </a>
                     </div>
 
-                    {/* Info Box */}
-                    <div className="mt-6 p-4 bg-green-50 rounded-xl border border-green-200">
-                        <div className="flex items-start gap-3">
-                            <ShieldCheck className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                            <div>
-                                <p className="text-sm font-semibold text-green-900 mb-1">
-                                    ¡Excelente elección!
-                                </p>
-                                <p className="text-xs text-green-700 leading-relaxed">
-                                    Reserva ahora y asegura tu estadía. Confirmación inmediata por email.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     {/* Policy Links */}
                     <div className="mt-6 pt-6 border-t">

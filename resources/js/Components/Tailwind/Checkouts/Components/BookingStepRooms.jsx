@@ -5,7 +5,7 @@ import { processCulqiPayment } from "../../../../Actions/culqiPayment";
 import { processOpenPayPayment } from "../../../../Actions/openPayPayment";
 import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
-import PaymentModalRooms from "./PaymentModalRooms";
+import PaymentModal from "./PaymentModal";
 import OpenPayCardModal from "./OpenPayCardModal";
 // Usar modales de voucher específicos para reservas de hotel (no usan /api/sales)
 import UploadVoucherModalYapeBooking from "./UploadVoucherModalYapeBooking";
@@ -629,116 +629,76 @@ export default function BookingStepRooms({
             {/* Formulario de datos del huésped */}
             <div className="lg:col-span-2 space-y-6">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-2xl md:text-3xl font-bold customtext-neutral-dark mb-2">
                         Datos de la reserva
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="customtext-neutral-light">
                         Completa tus datos para confirmar la reserva
                     </p>
                 </div>
 
-                {/* Resumen de habitaciones seleccionadas */}
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                        <Building2 className="w-5 h-5" />
-                        Resumen de tu estadía
-                    </h3>
-                    <div className="space-y-3">
-                        {cart.map((room, index) => (
-                            <div key={`${room.id}-${room.checkIn}-${index}`} className="flex items-center gap-3 bg-white rounded-lg p-3">
-                                <img
-                                    src={`/storage/images/item/${room.image}`}
-                                    alt={room.name}
-                                    className="w-16 h-16 object-cover rounded-lg"
-                                    onError={(e) => (e.target.src = "/assets/img/noimage/no_img.jpg")}
-                                />
-                                <div className="flex-1">
-                                    <h4 className="font-semibold text-gray-900">{room.name}</h4>
-                                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                                        <span className="flex items-center gap-1">
-                                            <Calendar size={14} />
-                                            {formatDate(room.checkIn)} - {formatDate(room.checkOut)}
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Moon size={14} />
-                                            {room.nights || 1} noches
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Users size={14} />
-                                            {room.guests || 2} huéspedes
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="font-bold text-primary">
-                                        {CurrencySymbol()} {Number2Currency((room.final_price || room.price) * (room.nights || 1))}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+             
 
                 {/* Datos personales */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-primary" />
+                <div className="bg-white border border-sections-color rounded-xl p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold customtext-neutral-dark mb-4 flex items-center gap-2">
+                        <Users className="w-5 h-5 customtext-primary" />
                         Datos del huésped principal
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Nombre */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Nombre <span className="text-red-500">*</span>
+                            <label className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Nombre <span className="customtext-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className={`w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
+                                className={`w-full border ${errors.name ? 'border-danger' : 'border-sections-color'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all`}
                                 placeholder="Tu nombre"
                             />
-                            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                            {errors.name && <p className="customtext-danger text-xs mt-1">{errors.name}</p>}
                         </div>
 
                         {/* Apellido */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Apellido <span className="text-red-500">*</span>
+                            <label className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Apellido <span className="customtext-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="lastname"
                                 value={formData.lastname}
                                 onChange={handleChange}
-                                className={`w-full border ${errors.lastname ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
+                                className={`w-full border ${errors.lastname ? 'border-danger' : 'border-sections-color'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all`}
                                 placeholder="Tu apellido"
                             />
-                            {errors.lastname && <p className="text-red-500 text-xs mt-1">{errors.lastname}</p>}
+                            {errors.lastname && <p className="customtext-danger text-xs mt-1">{errors.lastname}</p>}
                         </div>
 
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email <span className="text-red-500">*</span>
+                            <label className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Email <span className="customtext-danger">*</span>
                             </label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className={`w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
+                                className={`w-full border ${errors.email ? 'border-danger' : 'border-sections-color'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all`}
                                 placeholder="tu@email.com"
                             />
-                            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                            {errors.email && <p className="customtext-danger text-xs mt-1">{errors.email}</p>}
                         </div>
 
                         {/* Teléfono */}
                         <div className="w-full">
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                                Celular <span className="text-red-500">*</span>
+                            <label htmlFor="phone" className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Celular <span className="customtext-danger">*</span>
                             </label>
                             <div className="flex gap-2 w-full">
                                 <div className="max-w-[120px]">
@@ -849,24 +809,24 @@ export default function BookingStepRooms({
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleChange}
-                                        className={`w-full border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
+                                        className={`w-full border ${errors.phone ? 'border-danger' : 'border-sections-color'} rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all`}
                                         placeholder="000 000 000"
                                     />
                                 </div>
                             </div>
-                            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                            {errors.phone && <p className="customtext-danger text-xs mt-1">{errors.phone}</p>}
                         </div>
 
                         {/* Tipo de documento */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Tipo de documento <span className="text-red-500">*</span>
+                            <label className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Tipo de documento <span className="customtext-danger">*</span>
                             </label>
                             <select
                                 name="documentType"
                                 value={formData.documentType}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                className="w-full border border-sections-color rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all"
                             >
                                 {typesDocument.map((type) => (
                                     <option key={type.value} value={type.value}>
@@ -878,25 +838,25 @@ export default function BookingStepRooms({
 
                         {/* Número de documento */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Número de documento <span className="text-red-500">*</span>
+                            <label className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Número de documento <span className="customtext-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="document"
                                 value={formData.document}
                                 onChange={handleChange}
-                                className={`w-full border ${errors.document ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
+                                className={`w-full border ${errors.document ? 'border-danger' : 'border-sections-color'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all`}
                                 placeholder={formData.documentType === 'dni' ? '12345678' : 'Número de documento'}
                                 maxLength={formData.documentType === 'dni' ? 8 : formData.documentType === 'ruc' ? 11 : 20}
                             />
-                            {errors.document && <p className="text-red-500 text-xs mt-1">{errors.document}</p>}
+                            {errors.document && <p className="customtext-danger text-xs mt-1">{errors.document}</p>}
                         </div>
                     </div>
 
                     {/* Solicitudes especiales */}
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium customtext-neutral-dark mb-1">
                             Solicitudes especiales (opcional)
                         </label>
                         <textarea
@@ -904,39 +864,39 @@ export default function BookingStepRooms({
                             value={formData.specialRequests}
                             onChange={handleChange}
                             rows={3}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                            className="w-full border border-sections-color rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all resize-none"
                             placeholder="¿Tienes alguna solicitud especial? (cama extra, llegada tarde, etc.)"
                         />
                     </div>
                 </div>
 
                 {/* Tipo de comprobante */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-primary" />
+                <div className="bg-white border border-sections-color rounded-xl p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold customtext-neutral-dark mb-4 flex items-center gap-2">
+                        <CreditCard className="w-5 h-5 customtext-primary" />
                         Comprobante de pago
                     </h3>
 
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                        <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${formData.invoiceType === 'boleta' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${formData.invoiceType === 'boleta' ? 'border-accent bg-accent/5' : 'border-sections-color hover:border-accent'}`}>
                             <input
                                 type="radio"
                                 name="invoiceType"
                                 value="boleta"
                                 checked={formData.invoiceType === 'boleta'}
                                 onChange={handleChange}
-                                className="text-primary focus:ring-primary"
+                                className="text-accent focus:ring-accent"
                             />
-                            <span className="font-medium">Boleta</span>
+                            <span className="font-medium customtext-neutral-dark">Boleta</span>
                         </label>
-                        <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${formData.invoiceType === 'factura' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${formData.invoiceType === 'factura' ? 'border-accent bg-accent/5' : 'border-sections-color hover:border-accent'}`}>
                             <input
                                 type="radio"
                                 name="invoiceType"
                                 value="factura"
                                 checked={formData.invoiceType === 'factura'}
                                 onChange={handleChange}
-                                className="text-primary focus:ring-primary"
+                                className="text-accent focus:ring-accent"
                             />
                             <span className="font-medium">Factura</span>
                         </label>
@@ -944,40 +904,29 @@ export default function BookingStepRooms({
 
                     {formData.invoiceType === 'factura' && (
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Razón Social <span className="text-red-500">*</span>
+                            <label className="block text-sm font-medium customtext-neutral-dark mb-1">
+                                Razón Social <span className="customtext-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="businessName"
                                 value={formData.businessName}
                                 onChange={handleChange}
-                                className={`w-full border ${errors.businessName ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
+                                className={`w-full border ${errors.businessName ? 'border-danger' : 'border-sections-color'} rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all`}
                                 placeholder="Nombre de la empresa"
                             />
-                            {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
+                            {errors.businessName && <p className="customtext-danger text-xs mt-1">{errors.businessName}</p>}
                         </div>
                     )}
                 </div>
 
-                {/* Información de check-in */}
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <h3 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
-                        <Clock className="w-5 h-5" />
-                        Información importante
-                    </h3>
-                    <ul className="text-sm text-amber-800 space-y-1">
-                        <li>• Check-in: A partir de las 15:00 hrs</li>
-                        <li>• Check-out: Hasta las 12:00 hrs</li>
-                        <li>• Recibirás un correo de confirmación con todos los detalles</li>
-                    </ul>
-                </div>
+             
 
                 {/* Botón volver en móvil */}
                 <div className="lg:hidden">
                     <button
                         onClick={noContinue}
-                        className="w-full py-3 px-6 text-center rounded-xl font-medium text-gray-700 border-2 border-gray-300 hover:border-primary hover:text-primary transition-all"
+                        className="w-full py-3 px-6 text-center rounded-full font-semibold customtext-neutral-dark border-2 border-accent hover:bg-accent hover:text-white transition-all duration-300"
                     >
                         Volver al carrito
                     </button>
@@ -986,45 +935,45 @@ export default function BookingStepRooms({
 
             {/* Sidebar - Resumen de pago */}
             <div className="lg:col-span-1">
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sticky top-4">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6">Resumen de pago</h3>
+                <div className="bg-white border border-sections-color rounded-2xl shadow-md p-6 sticky top-4">
+                    <h3 className="text-xl font-bold customtext-neutral-dark mb-6">Resumen de pago</h3>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-3 gap-3 pb-6 border-b mb-6">
+                    <div className="grid grid-cols-3 gap-3 pb-6 border-b border-sections-color mb-6">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-primary">{cart.length}</div>
-                            <div className="text-xs text-gray-600 mt-1">
+                            <div className="text-2xl font-bold customtext-primary">{cart.length}</div>
+                            <div className="text-xs customtext-neutral-light mt-1">
                                 {cart.length === 1 ? 'Habitación' : 'Habitaciones'}
                             </div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-primary">{totalNights}</div>
-                            <div className="text-xs text-gray-600 mt-1">Noches</div>
+                            <div className="text-2xl font-bold customtext-primary">{totalNights}</div>
+                            <div className="text-xs customtext-neutral-light mt-1">Noches</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-primary">{totalGuests}</div>
-                            <div className="text-xs text-gray-600 mt-1">Huéspedes</div>
+                            <div className="text-2xl font-bold customtext-primary">{totalGuests}</div>
+                            <div className="text-xs customtext-neutral-light mt-1">Huéspedes</div>
                         </div>
                     </div>
 
                     {/* Price Breakdown */}
                     <div className="space-y-3 mb-6">
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Subtotal</span>
-                            <span className="font-medium text-gray-900">
+                            <span className="customtext-neutral-light">Subtotal</span>
+                            <span className="font-medium customtext-neutral-dark">
                                 {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Impuestos y cargos</span>
-                            <span className="font-medium text-gray-900">
+                            <span className="customtext-neutral-light">Impuestos y cargos</span>
+                            <span className="font-medium customtext-neutral-dark">
                                 {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
 
                         {/* Cupón aplicado */}
                         {appliedCoupon && calculatedCouponDiscount > 0 && (
-                            <div className="flex justify-between text-sm text-green-600">
+                            <div className="flex justify-between text-sm customtext-success">
                                 <span className="flex items-center gap-1">
                                     <CheckCircle size={14} />
                                     Cupón ({appliedCoupon.code})
@@ -1037,7 +986,7 @@ export default function BookingStepRooms({
 
                         {/* Comisión del método de pago */}
                         {commissionAmount > 0 && (
-                            <div className="flex justify-between text-sm text-orange-600">
+                            <div className="flex justify-between text-sm customtext-warning">
                                 <span>Comisión ({paymentCommission}%)</span>
                                 <span className="font-medium">
                                     +{CurrencySymbol()} {Number2Currency(commissionAmount)}
@@ -1047,19 +996,19 @@ export default function BookingStepRooms({
                     </div>
 
                     {/* Cupón */}
-                    <div className="mb-6 pb-6 border-b">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="mb-6 pb-6 border-b border-sections-color">
+                        <label className="block text-sm font-medium customtext-neutral-dark mb-2">
                             ¿Tienes un cupón?
                         </label>
                         {appliedCoupon ? (
-                            <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                            <div className="flex items-center justify-between bg-success/10 border border-success rounded-lg px-4 py-3">
                                 <div className="flex items-center gap-2">
-                                    <CheckCircle size={18} className="text-green-600" />
-                                    <span className="font-medium text-green-800">{appliedCoupon.code}</span>
+                                    <CheckCircle size={18} className="customtext-success" />
+                                    <span className="font-medium customtext-success">{appliedCoupon.code}</span>
                                 </div>
                                 <button
                                     onClick={handleRemoveCoupon}
-                                    className="text-red-500 hover:text-red-700 text-sm font-medium"
+                                    className="customtext-danger hover:text-danger text-sm font-medium"
                                 >
                                     Quitar
                                 </button>
@@ -1072,31 +1021,31 @@ export default function BookingStepRooms({
                                     value={couponCode}
                                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                     placeholder="Código de cupón"
-                                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                    className="flex-1 border border-gray-300 rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all"
                                 />
                                 <button
                                     onClick={handleApplyCoupon}
                                     disabled={couponLoading}
-                                    className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                                    className="px-6 py-2.5 bg-accent hover:bg-secondary text-white rounded-full text-sm font-bold hover:shadow-lg transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95"
                                 >
                                     {couponLoading ? '...' : 'Aplicar'}
                                 </button>
                             </div>
                         )}
                         {couponError && (
-                            <p className="text-red-500 text-xs mt-2">{couponError}</p>
+                            <p className="customtext-danger text-xs mt-2">{couponError}</p>
                         )}
                     </div>
 
                     {/* Total */}
                     <div className="mb-6">
                         <div className="flex justify-between items-center">
-                            <span className="text-lg font-bold text-gray-900">Total a pagar</span>
+                            <span className="text-lg font-bold customtext-neutral-dark">Total a pagar</span>
                             <div className="text-right">
-                                <div className="text-2xl font-bold text-primary">
+                                <div className="text-2xl font-bold customtext-primary">
                                     {CurrencySymbol()} {Number2Currency(finalTotalWithCoupon)}
                                 </div>
-                                <div className="text-xs text-gray-500">Incluye impuestos</div>
+                                <div className="text-xs customtext-neutral-light">Incluye impuestos</div>
                             </div>
                         </div>
                     </div>
@@ -1106,7 +1055,7 @@ export default function BookingStepRooms({
                         <button
                             onClick={handleContinueClick}
                             disabled={paymentLoading || !hasPaymentMethods}
-                            className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-300 bg-primary text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${data?.class_button || ''}`}
+                            className={`w-full py-4 px-6 rounded-full font-bold text-base transition-all duration-300 bg-primary hover:bg-secondary text-white hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${data?.class_button || ''}`}
                         >
                             {paymentLoading ? (
                                 <span className="flex items-center justify-center gap-2">
@@ -1120,38 +1069,29 @@ export default function BookingStepRooms({
 
                         <button
                             onClick={noContinue}
-                            className="hidden lg:block w-full py-3 px-6 text-center rounded-xl font-medium text-gray-700 border-2 border-gray-300 hover:border-primary hover:text-primary transition-all"
+                            className="hidden lg:block w-full py-3 px-6 text-center rounded-full font-semibold customtext-primary border-2 border-accent hover:bg-accent hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
                         >
                             Volver al carrito
                         </button>
                     </div>
 
-                    {/* Trust badges */}
-                    <div className="mt-6 pt-6 border-t">
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
-                            <ShieldCheck className="w-5 h-5 text-green-600" />
-                            <span>Pago 100% seguro</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <CheckCircle className="w-5 h-5 text-blue-600" />
-                            <span>Confirmación inmediata</span>
-                        </div>
-                    </div>
+                  
+                
 
                     {/* Policy Links */}
-                    <div className="mt-6 pt-6 border-t">
-                        <p className="text-xs text-gray-500 leading-relaxed">
+                    <div className="mt-6 pt-6 border-t border-sections-color">
+                        <p className="text-xs customtext-neutral-light leading-relaxed">
                             Al proceder, aceptas nuestros{' '}
                             <button
                                 onClick={() => openModal && openModal(1)}
-                                className="text-primary font-medium hover:underline"
+                                className="customtext-accent font-medium hover:underline"
                             >
                                 Términos y Condiciones
                             </button>
                             {' '}y{' '}
                             <button
                                 onClick={() => openModal && openModal(0)}
-                                className="text-primary font-medium hover:underline"
+                                className="customtext-accent font-medium hover:underline"
                             >
                                 Política de Privacidad
                             </button>
@@ -1169,30 +1109,30 @@ export default function BookingStepRooms({
                 overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
                 ariaHideApp={false}
             >
-                <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
                     <div className="text-center mb-6">
-                        <UserRoundX className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Inicia sesión</h2>
-                        <p className="text-gray-600">
+                        <UserRoundX className="w-16 h-16 customtext-neutral-light mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold customtext-neutral-dark mb-2">Inicia sesión</h2>
+                        <p className="customtext-neutral-light">
                             Para continuar con tu reserva, necesitas iniciar sesión o crear una cuenta.
                         </p>
                     </div>
                     <div className="space-y-3">
                         <a
                             href="/login"
-                            className="block w-full py-3 px-6 text-center rounded-xl font-medium bg-primary text-white hover:opacity-90 transition-all"
+                            className="block w-full py-4 px-6 text-center rounded-full font-bold bg-primary hover:bg-secondary text-white hover:shadow-xl transition-all duration-300 shadow-lg hover:scale-105 active:scale-95"
                         >
                             Iniciar sesión
                         </a>
                         <a
                             href="/register"
-                            className="block w-full py-3 px-6 text-center rounded-xl font-medium text-gray-700 border-2 border-gray-300 hover:border-primary hover:text-primary transition-all"
+                            className="block w-full py-3 px-6 text-center rounded-full font-semibold customtext-primary border-2 border-accent hover:bg-accent hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
                         >
                             Crear cuenta
                         </a>
                         <button
                             onClick={() => setShowLoginModal(false)}
-                            className="block w-full py-2 text-center text-gray-500 hover:text-gray-700 text-sm"
+                            className="block w-full py-2 text-center customtext-neutral-light hover:customtext-neutral-dark text-sm font-medium transition-colors"
                         >
                             Cancelar
                         </button>
@@ -1201,7 +1141,7 @@ export default function BookingStepRooms({
             </ReactModal>
 
             {/* Modal de métodos de pago */}
-            <PaymentModalRooms
+            <PaymentModal
                 isOpen={showPaymentModal}
                 contacts={contacts}
                 cart={cart}

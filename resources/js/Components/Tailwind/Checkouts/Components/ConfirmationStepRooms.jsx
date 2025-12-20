@@ -116,7 +116,7 @@ export default function ConfirmationStepRooms({
         <div className="max-w-4xl mx-auto font-paragraph">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {/* Header de confirmación */}
-                <div className="bg-gradient-to-r from-green-500 to-green-600 p-8 text-white text-center">
+                <div className="bg-success p-8 text-white text-center">
                     <CheckCircle className="w-16 h-16 mx-auto mb-4" />
                     <h1 className="text-3xl font-bold mb-2">¡Reserva Confirmada!</h1>
                     <p className="text-lg opacity-90">
@@ -127,10 +127,10 @@ export default function ConfirmationStepRooms({
                 {/* Información del cliente */}
                 <div className="p-6 border-b border-gray-200">
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-primary" />
+                        <Users className="w-5 h-5 customtext-primary" />
                         Información del Huésped
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 rounded-lg p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-sections-color rounded-lg p-4">
                         <div className="flex items-start gap-3">
                             <Mail className="w-5 h-5 text-gray-400 mt-1" />
                             <div>
@@ -196,22 +196,22 @@ export default function ConfirmationStepRooms({
                                             
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar size={16} className="text-blue-600" />
+                                                    <Calendar size={16} className="customtext-info" />
                                                     <span className="text-gray-600">Check-in:</span>
                                                     <span className="font-semibold">{formatDate(room.check_in)}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar size={16} className="text-red-600" />
+                                                    <Calendar size={16} className="customtext-danger" />
                                                     <span className="text-gray-600">Check-out:</span>
                                                     <span className="font-semibold">{formatDate(room.check_out)}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Moon size={16} className="text-indigo-600" />
+                                                    <Moon size={16} className="customtext-secondary" />
                                                     <span className="text-gray-600">Noches:</span>
                                                     <span className="font-semibold">{nights}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Users size={16} className="text-green-600" />
+                                                    <Users size={16} className="customtext-success" />
                                                     <span className="text-gray-600">Huéspedes:</span>
                                                     <span className="font-semibold">{guests}</span>
                                                 </div>
@@ -224,7 +224,7 @@ export default function ConfirmationStepRooms({
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-xs text-gray-500">Total habitación</p>
-                                                    <p className="font-bold text-lg text-primary">
+                                                    <p className="font-bold text-lg customtext-primary">
                                                         {CurrencySymbol()} {Number2Currency(totalRoomPrice)}
                                                     </p>
                                                 </div>
@@ -240,7 +240,7 @@ export default function ConfirmationStepRooms({
                 {/* Resumen de pago */}
                 <div className="p-6">
                     <h2 className="text-xl font-bold mb-4">Resumen de Pago</h2>
-                    <div className="space-y-3 bg-gray-50 rounded-lg p-4">
+                    <div className="space-y-3 bg-sections-color rounded-lg p-4">
                         <div className="flex justify-between">
                             <span className="customtext-neutral-dark">Subtotal</span>
                             <span className="font-semibold">{CurrencySymbol()} {Number2Currency(subTotal)}</span>
@@ -251,7 +251,7 @@ export default function ConfirmationStepRooms({
                         </div>
                         
                         {order.coupon_id && (
-                            <div className="flex justify-between items-center text-green-600 border-t pt-2">
+                            <div className="flex justify-between items-center customtext-success border-t pt-2">
                                 <span className="flex items-center gap-2">
                                     <CheckCircle size={16} />
                                     Cupón aplicado ({order.coupon_code})
@@ -263,7 +263,7 @@ export default function ConfirmationStepRooms({
                         )}
 
                         {paymentCommission > 0 && (
-                            <div className="flex justify-between items-center text-orange-600 border-t pt-2">
+                            <div className="flex justify-between items-center customtext-warning border-t pt-2">
                                 <span className="text-sm">
                                     Comisión método de pago ({order.payment_commission_percentage || 0}%)
                                 </span>
@@ -275,7 +275,7 @@ export default function ConfirmationStepRooms({
 
                         <div className="flex justify-between items-center font-bold text-xl border-t-2 pt-3 mt-3">
                             <span>Total Pagado</span>
-                            <span className="text-primary">{CurrencySymbol()} {Number2Currency(totalFinal)}</span>
+                            <span className="customtext-primary">{CurrencySymbol()} {Number2Currency(totalFinal)}</span>
                         </div>
 
                         {order.payment_method && (
@@ -287,14 +287,14 @@ export default function ConfirmationStepRooms({
                 </div>
 
                 {/* Información adicional */}
-                <div className="p-6 bg-blue-50 border-t border-blue-200">
+                <div className="p-6 bg-sections-color border-t border-info">
                     <div className="flex items-start gap-3">
-                        <Mail className="w-5 h-5 text-blue-600 mt-1" />
+                        <Mail className="w-5 h-5 customtext-info mt-1" />
                         <div className="flex-1">
-                            <h3 className="font-semibold text-blue-900 mb-2">
+                            <h3 className="font-semibold customtext-primary mb-2">
                                 Confirmación enviada por email
                             </h3>
-                            <p className="text-sm text-blue-800">
+                            <p className="text-sm customtext-neutral-dark">
                                 Hemos enviado un correo electrónico a <span className="font-semibold">{order.email}</span> con 
                                 todos los detalles de tu reserva. Por favor, revisa tu bandeja de entrada y la carpeta de spam.
                             </p>
@@ -304,11 +304,11 @@ export default function ConfirmationStepRooms({
 
                 {/* Nota importante */}
                 {order.comment && (
-                    <div className="p-6 bg-yellow-50 border-t border-yellow-200">
-                        <h3 className="font-semibold text-yellow-900 mb-2">
+                    <div className="p-6 bg-sections-color border-t border-warning">
+                        <h3 className="font-semibold customtext-primary mb-2">
                             Comentarios adicionales
                         </h3>
-                        <p className="text-sm text-yellow-800">{order.comment}</p>
+                        <p className="text-sm customtext-neutral-dark">{order.comment}</p>
                     </div>
                 )}
 
@@ -316,14 +316,14 @@ export default function ConfirmationStepRooms({
                 <div className="p-6 border-t border-gray-200">
                     <ButtonPrimary 
                         href="/habitaciones" 
-                        className={`w-full !rounded-full ${data?.class_button}`}
+                        className={`w-full !rounded-full py-4 text-white ${data?.class_button}`}
                     >
                         Ver más habitaciones
                     </ButtonPrimary>
                 </div>
 
                 {/* Información de contacto */}
-                <div className="p-6 bg-gray-50 text-center text-sm text-gray-600">
+                <div className="p-6 bg-sections-color text-center text-sm text-gray-600">
                     <p>
                         Si tienes alguna pregunta sobre tu reserva, no dudes en contactarnos.
                     </p>

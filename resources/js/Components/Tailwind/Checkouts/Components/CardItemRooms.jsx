@@ -6,7 +6,7 @@ import { es } from "date-fns/locale";
 const CardItemRooms = ({ setCart, ...room }) => {
 
     const onDeleteClicked = () => {
-        setCart(old => old.filter(x => x.id !== room.id || x.checkIn !== room.checkIn));
+        setCart(old => old.filter(x => x.id !== room.id || x.check_in !== room.check_in));
     }
 
     // Formatear fechas de manera corta
@@ -101,7 +101,7 @@ const CardItemRooms = ({ setCart, ...room }) => {
                                     <Calendar size={16} className="text-gray-500" />
                                     <div>
                                         <div className="text-xs text-gray-500">Check-in</div>
-                                        <div className="font-semibold text-gray-900">{formatDate(room.checkIn)}</div>
+                                        <div className="font-semibold text-gray-900">{formatDate(room.check_in)}</div>
                                     </div>
                                 </div>
                                 <div className="w-8 h-px bg-gray-300"></div>
@@ -109,7 +109,7 @@ const CardItemRooms = ({ setCart, ...room }) => {
                                     <Calendar size={16} className="text-gray-500" />
                                     <div>
                                         <div className="text-xs text-gray-500">Check-out</div>
-                                        <div className="font-semibold text-gray-900">{formatDate(room.checkOut)}</div>
+                                        <div className="font-semibold text-gray-900">{formatDate(room.check_out)}</div>
                                     </div>
                                 </div>
                             </div>
