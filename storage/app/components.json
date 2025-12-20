@@ -2069,7 +2069,8 @@
                 "image": "indicator-lapetaca.png",
                 "data": [
                     "accentColor",
-                    "showDirectBooking"
+                    "showDirectBooking",
+                    "class_section"
                 ],
                 "using": {
                     "model": "Indicator",
