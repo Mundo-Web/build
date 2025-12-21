@@ -54,7 +54,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
     'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'excel_import_template'],//footer_description
-    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email'],
+    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email','job_application_email','admin_job_application_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
@@ -105,7 +105,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'admin_purchase_email',
     'admin_contact_email',
     'admin_claim_email',
-    'admin_whistleblowing_email'
+    'admin_whistleblowing_email',
+    'job_application_email',
+    'admin_job_application_email'
   ];
 
   // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
