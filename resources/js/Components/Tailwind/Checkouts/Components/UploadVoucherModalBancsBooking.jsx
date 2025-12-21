@@ -21,6 +21,9 @@ export default function UploadVoucherModalBancsBooking({
     contacts = [],
     coupon = null,
     descuentofinal = 0,
+    setCode,
+    setBooking,
+    onContinue,
 }) {
     const [saving, setSaving] = useState(false);
     const [voucher, setVoucher] = useState(null);
@@ -77,12 +80,25 @@ export default function UploadVoucherModalBancsBooking({
     
             const result = await bookingsRest.checkout(formData);
             
-            if (result && result.code) {
+            console.log('\u2705 Respuesta del checkout:', result);
+            
+            if (result && result.data && result.data.code) {
                 Local.set(`${Global.APP_CORRELATIVE}_cart`, 
                     (Local.get(`${Global.APP_CORRELATIVE}_cart`) || []).filter(item => item.type !== 'booking')
                 );
-                // Redirigir a /cart con el código para que CheckoutStepsRooms muestre la confirmación
-                location.href = `${location.origin}/cart?code=${result.code}`;
+                // Actualizar estado y cambiar al paso de confirmación
+                setBooking(result.data.sale || result.data);
+                setCode(result.data.code);
+                onClose();
+                onContinue();
+            } else {
+                console.error('\u274c Respuesta inválida del servidor:', result);
+                toast.error('Error al procesar la reserva', {
+                    description: result?.message || 'No se recibió el código de confirmación',
+                    icon: <CircleX className="h-5 w-5 text-red-500" />,
+                    duration: 3000,
+                    position: 'top-right',
+                });
             }
         } catch (error) {
             console.error("Error al procesar el pago:", error);

@@ -1169,6 +1169,9 @@ export default function BookingStepRooms({
                 contacts={contacts}
                 coupon={appliedCoupon}
                 descuentofinal={calculatedCouponDiscount}
+                setCode={setCode}
+                setBooking={setBooking}
+                onContinue={onContinue}
             />
 
             {/* Modal de Voucher Transferencia - Específico para reservas de hotel */}
@@ -1183,6 +1186,9 @@ export default function BookingStepRooms({
                 onClose={() => setShowVoucherModalBancs(false)}
                 coupon={appliedCoupon}
                 descuentofinal={calculatedCouponDiscount}
+                setCode={setCode}
+                setBooking={setBooking}
+                onContinue={onContinue}
             />
         </div>
     );

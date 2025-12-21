@@ -6,11 +6,14 @@ use App\Models\Booking;
 use App\Models\Item;
 use App\Models\Sale;
 use App\Models\RoomAvailability;
+use App\Notifications\BookingSummaryNotification;
+use App\Notifications\AdminBookingNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use SoDe\Extend\Crypto;
 use SoDe\Extend\Response;
@@ -435,9 +438,32 @@ class BookingController extends Controller
 
             DB::commit();
 
+            // Enviar correos de confirmación
+            try {
+                // Cargar la relación de status para los correos
+                $sale->load('status');
+                
+                // Enviar correo al cliente
+                Notification::route('mail', $sale->email)
+                    ->notify(new BookingSummaryNotification($sale, $bookings));
+                
+                // Enviar correo al administrador
+                $coorporativeEmail = \App\Models\General::where('correlative', 'coorporative_email')->first();
+                if ($coorporativeEmail && $coorporativeEmail->description) {
+                    Notification::route('mail', $coorporativeEmail->description)
+                        ->notify(new AdminBookingNotification($sale, $bookings));
+                }
+                
+            } catch (\Throwable $emailError) {
+                // Log del error pero no fallar la reserva
+                \Illuminate\Support\Facades\Log::error('Error al enviar correos de reserva', [
+                    'sale_id' => $sale->id,
+                    'error' => $emailError->getMessage()
+                ]);
+            }
+
             $response->status = 200;
             $response->message = 'Reserva procesada exitosamente';
-            $response->code = $saleCode;
             $response->data = [
                 'sale' => $sale,
                 'bookings' => $bookings,

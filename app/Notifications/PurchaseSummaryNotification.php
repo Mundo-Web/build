@@ -26,21 +26,22 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
 
     /**
      * Variables disponibles para la plantilla de email.
+     * Compatible con ecommerce Y reservas de hotel
      */
     public static function availableVariables()
     {
         return [
-            'orderId'        => 'Código del pedido',
+            'orderId'        => 'Código del pedido/reserva',
             'fecha_pedido'   => 'Fecha y hora del pedido',
             'status'         => 'Estado actual',
             'status_color'   => 'Color para mostrar el estado',
             'name'           => 'Nombre del cliente',
             'email'          => 'Correo electrónico del cliente',
             'year'           => 'Año actual',
-            'total'          => 'Total de la compra',
-            'subtotal'       => 'Subtotal de la compra (sin IGV)',
+            'total'          => 'Total de la compra/reserva',
+            'subtotal'       => 'Subtotal (sin IGV)',
             'igv'            => 'Impuesto General a las Ventas (18%)',
-            'costo_envio'    => 'Costo de envío',
+            'costo_envio'    => 'Costo de envío (solo ecommerce)',
             'direccion_envio' => 'Dirección de envío',
             'distrito'       => 'Distrito de envío',
             'provincia'      => 'Provincia de envío',
@@ -62,7 +63,13 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             'tiene_comprobante' => 'Indica si el cliente subió comprobante (true/false)',
             'metodo_pago'      => 'Método de pago usado (tarjeta, yape, transferencia, etc.)',
 
+            // Variables de productos (para ecommerce)
             'productos'      => 'Bloque repetible de productos: {{#productos}}...{{/productos}}. Variables: nombre, cantidad, sku, precio_unitario, precio_total, categoria, imagen',
+            
+            // Variables de reservas de hotel (nuevas)
+            'habitaciones'   => 'Bloque repetible de habitaciones: {{#habitaciones}}...{{/habitaciones}}. Variables: nombre_habitacion, tipo_habitacion, check_in, check_out, noches, huespedes, adultos, ninos, precio_noche, total_habitacion, imagen, solicitudes_especiales',
+            'total_habitaciones' => 'Número total de habitaciones reservadas',
+            'total_noches'   => 'Total de noches reservadas',
         ];
     }
 
