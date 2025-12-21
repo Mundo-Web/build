@@ -353,13 +353,13 @@ const Bookings = ({ statuses = [] }) => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      pending: { badge: 'badge-warning', label: 'Pendiente', color: '#f1b44c' },
-      confirmed: { badge: 'badge-success', label: 'Confirmada', color: '#28a745' },
-      cancelled: { badge: 'badge-danger', label: 'Cancelada', color: '#dc3545' },
-      completed: { badge: 'badge-info', label: 'Completada', color: '#17a2b8' },
-      no_show: { badge: 'badge-secondary', label: 'No Show', color: '#6c757d' },
+      pending: { badge: 'badge-warning', label: 'Pendiente', color: '#f1b44c', bg: '#fff3cd' },
+      confirmed: { badge: 'badge-success', label: 'Confirmada', color: '#28a745', bg: '#d4edda' },
+      cancelled: { badge: 'badge-danger', label: 'Cancelada', color: '#dc3545', bg: '#f8d7da' },
+      completed: { badge: 'badge-info', label: 'Completada', color: '#17a2b8', bg: '#d1ecf1' },
+      no_show: { badge: 'badge-secondary', label: 'No Show', color: '#6c757d', bg: '#e2e3e5' },
     };
-    return badges[status] || { badge: 'badge-secondary', label: status, color: '#6c757d' };
+    return badges[status] || { badge: 'badge-secondary', label: status || 'Sin estado', color: '#6c757d', bg: '#e2e3e5' };
   };
 
   const getPaymentStatusBadge = (status) => {
@@ -621,9 +621,18 @@ const Bookings = ({ statuses = [] }) => {
             dataField: 'status',
             caption: 'Estado Reserva',
             cellTemplate: (container, { data }) => {
-              const { badge, label } = getStatusBadge(data.status);
+              const { badge, label, color, bg } = getStatusBadge(data.status);
               ReactAppend(container,
-                <span className={`badge ${badge}`}>{label}</span>
+                <span 
+                  className="badge"
+                  style={{
+                    backgroundColor: bg,
+                    color: color,
+                    fontWeight: '500'
+                  }}
+                >
+                  {label}
+                </span>
               );
             }
           },
@@ -783,7 +792,16 @@ const Bookings = ({ statuses = [] }) => {
                             <strong>{CurrencySymbol()} {Number2Currency(booking.total_price || 0)}</strong>
                           </td>
                           <td>
-                            <span className={`badge ${statusInfo.badge}`}>{statusInfo.label}</span>
+                            <span 
+                              className="badge"
+                              style={{
+                                backgroundColor: statusInfo.bg,
+                                color: statusInfo.color,
+                                fontWeight: '500'
+                              }}
+                            >
+                              {statusInfo.label}
+                            </span>
                           </td>
                         </tr>
                       );
@@ -1029,7 +1047,14 @@ const Bookings = ({ statuses = [] }) => {
               <div className="card-body p-2">
                 <div className="mb-2">
                   <strong>Estado actual:</strong>{' '}
-                  <span className={`badge ${getStatusBadge(bookingLoaded?.status).badge}`}>
+                  <span 
+                    className="badge"
+                    style={{
+                      backgroundColor: getStatusBadge(bookingLoaded?.status).bg,
+                      color: getStatusBadge(bookingLoaded?.status).color,
+                      fontWeight: '500'
+                    }}
+                  >
                     {getStatusBadge(bookingLoaded?.status).label}
                   </span>
                 </div>

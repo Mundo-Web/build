@@ -250,35 +250,39 @@ const RoomAvailability = ({ rooms = [] }) => {
               
               let bgColor = '#d4edda'; // Verde - disponible
               let textColor = '#155724';
+              let statusText = 'Disponible';
               
               if (isBlocked) {
                 bgColor = '#e2e3e5';
                 textColor = '#383d41';
+                statusText = 'Bloqueada';
               } else if (hasBookings) {
                 bgColor = '#f8d7da'; // Rojo - ocupado
                 textColor = '#721c24';
+                statusText = 'Ocupada';
               } else if (day.available_rooms === 0) {
                 bgColor = '#fff3cd'; // Amarillo - sin disponibilidad
                 textColor = '#856404';
+                statusText = 'Reservada';
               }
 
               return (
                 <div
                   key={day.date}
-                  className="text-center rounded p-1"
+                  className="text-center rounded p-2 d-flex align-items-center justify-content-center"
                   style={{
                     width: '40px',
-                    height: '50px',
+                    height: '40px',
                     backgroundColor: bgColor,
                     color: textColor,
                     cursor: 'pointer',
-                    fontSize: '12px'
+                    fontSize: '14px',
+                    fontWeight: 'bold'
                   }}
-                  title={`${day.date}\nDisponibles: ${day.available_rooms}\nReservados: ${day.booked_rooms}${isBlocked ? '\n⛔ Bloqueado' : ''}${day.bookings.map(b => `\n👤 ${b.sale?.name || 'Cliente'}`).join('')}`}
+                  title={`${day.date}\n${statusText}${day.bookings.map(b => `\n👤 ${b.sale?.name || 'Cliente'}`).join('')}`}
                 >
-                  <div className="font-weight-bold">{dayNum}</div>
-                  <small>{day.available_rooms}/{selectedRoom?.total_rooms || 1}</small>
-                  {isBlocked && <i className="mdi mdi-lock text-danger" style={{ fontSize: '10px' }}></i>}
+                  {dayNum}
+                  {isBlocked && <i className="mdi mdi-lock position-absolute" style={{ fontSize: '10px', top: '2px', right: '2px' }}></i>}
                 </div>
               );
             })}
@@ -361,7 +365,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                             </div>
                             
                             {/* Info */}
-                            <div className="flex-grow-1">
+                            <div className="flex-grow-1 position-relative px-2">
                               <h5 className="mb-1">{room.name}</h5>
                               <span 
                                 className="badge mb-2"
@@ -372,7 +376,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                               
                               <div className="small text-muted">
                                 <i className="mdi mdi-bed mr-1"></i>
-                                {room.available_rooms}/{room.total_rooms} disponibles
+                                {room.available_rooms ? 'Disponible' : 'Reservada'}
                               </div>
                               <div className="small text-muted">
                                 <i className="mdi mdi-account-multiple mr-1"></i>

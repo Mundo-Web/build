@@ -137,11 +137,10 @@ class RoomAvailabilityController extends BasicController
                         'slug' => $room->slug,
                         'image' => $room->image,
                         'room_type' => $room->room_type,
-                        'total_rooms' => $room->total_rooms ?? 1,
                         'max_occupancy' => $room->max_occupancy,
                         'price' => $room->final_price,
-                        'available_rooms' => $availability->available_rooms ?? ($room->total_rooms ?? 1),
-                        'booked_rooms' => $availability->booked_rooms ?? 0,
+                        'available_rooms' => ($availability && $availability->is_blocked) ? 0 : ($activeBooking ? 0 : 1),
+                        'booked_rooms' => $activeBooking ? 1 : 0,
                         'is_blocked' => $availability->is_blocked ?? false,
                         'status' => $this->getRoomStatus($room, $activeBooking, $availability),
                         'upcoming_bookings' => $upcomingBookings,
@@ -166,8 +165,8 @@ class RoomAvailabilityController extends BasicController
                 'rooms' => $rooms,
                 'date' => $date,
                 'summary' => [
-                    'total_rooms' => $rooms->sum('total_rooms'),
-                    'available' => $rooms->sum('available_rooms'),
+                    'total_rooms' => $rooms->count(),
+                    'available' => $rooms->where('available_rooms', 1)->count(),
                     'occupied' => $rooms->where('status', 'occupied')->count(),
                     'blocked' => $rooms->where('is_blocked', true)->count(),
                 ]
@@ -195,10 +194,6 @@ class RoomAvailabilityController extends BasicController
                 return 'occupied';
             }
             return 'reserved'; // pending
-        }
-        
-        if ($availability && $availability->available_rooms <= 0) {
-            return 'full';
         }
         
         return 'available';
@@ -283,8 +278,9 @@ class RoomAvailabilityController extends BasicController
                 $updateData = [];
                 
                 if (isset($validated['available_rooms'])) {
-                    $updateData['available_rooms'] = $validated['available_rooms'];
-                    $updateData['booked_rooms'] = $availability->total_rooms - $validated['available_rooms'];
+                    // Lógica binaria: 0 (no disponible) o 1 (disponible)
+                    $updateData['available_rooms'] = $validated['available_rooms'] > 0 ? 1 : 0;
+                    $updateData['booked_rooms'] = $validated['available_rooms'] > 0 ? 0 : 1;
                 }
                 
                 if (isset($validated['is_blocked'])) {
