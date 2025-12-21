@@ -323,6 +323,35 @@ const CartModalLaPetaca = ({ data, cart = [], setCart, modalOpen, setModalOpen }
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                
+                                                                {/* Huéspedes */}
+                                                                <div className="mt-3 pt-3 border-t border-white/10">
+                                                                    <div className="flex items-center gap-2.5">
+                                                                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                                                                            <Users size={14} className="customtext-accent" />
+                                                                        </div>
+                                                                        <div className="flex items-center gap-4 flex-1">
+                                                                            {booking.adults > 0 && (
+                                                                                <div className="min-w-0">
+                                                                                    <p className="customtext-neutral-dark text-[10px] uppercase tracking-wider font-medium">Adultos</p>
+                                                                                    <p className="customtext-neutral-dark font-semibold text-sm">{booking.adults || booking.guests}</p>
+                                                                                </div>
+                                                                            )}
+                                                                            {booking.children > 0 && (
+                                                                                <div className="min-w-0">
+                                                                                    <p className="customtext-neutral-dark text-[10px] uppercase tracking-wider font-medium">Niños</p>
+                                                                                    <p className="customtext-neutral-dark font-semibold text-sm">{booking.children}</p>
+                                                                                </div>
+                                                                            )}
+                                                                            {(!booking.adults && !booking.children) && (
+                                                                                <div className="min-w-0">
+                                                                                    <p className="customtext-neutral-dark text-[10px] uppercase tracking-wider font-medium">Huéspedes</p>
+                                                                                    <p className="customtext-neutral-dark font-semibold text-sm">{booking.guests || 2}</p>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                               
                                                             </div>
                                                         </div>

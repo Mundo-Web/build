@@ -364,6 +364,8 @@ class BookingController extends Controller
                     'check_out' => $checkOut,
                     'nights' => $nights,
                     'guests' => $guests,
+                    'adults' => $room['adults'] ?? $guests,
+                    'children' => $room['children'] ?? 0,
                     'price_per_night' => $pricePerNight,
                     'total_price' => $roomTotal,
                 ];
@@ -427,6 +429,8 @@ class BookingController extends Controller
                     'check_out' => $roomData['check_out'],
                     'nights' => $roomData['nights'],
                     'guests' => $roomData['guests'],
+                    'adults' => $roomData['adults'] ?? $roomData['guests'],
+                    'children' => $roomData['children'] ?? 0,
                     'price_per_night' => $roomData['price_per_night'],
                     'total_price' => $roomData['total_price'],
                     'status' => 'pending',

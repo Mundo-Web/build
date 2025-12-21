@@ -67,10 +67,18 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
     // Estados para reserva
     const [checkIn, setCheckIn] = useState(null);
     const [checkOut, setCheckOut] = useState(null);
-    const [guests, setGuests] = useState(2);
+    const [adults, setAdults] = useState(() => {
+        // Iniciar con 1 adulto como mínimo, o 2 si la capacidad lo permite
+        const maxCapacity = item?.max_occupancy || 2;
+        return Math.min(2, maxCapacity) || 1;
+    });
+    const [children, setChildren] = useState(0);
     const [loading, setLoading] = useState(false);
     const [showGuestsPicker, setShowGuestsPicker] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+    
+    // Calcular total de huéspedes
+    const guests = adults + children;
     
     // Estados para disponibilidad
     const [blockedDates, setBlockedDates] = useState([]);
@@ -626,6 +634,8 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                 check_out: checkOut.toISOString().split('T')[0],
                 nights: nights,
                 guests: guests,
+                adults: adults,
+                children: children,
                 max_occupancy: item.max_occupancy,
                 beds_count: item.beds_count,
                 room_type: item.room_type,
@@ -644,6 +654,8 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                 checkOut,
                 nights,
                 guests,
+                adults,
+                children,
                 pricePerNight,
                 totalPrice
             });
@@ -1097,7 +1109,8 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                             {/* Dropdown de huéspedes */}
                                             {showGuestsPicker && (
                                                 <div className="px-4 pb-4 border-t border-gray-100 pt-4 animate-slideUp">
-                                                    <div className="flex items-center justify-between">
+                                                    {/* Adultos */}
+                                                    <div className="flex items-center justify-between mb-4">
                                                         <div>
                                                             <p className="font-semibold customtext-primary text-sm">Adultos</p>
                                                             <p className="text-xs customtext-neutral-light">Edad 13+</p>
@@ -1106,18 +1119,18 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    if (guests > 1) setGuests(guests - 1);
+                                                                    if (adults > 1) setAdults(adults - 1);
                                                                 }}
-                                                                disabled={guests <= 1}
+                                                                disabled={adults <= 1}
                                                                 className="w-9 h-9 rounded-full border-2 border-accent flex items-center justify-center hover:bg-accent hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-current"
                                                             >
                                                                 <Minus size={16} />
                                                             </button>
-                                                            <span className="w-8 text-center font-bold customtext-primary text-lg">{guests}</span>
+                                                            <span className="w-8 text-center font-bold customtext-primary text-lg">{adults}</span>
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    if (guests < (item?.max_occupancy || 4)) setGuests(guests + 1);
+                                                                    if (guests < (item?.max_occupancy || 4)) setAdults(adults + 1);
                                                                 }}
                                                                 disabled={guests >= (item?.max_occupancy || 4)}
                                                                 className="w-9 h-9 rounded-full border-2 border-accent flex items-center justify-center hover:bg-accent hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-current"
@@ -1126,7 +1139,39 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <p className="text-xs customtext-neutral-light mt-3">
+                                                    
+                                                    {/* Niños */}
+                                                    <div className="flex items-center justify-between pb-3">
+                                                        <div>
+                                                            <p className="font-semibold customtext-primary text-sm">Niños</p>
+                                                            <p className="text-xs customtext-neutral-light">Edad 0-12</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (children > 0) setChildren(children - 1);
+                                                                }}
+                                                                disabled={children <= 0}
+                                                                className="w-9 h-9 rounded-full border-2 border-accent flex items-center justify-center hover:bg-accent hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-current"
+                                                            >
+                                                                <Minus size={16} />
+                                                            </button>
+                                                            <span className="w-8 text-center font-bold customtext-primary text-lg">{children}</span>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (guests < (item?.max_occupancy || 4)) setChildren(children + 1);
+                                                                }}
+                                                                disabled={guests >= (item?.max_occupancy || 4)}
+                                                                className="w-9 h-9 rounded-full border-2 border-accent flex items-center justify-center hover:bg-accent hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-current"
+                                                            >
+                                                                <Plus size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <p className="text-xs customtext-neutral-light pt-2 border-t border-gray-100">
                                                         Capacidad máxima: {item?.max_occupancy || 4} personas
                                                     </p>
                                                 </div>

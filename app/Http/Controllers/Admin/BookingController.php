@@ -192,7 +192,8 @@ class BookingController extends BasicController
 
             // Notificar al cliente si se requiere
             if ($request->input('notify_client', false)) {
-                $saleWithTracking = Sale::with(['status', 'tracking'])->find($booking->sale->id);
+                // Cargar el sale con sus bookings para enviar el correo con la información completa
+                $saleWithTracking = Sale::with(['status', 'tracking', 'bookings', 'bookings.item', 'bookings.item.category'])->find($booking->sale->id);
                 $saleWithTracking->notify(new OrderStatusChangedNotification($saleWithTracking));
             }
 
