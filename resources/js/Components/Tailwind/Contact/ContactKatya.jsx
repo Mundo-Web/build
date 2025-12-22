@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 
 import MessagesRest from "../../../Actions/MessagesRest";
 import GeneralsRest from "../../../Actions/Admin/GeneralsRest";
+import Global from "../../../Utils/Global";
 
 // Animaciones mejoradas
 const containerVariants = {
@@ -211,6 +212,39 @@ const nameRef = useRef()
         showConfirmButton: false,
         timer: 3000
       })
+
+      // Enviar lead a Atalaya CRM si existe API Key configurado
+      const atalayaApiKey = generalsData.find(item => item.correlative === "atalaya_leads_api_key")?.description;
+      if (atalayaApiKey && atalayaApiKey.trim() !== '') {
+        try {
+          console.log('ContactKatya - Enviando lead a Atalaya CRM...');
+          const atalayaResponse = await fetch('https://crm.atalaya.pe/free/leads', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${atalayaApiKey}`
+            },
+            body: JSON.stringify({
+              contact_name: nameRef.current.value + ' ' + lastnameRef.current.value,
+              contact_phone: phoneRef.current.value,
+              contact_email: emailRef.current.value,
+              message: descriptionRef.current.value,
+              origin: `${Global.APP_NAME} Formulario de Contacto`,
+              triggered_by: 'Website'
+            })
+          });
+
+          const atalayaResult = await atalayaResponse.json();
+          if (atalayaResult.status === 200) {
+            console.log('ContactKatya - Lead enviado correctamente a Atalaya:', atalayaResult.message);
+          } else {
+            console.warn('ContactKatya - Error al enviar lead a Atalaya:', atalayaResult);
+          }
+        } catch (atalayaError) {
+          // No mostrar error al usuario, solo log interno
+          console.error('ContactKatya - Error al enviar a Atalaya CRM:', atalayaError);
+        }
+      }
 
       // Verificar si hay redirección en data (como ContactGrid)
       if (data?.redirect) {

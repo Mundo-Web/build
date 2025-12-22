@@ -2816,7 +2816,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-B7QM_ksq.js",
+    "file": "assets/Generals-B8d6JMyd.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -8221,7 +8221,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-BuzpSHxH.js",
+    "file": "assets/Contact-C63vdyY8.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -8318,7 +8318,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact/ContactKatya.jsx": {
-    "file": "assets/ContactKatya-BJqed_ZY.js",
+    "file": "assets/ContactKatya-BjoNIWVB.js",
     "name": "ContactKatya",
     "src": "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
     "isDynamicEntry": true,
@@ -8329,6 +8329,7 @@
       "_MessagesRest-gAMzUB4v.js",
       "_main-B6F2O9-U.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_Global-Bz6gVLc5.js",
       "_proxy-B0QLMKEh.js",
       "_index-BZvh78jk.js",
       "_phone-ZNY-sPqk.js",
@@ -14642,7 +14643,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Dlo_S62e.js",
+    "file": "assets/System-CXc1XiW7.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

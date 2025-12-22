@@ -3386,7 +3386,8 @@
                     "email_contact",
                     "address",
                     "phone_contact",
-                    "location"
+                    "location",
+                    "atalaya_leads_api_key"
                 ]
             },
           
