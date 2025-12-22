@@ -43,7 +43,8 @@ export default function ConfirmationStepRooms({
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try {
-            const date = new Date(dateString);
+            // Agregar T00:00:00 para forzar hora local y evitar conversión UTC
+            const date = new Date(dateString + 'T00:00:00');
             return format(date, "dd 'de' MMMM, yyyy", { locale: es });
         } catch (error) {
             return dateString;

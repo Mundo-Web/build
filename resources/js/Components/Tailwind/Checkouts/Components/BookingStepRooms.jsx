@@ -341,7 +341,8 @@ export default function BookingStepRooms({
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try {
-            const date = new Date(dateString);
+            // Agregar T00:00:00 para forzar hora local y evitar conversión UTC
+            const date = new Date(dateString + 'T00:00:00');
             return format(date, "dd MMM yyyy", { locale: es });
         } catch (error) {
             return dateString;
@@ -359,12 +360,12 @@ export default function BookingStepRooms({
 
     const handleContinueClick = (e) => {
         e.preventDefault();
-
-        if (!user) {
+/*    if (!user) {
             setShowLoginModal(true);
             return;
         }
-
+*/
+     
         if (!validateForm()) {
             focusFirstError(errors);
             return;
@@ -641,7 +642,33 @@ export default function BookingStepRooms({
                     </p>
                 </div>
 
-             
+                {/* Resumen de habitaciones seleccionadas */}
+                {cart.length > 0 && (
+                    <div className="bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-4">
+                        <h3 className="text-sm font-semibold customtext-neutral-dark mb-3 flex items-center gap-2">
+                            <Calendar className="w-4 h-4 customtext-primary" />
+                            Resumen de tu reserva
+                        </h3>
+                        <div className="space-y-2">
+                            {cart.map((room, index) => (
+                                <div key={`${room.id}-${room.check_in}-${index}`} className="flex items-center gap-3 text-sm bg-white/50 rounded-lg p-2">
+                                    <img
+                                        src={`/storage/images/item/${room.image}`}
+                                        alt={room.name}
+                                        className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                                        onError={(e) => (e.target.src = "/assets/img/noimage/no_img.jpg")}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-semibold customtext-neutral-dark truncate">{room.name}</div>
+                                        <div className="text-xs customtext-neutral-light">
+                                            {formatDate(room.check_in)} - {formatDate(room.check_out)} · {room.nights} {room.nights === 1 ? 'noche' : 'noches'} · {room.guests} {room.guests === 1 ? 'huésped' : 'huéspedes'}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Datos personales */}
                 <div className="bg-white border border-sections-color rounded-xl p-6 shadow-sm">

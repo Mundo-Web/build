@@ -79,7 +79,7 @@ const RoomAvailability = ({ rooms = [] }) => {
     try {
       const startDate = new Date();
       const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 2);
+      endDate.setMonth(endDate.getMonth() + 3);
       
       const response = await fetch(
         `/api/admin/room-availability/${room.id}/calendar?start_date=${startDate.toISOString().split('T')[0]}&end_date=${endDate.toISOString().split('T')[0]}`,
@@ -188,10 +188,22 @@ const RoomAvailability = ({ rooms = [] }) => {
   };
 
   // Normalizar fecha a formato YYYY-MM-DD
-  const normalizeDate = (dateStr) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return date.toISOString().split('T')[0];
+  const normalizeDate = (dateInput) => {
+    if (!dateInput) return null;
+    
+    let date;
+    if (typeof dateInput === 'string') {
+      // Si es string, agregar T00:00:00 para evitar conversión UTC
+      date = new Date(dateInput + 'T00:00:00');
+    } else {
+      // Si ya es un objeto Date, usarlo directamente
+      date = dateInput;
+    }
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Renderizar calendario visual
@@ -200,15 +212,40 @@ const RoomAvailability = ({ rooms = [] }) => {
     
     const { availability, bookings } = calendarData;
     
-    // Crear mapa de fechas con reservas
+    console.log('📅 DEBUG CALENDARIO:', {
+      totalBookings: bookings?.length,
+      bookings: bookings?.map(b => ({
+        id: b.id,
+        check_in: b.check_in,
+        check_out: b.check_out,
+        status: b.status,
+        guest: b.sale?.name
+      })),
+      availabilityDates: availability?.slice(0, 5).map(d => d.date)
+    });
+    
+    // Crear mapa de reservas por fecha
     const bookingsByDate = {};
     bookings?.forEach(booking => {
-      const start = new Date(booking.check_in);
-      const end = new Date(booking.check_out);
-      let current = new Date(start);
+      // Parsear fechas manualmente para evitar problemas de UTC
+      // booking.check_in puede venir como "2026-01-01" o "2026-01-01 00:00:00"
+      const checkInDate = booking.check_in.split(' ')[0]; // Obtener solo YYYY-MM-DD
+      const checkOutDate = booking.check_out.split(' ')[0];
       
-      while (current < end) {
-        const dateStr = normalizeDate(current);
+      const [startYear, startMonth, startDay] = checkInDate.split('-');
+      const [endYear, endMonth, endDay] = checkOutDate.split('-');
+      
+      const startDate = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
+      const endDate = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
+      let current = new Date(startDate);
+      
+      // Incluir día de check-out para limpieza
+      while (current <= endDate) {
+        const year = current.getFullYear();
+        const month = String(current.getMonth() + 1).padStart(2, '0');
+        const day = String(current.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        
         if (!bookingsByDate[dateStr]) {
           bookingsByDate[dateStr] = [];
         }
@@ -216,21 +253,42 @@ const RoomAvailability = ({ rooms = [] }) => {
         current.setDate(current.getDate() + 1);
       }
     });
+    
+    console.log('🗓️ MAPA DE BOOKINGS POR FECHA:', {
+      totalDates: Object.keys(bookingsByDate).length,
+      dates: Object.keys(bookingsByDate).slice(0, 10),
+      sampleBooking: bookingsByDate[Object.keys(bookingsByDate)[0]]
+    });
 
     // Agrupar por mes
     const months = {};
     availability?.forEach(day => {
-      const normalizedDate = normalizeDate(day.date);
-      const date = new Date(day.date);
+      // Parsear fecha manualmente para evitar problemas de UTC
+      // day.date viene como "2025-12-22T05:00:00.000000Z", extraer solo YYYY-MM-DD
+      const dayDateStr = day.date.split('T')[0]; // "2026-01-01"
+      const [year, month, dayNum] = dayDateStr.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(dayNum));
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
       if (!months[monthKey]) {
         months[monthKey] = [];
       }
+      
       months[monthKey].push({
         ...day,
-        date: normalizedDate, // Usar fecha normalizada
-        bookings: bookingsByDate[normalizedDate] || []
+        date: dayDateStr, // Usar formato YYYY-MM-DD en lugar del timestamp
+        bookings: bookingsByDate[dayDateStr] || [] // Buscar con YYYY-MM-DD
       });
+    });
+    
+    console.log('📊 DÍAS CON BOOKINGS:', {
+      totalDays: Object.values(months).flat().length,
+      daysWithBookings: Object.values(months).flat().filter(d => d.bookings.length > 0).length,
+      sample: Object.values(months).flat().slice(0, 5).map(d => ({
+        date: d.date,
+        bookings: d.bookings.length,
+        statuses: d.bookings.map(b => b.status)
+      }))
     });
 
     return Object.entries(months).map(([monthKey, days]) => {
@@ -242,11 +300,16 @@ const RoomAvailability = ({ rooms = [] }) => {
           <h5 className="text-capitalize mb-3">{monthName}</h5>
           <div className="d-flex flex-wrap gap-1">
             {days.map(day => {
-              const date = new Date(day.date);
-              const dayNum = date.getDate();
+              // Parsear fecha manualmente para evitar problemas de UTC
+              const [year, month, dayNum] = day.date.split('-');
+              const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(dayNum));
+              const dayNumber = date.getDate();
               const isBlocked = day.is_blocked;
               const hasBookings = day.bookings.length > 0;
-              const isAvailable = day.available_rooms > 0 && !isBlocked;
+              
+              // Verificar si hay reservas confirmadas (check-in realizado) o pendientes (pagó pero sin check-in)
+              const hasConfirmedBookings = day.bookings.some(b => b.status === 'confirmed');
+              const hasPendingBookings = day.bookings.some(b => b.status === 'pending');
               
               let bgColor = '#d4edda'; // Verde - disponible
               let textColor = '#155724';
@@ -256,32 +319,37 @@ const RoomAvailability = ({ rooms = [] }) => {
                 bgColor = '#e2e3e5';
                 textColor = '#383d41';
                 statusText = 'Bloqueada';
-              } else if (hasBookings) {
-                bgColor = '#f8d7da'; // Rojo - ocupado
+              } else if (hasConfirmedBookings) {
+                bgColor = '#f8d7da'; // Rojo - ocupado (huésped activo, ya hizo check-in)
                 textColor = '#721c24';
                 statusText = 'Ocupada';
+              } else if (hasPendingBookings) {
+                bgColor = '#fff3cd'; // Amarillo - reservado (pagó pero sin check-in)
+                textColor = '#856404';
+                statusText = 'Reservada';
               } else if (day.available_rooms === 0) {
                 bgColor = '#fff3cd'; // Amarillo - sin disponibilidad
                 textColor = '#856404';
-                statusText = 'Reservada';
+                statusText = 'Sin disponibilidad';
               }
 
               return (
                 <div
                   key={day.date}
-                  className="text-center rounded p-2 d-flex align-items-center justify-content-center"
+                  className="text-center rounded p-2 d-flex align-items-center justify-content-center position-relative"
                   style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '45px',
+                    height: '45px',
                     backgroundColor: bgColor,
                     color: textColor,
                     cursor: 'pointer',
                     fontSize: '14px',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    border: '1px solid rgba(0,0,0,0.1)'
                   }}
                   title={`${day.date}\n${statusText}${day.bookings.map(b => `\n👤 ${b.sale?.name || 'Cliente'}`).join('')}`}
                 >
-                  {dayNum}
+                  {dayNumber}
                   {isBlocked && <i className="mdi mdi-lock position-absolute" style={{ fontSize: '10px', top: '2px', right: '2px' }}></i>}
                 </div>
               );
@@ -522,22 +590,43 @@ const RoomAvailability = ({ rooms = [] }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {calendarData.bookings.map(booking => (
-                        <tr key={booking.id}>
-                          <td>
-                            {booking.sale?.name} {booking.sale?.lastname}
-                            <br/>
-                            <small className="text-muted">{booking.sale?.email}</small>
-                          </td>
-                          <td>{new Date(booking.check_in).toLocaleDateString('es-PE')}</td>
-                          <td>{new Date(booking.check_out).toLocaleDateString('es-PE')}</td>
-                          <td>
-                            <span className={`badge badge-${booking.status === 'confirmed' ? 'success' : 'warning'}`}>
-                              {booking.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {calendarData.bookings.map(booking => {
+                        const getBookingStatusBadge = (status) => {
+                          const badges = {
+                            pending: { badge: 'badge-warning', label: 'Pendiente', color: '#f1b44c', bg: '#fff3cd' },
+                            confirmed: { badge: 'badge-success', label: 'Confirmada', color: '#28a745', bg: '#d4edda' },
+                            cancelled: { badge: 'badge-danger', label: 'Cancelada', color: '#dc3545', bg: '#f8d7da' },
+                            completed: { badge: 'badge-info', label: 'Completada', color: '#17a2b8', bg: '#d1ecf1' },
+                            no_show: { badge: 'badge-secondary', label: 'No Show', color: '#6c757d', bg: '#e2e3e5' },
+                          };
+                          return badges[status] || { badge: 'badge-secondary', label: status || 'Sin estado', color: '#6c757d', bg: '#e2e3e5' };
+                        };
+                        const statusInfo = getBookingStatusBadge(booking.status);
+                        
+                        return (
+                          <tr key={booking.id}>
+                            <td>
+                              {booking.sale?.name} {booking.sale?.lastname}
+                              <br/>
+                              <small className="text-muted">{booking.sale?.email}</small>
+                            </td>
+                            <td>{new Date(booking.check_in).toLocaleDateString('es-PE')}</td>
+                            <td>{new Date(booking.check_out).toLocaleDateString('es-PE')}</td>
+                            <td>
+                              <span 
+                                className="badge"
+                                style={{
+                                  backgroundColor: statusInfo.bg,
+                                  color: statusInfo.color,
+                                  fontWeight: '500'
+                                }}
+                              >
+                                {statusInfo.label}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
