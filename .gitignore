@@ -47,3 +47,6 @@ composer.lock
 /vite.config-useTunnel.js
 /lapetaca
 /storage/app/*.zip
+COLORS_SYSTEM.md
+/docs/EMAIL_SYSTEM_UNIFIED.md
+/docs/EMAIL_TEMPLATE_EXAMPLE.html

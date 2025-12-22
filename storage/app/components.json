@@ -151,6 +151,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                      "class_button_card_detail"
@@ -1178,6 +1179,8 @@
                     "section_brands",
                     "section_categories",
                     "section_subcategories",
+                    "section_amenities",
+                    "dat_prices",
                     "section_prices",
                     "section_stores",
                     "type_card_product",
@@ -1190,6 +1193,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"
@@ -1203,11 +1207,15 @@
                             "with": [
                                 "category",
                                 "subcategory",
-                                "brand"
+                                "brand",
+                                "images",
+                                "amenities"
                             ],
                             "relations": [
                                 "category",
-                                "tags"
+                                "tags",
+                                "images",
+                                "amenities"
                             ],
                             "fields": [
                                 "id",
@@ -2061,7 +2069,8 @@
                 "image": "indicator-lapetaca.png",
                 "data": [
                     "accentColor",
-                    "showDirectBooking"
+                    "showDirectBooking",
+                    "class_section"
                 ],
                 "using": {
                     "model": "Indicator",
@@ -2274,6 +2283,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"
@@ -3020,6 +3030,7 @@
                     "buyButton",
                     "class_badge_category",
                      "title",
+                     "type_style_list",
                     "class_title",
                     "description",
                     "link_catalog",
@@ -3032,6 +3043,7 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
+                    "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"
@@ -3295,6 +3307,36 @@
                     "checkout_dwallet_commission",
                     "checkout_dwallet_commission"
                 ]
+            },
+            {
+                "id": "CheckoutStepsRooms",
+                "name": "StepsRooms - Reservas de Habitaciones",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "json": {
+                    "prefixes": "./prefijocelular.json"
+                },
+                "generals": [
+                    "igv_checkout",
+                    "checkout_culqi",
+                    "checkout_culqi_name",
+                    "checkout_culqi_public_key",
+                    "checkout_dwallet",
+                    "checkout_dwallet_qr",
+                    "checkout_dwallet_name",
+                    "checkout_dwallet_description",
+                    "checkout_transfer",
+                    "checkout_transfer_cci",
+                    "checkout_transfer_name",
+                    "checkout_transfer_description",
+                    "checkout_culqi_commission",
+                    "checkout_mercadopago_commission",
+                    "checkout_openpay_commission",
+                    "checkout_dwallet_commission",
+                    "checkout_transfer_commission"
+                ]
             }
         ]
     },
@@ -3344,7 +3386,8 @@
                     "email_contact",
                     "address",
                     "phone_contact",
-                    "location"
+                    "location",
+                    "atalaya_leads_api_key"
                 ]
             },
           
@@ -3839,25 +3882,17 @@
                 "image": "about-sidebar.png",
                 "data": [
                     "strengths_title",
-                    "class_container"
+                    "class_container",
+                    "class_sidebar",
+                    "strengths_section",
+                    "class_title_banner",
+                    "class_content_banner"
                 ],
                 "using": {
                     "model": "Aboutus"
                 }
-            },
-            {
-                "id": "AboutLaPetaca",
-                "name": "About - La Petaca Hotel",
-                "image": "about-lapetaca.png",
-                "data": [
-                    "stats",
-                    "values",
-                    "accentColor",
-                    "mainImage",
-                    "ctaImage"
-                ],
-                "generals": []
             }
+           
         ]
     },
     {

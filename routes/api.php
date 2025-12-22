@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesController;
 use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\RoomAvailabilityController as AdminRoomAvailabilityController;
 
 use App\Http\Controllers\Admin\DeliveryPriceController as AdminDeliveryPriceController;
 use App\Http\Controllers\Admin\TypesDeliveryController as AdminTypesDeliveryController;
@@ -230,8 +231,17 @@ Route::prefix('hotels')->group(function () {
     // Obtener calendario de disponibilidad
     Route::get('/rooms/{id}/calendar', [RoomAvailabilityController::class, 'calendar']);
     
+    // Obtener fechas bloqueadas/no disponibles (para deshabilitar en DatePicker)
+    Route::get('/rooms/{id}/blocked-dates', [AdminRoomAvailabilityController::class, 'getBlockedDates']);
+    
     // Crear reserva (pre-venta)
     Route::post('/bookings', [BookingController::class, 'create']);
+    
+    // Checkout de reservas con pago (Yape, Transferencia, etc.)
+    Route::post('/bookings/checkout', [BookingController::class, 'checkout']);
+    
+    // Obtener detalles de reserva por código (para página de confirmación)
+    Route::post('/bookings/order', [BookingController::class, 'getBookingOrder']);
     
     // Rastrear reserva por código
     Route::get('/bookings/{code}/track', [BookingController::class, 'track']);
@@ -574,13 +584,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/amenities/{id}', [AdminAmenityController::class, 'delete']);
 
     // Bookings (Reservas de habitaciones)
+    Route::get('/bookings/{id}', [AdminBookingController::class, 'show']);
     Route::post('/bookings', [AdminBookingController::class, 'save']);
     Route::post('/bookings/paginate', [AdminBookingController::class, 'paginate']);
     Route::post('/bookings/{id}/confirm', [AdminBookingController::class, 'confirm']);
     Route::post('/bookings/{id}/complete', [AdminBookingController::class, 'complete']);
     Route::post('/bookings/{id}/cancel', [AdminBookingController::class, 'cancel']);
     Route::post('/bookings/{id}/no-show', [AdminBookingController::class, 'noShow']);
+    Route::post('/bookings/{id}/update-sale-status', [AdminBookingController::class, 'updateSaleStatus']);
+    Route::get('/bookings/{id}/sale-status-history', [AdminBookingController::class, 'getSaleStatusHistory']);
     Route::delete('/bookings/{id}', [AdminBookingController::class, 'delete']);
+
+    // Room Availability (Disponibilidad de habitaciones)
+    Route::get('/room-availability/summary', [AdminRoomAvailabilityController::class, 'getSummary']);
+    Route::get('/room-availability/{roomId}/calendar', [AdminRoomAvailabilityController::class, 'getCalendar']);
+    Route::post('/room-availability/{roomId}/block', [AdminRoomAvailabilityController::class, 'blockDates']);
+    Route::post('/room-availability/{roomId}/update', [AdminRoomAvailabilityController::class, 'updateAvailability']);
+    Route::post('/room-availability/{roomId}/generate', [AdminRoomAvailabilityController::class, 'generateAvailability']);
 
 
     //JOB APLICATIONS

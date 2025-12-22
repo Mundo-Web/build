@@ -54,7 +54,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
     'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'excel_import_template'],//footer_description
-    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email'],
+    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email','job_application_email','admin_job_application_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
@@ -63,7 +63,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen'],
     'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'],
 
-    'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts'],
+    'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts', 'atalaya_leads_api_key'],
     'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
   };
 
@@ -105,7 +105,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'admin_purchase_email',
     'admin_contact_email',
     'admin_claim_email',
-    'admin_whistleblowing_email'
+    'admin_whistleblowing_email',
+    'job_application_email',
+    'admin_job_application_email'
   ];
 
   // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
@@ -402,6 +404,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         ?.description ?? "",
     customBodyScripts:
       generals.find((x) => x.correlative == "custom_body_scripts")
+        ?.description ?? "",
+    atalayaLeadsApiKey:
+      generals.find((x) => x.correlative == "atalaya_leads_api_key")
         ?.description ?? "",
     // Google OAuth Configuration
     googleClientId:
@@ -1250,6 +1255,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: "custom_body_scripts",
         name: "Scripts Personalizados (Body)",
         description: formData.customBodyScripts || "",
+      },
+      {
+        correlative: "atalaya_leads_api_key",
+        name: "Atalaya Leads API Key",
+        description: formData.atalayaLeadsApiKey || "",
       },
       {
         correlative: "google_client_id",
@@ -3858,6 +3868,24 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       })}
                     />
                     <small className="text-muted">Scripts personalizados para el final del &lt;body&gt;</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Atalaya Leads API Key</label>
+                    <input
+                      type="text"
+                      placeholder="API Key de Atalaya CRM (ejemplo: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)"
+                      className="form-control"
+                      value={formData.atalayaLeadsApiKey}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        atalayaLeadsApiKey: e.target.value
+                      })}
+                    />
+                    <small className="text-muted">
+                      API Key para enviar leads del formulario de contacto a Atalaya CRM. 
+                      <a href="https://atalaya.pe" target="_blank" rel="noopener noreferrer" className="text-primary">Obtén tu API Key aquí</a>
+                    </small>
                   </div>
                 </div>
               </div>

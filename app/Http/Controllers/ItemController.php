@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Amenity;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Combo;
 use App\Models\General;
 use App\Models\Item;
+use App\Models\ItemAmenity;
 use App\Models\ItemTag;
 use App\Models\Store;
 use App\Models\SubCategory;
@@ -187,13 +189,14 @@ class ItemController extends BasicController
         //dump('[STEP 2] Antes de armar query base');
         $query = $model::select(['items.*'])
             ->distinct() // Agregar DISTINCT para evitar duplicados por múltiples tags
-            ->with(['collection', 'category', 'subcategory', 'brand', 'store', 'tags'])
+            ->with(['collection', 'category', 'subcategory', 'brand', 'store', 'tags', 'amenities'])
             ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
             ->leftJoin('categories AS category', 'category.id', 'items.category_id')
             ->leftJoin('sub_categories AS subcategory', 'subcategory.id', 'items.subcategory_id')
             ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
             ->leftJoin('stores AS store', 'store.id', 'items.store_id')
             ->leftJoin('item_tags AS item_tag', 'item_tag.item_id', 'items.id')
+            ->leftJoin('item_amenity AS item_amenity', 'item_amenity.item_id', 'items.id')
             ->where('items.status', true)
             ->where('items.visible', true);
         
@@ -442,6 +445,7 @@ class ItemController extends BasicController
             $selectedCollections = $request->input('collection_id', []);
             $selectedStores = $request->input('store_id', []);
             $selectedTags = []; // Inicializar array para tags seleccionados
+            $selectedAmenities = []; // Inicializar array para amenidades seleccionadas
 
             // Extraer filtros del filtro complejo si no hay filtros directos
             if ((empty($selectedBrands) && empty($selectedCategories) && empty($selectedSubcategories) && empty($selectedCollections) && empty($selectedStores)) && $request->filter) {
@@ -465,6 +469,8 @@ class ItemController extends BasicController
                                         $selectedStores[] = $f2[2];
                                     } elseif ($f2[0] === 'item_tag.tag_id' && $f2[1] === '=') {
                                         $selectedTags[] = $f2[2];
+                                    } elseif ($f2[0] === 'item_amenity.amenity_id' && $f2[1] === '=') {
+                                        $selectedAmenities[] = $f2[2];
                                     }
                                 }
                             }
@@ -483,6 +489,8 @@ class ItemController extends BasicController
                                     $selectedStores[] = $f1[2];
                                 } elseif ($f1[0] === 'item_tag.tag_id' && $f1[1] === '=') {
                                     $selectedTags[] = $f1[2];
+                                } elseif ($f1[0] === 'item_amenity.amenity_id' && $f1[1] === '=') {
+                                    $selectedAmenities[] = $f1[2];
                                 }
                             }
                         }
@@ -796,7 +804,28 @@ class ItemController extends BasicController
             }
            
             // 5. TAGS: usar originalBuilder (independientes por ahora)
-            $tags = Item::getForeignMany($originalBuilder, ItemTag::class, Tag::class);
+            $tags = Item::getForeignMany($originalBuilder, ItemTag::class, Tag::class, 'tag_id');
+            
+            // 6. AMENITIES: obtener amenidades que tienen items visibles
+            try {
+                $amenities = Amenity::select('amenities.*')
+                    ->distinct()
+                    ->join('item_amenity', 'amenities.id', '=', 'item_amenity.amenity_id')
+                    ->join('items', 'items.id', '=', 'item_amenity.item_id')
+                    ->where('items.status', true)
+                    ->where('items.visible', true)
+                    ->where('amenities.status', true)
+                    ->where('amenities.visible', true)
+                    ->orderBy('amenities.name', 'ASC')
+                    ->get();
+            } catch (\Throwable $e) {
+                Log::error('Error obteniendo amenities: ' . $e->getMessage());
+                // Fallback: obtener todas las amenidades activas
+                $amenities = Amenity::where('status', true)
+                    ->where('visible', true)
+                    ->orderBy('name', 'ASC')
+                    ->get();
+            }
             
             return [
                 'priceRanges' => $ranges,
@@ -805,10 +834,11 @@ class ItemController extends BasicController
                 'subcategories' => $subcategories,
                 'brands' => $brands,
                 'stores' => $stores,
-                'tags' => $tags
+                'tags' => $tags,
+                'amenities' => $amenities
             ];
         } catch (\Throwable $th) {
-            // //dump($th->getMessage());
+            Log::error('Error en setPaginationSummary: ' . $th->getMessage() . ' - Line: ' . $th->getLine());
             return [];
         }
     }

@@ -27,7 +27,7 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                 {/* Main Content Grid */}
                 <div className="grid lg:grid-cols-12 gap-0">
                     {/* Sidebar - Section List (Negro) */}
-                    <div className="lg:col-span-3 bg-neutral-900 text-white py-12 px-6">
+                    <div className={`lg:col-span-3  py-12 px-6 ${data?.class_sidebar || 'bg-neutral-900 text-white'}`}>
                         <nav className="space-y-0">
                             {sections.map((section, index) => (
                                 <button
@@ -36,7 +36,7 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                                     className={`w-full text-left px-0 py-4 border-b border-white/5 transition-all duration-300 ${
                                         selectedSection?.id === section.id
                                             ? 'customtext-primary font-bold'
-                                            : 'text-white hover:customtext-primary'
+                                            : 'hover:customtext-primary'
                                     }`}
                                 >
                                     <span className="text-lg">
@@ -47,7 +47,7 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                         </nav>
 
                         {/* Strengths/Fortalezas Section en Sidebar */}
-                        {strengths && strengths.length > 0 && (
+                        {data?.strengths_section &&strengths && strengths.length > 0 && (
                             <div className="mt-12 pt-8 border-t border-white/10">
                                 <h3 className="text-xl font-bold text-white mb-6">
                                     {data?.strengths_title || "Nuestras Fortalezas"}
@@ -94,31 +94,31 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                                     transition={{ duration: 0.3 }}
                                 >
                                     {/* Title Banner (Amarillo/Primary) */}
-                                    <div className="bg-primary px-12 py-4">
-                                        <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900">
+                                    <div className={`px-12 py-4 ${data?.class_title_banner || 'bg-primary'}`}>
+                                        <h2 className="text-3xl lg:text-4xl font-bold ">
                                             {selectedSection.title}
                                         </h2>
                                     </div>
 
                                     {/* Content: Texto arriba + Imagen abajo */}
-                                    <div className="bg-neutral-800">
+                                    <div className={` ${data?.class_content_banner || 'bg-neutral-800 text-white'}`}>
                                         {/* Description Content (Arriba - Fondo oscuro) */}
-                                        <div className="p-12 text-white">
+                                        <div className="p-12 ">
                                             {selectedSection.description && (
                                                 <div 
-                                                    className="prose prose-lg prose-invert max-w-none text-white leading-relaxed"
+                                                    className="prose prose-lg max-w-none t leading-relaxed"
                                                     dangerouslySetInnerHTML={{ __html: selectedSection.description }}
                                                 />
                                             )}
 
                                             {!selectedSection.description && selectedSection.extract && (
-                                                <p className="text-white text-lg leading-relaxed">
+                                                <p className=" text-lg leading-relaxed">
                                                     {selectedSection.extract}
                                                 </p>
                                             )}
 
                                             {!selectedSection.description && !selectedSection.extract && selectedSection.summary && (
-                                                <p className="text-white text-lg leading-relaxed">
+                                                <p className=" text-lg leading-relaxed">
                                                     {selectedSection.summary}
                                                 </p>
                                             )}
@@ -153,7 +153,7 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                                         {strengths && strengths.length > 0 && 
                                          (selectedSection.correlative?.toLowerCase().includes('valor') || 
                                           selectedSection.name?.toLowerCase().includes('valor')) && (
-                                            <div className="p-12 bg-neutral-900">
+                                            <div className="p-12 ">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                                     {strengths.map((strength, index) => (
                                                         <div key={index} className="flex items-start gap-4">
@@ -170,10 +170,10 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                                                                 </div>
                                                             )}
                                                             <div className="flex-1">
-                                                                <h4 className="text-white font-semibold text-lg mb-2">
+                                                                <h4 className=" font-semibold text-lg mb-2">
                                                                     {strength.name}
                                                                 </h4>
-                                                                <p className="text-white/70 text-base leading-relaxed">
+                                                                <p className=" text-base leading-relaxed">
                                                                     {strength.description}
                                                                 </p>
                                                             </div>
@@ -208,9 +208,9 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                         {!selectedSection && sections.length === 0 && (
                             <div className="bg-neutral-800 p-12 text-center min-h-[600px] flex items-center justify-center">
                                 <div>
-                                    <div className="w-24 h-24 mx-auto mb-6 bg-neutral-700 rounded-full flex items-center justify-center">
+                                    <div className="w-24 h-24 mx-auto mb-6  rounded-full flex items-center justify-center">
                                         <svg 
-                                            className="w-12 h-12 text-neutral-500" 
+                                            className="w-12 h-12 " 
                                             fill="none" 
                                             stroke="currentColor" 
                                             viewBox="0 0 24 24"
@@ -223,10 +223,10 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                                             />
                                         </svg>
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">
+                                    <h3 className="text-2xl font-bold  mb-2">
                                         No hay información disponible
                                     </h3>
-                                    <p className="text-neutral-400">
+                                    <p className="">
                                         Las secciones se mostrarán aquí una vez que sean agregadas
                                     </p>
                                 </div>

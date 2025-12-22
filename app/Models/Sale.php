@@ -136,6 +136,14 @@ class Sale extends Model
         return $this->belongsTo(Store::class);
     }
 
+    /**
+     * Relación con reservas de hotel
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function scopeWithUser($query)
     {
         return $query->with(['user' => function ($q) {

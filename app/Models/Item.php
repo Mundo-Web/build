@@ -103,13 +103,13 @@ class Item extends Model
             });
     }
 
-    static function getForeignMany(Builder $builder, string $through, string $model)
+    static function getForeignMany(Builder $builder, string $through, string $model, string $foreignKey = 'tag_id')
     {
         $table = (new $model)->getTable();
         $tableThrough = (new $through)->getTable();
         return $builder->reorder()
             ->join($tableThrough, $tableThrough . '.item_id', '=', 'items.id')
-            ->join($table, $table . '.id', $tableThrough . '.tag_id')
+            ->join($table, $table . '.id', '=', $tableThrough . '.' . $foreignKey)
             ->select($table . '.*')
             ->distinct()
             ->orderBy($table . '.name', 'ASC')

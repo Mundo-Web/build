@@ -522,7 +522,7 @@ class BasicController extends Controller
           ->groupBy($selector);
       }
 
-      if (Auth::check()) {
+      if (Auth::check() && !($this->skipStatusFilter ?? false)) {
         $table = $this->prefix4filter ? $this->prefix4filter : (new $this->model)->getTable();
         if (Schema::hasColumn($table, 'status')) {
           $instance->where($this->prefix4filter ? $this->prefix4filter . '.status' : 'status', true);

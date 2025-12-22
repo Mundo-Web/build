@@ -11,6 +11,8 @@ class RoomAvailability extends Model
 {
     use HasFactory;
 
+    protected $table = 'room_availability';
+
     protected $fillable = [
         'item_id',
         'date',
@@ -38,6 +40,7 @@ class RoomAvailability extends Model
 
     /**
      * Verificar disponibilidad de una habitación en un rango de fechas
+     * Si no existen registros de disponibilidad, los crea automáticamente
      */
     public static function checkAvailability($itemId, $checkIn, $checkOut, $roomsNeeded = 1)
     {
@@ -45,7 +48,21 @@ class RoomAvailability extends Model
         $checkOut = Carbon::parse($checkOut);
         $totalDays = $checkIn->diffInDays($checkOut);
 
-        // Contar cuántos días tienen disponibilidad suficiente
+        if ($totalDays <= 0) {
+            return false;
+        }
+
+        // Verificar si existen registros para este item en el rango de fechas
+        $existingRecords = self::where('item_id', $itemId)
+            ->whereBetween('date', [$checkIn->format('Y-m-d'), $checkOut->copy()->subDay()->format('Y-m-d')])
+            ->count();
+
+        // Si no hay registros, generar disponibilidad automáticamente
+        if ($existingRecords === 0) {
+            self::ensureAvailabilityExists($itemId, $checkIn, $checkOut);
+        }
+
+        // Ahora verificar disponibilidad
         $availableDays = self::where('item_id', $itemId)
             ->whereBetween('date', [$checkIn->format('Y-m-d'), $checkOut->copy()->subDay()->format('Y-m-d')])
             ->where('available_rooms', '>=', $roomsNeeded)
@@ -53,7 +70,51 @@ class RoomAvailability extends Model
             ->count();
 
         // Debe haber disponibilidad todos los días
-        return $availableDays === $totalDays;
+        return $availableDays >= $totalDays;
+    }
+
+    /**
+     * Asegurar que existan registros de disponibilidad para un rango de fechas
+     */
+    public static function ensureAvailabilityExists($itemId, $checkIn, $checkOut)
+    {
+        $room = Item::find($itemId);
+        
+        if (!$room) {
+            return false;
+        }
+
+        $checkIn = Carbon::parse($checkIn);
+        $checkOut = Carbon::parse($checkOut);
+        
+        $totalRooms = $room->total_rooms ?? $room->stock ?? 1;
+        $basePrice = $room->final_price ?? $room->price ?? 0;
+
+        $availabilityData = [];
+        $current = $checkIn->copy();
+        
+        while ($current < $checkOut) {
+            $availabilityData[] = [
+                'item_id' => $itemId,
+                'date' => $current->format('Y-m-d'),
+                'total_rooms' => $totalRooms,
+                'available_rooms' => $totalRooms,
+                'booked_rooms' => 0,
+                'base_price' => $basePrice,
+                'dynamic_price' => null,
+                'is_blocked' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            $current->addDay();
+        }
+
+        // Insertar ignorando duplicados
+        if (!empty($availabilityData)) {
+            DB::table('room_availability')->insertOrIgnore($availabilityData);
+        }
+
+        return true;
     }
 
     /**
@@ -63,6 +124,9 @@ class RoomAvailability extends Model
     {
         $checkIn = Carbon::parse($checkIn);
         $checkOut = Carbon::parse($checkOut);
+        
+        // Asegurar que existan los registros de disponibilidad
+        self::ensureAvailabilityExists($itemId, $checkIn, $checkOut);
         
         $dates = [];
         $current = $checkIn->copy();
@@ -77,7 +141,7 @@ class RoomAvailability extends Model
         return self::where('item_id', $itemId)
             ->whereIn('date', $dates)
             ->update([
-                'available_rooms' => DB::raw('available_rooms - ' . $quantity),
+                'available_rooms' => DB::raw('GREATEST(available_rooms - ' . $quantity . ', 0)'),
                 'booked_rooms' => DB::raw('booked_rooms + ' . $quantity)
             ]);
     }

@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Quote, ChevronLeft, ChevronRight, Star, MessageCircle } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
 const TestimonialsLaPetaca = ({ data, items }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+    // Inyectar estilos del swiper
+    useEffect(() => {
+        const styleId = 'testimonials-lapetaca-styles';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                .testimonials-swiper .swiper-pagination-bullet { width: 8px; height: 8px; background: var(--bg-secondary); opacity: 0.3; border-radius: 9999px; transition: all 0.2s ease; }
+                .testimonials-swiper .swiper-pagination-bullet-active { width: 28px; background: var(--bg-accent); opacity: 1; }
+                .testimonials-swiper { overflow: visible !important; }
+                .testimonials-swiper .swiper-wrapper { overflow: visible !important; }
+                .testimonials-swiper .swiper-slide { overflow: visible !important; }
+            `;
+            document.head.appendChild(style);
+        }
+        return () => {
+            const style = document.getElementById(styleId);
+            if (style) style.remove();
+        };
+    }, []);
 
     // No mostrar la sección si no hay items
     if (!items || items.length === 0) {
@@ -9,200 +35,181 @@ const TestimonialsLaPetaca = ({ data, items }) => {
     }
 
     const testimonials = items;
-    const accentColor = data?.accentColor || '#78673A';
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-        }, 6000);
-
-        return () => clearInterval(timer);
-    }, [testimonials.length]);
-
-    const nextTestimonial = () => {
-        setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    };
-
-    const prevTestimonial = () => {
-        setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    };
-
-    const getVisibleTestimonials = () => {
-        const visible = [];
-        for (let i = 0; i < 3; i++) {
-            const index = (currentIndex + i) % testimonials.length;
-            visible.push(testimonials[index]);
-        }
-        return visible;
-    };
+    const title = data?.title || 'Lo Que Dicen Nuestros Huéspedes';
+    const subtitle = data?.subtitle || 'Las experiencias de quienes nos visitaron hablan por sí solas';
 
     return (
-        <section className="py-20 px-4 bg-gradient-to-b from-[#281409] to-[#0a0604] relative overflow-hidden">
-                <div className="absolute inset-0 opacity-5">
-                    <div 
-                        className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl"
-                        style={{ backgroundColor: accentColor }}
-                    ></div>
-                    <div 
-                        className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl"
-                        style={{ backgroundColor: accentColor }}
-                    ></div>
+        <section className="py-20 md:py-20 px-4 bg-sections-color relative overflow-hidden">
+            {/* Decoraciones de fondo sutiles */}
+            <div className="absolute top-0 left-0 w-80 h-80 bg-accent rounded-full blur-3xl opacity-5 -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl opacity-5 translate-x-1/2 translate-y-1/2"></div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
+                {/* Header */}
+                <div className="text-center mb-14 md:mb-14">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full mb-6 shadow-sm">
+                        <MessageCircle size={16} className="customtext-accent" />
+                        <span className="text-sm font-semibold customtext-accent uppercase tracking-wider">
+                            Testimonios
+                        </span>
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-bold customtext-primary mb-5">
+                        {title}
+                    </h2>
+                    <div className="w-20 h-1 mx-auto mb-6 bg-accent rounded-full"></div>
+                    <p className="customtext-neutral-light text-lg max-w-2xl mx-auto leading-relaxed">
+                        {subtitle}
+                    </p>
                 </div>
 
-                <div className="max-w-7xl mx-auto relative z-10">
-                    {/* Header */}
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: accentColor }}>
-                            {data?.title || 'Lo Que Dicen Nuestros Huéspedes'}
-                        </h2>
-                        <div className="w-24 h-1 mx-auto mb-6" style={{ backgroundColor: accentColor }}></div>
-                        <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-                            {data?.subtitle || 'Las experiencias de quienes nos visitaron hablan por sí solas'}
-                        </p>
-                    </div>
+                {/* Testimonials Swiper */}
+                <div className="relative px-0 md:px-14 py-4">
+                    <Swiper
+                        modules={[Navigation, Pagination, Autoplay]}
+                        spaceBetween={24}
+                        slidesPerView={1}
+                        loop={testimonials.length > 2}
+                        autoplay={{
+                            delay: 5000,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                        }}
+                        navigation={{
+                            nextEl: '.testimonial-next',
+                            prevEl: '.testimonial-prev',
+                        }}
+                        pagination={{
+                            el: '.testimonial-pagination',
+                            clickable: true,
+                        }}
+                        breakpoints={{
+                            768: { slidesPerView: 2, spaceBetween: 24 },
+                            1024: { slidesPerView: 3, spaceBetween: 28 },
+                        }}
+                        className="testimonials-swiper"
+                    >
+                        {testimonials.map((testimonial, index) => (
+                            <SwiperSlide key={testimonial.id || index} className="!h-auto">
+                                <div className="group relative h-full cursor-pointer">
+                                    {/* Card base */}
+                                    <div className="bg-white p-7 rounded-2xl shadow-sm h-full flex flex-col border border-gray-100">
+                                        {/* Quote icon */}
+                                        <Quote size={32} className="customtext-accent  mb-4" />
 
-                    <div className="relative">
-                        {/* Desktop View - 3 cards */}
-                        <div className="hidden md:grid md:grid-cols-3 gap-8">
-                            {getVisibleTestimonials().map((testimonial, index) => (
-                                <div
-                                    key={testimonial.id || index}
-                                    className={`transition-all duration-500 ${
-                                        index === 1 ? 'scale-105' : 'scale-95 opacity-70'
-                                    }`}
-                                >
-                                    <div 
-                                        className="bg-gradient-to-br from-[#281409]/80 to-[#281409]/40 p-8 rounded-2xl border transition-all duration-300 h-full"
-                                        style={{ borderColor: `${accentColor}33` }}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-quote w-12 h-12 text-[#78673A]/30 mb-6"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path></svg>
-
+                                        {/* Rating */}
                                         {testimonial.rating && (
-                                            <div className="flex items-center mb-4">
+                                            <div className="flex items-center gap-1 mb-4">
                                                 {[...Array(Number(testimonial.rating) || 5)].map((_, i) => (
-                                                    <svg key={i} className="w-5 h-5" style={{ fill: accentColor, color: accentColor }} viewBox="0 0 24 24">
-                                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                                    </svg>
+                                                    <Star key={i} size={16} className="customtext-warning fill-current" />
                                                 ))}
                                             </div>
                                         )}
 
-                                        <p className="text-gray-300 mb-6 leading-relaxed italic">
-                                            "{testimonial.testimonial || testimonial.text || testimonial.description}"
+                                        {/* Testimonial text - truncado */}
+                                        <p className="customtext-neutral-light leading-relaxed flex-grow mb-6 line-clamp-4">
+                                            <TextWithHighlight
+                                            text={testimonial.testimonial || testimonial.text || testimonial.description}
+                                            color='bg-primary font-bold'
+                                            />
                                         </p>
 
-                                        <div 
-                                            className="flex items-center gap-4 pt-6 border-t"
-                                            style={{ borderColor: `${accentColor}33` }}
-                                        >
-                                            {testimonial.image && (
+                                        {/* Author */}
+                                        <div className="flex items-center gap-4 pt-5 border-t border-gray-100">
+                                            {testimonial.image ? (
                                                 <img
                                                     src={`/storage/images/testimony/${testimonial.image}`}
                                                     alt={testimonial.name}
-                                                    className="w-14 h-14 rounded-full object-cover border-2"
-                                                    style={{ borderColor: accentColor }}
-                                                    onError={(e) => e.target.style.display = 'none'}
+                                                    className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextElementSibling.style.display = 'flex';
+                                                    }}
                                                 />
-                                            )}
+                                            ) : null}
+                                            <div className={`w-12 h-12 rounded-full bg-accent items-center justify-center text-white font-bold text-lg flex-shrink-0 ${testimonial.image ? 'hidden' : 'flex'}`}>
+                                                {testimonial.name?.charAt(0).toUpperCase()}
+                                            </div>
                                             <div>
-                                                <h4 className="text-white font-semibold">{testimonial.name}</h4>
+                                                <h4 className="font-bold customtext-primary">{testimonial.name}</h4>
                                                 {testimonial.location && (
-                                                    <p className="text-gray-400 text-sm">{testimonial.location}</p>
+                                                    <p className="text-sm customtext-secondary">{testimonial.location}</p>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
 
-                        {/* Mobile View - 1 card */}
-                        <div className="md:hidden">
-                            {testimonials[currentIndex] && (
-                                <div 
-                                    className="bg-gradient-to-br from-[#281409]/80 to-[#281409]/40 p-8 rounded-2xl border"
-                                    style={{ borderColor: `${accentColor}33` }}
-                                >
-                                    <svg className="w-12 h-12 mb-6 opacity-30" fill="none" stroke="currentColor" style={{ color: accentColor }} viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                    </svg>
+                                    {/* Card expandido en hover - centrado */}
+                                    <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 z-30 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 ease-out pointer-events-none group-hover:pointer-events-auto">
+                                        <div className="bg-white p-7 rounded-2xl shadow-2xl flex flex-col ">
+                                            {/* Quote icon */}
+                                            <Quote size={32} className="customtext-accent  mb-4" />
 
-                                    {testimonials[currentIndex].rating && (
-                                        <div className="flex items-center mb-4">
-                                            {[...Array(Number(testimonials[currentIndex].rating) || 5)].map((_, i) => (
-                                                <svg key={i} className="w-5 h-5" style={{ fill: accentColor, color: accentColor }} viewBox="0 0 24 24">
-                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                                </svg>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    <p className="text-gray-300 mb-6 leading-relaxed italic">
-                                        "{testimonials[currentIndex].testimonial || testimonials[currentIndex].text || testimonials[currentIndex].description}"
-                                    </p>
-
-                                    <div 
-                                        className="flex items-center gap-4 pt-6 border-t"
-                                        style={{ borderColor: `${accentColor}33` }}
-                                    >
-                                        {testimonials[currentIndex].image && (
-                                            <img
-                                                src={`/storage/images/testimony/${testimonials[currentIndex].image}`}
-                                                alt={testimonials[currentIndex].name}
-                                                className="w-14 h-14 rounded-full object-cover border-2"
-                                                style={{ borderColor: accentColor }}
-                                                onError={(e) => e.target.style.display = 'none'}
-                                            />
-                                        )}
-                                        <div>
-                                            <h4 className="text-white font-semibold">{testimonials[currentIndex].name}</h4>
-                                            {testimonials[currentIndex].location && (
-                                                <p className="text-gray-400 text-sm">{testimonials[currentIndex].location}</p>
+                                            {/* Rating */}
+                                            {testimonial.rating && (
+                                                <div className="flex items-center gap-1 mb-4">
+                                                    {[...Array(Number(testimonial.rating) || 5)].map((_, i) => (
+                                                        <Star key={i} size={16} className="customtext-warning fill-current" />
+                                                    ))}
+                                                </div>
                                             )}
+
+                                            {/* Testimonial text - completo */}
+                                            <p className="customtext-neutral-light leading-relaxed mb-6">
+                                                 <TextWithHighlight
+                                                    text={testimonial.testimonial || testimonial.text || testimonial.description}
+                                                    
+                                                    color='bg-primary font-bold'
+                                                    />
+                                            </p>
+
+                                            {/* Author */}
+                                            <div className="flex items-center gap-4 pt-5 border-t border-gray-100 mt-auto">
+                                                {testimonial.image ? (
+                                                    <img
+                                                        src={`/storage/images/testimony/${testimonial.image}`}
+                                                        alt={testimonial.name}
+                                                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.style.display = 'none';
+                                                            e.target.nextElementSibling.style.display = 'flex';
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <div className={`w-12 h-12 rounded-full bg-accent items-center justify-center text-white font-bold text-lg flex-shrink-0 ${testimonial.image ? 'hidden' : 'flex'}`}>
+                                                    {testimonial.name?.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold customtext-primary">{testimonial.name}</h4>
+                                                    {testimonial.location && (
+                                                        <p className="text-sm customtext-secondary">{testimonial.location}</p>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-
-                        {/* Navigation buttons */}
-                        <button
-                            onClick={prevTestimonial}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 z-20 hover:opacity-100 opacity-80"
-                            style={{ backgroundColor: accentColor }}
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-
-                        <button
-                            onClick={nextTestimonial}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 p-3 rounded-full text-white transition-all duration-300 hover:scale-110 z-20 hover:opacity-100 opacity-80"
-                            style={{ backgroundColor: accentColor }}
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    {/* Indicators */}
-                    <div className="flex justify-center gap-2 mt-12">
-                        {testimonials.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentIndex(index)}
-                                className={`transition-all duration-300 rounded-full ${
-                                    index === currentIndex
-                                        ? 'w-8 h-3'
-                                        : 'w-3 h-3 bg-white/30 hover:bg-white/50'
-                                }`}
-                                style={index === currentIndex ? { backgroundColor: accentColor } : {}}
-                            />
+                            </SwiperSlide>
                         ))}
-                    </div>
+                    </Swiper>
+
+                    {/* Navigation Arrows */}
+                    {testimonials.length > 2 && (
+                        <>
+                            <button className="testimonial-prev absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white shadow-lg hover:shadow-xl border border-gray-100 hover:border-accent flex items-center justify-center transition-all duration-200 disabled:opacity-30">
+                                <ChevronLeft size={20} className="customtext-primary" />
+                            </button>
+                            <button className="testimonial-next absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white shadow-lg hover:shadow-xl border border-gray-100 hover:border-accent flex items-center justify-center transition-all duration-200 disabled:opacity-30">
+                                <ChevronRight size={20} className="customtext-primary" />
+                            </button>
+                        </>
+                    )}
+
+                    {/* Pagination */}
+                    <div className="testimonial-pagination flex justify-center gap-2 mt-8"></div>
                 </div>
+            </div>
         </section>
     );
 };

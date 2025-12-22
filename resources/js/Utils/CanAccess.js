@@ -4,10 +4,12 @@ const CanAccess = {}
 
 for (const container of menus) {
   for (const menu of container.items) {
-    if (menu.href) CanAccess[menu.href] = true
+    const menuKey = menu.id || menu.href
+    if (menuKey) CanAccess[menuKey] = true
     if (menu.children) {
       for (const submenu of menu.children) {
-        CanAccess[submenu.href] = true
+        const submenuKey = submenu.id || submenu.href
+        CanAccess[submenuKey] = true
       }
     }
   }
