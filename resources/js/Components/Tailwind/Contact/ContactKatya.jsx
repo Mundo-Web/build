@@ -229,8 +229,8 @@ const nameRef = useRef()
               contact_phone: phoneRef.current.value,
               contact_email: emailRef.current.value,
               message: descriptionRef.current.value,
-              origin: `${Global.APP_NAME} Formulario de Contacto`,
-              triggered_by: 'Website'
+              origin: `Página Web ${Global.APP_NAME}`,
+              triggered_by: 'Formulario de Contacto'
             })
           });
 

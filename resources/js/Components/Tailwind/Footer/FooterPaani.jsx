@@ -10,6 +10,36 @@ import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { CircleCheckBig, X } from "lucide-react";
 import { toast } from "sonner";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaYoutube,
+  FaTiktok,
+  FaWhatsapp,
+  FaTelegram,
+  FaDiscord,
+  FaSnapchat,
+  FaPinterest,
+  FaReddit
+} from 'react-icons/fa';
+
+// Redes sociales predefinidas con sus iconos
+const predefinedSocials = [
+  { id: 'facebook', name: 'Facebook', icon: FaFacebook, iconRef: 'fab fa-facebook' },
+  { id: 'instagram', name: 'Instagram', icon: FaInstagram, iconRef: 'fab fa-instagram' },
+  { id: 'twitter', name: 'Twitter/X', icon: FaTwitter, iconRef: 'fab fa-twitter' },
+  { id: 'linkedin', name: 'LinkedIn', icon: FaLinkedin, iconRef: 'fab fa-linkedin' },
+  { id: 'youtube', name: 'YouTube', icon: FaYoutube, iconRef: 'fab fa-youtube' },
+  { id: 'tiktok', name: 'TikTok', icon: FaTiktok, iconRef: 'fab fa-tiktok' },
+  { id: 'whatsapp', name: 'WhatsApp', icon: FaWhatsapp, iconRef: 'fab fa-whatsapp' },
+  { id: 'telegram', name: 'Telegram', icon: FaTelegram, iconRef: 'fab fa-telegram' },
+  { id: 'discord', name: 'Discord', icon: FaDiscord, iconRef: 'fab fa-discord' },
+  { id: 'snapchat', name: 'Snapchat', icon: FaSnapchat, iconRef: 'fab fa-snapchat' },
+  { id: 'pinterest', name: 'Pinterest', icon: FaPinterest, iconRef: 'fab fa-pinterest' },
+  { id: 'reddit', name: 'Reddit', icon: FaReddit, iconRef: 'fab fa-reddit' }
+];
 
 // Datos de ejemplo (estos vendrían de la base de datos)
 const footerData = {
@@ -52,6 +82,7 @@ export default function FooterPaani({ data = footerData, generals, socials }) {
 
     const [modalOpen, setModalOpen] = useState(null);
     const [saving, setSaving] = useState();
+    const [showFooterOverlay, setShowFooterOverlay] = useState(true);
 
     const policyItems = {
         terms_conditions: "Términos y condiciones",
@@ -72,17 +103,21 @@ export default function FooterPaani({ data = footerData, generals, socials }) {
     return (
         <footer className="w-full bg-primary text-white py-12 relative overflow-hidden">
             {/* Imagen overlay decorativa con blend mode */}
-            <img
-                src={`/assets/${Global.APP_CORRELATIVE}/overlay.png`}
-                alt={`${Global.APP_NAME} - ${Global.APP_CORRELATIVE}`}
-                className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-50 z-0"
-                style={{
-                    objectPosition: "center",
-                    mixBlendMode: "overlay", // Cambia a "multiply" si prefieres ese efecto
-                }}
-                aria-hidden="true"
-                loading="lazy"
-            />
+
+            {showFooterOverlay && (
+                <img
+                    src={`/assets/resources/footer-overlay.png?v=${crypto.randomUUID()}`}
+                    alt={`${Global.APP_NAME} - footer overlay decorativo`}
+                    className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-50 z-0"
+                    style={{
+                        objectPosition: "center",
+                        mixBlendMode: "overlay", // Cambia a "multiply" si prefieres ese efecto
+                    }}
+                    aria-hidden="true"
+                    loading="lazy"
+                    onError={() => setShowFooterOverlay(false)}
+                />
+            )}
             <div className="relative z-10 px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto ">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
                     {/* Logo y métodos de pago */}
@@ -194,16 +229,26 @@ export default function FooterPaani({ data = footerData, generals, socials }) {
                             <h3 className="text-base  lg:text-xl font-semibold">Nuestras redes</h3>
                             <div className="grid grid-cols-3 gap-y-3 lg:flex lg:space-x-3">
                                 {
-                                    socials.map((social, index) => (
-                                        <Tippy
-                                            key={index}
-                                            content={`Ver ${social.name} en ${social.description}`}>
-
-                                            <a key={index}  className="text-xl w-8 h-8 flex items-center justify-center  bg-white rounded-full p-2 customtext-primary" href={social.link} target="_blank" rel="noopener noreferrer">
-                                                <i className={social.icon} />
-                                            </a>
-                                        </Tippy>
-                                    ))
+                                    socials.map((social, index) => {
+                                        const socialData = predefinedSocials.find(s => 
+                                            s.name === social.description || s.iconRef === social.icon
+                                        );
+                                        const IconComponent = socialData?.icon;
+                                        
+                                        return (
+                                            <Tippy
+                                                key={index}
+                                                content={`Ver ${social.name} en ${social.description}`}>
+                                                <a className="text-xl w-8 h-8 flex items-center justify-center bg-white rounded-full p-2 customtext-primary" href={social.link} target="_blank" rel="noopener noreferrer">
+                                                    {IconComponent ? (
+                                                        <IconComponent size={20} />
+                                                    ) : (
+                                                        <i className={social.icon} />
+                                                    )}
+                                                </a>
+                                            </Tippy>
+                                        );
+                                    })
                                 }
                             </div>
                         </div>
