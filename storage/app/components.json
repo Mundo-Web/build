@@ -725,7 +725,9 @@
                 "name": "Interactivo Loop Nav Pag",
                 "image": "slider-simple.png",
                 "data": [
+                    "class_slider_section",
                     "class_slider",
+                    "class_slider_container",
                     "infiniteLoop",
                     "paginationAlignment",
                     "showNavigation",

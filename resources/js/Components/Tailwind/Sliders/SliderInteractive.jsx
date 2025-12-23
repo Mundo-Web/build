@@ -396,9 +396,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     }, [currentIndex, duplicatedItems]);
 
     return (
-        <div className={`relative w-full mx-auto ${data?.class_slider || ""}`}>
+        <div className={`relative w-full mx-auto ${data?.class_slider_section|| ""}`}>
             <div
-                className={`overflow-hidden relative ${isDragging.current ? 'cursor-grabbing' : 'cursor-grab'} ease ${data?.class_slider || ""}`}
+                className={`overflow-hidden relative ${isDragging.current ? 'cursor-grabbing' : 'cursor-grab'} ease`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -419,7 +419,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                     {duplicatedItems.map((item, index) => (
                         <div
                             key={`slide-${index}`}
-                            className={`w-full min-h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative ${data?.class_slider || ""}`}
+                            className={`w-full min-h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative`}
                    
                         >
                             <AnimatePresence>
@@ -456,19 +456,50 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                 )}
                             </AnimatePresence>
 
+                            {/* Overlays personalizados por slide (como SliderMultivet) */}
+                            {(item?.show_overlay !== false && item?.show_overlay !== 0) && (
+                                <div 
+                                    className="absolute inset-0"
+                                    style={{
+                                        background: `linear-gradient(${
+                                            item?.overlay_direction === 'to-r' ? 'to right' :
+                                            item?.overlay_direction === 'to-l' ? 'to left' :
+                                            item?.overlay_direction === 'to-t' ? 'to top' :
+                                            item?.overlay_direction === 'to-b' ? 'to bottom' :
+                                            item?.overlay_direction === 'to-tr' ? 'to top right' :
+                                            item?.overlay_direction === 'to-tl' ? 'to top left' :
+                                            item?.overlay_direction === 'to-br' ? 'to bottom right' :
+                                            item?.overlay_direction === 'to-bl' ? 'to bottom left' :
+                                            'to bottom'
+                                        }, ${item?.overlay_color || '#000000'}${Math.round((item?.overlay_opacity ?? 50) * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                                    }}
+                                ></div>
+                            )}
+                            
+                            {/* Overlays por defecto si el overlay personalizado está desactivado */}
+                            {(item?.show_overlay === false || item?.show_overlay === 0) && (
+                                <>
+                                    {/* Overlay por defecto desde data.class_overlay */}
+                                    {data?.class_overlay && (
+                                        <div className={`absolute inset-0 ${data?.class_overlay}`}></div>
+                                    )}
+                                    
+                                    {/* Overlays legacy (mantener compatibilidad) */}
+                                    {data?.overlayMobile && (
+                                        <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
+                                    )}
+                                    {data?.overlayMobileDark && (
+                                        <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
+                                    )}
+                                    {data?.overlayDesktop && (
+                                        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
+                                    )}
+                                </>
+                            )}
+
                          {data?.only_image && (<>
-                            {data?.overlayMobile && (
-                                <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
-                            )}
-                            {data?.overlayMobileDark && (
-                                <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
-                            )}
 
-                            {data?.overlayDesktop && (
-                                <div className=" absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
-                            )}
-
-                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider || ""}`}>
+                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider_container || ""}`}>
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={`content-${currentIndex}-${item.name}`}
