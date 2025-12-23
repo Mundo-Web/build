@@ -215,8 +215,8 @@
       "_index-BOnQTV8N.js"
     ]
   },
-  "_GalleryRest-wqi3FckJ.js": {
-    "file": "assets/GalleryRest-wqi3FckJ.js",
+  "_GalleryRest-BbuIO9mT.js": {
+    "file": "assets/GalleryRest-BbuIO9mT.js",
     "name": "GalleryRest",
     "imports": [
       "_BasicRest-tjV1jpAY.js"
@@ -1993,7 +1993,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-BM_oSHsH.js",
+    "file": "assets/Banners-x5i82Awb.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -2780,7 +2780,7 @@
     ]
   },
   "resources/js/Admin/Gallery.jsx": {
-    "file": "assets/Gallery-B5uTez7u.js",
+    "file": "assets/Gallery-qQD3pON-.js",
     "name": "Gallery",
     "src": "resources/js/Admin/Gallery.jsx",
     "isEntry": true,
@@ -2790,7 +2790,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "_Base-bVzGLvC1.js",
       "_CreateReactScript-DqkNE-BN.js",
-      "_GalleryRest-wqi3FckJ.js",
+      "_GalleryRest-BbuIO9mT.js",
       "_BasicRest-tjV1jpAY.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-yBjzXJbu.js",
@@ -2816,7 +2816,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-DaAmpCW0.js",
+    "file": "assets/Generals-BsDfyts0.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -2832,7 +2832,7 @@
       "_QuillFormGroup-BXX8qnUc.js",
       "resources/js/Components/Adminto/form/TinyMCEFormGroup.jsx",
       "_Global-Bz6gVLc5.js",
-      "_GalleryRest-wqi3FckJ.js",
+      "_GalleryRest-BbuIO9mT.js",
       "_RepositoryRest-DPbwcRjQ.js",
       "_tippy-react.esm-BGU1pa2o.js",
       "_TextareaFormGroup-CliirJM1.js",
@@ -3969,7 +3969,7 @@
     ]
   },
   "resources/js/Admin/System.jsx": {
-    "file": "assets/System-jEWf8v8X.js",
+    "file": "assets/System-Cucn0-3N.js",
     "name": "System",
     "src": "resources/js/Admin/System.jsx",
     "isEntry": true,
@@ -3990,7 +3990,7 @@
       "_SetSelectValue-UxyCmHse.js",
       "_MenuItemContainer-B4uedZKJ.js",
       "_SettingsRest-CgDhxtGt.js",
-      "_GalleryRest-wqi3FckJ.js",
+      "_GalleryRest-BbuIO9mT.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_index-BLHw34Di.js",
@@ -4583,7 +4583,7 @@
     ]
   },
   "resources/js/Components/Adminto/System/RightBar.jsx": {
-    "file": "assets/RightBar-BT-hVnQm.js",
+    "file": "assets/RightBar-WhGn_M2M.js",
     "name": "RightBar",
     "src": "resources/js/Components/Adminto/System/RightBar.jsx",
     "isEntry": true,
@@ -4591,7 +4591,7 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "_SettingsRest-CgDhxtGt.js",
-      "_GalleryRest-wqi3FckJ.js",
+      "_GalleryRest-BbuIO9mT.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_BasicRest-tjV1jpAY.js",
@@ -5769,7 +5769,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-DL8LRR1l.js",
+    "file": "assets/Banner-dur6bvhl.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -14644,7 +14644,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DCBQ2qVq.js",
+    "file": "assets/System-56gTqu42.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
