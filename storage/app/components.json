@@ -2890,7 +2890,17 @@
                 "data": [
                     "link_cart",
                     "background",
-                    "backgroundboton"
+                    "backgroundboton",
+                    "especification_tec",
+                    "title",
+                    "style_offer",
+                    "background",
+                    "class_button_primary",
+                    "class_button",
+                    "class_section",
+                    "text_button",
+                    "link_catalog"
+
                 ],
                 "using": {
                     "model": "Item",
