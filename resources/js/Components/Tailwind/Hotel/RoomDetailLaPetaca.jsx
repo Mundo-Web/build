@@ -145,7 +145,7 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
     
-    // Cargar fechas bloqueadas
+    // Cargar fechas bloqueadas Y reservas pendientes/confirmadas
     useEffect(() => {
         const loadBlockedDates = async () => {
             if (!item?.id) return;
@@ -155,9 +155,24 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                 const response = await fetch(`/api/hotels/rooms/${item.id}/blocked-dates`);
                 const result = await response.json();
                 
-                if (result.status === 200 && result.data?.blocked_dates) {
-                    const dates = result.data.blocked_dates.map(dateStr => new Date(dateStr + 'T00:00:00'));
-                    setBlockedDates(dates);
+                if (result.status === 200) {
+                    const allBlockedDates = [];
+                    
+                    // 1. Fechas bloqueadas manualmente
+                    if (result.data?.blocked_dates) {
+                        result.data.blocked_dates.forEach(dateStr => {
+                            allBlockedDates.push(new Date(dateStr + 'T00:00:00'));
+                        });
+                    }
+                    
+                    // 2. Fechas de bookings pendientes y confirmadas
+                    if (result.data?.booked_dates) {
+                        result.data.booked_dates.forEach(dateStr => {
+                            allBlockedDates.push(new Date(dateStr + 'T00:00:00'));
+                        });
+                    }
+                    
+                    setBlockedDates(allBlockedDates);
                 }
             } catch (error) {
                 console.error('Error al cargar fechas bloqueadas:', error);

@@ -13,7 +13,8 @@ const CardItemRooms = ({ setCart, ...room }) => {
     const formatDateShort = (dateString) => {
         if (!dateString) return '';
         try {
-            const date = new Date(dateString);
+            // Agregar T00:00:00 para forzar hora local y evitar conversión UTC
+            const date = new Date(dateString + 'T00:00:00');
             return format(date, "dd MMM", { locale: es });
         } catch (error) {
             return dateString;
@@ -24,7 +25,8 @@ const CardItemRooms = ({ setCart, ...room }) => {
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try {
-            const date = new Date(dateString);
+            // Agregar T00:00:00 para forzar hora local y evitar conversión UTC
+            const date = new Date(dateString + 'T00:00:00');
             return format(date, "dd 'de' MMMM", { locale: es });
         } catch (error) {
             return dateString;

@@ -25,9 +25,6 @@ const AboutAko = ({ data, filteredData, items }) => {
     const values = items?.find((item) => item.correlative === "section-valores");
     const mision = items?.find((item) => item.correlative === "section-mision");
     const vision = items?.find((item) => item.correlative === "section-vision");
-    const titleMision = items?.find((item) => item.correlative === "title_mision");
-    const titleVision = items?.find((item) => item.correlative === "title_vision");
-    const imageVisionMision = items?.find((item) => item.correlative === "image_vision_mision");
 
     // Animaciones mejoradas
     const fadeInUp = {

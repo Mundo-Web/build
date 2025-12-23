@@ -55,6 +55,7 @@ const Bookings = ({ statuses = [] }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
+    // Agregar T00:00:00 para evitar problemas de zona horaria en fechas de check-in/check-out
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1036,7 +1037,7 @@ const Bookings = ({ statuses = [] }) => {
               </div>
             </div>
 
-            {/* Estado de la Reserva */}
+            {/* Estado de la Reserva - Solo Informativo */}
             <div className="card">
               <div className="card-header p-2">
                 <h5 className="card-title mb-0">
@@ -1045,57 +1046,27 @@ const Bookings = ({ statuses = [] }) => {
                 </h5>
               </div>
               <div className="card-body p-2">
-                <div className="mb-2">
-                  <strong>Estado actual:</strong>{' '}
+                <div className="alert alert-light mb-0 d-flex align-items-center justify-content-between">
+                  <span>
+                    <strong>Estado actual:</strong>
+                  </span>
                   <span 
                     className="badge"
                     style={{
                       backgroundColor: getStatusBadge(bookingLoaded?.status).bg,
                       color: getStatusBadge(bookingLoaded?.status).color,
-                      fontWeight: '500'
+                      fontWeight: '500',
+                      fontSize: '0.9rem',
+                      padding: '0.35rem 0.65rem'
                     }}
                   >
                     {getStatusBadge(bookingLoaded?.status).label}
                   </span>
                 </div>
-                <div className="d-flex flex-wrap gap-1">
-                  {bookingLoaded?.status === 'pending' && (
-                    <button 
-                      type="button" 
-                      className="btn btn-sm btn-success"
-                      onClick={() => onConfirmBooking(bookingLoaded.id)}
-                    >
-                      <i className="mdi mdi-check-circle mr-1"></i> Confirmar
-                    </button>
-                  )}
-                  {bookingLoaded?.status === 'confirmed' && (
-                    <>
-                      <button 
-                        type="button" 
-                        className="btn btn-sm btn-info"
-                        onClick={() => onCompleteBooking(bookingLoaded.id)}
-                      >
-                        <i className="mdi mdi-check-all mr-1"></i> Completar
-                      </button>
-                      <button 
-                        type="button" 
-                        className="btn btn-sm btn-secondary"
-                        onClick={() => onNoShowBooking(bookingLoaded.id)}
-                      >
-                        <i className="mdi mdi-account-off mr-1"></i> No Show
-                      </button>
-                    </>
-                  )}
-                  {['pending', 'confirmed'].includes(bookingLoaded?.status) && (
-                    <button 
-                      type="button" 
-                      className="btn btn-sm btn-danger"
-                      onClick={() => onCancelBooking(bookingLoaded.id)}
-                    >
-                      <i className="mdi mdi-close-circle mr-1"></i> Cancelar
-                    </button>
-                  )}
-                </div>
+                <small className="text-muted d-block mt-2">
+                  <i className="mdi mdi-information-outline mr-1"></i>
+                  El check-in/check-out se gestiona desde el calendario de disponibilidad de habitaciones.
+                </small>
               </div>
             </div>
 

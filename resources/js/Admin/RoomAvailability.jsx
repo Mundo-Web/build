@@ -79,7 +79,7 @@ const RoomAvailability = ({ rooms = [] }) => {
     try {
       const startDate = new Date();
       const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 2);
+      endDate.setMonth(endDate.getMonth() + 3);
       
       const response = await fetch(
         `/api/admin/room-availability/${room.id}/calendar?start_date=${startDate.toISOString().split('T')[0]}&end_date=${endDate.toISOString().split('T')[0]}`,
@@ -187,11 +187,223 @@ const RoomAvailability = ({ rooms = [] }) => {
     }
   };
 
+  // Check-in (Confirmar reserva)
+  const handleCheckIn = async (bookingId) => {
+    const result = await Swal.fire({
+      title: 'Check-In',
+      html: `
+        <p>¿Confirmar el check-in del huésped?</p>
+        <small class="text-muted">Fecha y hora: ${new Date().toLocaleString('es-PE')}</small>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="mdi mdi-check-circle"></i> Confirmar Check-In',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/bookings/${bookingId}/confirm`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
+        }
+      });
+      
+      const data = await response.json();
+      if (data.status) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Check-In Realizado!',
+          text: 'El huésped ha hecho el check-in correctamente',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        if (selectedRoom) {
+          await openCalendarModal(selectedRoom);
+        }
+        loadSummary();
+      } else {
+        Swal.fire('Error', data.message || 'Error al realizar check-in', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Error al procesar la solicitud', 'error');
+    }
+  };
+
+  // Check-out (Completar reserva)
+  const handleCheckOut = async (bookingId) => {
+    const result = await Swal.fire({
+      title: 'Check-Out',
+      html: `
+        <p>¿Confirmar el check-out del huésped?</p>
+        <small class="text-muted">Fecha y hora: ${new Date().toLocaleString('es-PE')}</small>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#17a2b8',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="mdi mdi-check-all"></i> Confirmar Check-Out',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/bookings/${bookingId}/complete`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
+        }
+      });
+      
+      const data = await response.json();
+      if (data.status) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Check-Out Realizado!',
+          text: 'La reserva ha sido completada correctamente',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        if (selectedRoom) {
+          await openCalendarModal(selectedRoom);
+        }
+        loadSummary();
+      } else {
+        Swal.fire('Error', data.message || 'Error al realizar check-out', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Error al procesar la solicitud', 'error');
+    }
+  };
+
+  // Cancelar reserva
+  const handleCancelBooking = async (bookingId) => {
+    const { value: reason } = await Swal.fire({
+      title: 'Cancelar Reserva',
+      input: 'textarea',
+      inputLabel: 'Razón de la cancelación',
+      inputPlaceholder: 'Ej: Cliente solicitó cancelación, cambio de planes, etc.',
+      inputAttributes: {
+        'aria-label': 'Razón de cancelación'
+      },
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="mdi mdi-close-circle"></i> Cancelar Reserva',
+      cancelButtonText: 'No cancelar',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Debes ingresar una razón para la cancelación';
+        }
+      }
+    });
+
+    if (!reason) return;
+
+    try {
+      const response = await fetch(`/api/admin/bookings/${bookingId}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
+        },
+        body: JSON.stringify({ reason })
+      });
+      
+      const data = await response.json();
+      if (data.status) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Reserva Cancelada!',
+          text: 'La reserva ha sido cancelada correctamente',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        if (selectedRoom) {
+          await openCalendarModal(selectedRoom);
+        }
+        loadSummary();
+      } else {
+        Swal.fire('Error', data.message || 'Error al cancelar la reserva', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Error al procesar la solicitud', 'error');
+    }
+  };
+
+  // No Show
+  const handleNoShow = async (bookingId) => {
+    const result = await Swal.fire({
+      title: 'Marcar como No Show',
+      text: '¿El huésped no se presentó para el check-in?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#6c757d',
+      cancelButtonColor: '#17a2b8',
+      confirmButtonText: '<i class="mdi mdi-account-off"></i> Marcar No Show',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/bookings/${bookingId}/no-show`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
+        }
+      });
+      
+      const data = await response.json();
+      if (data.status) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Marcada como No Show',
+          text: 'La reserva ha sido marcada como no show',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        if (selectedRoom) {
+          await openCalendarModal(selectedRoom);
+        }
+        loadSummary();
+      } else {
+        Swal.fire('Error', data.message || 'Error al marcar como no show', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Error al procesar la solicitud', 'error');
+    }
+  };
+
   // Normalizar fecha a formato YYYY-MM-DD
-  const normalizeDate = (dateStr) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return date.toISOString().split('T')[0];
+  const normalizeDate = (dateInput) => {
+    if (!dateInput) return null;
+    
+    let date;
+    if (typeof dateInput === 'string') {
+      // Si es string, agregar T00:00:00 para evitar conversión UTC
+      date = new Date(dateInput);
+    } else {
+      // Si ya es un objeto Date, usarlo directamente
+      date = dateInput;
+    }
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Renderizar calendario visual
@@ -200,15 +412,40 @@ const RoomAvailability = ({ rooms = [] }) => {
     
     const { availability, bookings } = calendarData;
     
-    // Crear mapa de fechas con reservas
+    console.log('📅 DEBUG CALENDARIO:', {
+      totalBookings: bookings?.length,
+      bookings: bookings?.map(b => ({
+        id: b.id,
+        check_in: b.check_in,
+        check_out: b.check_out,
+        status: b.status,
+        guest: b.sale?.name
+      })),
+      availabilityDates: availability?.slice(0, 5).map(d => d.date)
+    });
+    
+    // Crear mapa de reservas por fecha
     const bookingsByDate = {};
     bookings?.forEach(booking => {
-      const start = new Date(booking.check_in);
-      const end = new Date(booking.check_out);
-      let current = new Date(start);
+      // Parsear fechas manualmente para evitar problemas de UTC
+      // booking.check_in puede venir como "2026-01-01" o "2026-01-01 00:00:00"
+      const checkInDate = booking.check_in.split(' ')[0]; // Obtener solo YYYY-MM-DD
+      const checkOutDate = booking.check_out.split(' ')[0];
       
-      while (current < end) {
-        const dateStr = normalizeDate(current);
+      const [startYear, startMonth, startDay] = checkInDate.split('-');
+      const [endYear, endMonth, endDay] = checkOutDate.split('-');
+      
+      const startDate = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
+      const endDate = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
+      let current = new Date(startDate);
+      
+      // Incluir día de check-out para limpieza
+      while (current <= endDate) {
+        const year = current.getFullYear();
+        const month = String(current.getMonth() + 1).padStart(2, '0');
+        const day = String(current.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        
         if (!bookingsByDate[dateStr]) {
           bookingsByDate[dateStr] = [];
         }
@@ -216,21 +453,42 @@ const RoomAvailability = ({ rooms = [] }) => {
         current.setDate(current.getDate() + 1);
       }
     });
+    
+    console.log('🗓️ MAPA DE BOOKINGS POR FECHA:', {
+      totalDates: Object.keys(bookingsByDate).length,
+      dates: Object.keys(bookingsByDate).slice(0, 10),
+      sampleBooking: bookingsByDate[Object.keys(bookingsByDate)[0]]
+    });
 
     // Agrupar por mes
     const months = {};
     availability?.forEach(day => {
-      const normalizedDate = normalizeDate(day.date);
-      const date = new Date(day.date);
+      // Parsear fecha manualmente para evitar problemas de UTC
+      // day.date viene como "2025-12-22T05:00:00.000000Z", extraer solo YYYY-MM-DD
+      const dayDateStr = day.date.split('T')[0]; // "2026-01-01"
+      const [year, month, dayNum] = dayDateStr.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(dayNum));
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
       if (!months[monthKey]) {
         months[monthKey] = [];
       }
+      
       months[monthKey].push({
         ...day,
-        date: normalizedDate, // Usar fecha normalizada
-        bookings: bookingsByDate[normalizedDate] || []
+        date: dayDateStr, // Usar formato YYYY-MM-DD en lugar del timestamp
+        bookings: bookingsByDate[dayDateStr] || [] // Buscar con YYYY-MM-DD
       });
+    });
+    
+    console.log('📊 DÍAS CON BOOKINGS:', {
+      totalDays: Object.values(months).flat().length,
+      daysWithBookings: Object.values(months).flat().filter(d => d.bookings.length > 0).length,
+      sample: Object.values(months).flat().slice(0, 5).map(d => ({
+        date: d.date,
+        bookings: d.bookings.length,
+        statuses: d.bookings.map(b => b.status)
+      }))
     });
 
     return Object.entries(months).map(([monthKey, days]) => {
@@ -242,11 +500,16 @@ const RoomAvailability = ({ rooms = [] }) => {
           <h5 className="text-capitalize mb-3">{monthName}</h5>
           <div className="d-flex flex-wrap gap-1">
             {days.map(day => {
-              const date = new Date(day.date);
-              const dayNum = date.getDate();
+              // Parsear fecha manualmente para evitar problemas de UTC
+              const [year, month, dayNum] = day.date.split('-');
+              const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(dayNum));
+              const dayNumber = date.getDate();
               const isBlocked = day.is_blocked;
               const hasBookings = day.bookings.length > 0;
-              const isAvailable = day.available_rooms > 0 && !isBlocked;
+              
+              // Verificar si hay reservas confirmadas (check-in realizado) o pendientes (pagó pero sin check-in)
+              const hasConfirmedBookings = day.bookings.some(b => b.status === 'confirmed');
+              const hasPendingBookings = day.bookings.some(b => b.status === 'pending');
               
               let bgColor = '#d4edda'; // Verde - disponible
               let textColor = '#155724';
@@ -256,32 +519,37 @@ const RoomAvailability = ({ rooms = [] }) => {
                 bgColor = '#e2e3e5';
                 textColor = '#383d41';
                 statusText = 'Bloqueada';
-              } else if (hasBookings) {
-                bgColor = '#f8d7da'; // Rojo - ocupado
+              } else if (hasConfirmedBookings) {
+                bgColor = '#f8d7da'; // Rojo - ocupado (huésped activo, ya hizo check-in)
                 textColor = '#721c24';
                 statusText = 'Ocupada';
+              } else if (hasPendingBookings) {
+                bgColor = '#fff3cd'; // Amarillo - reservado (pagó pero sin check-in)
+                textColor = '#856404';
+                statusText = 'Reservada';
               } else if (day.available_rooms === 0) {
                 bgColor = '#fff3cd'; // Amarillo - sin disponibilidad
                 textColor = '#856404';
-                statusText = 'Reservada';
+                statusText = 'Sin disponibilidad';
               }
 
               return (
                 <div
                   key={day.date}
-                  className="text-center rounded p-2 d-flex align-items-center justify-content-center"
+                  className="text-center rounded p-2 d-flex align-items-center justify-content-center position-relative"
                   style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '45px',
+                    height: '45px',
                     backgroundColor: bgColor,
                     color: textColor,
                     cursor: 'pointer',
                     fontSize: '14px',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    border: '1px solid rgba(0,0,0,0.1)'
                   }}
                   title={`${day.date}\n${statusText}${day.bookings.map(b => `\n👤 ${b.sale?.name || 'Cliente'}`).join('')}`}
                 >
-                  {dayNum}
+                  {dayNumber}
                   {isBlocked && <i className="mdi mdi-lock position-absolute" style={{ fontSize: '10px', top: '2px', right: '2px' }}></i>}
                 </div>
               );
@@ -477,7 +745,7 @@ const RoomAvailability = ({ rooms = [] }) => {
       <Modal
         modalRef={modalCalendarRef}
         title={`Calendario - ${selectedRoom?.name || ''}`}
-        size="lg"
+        size="xl"
         hideButtonSubmit
       >
         {calendarLoading ? (
@@ -490,59 +758,226 @@ const RoomAvailability = ({ rooms = [] }) => {
         ) : (
           <div>
             {/* Leyenda del calendario */}
-            <div className="d-flex gap-2 mb-3 flex-wrap">
+            <div className="d-flex gap-2 mb-3 flex-wrap justify-content-center">
               <span className="badge px-2 py-1" style={{ backgroundColor: '#d4edda', color: '#155724', fontSize: '11px' }}>
-                Disponible
+                <i className="mdi mdi-check-circle mr-1"></i> Disponible
               </span>
               <span className="badge px-2 py-1" style={{ backgroundColor: '#f8d7da', color: '#721c24', fontSize: '11px' }}>
-                Ocupado
+                <i className="mdi mdi-bed mr-1"></i> Ocupado
               </span>
               <span className="badge px-2 py-1" style={{ backgroundColor: '#fff3cd', color: '#856404', fontSize: '11px' }}>
-                Sin disponibilidad
+                <i className="mdi mdi-clock mr-1"></i> Reservado
               </span>
               <span className="badge px-2 py-1" style={{ backgroundColor: '#e2e3e5', color: '#383d41', fontSize: '11px' }}>
-                Bloqueado
+                <i className="mdi mdi-lock mr-1"></i> Bloqueado
               </span>
             </div>
-            
-            {renderCalendar()}
 
-            {/* Reservas activas */}
-            {calendarData?.bookings?.length > 0 && (
-              <div className="mt-4">
-                <h6>Reservas en este período:</h6>
-                <div className="table-responsive">
-                  <table className="table table-sm table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Huésped</th>
-                        <th>Check-in</th>
-                        <th>Check-out</th>
-                        <th>Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {calendarData.bookings.map(booking => (
-                        <tr key={booking.id}>
-                          <td>
-                            {booking.sale?.name} {booking.sale?.lastname}
-                            <br/>
-                            <small className="text-muted">{booking.sale?.email}</small>
-                          </td>
-                          <td>{new Date(booking.check_in).toLocaleDateString('es-PE')}</td>
-                          <td>{new Date(booking.check_out).toLocaleDateString('es-PE')}</td>
-                          <td>
-                            <span className={`badge badge-${booking.status === 'confirmed' ? 'success' : 'warning'}`}>
-                              {booking.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            {/* Layout de 2 columnas */}
+            <div className="row">
+              {/* Columna Izquierda - Tabla de Reservas */}
+              <div className="col-md-5">
+                <div className="border rounded p-3" style={{ backgroundColor: '#f8f9fa', maxHeight: '600px', overflowY: 'auto' }}>
+                  {calendarData?.bookings?.length > 0 ? (
+                    <>
+                      <div className="d-flex justify-content-between align-items-center mb-3 sticky-top bg-light py-2 px-2 rounded" style={{ top: 0, zIndex: 1 }}>
+                        <h6 className="mb-0 font-weight-bold">
+                          <i className="mdi mdi-account-group mx-2 text-primary"></i>
+                          Reservas
+                        </h6>
+                        <span className="badge badge-primary badge-pill">{calendarData.bookings.length}</span>
+                      </div>
+                      {calendarData.bookings.map(booking => {
+                        const getBookingStatusBadge = (status) => {
+                          const badges = {
+                            pending: { badge: 'badge-warning', label: 'Pendiente', color: '#f1b44c', bg: '#fff3cd', icon: 'mdi-clock-outline' },
+                            confirmed: { badge: 'badge-success', label: 'Confirmada', color: '#28a745', bg: '#d4edda', icon: 'mdi-check-circle' },
+                            cancelled: { badge: 'badge-danger', label: 'Cancelada', color: '#dc3545', bg: '#f8d7da', icon: 'mdi-close-circle' },
+                            completed: { badge: 'badge-info', label: 'Completada', color: '#17a2b8', bg: '#d1ecf1', icon: 'mdi-checkbox-marked-circle' },
+                            no_show: { badge: 'badge-secondary', label: 'No Show', color: '#6c757d', bg: '#e2e3e5', icon: 'mdi-account-off' },
+                          };
+                          return badges[status] || { badge: 'badge-secondary', label: status || 'Sin estado', color: '#6c757d', bg: '#e2e3e5', icon: 'mdi-help-circle' };
+                        };
+                        const statusInfo = getBookingStatusBadge(booking.status);
+                        
+                        return (
+                          <div 
+                            key={booking.id} 
+                            className="card mb-3 shadow-sm" 
+                            style={{ 
+                              borderLeft: `4px solid ${statusInfo.color}`,
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <div className="card-body p-3">
+                              {/* Header con nombre y estado */}
+                              <div className="d-flex justify-content-between align-items-center mb-2">
+                                <div className="d-flex align-items-center">
+                                  <div 
+                                    className="rounded-circle d-flex align-items-center justify-content-center mr-2"
+                                    style={{
+                                      width: '40px',
+                                      height: '40px',
+                                      backgroundColor: statusInfo.bg,
+                                      color: statusInfo.color
+                                    }}
+                                  >
+                                    <i className={`mdi ${statusInfo.icon} mdi-24px`}></i>
+                                  </div>
+                                  <div className='mx-2'>
+                                    <h6 className="mb-0 font-weight-bold">{booking.sale?.name} {booking.sale?.lastname}</h6>
+                                    <small className="text-muted">#{booking.sale?.code || 'N/A'}</small>
+                                  </div>
+                                </div>
+                                <span 
+                                  className="badge px-2 py-1"
+                                  style={{
+                                    backgroundColor: statusInfo.bg,
+                                    color: statusInfo.color,
+                                    fontWeight: '600',
+                                    fontSize: '11px',
+                                    letterSpacing: '0.5px'
+                                  }}
+                                >
+                                  {statusInfo.label.toUpperCase()}
+                                </span>
+                              </div>
+                              
+                              {/* Información de contacto */}
+                              <div className="mb-2 pb-2 border-bottom">
+                                <div className="d-flex align-items-center mb-1">
+                                  <i className="mdi mdi-email text-muted mx-2"></i>
+                                  <small className="text-truncate" style={{ maxWidth: '250px' }}>
+                                    {booking.sale?.email}
+                                  </small>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                  <i className="mdi mdi-phone text-muted mx-2"></i>
+                                  <small>
+                                    {booking.sale?.phone_prefix || ''} {booking.sale?.phone || 'N/A'}
+                                  </small>
+                                </div>
+                              </div>
+                              
+                              {/* Fechas de reserva */}
+                              <div className="mb-3">
+                                <div className="row text-center">
+                                  <div className="col-5">
+                                    <div className="p-2 rounded" style={{ backgroundColor: '#e7f5ec' }}>
+                                      <i className="mdi mdi-login text-success d-block mb-1"></i>
+                                      <small className="d-block text-muted" style={{ fontSize: '10px' }}>CHECK-IN</small>
+                                      <strong className="d-block" style={{ fontSize: '13px' }}>
+                                        {new Date(booking.check_in).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}
+                                      </strong>
+                                    </div>
+                                  </div>
+                                  <div className="col-2 d-flex align-items-center justify-content-center">
+                                    <div className="text-center">
+                                      <i className="mdi mdi-arrow-right text-muted"></i>
+                                      <small className="d-block text-muted">{booking.nights}n</small>
+                                    </div>
+                                  </div>
+                                  <div className="col-5">
+                                    <div className="p-2 rounded" style={{ backgroundColor: '#ffeaea' }}>
+                                      <i className="mdi mdi-logout text-danger d-block mb-1"></i>
+                                      <small className="d-block text-muted" style={{ fontSize: '10px' }}>CHECK-OUT</small>
+                                      <strong className="d-block" style={{ fontSize: '13px' }}>
+                                        {new Date(booking.check_out ).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}
+                                      </strong>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Información adicional */}
+                              <div className="d-flex justify-content-around mb-3 py-2" style={{ backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                                <div className="text-center">
+                                  <i className="mdi mdi-account-multiple text-primary"></i>
+                                  <small className="d-block">{booking.guests || 1} huésped{(booking.guests || 1) > 1 ? 'es' : ''}</small>
+                                </div>
+                                <div className="text-center">
+                                  <i className="mdi mdi-cash-multiple text-success"></i>
+                                  <small className="d-block">{CurrencySymbol()} {Number2Currency(booking.total_price || 0)}</small>
+                                </div>
+                              </div>
+
+                              {/* Botones de acción */}
+                              <div className="d-flex gap-2 flex-wrap">
+                                {booking.status === 'pending' && (
+                                  <>
+                                    <button
+                                      className="btn btn-sm btn-success flex-fill"
+                                      onClick={() => handleCheckIn(booking.id)}
+                                      title="Check-In"
+                                    >
+                                      <i className="mdi mdi-login mr-1"></i> Check-In
+                                    </button>
+                                    <button
+                                      className="btn btn-sm btn-outline-danger"
+                                      onClick={() => handleCancelBooking(booking.id)}
+                                      title="Cancelar"
+                                    >
+                                      <i className="mdi mdi-close"></i>
+                                    </button>
+                                  </>
+                                )}
+                                {booking.status === 'confirmed' && (
+                                  <>
+                                    <button
+                                      className="btn btn-sm btn-info flex-fill"
+                                      onClick={() => handleCheckOut(booking.id)}
+                                      title="Check-Out"
+                                    >
+                                      <i className="mdi mdi-logout mr-1"></i> Check-Out
+                                    </button>
+                                    <button
+                                      className="btn btn-sm btn-outline-secondary"
+                                      onClick={() => handleNoShow(booking.id)}
+                                      title="No Show"
+                                    >
+                                      <i className="mdi mdi-account-off"></i>
+                                    </button>
+                                    <button
+                                      className="btn btn-sm btn-outline-danger"
+                                      onClick={() => handleCancelBooking(booking.id)}
+                                      title="Cancelar"
+                                    >
+                                      <i className="mdi mdi-close"></i>
+                                    </button>
+                                  </>
+                                )}
+                                {['completed', 'cancelled', 'no_show'].includes(booking.status) && (
+                                  <div className="text-center w-100 py-2 text-muted">
+                                    <i className="mdi mdi-information-outline mr-1"></i>
+                                    Reserva finalizada
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <div className="text-center text-muted py-5">
+                      <i className="mdi mdi-calendar-blank mdi-48px"></i>
+                      <p className="mt-2">No hay reservas en este período</p>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+
+              {/* Columna Derecha - Calendario Visual */}
+              <div className="col-md-7">
+                <div className="border rounded p-2" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                  <h6 className="mb-3 sticky-top bg-white py-2" style={{ top: 0, zIndex: 1 }}>
+                    <i className="mdi mdi-calendar mr-1"></i>
+                    Vista de Calendario
+                  </h6>
+                  {renderCalendar()}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </Modal>

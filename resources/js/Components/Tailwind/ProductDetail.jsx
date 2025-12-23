@@ -37,7 +37,7 @@ const ProductDetail = ({ which, item, cart, setCart, data, generals = [], favori
       case 'ProductDetailAko':
         return <ProductDetailAko item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} />
       case 'ProductDetailDental':
-        return <ProductDetailDental item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} />
+        return <ProductDetailDental item={item} cart={cart} setCart={setCart} generals={generals} favorites={favorites} setFavorites={setFavorites} data={data}/>
       case 'ProductDetailPidelo':
         return <ProductDetailPidelo item={item} cart={cart} setCart={setCart} textstatic={textstatic} contacts={contacts} data={data} />
       case 'ProductDetailMultivet':

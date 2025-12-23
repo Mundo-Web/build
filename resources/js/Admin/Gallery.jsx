@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import BaseAdminto from '@Adminto/Base';
 import CreateReactScript from '../Utils/CreateReactScript';
@@ -11,12 +11,17 @@ import { toast, Toaster } from 'sonner';
 const galleryRest = new GalleryRest()
 const galleryConfigRest = new GalleryConfigRest()
 
-const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = false }) => {
+const Gallery = ({ images: imagesJSON = [], allImages: allImagesJSON = [], isDevelopment = false, canEdit = false, session = {}, hasRootRole: backendRootRole = false, imageVisibilityConfig = {} }) => {
 
   const [images, setImages] = useState(imagesJSON.map(x => {
     x.uuid = crypto.randomUUID()
     return x
   }));
+
+  // Estados para gestión de visibilidad de imágenes
+  const [showVisibilityModal, setShowVisibilityModal] = useState(false);
+  const [imageVisibility, setImageVisibility] = useState({});
+  const [savingVisibility, setSavingVisibility] = useState(false);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingImage, setEditingImage] = useState(null);
@@ -34,6 +39,27 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
 
 
   const imageFormRef = useRef();
+
+  // Función para verificar si el usuario tiene rol Root
+  const hasRootRole = useCallback(() => {
+    const roles = session?.roles || session?.user?.roles;
+    const result = backendRootRole || (roles?.some(role => role.name === 'Root') ?? false);
+    console.log('🔐 hasRootRole ejecutándose:', {
+      backendRootRole,
+      session,
+      sessionRoles: session?.roles,
+      userRoles: session?.user?.roles,
+      roles,
+      result
+    });
+    return result;
+  }, [backendRootRole, session]);
+
+  // Memoizar imágenes para usar las recibidas del backend (YA FILTRADAS)
+  const visibleImages = useMemo(() => {
+    console.log('📊 visibleImages - usando images directamente (backend ya filtró):', images);
+    return images;
+  }, [images]);
 
   // Verificar si estamos en entorno local/desarrollo
   // Combina verificación del cliente Y del servidor para mayor seguridad
@@ -55,6 +81,41 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
       }
     })
   }, [images])
+
+  // Inicializar estado de visibilidad de imágenes (solo para Root - para el modal)
+  useEffect(() => {
+    console.log('🚨 Gallery Debug - Inicializando visibilidad:', {
+      hasRootRole: hasRootRole(),
+      allImagesJSON,
+      session,
+      backendRootRole
+    });
+
+    if (hasRootRole()) {
+      const visibility = {};
+      
+      // Inicializar desde allImagesJSON (todas las imágenes, incluyendo no visibles)
+      if (allImagesJSON && allImagesJSON.length > 0) {
+        allImagesJSON.forEach(image => {
+          if (image) {
+            const imageKey = image.filename || image.src;
+            // Si tiene is_visible definido, usarlo, sino true por defecto
+            visibility[imageKey] = image.is_visible !== undefined ? image.is_visible : true;
+            
+            console.log(`🔍 Imagen "${image.name}" (${imageKey}):`, {
+              is_visible: image.is_visible,
+              visibility: visibility[imageKey]
+            });
+          }
+        });
+      }
+      
+      console.log('✅ Visibilidad inicial configurada:', visibility);
+      setImageVisibility(visibility);
+    } else {
+      console.log('❌ Usuario no es Root, no se inicializa visibilidad');
+    }
+  }, [allImagesJSON, hasRootRole]);
 
   const onImageChange = async (e) => {
     const file = e.target.files?.[0] ?? null
@@ -231,6 +292,44 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
     }
   }
 
+  // Funciones para gestión de visibilidad de imágenes
+  const handleToggleImageVisibility = (imageKey) => {
+    setImageVisibility(prev => ({
+      ...prev,
+      [imageKey]: !prev[imageKey]
+    }));
+  };
+
+  const handleSaveVisibility = async () => {
+    setSavingVisibility(true);
+    try {
+      // Verificar que hay cambios que guardar
+      if (Object.keys(imageVisibility).length === 0) {
+        toast.error('No hay imágenes para actualizar');
+        return;
+      }
+
+      // Usar el servicio REST que maneja CSRF automáticamente
+      const response = await galleryRest.updateVisibility(imageVisibility);
+
+      if (response.success) {
+        toast.success('Configuración de visibilidad guardada correctamente');
+        setShowVisibilityModal(false);
+        // Recargar la página para reflejar los cambios
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        toast.error(response.message || 'Error al guardar la configuración de visibilidad');
+      }
+    } catch (error) {
+      console.error('Error saving visibility:', error);
+      toast.error('Error al guardar la configuración de visibilidad: ' + error.message);
+    } finally {
+      setSavingVisibility(false);
+    }
+  };
+
   const handleDeleteImage = async (index) => {
     const imageToDelete = images[index];
     
@@ -267,24 +366,50 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
   }
 
   return (<div className='port'>
-    {/* Header con botón agregar - Solo en desarrollo */}
+    {/* Header con botones de acción */}
     <div className="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 className="mb-0">Galería de Imágenes</h4>
+        <small className="text-muted">
+          {hasRootRole() ? 'Administrador Root - Vista completa' : 'Vista de usuario'}
+        </small>
+      </div>
       
-      {isLocalEnvironment && (
-        <button 
-          type="button" 
-          className="btn btn-primary"
-          onClick={handleAddNewImage}
-          disabled={isLoading}
-        >
-          <i className="mdi mdi-plus me-1"></i>
-          Agregar Nueva Imagen
-        </button>
-      )}
+      <div className="d-flex gap-2">
+        {/* Botón de gestión de visibilidad - Solo para root */}
+        {(() => {
+          const isRoot = hasRootRole();
+          console.log('🎯 Renderizando botón de visibilidad:', { isRoot });
+          return isRoot && (
+            <button 
+              type="button" 
+              className="btn btn-info"
+              onClick={() => setShowVisibilityModal(true)}
+              disabled={isLoading}
+            >
+              <i className="mdi mdi-eye-settings me-1"></i>
+              Gestionar Visibilidad
+            </button>
+          );
+        })()}
+        
+        {/* Botón agregar - Solo en desarrollo */}
+        {isLocalEnvironment && (
+          <button 
+            type="button" 
+            className="btn btn-primary"
+            onClick={handleAddNewImage}
+            disabled={isLoading}
+          >
+            <i className="mdi mdi-plus me-1"></i>
+            Agregar Nueva Imagen
+          </button>
+        )}
+      </div>
     </div>
 
     <div className="row portfolioContainer">
-      {images.map((image, index) => {
+      {visibleImages.map((image, index) => {
         const slug = slugify(image.name)
         const isSystemImage = image.is_system === true;
         
@@ -548,6 +673,118 @@ const Gallery = ({ images: imagesJSON = [], isDevelopment = false, canEdit = fal
                   <>
                     <i className="mdi mdi-content-save me-1"></i>
                     {editingImage !== null ? 'Actualizar' : 'Agregar'}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Modal para gestionar visibilidad de imágenes - Solo para root */}
+    {hasRootRole() && showVisibilityModal && (
+      <div className="modal show d-block" tabIndex="-1" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                <i className="mdi mdi-eye-settings me-2"></i>
+                Gestionar Visibilidad de Imágenes
+              </h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => setShowVisibilityModal(false)}
+                disabled={savingVisibility}
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="alert alert-info">
+                <i className="mdi mdi-information me-2"></i>
+                Configura qué imágenes serán visibles para los usuarios que no tienen rol Root.
+                Las imágenes desmarcadas solo serán visibles para administradores Root.
+              </div>
+              
+              <div className="row">
+                {(allImagesJSON || images).map((image, index) => {
+                  const imageKey = image.filename || image.src;
+                  const isSystemImage = image.is_system === true;
+                  
+                  return (
+                    <div key={index} className="col-md-6 mb-3">
+                      <div className="card">
+                        <div className="card-body">
+                          <div className="d-flex align-items-center">
+                            <div className="form-check form-switch me-3">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={`visibility-${imageKey}`}
+                                checked={imageVisibility[imageKey] || false}
+                                onChange={() => handleToggleImageVisibility(imageKey)}
+                                disabled={savingVisibility}
+                              />
+                            </div>
+                            <div className="flex-grow-1">
+                              <div className="d-flex align-items-center">
+                                <img 
+                                  src={`/assets/resources/${image.src}?v=${image.uuid}`} 
+                                  alt={image.name}
+                                  style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    objectFit: 'cover',
+                                    borderRadius: '4px',
+                                    marginRight: '10px'
+                                  }}
+                                  onError={e => e.target.src = '/assets/resources/cover-404.svg'}
+                                />
+                                <div>
+                                  <div className="fw-bold">
+                                    {image.name}
+                                    {isSystemImage && (
+                                      <span className="badge bg-primary ms-2" style={{fontSize: '9px'}}>
+                                        SISTEMA
+                                      </span>
+                                    )}
+                                  </div>
+                                  <small className="text-muted">{image.filename || image.src}</small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setShowVisibilityModal(false)}
+                disabled={savingVisibility}
+              >
+                Cancelar
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-primary"
+                onClick={handleSaveVisibility}
+                disabled={savingVisibility}
+              >
+                {savingVisibility ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status"></span>
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <i className="mdi mdi-content-save me-1"></i>
+                    Guardar Configuración
                   </>
                 )}
               </button>

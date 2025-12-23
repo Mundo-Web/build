@@ -11,7 +11,7 @@ const TopBarCopyrightSocials = React.lazy(() =>
 const TopBarPages = React.lazy(() => import("./TopBars/TopBarPages"));
 const TopBarAddress = React.lazy(() => import("./TopBars/TopBarAddress"));
 
-const TopBar = ({ data, which, items, setCart, cart, isUser,pages }) => {
+const TopBar = ({ data, which, items,generals, setCart, cart, isUser,pages }) => {
     const getTopBar = () => {
         switch (which) {
             case "TopBarSimple":
@@ -51,6 +51,7 @@ const TopBar = ({ data, which, items, setCart, cart, isUser,pages }) => {
                 return (
                     <TopBarPanni
                         data={data}
+                        generals={generals}
                         items={items}
                         cart={cart}
                         setCart={setCart}

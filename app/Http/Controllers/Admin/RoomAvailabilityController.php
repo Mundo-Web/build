@@ -350,8 +350,8 @@ class RoomAvailabilityController extends BasicController
             $startDate = Carbon::today();
             $endDate = Carbon::today()->addYear();
 
-            // Obtener fechas bloqueadas y sin disponibilidad
-            $blockedDates = RoomAvailability::where('item_id', $room->id)
+            // Obtener fechas bloqueadas manualmente y sin disponibilidad
+            $manuallyBlocked = RoomAvailability::where('item_id', $room->id)
                 ->whereBetween('date', [$startDate, $endDate])
                 ->where(function($query) {
                     $query->where('is_blocked', true)
@@ -361,7 +361,8 @@ class RoomAvailabilityController extends BasicController
                 ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
                 ->toArray();
 
-            // Obtener reservas activas para agregar sus fechas
+            // Obtener fechas de reservas activas (pending y confirmed)
+            $bookedDates = [];
             $bookings = Booking::where('item_id', $room->id)
                 ->whereIn('status', ['pending', 'confirmed'])
                 ->where('check_out', '>=', $startDate)
@@ -371,21 +372,26 @@ class RoomAvailabilityController extends BasicController
                 $current = Carbon::parse($booking->check_in);
                 $checkOut = Carbon::parse($booking->check_out);
                 
-                while ($current < $checkOut) {
+                // Incluir día de check-out para limpieza
+                while ($current <= $checkOut) {
                     $dateStr = $current->format('Y-m-d');
-                    if (!in_array($dateStr, $blockedDates)) {
-                        $blockedDates[] = $dateStr;
+                    if (!in_array($dateStr, $bookedDates)) {
+                        $bookedDates[] = $dateStr;
                     }
                     $current->addDay();
                 }
             }
 
-            sort($blockedDates);
+            // Combinar ambas listas (para compatibilidad con versión anterior)
+            $allBlockedDates = array_unique(array_merge($manuallyBlocked, $bookedDates));
+            sort($allBlockedDates);
 
             $response->status = 200;
             $response->message = 'Fechas bloqueadas obtenidas';
             $response->data = [
-                'blocked_dates' => $blockedDates,
+                'blocked_dates' => $allBlockedDates, // Todas las fechas bloqueadas (manual + reservas)
+                'booked_dates' => $bookedDates, // Solo fechas de reservas pending/confirmed
+                'manually_blocked' => $manuallyBlocked, // Solo fechas bloqueadas manualmente
                 'room_id' => $room->id,
             ];
 

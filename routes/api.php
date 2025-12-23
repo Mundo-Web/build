@@ -323,6 +323,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/web-details', [AdminWebDetailController::class, 'save']);
     Route::post('/gallery', [AdminGalleryController::class, 'save']);
     Route::post('/gallery/config', [AdminGalleryController::class, 'saveConfig']);
+    Route::post('/gallery/visibility', [AdminGalleryController::class, 'updateVisibility']);
 
     Route::post('/items', [AdminItemController::class, 'save']);
     Route::post('/items/paginate', [AdminItemController::class, 'paginate'])->withoutMiddleware('throttle');

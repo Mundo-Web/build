@@ -32,7 +32,7 @@ const TestimonialsPaani = ({items}) => {
                    
                     <div className="relative h-[340px] w-[340px] md:h-[440px] md:w-[440px] rounded-xl  bg-primary  md:col-span-2">
                         <img
-                            src={backgroundImage}
+                            src={`/assets/resources/testimonials.png?v=${crypto.randomUUID()}`}
                             alt={`Testimonios de ${items.length} clientes satisfechos ${Global.APP_NAME}`}
                             className="absolute left-1/2 -translate-x-1/2 -top-24 max-h-[670px] object-cover object-bottom drop-shadow-2xl"
                             style={{
@@ -40,6 +40,10 @@ const TestimonialsPaani = ({items}) => {
                                 zIndex: 2,
                            
                             }}
+                              onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/img/logo-bk.svg';
+                                }}
                             loading="lazy"
                         />
                     </div>

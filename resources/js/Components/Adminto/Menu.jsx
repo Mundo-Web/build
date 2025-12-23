@@ -26,18 +26,20 @@ const Menu = ({ session, hasRole }) => {
 
         // Si tiene hijos, verificar si algún hijo coincide
         if (item.children) {
-          return item.children.some(child => 
-            child.label.toLowerCase().includes(query) && CanAccess[child.href]
-          );
+          return item.children.some(child => {
+            const accessKey = child.id || child.href;
+            return child.label.toLowerCase().includes(query) && CanAccess[accessKey];
+          });
         }
 
         return false;
       }).map(item => {
         // Si el item tiene hijos, filtrar solo los hijos que coinciden
         if (item.children) {
-          const filteredChildren = item.children.filter(child =>
-            child.label.toLowerCase().includes(query) && CanAccess[child.href]
-          );
+          const filteredChildren = item.children.filter(child => {
+            const accessKey = child.id || child.href;
+            return child.label.toLowerCase().includes(query) && CanAccess[accessKey];
+          });
           
           // Si hay hijos filtrados, retornar el item con solo esos hijos
           if (filteredChildren.length > 0) {
@@ -263,8 +265,11 @@ const Menu = ({ session, hasRole }) => {
                           const itemKey = item.id || item.href || `${sectionKey}-${item.label}`;
 
                           if (item.children) {
-                            // Filtrar hijos con acceso
-                            const accessibleChildren = item.children.filter((child) => CanAccess[child.href]);
+                            // Filtrar hijos con acceso usando ID único si existe, sino usar href
+                            const accessibleChildren = item.children.filter((child) => {
+                              const accessKey = child.id || child.href;
+                              return CanAccess[accessKey];
+                            });
                             
                             // Si no hay hijos con acceso, no mostrar el menú padre
                             if (accessibleChildren.length === 0) {
@@ -291,7 +296,8 @@ const Menu = ({ session, hasRole }) => {
                           }
 
                           if (item.role) {
-                            if (!hasRole(item.role) || !CanAccess[item.href]) {
+                            const accessKey = item.id || item.href;
+                            if (!hasRole(item.role) || !CanAccess[accessKey]) {
                               return null;
                             }
 
@@ -310,7 +316,8 @@ const Menu = ({ session, hasRole }) => {
                             );
                           }
 
-                          if (!CanAccess[item.href]) {
+                          const accessKey = item.id || item.href;
+                          if (!CanAccess[accessKey]) {
                             return null;
                           }
 

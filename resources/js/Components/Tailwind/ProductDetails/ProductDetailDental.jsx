@@ -279,6 +279,9 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
         },
     };
 
+    // Debug: Verificar el valor de especification_tec
+    console.log("data?.especification_tec:", data?.especification_tec);
+
     return (
         <>
             {/* Versión Mobile */}
@@ -464,14 +467,14 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 type: "main",
                                             })
                                         }
-                                        className={`w-16 h-16  rounded-lg p-2 border-2 ${selectedImage.url === item?.image
+                                        className={`w-16 h-16  rounded-xl p-2 border-2 ${selectedImage.url === item?.image
                                             ? "border-primary "
                                             : "border-gray-200"
                                             }`}
                                     >
                                         <img
                                             src={`/storage/images/item/${item?.image}`}
-                                            alt="Main Thumbnail"
+                                            alt={item?.name}
                                             className="w-full h-full object-contain"
                                             onError={(e) =>
                                             (e.target.src =
@@ -490,14 +493,14 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                     type: "gallery",
                                                 })
                                             }
-                                            className={`w-16 h-16 border-2 rounded-lg p-2 ${selectedImage.url === image.url
+                                            className={`w-16 h-16 border-2 rounded-xl p-2 ${selectedImage.url === image.url
                                                 ? "border-primary"
                                                 : "border-gray-200"
                                                 }`}
                                         >
                                             <img
                                                 src={`/storage/images/item/${image.url}`}
-                                                alt={`Thumbnail ${index + 1}`}
+                                                alt={`${item?.name} Thumbnail ${index + 1}`}
                                                 className="w-full h-full object-contain"
                                                 onError={(e) =>
                                                 (e.target.src =
@@ -520,8 +523,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                         (e.target.src =
                                             "/api/cover/thumbnail/null")
                                         }
-                                        alt="Product main"
-                                        className="w-full min-h-[600px] max-h-[600px] object-cover"
+                                        alt={item?.name}
+                                        className="w-full min-h-[600px] max-h-[600px] rounded-xl object-cover"
                                     />
                                 </div>
                             </div>
@@ -590,7 +593,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 </div>
                             </div>
 
-                            {/* Specifications */}
+                            {/* Specifications - Mobile */}
                             <div className="block lg:hidden flex-1 w-full ">
                                 <div className="bg-[#F7F9FB] rounded-lg p-6">
                                     <h3 className="font-medium text-sm mb-4">
@@ -636,6 +639,60 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 </div>
                             </div>
 
+                            {/* Especificaciones Técnicas - Solo en Desktop si data?.especification_tec === "left" */}
+                            {data?.especification_tec === "left" && (
+                                <div className="hidden lg:block flex-1 w-full">
+                                    <div className="bg-gray-100 rounded-lg p-6">
+                                        <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
+                                            Especificaciones Técnicas
+                                        </h3>
+                                        <ul
+                                            className="space-y-2 customtext-primary mb-4 transition-all duration-300 max-h-full overflow-hidden"
+                                            style={{ listStyleType: "disc" }}
+                                        >
+                                            {item?.specifications.filter(spec => spec.type === "general").length > 0 ? (
+                                                <div className="overflow-hidden rounded-lg border border-gray-200">
+                                                    <table className="w-full">
+                                                        <thead>
+                                                            <tr className="bg-gray-50 border-b border-gray-200">
+                                                                <th className="px-4 py-3 text-left text-sm font-semibold customtext-neutral-dark w-1/3">
+                                                                    Especificación
+                                                                </th>
+                                                                <th className="px-4 py-3 text-left text-sm font-semibold customtext-neutral-dark w-2/3">
+                                                                    Detalle
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {item?.specifications.map(
+                                                                (spec, index) =>
+                                                                    spec.type === "general" && (
+                                                                        <tr
+                                                                            key={index}
+                                                                            className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                                                                        >
+                                                                            <td className="px-4 py-3 text-sm font-medium customtext-neutral-dark align-top">
+                                                                                {spec?.title || "Característica"}
+                                                                            </td>
+                                                                            <td className="px-4 py-3 text-sm customtext-primary">
+                                                                                {spec?.description}
+                                                                            </td>
+                                                                        </tr>
+                                                                    )
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-8 text-gray-500">
+                                                    <p className="text-sm">No hay especificaciones técnicas disponibles</p>
+                                                </div>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
 
 
 
@@ -645,7 +702,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         {/* Right Column - Product Info */}
                         <div className="hidden md:block font-paragraph">
                             {/* Brand and Title */}
-                            <div className="mb-6">
+                            <div className="mb-4">
 
                                 {/* SKU and Availability */}
                                 <div className="font-paragraph flex customtext-primary items-center gap-8 text-sm mb-6">
@@ -709,23 +766,29 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
 
                                 </div>
                                 {/* */}
-                                <div>
-                                    <p className="customtext-primary text-sm">
+                             
+                                    {data?.badge_category && (
+ <p className="customtext-primary text-sm">
                                         Categoría:{" "}
                                         <span className="customtext-neutral-dark font-medium">
                                             {item?.category?.name}
                                         </span>
                                     </p>
-
-                                    <p className="customtext-primary text-sm">
+                                    )}
+                                   {data?.badge_brand && (    <p className="customtext-primary text-sm">
                                         Marca:{" "}
                                         <span className="customtext-neutral-dark font-medium">
                                             {item?.brand?.name}
                                         </span>
                                     </p>
+)
+                                   }
 
-                                </div>
-                                <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
+                                
+                            
+                                {/* Descripción */}
+                                {item?.description && (
+                                    <> <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
                                     Descripción
                                 </h3>
                                 <div
@@ -733,10 +796,11 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     dangerouslySetInnerHTML={{
                                         __html: item?.description,
                                     }}
-                                ></div>
-                                {/* Specifications */}
+                                ></div></>)}
+                               
+                                {/* Características - Siempre visible */}
                                 <div className="flex-1 w-full ">
-                                    <div className="bg-secondary rounded-lg p-6">
+                                    <div className="bg-secondary rounded-xl p-6">
                                         <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
                                             Características
                                         </h3>
@@ -770,8 +834,10 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     </div>
                                 </div>
 
-                                <div className="flex-1 w-full ">
-                                    <div className="bg-gray-100 rounded-lg p-6">
+                                {/* Especificaciones Técnicas - Solo si NO es "left" */}
+                                {data?.especification_tec !== "left" && (
+                                    <div className="flex-1 w-full ">
+                                        <div className="bg-gray-100 rounded-lg p-6">
                                         <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
                                             Especificaciones Técnicas
                                         </h3>
@@ -823,8 +889,9 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                             )}
                                         </ul>
 
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Add to Cart */}
                                 <button
@@ -833,7 +900,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     onClick={(event) => {
                                         handleClickWhatsAppCotizar(event);
                                     }}
-                                    className="w-full bg-primary text-white py-3 font-bold shadow-lg rounded-full hover:opacity-90 transition-all duration-300 mt-4"
+                                    className="w-full bg-primary text-lg text-white py-3 2xl:py-4 font-bold shadow-lg rounded-full hover:opacity-90 transition-all duration-300 mt-4"
                                 >
                                     Cotizar este producto
                                 </button>
@@ -882,7 +949,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
             </div>
             {relationsItems.length > 0 && (
                 <ProductBananaLab
-                    data={{ title: "Te puede interesar", style_offer: "circle", background: "", class_button_primary: "lg:bg-primary", class_button: "bg-accent customtext-netrual-dark !font-semibold", class_section: "bg-secondary", text_button: "Ir a catalogo", link_catalog: "/catalogo" }}
+                    data={
+                       data}
                     items={relationsItems.slice(0, 4)}
                     cart={cart}
                     setCart={setCart}
