@@ -744,18 +744,8 @@
                     "only_image"
                 ],
                 "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "name",
-                        "description",
-                        "bg_image",
-                        "bg_image_mobile",
-                        "button_text",
-                        "button_link",
-                        "order_index",
-                        "title_color",
-                        "description_color"
-                    ]
+                    "model": "Slider"
+                    
                 },
                 "generals": [
                     "phone_whatsapp",
