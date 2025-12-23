@@ -55,13 +55,13 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
             // 1️⃣ Obtener o crear la categoría
             $category = Category::firstOrCreate(
                 ['name' => $categoria],
-                ['slug' => str()->slug($categoria)]
+                ['slug' => str()->slug($categoria), 'status' => true]
             );
 
             // Collection handling - verificar si existe la columna
             $collection = null;
             $collectionKey = $row['colleccion'] ?? $row['collection'] ?? null;
-            
+
             if ($collectionKey && trim($collectionKey)) {
                 $colleccion = trim($collectionKey);
                 $collection = Collection::firstOrCreate(
@@ -72,7 +72,7 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
 
 
             // 2️⃣ Obtener o crear la subcategoría
-         
+
             $subCategorySlug = "";
             if ($subcategoria) {
                 $subCategorySlug = Str::slug($subcategoria);
@@ -132,7 +132,7 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
                 if (isset($row['especificaciones_principales_separadas_por_comas']) && $row['especificaciones_principales_separadas_por_comas']) {
                     $this->saveSpecifications($item, $row['especificaciones_principales_separadas_por_comas'], 'principal');
                 }
-                
+
                 if (isset($row['especificaciones_generales_separado_por_comas_y_dos_puntos']) && $row['especificaciones_generales_separado_por_comas_y_dos_puntos']) {
                     $this->saveSpecifications($item, $row['especificaciones_generales_separado_por_comas_y_dos_puntos'], 'general');
                 }
@@ -151,10 +151,10 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
                 $e->getLine(),
                 basename($e->getFile())
             );
-            
+
             dump($errorMessage);
             dump("Datos de la fila:", $row);
-            
+
             $this->addError($errorMessage);
             return null; // Continuar con la siguiente fila
         }
@@ -192,7 +192,7 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
             if (empty($spec)) {
                 continue;
             }
-            
+
             if ($type == 'principal') {
                 ItemSpecification::create([
                     'item_id' => $item->id,
@@ -205,7 +205,7 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
                 if (count($parts) == 2) {
                     $title = trim($parts[0]);
                     $description = trim($parts[1]);
-                    
+
                     if (!empty($title) && !empty($description)) {
                         ItemSpecification::create([
                             'item_id' => $item->id,

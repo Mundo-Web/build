@@ -24,6 +24,7 @@ use Illuminate\Support\Str;
 use SoDe\Extend\Crypto;
 use Throwable;
 use Illuminate\Support\Facades\Log;
+use SoDe\Extend\File;
 
 class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailure
 {
@@ -196,11 +197,17 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if (!$categoria) {
                 throw new Exception("La categoría es requerida");
             }
-            
             $category = Category::firstOrCreate(
                 ['name' => $categoria],
-                ['slug' => Str::slug($categoria)]
+                [
+                    'slug' => Str::slug($categoria),
+                    'status' => true
+                ]
             );
+            
+            // Si el slug o status han cambiado, actualizarlos
+            $category->status = true;
+            $category->save();
 
             // 2️⃣ Crear/obtener subcategoría (opcional)
             $subCategory = null;
@@ -215,8 +222,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     
                     $subCategory = SubCategory::firstOrCreate(
                         ['name' => $subcategoria, 'category_id' => $category->id],
-                        ['slug' => $subCategorySlug]
+                        [
+                            'slug' => $subCategorySlug,
+                            'status' => true
+                        ]
                     );
+                    $subCategory->status = true;
+                    $subCategory->save();
                 }
             }
 
@@ -227,8 +239,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 if ($collectionName) {
                     $collection = Collection::firstOrCreate(
                         ['name' => $collectionName],
-                        ['slug' => Str::slug($collectionName)]
+                        [
+                            'slug' => Str::slug($collectionName),
+                            'status' => true    
+                        ]
                     );
+                    $collection->status = true;
+                    $collection->save();
                 }
             }
 
@@ -239,8 +256,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 if ($marca) {
                     $brand = Brand::firstOrCreate(
                         ['name' => $marca],
-                        ['slug' => Str::slug($marca)]
+                        [
+                            'slug' => Str::slug($marca),
+                            'statud' => true
+                        ]
                     );
+                    $brand->status = true;
+                    $brand->save();
                 }
             }
 
@@ -261,10 +283,14 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 if ($store) {
                      $store = Store::firstOrCreate(
                         ['name' => $store],
-                        ['slug' => Str::slug($store)]
+                        [
+                            'slug' => Str::slug($store),
+                            'status' => true
+                        ]
                     );
                     
-                  
+                    $store->status = true;
+                    $store->save();
                 }
             }
 
@@ -761,6 +787,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             }
         }
 
+        $files = File::scan(storage_path('/app/images/item'), [
+            'type' => 'file',
+            'startsWith' => $sku
+        ]);
+        return $files;
         // Imágenes de galería: sku_1.ext, etc.
         $i = 1;
         while (true) {
