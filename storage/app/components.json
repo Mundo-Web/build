@@ -2797,6 +2797,17 @@
                 "using": {
                     "model": "App"
                 }
+            },
+            {
+                "id": "BannerAboutStats",
+                "name": "About con Estadísticas - WebQuirurgica",
+                "image": "banner-about-stats.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
             }
         ]
     },

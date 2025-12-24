@@ -47,7 +47,7 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
 
         return parts.map((part, index) =>
             part.startsWith("*") && part.endsWith("*") ? (
-                <span key={index} className={`${color} bg-clip-text text-transparent ${className}`}>
+                <span key={index} className={`${className} ${color} bg-clip-text text-transparent `}>
                     {part.slice(1, -1)}
                 </span>
             ) : (
