@@ -155,12 +155,17 @@ class DeliveryPriceController extends BasicController
                     
                     // Si el precio base es 0 pero tiene express_price, usar la mitad del express como fallback
                     if ($fallbackPrice == 0 && $deliveryPrice->express_price > 0) {
-                        $fallbackPrice = round($deliveryPrice->express_price * 0.6, 2); // 60% del express
+                        $fallbackPrice = round($deliveryPrice->express_price * 0.6, 2);
+                        // Convertir a float con exactamente 2 decimales para evitar problemas de precisión
+                        $fallbackPrice = floatval(number_format($fallbackPrice, 2, '.', ''));
                         Log::info('Using fallback price calculation', [
                             'original_price' => $deliveryPrice->price,
                             'express_price' => $deliveryPrice->express_price,
                             'calculated_fallback' => $fallbackPrice
                         ]);
+                    } else {
+                        // Asegurar que el precio también tenga 2 decimales exactos
+                        $fallbackPrice = floatval(number_format($fallbackPrice, 2, '.', ''));
                     }
                     
                     // Usar el tipo "Delivery Normal" cuando no califica para envío gratis
@@ -184,7 +189,7 @@ class DeliveryPriceController extends BasicController
                 
                 // Siempre agregar express para ubicaciones is_free
                 $result['express'] = [
-                    'price' => $deliveryPrice->express_price,
+                    'price' => floatval(number_format((float)$deliveryPrice->express_price, 2, '.', '')),
                     'description' => $expressType->description ?? 'Entrega express',
                     'type' => $expressType->name,
                     'characteristics' => $expressType->characteristics,
@@ -196,7 +201,7 @@ class DeliveryPriceController extends BasicController
                     'is_free' => false,
                     'cart_total' => $cartTotal,
                     'qualifies_for_free_shipping' => $qualifiesForFreeShipping,
-                    'final_price' => $deliveryPrice->price,
+                    'final_price' => floatval(number_format((float)$deliveryPrice->price, 2, '.', '')),
                     'note' => 'Para ubicaciones NO is_free, NUNCA aplicar envío gratis'
                 ]);
             }
@@ -205,7 +210,7 @@ class DeliveryPriceController extends BasicController
                 $agencyType = TypeDelivery::where('slug', 'delivery-agencia')->first();
 
                 $result['agency'] = [
-                    'price' => $deliveryPrice->agency_payment_on_delivery ? 0 : $deliveryPrice->agency_price,
+                    'price' => $deliveryPrice->agency_payment_on_delivery ? 0 : floatval(number_format((float)$deliveryPrice->agency_price, 2, '.', '')),
                     'description' => $agencyType->description ?? 'Entrega en Agencia',
                     'type' => $agencyType->name,
                     'characteristics' => $agencyType->characteristics,
