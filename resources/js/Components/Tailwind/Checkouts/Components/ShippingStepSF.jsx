@@ -1036,8 +1036,8 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCommission || 0,
-                    delivery: envio,
+                    amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                    delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
                     cart: cart,
                     invoiceType: formData.invoiceType || "",
@@ -1047,16 +1047,16 @@ export default function ShippingStepSF({
                     payment_method: paymentMethod || null,
                     // Cupón aplicado
                     coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
+                    coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
                     // Comisión del método de pago
-                    payment_commission: commissionAmount || 0,
-                    payment_commission_percentage: mercadopagoCommission || 0,
+                    payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                    payment_commission_percentage: roundToTwoDecimals(mercadopagoCommission || 0),
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
+                    automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                     applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCommission || 0,
+                    promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                    total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 };
                 
                 try {
@@ -1155,8 +1155,8 @@ export default function ShippingStepSF({
                         number: formData?.number || "",
                         comment: formData?.comment || "",
                         reference: formData?.reference || "",
-                        amount: finalTotalWithCommission || 0,
-                        delivery: envio,
+                        amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                        delivery: roundToTwoDecimals(envio || 0),
                         delivery_type: deliveryType,
                         cart: cart,
                         invoiceType: formData.invoiceType || "",
@@ -1166,16 +1166,16 @@ export default function ShippingStepSF({
                         payment_method: "culqi",
                         // Cupón aplicado
                         coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                        coupon_discount: calculatedCouponDiscount || 0,
+                        coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
                         // Comisión del método de pago
-                        payment_commission: commissionAmount || 0,
-                        payment_commission_percentage: culqiCommission || 0,
+                        payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                        payment_commission_percentage: roundToTwoDecimals(culqiCommission || 0),
                         // Descuentos automáticos
                         automatic_discounts: autoDiscounts,
-                        automatic_discount_total: autoDiscountTotal,
+                        automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                         applied_promotions: autoDiscounts,
-                        promotion_discount: autoDiscountTotal || 0,
-                        total_amount: finalTotalWithCommission || 0,
+                        promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                        total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                     };
 
                     const response = await processCulqiPayment(request);
@@ -1252,8 +1252,8 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCommission || 0,
-                    delivery: envio,
+                    amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                    delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
                         id: item.id,
@@ -1267,16 +1267,16 @@ export default function ShippingStepSF({
                     payment_proof: null,
                     // Cupón aplicado
                     coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
+                    coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
                     // Comisión del método de pago
-                    payment_commission: commissionAmount || 0,
-                    payment_commission_percentage: yapeCommission || 0,
+                    payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                    payment_commission_percentage: roundToTwoDecimals(yapeCommission || 0),
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
+                    automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                     applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCommission || 0,
+                    promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                    total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 };
 
                 setPaymentRequest(request);
@@ -1310,8 +1310,8 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCommission || 0,
-                    delivery: envio,
+                    amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                    delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
                         id: item.id,
@@ -1325,16 +1325,16 @@ export default function ShippingStepSF({
                     payment_proof: null,
                     // Cupón aplicado
                     coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
+                    coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
                     // Comisión del método de pago
-                    payment_commission: commissionAmount || 0,
-                    payment_commission_percentage: transferenciaCommission || 0,
+                    payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                    payment_commission_percentage: roundToTwoDecimals(transferenciaCommission || 0),
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
+                    automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                     applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCommission || 0,
+                    promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                    total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 };
                 setPaymentRequest(request);
                 setShowVoucherModalBancs(true);
@@ -1385,8 +1385,8 @@ export default function ShippingStepSF({
                 number: formData?.number || "",
                 comment: formData?.comment || "",
                 reference: formData?.reference || "",
-                amount: finalTotalWithCommission || 0,
-                delivery: envio,
+                amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                delivery: roundToTwoDecimals(envio || 0),
                 delivery_type: deliveryType,
                 cart: cart,
                 invoiceType: formData.invoiceType || "",
@@ -1398,16 +1398,16 @@ export default function ShippingStepSF({
                 device_session_id: tokenData.device_session_id,
                 // Cupón aplicado
                 coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                coupon_discount: calculatedCouponDiscount || 0,
+                coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
                 // Comisión del método de pago
-                payment_commission: commissionAmount || 0,
-                payment_commission_percentage: openpayCommission || 0,
+                payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                payment_commission_percentage: roundToTwoDecimals(openpayCommission || 0),
                 // Descuentos automáticos
                 automatic_discounts: autoDiscounts,
-                automatic_discount_total: autoDiscountTotal,
+                automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                 applied_promotions: autoDiscounts,
-                promotion_discount: autoDiscountTotal || 0,
-                total_amount: finalTotalWithCommission || 0,
+                promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
             };
             
             console.log("📤 Enviando request al backend:", request);

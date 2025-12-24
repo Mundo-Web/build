@@ -1,1 +1,0 @@
-import"./AboutSimple-Cf8x2fCZ.js";import"./index-BOnQTV8N.js";import"./PolicyModal-B0WwLYks.js";import"./CardProductKatya-BPLqIfPk.js";import"./main-iQpBVKTZ.js";import"./index-yBjzXJbu.js";import"./_commonjsHelpers-D6-XlEtG.js";import"./index-BLHw34Di.js";import"./index-Chjiymov.js";import"./index-B8-haksW.js";import"./___vite-browser-external_commonjs-proxy-DDYoOVPM.js";
