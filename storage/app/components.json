@@ -539,6 +539,26 @@
                     "accentColor"
                 ],
                 "generals": []
+            },
+            {
+                "id": "HeaderWebQuirurgica",
+                "name": "Header - Web Quirurgica",
+                "image": "header-webquirurgica.png",
+                "data": [
+                    "logoWidth",
+                    "ctaText",
+                    "ctaLink",
+                    "footerText"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                "generals": [
+                    "header_menu_order"
+                ]
             }
         ]
     },
@@ -980,7 +1000,10 @@
                 "image": "slider-lapetaca.png",
                 "data": [
                     "class_slider",
-                  
+                  "class_title",
+                  "class_description",
+                  "class_button",
+                  "class_secondary_button",
                     "autoplayDelay",
                     "showNavigation",
                     "showIndicators"

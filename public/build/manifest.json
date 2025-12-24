@@ -1725,7 +1725,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-MiDnMhv_.js",
+    "file": "assets/About-C01W2vVm.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -4190,7 +4190,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-CzzMEIaB.js",
+    "file": "assets/Blog--lgfBoZu.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -4235,7 +4235,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-ChCd9xxE.js",
+    "file": "assets/BlogArticle-DziFpabW.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -6078,7 +6078,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-mpX5yBnV.js",
+    "file": "assets/Base-DRi3hEub.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -9958,7 +9958,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-C7rhUFfo.js",
+    "file": "assets/Header-kWtjResw.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -9987,7 +9987,8 @@
       "resources/js/Components/Tailwind/Headers/HeaderSearchKatya.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderHuaillys.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderFirstClass.jsx",
-      "resources/js/Components/Tailwind/Headers/HeaderLaPetaca.jsx"
+      "resources/js/Components/Tailwind/Headers/HeaderLaPetaca.jsx",
+      "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Headers/Components/LiveSearchBar.jsx": {
@@ -10673,6 +10674,18 @@
       "_index-B6ujFmsw.js",
       "_BooleanLimit-D-OsQsek.js",
       "_General-apRuNwp7.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica.jsx": {
+    "file": "assets/HeaderWebQuirurgica--pJTheE3.js",
+    "name": "HeaderWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Hotel.jsx": {
@@ -13335,7 +13348,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-D7DiXUke.js",
+    "file": "assets/Slider-DQN2eZLS.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -14260,7 +14273,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-kmc2M8Ny.js",
+    "file": "assets/Contact-C0lRipyE.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -14305,7 +14318,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-C2lkV7g7.js",
+    "file": "assets/CourseDetails-DLr-8guT.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -14341,7 +14354,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-W6Wx6rxR.js",
+    "file": "assets/Courses-DdC6OqaV.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -14436,7 +14449,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-BNbnIh-U.js",
+    "file": "assets/Home-CQ0e8-85.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -14644,7 +14657,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-22LgKsjx.js",
+    "file": "assets/System-DpNN5V9V.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

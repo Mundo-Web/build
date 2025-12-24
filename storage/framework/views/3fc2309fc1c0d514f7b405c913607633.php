@@ -33,9 +33,9 @@
 
     <!-- Meta básicas -->
     <meta name="description" content="<?php echo e($data['description'] ?? $ogDescription ?? $siteDescription); ?>">
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($siteKeywords || (isset($data['keywords']) && $data['keywords'])): ?>
+    <?php if($siteKeywords || (isset($data['keywords']) && $data['keywords'])): ?>
         <meta name="keywords" content="<?php echo e(isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords); ?>">
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
     <meta name="author" content="Powered by Mundo Web">
     
     <!-- Canonical URL -->
@@ -46,11 +46,11 @@
     <meta property="og:url" content="<?php echo e($ogUrl); ?>">
     <meta property="og:title" content="<?php echo e($ogTitle); ?>">
     <meta property="og:description" content="<?php echo e($ogDescription); ?>">
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ogImage): ?>
+    <?php if($ogImage): ?>
         <meta property="og:image" content="<?php echo e($ogImage); ?>">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
     <meta property="og:site_name" content="<?php echo e($siteTitle); ?>">
 
     <!-- Twitter -->
@@ -58,9 +58,9 @@
     <meta property="twitter:url" content="<?php echo e($ogUrl); ?>">
     <meta property="twitter:title" content="<?php echo e($twitterTitle); ?>">
     <meta property="twitter:description" content="<?php echo e($twitterDescription); ?>">
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($twitterImage): ?>
+    <?php if($twitterImage): ?>
         <meta property="twitter:image" content="<?php echo e($twitterImage); ?>">
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
 
     <!-- Carga diferida de select2 CSS -->
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -95,18 +95,18 @@
     <?php echo $pixelScripts['head']; ?>
 
 
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true'): ?>
+    <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true'): ?>
         <link rel="stylesheet" href="<?php echo e($data['fonts']['title']['url']); ?>">
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
 
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true'): ?>
+    <?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true'): ?>
         <link rel="stylesheet" href="<?php echo e($data['fonts']['paragraph']['url']); ?>">
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
 
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()]); ?>
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->head; } ?>
 
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($component == 'BlogArticle.jsx'): ?>
+    <?php if($component == 'BlogArticle.jsx'): ?>
         <link href="/lte/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />
         <link href="/lte/assets/libs/quill/quill.bubble.css" rel="stylesheet" type="text/css" />
         <style>
@@ -123,7 +123,7 @@
                 border-radius: 8px;
             }
         </style>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
     <style>
         body {
             /* background-image: url('/assets/img/maqueta/home-mobile.png');*/
@@ -137,112 +137,58 @@
         }
     </style>
 
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] == 'true'): ?>
+    <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] == 'true'): ?>
         <style>
             @font-face {
                 font-family: "<?php echo e($data['fonts']['title']['name']); ?>";
                 src: url('<?php echo e($data['fonts']['title']['url']); ?>') format('woff2');
             }
         </style>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($data['fonts']['title']['name']): ?>
+    <?php endif; ?>
+    <?php if($data['fonts']['title']['name']): ?>
         <style>
             .font-title {
                 font-family: "<?php echo e($data['fonts']['title']['name']); ?>", sans-serif;
             }
         </style>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] == 'true'): ?>
+    <?php endif; ?>
+    <?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] == 'true'): ?>
         <style>
             @font-face {
                 font-family: "<?php echo e($data['fonts']['paragraph']['name']); ?>";
                 src: url('<?php echo e($data['fonts']['paragraph']['url']); ?>') format('woff2');
             }
         </style>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($data['fonts']['paragraph']['name']): ?>
+    <?php endif; ?>
+    <?php if($data['fonts']['paragraph']['name']): ?>
         <style>
             * {
                 font-family: "<?php echo e($data['fonts']['paragraph']['name']); ?>", sans-serif;
             }
         </style>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-    <?php
-        $gradientBg = $data['colors']->firstWhere('name', 'gradient-background');
-    ?>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $data['colors']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
+    <?php $__currentLoopData = $data['colors']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <style>
+            /* Variables CSS para Tailwind */
             :root {
                 --bg-<?php echo e($color->name); ?>: <?php echo e($color->description); ?>;
             }
             
-            .stroke-<?php echo e($color->name); ?> {
-                stroke: <?php echo e($color->description); ?>;
-            }
-
-            .background-<?php echo e($color->name); ?> {
-                background-color: <?php echo e($color->description); ?>;
-            }
-
-            .bg-<?php echo e($color->name); ?> {
-                <?php if($color->name == 'primary' && $gradientBg): ?>
-                background-image: <?php echo e($gradientBg->description); ?> !important;
-                background-color: transparent !important;
-                background-repeat: no-repeat !important;
-                <?php else: ?>
-                background-color: <?php echo e($color->description); ?>;
-                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-            }
-            .group:hover .group-hover\:bg-<?php echo e($color->name); ?> {
-                background-color: <?php echo e($color->description); ?>;
-            }
-
+            /* Clases customtext-* para migración gradual */
             .customtext-<?php echo e($color->name); ?> {
                 color: <?php echo e($color->description); ?>;
             }
-            /* Variantes de hover */
             .hover\:customtext-<?php echo e($color->name); ?>:hover {
                 color: <?php echo e($color->description); ?>;
-            }
-
-            .hover\:bg-<?php echo e($color->name); ?>:hover {
-                background-color: <?php echo e($color->description); ?>;
-
-            }
-            .hover\:border-<?php echo e($color->name); ?>:hover{
-                border-color: <?php echo e($color->description); ?>;
-            }
-
-            .placeholder\:customtext-<?php echo e($color->name); ?>::placeholder {
-                color: <?php echo e($color->description); ?>;
-            }
-            .active\:bg-<?php echo e($color->name); ?>:active {
-                background-color: <?php echo e($color->description); ?>;
             }
             .active\:customtext-<?php echo e($color->name); ?>:active {
                 color: <?php echo e($color->description); ?>;
             }
-            .active\:border-<?php echo e($color->name); ?>:active {
-                border-color: <?php echo e($color->description); ?>;
-            }
-
-            .border-<?php echo e($color->name); ?> {
-                border-color: <?php echo e($color->description); ?>;
-            }
-
-            .fill-<?php echo e($color->name); ?> {
-                fill: <?php echo e($color->description); ?>;
-            }
-
-            .before\:.bg-<?php echo e($color->name); ?> {
-                background-color: <?php echo e($color->description); ?>;
-            }
-
-            .lg\:.bg-<?php echo e($color->name); ?> {
-                background-color: <?php echo e($color->description); ?>;
+            .placeholder\:customtext-<?php echo e($color->name); ?>::placeholder {
+                color: <?php echo e($color->description); ?>;
             }
         </style>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     <style>
         .font-emoji {
@@ -285,7 +231,7 @@
         $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
         $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
     ?>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
+    <?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
         <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
         <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
         <script type="text/javascript">
@@ -312,7 +258,7 @@
                 publicKey: "<?php echo e($openpayPublicKey ? substr($openpayPublicKey, 0, 5) . '...' : 'VACÍO'); ?>"
             });
         </script>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
 
     <script src="/lte/assets/libs/select2/js/select2.full.min.js" defer></script>    <!-- App js -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
@@ -366,4 +312,4 @@
 </body>
 
 </html>
-<?php /**PATH C:\xampp\htdocs\projects\xlerator\resources\views/public.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\projects\bariatric\resources\views/public.blade.php ENDPATH**/ ?>

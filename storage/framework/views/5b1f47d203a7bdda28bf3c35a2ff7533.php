@@ -119,4 +119,4 @@
 </body>
 
 </html>
-<?php /**PATH C:\xampp\htdocs\projects\mblens\resources\views/admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\projects\bariatric\resources\views/admin.blade.php ENDPATH**/ ?>
