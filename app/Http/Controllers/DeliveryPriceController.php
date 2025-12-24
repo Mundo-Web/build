@@ -150,40 +150,24 @@ class DeliveryPriceController extends BasicController
                         'standard_price' => 0
                     ]);
                 } else {
-                    // Si no califica por monto: Standard (con precio normal) + Express
-                    $fallbackPrice = $deliveryPrice->price;
+                    // Si no califica por monto: usar el precio base tal cual está en la DB (puede ser 0)
+                    $standardPrice = floatval(number_format((float)$deliveryPrice->price, 2, '.', ''));
+                    $result['standard']['price'] = $standardPrice;
                     
-                    // Si el precio base es 0 pero tiene express_price, usar la mitad del express como fallback
-                    if ($fallbackPrice == 0 && $deliveryPrice->express_price > 0) {
-                        $fallbackPrice = round($deliveryPrice->express_price * 0.6, 2);
-                        // Convertir a float con exactamente 2 decimales para evitar problemas de precisión
-                        $fallbackPrice = floatval(number_format($fallbackPrice, 2, '.', ''));
-                        Log::info('Using fallback price calculation', [
-                            'original_price' => $deliveryPrice->price,
-                            'express_price' => $deliveryPrice->express_price,
-                            'calculated_fallback' => $fallbackPrice
-                        ]);
-                    } else {
-                        // Asegurar que el precio también tenga 2 decimales exactos
-                        $fallbackPrice = floatval(number_format($fallbackPrice, 2, '.', ''));
+                    // Si el precio es mayor a 0, usar tipo "Delivery Normal"
+                    if ($standardPrice > 0) {
+                        $normalDeliveryType = TypeDelivery::where('slug', 'delivery-normal')->first();
+                        if ($normalDeliveryType) {
+                            $result['standard']['description'] = $normalDeliveryType->description;
+                            $result['standard']['type'] = $normalDeliveryType->name;
+                            $result['standard']['characteristics'] = $normalDeliveryType->characteristics;
+                        }
                     }
                     
-                    // Usar el tipo "Delivery Normal" cuando no califica para envío gratis
-                    $normalDeliveryType = TypeDelivery::where('slug', 'delivery-normal')->first();
-                    
-                    $result['standard']['price'] = $fallbackPrice;
-                    if ($normalDeliveryType) {
-                        $result['standard']['description'] = $normalDeliveryType->description;
-                        $result['standard']['type'] = $normalDeliveryType->name;
-                        $result['standard']['characteristics'] = $normalDeliveryType->characteristics;
-                    }
-                    
-                    Log::info('Setting PAID shipping - does NOT qualify for free shipping', [
+                    Log::info('Setting standard shipping - does NOT qualify for free shipping', [
                         'cart_total' => $cartTotal,
                         'threshold' => $minFreeShipping,
-                        'original_price' => $deliveryPrice->price,
-                        'final_price' => $fallbackPrice,
-                        'using_normal_delivery_type' => $normalDeliveryType ? $normalDeliveryType->name : 'not found'
+                        'standard_price' => $standardPrice,
                     ]);
                 }
                 

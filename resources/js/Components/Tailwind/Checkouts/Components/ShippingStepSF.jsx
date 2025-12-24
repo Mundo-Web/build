@@ -2160,7 +2160,8 @@ export default function ShippingStepSF({
                                                     selected={selectedOption === option.type}
                                                     paymentOnDelivery={option.paymentOnDelivery || false}
                                                     showConsultButton={option.showConsultButton || false}
-                                                    advisors={Global.whatsapp_advisors || []}
+                                                    advisors={General.whatsapp_advisors || []}
+                                                    class_advisors="rounded-full"
                                                     consultMessage={consultMessage}
                                                     onSelect={() => {
                                                         setSelectedOption(option.type);
