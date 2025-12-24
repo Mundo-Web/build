@@ -1363,10 +1363,23 @@ export default function ShippingStepSF({
             const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
             
             // Calcular el total con comisión
+            console.log("🧮 [OpenPay] Calculando montos:");
+            console.log("   - subTotal:", subTotal, typeof subTotal);
+            console.log("   - igv:", igv, typeof igv);
+            console.log("   - envio:", envio, typeof envio);
+            console.log("   - autoDiscountTotal:", autoDiscountTotal, typeof autoDiscountTotal);
+            console.log("   - totalBase (calculado):", totalBase, typeof totalBase);
+            console.log("   - calculatedCouponDiscount:", calculatedCouponDiscount, typeof calculatedCouponDiscount);
+            
             const openpayCommission = parseFloat(Global.get("checkout_openpay_commission") || 0);
             const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
             const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (openpayCommission / 100));
             const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+            
+            console.log("   - openpayCommission:", openpayCommission + "%");
+            console.log("   - totalBeforeCommissionCalc:", totalBeforeCommissionCalc);
+            console.log("   - commissionAmount:", commissionAmount);
+            console.log("   - finalTotalWithCommission:", finalTotalWithCommission);
             
             const request = {
                 user_id: user?.id || "",
@@ -1410,7 +1423,12 @@ export default function ShippingStepSF({
                 total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
             };
             
-            console.log("📤 Enviando request al backend:", request);
+            console.log("📤 [OpenPay] Valores antes de enviar:");
+            console.log("   - amount:", request.amount, "(tipo:", typeof request.amount, ")");
+            console.log("   - delivery:", request.delivery, "(tipo:", typeof request.delivery, ")");
+            console.log("   - coupon_discount:", request.coupon_discount);
+            console.log("   - commission:", request.payment_commission);
+            console.log("📤 Enviando request completo al backend:", request);
             
             const response = await processOpenPayPayment(request);
             console.log("📥 Respuesta del backend:", response);

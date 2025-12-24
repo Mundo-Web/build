@@ -141,7 +141,18 @@ class OpenPayController extends Controller
             }
 
             // Preparar datos para OpenPay
+            // IMPORTANTE: Redondear y formatear el amount a exactamente 2 decimales
             $amount = round($request->amount + $request->delivery - $discountAmount, 2);
+            // Convertir a float con exactamente 2 decimales para evitar problemas de precisión
+            $amount = floatval(number_format($amount, 2, '.', ''));
+            
+            Log::info('OpenPay - Amount calculado', [
+                'request_amount' => $request->amount,
+                'request_delivery' => $request->delivery,
+                'discountAmount' => $discountAmount,
+                'final_amount' => $amount,
+                'amount_type' => gettype($amount)
+            ]);
             
             // URL base según ambiente (producción o sandbox) - OpenPay Perú
             $baseUrl = env('OPENPAY_SANDBOX_MODE', true) 
