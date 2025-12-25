@@ -4041,7 +4041,8 @@
                     "class_button",
                     "link_denuncias",
                     "job_button",
-                    "section_newsletter"
+                    "section_newsletter",
+                    "hide_policy_change_return"
                 ],
                 "using": {
                     "model": "Social",
