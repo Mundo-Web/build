@@ -3506,6 +3506,15 @@
                     "class_faq_answer",
                     "show_contact_cta"
                 ]
+            },
+            {
+                "id": "FaqWebQuirurgica",
+                "name": "FAQ WebQuirurgica - Diseño Limpio",
+                "image": "faq-webquirurgica.png",
+                "using": {
+                    "model": "Faq"
+                },
+                "data": []
             }
         ]
     },

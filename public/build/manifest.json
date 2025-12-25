@@ -8478,7 +8478,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Faq.jsx": {
-    "file": "assets/Faq-HUDVEx5C.js",
+    "file": "assets/Faq-D-6f3V83.js",
     "name": "Faq",
     "src": "resources/js/Components/Tailwind/Faq.jsx",
     "isDynamicEntry": true,
@@ -8493,7 +8493,8 @@
       "resources/js/Components/Tailwind/Faqs/FaqSimple.jsx",
       "resources/js/Components/Tailwind/Faqs/FaqAko.jsx",
       "resources/js/Components/Tailwind/Faqs/FaqModern.jsx",
-      "resources/js/Components/Tailwind/Faqs/FaqChat.jsx"
+      "resources/js/Components/Tailwind/Faqs/FaqChat.jsx",
+      "resources/js/Components/Tailwind/Faqs/FaqWebQuirurgica.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Faqs/FaqAko.jsx": {
@@ -8536,6 +8537,18 @@
     "file": "assets/FaqSimple--pJTheE3.js",
     "name": "FaqSimple",
     "src": "resources/js/Components/Tailwind/Faqs/FaqSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Faqs/FaqWebQuirurgica.jsx": {
+    "file": "assets/FaqWebQuirurgica--pJTheE3.js",
+    "name": "FaqWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Faqs/FaqWebQuirurgica.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -14765,7 +14778,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-C3JWu6LV.js",
+    "file": "assets/System-BUyneS8Y.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
