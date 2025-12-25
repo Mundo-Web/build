@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\IndicatorController as AdminIndicatorController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
+use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
@@ -153,6 +154,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/sliders', [AdminSliderController::class, 'reactView'])->name('Admin/Sliders.jsx');
     Route::get('/banners', [AdminBannerController::class, 'reactView'])->name('Admin/Banners.jsx');
     Route::get('/testimonies', [AdminTestimonyController::class, 'reactView'])->name('Admin/Testimonies.jsx');
+    Route::get('/case-studies', [AdminCaseStudyController::class, 'reactView'])->name('Admin/CaseStudies.jsx');
     Route::get('/socials', [AdminSocialController::class, 'reactView'])->name('Admin/Socials.jsx');
     Route::get('/statuses', [AdminSaleStatusController::class, 'reactView'])->name('Admin/Statuses.jsx');
     Route::get('/strengths', [AdminStrengthController::class, 'reactView'])->name('Admin/Strengths.jsx');

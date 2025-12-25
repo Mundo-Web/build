@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
+use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
@@ -468,6 +469,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/testimonies/status', [AdminTestimonyController::class, 'status']);
     Route::patch('/testimonies/{field}', [AdminTestimonyController::class, 'boolean']);
     Route::delete('/testimonies/{id}', [AdminTestimonyController::class, 'delete']);
+
+    Route::post('/case-studies', [AdminCaseStudyController::class, 'save']);
+    Route::post('/case-studies/paginate', [AdminCaseStudyController::class, 'paginate']);
+    Route::patch('/case-studies/status', [AdminCaseStudyController::class, 'status']);
+    Route::patch('/case-studies/{field}', [AdminCaseStudyController::class, 'boolean']);
+    Route::put('/case-studies/{id}/reorder', [AdminCaseStudyController::class, 'reorder']);
+    Route::delete('/case-studies/{id}', [AdminCaseStudyController::class, 'delete']);
 
     Route::post('/categories', [AdminCategoryController::class, 'save']);
     Route::post('/categories/paginate', [AdminCategoryController::class, 'paginate']);

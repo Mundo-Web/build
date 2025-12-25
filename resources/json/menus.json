@@ -73,7 +73,14 @@
       { "label": "Banners", "href": "/admin/banners", "icon": "mdi mdi-post-outline" },
       { "label": "Sliders", "href": "/admin/sliders", "icon": "mdi mdi-page-layout-body" },
       { "label": "Preguntas Frecuentes", "href": "/admin/faqs", "icon": "mdi mdi-comment-account" },
-      { "label": "Testimonios", "href": "/admin/testimonies", "icon": "mdi mdi-forum" },
+      {
+        "label": "Testimonios",
+        "icon": "mdi mdi-forum",
+        "children": [
+          { "label": "Testimonios Escritos", "href": "/admin/testimonies", "icon": "mdi mdi-message-text" },
+          { "label": "Casos Reales (Videos)", "href": "/admin/case-studies", "icon": "mdi mdi-video-box" }
+        ]
+      },
       { "label": "Redes Sociales", "href": "/admin/socials", "icon": "mdi mdi-web" },
       { "label": "Estados de ventas", "href": "/admin/statuses", "icon": "mdi mdi-bell-circle" },
       {"label": "Trabaja con Nosotros", "href": "/admin/job-applications", "icon": "mdi mdi-briefcase-search" }

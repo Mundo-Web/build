@@ -4444,6 +4444,24 @@
                 "using": {
                     "model": "Testimony"
                 }
+            },
+            {
+                "id": "TestimonialsVideosWebQuirurgica",
+                "name": "Videos de Casos Reales - WebQuirurgica",
+                "data": [],
+                "generals": [],
+                "using": {
+                    "model": "CaseStudy"
+                }
+            },
+            {
+                "id": "TestimonialsTextWebQuirurgica",
+                "name": "Testimonios Escritos - WebQuirurgica",
+                "data": [],
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
             }
         ]
     },
