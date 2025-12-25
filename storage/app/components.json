@@ -4781,6 +4781,18 @@
                
                 },
                 "generals": []
+            },
+            {
+                "id": "ServiceWebQuirurgica",
+                "name": "Servicios por Categoría - WebQuirurgica",
+                "image": "service-webquirurgica.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": ["category", "subcategory"]
+                }
             }
         ]
     },

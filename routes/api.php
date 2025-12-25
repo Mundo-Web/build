@@ -420,6 +420,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/service-categories/paginate', [AdminServiceCategoryController::class, 'paginate']);
     Route::patch('/service-categories/status', [AdminServiceCategoryController::class, 'status']);
     Route::patch('/service-categories/{field}', [AdminServiceCategoryController::class, 'boolean']);
+    Route::put('/service-categories/{id}/reorder', [AdminServiceCategoryController::class, 'reorder']);
     Route::delete('/service-categories/{id}', [AdminServiceCategoryController::class, 'delete']);
 
     Route::post('/service-subcategories', [AdminServiceSubCategoryController::class, 'save']);

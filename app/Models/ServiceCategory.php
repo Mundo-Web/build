@@ -19,6 +19,7 @@ class ServiceCategory extends Model
         'description',
         'banner',
         'image',
+        'order_index',
         'featured',
         'visible',
         'status',

@@ -10,6 +10,7 @@ class ServiceCategoryController extends BasicController
     public $model = ServiceCategory::class;
     public $reactView = 'Admin/ServiceCategories';
     public $imageFields = ['banner', 'image'];
+    public $defaultOrderBy = 'order_index';
     public $booleanLimits = [
         'featured' => [
             'max' => 10,

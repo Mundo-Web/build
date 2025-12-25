@@ -165,12 +165,35 @@ const ServiceCategories = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+
+        try {
+            const result = await serviceCategoriesRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering service category:', error);
+        }
+    };
+
     return (
         <>
             <Table
                 gridRef={gridRef}
                 title="Categorías de Servicios"
                 rest={serviceCategoriesRest}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 toolBar={(container) => {
                     container.unshift({
                         widget: "dxButton",
@@ -200,6 +223,13 @@ const ServiceCategories = () => {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     {
                         dataField: "name",

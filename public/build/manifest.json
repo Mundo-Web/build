@@ -3513,7 +3513,7 @@
     ]
   },
   "resources/js/Admin/ServiceCategories.jsx": {
-    "file": "assets/ServiceCategories-D95mjwzd.js",
+    "file": "assets/ServiceCategories-BiV0NlaI.js",
     "name": "ServiceCategories",
     "src": "resources/js/Admin/ServiceCategories.jsx",
     "isEntry": true,
@@ -13184,7 +13184,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-DKtPIeC9.js",
+    "file": "assets/Service-eeiFRvpu.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -13201,7 +13201,8 @@
       "resources/js/Components/Tailwind/Services/ServiceCarousel.jsx",
       "resources/js/Components/Tailwind/Services/ServiceSelection.jsx",
       "resources/js/Components/Tailwind/Services/ServiceSidebar.jsx",
-      "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx"
+      "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx",
+      "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceCarousel.jsx": {
@@ -13280,6 +13281,18 @@
     "file": "assets/ServiceSimple--pJTheE3.js",
     "name": "ServiceSimple",
     "src": "resources/js/Components/Tailwind/Services/ServiceSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica.jsx": {
+    "file": "assets/ServiceWebQuirurgica--pJTheE3.js",
+    "name": "ServiceWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -14670,7 +14683,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-AvXkFfC7.js",
+    "file": "assets/System-Dzug_LJ2.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
