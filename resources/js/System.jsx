@@ -350,7 +350,7 @@ const System = ({
             case "checkout":
                 return <Checkout which={value} data={data} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} categorias={categorias} />
             case "contact":
-                return <Contact which={value} data={data} contacts={contacts} generals={generals} />
+                return <Contact which={value} data={data} contacts={contacts} generals={generals} items={getItems(itemsId)} />
             case "faq":
                 return <Faq which={value} data={data} faqs={faqs} />
             case "thank":

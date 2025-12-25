@@ -8278,7 +8278,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-CHCzZmfr.js",
+    "file": "assets/Contact-BNU4wbP8.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -8296,7 +8296,8 @@
       "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
       "resources/js/Components/Tailwind/Contact/ContactHuaillys.jsx",
       "resources/js/Components/Tailwind/Contact/ThankContact.jsx",
-      "resources/js/Components/Tailwind/Contact/ContactLaPetaca.jsx"
+      "resources/js/Components/Tailwind/Contact/ContactLaPetaca.jsx",
+      "resources/js/Components/Tailwind/Contact/ContactWebQuirurgica.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Contact/ContactAko.jsx": {
@@ -8431,6 +8432,24 @@
       "_index-pSueRYGM.js",
       "_index-B6ujFmsw.js",
       "_BooleanLimit-D-OsQsek.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Contact/ContactWebQuirurgica.jsx": {
+    "file": "assets/ContactWebQuirurgica-BEDlTNk3.js",
+    "name": "ContactWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Contact/ContactWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js"
     ]
   },
   "resources/js/Components/Tailwind/Contact/ThankContact.jsx": {
@@ -14778,7 +14797,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BUyneS8Y.js",
+    "file": "assets/System-Bi0E-2Yi.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

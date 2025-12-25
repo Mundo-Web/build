@@ -3443,6 +3443,22 @@
                     "locationImage"
                 ],
                 "generals": []
+            },
+            {
+                "id": "ContactWebQuirurgica",
+                "name": "Contact WebQuirurgica - Diseño Limpio",
+                "image": "contact-webquirurgica.png",
+                "using": {
+                    "model": "Service"
+                },
+                "data": [],
+                "generals": [
+                  "email_contact",
+                    "phone_contact",
+                    "address",
+                  
+                    "opening_hours"
+                ]
             }
         ]
     },
