@@ -5,7 +5,17 @@ import Global from '../../../Utils/Global';
 const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isHomePage, setIsHomePage] = useState(false);
     const menuRef = useRef(null);
+
+    // Detectar si estamos en la página de inicio
+    useEffect(() => {
+        const checkIfHomePage = () => {
+            const path = window.location.pathname;
+            return path === '/' || path === '/home' || path === '/inicio';
+        };
+        setIsHomePage(checkIfHomePage());
+    }, []);
 
     // Obtener orden del menú desde generals
     const headerMenuOrderObj = generals.find(item => item.correlative === "header_menu_order");
@@ -80,14 +90,14 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
     return (
         <>
             <nav
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
-                    isScrolled
-                        ? 'bg-primary backdrop-blur-xl py-5'
-                        : 'bg-transparent py-8'
+                className={`w-full top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+                    isHomePage 
+                        ? `fixed ${isScrolled ? 'bg-primary backdrop-blur-xl py-5' : 'bg-transparent py-8'}`
+                        : `${isScrolled ? 'fixed bg-primary py-5' : 'relative bg-primary py-5'}`
                 }`}
                 style={{
-                    boxShadow: isScrolled ? '0 1px 3px 0 rgba(0, 0, 0, 0.02)' : 'none',
-                    borderBottom: isScrolled ? '1px solid rgba(0, 0, 0, 0.03)' : 'none'
+                    boxShadow: (isHomePage ? isScrolled : isScrolled) ? '0 1px 3px 0 rgba(0, 0, 0, 0.02)' : 'none',
+                    borderBottom: (isHomePage ? isScrolled : isScrolled) ? '1px solid rgba(0, 0, 0, 0.03)' : 'none'
                 }}
             >
                 <div className="max-w-[1400px] mx-auto px-8 lg:px-16">

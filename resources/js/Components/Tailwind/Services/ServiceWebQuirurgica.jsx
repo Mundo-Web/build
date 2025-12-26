@@ -6,8 +6,14 @@ const ServiceCard = ({ service }) => {
         ? `/storage/images/service/${service.image}` 
         : null;
 
+    // Construir URL del servicio
+    const serviceUrl = service.slug ? `/servicio/${service.slug}` : '#';
+
     return (
-        <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 cursor-pointer">
+        <a 
+            href={serviceUrl}
+            className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 cursor-pointer block"
+        >
             {imageUrl && (
                 <div className="w-12 h-12 mb-6 overflow-hidden rounded-xl group-hover:scale-110 transition-transform duration-300">
                     <img 
@@ -34,7 +40,7 @@ const ServiceCard = ({ service }) => {
                     color="bg-primary"
                 />
             </p>
-        </div>
+        </a>
     );
 };
 

@@ -4841,6 +4841,37 @@
         ]
     },
     {
+        "id": "service-detail",
+        "icon": "mdi mdi-file-document-outline",
+        "name": "Detalle de Servicio",
+        "options": [
+            {
+                "id": "ServiceDetailSimple",
+                "name": "Simple",
+                "image": "service-detail-simple.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": ["category", "subcategory", "images", "features", "specifications"]
+                }
+            },
+            {
+                "id": "ServiceDetailCatalog",
+                "name": "Catálogo con Sidebar",
+                "image": "service-detail-catalog.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": ["category", "subcategory", "images", "features", "specifications"]
+                }
+            }
+        ]
+    },
+    {
         "id": "firstclass",
         "icon": "mdi mdi-package-variant",
         "name": "FirstClass Pages",
