@@ -1,6 +1,29 @@
 import React from 'react';
 import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
+// Función helper para convertir HTML a texto plano y cortar palabras
+const getServiceDescription = (service, maxWords = 20) => {
+    if (service.summary) {
+        return service.summary;
+    }
+    
+    if (service.description) {
+        // Convertir HTML a texto plano
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = service.description;
+        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        
+        // Cortar a maxWords palabras
+        const words = plainText.trim().split(/\s+/);
+        if (words.length > maxWords) {
+            return words.slice(0, maxWords).join(' ') + '...';
+        }
+        return plainText;
+    }
+    
+    return 'Descripción no disponible.';
+};
+
 const ServiceCard = ({ service }) => {
     const imageUrl = service.image 
         ? `/storage/images/service/${service.image}` 
@@ -35,10 +58,7 @@ const ServiceCard = ({ service }) => {
                 />
             </h3>
             <p className="text-gray-600 font-light leading-relaxed whitespace-pre-line">
-                <TextWithHighlight 
-                    text={service.description}
-                    color="bg-primary"
-                />
+                {getServiceDescription(service, 20)}
             </p>
         </a>
     );
