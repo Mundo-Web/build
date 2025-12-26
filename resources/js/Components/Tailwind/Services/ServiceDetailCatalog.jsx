@@ -20,26 +20,26 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
         if (items && items.length > 0) {
             const uniqueCategories = [];
             const categoryIds = new Set();
-            
+
             items.forEach(service => {
                 if (service.category && !categoryIds.has(service.category.id)) {
                     categoryIds.add(service.category.id);
                     uniqueCategories.push(service.category);
                 }
             });
-            
+
             setCategories(uniqueCategories);
         }
 
         // Si hay un servicio actual, establecerlo como seleccionado
         if (currentService) {
             setSelectedService(currentService);
-            
+
             // Establecer categoría seleccionada
             if (currentService.category) {
                 setSelectedCategory(currentService.category);
             }
-            
+
             // Filtrar servicios de la misma categoría
             if (currentService.service_category_id && items.length > 0) {
                 const sameCategoryServices = items.filter(
@@ -50,11 +50,11 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
         } else if (items.length > 0) {
             // Si no hay servicio actual, seleccionar el primero
             setSelectedService(items[0]);
-            
+
             if (items[0].category) {
                 setSelectedCategory(items[0].category);
             }
-            
+
             if (items[0].service_category_id) {
                 const sameCategoryServices = items.filter(
                     service => service.service_category_id === items[0].service_category_id
@@ -71,13 +71,13 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
 
     const handleCategoryClick = (category) => {
         setSelectedCategory(category);
-        
+
         // Filtrar servicios por categoría
         const filteredServices = items.filter(
             service => service.service_category_id === category.id
         );
         setCategoryServices(filteredServices);
-        
+
         // Seleccionar el primer servicio de la categoría
         if (filteredServices.length > 0) {
             setSelectedService(filteredServices[0]);
@@ -87,9 +87,9 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
 
     if (!selectedService) {
         return (
-            <section className={`py-24 px-4 bg-sections-color ${data?.class || ''}`}>
-                <div className="max-w-7xl mx-auto text-center">
-                    <p className="text-gray-600">No hay servicios disponibles</p>
+            <section className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
+                <div className="2xl:max-w-7xl  mx-auto text-center">
+                    <p className="text-neutral-dark">No hay servicios disponibles</p>
                 </div>
             </section>
         );
@@ -102,21 +102,32 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
             {/* Sección de Categorías con Swiper */}
             {categories && categories.length > 0 && (
                 <section className="py-8 lg:py-12 bg-gradient-to-b from-gray-50 to-white">
-                    <div className="max-w-7xl mx-auto px-4">
+                    <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
                         <div className="text-center mb-8">
-                            <h2 className="text-3xl lg:text-4xl font-light text-primary mb-2">
-                                Nuestras Categorías
-                            </h2>
-                            <p className="text-gray-600">Explora nuestros servicios por categoría</p>
+                             <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight whitespace-pre-line">
+                        <TextWithHighlight 
+                            text={data?.name || 'Nuestras *Categorias*'}
+                            color="bg-accent"
+                        />
+                    </h2>
+                            <div className="w-20 h-1 bg-accent mx-auto"></div>
+                    {data?.description && (
+                        <p className="text-lg text-neutral-dark font-light leading-relaxed whitespace-pre-line">
+                            <TextWithHighlight 
+                                text={data?.description}
+                                color="bg-primary"
+                            />
+                        </p>
+                    )}
                         </div>
 
-                        <div className="relative px-2 py-6 overflow-hidden">
+                        <div className="relative px-4 py-10 overflow-visible">
                             <Swiper
                                 modules={[Autoplay, Navigation]}
-                                spaceBetween={16}
+                                spaceBetween={24}
                                 slidesPerView={1}
                                 autoplay={{
-                                    delay: 3000,
+                                    delay: 4000,
                                     disableOnInteraction: false,
                                     pauseOnMouseEnter: true,
                                 }}
@@ -136,93 +147,93 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                 breakpoints={{
                                     640: {
                                         slidesPerView: 2,
-                                        spaceBetween: 16,
                                         centeredSlides: categories.length <= 2,
                                     },
                                     768: {
                                         slidesPerView: 3,
-                                        spaceBetween: 20,
                                         centeredSlides: categories.length <= 3,
                                     },
                                     1024: {
                                         slidesPerView: 4,
-                                        spaceBetween: 24,
                                         centeredSlides: false,
                                     },
                                 }}
-                                className="category-swiper"
+                                className="category-swiper !overflow-visible"
                             >
-                                {categories.map((category) => (
-                                    <SwiperSlide key={category.id}>
-                                        <div 
-                                            className={`group cursor-pointer rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 h-full ${
-                                                selectedCategory?.id === category.id
-                                                    ? 'ring-4 ring-primary shadow-xl'
-                                                    : 'shadow-md hover:shadow-xl'
-                                            }`}
-                                            onClick={() => handleCategoryClick(category)}
-                                        >
-                                            {/* Imagen de la categoría */}
-                                            <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                                                <img
-                                                    src={category.image ? `/storage/images/service_category/${category.image}` : '/assets/img/noimage/no_img.jpg'}
-                                                    alt={category.name}
-                                                    className={`w-full h-full object-cover transition-all duration-500 ${
-                                                        selectedCategory?.id === category.id
-                                                            ? 'scale-110'
-                                                            : 'group-hover:scale-105'
+                                {categories.map((category) => {
+                                    const isSelected = selectedCategory?.id === category.id;
+                                    return (
+                                        <SwiperSlide key={category.id} className="h-auto">
+                                            <div
+                                                className={`group cursor-pointer rounded-2xl h-full flex flex-col transition-all duration-300 bg-white overflow-hidden shadow-xl ${isSelected
+                                                        ? 'ring-2 ring-primary shadow-xl scale-[1.02]'
+                                                        : 'hover:shadow-xl hover:-translate-y-1 hover:shadow-primary/10 border border-gray-100'
                                                     }`}
-                                                    onError={(e) => {
-                                                        e.target.src = '/assets/img/noimage/no_img.jpg';
-                                                    }}
-                                                />
-                                                
-                                                {/* Overlay */}
-                                                <div className={`absolute inset-0 transition-all duration-300 ${
-                                                    selectedCategory?.id === category.id
-                                                        ? 'bg-primary/30'
-                                                        : 'bg-black/20 group-hover:bg-primary/20'
-                                                }`}></div>
-                                                
-                                                {/* Check si está seleccionada */}
-                                                {selectedCategory?.id === category.id && (
-                                                    <div className="absolute top-4 right-4">
-                                                        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                                                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                onClick={() => handleCategoryClick(category)}
+                                            >
+                                                {/* Imagen de la categoría */}
+                                                <div className="relative aspect-[4/3] overflow-hidden">
+                                                    <img
+                                                        src={category.banner ? `/storage/images/service_category/${category.banner}` : `/storage/images/service_category/${category.image}`}
+                                                        alt={category.name}
+                                                        className={`w-full h-full object-cover transition-transform duration-700 ${isSelected ? 'scale-110' : 'group-hover:scale-110'
+                                                            }`}
+                                                         onError={(e) =>
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
+                                    }
+                                                    />
+
+                                                    {/* Overlay Gradiente */}
+                                                    <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 ${isSelected ? 'opacity-80' : 'group-hover:opacity-80'
+                                                        }`}></div>
+
+                                                    {/* Indicador de Selección (Check) */}
+                                                    <div className={`absolute top-3 right-3 transition-all duration-300 transform ${isSelected ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
+                                                        }`}>
+                                                        <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center shadow-lg">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                             </svg>
                                                         </div>
                                                     </div>
-                                                )}
-                                            </div>
+                                                </div>
 
-                                            {/* Contenido */}
-                                            <div className={`p-5 transition-all duration-300 ${
-                                                selectedCategory?.id === category.id
-                                                    ? 'bg-primary text-white'
-                                                    : 'bg-white group-hover:bg-primary/5'
-                                            }`}>
-                                                <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                                                    selectedCategory?.id === category.id
-                                                        ? 'text-white'
-                                                        : 'text-gray-800 group-hover:text-primary'
-                                                }`}>
-                                                    {category.name}
-                                                </h3>
-                                                
-                                                {category.description && (
-                                                    <p className={`text-sm mt-2 line-clamp-2 transition-colors duration-300 ${
-                                                        selectedCategory?.id === category.id
-                                                            ? 'text-white/90'
-                                                            : 'text-gray-600'
-                                                    }`}>
-                                                        {category.description}
-                                                    </p>
-                                                )}
+                                                {/* Contenido de la tarjeta */}
+                                                <div className="p-6 flex flex-col flex-grow relative">
+                                                    {/* Decoración superior */}
+                                                    <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent transform origin-left transition-transform duration-300 ${isSelected ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                                                        }`}></div>
+
+                                                    <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${isSelected ? 'text-primary' : 'text-gray-800 group-hover:text-primary'
+                                                        }`}>
+                                                        {category.name}
+                                                    </h3>
+
+                                                    <div className="flex-grow">
+                                                        {category.description && (
+                                                            <p className="text-neutral-light text-sm leading-relaxed line-clamp-2">
+                                                                {category.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Footer de la tarjeta con acción */}
+                                                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                                        <span className={`text-sm font-medium transition-colors duration-300 ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary'
+                                                            }`}>
+                                                            {isSelected ? 'Seleccionado' : 'Ver servicios'}
+                                                        </span>
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${isSelected ? 'bg-primary text-white translate-x-0' : 'bg-gray-50 text-gray-400 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-primary'
+                                                            }`}>
+                                                            <ChevronRight className="w-4 h-4" />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </SwiperSlide>
-                                ))}
+                                        </SwiperSlide>
+                                    );
+                                })}
                             </Swiper>
 
                             {/* Botones de navegación - solo si hay más de 4 categorías */}
@@ -230,17 +241,17 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                 <>
                                     <button
                                         ref={navigationPrevRef}
-                                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl hover:bg-primary hover:text-white transition-all duration-300 -ml-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-gray-700 hover:bg-primary hover:text-white transition-all duration-300 -ml-4 lg:-ml-6 disabled:opacity-0 disabled:cursor-not-allowed"
                                         aria-label="Anterior"
                                     >
-                                        <ChevronLeft className="w-6 h-6" />
+                                        <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
                                     </button>
                                     <button
                                         ref={navigationNextRef}
-                                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl hover:bg-primary hover:text-white transition-all duration-300 -mr-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-gray-700 hover:bg-primary hover:text-white transition-all duration-300 -mr-4 lg:-mr-6 disabled:opacity-0 disabled:cursor-not-allowed"
                                         aria-label="Siguiente"
                                     >
-                                        <ChevronRight className="w-6 h-6" />
+                                        <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
                                     </button>
                                 </>
                             )}
@@ -250,8 +261,8 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
             )}
 
             {/* Sección Principal */}
-            <section className={`py-12 px-4 bg-sections-color ${data?.class || ''}`}>
-                <div className="max-w-7xl mx-auto">
+            <section className={`py-12 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
+                <div className=" 2xl:max-w-7xl mx-auto">
                     <div className="grid lg:grid-cols-4 gap-8">
                         {/* SIDEBAR - Lista de servicios */}
                         <div className="lg:col-span-1">
@@ -259,17 +270,16 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                 <h3 className="text-2xl font-light text-primary mb-6 pb-3 border-b-2 border-primary/20 truncate">
                                     {selectedService.category?.name || 'Servicios'}
                                 </h3>
-                                
+
                                 <nav className="space-y-2 overflow-y-auto overflow-x-hidden" style={{ maxHeight: 'calc(100vh - 200px)' }}>
                                     {servicesToShow.map((service, index) => (
                                         <button
                                             key={index}
                                             onClick={() => handleServiceClick(service)}
-                                            className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 group ${
-                                                selectedService.id === service.id
+                                            className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 group ${selectedService.id === service.id
                                                     ? 'bg-primary text-white shadow-lg scale-105'
                                                     : 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow-lg hover:scale-102'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
                                                 {service.image && (
@@ -277,18 +287,16 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                                         <img
                                                             src={`/storage/images/service/${service.image}`}
                                                             alt={service.name}
-                                                            className={`w-full h-full object-cover transition-all duration-300 ${
-                                                                selectedService.id === service.id
+                                                            className={`w-full h-full object-cover transition-all duration-300 ${selectedService.id === service.id
                                                                     ? 'brightness-110'
                                                                     : 'group-hover:brightness-90 group-hover:grayscale-0'
-                                                            }`}
+                                                                }`}
                                                             onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
                                                         />
                                                     </div>
                                                 )}
-                                                <span className={`font-light text-sm leading-tight flex-1 min-w-0 break-words ${
-                                                    selectedService.id === service.id ? 'font-medium' : ''
-                                                }`}>
+                                                <span className={`font-light text-sm leading-tight flex-1 min-w-0 break-words ${selectedService.id === service.id ? 'font-medium' : ''
+                                                    }`}>
                                                     {service.name}
                                                 </span>
                                                 {selectedService.id === service.id && (
@@ -318,7 +326,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                                         <div className="absolute bottom-0 left-0 right-0 p-8">
                                             <h1 className="text-4xl font-light text-white mb-2 whitespace-pre-line">
-                                                <TextWithHighlight 
+                                                <TextWithHighlight
                                                     text={selectedService.name}
                                                     color="bg-accent"
                                                 />
@@ -338,7 +346,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                     {!selectedService.background_image && (
                                         <div className="mb-6">
                                             <h1 className="text-4xl font-light text-primary mb-3 whitespace-pre-line">
-                                                <TextWithHighlight 
+                                                <TextWithHighlight
                                                     text={selectedService.name}
                                                     color="bg-accent"
                                                 />
@@ -363,8 +371,8 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                     {/* Descripción detallada */}
                                     {selectedService.description && (
                                         <div className="prose max-w-none mb-8">
-                                            <div 
-                                                className="text-gray-600 font-light leading-relaxed"
+                                            <div
+                                                className="text-neutral-dark font-light leading-relaxed"
                                                 dangerouslySetInnerHTML={{ __html: selectedService.description }}
                                             />
                                         </div>
@@ -421,7 +429,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                                             {spec.title}
                                                         </h4>
                                                         {spec.description && (
-                                                            <p className="text-gray-600 font-light">
+                                                            <p className="text-neutral-dark font-light">
                                                                 {spec.description}
                                                             </p>
                                                         )}

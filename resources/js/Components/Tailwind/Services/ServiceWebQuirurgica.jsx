@@ -57,7 +57,7 @@ const ServiceCard = ({ service }) => {
                     color="bg-accent"
                 />
             </h3>
-            <p className="text-gray-600 font-light leading-relaxed whitespace-pre-line">
+            <p className="text-neutral-dark font-light leading-relaxed whitespace-pre-line">
                 {getServiceDescription(service, 20)}
             </p>
         </a>
@@ -132,7 +132,7 @@ const ServiceWebQuirurgica = ({ data, items = [] }) => {
                     </h2>
                     <div className="w-20 h-1 bg-accent mx-auto"></div>
                     {data?.description && (
-                        <p className="text-lg text-gray-600 font-light leading-relaxed whitespace-pre-line">
+                        <p className="text-lg text-neutral-dark font-light leading-relaxed whitespace-pre-line">
                             <TextWithHighlight 
                                 text={data.description}
                                 color="bg-primary"
