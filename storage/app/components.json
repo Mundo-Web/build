@@ -3679,6 +3679,23 @@
                         "category"
                     ]
                 }
+            },
+            {
+                "id": "BlogWebQuirurgica",
+                "name": "Blog WebQuirúrgica",
+                "image": "blog-webquirurgica.png",
+                "data": [
+                    "name",
+                    "description"
+                ],
+                "using": {
+                    "model": "Post",
+                    "header": 3,
+                    "latest": 20,
+                    "with": [
+                        "category"
+                    ]
+                }
             }
         ]
     },

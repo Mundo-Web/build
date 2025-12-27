@@ -1098,6 +1098,13 @@
       "_createLucideIcon-DfjclApS.js"
     ]
   },
+  "_grid-3x3-BmM0xOzs.js": {
+    "file": "assets/grid-3x3-BmM0xOzs.js",
+    "name": "grid-3x3",
+    "imports": [
+      "_createLucideIcon-DfjclApS.js"
+    ]
+  },
   "_grid-BZ4EKnFQ.js": {
     "file": "assets/grid-BZ4EKnFQ.js",
     "name": "grid"
@@ -1596,8 +1603,8 @@
       "_createLucideIcon-DfjclApS.js"
     ]
   },
-  "_trash-oU5fdkBO.js": {
-    "file": "assets/trash-oU5fdkBO.js",
+  "_trash-2SBNsdcL.js": {
+    "file": "assets/trash-2SBNsdcL.js",
     "name": "trash",
     "imports": [
       "_createLucideIcon-DfjclApS.js"
@@ -6165,7 +6172,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Blog.jsx": {
-    "file": "assets/Blog-B-1-vKDe.js",
+    "file": "assets/Blog-B3e5bJ4H.js",
     "name": "Blog",
     "src": "resources/js/Components/Tailwind/Blog.jsx",
     "isDynamicEntry": true,
@@ -6185,7 +6192,8 @@
       "resources/js/Components/Tailwind/Blogs/BlogSectionAko.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionDental.jsx",
       "resources/js/Components/Tailwind/Blogs/BlogSectionMultivet.jsx",
-      "resources/js/Components/Tailwind/Blogs/BlogKatya.jsx"
+      "resources/js/Components/Tailwind/Blogs/BlogKatya.jsx",
+      "resources/js/Components/Tailwind/Blogs/BlogWebQuirurgica.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx": {
@@ -6354,6 +6362,18 @@
       "_check-D5vaIe6v.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/BlogWebQuirurgica.jsx": {
+    "file": "assets/BlogWebQuirurgica--pJTheE3.js",
+    "name": "BlogWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Blogs/BlogWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx": {
     "file": "assets/BlogCarrusel-yPzlLR5S.js",
     "name": "BlogCarrusel",
@@ -6425,6 +6445,18 @@
       "_BooleanLimit-D-OsQsek.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderWebQuirurgica.jsx": {
+    "file": "assets/BlogHeaderWebQuirurgica--pJTheE3.js",
+    "name": "BlogHeaderWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogHeaderWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogList.jsx": {
     "file": "assets/BlogList--pJTheE3.js",
     "name": "BlogList",
@@ -6461,6 +6493,18 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogListWebQuirurgica.jsx": {
+    "file": "assets/BlogListWebQuirurgica--pJTheE3.js",
+    "name": "BlogListWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogListWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Blogs/Components/BlogPostCard.jsx": {
     "file": "assets/BlogPostCard--pJTheE3.js",
     "name": "BlogPostCard",
@@ -6489,6 +6533,18 @@
     "file": "assets/BlogPostCardMultivet--pJTheE3.js",
     "name": "BlogPostCardMultivet",
     "src": "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardMultivet.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardWebQuirurgica.jsx": {
+    "file": "assets/BlogPostCardWebQuirurgica--pJTheE3.js",
+    "name": "BlogPostCardWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/Blogs/Components/BlogPostCardWebQuirurgica.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -8591,7 +8647,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-Cu1Fhb2h.js",
+    "file": "assets/Filter-CZR0CtdD.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -8618,7 +8674,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltros.jsx": {
-    "file": "assets/CatalagoFiltros-D9zkolwN.js",
+    "file": "assets/CatalagoFiltros-K2bo31CO.js",
     "name": "CatalagoFiltros",
     "src": "resources/js/Components/Tailwind/Filters/CatalagoFiltros.jsx",
     "isDynamicEntry": true,
@@ -8641,11 +8697,12 @@
       "_search-BQ59Robe.js",
       "_circle-check-DW_TmQ0Z.js",
       "_layers-DAZbsfi5.js",
-      "_trash-oU5fdkBO.js",
+      "_grid-3x3-BmM0xOzs.js",
       "_trending-up-BKS7zL0o.js",
       "_star-DU-S9B50.js",
       "_x-fof_H3Vv.js",
       "_hash-B-gZU8HC.js",
+      "_trash-2SBNsdcL.js",
       "_shopping-bag-C59bLmNC.js",
       "_sparkles-DvmvZ6mJ.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -8679,7 +8736,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltrosAko.jsx": {
-    "file": "assets/CatalagoFiltrosAko-Dm_yeEpB.js",
+    "file": "assets/CatalagoFiltrosAko-BQ_iFsii.js",
     "name": "CatalagoFiltrosAko",
     "src": "resources/js/Components/Tailwind/Filters/CatalagoFiltrosAko.jsx",
     "isDynamicEntry": true,
@@ -8702,10 +8759,11 @@
       "_search-BQ59Robe.js",
       "_circle-check-DW_TmQ0Z.js",
       "_layers-DAZbsfi5.js",
-      "_trash-oU5fdkBO.js",
+      "_grid-3x3-BmM0xOzs.js",
       "_trending-up-BKS7zL0o.js",
       "_star-DU-S9B50.js",
       "_x-fof_H3Vv.js",
+      "_trash-2SBNsdcL.js",
       "_shopping-bag-C59bLmNC.js",
       "_sparkles-DvmvZ6mJ.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -8742,7 +8800,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalagoFiltrosPaani.jsx": {
-    "file": "assets/CatalagoFiltrosPaani-By9IaLBZ.js",
+    "file": "assets/CatalagoFiltrosPaani-CZNlotrO.js",
     "name": "CatalagoFiltrosPaani",
     "src": "resources/js/Components/Tailwind/Filters/CatalagoFiltrosPaani.jsx",
     "isDynamicEntry": true,
@@ -8765,10 +8823,11 @@
       "_search-BQ59Robe.js",
       "_circle-check-DW_TmQ0Z.js",
       "_layers-DAZbsfi5.js",
-      "_trash-oU5fdkBO.js",
+      "_grid-3x3-BmM0xOzs.js",
       "_trending-up-BKS7zL0o.js",
       "_star-DU-S9B50.js",
       "_x-fof_H3Vv.js",
+      "_trash-2SBNsdcL.js",
       "_shopping-bag-C59bLmNC.js",
       "_sparkles-DvmvZ6mJ.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -8900,7 +8959,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-CbJNTCV9.js",
+    "file": "assets/CatalogoFiltrosDental-DSVMSi-o.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -8930,12 +8989,13 @@
       "_tag-Dgi-uTqk.js",
       "_store-DCbpAdsr.js",
       "_layers-DAZbsfi5.js",
-      "_trash-oU5fdkBO.js",
+      "_grid-3x3-BmM0xOzs.js",
       "_trending-up-BKS7zL0o.js",
       "_coffee-Cm2VcPtV.js",
       "_star-DU-S9B50.js",
       "_x-fof_H3Vv.js",
       "_hash-B-gZU8HC.js",
+      "_trash-2SBNsdcL.js",
       "_shopping-bag-C59bLmNC.js",
       "_sparkles-DvmvZ6mJ.js",
       "_chevron-left-JcR9Fe4w.js",
@@ -8971,7 +9031,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx": {
-    "file": "assets/CatalogoFiltrosKatya-B2H1JkJW.js",
+    "file": "assets/CatalogoFiltrosKatya-CWYl36y_.js",
     "name": "CatalogoFiltrosKatya",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosKatya.jsx",
     "isDynamicEntry": true,
@@ -8994,10 +9054,11 @@
       "_chevron-right-Cug7tVUE.js",
       "_index-BZvh78jk.js",
       "_star-DU-S9B50.js",
-      "_trash-oU5fdkBO.js",
+      "_grid-3x3-BmM0xOzs.js",
       "_x-fof_H3Vv.js",
       "_shopping-bag-C59bLmNC.js",
       "_sparkles-DvmvZ6mJ.js",
+      "_trash-2SBNsdcL.js",
       "_chevron-left-JcR9Fe4w.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
@@ -14868,7 +14929,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-iSDqE-un.js",
+    "file": "assets/System-DdBl4gHm.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
