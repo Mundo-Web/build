@@ -75,7 +75,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
     } catch (error) {
       console.error('ContactWebQuirurgica - Error al enviar:', error);
       setSending(false);
-      
+
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -111,13 +111,13 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
               <h3 className="text-2xl font-light text-primary mb-6">Información de Contacto</h3>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500 font-light mb-1">Teléfono</div>
+                    <div className="text-sm text-neutral-light font-light mb-1">Teléfono</div>
                     <div className="space-y-1">
                       {phone.split(',').map((tel, index) => (
                         <div key={index} className="text-lg text-primary font-light">
@@ -129,13 +129,13 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500 font-light mb-1">Email</div>
+                    <div className="text-sm text-neutral-light font-light mb-1">Email</div>
                     <div className="space-y-1">
                       {email.split(',').map((mail, index) => (
                         <div key={index} className="text-lg text-primary font-light">
@@ -147,14 +147,14 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500 font-light mb-1">Ubicación</div>
+                    <div className="text-sm text-neutral-light font-light mb-1">Ubicación</div>
                     <div className="text-lg text-primary font-light whitespace-pre-line">
                       {address}
                     </div>
@@ -231,9 +231,8 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                       {selectedService ? selectedService.name : 'Selecciona un procedimiento'}
                     </span>
                     <svg
-                      className={`w-5 h-5 text-neutral-light transition-transform ${
-                        isDropdownOpen ? 'rotate-180' : ''
-                      }`}
+                      className={`w-5 h-5 text-neutral-light transition-transform ${isDropdownOpen ? 'rotate-180' : ''
+                        }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -252,9 +251,8 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                             setSelectedService(service);
                             setIsDropdownOpen(false);
                           }}
-                          className={`w-full px-4 py-3 text-left hover:bg-sections-color transition-colors font-light ${
-                            selectedService?.id === service.id ? 'bg-accent/10 text-primary' : 'text-neutral-dark'
-                          }`}
+                          className={`w-full px-4 py-3 text-left hover:bg-sections-color transition-colors font-light ${selectedService?.id === service.id ? 'bg-accent/10 text-primary' : 'text-neutral-dark'
+                            }`}
                         >
                           {service.name}
                         </button>
@@ -280,7 +278,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full px-8 py-4 bg-primary hover:bg-secondary text-white rounded-xl font-light text-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full px-8 py-4 bg-primary hover:bg-secondary text-white rounded-full font-light text-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 <svg className="w-5 h-5 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

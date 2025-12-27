@@ -145,7 +145,7 @@
                     "icon",
                     "class_container",
                     "type_order",
-                       "cardType",
+                    "cardType",
                     "show_categories",
                     "button_top",
                     "button_bottom",
@@ -154,7 +154,7 @@
                     "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
-                     "class_button_card_detail"
+                    "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Category",
@@ -551,9 +551,9 @@
                     "footerText"
                 ],
                 "using": {
-                    "model": "Category",
+                    "model": "ServiceCategory",
                     "with": [
-                        "subcategories"
+                        "services"
                     ]
                 },
                 "generals": [
@@ -765,7 +765,6 @@
                 ],
                 "using": {
                     "model": "Slider"
-                    
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -793,7 +792,6 @@
                 ],
                 "using": {
                     "model": "Slider"
-                  
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -1000,17 +998,16 @@
                 "image": "slider-lapetaca.png",
                 "data": [
                     "class_slider",
-                  "class_title",
-                  "class_description",
-                  "class_button",
-                  "class_secondary_button",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "class_secondary_button",
                     "autoplayDelay",
                     "showNavigation",
                     "showIndicators"
                 ],
                 "using": {
                     "model": "Slider"
-                  
                 },
                 "generals": []
             }
@@ -1202,7 +1199,7 @@
                     "class_product_card_container",
                     "class_clear_button",
                     "class_title",
-                      "cardType",
+                    "cardType",
                     "show_categories",
                     "button_top",
                     "button_bottom",
@@ -2093,7 +2090,7 @@
                         "symbol",
                         "bg_image",
                         "name",
-                       "subtitle",
+                        "subtitle",
                         "badge",
                         "description",
                         "button_text",
@@ -2434,7 +2431,6 @@
                     "limit": 20
                 }
             },
-          
             {
                 "id": "ProductFeaturedSwiper",
                 "name": "Navegacion Swiper Featured",
@@ -2596,7 +2592,7 @@
                     "title",
                     "subtitle"
                 ],
-                  "using": {
+                "using": {
                     "model": "Item",
                     "filters": [
                         "featured",
@@ -2604,7 +2600,7 @@
                         "offering",
                         "is_new"
                     ],
-                   "with": [
+                    "with": [
                         "category",
                         "subcategory",
                         "brand",
@@ -2615,7 +2611,6 @@
                 },
                 "generals": []
             }
-          
         ]
     },
     {
@@ -2730,7 +2725,6 @@
             {
                 "id": "BannerStaticSecond",
                 "name": "Estatico 2",
-              
                 "using": {
                     "model": "Certification"
                 }
@@ -2926,7 +2920,6 @@
                     "class_section",
                     "text_button",
                     "link_catalog"
-
                 ],
                 "using": {
                     "model": "Item",
@@ -3034,8 +3027,8 @@
                     "background",
                     "buyButton",
                     "class_badge_category",
-                     "title",
-                     "type_style_list",
+                    "title",
+                    "type_style_list",
                     "class_title",
                     "description",
                     "link_catalog",
@@ -3071,7 +3064,7 @@
                     "message_whatsapp"
                 ]
             },
-                {
+            {
                 "id": "ProductDetailIbergruas",
                 "name": "ProductDetailIbergruas - Ibergruas",
                 "data": [
@@ -3283,7 +3276,7 @@
                     "checkout_transfer_description"
                 ]
             },
-              {
+            {
                 "id": "CheckoutStepsIbegruas",
                 "name": "StepsIbegruas",
                 "data": [
@@ -3370,7 +3363,6 @@
                     "description_ubication",
                     "stores_support",
                     "description"
-                    
                 ]
             },
             {
@@ -3395,7 +3387,6 @@
                     "atalaya_leads_api_key"
                 ]
             },
-          
             {
                 "id": "ContactHuaillys",
                 "name": "Contact Huaillys",
@@ -3453,10 +3444,9 @@
                 },
                 "data": [],
                 "generals": [
-                  "email_contact",
+                    "email_contact",
                     "phone_contact",
                     "address",
-                  
                     "opening_hours"
                 ]
             }
@@ -3496,7 +3486,6 @@
                     "class_title"
                 ]
             },
-          
             {
                 "id": "FaqModern",
                 "name": "FAQ Modern - Accordion Moderno",
@@ -3922,7 +3911,6 @@
                     "model": "Aboutus"
                 }
             }
-           
         ]
     },
     {
@@ -4061,7 +4049,7 @@
                     "alcance_sistema_gestion"
                 ]
             },
-              {
+            {
                 "id": "FooterIbergruas",
                 "name": "FooterIbergruas",
                 "image": "footer-simple.png",
@@ -4161,7 +4149,7 @@
                 "id": "FooterSalaFabulosa",
                 "name": "FooterSalaFabulosa",
                 "image": "footer-simple.png",
-                "data":[
+                "data": [
                     "class_button"
                 ],
                 "using": {
@@ -4302,7 +4290,7 @@
                     "tagline",
                     "accentColor"
                 ],
-                 "generals": [
+                "generals": [
                     "address",
                     "support_phone",
                     "support_email",
@@ -4315,7 +4303,6 @@
                 ],
                 "using": {
                     "model": "Service"
-               
                 }
             }
         ]
@@ -4820,9 +4807,8 @@
                     "title",
                     "subtitle"
                 ],
-                 "using": {
+                "using": {
                     "model": "Service"
-               
                 },
                 "generals": []
             },
@@ -4835,7 +4821,10 @@
                 ],
                 "using": {
                     "model": "Service",
-                    "with": ["category", "subcategory"]
+                    "with": [
+                        "category",
+                        "subcategory"
+                    ]
                 }
             }
         ]
@@ -4854,7 +4843,13 @@
                 ],
                 "using": {
                     "model": "Service",
-                    "with": ["category", "subcategory", "images", "features", "specifications"]
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "images",
+                        "features",
+                        "specifications"
+                    ]
                 }
             },
             {
@@ -4866,7 +4861,13 @@
                 ],
                 "using": {
                     "model": "Service",
-                    "with": ["category", "subcategory", "images", "features", "specifications"]
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "images",
+                        "features",
+                        "specifications"
+                    ]
                 }
             }
         ]
@@ -5205,7 +5206,7 @@
                 ],
                 "generals": []
             },
-              {
+            {
                 "id": "RoomDetailLaPetaca",
                 "name": "Detalle de Habitación - La Petaca",
                 "image": "hotel-room-detail-lapetaca.png",

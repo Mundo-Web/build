@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import Global from '../../../Utils/Global';
 
 const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isHomePage, setIsHomePage] = useState(false);
+    const [isServicesExpanded, setIsServicesExpanded] = useState(true); // Servicios expandido por defecto o false
     const menuRef = useRef(null);
 
     // Detectar si estamos en la página de inicio
@@ -17,41 +18,20 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
         setIsHomePage(checkIfHomePage());
     }, []);
 
-    // Obtener orden del menú desde generals
-    const headerMenuOrderObj = generals.find(item => item.correlative === "header_menu_order");
-    const headerMenuOrder = headerMenuOrderObj?.description ?? null;
-
-    // Función para ordenar el menú según el orden especificado
+    // Función modificada para agrupar servicios
     const getOrderedMenuItems = () => {
-        if (!headerMenuOrder) {
-            return [
-                ...(items || []).map(cat => ({ type: 'category', data: cat })),
-                ...(pages || []).filter(page => page.menuable).map(page => ({ type: 'page', data: page }))
-            ];
-        }
+        // Agrupamos todas las categorías en un solo ítem "services_root"
+        const servicesItem = items && items.length > 0 ? { type: 'services_root', data: items } : null;
 
-        const orderArray = headerMenuOrder.split(',').map(item => item.trim()).filter(Boolean);
-        const orderedItems = [];
+        // Páginas ordenadas
+        const menuPages = (pages || []).filter(page => page.menuable).map(page => ({ type: 'page', data: page }));
 
-        orderArray.forEach(displayName => {
-            const category = (items || []).find(cat =>
-                (cat.alias && cat.alias.toLowerCase() === displayName.toLowerCase()) ||
-                cat.name.toLowerCase() === displayName.toLowerCase()
-            );
-            if (category) {
-                orderedItems.push({ type: 'category', data: category });
-                return;
-            }
+        // Retornamos Servicios primero, luego las páginas
+        const menu = [];
+        if (servicesItem) menu.push(servicesItem);
+        menu.push(...menuPages);
 
-            const page = (pages || []).find(p =>
-                p.menuable && p.name.toLowerCase() === displayName.toLowerCase()
-            );
-            if (page) {
-                orderedItems.push({ type: 'page', data: page });
-            }
-        });
-
-        return orderedItems;
+        return menu;
     };
 
     const orderedMenuItems = getOrderedMenuItems();
@@ -90,11 +70,10 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
     return (
         <>
             <nav
-                className={`w-full top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
-                    isHomePage 
-                        ? `fixed ${isScrolled ? 'bg-primary backdrop-blur-xl py-5' : 'bg-transparent py-8'}`
-                        : `${isScrolled ? 'fixed bg-primary py-5' : 'relative bg-primary py-5'}`
-                }`}
+                className={`w-full top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isHomePage
+                    ? `fixed ${isScrolled ? 'bg-primary backdrop-blur-xl py-5' : 'bg-transparent py-8'}`
+                    : `${isScrolled ? 'fixed bg-primary py-5' : 'relative bg-primary py-5'}`
+                    }`}
                 style={{
                     boxShadow: (isHomePage ? isScrolled : isScrolled) ? '0 1px 3px 0 rgba(0, 0, 0, 0.02)' : 'none',
                     borderBottom: (isHomePage ? isScrolled : isScrolled) ? '1px solid rgba(0, 0, 0, 0.03)' : 'none'
@@ -123,21 +102,18 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
                         >
                             <div className="relative w-6 h-6">
                                 <span
-                                    className={`absolute left-0 top-1.5 w-6 transition-all duration-500 ease-out ${
-                                        isMenuOpen ? 'rotate-45 top-2.5 w-6' : ''
-                                    } ${isScrolled ? 'bg-white' : 'bg-white'}`}
+                                    className={`absolute left-0 top-1.5 w-6 transition-all duration-500 ease-out ${isMenuOpen ? 'rotate-45 top-2.5 w-6' : ''
+                                        } ${isScrolled ? 'bg-white' : 'bg-white'}`}
                                     style={{ height: '2px' }}
                                 />
                                 <span
-                                    className={`absolute left-0 top-2.5 w-6 transition-all duration-500 ease-out ${
-                                        isMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
-                                    } ${isScrolled ? 'bg-white' : 'bg-white'}`}
+                                    className={`absolute left-0 top-2.5 w-6 transition-all duration-500 ease-out ${isMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+                                        } ${isScrolled ? 'bg-white' : 'bg-white'}`}
                                     style={{ height: '2px' }}
                                 />
                                 <span
-                                    className={`absolute left-0 top-3.5 w-6 transition-all duration-500 ease-out ${
-                                        isMenuOpen ? '-rotate-45 top-2.5 w-6' : ''
-                                    } ${isScrolled ? 'bg-white' : 'bg-white'}`}
+                                    className={`absolute left-0 top-3.5 w-6 transition-all duration-500 ease-out ${isMenuOpen ? '-rotate-45 top-2.5 w-6' : ''
+                                        } ${isScrolled ? 'bg-white' : 'bg-white'}`}
                                     style={{ height: '2px' }}
                                 />
                             </div>
@@ -157,9 +133,8 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
             {/* Side Menu */}
             <div
                 ref={menuRef}
-                className={`fixed top-0 right-0 h-full w-full sm:w-[440px] bg-white transition-all duration-700 ease-out ${
-                    isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed top-0 right-0 h-full w-full sm:w-[440px] bg-white transition-all duration-700 ease-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
                 style={{
                     boxShadow: isMenuOpen ? '-4px 0 24px rgba(0, 0, 0, 0.04)' : 'none',
                     zIndex: 100
@@ -180,40 +155,52 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
 
                 <div className="flex flex-col h-full pt-32 pb-12 px-12">
                     {/* Menu Items */}
-                    <div className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden">
+                    <div className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden pr-2">
                         {orderedMenuItems.map((menuItem, index) => {
-                            if (menuItem.type === 'category') {
-                                const category = menuItem.data;
+                            if (menuItem.type === 'services_root') {
                                 return (
-                                    <div hidden key={`cat-${category.id}`}>
-                                        <a
-                                            href={`/catalogo?category=${category.slug}`}
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="block w-full text-left py-5 text-slate-900 font-light text-[15px] tracking-tight hover:text-slate-600 hover:translate-x-1 transition-all duration-300"
+                                    <div key="services-root" className="mb-0">
+                                        <button
+                                            onClick={() => setIsServicesExpanded(!isServicesExpanded)}
+                                            className="w-full flex items-center justify-between py-5 text-left text-secondary font-light text-xl tracking-tight group hover:text-primary transition-colors border-b border-gray-100"
                                             style={{
-                                                animation: isMenuOpen ? `slideIn 0.4s ease-out ${index * 0.06}s both` : 'none',
-                                                borderBottom: '1px solid rgba(0, 0, 0, 0.04)',
-                                                letterSpacing: '-0.01em'
+                                                animation: isMenuOpen ? 'slideIn 0.4s ease-out 0.1s both' : 'none'
                                             }}
                                         >
-                                            {category.alias || category.name}
-                                        </a>
-                                        
-                                        {/* Subcategorías */}
-                                        {category.subcategories?.length > 0 && (
-                                            <div className="ml-4 space-y-1 mb-2">
-                                                {category.subcategories.map((sub) => (
-                                                    <a
-                                                        key={sub.id}
-                                                        href={`/catalogo?subcategory=${sub.slug}`}
-                                                        onClick={() => setIsMenuOpen(false)}
-                                                        className="block py-2 text-sm text-slate-500 hover:text-slate-900 transition-colors"
-                                                    >
-                                                        {sub.name}
-                                                    </a>
+                                            <span className="font-light">Servicios</span>
+                                            <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${isServicesExpanded ? 'rotate-180 text-primary' : 'text-gray-400'}`} />
+                                        </button>
+
+                                        {/* Contenedor de Categorías y Servicios */}
+                                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isServicesExpanded ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
+                                            <div className="pl-4 space-y-8   ml-1">
+                                                {menuItem.data.map((category, catIndex) => (
+                                                    <div key={category.id} className="relative">
+                                                        {/* Nombre de Categoría */}
+                                                        <h4 className="text-secondary font-light text-lg mb-3 block">
+                                                            {category.alias || category.name}
+                                                        </h4>
+
+                                                        {/* Lista de Servicios */}
+                                                        <div className="space-y-2 ml-2">
+                                                            {category.services && category.services.map((service, servIndex) => (
+                                                                <a
+                                                                    key={service.id}
+                                                                    href={`/servicio/${service.slug}`}
+                                                                    onClick={() => setIsMenuOpen(false)}
+                                                                    className="block py-1 text-[15px] font-light text-neutral-light hover:text-primary hover:bg-primary/5 transition-all duration-300 rounded-md px-2 -ml-2"
+                                                                >
+                                                                    {service.name}
+                                                                </a>
+                                                            ))}
+                                                            {(!category.services || category.services.length === 0) && (
+                                                                <span className="text-sm text-gray-300 italic px-2">Sin servicios disponibles</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 ))}
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 );
                             } else if (menuItem.type === 'page') {
@@ -223,10 +210,9 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
                                         key={`page-${page.id}`}
                                         href={page.path}
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="block w-full text-left py-5 text-secondary font-light text-base lg:text-lg tracking-tight hover:text-neutral-light hover:translate-x-1 transition-all duration-300"
+                                        className="block w-full text-left py-4 text-secondary font-light text-xl lg:text-xl tracking-tight hover:text-primary hover:translate-x-1 transition-all duration-300 border-b border-gray-50"
                                         style={{
-                                            animation: isMenuOpen ? `slideIn 0.4s ease-out ${index * 0.06}s both` : 'none',
-                                            borderBottom: '1px solid rgba(0, 0, 0, 0.04)',
+                                            animation: isMenuOpen ? `slideIn 0.4s ease-out ${index * 0.06 + 0.2}s both` : 'none',
                                             letterSpacing: '-0.01em'
                                         }}
                                     >
@@ -235,16 +221,13 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
                                 );
                             }
                             return null;
-                        })}
-
-                       
-                    </div>
+                        })}                    </div>
 
                     {/* CTA Button */}
                     {data?.ctaText && data?.ctaLink && (
                         <a
                             href={data.ctaLink}
-                            className="w-full px-8 py-4 bg-secondary text-white text-[13px] font-light tracking-wide hover:bg-primary transition-all duration-500 mt-8 text-center block"
+                            className="w-full px-8 py-4 bg-primary rounded-full text-white text-[13px] font-light tracking-wide hover:bg-secondary transition-all duration-500 mt-8 text-center block"
                             style={{
                                 animation: isMenuOpen ? 'slideIn 0.4s ease-out 0.5s both' : 'none',
                                 letterSpacing: '0.05em'
