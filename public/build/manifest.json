@@ -5225,7 +5225,7 @@
     ]
   },
   "resources/js/Components/Tailwind/AboutUs.jsx": {
-    "file": "assets/AboutUs-DHHYDHC7.js",
+    "file": "assets/AboutUs-CYP37Hrb.js",
     "name": "AboutUs",
     "src": "resources/js/Components/Tailwind/AboutUs.jsx",
     "isDynamicEntry": true,
@@ -5245,7 +5245,8 @@
       "resources/js/Components/Tailwind/AboutUs/AboutKatya.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutHuaillys.jsx",
       "resources/js/Components/Tailwind/AboutUs/AboutModern.jsx",
-      "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx"
+      "resources/js/Components/Tailwind/AboutUs/AboutSidebar.jsx",
+      "resources/js/Components/Tailwind/AboutUs/AboutWebQuirurgica.jsx"
     ]
   },
   "resources/js/Components/Tailwind/AboutUs/AboutAko.jsx": {
@@ -5351,6 +5352,18 @@
     "isEntry": true,
     "imports": [
       "_index-yBjzXJbu.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/AboutUs/AboutWebQuirurgica.jsx": {
+    "file": "assets/AboutWebQuirurgica--pJTheE3.js",
+    "name": "AboutWebQuirurgica",
+    "src": "resources/js/Components/Tailwind/AboutUs/AboutWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Ad.jsx": {
@@ -14855,7 +14868,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-SdmzGSbh.js",
+    "file": "assets/System-iSDqE-un.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

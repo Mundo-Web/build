@@ -3833,6 +3833,19 @@
                     "model": "Aboutus"
                 }
             },
+               {
+                "id": "AboutWebQuirurgica",
+                "name": "AboutWebQuirurgica",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
             {
                 "id": "AboutKatya",
                 "name": "AboutKatya",
