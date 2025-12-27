@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Filter, Grid3x3, List } from "lucide-react";
+import { Filter, Grid3x3, List, ChevronDown, Check } from "lucide-react";
 import { Loading } from "../../../Tailwind/Components/Resources/Loading";
 import { NoResults } from "../../../Tailwind/Components/Resources/NoResult";
 import BlogPostCardWebQuirurgica from "./BlogPostCardWebQuirurgica";
@@ -22,6 +22,8 @@ const BlogListWebQuirurgica = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [filteredPosts, setFilteredPosts] = useState([]);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const postsPerPage = 9;
 
     // Referencias para animaciones
@@ -29,11 +31,22 @@ const BlogListWebQuirurgica = ({
     const listInView = useInView(listRef, { once: true, threshold: 0.1 });
 
     const sortOptions = [
-        { value: 'newest', label: 'Más Recientes' },
-        { value: 'oldest', label: 'Más Antiguos' },
-        { value: 'title-asc', label: 'Título A-Z' },
-        { value: 'title-desc', label: 'Título Z-A' },
+        { value: 'newest', label: 'Más Recientes', icon: '' },
+        { value: 'oldest', label: 'Más Antiguos', icon: '' },
+        { value: 'title-asc', label: 'Título A-Z', icon: '' },
+        { value: 'title-desc', label: 'Título Z-A', icon: '' },
     ];
+
+    // Cerrar dropdown al hacer click fuera
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Filtrar y ordenar posts
     useEffect(() => {
@@ -54,9 +67,13 @@ const BlogListWebQuirurgica = ({
                 case 'oldest':
                     return new Date(a.created_at) - new Date(b.created_at);
                 case 'title-asc':
-                    return a.title.localeCompare(b.title);
+                    const titleA = (a.title || a.name || '').toLowerCase();
+                    const titleB = (b.title || b.name || '').toLowerCase();
+                    return titleA.localeCompare(titleB);
                 case 'title-desc':
-                    return b.title.localeCompare(a.title);
+                    const titleDescA = (a.title || a.name || '').toLowerCase();
+                    const titleDescB = (b.title || b.name || '').toLowerCase();
+                    return titleDescB.localeCompare(titleDescA);
                 default:
                     return 0;
             }
@@ -130,18 +147,18 @@ const BlogListWebQuirurgica = ({
                             </button>
                         ))}
                     </div>
-
                     {/* Sort & View Options */}
                     <div className="flex items-center gap-3">
                         {/* View Mode Toggle */}
-                        <div className="flex border border-gray-200 rounded-full p-1">
+                        <div className="flex border border-gray-200 rounded-full p-1 bg-white">
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-full transition-all duration-300 ${
                                     viewMode === 'grid'
-                                        ? 'bg-primary text-white'
-                                        : 'text-neutral-dark hover:bg-gray-100'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-600 hover:bg-gray-100'
                                 }`}
+                                title="Vista en cuadrícula"
                             >
                                 <Grid3x3 size={18} />
                             </button>
@@ -149,33 +166,61 @@ const BlogListWebQuirurgica = ({
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 rounded-full transition-all duration-300 ${
                                     viewMode === 'list'
-                                        ? 'bg-primary text-white'
-                                        : 'text-neutral-dark hover:bg-gray-100'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-600 hover:bg-gray-100'
                                 }`}
+                                title="Vista en lista"
                             >
                                 <List size={18} />
                             </button>
                         </div>
 
-                        {/* Sort Dropdown */}
-                        <select
-                            value={sortOption}
-                            onChange={(e) => setSortOption(e.target.value)}
-                            className="px-4 py-2 rounded-full border border-gray-200 text-sm font-light text-neutral-dark focus:outline-none focus:border-primary transition-all duration-300"
-                        >
-                            {sortOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
+                        {/* Custom Sort Dropdown */}
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-gray-300 bg-white text-gray-900 font-medium text-sm hover:border-blue-600 hover:text-blue-600 transition-all duration-300"
+                            >
+                                <span>{sortOptions.find(opt => opt.value === sortOption)?.icon}</span>
+                                <span>{sortOptions.find(opt => opt.value === sortOption)?.label}</span>
+                                <ChevronDown size={16} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-white border-2 border-gray-300 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                                    {sortOptions.map((option) => (
+                                        <button
+                                            key={option.value}
+                                            onClick={() => {
+                                                setSortOption(option.value);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                                                sortOption === option.value
+                                                    ? 'bg-blue-50 text-blue-600'
+                                                    : 'text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg">{option.icon}</span>
+                                                <span>{option.label}</span>
+                                            </div>
+                                            {sortOption === option.value && (
+                                                <Check size={18} className="text-blue-600" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Results Count */}
-                <div className="text-neutral-dark font-light">
-                    Mostrando <span className="font-medium">{currentPosts.length}</span> de{' '}
-                    <span className="font-medium">{filteredPosts.length}</span> artículos
+                <div className="text-gray-700 font-medium">
+                    Mostrando <span className="font-bold text-gray-900">{currentPosts.length}</span> de{' '}
+                    <span className="font-bold text-gray-900">{filteredPosts.length}</span> artículos
                 </div>
 
                 {/* Posts Grid/List */}
@@ -188,11 +233,8 @@ const BlogListWebQuirurgica = ({
                         <NoResults />
                     </div>
                 ) : (
-                    <motion.div
+                    <div
                         ref={listRef}
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate={listInView ? "visible" : "hidden"}
                         className={
                             viewMode === 'grid'
                                 ? "grid md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -200,15 +242,15 @@ const BlogListWebQuirurgica = ({
                         }
                     >
                         {currentPosts.map((post) => (
-                            <motion.div key={post.id} variants={itemVariants}>
+                            <div key={post.id} style={{ backgroundColor: '#fff', minHeight: '300px' }}>
                                 <BlogPostCardWebQuirurgica
                                     data={data}
                                     post={post}
                                     listView={viewMode === 'list'}
                                 />
-                            </motion.div>
+                            </div>
                         ))}
-                    </motion.div>
+                    </div>
                 )}
 
                 {/* Pagination */}

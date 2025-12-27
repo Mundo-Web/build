@@ -1,6 +1,5 @@
 import React from 'react';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
-import TextWithHighlight from '../../../../Utils/TextWithHighlight';
 
 export default function BlogPostCardWebQuirurgica({ 
     data, 
@@ -45,14 +44,14 @@ export default function BlogPostCardWebQuirurgica({
         return (
             <article className="group h-full">
                 <a href={`/post/${post?.slug}`} className="block h-full">
-                    <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 h-full flex flex-col">
+                    <div className="bg-white shadow-lg rounded-3xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-300 h-full flex flex-col">
                         
                         {/* Image */}
-                        <div className="relative overflow-hidden aspect-[16/10]">
+                        <div className="relative overflow-hidden aspect-[16/10] bg-gray-200">
                             <img
                                 src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
                                 alt={post?.title || post?.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
                                     e.target.src = '/assets/img/noimage/no_img.jpg';
                                 }}
@@ -60,8 +59,8 @@ export default function BlogPostCardWebQuirurgica({
                             
                             {/* Category Badge */}
                             {post?.category && (
-                                <div className="absolute top-6 left-6">
-                                    <span className="px-4 py-2 bg-white/95 backdrop-blur-sm text-primary text-sm font-light rounded-full">
+                                <div className="absolute top-6 left-6 z-10">
+                                    <span className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-full shadow-lg">
                                         {post.category?.name}
                                     </span>
                                 </div>
@@ -69,35 +68,32 @@ export default function BlogPostCardWebQuirurgica({
                         </div>
 
                         {/* Content */}
-                        <div className="p-8 flex flex-col flex-grow">
+                        <div className="p-8 flex flex-col flex-grow bg-white">
                             
                             {/* Meta Info */}
-                            <div className="flex items-center gap-4 text-sm text-neutral-dark font-light mb-4">
+                            <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                                 <div className="flex items-center gap-2">
-                                    <Calendar size={16} className="opacity-60" />
+                                    <Calendar size={16} />
                                     <span>{formatDate(post?.created_at)}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Clock size={16} className="opacity-60" />
+                                    <Clock size={16} />
                                     <span>{calculateReadTime(post?.description)}</span>
                                 </div>
                             </div>
 
                             {/* Title */}
-                            <h3 className="text-2xl md:text-3xl font-light text-primary mb-4 group-hover:underline transition-all line-clamp-2">
-                                <TextWithHighlight 
-                                    text={post?.title || post?.name}
-                                    color="bg-accent"
-                                />
+                            <h3 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4 group-hover:text-primary transition-colors line-clamp-2">
+                                {post?.title || post?.name}
                             </h3>
 
                             {/* Excerpt */}
-                            <p className="text-neutral-dark font-light leading-relaxed mb-6 line-clamp-3 flex-grow">
+                            <p className="text-gray-700 font-normal leading-relaxed mb-6 line-clamp-3 flex-grow">
                                 {extractText(post?.extract || post?.description, 180)}
                             </p>
 
                             {/* Read More Link */}
-                            <div className="flex items-center gap-2 text-primary font-light group-hover:gap-4 transition-all duration-300">
+                            <div className="flex items-center gap-2 text-primary font-medium group-hover:gap-4 transition-all duration-300">
                                 <span>Leer más</span>
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </div>
@@ -113,14 +109,14 @@ export default function BlogPostCardWebQuirurgica({
         return (
             <article className="group h-full">
                 <a href={`/post/${post?.slug}`} className="block h-full">
-                    <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 h-full flex">
+                    <div className="bg-white shadow-lg rounded-3xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-300 h-full flex">
                         
                         {/* Image */}
-                        <div className="relative overflow-hidden w-2/5">
+                        <div className="relative overflow-hidden w-2/5 bg-gray-200">
                             <img
                                 src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
                                 alt={post?.title || post?.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
                                     e.target.src = '/assets/img/noimage/no_img.jpg';
                                 }}
@@ -128,29 +124,29 @@ export default function BlogPostCardWebQuirurgica({
                         </div>
 
                         {/* Content */}
-                        <div className="p-6 w-3/5 flex flex-col justify-between">
+                        <div className="p-6 w-3/5 flex flex-col justify-between bg-white">
                             
                             {/* Category */}
                             {post?.category && (
-                                <span className="text-primary text-sm font-light mb-2 inline-block">
+                                <span className="text-primary text-sm font-medium mb-2 inline-block">
                                     {post.category?.name}
                                 </span>
                             )}
 
                             {/* Title */}
-                            <h3 className="text-xl font-light text-primary mb-3 group-hover:underline transition-all line-clamp-2">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-primary transition-colors line-clamp-2">
                                 {post?.title || post?.name}
                             </h3>
 
                             {/* Excerpt */}
-                            <p className="text-neutral-dark font-light text-sm leading-relaxed line-clamp-2 mb-4">
+                            <p className="text-gray-700 text-sm leading-relaxed line-clamp-2 mb-4">
                                 {extractText(post?.extract || post?.description, 100)}
                             </p>
 
                             {/* Meta */}
-                            <div className="flex items-center gap-3 text-xs text-neutral-dark font-light">
+                            <div className="flex items-center gap-3 text-xs text-gray-500">
                                 <div className="flex items-center gap-1">
-                                    <Calendar size={14} className="opacity-60" />
+                                    <Calendar size={14} />
                                     <span>{formatDate(post?.created_at)}</span>
                                 </div>
                             </div>
@@ -163,17 +159,18 @@ export default function BlogPostCardWebQuirurgica({
 
     // Versión List (horizontal)
     if (listView) {
+        console.log('Rendering list view for post:', post?.title);
         return (
-            <article className="group">
-                <a href={`/post/${post?.slug}`} className="block">
-                    <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 flex">
+            <article className="group h-full min-h-[300px]">
+                <a href={`/post/${post?.slug}`} className="block h-full">
+                    <div className="bg-white shadow-lg rounded-3xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-300 flex flex-row h-full">
                         
                         {/* Image */}
-                        <div className="relative overflow-hidden w-1/3">
+                        <div className="relative w-2/5 flex-shrink-0 bg-gray-200">
                             <img
                                 src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
                                 alt={post?.title || post?.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
                                     e.target.src = '/assets/img/noimage/no_img.jpg';
                                 }}
@@ -181,8 +178,8 @@ export default function BlogPostCardWebQuirurgica({
                             
                             {/* Category Badge */}
                             {post?.category && (
-                                <div className="absolute top-4 left-4">
-                                    <span className="px-3 py-1 bg-white/95 backdrop-blur-sm text-primary text-xs font-light rounded-full">
+                                <div className="absolute top-4 left-4 z-10">
+                                    <span className="px-4 py-2 bg-primary text-white text-xs font-medium rounded-full shadow-lg">
                                         {post.category?.name}
                                     </span>
                                 </div>
@@ -190,32 +187,32 @@ export default function BlogPostCardWebQuirurgica({
                         </div>
 
                         {/* Content */}
-                        <div className="p-8 w-2/3 flex flex-col justify-between">
+                        <div className="p-6 md:p-8 w-3/5 flex flex-col justify-between bg-white">
                             
                             {/* Meta Info */}
-                            <div className="flex items-center gap-4 text-sm text-neutral-dark font-light mb-3">
+                            <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                                 <div className="flex items-center gap-2">
-                                    <Calendar size={16} className="opacity-60" />
+                                    <Calendar size={16} />
                                     <span>{formatDate(post?.created_at)}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Clock size={16} className="opacity-60" />
+                                    <Clock size={16} />
                                     <span>{calculateReadTime(post?.description)}</span>
                                 </div>
                             </div>
 
                             {/* Title */}
-                            <h3 className="text-2xl font-light text-primary mb-3 group-hover:underline transition-all line-clamp-2">
+                            <h3 className="text-xl md:text-2xl font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-2 mb-3">
                                 {post?.title || post?.name}
                             </h3>
 
                             {/* Excerpt */}
-                            <p className="text-neutral-dark font-light leading-relaxed mb-4 line-clamp-2">
-                                {extractText(post?.extract || post?.description, 200)}
+                            <p className="text-base text-gray-600 leading-relaxed line-clamp-2 mb-4 flex-grow">
+                                {extractText(post?.extract || post?.description, 150)}
                             </p>
 
                             {/* Read More Link */}
-                            <div className="flex items-center gap-2 text-primary font-light group-hover:gap-4 transition-all duration-300">
+                            <div className="flex items-center gap-2 text-primary font-medium group-hover:gap-4 transition-all duration-300">
                                 <span>Leer más</span>
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </div>
@@ -227,17 +224,18 @@ export default function BlogPostCardWebQuirurgica({
     }
 
     // Versión Default (Grid)
+    console.log('Rendering grid view for post:', post?.title);
     return (
         <article className="group h-full">
             <a href={`/post/${post?.slug}`} className="block h-full">
-                <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 h-full flex flex-col">
+                <div className="bg-white shadow-lg rounded-3xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-300 h-full flex flex-col min-h-[450px]">
                     
                     {/* Image */}
-                    <div className="relative overflow-hidden aspect-[16/10]">
+                    <div className="relative overflow-hidden aspect-[16/10] bg-gray-200">
                         <img
                             src={post?.image ? `/storage/images/post/${post?.image}` : '/assets/img/noimage/no_img.jpg'}
                             alt={post?.title || post?.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                                 e.target.src = '/assets/img/noimage/no_img.jpg';
                             }}
@@ -245,8 +243,8 @@ export default function BlogPostCardWebQuirurgica({
                         
                         {/* Category Badge */}
                         {post?.category && (
-                            <div className="absolute top-4 left-4">
-                                <span className="px-3 py-2 bg-white/95 backdrop-blur-sm text-primary text-sm font-light rounded-full">
+                            <div className="absolute top-4 left-4 z-10">
+                                <span className="px-4 py-2 bg-primary text-white text-xs font-medium rounded-full shadow-lg">
                                     {post.category?.name}
                                 </span>
                             </div>
@@ -254,32 +252,32 @@ export default function BlogPostCardWebQuirurgica({
                     </div>
 
                     {/* Content */}
-                    <div className="p-6 flex flex-col flex-grow">
+                    <div className="p-6 flex flex-col flex-grow bg-white">
                         
                         {/* Meta Info */}
-                        <div className="flex items-center gap-4 text-sm text-neutral-dark font-light mb-3">
+                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                             <div className="flex items-center gap-2">
-                                <Calendar size={14} className="opacity-60" />
+                                <Calendar size={14} />
                                 <span>{formatDate(post?.created_at)}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Clock size={14} className="opacity-60" />
+                                <Clock size={14} />
                                 <span>{calculateReadTime(post?.description)}</span>
                             </div>
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-xl font-light text-primary mb-3 group-hover:underline transition-all line-clamp-2 flex-grow">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-primary transition-colors line-clamp-2 flex-grow">
                             {post?.title || post?.name}
                         </h3>
 
                         {/* Excerpt */}
-                        <p className="text-neutral-dark font-light text-sm leading-relaxed mb-4 line-clamp-3">
+                        <p className="text-base text-gray-600 leading-relaxed mb-4 line-clamp-3">
                             {extractText(post?.extract || post?.description, 120)}
                         </p>
 
                         {/* Read More Link */}
-                        <div className="flex items-center gap-2 text-primary font-light group-hover:gap-4 transition-all duration-300">
+                        <div className="flex items-center gap-2 text-primary font-medium group-hover:gap-4 transition-all duration-300">
                             <span>Leer más</span>
                             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                         </div>
