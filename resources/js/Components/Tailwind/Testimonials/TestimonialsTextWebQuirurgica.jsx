@@ -17,7 +17,7 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
           <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
             Historias de <span className="font-light">Éxito</span>
           </h2>
-          <div className="w-20 h-1 bg-accent mx-auto"></div>
+          <div className=" mx-auto"></div>
         </div>
 
         <div className="relative">
@@ -41,7 +41,7 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
             className="testimonials-swiper"
           >
             {items.map((testimonial, index) => {
-              const imageUrl = testimonial.image 
+              const imageUrl = testimonial.image
                 ? `/storage/images/testimony/${testimonial.image}`
                 : '/api/cover/thumbnail/null';
 
@@ -51,12 +51,12 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
                     {/* Estrellas de rating */}
                     <div className="flex gap-1 mb-6 justify-center">
                       {Array.from({ length: testimonial.rating || 5 }).map((_, i) => (
-                        <svg 
-                          key={i} 
-                          className="w-5 h-5 text-accent fill-accent" 
+                        <svg
+                          key={i}
+                          className="w-5 h-5 text-accent fill-accent"
                           viewBox="0 0 24 24"
                         >
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                       ))}
                     </div>

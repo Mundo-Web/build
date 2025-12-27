@@ -21,7 +21,7 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
             <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
               Casos <span className="font-light">Reales</span>
             </h2>
-            <div className="w-20 h-1 bg-accent mx-auto"></div>
+            <div className=" mx-auto"></div>
             <p className="text-lg text-neutral-dark font-light leading-relaxed">
               Conoce historias reales de transformación y procedimientos quirúrgicos
             </p>
@@ -58,7 +58,7 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
             >
               {items.map((video, index) => {
                 const videoId = getYTVideoId(video.video_url);
-                const thumbnail = videoId 
+                const thumbnail = videoId
                   ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
                   : '/api/cover/thumbnail/null';
 
@@ -83,12 +83,12 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
                         />
                         {/* Gradient Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300"></div>
-                        
+
                         {/* Content */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
                           <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-4 group-hover:bg-accent/80 group-hover:scale-110 transition-all duration-300 shadow-xl">
                             <svg className="w-8 h-8 text-white fill-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M8 5v14l11-7z"/>
+                              <path d="M8 5v14l11-7z" />
                             </svg>
                           </div>
                           <p className="text-sm font-light text-center line-clamp-2 px-2">{video.name}</p>
@@ -137,7 +137,7 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <div 
+          <div
             className="max-w-4xl w-full rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in"
             onClick={(e) => e.stopPropagation()}
           >

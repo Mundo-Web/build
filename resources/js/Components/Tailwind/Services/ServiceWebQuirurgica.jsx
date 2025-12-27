@@ -127,10 +127,10 @@ const ServiceWebQuirurgica = ({ data, items = [] }) => {
                     <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight whitespace-pre-line">
                         <TextWithHighlight
                             text={data?.name || 'Servicios *Especializados*'}
-                            color="bg-accent"
+                            color="bg-primary font-light"
                         />
                     </h2>
-                    <div className="w-20 h-1 bg-accent mx-auto"></div>
+                    <div className=" mx-auto"></div>
                     {data?.description && (
                         <p className="text-lg text-neutral-dark font-light leading-relaxed whitespace-pre-line">
                             <TextWithHighlight

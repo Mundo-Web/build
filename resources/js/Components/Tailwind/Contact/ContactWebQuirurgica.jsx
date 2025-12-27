@@ -98,7 +98,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
           <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
             Agenda tu <span className="font-light">Evaluación</span>
           </h2>
-          <div className="w-20 h-1 bg-accent mx-auto"></div>
+          <div className=" mx-auto"></div>
           <p className="text-lg text-neutral-light font-light leading-relaxed">
             Da el primer paso hacia tu transformación
           </p>

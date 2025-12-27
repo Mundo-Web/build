@@ -115,7 +115,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                     color="bg-accent"
                                 />
                             </h2>
-                            <div className="w-20 h-1 bg-accent mx-auto"></div>
+                            <div className=" mx-auto"></div>
                             {data?.description && (
                                 <p className="text-lg text-neutral-dark font-light leading-relaxed whitespace-pre-line">
                                     <TextWithHighlight

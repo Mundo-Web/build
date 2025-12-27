@@ -1993,7 +1993,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-BO9UnjpD.js",
+    "file": "assets/Banners-DfCrPw7u.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -5813,7 +5813,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-CNuVvLFC.js",
+    "file": "assets/Banner-DDhgN4tg.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -8279,7 +8279,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-IgQel4Ld.js",
+    "file": "assets/Contact-kwTQhLeg.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -8498,7 +8498,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Faq.jsx": {
-    "file": "assets/Faq-D-6f3V83.js",
+    "file": "assets/Faq-7RezaMcq.js",
     "name": "Faq",
     "src": "resources/js/Components/Tailwind/Faq.jsx",
     "isDynamicEntry": true,
@@ -13261,7 +13261,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-DY0gJsHp.js",
+    "file": "assets/Service-BFOZ_3V5.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -13283,7 +13283,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ServiceDetail.jsx": {
-    "file": "assets/ServiceDetail-D7zvKTEJ.js",
+    "file": "assets/ServiceDetail-DlvT8Dzy.js",
     "name": "ServiceDetail",
     "src": "resources/js/Components/Tailwind/ServiceDetail.jsx",
     "isDynamicEntry": true,
@@ -13318,7 +13318,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceDetailCatalog.jsx": {
-    "file": "assets/ServiceDetailCatalog-DKeZp7cF.js",
+    "file": "assets/ServiceDetailCatalog-DiJ3IplD.js",
     "name": "ServiceDetailCatalog",
     "src": "resources/js/Components/Tailwind/Services/ServiceDetailCatalog.jsx",
     "isDynamicEntry": true,
@@ -13947,7 +13947,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-BJYf5FbP.js",
+    "file": "assets/Testimonials-BSOFHfhn.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -14855,7 +14855,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Dt2hH5vP.js",
+    "file": "assets/System-SdmzGSbh.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

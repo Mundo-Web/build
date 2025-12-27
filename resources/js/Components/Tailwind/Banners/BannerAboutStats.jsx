@@ -13,18 +13,18 @@ const BannerAboutStats = ({ data, items = [] }) => {
                     <div className="space-y-8">
                         <div className="space-y-4">
                             <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight whitespace-pre-line">
-                                <TextWithHighlight 
-                                    text={data?.name} 
+                                <TextWithHighlight
+                                    text={data?.name}
                                     color="bg-primary font-light"
                                     className=""
                                 />
                             </h2>
-                            <div className="w-20 h-1 bg-accent"></div>
+
                         </div>
 
                         <p className="text-lg text-gray-600 leading-relaxed font-light whitespace-pre-line">
-                            <TextWithHighlight 
-                                text={data?.description} 
+                            <TextWithHighlight
+                                text={data?.description}
                                 color="bg-primary"
                             />
                         </p>
@@ -33,14 +33,14 @@ const BannerAboutStats = ({ data, items = [] }) => {
                         {items.length > 0 && (
                             <div className={`grid grid-cols-1 sm:grid-cols-${Math.min(items.length, 3)} gap-8 pt-8`}>
                                 {items.map((item, index) => {
-                                    const symbolUrl = item.symbol 
-                                        ? `/storage/images/indicator/${item.symbol}` 
+                                    const symbolUrl = item.symbol
+                                        ? `/storage/images/indicator/${item.symbol}`
                                         : '/api/cover/thumbnail/null';
-                                    
+
                                     return (
                                         <div key={index} className="text-center space-y-3 group">
                                             <div className="inline-flex p-4 invert  rounded-2xl hover:bg-primary hover:invert-0 transition-all duration-300">
-                                                <img 
+                                                <img
                                                     src={symbolUrl}
                                                     alt={item.name}
                                                     className="w-8 h-8 object-contain transition-all duration-300 "
@@ -48,7 +48,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                                 />
                                             </div>
                                             <div className="text-4xl font-light text-primary">
-                                                <TextWithHighlight 
+                                                <TextWithHighlight
                                                     text={item.name}
                                                     counter={true}
                                                     color="bg-accent"
@@ -56,7 +56,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                                 />
                                             </div>
                                             <div className="text-sm text-gray-500 font-light whitespace-pre-line">
-                                                <TextWithHighlight 
+                                                <TextWithHighlight
                                                     text={item.description}
                                                     color="bg-primary"
                                                 />
@@ -76,9 +76,9 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                 alt={data?.name || 'Banner'}
                                 className="aspect-[3/4] w-full object-cover"
                                 onError={(e) =>
-                                    (e.target.src =
-                                        "/api/cover/thumbnail/null")
-                                                } 
+                                (e.target.src =
+                                    "/api/cover/thumbnail/null")
+                                }
                             />
                         </div>
                         <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-accent/10 rounded-full blur-3xl"></div>

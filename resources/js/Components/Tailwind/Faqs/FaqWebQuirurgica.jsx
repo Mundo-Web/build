@@ -14,7 +14,7 @@ const FaqWebQuirurgica = ({ data, faqs }) => {
           <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
             Preguntas <span className="font-light">Frecuentes</span>
           </h2>
-          <div className="w-20 h-1 bg-accent mx-auto"></div>
+          <div className=" mx-auto"></div>
         </div>
 
         <div className="space-y-4">
@@ -43,9 +43,8 @@ const FaqWebQuirurgica = ({ data, faqs }) => {
                 </div>
               </button>
               <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                }`}
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
               >
                 <div className="px-8 pb-6 text-neutral-dark font-light leading-relaxed">
                   {faq.description || faq.answer}
