@@ -36,15 +36,25 @@ const ServiceCategories = () => {
 
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
-        descriptionRef.current.value = data?.description ?? "";
-        bannerRef.image.src = data?.banner ? `/storage/images/service_category/${data.banner}` : '';
-        bannerRef.current.value = null;
-        imageRef.image.src = data?.image ? `/storage/images/service_category/${data.image}` : '';
-        imageRef.current.value = null;
-
-        // Reset delete flags using React state - only when opening modal
-        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        
+        // Validar si description está disponible (Fillable)
+        if (descriptionRef.current) {
+            descriptionRef.current.value = data?.description ?? "";
+        }
+        
+        // Validar si banner está disponible (Fillable)
+        if (bannerRef.current && bannerRef.image) {
+            bannerRef.image.src = data?.banner ? `/storage/images/service_category/${data.banner}` : '';
+            bannerRef.current.value = null;
+            if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        }
+        
+        // Validar si image está disponible (Fillable)
+        if (imageRef.current && imageRef.image) {
+            imageRef.image.src = data?.image ? `/storage/images/service_category/${data.image}` : '';
+            imageRef.current.value = null;
+            if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        }
 
         $(modalRef.current).modal("show");
     };
@@ -62,30 +72,37 @@ const ServiceCategories = () => {
         for (const key in request) {
             formData.append(key, request[key]);
         }
-        const file = imageRef.current.files[0];
-        if (file) {
-            formData.append("image", file);
+        
+        // Validar si image está disponible (Fillable)
+        if (imageRef.current) {
+            const file = imageRef.current.files[0];
+            if (file) {
+                formData.append("image", file);
+            }
+            // Check for image deletion flag
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
         }
-        const file2 = bannerRef.current.files[0];
-        if (file2) {
-            formData.append("banner", file2);
-        }
-
-        // Check for image deletion flags using React state
-        if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
-            formData.append('banner_delete', 'DELETE');
-        }
-
-        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
+        
+        // Validar si banner está disponible (Fillable)
+        if (bannerRef.current) {
+            const file2 = bannerRef.current.files[0];
+            if (file2) {
+                formData.append("banner", file2);
+            }
+            // Check for banner deletion flag
+            if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
+                formData.append('banner_delete', 'DELETE');
+            }
         }
 
         const result = await serviceCategoriesRest.save(formData);
         if (!result) return;
 
         // Reset delete flags after successful save
-        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (bannerRef.current && bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -236,7 +253,7 @@ const ServiceCategories = () => {
                         caption: "Categoría",
                         width: "30%",
                     },
-                    {
+                    Fillable.has('service_categories', 'description') && {
                         dataField: "description",
                         caption: "Descripción",
                         width: "50%",
@@ -291,7 +308,8 @@ const ServiceCategories = () => {
                             );
                         },
                     },
-                    {
+
+                        Fillable.has('service_categories', 'featured') &&  {
                         dataField: "featured",
                         caption: "Destacado",
                         dataType: "boolean",
@@ -376,40 +394,93 @@ const ServiceCategories = () => {
                 modalRef={modalRef}
                 title={isEditing ? "Editar categoría de servicio" : "Agregar categoría de servicio"}
                 onSubmit={onModalSubmit}
+                size="lg"
             >
                 <input ref={idRef} type="hidden" />
-                <div className="row" id="service-categories-container">
-                    <div className={!Fillable.has('service_categories', 'banner') && !Fillable.has('service_categories', 'image') ? 'hidden' : 'col-md-6'}>
-                        <ImageFormGroup
-                            eRef={bannerRef}
-                            name="banner"
-                            label="Banner"
-                            col="col-12"
-                            aspect={3 / 1}
-                            hidden={!Fillable.has('service_categories', 'banner')}
-                        />
-                        <ImageFormGroup
-                            eRef={imageRef}
-                            name="image"
-                            label="Imagen"
-                            col="col-12"
-                            aspect={16 / 9}
-                            hidden={!Fillable.has('service_categories', 'image')}
-                        />
+                
+                <div id="service-categories-container">
+                    <div className="row g-3">
+                        {/* Información Básica */}
+                        <div className="col-12">
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header bg-light">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-info-circle me-2 text-primary"></i>
+                                        Información Básica
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row">
+                                        <div className="col-12">
+                                            <InputFormGroup
+                                                eRef={nameRef}
+                                                label="Nombre de la Categoría"
+                                                placeholder="Ej: Cirugías Bariátricas"
+                                                required
+                                            />
+                                        </div>
+                                        {Fillable.has('service_categories', 'description') && (
+                                            <div className="col-12">
+                                                <TextareaFormGroup
+                                                    eRef={descriptionRef}
+                                                    label="Descripción"
+                                                    rows={4}
+                                                    placeholder="Descripción detallada de la categoría..."
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    </div>
-                    <div className={!Fillable.has('service_categories', 'banner') && !Fillable.has('service_categories', 'image') ? 'col-md-12' : 'col-md-6'}>
-                        <InputFormGroup
-                            eRef={nameRef}
-                            label="Categoría"
-                            rows={2}
-                            required
-                        />
-                        <TextareaFormGroup
-                            eRef={descriptionRef}
-                            label="Descripción"
-                            rows={3}
-                        />
+                        {/* Multimedia */}
+                        {(Fillable.has('service_categories', 'banner') || Fillable.has('service_categories', 'image')) && (
+                            <div className="col-12">
+                                <div className="card border-0 shadow-sm">
+                                    <div className="card-header bg-light">
+                                        <h6 className="mb-0">
+                                            <i className="fas fa-images me-2 text-success"></i>
+                                            Multimedia
+                                        </h6>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="row g-3">
+                                            {Fillable.has('service_categories', 'banner') && (
+                                                <div className="col-md-6">
+                                                    <ImageFormGroup
+                                                        eRef={bannerRef}
+                                                        name="banner"
+                                                        label="Banner Principal"
+                                                        col="col-12"
+                                                        aspect={1 / 1}
+                                                    />
+                                                    <small className="text-muted">
+                                                        <i className="fas fa-info-circle me-1"></i>
+                                                        Recomendado: 1200x400px (proporción 3:1)
+                                                    </small>
+                                                </div>
+                                            )}
+                                            {Fillable.has('service_categories', 'image') && (
+                                                <div className="col-md-6">
+                                                    <ImageFormGroup
+                                                        eRef={imageRef}
+                                                        name="image"
+                                                        label="Icono / Imagen del Servicio"
+                                                        col="col-12"
+                                                        aspect={1 / 1}
+                                                    />
+                                                    <small className="text-muted">
+                                                        <i className="fas fa-info-circle me-1"></i>
+                                                        Recomendado: 1600x900px (proporción 16:9)
+                                                    </small>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Modal>

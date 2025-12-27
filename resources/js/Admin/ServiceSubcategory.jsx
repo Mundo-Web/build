@@ -14,6 +14,7 @@ import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import SetSelectValue from "../Utils/SetSelectValue";
+import Fillable from "../Utils/Fillable";
 
 const serviceSubCategoriesRest = new ServiceSubCategoriesRest();
 
@@ -34,9 +35,6 @@ const ServiceSubcategory = () => {
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
 
-        // Reset delete flag when opening modal
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
-
         idRef.current.value = data?.id ?? "";
         SetSelectValue(
             categoryRef.current,
@@ -44,9 +42,18 @@ const ServiceSubcategory = () => {
             data?.category?.name
         );
         nameRef.current.value = data?.name ?? "";
-        descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = data?.image ? `/storage/images/service_sub_category/${data.image}` : '';
-        imageRef.current.value = null;
+        
+        // Validar si description está disponible (Fillable)
+        if (descriptionRef.current) {
+            descriptionRef.current.value = data?.description ?? "";
+        }
+        
+        // Validar si image está disponible (Fillable)
+        if (imageRef.current && imageRef.image) {
+            imageRef.image.src = data?.image ? `/storage/images/service_sub_category/${data.image}` : '';
+            imageRef.current.value = null;
+            if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        }
 
         $(modalRef.current).modal("show");
     };
@@ -58,28 +65,35 @@ const ServiceSubcategory = () => {
             id: idRef.current.value || undefined,
             service_category_id: categoryRef.current.value,
             name: nameRef.current.value,
-            description: descriptionRef.current.value,
         };
+
+        // Solo agregar description si el campo está disponible (Fillable)
+        if (descriptionRef.current) {
+            request.description = descriptionRef.current.value;
+        }
 
         const formData = new FormData();
         for (const key in request) {
             formData.append(key, request[key]);
         }
-        const file = imageRef.current.files[0];
-        if (file) {
-            formData.append("image", file);
-        }
-
-        // Check for image deletion flag
-        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
+        
+        // Validar si image está disponible (Fillable)
+        if (imageRef.current) {
+            const file = imageRef.current.files[0];
+            if (file) {
+                formData.append("image", file);
+            }
+            // Check for image deletion flag
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
         }
 
         const result = await serviceSubCategoriesRest.save(formData);
         if (!result) return;
 
         // Reset delete flag after successful save
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -164,12 +178,12 @@ const ServiceSubcategory = () => {
                         dataField: "name",
                         caption: "Sub Categoría",
                     },
-                    {
+                    Fillable.has('service_sub_categories', 'description') && {
                         dataField: "description",
                         caption: "Descripción",
                         width: "50%",
                     },
-                    {
+                    Fillable.has('service_sub_categories', 'image') && {
                         dataField: "image",
                         caption: "Imagen",
                         width: "90px",
@@ -194,7 +208,7 @@ const ServiceSubcategory = () => {
                             );
                         },
                     },
-                    {
+                    Fillable.has('service_sub_categories', 'featured') && {
                         dataField: "featured",
                         caption: "Destacado",
                         dataType: "boolean",
@@ -266,36 +280,87 @@ const ServiceSubcategory = () => {
                     isEditing ? "Editar sub categoría de servicio" : "Agregar sub categoría de servicio"
                 }
                 onSubmit={onModalSubmit}
-                size="sm"
+                size="lg"
             >
                 <input ref={idRef} type="hidden" />
-                <ImageFormGroup
-                    eRef={imageRef}
-                    name="image"
-                    label="Imagen"
-                    col="col-12"
-                    aspect={16 / 9}
-                />
-                <div className="row" id="modal-container">
-                    <SelectAPIFormGroup
-                        eRef={categoryRef}
-                        label="Categoría"
-                        searchAPI="/api/admin/service-categories/paginate"
-                        searchBy="name"
-                        required
-                        dropdownParent="#modal-container"
-                    />
-                    <InputFormGroup
-                        eRef={nameRef}
-                        label="Sub Categoría"
-                        col="col-12"
-                        required
-                    />
-                    <TextareaFormGroup
-                        eRef={descriptionRef}
-                        label="Descripción"
-                        rows={3}
-                    />
+                
+                <div id="modal-container">
+                    <div className="row g-3">
+                        {/* Información Básica */}
+                        <div className="col-12">
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header bg-light">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-info-circle me-2 text-primary"></i>
+                                        Información Básica
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row">
+                                        <div className="col-12">
+                                            <SelectAPIFormGroup
+                                                eRef={categoryRef}
+                                                label="Categoría Principal"
+                                                searchAPI="/api/admin/service-categories/paginate"
+                                                searchBy="name"
+                                                required
+                                                dropdownParent="#modal-container"
+                                            />
+                                        </div>
+                                        <div className="col-12">
+                                            <InputFormGroup
+                                                eRef={nameRef}
+                                                label="Nombre de la Subcategoría"
+                                                placeholder="Ej: Manga Gástrica"
+                                                required
+                                            />
+                                        </div>
+                                        {Fillable.has('service_sub_categories', 'description') && (
+                                            <div className="col-12">
+                                                <TextareaFormGroup
+                                                    eRef={descriptionRef}
+                                                    label="Descripción"
+                                                    rows={4}
+                                                    placeholder="Descripción detallada de la subcategoría..."
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Multimedia */}
+                        {Fillable.has('service_sub_categories', 'image') && (
+                            <div className="col-12">
+                                <div className="card border-0 shadow-sm">
+                                    <div className="card-header bg-light">
+                                        <h6 className="mb-0">
+                                            <i className="fas fa-images me-2 text-success"></i>
+                                            Multimedia
+                                        </h6>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="row g-3">
+                                            <div className="col-md-12">
+                                                <ImageFormGroup
+                                                    eRef={imageRef}
+                                                    name="image"
+                                                    label="Imagen de la Subcategoría"
+                                                    col="col-12"
+                                                    aspect={16 / 9}
+                                                />
+                                                <small className="text-muted">
+                                                    <i className="fas fa-info-circle me-1"></i>
+                                                    Recomendado: 1600x900px (proporción 16:9)
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </Modal>
         </>

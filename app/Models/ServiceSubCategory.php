@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServiceSubCategory extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids,HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';

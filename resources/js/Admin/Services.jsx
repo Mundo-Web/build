@@ -566,16 +566,28 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                 return text;
                             };
 
-                            const truncatedDescription = truncateWords(data.description, 15);
+                            const stripHtml = (html) => {
+                                if (!html) return '';
+                                const tmp = document.createElement('div');
+                                tmp.innerHTML = html;
+                                return tmp.textContent || tmp.innerText || '';
+                            };
+
+                            // Priorizar summary, si no existe usar description limpiando HTML
+                            const contentToShow = data.summary 
+                                ? data.summary 
+                                : stripHtml(data.description);
+                            
+                            const truncatedContent = truncateWords(contentToShow, 15);
 
                             container.html(
                                 renderToString(
                                     <>
                                         <b>{data.name}</b>
-                                        {data.description && (
+                                        {(data.summary || data.description) && truncatedContent && (
                                             <>
                                                 <br />
-                                                <span className="text-muted">{truncatedDescription}</span>
+                                                <span className="text-muted">{truncatedContent}</span>
                                             </>
                                         )}
                                     </>
@@ -593,6 +605,31 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                 container,
                                 <img
                                     src={`/storage/images/service/${data.image}`}
+                                    style={{
+                                        width: "80px",
+                                        height: "48px",
+                                        objectFit: "cover",
+                                        objectPosition: "center",
+                                        borderRadius: "4px",
+                                    }}
+                                    onError={(e) =>
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
+                                    }
+                                />
+                            );
+                        },
+                    },
+                       Fillable.has('services', 'background_image') && {
+                        dataField: "background_image",
+                        caption: "Banner",
+                        width: "90px",
+                        allowFiltering: false,
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <img
+                                    src={`/storage/images/service/${data.background_image}`}
                                     style={{
                                         width: "80px",
                                         height: "48px",
@@ -1224,7 +1261,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                         <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
                             <div className="row g-3">
                                 {Fillable.has('services', 'is_features') && (
-                                    <div className="col-md-6">
+                                    <div className={`${Fillable.has('services', 'is_features') && Fillable.has('services', 'is_specifications')  ?  'col-md-6' : 'col-12'}`}>
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
                                                 <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
@@ -1273,7 +1310,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                 )}
                                 
                                 {Fillable.has('services', 'is_specifications') && (
-                                    <div className="col-md-6">
+                                    <div className={`${Fillable.has('services', 'is_features') && Fillable.has('services', 'is_specifications')  ? 'col-md-6' : 'col-12'}`}>
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
                                                 <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
