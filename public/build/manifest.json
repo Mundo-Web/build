@@ -13283,7 +13283,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ServiceDetail.jsx": {
-    "file": "assets/ServiceDetail-BSNj3ZYX.js",
+    "file": "assets/ServiceDetail-D7zvKTEJ.js",
     "name": "ServiceDetail",
     "src": "resources/js/Components/Tailwind/ServiceDetail.jsx",
     "isDynamicEntry": true,
@@ -13318,18 +13318,28 @@
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceDetailCatalog.jsx": {
-    "file": "assets/ServiceDetailCatalog-C75DsU7c.js",
+    "file": "assets/ServiceDetailCatalog-DKeZp7cF.js",
     "name": "ServiceDetailCatalog",
     "src": "resources/js/Components/Tailwind/Services/ServiceDetailCatalog.jsx",
-    "isEntry": true,
+    "isDynamicEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_navigation-MWoTpsXy.js",
+      "_pagination-pES01fIc.js",
+      "_autoplay-E5bqrXsF.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "resources/js/Components/About/Strengths.jsx",
+      "_TextWithHighlight-de4cdOrr.js",
+      "_chevron-right-Cug7tVUE.js",
+      "_chevron-left-JcR9Fe4w.js",
+      "_x-fof_H3Vv.js",
       "_index-yBjzXJbu.js",
-      "__commonjsHelpers-D6-XlEtG.js"
+      "__commonjsHelpers-D6-XlEtG.js",
+      "_create-element-if-not-defined-CLdVNY0a.js",
+      "_createLucideIcon-DfjclApS.js"
     ],
     "css": [
       "swiper.css"
@@ -14845,7 +14855,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-86q8gxdr.js",
+    "file": "assets/System-Bku8VhzL.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

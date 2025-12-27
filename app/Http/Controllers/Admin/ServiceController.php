@@ -104,10 +104,60 @@ class ServiceController extends BasicController
                 $request->merge(['slug' => Str::slug($request->name)]);
             }
 
+            // Procesar imágenes (image y background_image) usando la lógica del BasicController
+            $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+            $imageData = [];
+            
+            foreach ($this->imageFields as $field) {
+                // Check if image should be deleted (when hidden field contains 'DELETE')
+                $deleteFlag = $request->input($field . '_delete');
+                
+                if ($deleteFlag === 'DELETE') {
+                    // Find existing record to delete old image file
+                    if ($request->id) {
+                        $existingRecord = Service::find($request->id);
+                        if ($existingRecord && $existingRecord->{$field}) {
+                            $oldFilename = $existingRecord->{$field};
+                            if (!Text::has($oldFilename, '.')) {
+                                $oldFilename = "{$oldFilename}.enc";
+                            }
+                            $oldPath = "images/{$snake_case}/{$oldFilename}";
+                            Storage::delete($oldPath);
+                        }
+                    }
+                    // Set field to null in database
+                    $imageData[$field] = null;
+                    continue;
+                }
+                
+                // Handle new image upload
+                if (!$request->hasFile($field)) continue;
+                
+                // Delete old image if exists and we're updating
+                if ($request->id) {
+                    $existingRecord = Service::find($request->id);
+                    if ($existingRecord && $existingRecord->{$field}) {
+                        $oldFilename = $existingRecord->{$field};
+                        if (!Text::has($oldFilename, '.')) {
+                            $oldFilename = "{$oldFilename}.enc";
+                        }
+                        $oldPath = "images/{$snake_case}/{$oldFilename}";
+                        Storage::delete($oldPath);
+                    }
+                }
+                
+                $full = $request->file($field);
+                $uuid = Crypto::randomUUID();
+                $ext = $full->getClientOriginalExtension();
+                $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                Storage::put($path, file_get_contents($full));
+                $imageData[$field] = "{$uuid}.{$ext}";
+            }
+
             // Crear o actualizar el servicio
             $service = Service::updateOrCreate(
                 ['id' => $request->id],
-                [
+                array_merge([
                     'service_category_id' => $request->service_category_id,
                     'service_subcategory_id' => $request->service_subcategory_id,
                     'name' => $request->name,
@@ -120,7 +170,7 @@ class ServiceController extends BasicController
                     'is_features' => $request->is_features ?? true,
                     'is_specifications' => $request->is_specifications ?? true,
                     'is_gallery' => $request->is_gallery ?? true,
-                ]
+                ], $imageData)
             );
 
             // Procesar PDFs (múltiples archivos con ordenamiento)
