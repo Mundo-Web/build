@@ -15,6 +15,7 @@ import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
 import CreateReactScript from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
+import Fillable from "../Utils/Fillable";
 
 const testimoniesRest = new TestimoniesRest();
 
@@ -188,8 +189,37 @@ const Testimonies = ({ countries, details }) => {
                         },
                     },
                     {
+                        dataField: "role",
+                        caption: "Cargo/Rol",
+                        width: "150px",
+                    },
+                    {
                         dataField: "country",
-                        caption: "Pais",
+                        caption: "País",
+                        width: "120px",
+                    },
+                    {
+                        dataField: "rating",
+                        caption: "Rating",
+                        width: "120px",
+                        cellTemplate: (container, { data }) => {
+                            const stars = '⭐'.repeat(data.rating || 0);
+                            container.html(`<span title="${data.rating}/5">${stars}</span>`);
+                        },
+                    },
+                    {
+                        dataField: "description",
+                        caption: "Testimonio",
+                        minWidth: "300px",
+                        cellTemplate: (container, { data }) => {
+                            const truncate = (text, maxLength = 100) => {
+                                if (!text) return '';
+                                return text.length > maxLength 
+                                    ? text.substring(0, maxLength) + '...' 
+                                    : text;
+                            };
+                            container.html(`<span class="text-muted">${truncate(data.description)}</span>`);
+                        },
                     },
                     {
                         dataField: "visible",
@@ -240,62 +270,115 @@ const Testimonies = ({ countries, details }) => {
                 modalRef={modalRef}
                 title={isEditing ? "Editar testimonio" : "Agregar testimonio"}
                 onSubmit={onModalSubmit}
-                size="md"
+                size="lg"
             >
-                <div className="row" id="testimony-container">
-                    <input ref={idRef} type="hidden" />
-                    <div className="col-12">
-                        <div className="row">
-                            <ImageFormGroup
-                                eRef={imageRef}
-                                name="image"
-                                label="Imagen"
-                                col="col-sm-4 col-xs-12"
-                                aspect={1}
-                            />
-                            <div className="col-sm-8 col-xs-12">
-                                <InputFormGroup
-                                    eRef={nameRef}
-                                    label="Autor"
-                                    required
-                                />
-                                <InputFormGroup
-                                    eRef={roleRef}
-                                    label="Cargo/Rol"
-                                    required
-                                />
-                                <SelectFormGroup
-                                    eRef={countryRef}
-                                    label="Pais"
-                                    required
-                                    dropdownParent="#testimony-container"
-                                >
-                                    {countries.map((country, i) => (
-                                        <option
-                                            key={`country-${i}`}
-                                            value={country.id}
-                                        >
-                                            {country.name}
-                                        </option>
-                                    ))}
-                                </SelectFormGroup>
+                <input ref={idRef} type="hidden" />
+                
+                <div id="testimony-container">
+                    <div className="row g-3">
+                        {/* Información del Autor */}
+                        <div className="col-12">
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header bg-light">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-user me-2 text-primary"></i>
+                                        Información del Autor
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row g-3">
+                                        <div className="col-md-4">
+                                            <ImageFormGroup
+                                                eRef={imageRef}
+                                                name="image"
+                                                label="Foto del Autor"
+                                                col="col-12"
+                                                aspect={1}
+                                            />
+                                            <small className="text-muted">
+                                                <i className="fas fa-info-circle me-1"></i>
+                                                Imagen cuadrada 1:1
+                                            </small>
+                                        </div>
+                                        <div className="col-md-8">
+                                            <div className="row ">
+                                                <div className="col-md-12">
+                                                    <InputFormGroup
+                                                        eRef={nameRef}
+                                                        label="Nombre Completo"
+                                                        placeholder="Ej: Juan Pérez"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="col-md-12">
+                                                    <InputFormGroup
+                                                        eRef={roleRef}
+                                                        label="Cargo/Profesión"
+                                                        placeholder="Ej: Paciente Operado"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="col-md-12">
+                                                    <SelectFormGroup
+                                                        eRef={countryRef}
+                                                        label="País de Origen"
+                                                        required
+                                                        dropdownParent="#testimony-container"
+                                                    >
+                                                        {countries.map((country, i) => (
+                                                            <option
+                                                                key={`country-${i}`}
+                                                                value={country.id}
+                                                            >
+                                                                {country.name}
+                                                            </option>
+                                                        ))}
+                                                    </SelectFormGroup>
+                                                </div>
+                                                <div className="col-md-12">
+                                                    <InputFormGroup
+                                                        eRef={ratingRef}
+                                                        label="Calificación (1-5 estrellas)"
+                                                        type="number"
+                                                        min="1"
+                                                        max="5"
+                                                        placeholder="5"
+                                                        required
+                                                    />
+                                                  
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Testimonio */}
+                        <div className="col-12">
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header bg-light">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-comment-dots me-2 text-success"></i>
+                                        Testimonio
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <TextareaFormGroup
+                                        eRef={descriptionRef}
+                                        label="Descripción del Testimonio"
+                                        rows={5}
+                                        placeholder="Escribe aquí la experiencia y opinión..."
+                                        required
+                                    />
+                                    <small className="text-muted">
+                                        <i className="fas fa-info-circle me-1"></i>
+                                        Describe la experiencia completa y detallada
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <InputFormGroup
-                        eRef={ratingRef}
-                        label="Rating (1-5)"
-                        type="number"
-                        min="1"
-                        max="5"
-                        required
-                    />
-                    <TextareaFormGroup
-                        eRef={descriptionRef}
-                        label="Descripción"
-                        rows={3}
-                        required
-                    />
                 </div>
             </Modal>
         </>
