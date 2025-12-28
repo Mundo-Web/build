@@ -81,8 +81,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                 }
                             />
                         </div>
-                        <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-accent/10 rounded-full blur-3xl"></div>
-                        <div className="absolute -top-8 -right-8 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+                       
                     </div>
                 </div>
             </div>
