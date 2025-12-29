@@ -2005,7 +2005,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-WYz2zhYm.js",
+    "file": "assets/Banners-Cwc9Bqfq.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -5839,7 +5839,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-Dg-bBm0N.js",
+    "file": "assets/Banner-DiCycHg1.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -5875,7 +5875,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx": {
-    "file": "assets/BannerAboutStats-CaHPFaA3.js",
+    "file": "assets/BannerAboutStats-UxtNMTDR.js",
     "name": "BannerAboutStats",
     "src": "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx",
     "isDynamicEntry": true,
@@ -8366,7 +8366,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-CPIVU7Hg.js",
+    "file": "assets/Contact-DoB8cTNC.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -8588,7 +8588,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Faq.jsx": {
-    "file": "assets/Faq-7RezaMcq.js",
+    "file": "assets/Faq-DapwUBvr.js",
     "name": "Faq",
     "src": "resources/js/Components/Tailwind/Faq.jsx",
     "isDynamicEntry": true,
@@ -13400,7 +13400,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-BFKmI-4v.js",
+    "file": "assets/Service-BXJgBS96.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -14086,7 +14086,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-BSOFHfhn.js",
+    "file": "assets/Testimonials-tHWrZhFY.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -14996,7 +14996,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Beng-4vp.js",
+    "file": "assets/System-C7ARdL3r.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

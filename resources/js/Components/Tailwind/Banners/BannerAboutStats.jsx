@@ -10,7 +10,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
 
     return (
         <section className={`py-24 px-primary 2xl:px-0 bg-white ${data?.class || ''}`}>
-            <div className="max-w-7xl mx-auto">
+            <div className="2xl:max-w-7xl mx-auto">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
                     {/* Contenido de texto y estadísticas */}
                     <div className="space-y-8 min-w-0">
@@ -25,7 +25,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
 
                         </div>
 
-                        <p className="text-lg text-gray-600 leading-relaxed font-light whitespace-pre-line">
+                        <p className="text-lg text-neutral-dark leading-relaxed font-light whitespace-pre-line">
                             <TextWithHighlight
                                 text={data?.description}
                                 color="bg-primary"

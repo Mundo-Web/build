@@ -11,7 +11,7 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
   }
 
   return (
-    <section id="testimonios" className="py-24 px-4 bg-sections-color">
+    <section id="testimonios" className="py-24 px-primary 2xl:px-0 bg-sections-color">
       <div className="max-w-5xl mx-auto">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
@@ -47,7 +47,7 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
 
               return (
                 <SwiperSlide key={index}>
-                  <div className="bg-white rounded-3xl shadow-lg p-8 md:p-12 border border-gray-100">
+                  <div className="bg-white my-10 lg:my-0 rounded-3xl shadow-lg p-8 md:p-12 border border-gray-100">
                     {/* Estrellas de rating */}
                     <div className="flex gap-1 mb-6 justify-center">
                       {Array.from({ length: testimonial.rating || 5 }).map((_, i) => (

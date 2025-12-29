@@ -92,8 +92,8 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
   const openingHours = generalsData.find(item => item.correlative === 'opening_hours')?.description || 'Lunes - Viernes: 9:00 - 19:00\nSábados: 9:00 - 14:00';
 
   return (
-    <section id="contacto" className="py-24 px-4 bg-sections-color">
-      <div className="max-w-6xl mx-auto">
+    <section id="contacto" className="py-24 px-primary 2xl:px-0 bg-sections-color">
+      <div className="2xl:max-w-7xl mx-auto">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
             Agenda tu <span className="font-light">Evaluación</span>

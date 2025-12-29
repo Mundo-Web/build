@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
 // Función helper para convertir HTML a texto plano y cortar palabras
@@ -64,41 +65,53 @@ const ServiceCard = ({ service }) => {
     );
 };
 
-const CategoryHeader = ({ category, color = 'bg-primary' }) => {
+const CategoryHeader = ({ category, color = 'bg-primary', isExpanded, onToggle, isMobile }) => {
     const imageUrl = category.image
         ? `/storage/images/service_category/${category.image}`
         : null;
 
     return (
-        <div className="flex items-center gap-4 mb-8">
-            {imageUrl ? (
-                <div className="w-12 h-12 overflow-hidden rounded-full bg-primary p-2">
-                    <img
-                        src={imageUrl}
-                        alt={category.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) =>
-                        (e.target.src =
-                            "/api/cover/thumbnail/null")
-                        }
+        <button
+            onClick={onToggle}
+            className={`flex items-center justify-between w-full  md:mb-8 md:cursor-default group ${isExpanded ? 'mb-8' : ''}`}
+        >
+            <div className="flex items-center gap-4">
+                {imageUrl ? (
+                    <div className="min-w-12 min-h-12 max-w-12 max-h-12 overflow-hidden rounded-full bg-primary p-2">
+                        <img
+                            src={imageUrl}
+                            alt={category.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) =>
+                            (e.target.src =
+                                "/api/cover/thumbnail/null")
+                            }
+                        />
+                    </div>
+                ) : (
+                    <div className={`p-3 ${color} rounded-xl flex items-center justify-center`}>
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                )}
+                <h3 className="text-2xl md:text-3xl font-light text-primary whitespace-pre-line text-left">
+                    <TextWithHighlight
+                        text={category.name}
+                        color="bg-accent"
                     />
-                </div>
-            ) : (
-                <div className={`p-3 ${color} rounded-xl flex items-center justify-center`}>
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                </div>
-            )}
-            <h3 className="text-3xl font-light text-primary whitespace-pre-line">
-                <TextWithHighlight
-                    text={category.name}
-                    color="bg-accent"
-                />
-            </h3>
-        </div>
+                </h3>
+            </div>
+            {/* Flecha solo visible en móvil */}
+            <ChevronDown 
+                className={`w-6 h-6 text-primary transition-transform duration-300 md:hidden ${isExpanded ? 'rotate-180' : ''}`}
+            />
+        </button>
     );
 };
 
 const ServiceWebQuirurgica = ({ data, items = [] }) => {
+    // Estado para acordeón en móvil (índice de categoría expandida, -1 = ninguna)
+    const [expandedCategory, setExpandedCategory] = useState(-1);
+
     // Agrupar servicios por categoría
     const groupedServices = items.reduce((acc, service) => {
         const categoryId = service.service_category_id || 'sin-categoria';
@@ -119,9 +132,13 @@ const ServiceWebQuirurgica = ({ data, items = [] }) => {
         return orderA - orderB;
     });
 
+    const toggleCategory = (index) => {
+        setExpandedCategory(expandedCategory === index ? -1 : index);
+    };
+
     return (
-        <section id="servicios" className={`py-24 px-4 bg-sections-color ${data?.class || ''}`}>
-            <div className="max-w-7xl mx-auto space-y-20">
+        <section id="servicios" className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
+            <div className=" 2xl:max-w-7xl mx-auto space-y-20">
                 {/* Encabezado */}
                 <div className="text-center space-y-4 max-w-3xl mx-auto">
                     <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight whitespace-pre-line">
@@ -142,18 +159,26 @@ const ServiceWebQuirurgica = ({ data, items = [] }) => {
                 </div>
 
                 {/* Categorías con sus servicios */}
-                <div className="space-y-16">
+                <div className="space-y-8 md:space-y-16">
                     {categories.map((group, index) => {
                         // Alternar colores para los iconos
                         const iconColor = index % 2 === 0 ? 'bg-primary' : 'bg-accent';
+                        const isExpanded = expandedCategory === index;
 
                         return (
-                            <div key={index}>
+                            <div key={index} className="border-b border-gray-200 pb-6 md:border-0 md:pb-0">
                                 <CategoryHeader
                                     category={group.category}
                                     color={iconColor}
+                                    isExpanded={isExpanded}
+                                    onToggle={() => toggleCategory(index)}
                                 />
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {/* En móvil: acordeón | En desktop: siempre visible */}
+                                <div className={`
+                                    grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6
+                                    overflow-hidden transition-all duration-300 ease-in-out
+                                    ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 md:max-h-none md:opacity-100'}
+                                `}>
                                     {group.services.map((service, serviceIndex) => (
                                         <ServiceCard key={serviceIndex} service={service} />
                                     ))}
