@@ -2005,7 +2005,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-BGZpCKXW.js",
+    "file": "assets/Banners-WYz2zhYm.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -5839,7 +5839,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-Dqn3FEE6.js",
+    "file": "assets/Banner-Dg-bBm0N.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -5875,15 +5875,22 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx": {
-    "file": "assets/BannerAboutStats--pJTheE3.js",
+    "file": "assets/BannerAboutStats-CaHPFaA3.js",
     "name": "BannerAboutStats",
     "src": "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx",
-    "isEntry": true,
+    "isDynamicEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "_autoplay-E5bqrXsF.js",
+      "_bannerUtils-Dj-jRlM8.js",
+      "_TextWithHighlight-de4cdOrr.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAd.jsx": {
@@ -6146,16 +6153,14 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerStaticSecond.jsx": {
-    "file": "assets/BannerStaticSecond-BtruCJ2b.js",
+    "file": "assets/BannerStaticSecond-ChD7RLtC.js",
     "name": "BannerStaticSecond",
     "src": "resources/js/Components/Tailwind/Banners/BannerStaticSecond.jsx",
-    "isDynamicEntry": true,
+    "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
-      "_autoplay-E5bqrXsF.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
-      "_TextWithHighlight-de4cdOrr.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
     ],
@@ -13642,7 +13647,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-D9xb6nES.js",
+    "file": "assets/Slider-ogLk918i.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -14991,7 +14996,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B6GNEmw2.js",
+    "file": "assets/System-Beng-4vp.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

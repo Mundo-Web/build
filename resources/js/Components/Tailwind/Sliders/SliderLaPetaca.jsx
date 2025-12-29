@@ -87,7 +87,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                     )}
 
                     <div className="absolute inset-0 z-20 flex items-center justify-center">
-                        <div className="text-center px-4  animate-fade-in">
+                        <div className="text-center px-primary  animate-fade-in">
                         
 
                             <h2 
