@@ -14,7 +14,7 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
     <section id="testimonios" className="py-24 px-primary 2xl:px-0 bg-sections-color">
       <div className="max-w-5xl mx-auto">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight">
             Historias de <span className="font-light">Éxito</span>
           </h2>
           <div className=" mx-auto"></div>

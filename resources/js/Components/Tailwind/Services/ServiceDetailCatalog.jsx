@@ -266,12 +266,12 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
             )}
 
             {/* Sección Principal */}
-            <section className={`py-12 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
+            <section id='section-container' className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
                 <div className="2xl:max-w-7xl mx-auto">
                     <div className="grid lg:grid-cols-4 gap-8">
                         {/* SIDEBAR - Lista de servicios MEJORADO */}
                         <div className="lg:col-span-1">
-                            <div className="sticky top-24 bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200/60">
+                            <div className="sticky top-48 bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200/60">
                                 {/* Header mejorado con gradiente sutil */}
                                 <div className="relative p-6 bg-gradient-to-br from-primary/5 to-accent">
                                     <div className="flex items-center justify-between mb-3">
@@ -298,11 +298,11 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                                     }`}
                                             >
                                                 {/* Imagen del servicio */}
-                                                <div className="relative w-14 h-14 flex-shrink-0 transition-all duration-300">
+                                                <div className="relative w-14 h-14 rounded-full flex-shrink-0 transition-all duration-300">
                                                     <img
                                                         src={service.image ? `/storage/images/service/${service.image}` : '/api/cover/thumbnail/null'}
                                                         alt={service.name}
-                                                        className={`w-full h-full object-cover transition-all duration-500 ${isActive
+                                                        className={`w-full h-full rounded-full object-cover transition-all duration-500 ${isActive
                                                             ? 'grayscale invert scale-105'
                                                             : 'group-hover:scale-110 group-hover:brightness-95'
                                                             }`}
@@ -538,7 +538,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                             </div>
 
                                             {/* Layout Fibonacci Mejorado - Sin espacios vacíos */}
-                                            <div className="grid grid-cols-12 gap-4">
+                                            <div className="grid grid-cols-12 gap-4 auto-rows-[300px]">
                                                 {selectedService.images.map((img, index) => {
                                                     // Patrón que se adapta mejor y no deja espacios vacíos
                                                     const patterns = [
@@ -563,7 +563,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                                                                 setLightboxOpen(true);
                                                             }}
                                                         >
-                                                            <div className={`relative w-full ${pattern.aspect}`}>
+                                                            <div className={`relative w-full h-full`}>
                                                                 <img
                                                                     src={`/storage/images/service/${img.image}`}
                                                                     alt={`${selectedService.name} - ${index + 1}`}

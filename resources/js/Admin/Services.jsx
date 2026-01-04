@@ -480,6 +480,16 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    const onFeaturedChange = async ({ id, value }) => {
+        const result = await servicesRest.boolean({
+            id,
+            field: "featured",
+            value,
+        });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
     const onDeleteClicked = async (row) => {
         const { isConfirmed } = await Swal.fire({
             title: "Eliminar registro",
@@ -660,6 +670,27 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                         onVisibleChange({
                                             id: data.id,
                                             value: !data.visible,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
+                    {
+                        dataField: "featured",
+                        caption: "Destacado",
+                        dataType: "boolean",
+                        width: "110px",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.featured == 1}
+                                    onChange={() =>
+                                        onFeaturedChange({
+                                            id: data.id,
+                                            value: !data.featured,
                                         })
                                     }
                                 />

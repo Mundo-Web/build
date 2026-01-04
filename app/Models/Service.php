@@ -26,6 +26,7 @@ class Service extends Model
         'pdf',
         'linkvideo',
         'visible',
+        'featured',
         'status',
         'is_features',
         'is_specifications',
@@ -34,6 +35,7 @@ class Service extends Model
 
     protected $casts = [
         'visible' => 'boolean',
+        'featured' => 'boolean',
         'status' => 'boolean',
         'is_features' => 'boolean',
         'is_specifications' => 'boolean',

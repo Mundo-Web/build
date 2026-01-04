@@ -15,10 +15,10 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
 
   return (
     <>
-      <section id="casos" className="py-24 px-4 bg-gradient-to-b from-white to-gray-50">
-        <div className="max-w-7xl mx-auto">
+      <section id="casos" className="py-24 px-primary bg-gradient-to-b from-white to-gray-50">
+        <div className="2xl:max-w-7xl mx-auto">
           <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
-            <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight">
               Casos <span className="font-light">Reales</span>
             </h2>
             <div className=" mx-auto"></div>
@@ -40,6 +40,7 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
                 clickable: true,
                 el: '.swiper-pagination-custom',
               }}
+              loop={items.length > 3}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
@@ -50,8 +51,8 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
                   spaceBetween: 24,
                 },
                 1024: {
-                  slidesPerView: 4,
-                  spaceBetween: 24,
+                  slidesPerView: 3,
+                  spaceBetween: 10,
                 },
               }}
               className="videos-swiper"
@@ -64,10 +65,10 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
 
                 return (
                   <SwiperSlide key={video.id || index}>
-                    <div className="px-2 h-full py-10">
+                    <div className="px-4 h-full py-10">
                       <div
                         onClick={() => setSelectedVideo(video)}
-                        className="relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+                        className="relative aspect-[9/16] rounded-3xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105"
                       >
                         <img
                           src={thumbnail}

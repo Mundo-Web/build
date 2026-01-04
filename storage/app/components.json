@@ -559,6 +559,26 @@
                 "generals": [
                     "header_menu_order"
                 ]
+            },
+               {
+                "id": "HeaderWebQuirurgica2",
+                "name": "Header - Web Quirurgica 2",
+                "image": "header-webquirurgica.png",
+                "data": [
+                    "logoWidth",
+                    "ctaText",
+                    "ctaLink",
+                    "footerText"
+                ],
+                "using": {
+                    "model": "ServiceCategory",
+                    "with": [
+                        "services"
+                    ]
+                },
+                "generals": [
+                    "header_menu_order"
+                ]
             }
         ]
     },
@@ -997,14 +1017,21 @@
                 "name": "Slider - La Petaca Hotel",
                 "image": "slider-lapetaca.png",
                 "data": [
+                    "animation_slider",
+                    "autoplayDelay",
+                    "showNavigation",
+                    "showIndicators",
                     "class_slider",
+                    "class_slider_section",
                     "class_title",
                     "class_description",
                     "class_button",
                     "class_secondary_button",
-                    "autoplayDelay",
-                    "showNavigation",
-                    "showIndicators"
+                    "class_overlay",
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "overlayDesktop",
+                    "imageBgPosition"
                 ],
                 "using": {
                     "model": "Slider"
@@ -4854,6 +4881,25 @@
                     "with": [
                         "category",
                         "subcategory"
+                    ]
+                }
+            },
+             {
+                "id": "ServiceWebQuirurgica2",
+                "name": "Servicios por Categoría - WebQuirurgica2",
+                "image": "service-webquirurgica.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": [
+                        "category",
+                        "subcategory"
+                    ],
+                 "filters": [
+                        "featured"
+                       
                     ]
                 }
             }

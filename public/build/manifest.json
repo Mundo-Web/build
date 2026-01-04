@@ -750,6 +750,13 @@
       "_createLucideIcon-DfjclApS.js"
     ]
   },
+  "_arrow-up-right-C0ruSTyU.js": {
+    "file": "assets/arrow-up-right-C0ruSTyU.js",
+    "name": "arrow-up-right",
+    "imports": [
+      "_createLucideIcon-DfjclApS.js"
+    ]
+  },
   "_autoplay-E5bqrXsF.js": {
     "file": "assets/autoplay-E5bqrXsF.js",
     "name": "autoplay",
@@ -1737,7 +1744,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-CmSp_-c4.js",
+    "file": "assets/About-BJct_pFZ.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -2005,7 +2012,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-Cwc9Bqfq.js",
+    "file": "assets/Banners-FJz3_gpm.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -3659,7 +3666,7 @@
     ]
   },
   "resources/js/Admin/Services.jsx": {
-    "file": "assets/Services-CFVE5YIf.js",
+    "file": "assets/Services-Cj_UUZeI.js",
     "name": "Services",
     "src": "resources/js/Admin/Services.jsx",
     "isEntry": true,
@@ -4247,7 +4254,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-CHsFZHyi.js",
+    "file": "assets/Blog-Chckctzv.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -4292,7 +4299,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-Cgiv2r2Z.js",
+    "file": "assets/BlogArticle-BR8DeWx-.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5839,7 +5846,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-DiCycHg1.js",
+    "file": "assets/Banner-pUJS4UpI.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -5875,7 +5882,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx": {
-    "file": "assets/BannerAboutStats-UxtNMTDR.js",
+    "file": "assets/BannerAboutStats--zQcZ1ZS.js",
     "name": "BannerAboutStats",
     "src": "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx",
     "isDynamicEntry": true,
@@ -6169,7 +6176,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-CZQE_FN5.js",
+    "file": "assets/Base-CwDgZ4mv.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -10154,7 +10161,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-SwlV7LZD.js",
+    "file": "assets/Header-DPcf5uq0.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -10184,7 +10191,8 @@
       "resources/js/Components/Tailwind/Headers/HeaderHuaillys.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderFirstClass.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderLaPetaca.jsx",
-      "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica.jsx"
+      "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica.jsx",
+      "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica2.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Headers/Components/LiveSearchBar.jsx": {
@@ -10888,6 +10896,18 @@
     "file": "assets/HeaderWebQuirurgica--pJTheE3.js",
     "name": "HeaderWebQuirurgica",
     "src": "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica2.jsx": {
+    "file": "assets/HeaderWebQuirurgica2--pJTheE3.js",
+    "name": "HeaderWebQuirurgica2",
+    "src": "resources/js/Components/Tailwind/Headers/HeaderWebQuirurgica2.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -13400,7 +13420,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-BXJgBS96.js",
+    "file": "assets/Service-BTveplH8.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -13418,11 +13438,12 @@
       "resources/js/Components/Tailwind/Services/ServiceSelection.jsx",
       "resources/js/Components/Tailwind/Services/ServiceSidebar.jsx",
       "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx",
-      "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica.jsx"
+      "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica.jsx",
+      "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica2.jsx"
     ]
   },
   "resources/js/Components/Tailwind/ServiceDetail.jsx": {
-    "file": "assets/ServiceDetail-DlvT8Dzy.js",
+    "file": "assets/ServiceDetail-CkreLerC.js",
     "name": "ServiceDetail",
     "src": "resources/js/Components/Tailwind/ServiceDetail.jsx",
     "isDynamicEntry": true,
@@ -13457,7 +13478,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceDetailCatalog.jsx": {
-    "file": "assets/ServiceDetailCatalog-DiJ3IplD.js",
+    "file": "assets/ServiceDetailCatalog-DR-krybf.js",
     "name": "ServiceDetailCatalog",
     "src": "resources/js/Components/Tailwind/Services/ServiceDetailCatalog.jsx",
     "isDynamicEntry": true,
@@ -13566,6 +13587,18 @@
     "file": "assets/ServiceWebQuirurgica--pJTheE3.js",
     "name": "ServiceWebQuirurgica",
     "src": "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica2.jsx": {
+    "file": "assets/ServiceWebQuirurgica2--pJTheE3.js",
+    "name": "ServiceWebQuirurgica2",
+    "src": "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica2.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -14086,7 +14119,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-tHWrZhFY.js",
+    "file": "assets/Testimonials-BlGcwTal.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -14611,7 +14644,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-BjbqGWzl.js",
+    "file": "assets/Contact-Wzz5WBpv.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -14630,7 +14663,7 @@
       "_user-BZB1h7Cv.js",
       "_mail-drJGpT4k.js",
       "_message-square-3fUfiy2J.js",
-      "_createLucideIcon-DfjclApS.js",
+      "_arrow-up-right-C0ruSTyU.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_index.esm-C48oHfFw.js",
@@ -14646,6 +14679,7 @@
       "_preload-helper-BfFHrpNk.js",
       "resources/js/Components/Tailwind/Footer.jsx",
       "resources/js/Components/Tailwind/TopBar.jsx",
+      "_createLucideIcon-DfjclApS.js",
       "_BasicRest-BML1C-ua.js",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_index-pSueRYGM.js"
@@ -14656,7 +14690,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-BFvnb9MB.js",
+    "file": "assets/CourseDetails-BXXloOZi.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -14693,7 +14727,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-BWHDOQGg.js",
+    "file": "assets/Courses-D4uyxEVX.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -14788,7 +14822,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-1PSDbbUF.js",
+    "file": "assets/Home--bWv1ZPh.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -14996,7 +15030,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-C7ARdL3r.js",
+    "file": "assets/System-z2WD8ul_.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
