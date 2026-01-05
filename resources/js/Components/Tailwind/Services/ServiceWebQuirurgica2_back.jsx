@@ -48,7 +48,7 @@ const ServiceCard = ({ service, index }) => {
     return (
         <a
             href={serviceUrl}
-            className={`${pattern.cols} group relative overflow-hidden -3xl shadow-xl hover:shadow-2xl transition-all duration-700 cursor-pointer block`}
+            className={`${pattern.cols} group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 cursor-pointer block`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -73,7 +73,7 @@ const ServiceCard = ({ service, index }) => {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-1000 ease-out origin-center"></div>
                 
                 {/* Ícono flotante superior derecha con animación mejorada */}
-                <div className="absolute top-6 right-6 w-12 h-12 bg-white/10 backdrop-blur-xl -full flex items-center justify-center border border-accent/50 shadow-2xl transform translate-x-20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out z-10">
+                <div className="absolute top-6 right-6 w-12 h-12 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-accent/50 shadow-2xl transform translate-x-20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out z-10">
                     <ArrowUpRight className="w-5 h-5 text-white" />
                 </div>
 
@@ -112,7 +112,7 @@ const ServiceCard = ({ service, index }) => {
             </div>
 
             {/* Borde elegante al hover con color accent */}
-            <div className="absolute inset-0 border-2 border-white/0  -3xl transition-all duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 border-2 border-white/0  rounded-3xl transition-all duration-700 pointer-events-none"></div>
         </a>
     );
 };

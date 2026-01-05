@@ -2,7 +2,7 @@ import BasicRest from "../BasicRest";
 
 class CaseStudiesRest extends BasicRest {
   path = 'admin/case-studies'
-  hasFiles = false
+  hasFiles = true
 }
 
 export default CaseStudiesRest

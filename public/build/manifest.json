@@ -1752,7 +1752,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-BsfAFDr4.js",
+    "file": "assets/About-Dy2wG6kF.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -2020,7 +2020,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-CQGYflDv.js",
+    "file": "assets/Banners-CIBoXdKb.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -2205,7 +2205,7 @@
     ]
   },
   "resources/js/Admin/CaseStudies.jsx": {
-    "file": "assets/CaseStudies-DNSqKR0v.js",
+    "file": "assets/CaseStudies-C2zrs20p.js",
     "name": "CaseStudies",
     "src": "resources/js/Admin/CaseStudies.jsx",
     "isEntry": true,
@@ -2218,6 +2218,7 @@
       "resources/js/Utils/ReactAppend.jsx",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "_BasicRest-BML1C-ua.js",
+      "_ImageFormGroup-40MuGzez.js",
       "_InputFormGroup-iZIO11ZN.js",
       "_Modal-xDw9ufjg.js",
       "_Table-O7_BONvQ.js",
@@ -4262,7 +4263,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-DWAta5uF.js",
+    "file": "assets/Blog-CVBHJ8ao.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -4307,7 +4308,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-CDacKolG.js",
+    "file": "assets/BlogArticle-57JSk2mB.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -5854,7 +5855,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-BJmkkczZ.js",
+    "file": "assets/Banner-D0IHxGdG.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -5890,7 +5891,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx": {
-    "file": "assets/BannerAboutStats--zQcZ1ZS.js",
+    "file": "assets/BannerAboutStats-BsOEDRlx.js",
     "name": "BannerAboutStats",
     "src": "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx",
     "isDynamicEntry": true,
@@ -6184,7 +6185,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-C3p3Inl0.js",
+    "file": "assets/Base-BjwhLaxS.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -8381,7 +8382,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-DaTnDKgW.js",
+    "file": "assets/Contact-Bk6YSfQF.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -8558,6 +8559,24 @@
       "_index-B6ujFmsw.js"
     ]
   },
+  "resources/js/Components/Tailwind/Contact/ContactWebQuirurgica_back.jsx": {
+    "file": "assets/ContactWebQuirurgica_back-BEDlTNk3.js",
+    "name": "ContactWebQuirurgica_back",
+    "src": "resources/js/Components/Tailwind/Contact/ContactWebQuirurgica_back.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Contact/ThankContact.jsx": {
     "file": "assets/ThankContact--pJTheE3.js",
     "name": "ThankContact",
@@ -8603,7 +8622,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Faq.jsx": {
-    "file": "assets/Faq-DapwUBvr.js",
+    "file": "assets/Faq-BG_4Wsmp.js",
     "name": "Faq",
     "src": "resources/js/Components/Tailwind/Faq.jsx",
     "isDynamicEntry": true,
@@ -8674,6 +8693,18 @@
     "file": "assets/FaqWebQuirurgica--pJTheE3.js",
     "name": "FaqWebQuirurgica",
     "src": "resources/js/Components/Tailwind/Faqs/FaqWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Faqs/FaqWebQuirurgica_back.jsx": {
+    "file": "assets/FaqWebQuirurgica_back--pJTheE3.js",
+    "name": "FaqWebQuirurgica_back",
+    "src": "resources/js/Components/Tailwind/Faqs/FaqWebQuirurgica_back.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -10169,7 +10200,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-B4DaQgLF.js",
+    "file": "assets/Header-DnJLc6XI.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -13428,7 +13459,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-DPC_FWgG.js",
+    "file": "assets/Service-bhAvJsK8.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -13623,6 +13654,18 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica2_back.jsx": {
+    "file": "assets/ServiceWebQuirurgica2_back--pJTheE3.js",
+    "name": "ServiceWebQuirurgica2_back",
+    "src": "resources/js/Components/Tailwind/Services/ServiceWebQuirurgica2_back.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Signup.jsx": {
     "file": "assets/Signup-kmtOPaSt.js",
     "name": "Signup",
@@ -13696,7 +13739,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-Zw0F5r7Y.js",
+    "file": "assets/Slider-C1cz_mDq.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -14135,7 +14178,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-BlGcwTal.js",
+    "file": "assets/Testimonials-B0KTC6Os.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -14232,10 +14275,40 @@
       "swiper.css"
     ]
   },
+  "resources/js/Components/Tailwind/Testimonials/TestimonialsTextWebQuirurgica_back.jsx": {
+    "file": "assets/TestimonialsTextWebQuirurgica_back-DIe4y5s8.js",
+    "name": "TestimonialsTextWebQuirurgica_back",
+    "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsTextWebQuirurgica_back.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
+      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
+      "resources/js/Components/About/Strengths.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
+    ]
+  },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsVideosWebQuirurgica.jsx": {
-    "file": "assets/TestimonialsVideosWebQuirurgica-DIe4y5s8.js",
+    "file": "assets/TestimonialsVideosWebQuirurgica--pJTheE3.js",
     "name": "TestimonialsVideosWebQuirurgica",
     "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsVideosWebQuirurgica.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Testimonials/TestimonialsVideosWebQuirurgica_back.jsx": {
+    "file": "assets/TestimonialsVideosWebQuirurgica_back-DIe4y5s8.js",
+    "name": "TestimonialsVideosWebQuirurgica_back",
+    "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsVideosWebQuirurgica_back.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -14660,7 +14733,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-D9d2gsl8.js",
+    "file": "assets/Contact-X99bPOux.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -14706,7 +14779,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-BJIz82w7.js",
+    "file": "assets/CourseDetails-DZ0kT5vy.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -14743,7 +14816,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-B72ANe9S.js",
+    "file": "assets/Courses-BJnZ7lwW.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -14838,7 +14911,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-D9mG3qav.js",
+    "file": "assets/Home-B0GwPF08.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -15046,7 +15119,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DSMdOAZf.js",
+    "file": "assets/System-M-jY7aMh.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

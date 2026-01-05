@@ -66,18 +66,13 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                             <SwiperSlide key={index}>
                                                 <div className="group h-full">
                                                     {/* Card con diseño premium */}
-                                                    <div className="relative h-full bg-gradient-to-br from-white via-neutral-50/50 to-white rounded-3xl p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden">
-                                                        {/* Efecto de brillo en hover */}
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-accent/0 via-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                                                        
-                                                        {/* Línea decorativa superior */}
-                                                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-center"></div>
-                                                        
+                                                    <div className="relative h-full bg-gradient-to-br from-white via-neutral-50/50 to-white -3xl p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden">
+                                                      
                                                         {/* Contenido */}
                                                         <div className="relative flex flex-col items-center text-center space-y-4">
                                                             {/* Icono con backdrop blur */}
                                                             <div className="relative">
-                                                                <div className="relative bg-primary backdrop-blur-sm p-5 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700">
+                                                                <div className="relative bg-primary backdrop-blur-sm p-5 -full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700">
                                                                     <img
                                                                         src={symbolUrl}
                                                                         alt={item.name}
@@ -107,7 +102,6 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                                         </div>
 
                                                         {/* Línea decorativa inferior */}
-                                                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100"></div>
                                                     </div>
                                                 </div>
                                             </SwiperSlide>
@@ -120,7 +114,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
 
                     {/* Imagen */}
                     <div className="relative">
-                        <div className="relative rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500">
+                        <div className="relative -3xl border-secondary border-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500">
                             <img
                                 src={imageUrl}
                                 alt={data?.name || 'Banner'}

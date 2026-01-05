@@ -17,6 +17,7 @@ class CaseStudy extends Model
         'name',
         'description',
         'video_url',
+        'image',
         'order_index',
         'visible',
         'status',

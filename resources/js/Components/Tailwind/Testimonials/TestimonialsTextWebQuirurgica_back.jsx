@@ -47,7 +47,7 @@ const TestimonialsTextWebQuirurgica = ({ items }) => {
 
               return (
                 <SwiperSlide key={index}>
-                  <div className="bg-white my-10 lg:my-0 shadow-lg p-8 md:p-12 border border-gray-100">
+                  <div className="bg-white my-10 lg:my-0 rounded-3xl shadow-lg p-8 md:p-12 border border-gray-100">
                     {/* Estrellas de rating */}
                     <div className="flex gap-1 mb-6 justify-center">
                       {Array.from({ length: testimonial.rating || 5 }).map((_, i) => (

@@ -113,7 +113,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                                 }}
                             >
                                 <button
-                                    className={`flex items-center gap-2 text-white font-light text-base tracking-tight hover:text-white/80 transition-colors py-2 ${activeDropdown === 'services' ? 'text-white/80' : ''
+                                    className={`flex items-center gap-2 text-white font-light text-lg tracking-tight hover:text-white/80 transition-colors py-2 ${activeDropdown === 'services' ? 'text-white/80' : ''
                                         }`}
                                 >
                                     Servicios
@@ -124,7 +124,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                                 {/* Mega Menu Dropdown */}
                                 {activeDropdown === 'services' && items && items.length > 0 && (
                                     <div className="absolute top-full left-0 pt-2 w-64 animate-fadeIn">
-                                        <div className="bg-white rounded-xl shadow-xl overflow-visible border border-gray-100">
+                                        <div className="bg-white -xl shadow-xl overflow-visible border border-gray-100">
                                             <div className="py-2">
                                                 {items.map((category) => (
                                                     <div
@@ -133,12 +133,12 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                                                         onMouseEnter={() => setActiveCategory(category.id)}
                                                         onMouseLeave={() => setActiveCategory(null)}
                                                     >
-                                                        <div className={`px-4 py-2.5 text-secondary font-light text-sm cursor-pointer transition-all duration-200 flex items-center justify-between group ${
+                                                        <div className={`px-4 py-2.5 text-secondary font-light text-lg cursor-pointer transition-all duration-200 flex items-center justify-between group ${
                                                             activeCategory === category.id ? 'bg-primary/10 text-primary' : 'hover:bg-primary/5'
                                                         }`}>
                                                             <span>{category.alias || category.name}</span>
                                                             {category.services && category.services.length > 0 && (
-                                                                <ChevronDown className={`w-4 h-4 -rotate-90 transition-all duration-200 ${
+                                                                <ChevronDown className={`min-w-4 min-h-4 max-w-4 max-h-4 -rotate-90 transition-all duration-200 ${
                                                                     activeCategory === category.id ? 'text-primary translate-x-0.5' : 'text-gray-400 group-hover:text-primary'
                                                                 }`} />
                                                             )}
@@ -147,13 +147,13 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                                                         {/* Submenu de Servicios en Cascada */}
                                                         {activeCategory === category.id && category.services && category.services.length > 0 && (
                                                             <div className="absolute left-full top-0 pl-2 w-72 z-50">
-                                                                <div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-slideInRight">
-                                                                    <div className="py-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                                                <div className="bg-white -xl shadow-2xl border border-gray-100 overflow-hidden animate-slideInRight">
+                                                                    <div className=" max-h-[400px] overflow-y-auto custom-scrollbar">
                                                                         {category.services.map((service, idx) => (
                                                                             <a
                                                                                 key={service.id}
                                                                                 href={`/servicio/${service.slug}`}
-                                                                                className="block px-4 py-2.5 text-neutral-dark font-light text-sm hover:bg-primary/10 hover:text-primary transition-all duration-200 "
+                                                                                className="block px-4 py-3 text-neutral-dark font-light text-lg hover:bg-primary hover:text-white transition-all duration-200 "
                                                                                 style={{
                                                                                     animation: `fadeInStagger 0.15s ease-out ${idx * 0.03}s both`
                                                                                 }}
@@ -178,7 +178,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                                 <a
                                     key={page.id}
                                     href={page.path}
-                                    className="text-white font-light text-base tracking-tight hover:text-white/80 transition-colors"
+                                    className="text-white font-light text-lg tracking-tight hover:text-white/80 transition-colors"
                                 >
                                     {page.name}
                                 </a>
@@ -188,7 +188,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                             {data?.ctaText && data?.ctaLink && (
                                 <a
                                     href={data.ctaLink}
-                                    className="px-6 py-3 bg-white rounded-full text-primary text-sm font-semibold tracking-wide hover:bg-white/90 transition-all duration-300"
+                                    className={`px-6 py-3 bg-white -full text-primary text-sm font-semibold tracking-wide hover:bg-secondary hover:text-white transition-all duration-300 ${data?.class_cta_button || ''}`}
                                     style={{ letterSpacing: '0.03em' }}
                                 >
                                     {data.ctaText}
@@ -245,7 +245,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                 {/* Close Button */}
                 <button
                     onClick={() => setIsMenuOpen(false)}
-                    className="absolute top-8 right-8 w-11 h-11 flex items-center justify-center hover:bg-slate-50 rounded-full transition-all duration-300 group cursor-pointer"
+                    className="absolute top-8 right-8 w-11 h-11 flex items-center justify-center hover:bg-slate-50 -full transition-all duration-300 group cursor-pointer"
                     aria-label="Cerrar menú"
                     style={{
                         animation: isMenuOpen ? 'slideIn 0.3s ease-out 0.2s both' : 'none',
@@ -290,7 +290,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                                                                     key={service.id}
                                                                     href={`/servicio/${service.slug}`}
                                                                     onClick={() => setIsMenuOpen(false)}
-                                                                    className="block py-1 text-[15px] font-light text-neutral-light hover:text-primary hover:bg-primary/5 transition-all duration-300 rounded-md px-2 -ml-2"
+                                                                    className="block py-1 text-[15px] font-light text-neutral-light hover:text-primary hover:bg-primary/5 transition-all duration-300 -md px-2 -ml-2"
                                                                 >
                                                                     {service.name}
                                                                 </a>
@@ -329,7 +329,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
                     {data?.ctaText && data?.ctaLink && (
                         <a
                             href={data.ctaLink}
-                            className="w-full px-8 py-4 bg-primary rounded-full text-white text-[13px] font-light tracking-wide hover:bg-secondary transition-all duration-500 mt-8 text-center block"
+                            className="w-full px-8 py-4 bg-primary -full text-white text-[13px] font-light tracking-wide hover:bg-secondary transition-all duration-500 mt-8 text-center block"
                             style={{
                                 animation: isMenuOpen ? 'slideIn 0.4s ease-out 0.5s both' : 'none',
                                 letterSpacing: '0.05em'

@@ -568,6 +568,7 @@
                     "logoWidth",
                     "ctaText",
                     "ctaLink",
+                    "class_cta_button",
                     "footerText"
                 ],
                 "using": {
@@ -1023,6 +1024,7 @@
                     "showIndicators",
                     "class_slider",
                     "class_slider_section",
+                    "class_content_slider",
                     "class_title",
                     "class_description",
                     "class_button",

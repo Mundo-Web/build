@@ -163,7 +163,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
               </div>
             </div>
 
-            <div className="bg-white  p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h4 className="text-lg font-light text-primary mb-4">Horarios de Atención</h4>
               <div className="text-neutral-light font-light whitespace-pre-line">
                 {openingHours}
@@ -172,7 +172,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
           </div>
 
           {/* Formulario */}
-          <div className="bg-white  shadow-lg p-8 border border-gray-100">
+          <div className="bg-white rounded-3xl shadow-lg p-8 border border-gray-100">
             <form onSubmit={onSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-light text-neutral-dark mb-2">
@@ -181,7 +181,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                 <input
                   ref={nameRef}
                   type="text"
-                  className="w-full px-4 py-3 border border-gray-200  focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light"
                   placeholder="Tu nombre"
                   required
                   disabled={sending}
@@ -195,7 +195,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                 <input
                   ref={phoneRef}
                   type="tel"
-                  className="w-full px-4 py-3 border border-gray-200  focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light"
                   placeholder="Tu teléfono"
                   required
                   disabled={sending}
@@ -209,7 +209,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                 <input
                   ref={emailRef}
                   type="email"
-                  className="w-full px-4 py-3 border border-gray-200  focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light"
                   placeholder="tu@email.com"
                   required
                   disabled={sending}
@@ -225,7 +225,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     disabled={sending}
-                    className="w-full px-4 py-3 border border-gray-200  focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light text-left flex items-center justify-between bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light text-left flex items-center justify-between bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className={selectedService ? 'text-neutral-dark' : 'text-neutral-light'}>
                       {selectedService ? selectedService.name : 'Selecciona un procedimiento'}
@@ -242,7 +242,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                   </button>
 
                   {isDropdownOpen && (
-                    <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200  shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                       {items.map((service, index) => (
                         <button
                           key={service.id || index}
@@ -269,7 +269,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
                 <textarea
                   ref={descriptionRef}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-200  focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-light resize-none"
                   placeholder="Cuéntanos tu caso..."
                   disabled={sending}
                 />
@@ -278,7 +278,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full px-8 py-4 bg-primary hover:bg-secondary text-white  font-light text-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full px-8 py-4 bg-primary hover:bg-secondary text-white rounded-full font-light text-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] transform flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 <svg className="w-5 h-5 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

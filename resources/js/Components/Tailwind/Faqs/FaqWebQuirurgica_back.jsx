@@ -21,7 +21,7 @@ const FaqWebQuirurgica = ({ data, faqs }) => {
           {faqs.map((faq, index) => (
             <div
               key={faq.id || index}
-              className="bg-white border border-gray-200  overflow-hidden hover:shadow-lg transition-all duration-300"
+              className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
