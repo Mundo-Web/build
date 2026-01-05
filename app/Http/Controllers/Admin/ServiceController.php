@@ -10,6 +10,7 @@ use App\Models\ServiceImage;
 use App\Models\ServiceFeature;
 use App\Models\ServiceSpecification;
 use App\Models\Partner;
+use App\Models\AnalyticsEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\ResponseFactory;
@@ -391,4 +392,81 @@ class ServiceController extends BasicController
         
         return parent::beforeSave($request);
     }
+
+    /**
+     * Incrementar contador de vistas del servicio y registrar analytics
+     */
+    public function updateViews(Request $request)
+    {
+        try {
+            $service = Service::findOrFail($request->id);
+            
+            // Obtener información del dispositivo y sesión
+            $deviceType = $this->getDeviceType($request);
+            $sessionId = $request->session()->getId();
+            $userId = auth()->check() ? auth()->id() : null;
+            
+            // Verificar si ya existe un evento reciente (últimos 5 minutos) para evitar duplicados
+            $recentEvent = AnalyticsEvent::where('session_id', $sessionId)
+                ->where('service_id', $service->id)
+                ->where('event_type', 'service_view')
+                ->where('created_at', '>', now()->subMinutes(5))
+                ->first();
+            
+            // Solo incrementar si no hay evento reciente (anti-bot básico)
+            if (!$recentEvent) {
+                // Incrementar contador de vistas
+                $service->increment('views');
+                
+                // Registrar evento en analytics
+                AnalyticsEvent::create([
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'event_type' => 'service_view',
+                    'service_id' => $service->id,
+                    'page_url' => $request->input('page_url', url()->previous()),
+                    'device_type' => $deviceType,
+                    'source' => $request->input('source'),
+                    'medium' => $request->input('medium'),
+                    'campaign' => $request->input('campaign'),
+                    'metadata' => [
+                        'service_name' => $service->name,
+                        'service_category' => $service->category ? $service->category->name : null,
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]
+                ]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'views' => $service->views
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error updating service views: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error al actualizar vistas'
+            ], 500);
+        }
+    }
+
+    /**
+     * Detectar tipo de dispositivo
+     */
+    private function getDeviceType(Request $request)
+    {
+        $userAgent = $request->userAgent();
+        
+        if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', $userAgent)) {
+            return 'tablet';
+        }
+        
+        if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', $userAgent)) {
+            return 'mobile';
+        }
+        
+        return 'desktop';
+    }
 }
+

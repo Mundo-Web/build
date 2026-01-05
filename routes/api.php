@@ -180,6 +180,10 @@ Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'medi
 Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
 Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
 Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
+
+// Public route for service views tracking
+Route::post('/services/update-views', [AdminServiceController::class, 'updateViews']);
+
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
 Route::get('/item_images/media/{uuid}', [AdminItemImageController::class, 'media']);
