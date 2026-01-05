@@ -131,7 +131,7 @@ const ServiceWebQuirurgica2 = ({ data, items = [] }) => {
                 {/* Encabezado con diseño moderno */}
                 <div className="mb-20 max-w-4xl">
                 
-                    <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-[1.1] mb-6 whitespace-pre-line">
+                    <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight mb-6 whitespace-pre-line">
                         <TextWithHighlight
                             text={data?.name || 'Experiencia y *Profesionalismo* en Cada Detalle'}
                             color="bg-primary font-light"

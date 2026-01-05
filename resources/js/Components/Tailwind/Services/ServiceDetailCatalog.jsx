@@ -131,10 +131,10 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
                 <section className="py-8 lg:py-12 bg-gradient-to-b from-gray-50 to-white">
                     <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
                         <div className="text-center mb-8">
-                            <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight whitespace-pre-line">
+                            <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line">
                                 <TextWithHighlight
                                     text={data?.name || 'Nuestras *Categorias*'}
-                                    color="bg-accent"
+                                  color="bg-primary font-light"
                                 />
                             </h2>
                             <div className=" mx-auto"></div>
