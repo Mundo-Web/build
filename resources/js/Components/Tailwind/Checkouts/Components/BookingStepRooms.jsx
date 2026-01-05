@@ -1150,7 +1150,7 @@ export default function BookingStepRooms({
                     </div>
                     <div className="space-y-3">
                         <a
-                            href="/login"
+                            href="/iniciar-sesion"
                             className="block w-full py-4 px-6 text-center rounded-full font-bold bg-primary hover:bg-secondary text-white hover:shadow-xl transition-all duration-300 shadow-lg hover:scale-105 active:scale-95"
                         >
                             Iniciar sesión

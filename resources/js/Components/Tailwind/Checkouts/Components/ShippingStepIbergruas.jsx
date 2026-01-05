@@ -1629,7 +1629,7 @@ export default function ShippingStepIbergruas({
                             onClick={() => {
                                 setShowLoginModal(false);
                                 // Redirigir a login o abrir modal de login
-                                window.location.href = '/login';
+                                window.location.href = '/iniciar-sesion';
                             }}
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                         >
