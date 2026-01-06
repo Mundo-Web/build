@@ -59,18 +59,34 @@ const WhatsApp = () => {
                     whileTap={{ scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                    {/* Anillo de pulso suave y elegante */}
+                    {/* Anillo de pulso suave y elegante - Mejorado */}
                     <motion.div
-                        className="absolute inset-0 bg-green-500 rounded-full opacity-70"
+                        className="absolute inset-0 bg-green-500/40 rounded-full"
                         animate={{
-                            scale: [1, 1.6],
-                            opacity: [0.7, 0],
+                            scale: [1, 1.8],
+                            opacity: [0.5, 0],
                         }}
                         transition={{
-                            duration: 2.5,
+                            duration: 3,
                             repeat: Infinity,
-                            ease: [0.4, 0, 0.2, 1], // cubic-bezier para suavidad
-                            repeatDelay: 0.5,
+                            ease: [0.4, 0, 0.2, 1], // easeInOut personalizado más suave
+                            repeatDelay: 0.3,
+                        }}
+                    />
+
+                    {/* Segundo anillo para efecto más elegante */}
+                    <motion.div
+                        className="absolute inset-0 bg-green-400/30 rounded-full"
+                        animate={{
+                            scale: [1, 1.5],
+                            opacity: [0.4, 0],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: [0.4, 0, 0.2, 1],
+                            repeatDelay: 0.3,
+                            delay: 0.8, // Desfasado del primero
                         }}
                     />
 
@@ -80,7 +96,7 @@ const WhatsApp = () => {
                         alt="whatsapp"
                         className="w-16 h-16 relative z-10 cursor-pointer drop-shadow-xl"
                         animate={{
-                            y: [0, -4, 0],
+                            y: [0, -6, 0],
                         }}
                         transition={{
                             duration: 3,

@@ -7,7 +7,8 @@ const ContactKatya = React.lazy(() => import('./Contact/ContactKatya'))
 const ContactHuaillys = React.lazy(() => import('./Contact/ContactHuaillys'))
 const ThankContact = React.lazy(() => import('./Contact/ThankContact'))
 const ContactLaPetaca = React.lazy(() => import('./Contact/ContactLaPetaca'))
-const Contact = ({ which, data, contacts, setContact,generals=[] }) => {
+const ContactWebQuirurgica = React.lazy(() => import('./Contact/ContactWebQuirurgica'))
+const Contact = ({ which, data, contacts, setContact, generals = [], items = [] }) => {
   const getContact = () => {
     switch (which) {
       case 'ContactSimple':
@@ -24,6 +25,8 @@ const Contact = ({ which, data, contacts, setContact,generals=[] }) => {
         return <ThankContact data={data}  />
       case 'ContactLaPetaca':
         return <ContactLaPetaca data={data} contacts={contacts} setContact={setContact} generals={generals} />
+      case 'ContactWebQuirurgica':
+        return <ContactWebQuirurgica data={data} generals={generals} items={items} />
         default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }

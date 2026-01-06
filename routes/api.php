@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
+use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
@@ -34,6 +35,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesController;
 use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\RoomAvailabilityController as AdminRoomAvailabilityController;
 
 use App\Http\Controllers\Admin\DeliveryPriceController as AdminDeliveryPriceController;
 use App\Http\Controllers\Admin\TypesDeliveryController as AdminTypesDeliveryController;
@@ -93,6 +95,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ScrapController;
+use App\Http\Controllers\StrengthController;
 use App\Http\Controllers\TemporalyImageController;
 use App\Http\Controllers\UnifiedImportController;
 
@@ -143,6 +146,9 @@ Route::post('/tracking/add-to-cart', [App\Http\Controllers\Ecommerce\EcommerceTr
 Route::post('/tracking/initiate-checkout', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackInitiateCheckout']);
 Route::get('/tracking/purchase/{orderId}', [App\Http\Controllers\Ecommerce\EcommerceTrackingController::class, 'trackPurchase']);
 
+// Strengths API
+Route::get('/strengths', [StrengthController::class, 'getStrengths']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
 
@@ -175,6 +181,10 @@ Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'medi
 Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
 Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
 Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
+
+// Public route for service views tracking
+Route::post('/services/update-views', [AdminServiceController::class, 'updateViews']);
+
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
 Route::get('/item_images/media/{uuid}', [AdminItemImageController::class, 'media']);
@@ -227,8 +237,17 @@ Route::prefix('hotels')->group(function () {
     // Obtener calendario de disponibilidad
     Route::get('/rooms/{id}/calendar', [RoomAvailabilityController::class, 'calendar']);
     
+    // Obtener fechas bloqueadas/no disponibles (para deshabilitar en DatePicker)
+    Route::get('/rooms/{id}/blocked-dates', [AdminRoomAvailabilityController::class, 'getBlockedDates']);
+    
     // Crear reserva (pre-venta)
     Route::post('/bookings', [BookingController::class, 'create']);
+    
+    // Checkout de reservas con pago (Yape, Transferencia, etc.)
+    Route::post('/bookings/checkout', [BookingController::class, 'checkout']);
+    
+    // Obtener detalles de reserva por código (para página de confirmación)
+    Route::post('/bookings/order', [BookingController::class, 'getBookingOrder']);
     
     // Rastrear reserva por código
     Route::get('/bookings/{code}/track', [BookingController::class, 'track']);
@@ -310,6 +329,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/web-details', [AdminWebDetailController::class, 'save']);
     Route::post('/gallery', [AdminGalleryController::class, 'save']);
     Route::post('/gallery/config', [AdminGalleryController::class, 'saveConfig']);
+    Route::post('/gallery/visibility', [AdminGalleryController::class, 'updateVisibility']);
 
     Route::post('/items', [AdminItemController::class, 'save']);
     Route::post('/items/paginate', [AdminItemController::class, 'paginate'])->withoutMiddleware('throttle');
@@ -406,6 +426,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/service-categories/paginate', [AdminServiceCategoryController::class, 'paginate']);
     Route::patch('/service-categories/status', [AdminServiceCategoryController::class, 'status']);
     Route::patch('/service-categories/{field}', [AdminServiceCategoryController::class, 'boolean']);
+    Route::put('/service-categories/{id}/reorder', [AdminServiceCategoryController::class, 'reorder']);
     Route::delete('/service-categories/{id}', [AdminServiceCategoryController::class, 'delete']);
 
     Route::post('/service-subcategories', [AdminServiceSubCategoryController::class, 'save']);
@@ -453,6 +474,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/testimonies/status', [AdminTestimonyController::class, 'status']);
     Route::patch('/testimonies/{field}', [AdminTestimonyController::class, 'boolean']);
     Route::delete('/testimonies/{id}', [AdminTestimonyController::class, 'delete']);
+
+    Route::post('/case-studies', [AdminCaseStudyController::class, 'save']);
+    Route::post('/case-studies/paginate', [AdminCaseStudyController::class, 'paginate']);
+    Route::patch('/case-studies/status', [AdminCaseStudyController::class, 'status']);
+    Route::patch('/case-studies/{field}', [AdminCaseStudyController::class, 'boolean']);
+    Route::put('/case-studies/{id}/reorder', [AdminCaseStudyController::class, 'reorder']);
+    Route::delete('/case-studies/{id}', [AdminCaseStudyController::class, 'delete']);
 
     Route::post('/categories', [AdminCategoryController::class, 'save']);
     Route::post('/categories/paginate', [AdminCategoryController::class, 'paginate']);
@@ -571,13 +599,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/amenities/{id}', [AdminAmenityController::class, 'delete']);
 
     // Bookings (Reservas de habitaciones)
+    Route::get('/bookings/{id}', [AdminBookingController::class, 'show']);
     Route::post('/bookings', [AdminBookingController::class, 'save']);
     Route::post('/bookings/paginate', [AdminBookingController::class, 'paginate']);
     Route::post('/bookings/{id}/confirm', [AdminBookingController::class, 'confirm']);
     Route::post('/bookings/{id}/complete', [AdminBookingController::class, 'complete']);
     Route::post('/bookings/{id}/cancel', [AdminBookingController::class, 'cancel']);
     Route::post('/bookings/{id}/no-show', [AdminBookingController::class, 'noShow']);
+    Route::post('/bookings/{id}/update-sale-status', [AdminBookingController::class, 'updateSaleStatus']);
+    Route::get('/bookings/{id}/sale-status-history', [AdminBookingController::class, 'getSaleStatusHistory']);
     Route::delete('/bookings/{id}', [AdminBookingController::class, 'delete']);
+
+    // Room Availability (Disponibilidad de habitaciones)
+    Route::get('/room-availability/summary', [AdminRoomAvailabilityController::class, 'getSummary']);
+    Route::get('/room-availability/{roomId}/calendar', [AdminRoomAvailabilityController::class, 'getCalendar']);
+    Route::post('/room-availability/{roomId}/block', [AdminRoomAvailabilityController::class, 'blockDates']);
+    Route::post('/room-availability/{roomId}/update', [AdminRoomAvailabilityController::class, 'updateAvailability']);
+    Route::post('/room-availability/{roomId}/generate', [AdminRoomAvailabilityController::class, 'generateAvailability']);
 
 
     //JOB APLICATIONS

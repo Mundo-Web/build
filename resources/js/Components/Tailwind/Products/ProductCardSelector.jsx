@@ -9,6 +9,7 @@ const ProductCardColors = React.lazy(() => import("./Components/ProductCardColor
 const ProductCardColorsBoton = React.lazy(() => import("./Components/ProductCardColorsBoton"));
 const ProductCardFull = React.lazy(() => import("./Components/ProductCardFull"));
 const ProductCardSimple = React.lazy(() => import("./Components/ProductCardSimple"));
+const LaPetacaCard = React.lazy(() => import("./LaPetacaCard"));
 
 /**
  * Componente selector de tarjetas de productos
@@ -85,6 +86,17 @@ const ProductCardSelector = ({
             case "ProductCardSimple":
             case "simple":
                 return <ProductCardSimple {...commonProps} />;
+            
+            // Tarjeta LaPetaca para hoteles/habitaciones
+          
+            case "lapetaca":
+            
+                return (
+                    <LaPetacaCard 
+                        item={product}
+                        index={additionalProps.index || 0}
+                    />
+                );
             
             // Tarjeta por defecto
             case "ProductCard":

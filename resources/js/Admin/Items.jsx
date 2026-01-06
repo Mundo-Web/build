@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import Swal from "sweetalert2";
 import ItemsRest from "../Actions/Admin/ItemsRest";
+import AmenitiesRest from "../Actions/Admin/AmenitiesRest";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
@@ -23,7 +24,11 @@ import DynamicField from "../Components/Adminto/form/DynamicField";
 import ModalImportItem from "./Components/ModalImportItem";
 import Fillable from "../Utils/Fillable";
 
+
 const itemsRest = new ItemsRest();
+const amenitiesRest = new AmenitiesRest();
+
+
 
 const Items = ({ categories, brands, collections, stores, generals }) => {
     //!FALTA EDIT AND DELETEDE GALERIA
@@ -60,6 +65,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const featuresRef = useRef([]);
     const specificationsRef = useRef([]);
     const weightRef = useRef();
+    const amenitiesRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -75,6 +81,8 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const pdfRef = useRef();
     const [videos, setVideos] = useState([]);
     const videoUrlRef = useRef();
+    const [selectedAmenities, setSelectedAmenities] = useState([]);
+    const [amenities, setAmenities] = useState([]);
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -93,6 +101,17 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             url: URL.createObjectURL(file),
         }));
         setGallery((prev) => [...prev, ...newImages]);
+    };
+
+    useEffect(() => {
+        getAmenities();
+    }, []);
+
+    const getAmenities = async () => {
+        const result = await amenitiesRest.paginate({ page: 1, pageSize: 1000 });
+        if (result?.data) {
+            setAmenities(result.data);
+        }
     };
 
     const handleDragOver = (e) => {
@@ -366,6 +385,20 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
         setFeatures(data?.features?.map(f => typeof f === 'object' ? f : { feature: f }) || []);
         stockRef.current.value = data?.stock;
 
+        // Cargar amenidades seleccionadas
+        if (data?.amenities && Array.isArray(data.amenities)) {
+            const amenitiesIds = data.amenities.map(a => a.id || a);
+            setSelectedAmenities(amenitiesIds);
+            setTimeout(() => {
+                $(amenitiesRef.current).val(amenitiesIds).trigger('change');
+            }, 100);
+        } else {
+            setSelectedAmenities([]);
+            setTimeout(() => {
+                $(amenitiesRef.current).val([]).trigger('change');
+            }, 100);
+        }
+
         // Reset delete flags using direct references - only when opening modal
         if (bannerRef.deleteRef) bannerRef.deleteRef.value = '';
         if (imageRef.deleteRef) imageRef.deleteRef.value = '';
@@ -410,6 +443,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             specifications: cleanSpecs,
             weight: weightRef.current.value || 0,
             store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
+            amenities: $(amenitiesRef.current).val() || [],
         };
 
 
@@ -429,6 +463,14 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                 } else if (tagsValue) {
                     // Si no es array pero tiene valor, convertir a array
                     formData.append('tags[0]', tagsValue);
+                }
+            } else if (key === 'amenities') {
+                // Enviar amenities como array de items individuales (como en Rooms.jsx)
+                const amenitiesValue = request[key];
+                if (Array.isArray(amenitiesValue) && amenitiesValue.length > 0) {
+                    amenitiesValue.forEach((amenityId, index) => {
+                        formData.append(`amenities[${index}]`, amenityId);
+                    });
                 }
             } else {
                 formData.append(key, request[key]);
@@ -757,6 +799,11 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+                    Fillable.has('items', 'sku') && {
+                        dataField: "sku",
+                        caption: "SKU",
+                        width: "120px",
+                    },
                     {
                         dataField: "final_price",
                         caption: "Precio",
@@ -808,7 +855,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                     style={{
                                         width: "80px",
                                         height: "48px",
-                                        objectFit: "cover",
+                                        objectFit: "contain",
                                         objectPosition: "center",
                                         borderRadius: "4px",
                                     }}
@@ -909,7 +956,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
-                      Fillable.has('items', 'views') && { 
+                    Fillable.has('items', 'views') && { 
                         dataField: "views",
                         caption: "Vistas",
                         dataType: "number",
@@ -966,6 +1013,29 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                         onBooleanChange({
                                             id: data.id,
                                             field: "is_detail",
+                                            value: e.target.checked ? 1 : 0,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
+                    Fillable.has('items', 'sold_out') && {
+                        dataField: "sold_out",
+                        caption: "Agotado",
+                        dataType: "boolean",
+                        width: "85px",
+                        cellTemplate: (container, { data }) => {
+                            const soldOutValue = data.sold_out === 1 || data.sold_out === '1' || data.sold_out === true;
+
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={soldOutValue}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "sold_out",
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
@@ -1266,6 +1336,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                                 searchAPI={"/api/admin/tags/paginate"}
                                                 searchBy="name"
                                                 label="Tags"
+                                                 hidden={!Fillable.has('items', 'is_tags')}
                                                 dropdownParent="#principal-container"
                                                 tags
                                                 multiple
@@ -1733,40 +1804,117 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                         {/* Pestaña: Características */}
                         <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
                             <div className="row g-3">
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <DynamicField
-                                                ref={featuresRef}
-                                                label="Lista de Características"
-                                                structure=""
-                                                value={features}
-                                                onChange={setFeatures}
-                                            />
+                                {Fillable.has('items', 'is_features') && (
+                                    <div className={`${Fillable.has('items', 'is_specifications') ? 'col-md-6' : 'col-12'}`}>
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <DynamicField
+                                                    ref={featuresRef}
+                                                    label="Lista de Características"
+                                                    structure=""
+                                                    value={features}
+                                                    onChange={setFeatures}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                                 
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <DynamicField
-                                                ref={specificationsRef}
-                                                label="Especificaciones Técnicas"
-                                                structure={{ type: "", title: "", description: "" }}
-                                                value={specifications}
-                                                onChange={setSpecifications}
-                                                typeOptions={typeOptions}
-                                            />
+                                {Fillable.has('items', 'is_specifications') && (
+                                    <div className={`${Fillable.has('items', 'is_features') ? 'col-md-6' : 'col-12'}`}>
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <DynamicField
+                                                    ref={specificationsRef}
+                                                    label="Especificaciones Técnicas"
+                                                    structure={{ type: "", title: "", description: "" }}
+                                                    value={specifications}
+                                                    onChange={setSpecifications}
+                                                    typeOptions={typeOptions}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+                                
+                                {Fillable.has('items', 'is_amenities') && (
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-star-circle me-2 text-warning"></i>
+                                                    Cualidades / Atributos
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <SelectFormGroup
+                                                    eRef={amenitiesRef}
+                                                    label="Seleccionar Cualidades"
+                                                    dropdownParent="#principal-container"
+                                                    multiple
+                                                    templateResult={(state) => {
+                                                        if (!state.id) return state.text;
+                                                        const $option = $(state.element);
+                                                        const image = $option.data('image');
+                                                        
+                                                        if (image) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #71b6f9; display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0;">
+                                                                        <img src="/storage/images/amenity/${image}" 
+                                                                             style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
+                                                                             onerror="this.style.display='none'" />
+                                                                    </div>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        }
+                                                        return state.text;
+                                                    }}
+                                                    templateSelection={(state) => {
+                                                        if (!state.id) return state.text;
+                                                        const $option = $(state.element);
+                                                        const image = $option.data('image');
+                                                        
+                                                        if (image) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #71b6f9; display: flex; align-items: center; justify-content: center; padding: 3px; flex-shrink: 0;">
+                                                                        <img src="/storage/images/amenity/${image}" 
+                                                                             style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
+                                                                             onerror="this.style.display='none'" />
+                                                                    </div>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        }
+                                                        return state.text;
+                                                    }}
+                                                >
+                                                    {amenities.map((amenity) => (
+                                                        <option 
+                                                            key={amenity.id} 
+                                                            value={amenity.id}
+                                                            data-image={amenity.image}
+                                                        >
+                                                            {amenity.name}
+                                                        </option>
+                                                    ))}
+                                                </SelectFormGroup>
+                                                <small className="text-muted">
+                                                    <i className="fas fa-info-circle me-1"></i>
+                                                    Selecciona las cualidades o atributos que destacan este producto
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 
                                 <div className="col-12">
                                     <div className="card border-0 shadow-sm">

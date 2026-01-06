@@ -1,16 +1,30 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
+import axios from "axios";
 
 const AboutAko = ({ data, filteredData, items }) => {
-    const { aboutuses, webdetail, strengths } = filteredData;
+    const { aboutuses, webdetail } = filteredData;
+    const [strengths, setStrengths] = useState([]);
+    
+    // Cargar strengths desde la API
+    useEffect(() => {
+        const fetchStrengths = async () => {
+            try {
+                const response = await axios.get('/api/strengths');
+                setStrengths(response.data);
+            } catch (error) {
+                console.error('Error al cargar strengths:', error);
+                setStrengths([]);
+            }
+        };
+        
+        fetchStrengths();
+    }, []);
     const history = items?.find((item) => item.correlative === "section-historia");
     const values = items?.find((item) => item.correlative === "section-valores");
     const mision = items?.find((item) => item.correlative === "section-mision");
     const vision = items?.find((item) => item.correlative === "section-vision");
-    const titleMision = items?.find((item) => item.correlative === "title_mision");
-    const titleVision = items?.find((item) => item.correlative === "title_vision");
-    const imageVisionMision = items?.find((item) => item.correlative === "image_vision_mision");
 
     // Animaciones mejoradas
     const fadeInUp = {
@@ -96,7 +110,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                     variants={fadeInUp} 
                     className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title"
                 >
-                    <TextWithHighlight text={history?.title} />
+                    <TextWithHighlight text={history?.title} color="bg-secondary" />
                 </motion.h2>
             </motion.section>
 
@@ -149,7 +163,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                     variants={fadeInUp} 
                     className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-medium tracking-normal customtext-neutral-dark leading-tight font-title"
                 >
-                    <TextWithHighlight text={values?.title} />
+                    <TextWithHighlight text={values?.title} color="bg-secondary" />
                 </motion.h2>
             </motion.section>
 
@@ -170,7 +184,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                         {strengths?.slice(0, 2).map((item, index) => (
                             <motion.div 
                                 key={index} 
-                                className="flex flex-col gap-4 items-start min-w-[240px] bg-secondary group hover:bg-white hover:shadow-xl rounded-xl p-6 cursor-pointer border border-transparent hover:border-primary/20"
+                                className={`flex flex-col gap-4 items-start min-w-[240px] bg-secondary group hover:bg-white hover:shadow-xl rounded-xl p-6 cursor-pointer border border-transparent hover:border-primary/20 ${data?.class_card || ""}`}
                                 variants={fadeInUp}
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -239,7 +253,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                         {strengths?.slice(2, 4).map((item, index) => (
                             <motion.div 
                                 key={index} 
-                                className="flex flex-col gap-4 items-start min-w-[240px] bg-secondary group hover:bg-white hover:shadow-xl rounded-xl p-6 cursor-pointer border border-transparent hover:border-primary/20"
+                                className={`flex flex-col gap-4 items-start min-w-[240px] bg-secondary group hover:bg-white hover:shadow-xl rounded-xl p-6 cursor-pointer border border-transparent hover:border-primary/20 ${data?.class_card || ""}`}
                                 variants={fadeInUp}
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -324,7 +338,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                                         className="text-2xl md:text-3xl 2xl:text-4xl font-semibold customtext-primary font-title"
                                    
                                     >
-                                        <TextWithHighlight text={mision?.title} />
+                                        <TextWithHighlight text={mision?.title} color="bg-secondary" />
                                     </motion.h2>
                                 </motion.div>
                                 <motion.div
@@ -350,7 +364,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                                         className="text-2xl md:text-3xl 2xl:text-4xl font-semibold customtext-primary font-title"
                                       
                                     >
-                                        <TextWithHighlight text={vision?.title} />
+                                        <TextWithHighlight text={vision?.title} color="bg-secondary" />
                                     </motion.h2>
                                 </motion.div>
                                 <motion.div

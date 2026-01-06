@@ -18,17 +18,30 @@ class Service extends Model
         'service_subcategory_id',
         'name',
         'slug',
+        'summary',
         'description',
         'path',
         'image',
         'background_image',
+        'pdf',
+        'linkvideo',
         'visible',
+        'featured',
         'status',
+        'is_features',
+        'is_specifications',
+        'is_gallery',
     ];
 
     protected $casts = [
         'visible' => 'boolean',
+        'featured' => 'boolean',
         'status' => 'boolean',
+        'is_features' => 'boolean',
+        'is_specifications' => 'boolean',
+        'is_gallery' => 'boolean',
+        'pdf' => 'array',
+        'linkvideo' => 'array',
     ];
 
     public function category()
@@ -39,5 +52,20 @@ class Service extends Model
     public function subcategory()
     {
         return $this->belongsTo(ServiceSubCategory::class, 'service_subcategory_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ServiceImage::class)->orderBy('order');
+    }
+
+    public function features()
+    {
+        return $this->hasMany(ServiceFeature::class);
+    }
+
+    public function specifications()
+    {
+        return $this->hasMany(ServiceSpecification::class);
     }
 }

@@ -109,6 +109,11 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
                                                     Renueva tus espacios con estilo: Fundas exclusivas para cada temporada.
                                                 </p>
+                                                {parseFloat(General.get("checkout_mercadopago_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-600 font-medium">
+                                                        + Comisión {General.get("checkout_mercadopago_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-5 flex items-center justify-center">
                                                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
@@ -155,6 +160,11 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
                                                     Paga de forma segura con tu tarjeta de crédito o débito.
                                                 </p>
+                                                {parseFloat(General.get("checkout_openpay_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-600 font-medium">
+                                                        + Comisión {General.get("checkout_openpay_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-5 flex items-center justify-center">
                                                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
@@ -201,6 +211,11 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
                                                     Paga de forma segura con tarjeta de crédito, débito, Yape y más.
                                                 </p>
+                                                {parseFloat(General.get("checkout_culqi_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-600 font-medium">
+                                                        + Comisión {General.get("checkout_culqi_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-5 flex items-center justify-center">
                                                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
@@ -245,8 +260,15 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                     Yape / Plin
                                                 </label>
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
-                                                    Realiza el pago desde tu celular sin comisiones.
+                                                    {parseFloat(General.get("checkout_dwallet_commission") || 0) > 0 
+                                                        ? "Pago rápido desde tu celular." 
+                                                        : "Realiza el pago desde tu celular sin comisiones."}
                                                 </p>
+                                                {parseFloat(General.get("checkout_dwallet_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-600 font-medium">
+                                                        + Comisión {General.get("checkout_dwallet_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-5 flex items-center justify-center">
                                                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
@@ -293,6 +315,11 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
                                                     Haz una transferencia bancaria desde tu app o banca por internet.
                                                 </p>
+                                                {parseFloat(General.get("checkout_transfer_commission") || 0) > 0 && (
+                                                    <p className="text-xs mt-1 text-yellow-600 font-medium">
+                                                        + Comisión {General.get("checkout_transfer_commission")}%
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="min-w-5 flex items-center justify-center">
                                                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${

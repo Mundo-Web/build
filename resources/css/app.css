@@ -66,9 +66,23 @@
   opacity: 1;
 }
 
+<<<<<<< HEAD
+.swiper-pagination-fullcard .swiper-pagination-bullet {
+  width: 16px;
+  height: 16px;
+  border-radius: 100px;
+  background-color: #0082CA !important;     
+}
+
+.swiper-pagination-fullcard .swiper-pagination-bullet:not(.swiper-pagination-bullet-active) {
+  background-color: #ccc!important;
+  opacity: 1;
+}
+=======
 
 
 
+>>>>>>> 9ca4763587dfd555aa284f9d02988041e85f1b5e
 
   /*  */
   

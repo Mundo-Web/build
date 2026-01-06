@@ -1,4 +1,38 @@
 /** @type {import('tailwindcss').Config} */
+
+// Generar safelist dinámico para colores de la DB
+const colors = ['primary', 'secondary', 'accent', 'neutral-light', 'neutral-dark', 'warning', 'info', 'danger', 'success', 'sections-color'];
+const properties = ['bg', 'text', 'border', 'ring', 'outline'];
+const states = ['hover', 'focus', 'active'];
+
+const generateSafelist = () => {
+    const safelist = [];
+    
+    colors.forEach(color => {
+        properties.forEach(prop => {
+            // Clases base
+            safelist.push(`${prop}-${color}`);
+            safelist.push(`!${prop}-${color}`);
+            
+            // Estados (hover, focus, active)
+            states.forEach(state => {
+                safelist.push(`${state}:${prop}-${color}`);
+                safelist.push(`${state}:!${prop}-${color}`);
+            });
+            
+            // Group hover
+            safelist.push(`group-hover:${prop}-${color}`);
+        });
+        
+        // Extras
+        safelist.push(`placeholder:text-${color}`);
+        safelist.push(`from-${color}`, `via-${color}`, `to-${color}`);
+        safelist.push(`divide-${color}`, `caret-${color}`);
+    });
+    
+    return safelist;
+};
+
 export default {
     content: [
         "./resources/**/*.blade.php",
@@ -6,8 +40,22 @@ export default {
         "./resources/**/*.jsx",
         "./resources/**/*.vue",
     ],
+    safelist: generateSafelist(),
     theme: {
         extend: {
+            colors: {
+                // Colores dinámicos desde la DB usando variables CSS
+                primary: 'var(--bg-primary)',
+                secondary: 'var(--bg-secondary)',
+                accent: 'var(--bg-accent)',
+                'neutral-light': 'var(--bg-neutral-light)',
+                'neutral-dark': 'var(--bg-neutral-dark)',
+                warning: 'var(--bg-warning)',
+                info: 'var(--bg-info)',
+                danger: 'var(--bg-danger)',
+                success: 'var(--bg-success)',
+                'sections-color': 'var(--bg-sections-color)',
+            },
             screens: {
                 '3xl': '1400px', 
             },
@@ -63,12 +111,6 @@ export default {
         require('@tailwindcss/forms')({
             strategy: 'class',
         }),
-
-        // require('tailwind-scrollbar')({
-        //     nocompatible: true,
-        //     preferredStrategy: 'pseudoelements',
-        // }),
-        // Otros plugins si los tienes
     ],
 
 };

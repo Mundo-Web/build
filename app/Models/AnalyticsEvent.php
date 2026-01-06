@@ -18,6 +18,7 @@ class AnalyticsEvent extends Model
         'session_id',
         'event_type',
         'item_id',
+        'service_id',
         'page_url',
         'source',
         'medium',
@@ -35,6 +36,11 @@ class AnalyticsEvent extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 
     public function user()

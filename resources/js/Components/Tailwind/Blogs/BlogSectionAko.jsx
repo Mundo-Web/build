@@ -33,14 +33,19 @@ const BlogSectionAko = ({ data, items }) => {
     };
 
     const hoverCard = {
-        scale: 1.02,
-        // boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
-        transition: { duration: 0.3 }
+        // Sin hover en el card completo
     };
 
     const hoverImage = {
+        scale: 1.1,
+        transition: { duration: 0.5, ease: "easeOut" }
+    };
+
+    const buttonHover = {
         scale: 1.05,
-        transition: { duration: 0.5 }
+        y: -2,
+        boxShadow: "0px 10px 25px rgba(0, 0, 0, 0.15)",
+        transition: { duration: 0.2, ease: "easeOut" }
     };
 
     const subscriptionsRest = new SubscriptionsRest();
@@ -75,11 +80,12 @@ const BlogSectionAko = ({ data, items }) => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={containerVariants}
-            className="w-full px-[5%] font-title customtext-neutral-dark py-12 lg:py-20"
+            className="w-full px-[5%] 2xl:px-0 font-title customtext-neutral-dark py-12 lg:py-20"
         >
+            <div className="2xl:max-w-7xl mx-auto 2xl:px-0">
             <motion.div variants={itemVariants} className="flex flex-col gap-6 justify-center items-center mb-6">
                 <h2 className="max-w-lg 2xl:max-w-xl mx-auto text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title">
-                    <TextWithHighlight text={data?.title} ></TextWithHighlight>
+                    <TextWithHighlight text={data?.title} color="bg-secondary"></TextWithHighlight>
                 </h2>
                 <p className="max-w-3xl 2xl:max-w-4xl mx-auto text-lg 2xl:text-xl tracking-normal font-light font-title customtext-neutral-dark text-center">
                     {data?.description}
@@ -100,13 +106,15 @@ const BlogSectionAko = ({ data, items }) => {
                 <motion.div 
                     variants={itemVariants}
                     whileHover={{ 
-                        scale: 1.02,
+                        scale: 1.03,
+                        y: -8,
                         rotate: 0.5,
-                        transition: { type: "spring", damping: 10 }
+                        boxShadow: "0px 25px 50px rgba(0, 0, 0, 0.2)",
+                        transition: { type: "spring", damping: 15, stiffness: 300 }
                     }}
-                    className="col-span-1 rounded-2xl mt-2 "
+                    className="col-span-1 rounded-2xl mt-2 shadow-lg"
                 >
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-sm h-full relative flex flex-col items-center justify-end" 
+                    <div className="bg-white rounded-3xl overflow-hidden shadow-xl h-full relative flex flex-col items-center justify-end" 
                         style={{
                             backgroundImage: 'url(/assets/img/backgrounds/resources/suscription.png)',
                             backgroundSize: 'cover',
@@ -114,18 +122,24 @@ const BlogSectionAko = ({ data, items }) => {
                             backgroundRepeat: 'no-repeat'
                           }}
                         > 
-
+                        {/* Overlay glassmorphism */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        
                         <div
-                            className="bg-transparent text-white text-left p-4 rounded-b-2xl"
+                            className=" text-white text-left p-6 rounded-b-2xl relative z-10"
                         >
                             <h2 className="text-2xl font-title font-medium mb-3">¡Suscríbete a nuestro blog y recibe las últimas novedades y consejos!</h2>
                             
                             <form onSubmit={onEmailSubmit} className="max-w-sm">
                                 <div className="relative customtext-primary">
-                                    <input ref={emailRef} type="email" placeholder="Ingresa tu e-mail"
-                                    className="w-full bg-transparent text-white font-medium py-4 pl-2 border-2 border-white rounded-xl focus:ring-0 focus:outline-none placeholder:text-white placeholder:opacity-65" />
+                                    <input 
+                                        ref={emailRef} 
+                                        type="email" 
+                                        placeholder="Ingresa tu e-mail"
+                                        className="w-full bg-white/10 backdrop-blur-sm text-white font-medium py-4 pl-4 border-2 border-white/50 rounded-xl focus:ring-0 focus:outline-none focus:border-accent transition-all duration-300 placeholder:text-white placeholder:opacity-75" 
+                                    />
                                     <button
-                                        className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-accent customtext-neutral-light rounded-lg"
+                                        className="absolute text-md right-2 top-1/2 transform -translate-y-1/2 py-3 font-medium px-4 bg-accent customtext-neutral-dark rounded-lg transition-all duration-200"
                                         aria-label="Suscribite">
                                         Suscribirme
                                     </button>
@@ -138,17 +152,15 @@ const BlogSectionAko = ({ data, items }) => {
                 </motion.div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="flex flex-row items-center justify-center w-full mt-6">
-                <motion.a 
+            <motion.div variants={itemVariants} className="flex flex-row items-center justify-center w-full mt-8">
+                <a 
                     href={data?.link_blog} 
-                    className="bg-secondary text-base lg:text-lg customtext-neutral-light px-10 py-2.5 rounded-lg"
-                    whileHover={{ x: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    className="bg-secondary text-base lg:text-lg text-white px-12 py-3.5 rounded-full shadow-lg"
                 >
                    {data?.button_text}{" "}
-                </motion.a>
+                </a>
             </motion.div>
-
+            </div>
         </motion.div>
     );
 };

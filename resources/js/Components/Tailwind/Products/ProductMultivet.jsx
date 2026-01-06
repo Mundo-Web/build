@@ -2,14 +2,23 @@ import React, { useState, useMemo, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import CardProductMultivet from './Components/CardProductMultivet';
 import CardProductKatya from './Components/CardProductKatya';
+import CardProductBananaLab from './Components/CardProductBananaLab';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
-const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
+const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCart }) => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
   // Referencias para animaciones
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const carouselRef = useRef(null);
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
+  const [swiperInstance, setSwiperInstance] = useState(null);
 
   // Detectar cuando los elementos entran en el viewport
   const sectionInView = useInView(sectionRef, { once: true, threshold: 0.1 });
@@ -19,6 +28,10 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
 
   // Determinar qué tipo de card usar
   const cardType = data?.cardType || 'multivet'; // 'multivet' o 'katya'
+  
+  // Determinar tipo de layout (grid o swiper)
+  const layoutType = data?.type_style_list || 'grid'; // 'grid' o 'swiper'
+  const isSwiper = layoutType === 'swiper' || layoutType === 'flex';
 
   // Obtener categorías únicas de los productos
   const categories = useMemo(() => {
@@ -184,38 +197,146 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites }) => {
 
 
 
-        {/* Products grid */}
-        <motion.div
-          ref={carouselRef}
-          variants={carouselVariants}
-          initial="hidden"
-          animate={carouselInView ? "visible" : "hidden"}
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6"
-        >
-          {filteredProducts.map((product, index) => (
-            <motion.div
-              key={product.id || index}
-              variants={productVariants}
-              className="flex"
+        {/* Products grid o swiper */}
+        {isSwiper ? (
+          // Modo Swiper
+          <motion.div
+            ref={carouselRef}
+            variants={carouselVariants}
+            initial="hidden"
+            animate={carouselInView ? "visible" : "hidden"}
+            className="relative"
+          >
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              loop={filteredProducts.length > 4}
+              navigation={false}
+              onSwiper={setSwiperInstance}
+              spaceBetween={16}
+              slidesPerView={1}
+              autoplay={data?.autoplay ? {
+                delay: data?.autoplay_delay || 3000,
+                disableOnInteraction: false,
+              } : false}
+              breakpoints={{
+                0: {
+                  slidesPerView: 2,
+                  spaceBetween: 12,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 16,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 20,
+                },
+                1280: {
+                  slidesPerView: data?.slides_per_view || 4,
+                  spaceBetween: 24,
+                },
+              }}
             >
-              {cardType === 'katya' ? (
-                <CardProductKatya
-                  product={product}
-                  data={data}
-                  favorites={favorites}
-                  setFavorites={setFavorites}
-                />
-              ) : (
-                <CardProductMultivet
-                  product={product}
-                  data={data}
-                  favorites={favorites}
-                  setFavorites={setFavorites}
-                />
-              )}
-            </motion.div>
-          ))}
-        </motion.div>
+              {filteredProducts.map((product, index) => (
+                <SwiperSlide key={product.id || index}>
+                  <div className="h-full py-8">
+                    {cardType === 'katya' ? (
+                      <CardProductKatya
+                        product={product}
+                        data={data}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
+                      />
+                    ) : cardType === 'bananalab' ? (
+                      <CardProductBananaLab
+                        product={product}
+                        data={data}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
+                        cart={cart}
+                        setCart={setCart}
+                        widthClass='!w-full'
+                      />
+                    ) : (
+                      <CardProductMultivet
+                        product={product}
+                        data={data}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
+                      />
+                    )}
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Navigation buttons */}
+            {filteredProducts.length > 4 && (
+              <>
+                <button
+                  ref={prevRef}
+                  className={`absolute shadow-xl top-1/2 -left-4 lg:-left-6 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-secondary rounded-full -translate-y-1/2 hover:scale-105 transition-transform duration-200 ${data?.class_nav_button || ''}`}
+                  aria-label="Productos anteriores"
+                  onClick={() => swiperInstance?.slidePrev()}
+                >
+                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </button>
+
+                <button
+                  ref={nextRef}
+                  className={`absolute top-1/2 -right-4 lg:-right-6 shadow-xl z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-secondary rounded-full -translate-y-1/2 hover:scale-105 transition-transform duration-200 ${data?.class_nav_button || ''}`}
+                  aria-label="Siguientes productos"
+                  onClick={() => swiperInstance?.slideNext()}
+                >
+                  <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </button>
+              </>
+            )}
+          </motion.div>
+        ) : (
+          // Modo Grid (default)
+          <motion.div
+            ref={carouselRef}
+            variants={carouselVariants}
+            initial="hidden"
+            animate={carouselInView ? "visible" : "hidden"}
+            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6"
+          >
+            {filteredProducts.map((product, index) => (
+              <motion.div
+                key={product.id || index}
+                variants={productVariants}
+                className="flex"
+              >
+                {cardType === 'katya' ? (
+                  <CardProductKatya
+                    product={product}
+                    data={data}
+                    favorites={favorites}
+                    setFavorites={setFavorites}
+                  />
+                ) : cardType === 'bananalab' ? (
+                  <CardProductBananaLab
+                    product={product}
+                    data={data}
+                    favorites={favorites}
+                    setFavorites={setFavorites}
+                    cart={cart}
+                    setCart={setCart}
+                    widthClass='!w-full'
+                  />
+                ) : (
+                  <CardProductMultivet
+                    product={product}
+                    data={data}
+                    favorites={favorites}
+                    setFavorites={setFavorites}
+                  />
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* View all products button */}
         {data?.button_bottom && data?.link_catalog && (

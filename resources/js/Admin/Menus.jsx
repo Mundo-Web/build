@@ -8,9 +8,10 @@ import RoleHasMenusRest from '../Actions/Admin/RoleHasMenusRest';
 
 const roleHasMenusRest = new RoleHasMenusRest()
 
-const Item = ({ href, role, icon, label, menusAdmin, setMenusAdmin }) => {
+const Item = ({ id, href, role, icon, label, menusAdmin, setMenusAdmin }) => {
   const [saving, setSaving] = useState(false)
-  const active = menusAdmin.find(menu => menu.menu == href)?.can_access !== false
+  const menuKey = id || href
+  const active = menusAdmin.find(menu => menu.menu == menuKey)?.can_access !== false
 
   const handleChange = async (e) => {
     setSaving(true)
@@ -34,15 +35,15 @@ const Item = ({ href, role, icon, label, menusAdmin, setMenusAdmin }) => {
     <input
       className="form-check-input"
       type="checkbox"
-      id={`chk-${href.replaceAll('/', '').trim().replaceAll('/', '-')}`}
-      value={href}
+      id={`chk-${menuKey.replaceAll('/', '').trim().replaceAll('-', '_')}`}
+      value={menuKey}
       disabled={role == 'Root' || saving}
       checked={active && role != 'Root'}
       onChange={handleChange}
     />
     <label
       className="form-check-label"
-      htmlFor={`chk-${href.replaceAll('/', '').trim().replaceAll('/', '-')}`}
+      htmlFor={`chk-${menuKey.replaceAll('/', '').trim().replaceAll('-', '_')}`}
     >
       <i className={`${icon} me-1`}></i>
       {label}
@@ -68,10 +69,14 @@ const Menus = ({ menus: menusAdminDB }) => {
                     <i className={`${item.icon} me-1`}></i> {item.label}
                   </div>
                   <div className="ms-3 d-flex flex-column gap-1">
-                    {item.children.map((child) => <Item {...child} menusAdmin={menusAdmin} setMenusAdmin={setMenusAdmin} noMargin />)}
+                    {item.children.map((child, childIdx) => {
+                      const childKey = child.id || child.href || `${idx}-${childIdx}`;
+                      return <Item key={childKey} {...child} menusAdmin={menusAdmin} setMenusAdmin={setMenusAdmin} noMargin />
+                    })}
                   </div>
                 </div>
-                return <Item {...item} menusAdmin={menusAdmin} setMenusAdmin={setMenusAdmin} />
+                const itemKey = item.id || item.href || `item-${idx}`;
+                return <Item key={itemKey} {...item} menusAdmin={menusAdmin} setMenusAdmin={setMenusAdmin} />
 
               })}
             </div>

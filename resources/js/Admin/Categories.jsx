@@ -49,13 +49,23 @@ const Categories = () => {
         nameRef.current.value = data?.name ?? "";
         aliasRef.current.value = data?.alias ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        bannerRef.image.src = data?.banner ? `/storage/images/category/${data.banner}` : '';
-        bannerRef.current.value = null;
-        imageRef.image.src = data?.image ? `/storage/images/category/${data.image}` : '';
-        imageRef.current.value = null;
+        
+        // Validar si banner está disponible (Fillable)
+        if (bannerRef.current && bannerRef.image) {
+            bannerRef.image.src = data?.banner ? `/storage/images/category/${data.banner}` : '';
+            bannerRef.current.value = null;
+            if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        }
+        
+        // Validar si image está disponible (Fillable)
+        if (imageRef.current && imageRef.image) {
+            imageRef.image.src = data?.image ? `/storage/images/category/${data.image}` : '';
+            imageRef.current.value = null;
+            if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        }
 
-        // Load banners JSON
-        if (bannersJsonRef.current) {
+        // Load banners JSON (solo si está habilitado en Fillable)
+        if (bannersJsonRef.current && Fillable.has('categories', 'banners')) {
             let banners = data?.banners || [];
             console.log('Categories.onModalOpen - data.banners:', data?.banners);
             console.log('Categories.onModalOpen - banners type:', typeof banners);
@@ -104,12 +114,10 @@ const Categories = () => {
             setTimeout(() => tryLoadImages(), 500);
         }
 
-        // Load stores
-        SetSelectValue(storesRef.current, data?.stores ?? [], "id", "name");
-
-        // Reset delete flags using React state - only when opening modal
-        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        // Load stores (solo si está habilitado en Fillable)
+        if (storesRef.current && Fillable.has('categories', 'stores')) {
+            SetSelectValue(storesRef.current, data?.stores ?? [], "id", "name");
+        }
 
         $(modalRef.current).modal("show");
     };
@@ -128,17 +136,33 @@ const Categories = () => {
         for (const key in request) {
             formData.append(key, request[key]);
         }
-        const file = imageRef.current.files[0];
-        if (file) {
-            formData.append("image", file);
+        
+        // Validar si image está disponible (Fillable)
+        if (imageRef.current && Fillable.has('categories', 'image')) {
+            const file = imageRef.current.files[0];
+            if (file) {
+                formData.append("image", file);
+            }
+            // Check for image deletion flag
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
         }
-        const file2 = bannerRef.current.files[0];
-        if (file2) {
-            formData.append("banner", file2);
+        
+        // Validar si banner está disponible (Fillable)
+        if (bannerRef.current && Fillable.has('categories', 'banner')) {
+            const file2 = bannerRef.current.files[0];
+            if (file2) {
+                formData.append("banner", file2);
+            }
+            // Check for banner deletion flag
+            if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
+                formData.append('banner_delete', 'DELETE');
+            }
         }
 
-        // Add banners JSON
-        if (bannersJsonRef.current) {
+        // Add banners JSON (solo si está habilitado en Fillable)
+        if (bannersJsonRef.current && Fillable.has('categories', 'banners')) {
             formData.append('banners', bannersJsonRef.current.getValue());
 
             // Add banner images
@@ -148,21 +172,14 @@ const Categories = () => {
             });
         }
 
-        // Add stores array
-        const storesValue = $(storesRef.current).val();
-        if (storesValue && storesValue.length > 0) {
-            formData.append('stores', JSON.stringify(storesValue));
-        } else {
-            formData.append('stores', JSON.stringify([]));
-        }
-
-        // Check for image deletion flags using React state
-        if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
-            formData.append('banner_delete', 'DELETE');
-        }
-
-        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
+        // Add stores array (solo si está habilitado en Fillable)
+        if (storesRef.current && Fillable.has('categories', 'stores')) {
+            const storesValue = $(storesRef.current).val();
+            if (storesValue && storesValue.length > 0) {
+                formData.append('stores', JSON.stringify(storesValue));
+            } else {
+                formData.append('stores', JSON.stringify([]));
+            }
         }
 
         for (let [key, value] of formData.entries()) {
@@ -172,8 +189,8 @@ const Categories = () => {
         if (!result) return;
 
         // Reset delete flags after successful save
-        if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (bannerRef.current && bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
+        if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -464,66 +481,263 @@ const Categories = () => {
                 modalRef={modalRef}
                 title={isEditing ? "Editar categoría" : "Agregar categoría"}
                 onSubmit={onModalSubmit}
+                size="xl"
             >
                 <input ref={idRef} type="hidden" />
-                <div className="row" id="categories-container">
-                    <div className={!Fillable.has('categories', 'banner') && !Fillable.has('categories', 'image') ? 'hidden' : 'col-md-6'}>
-                        <ImageFormGroup
-                            eRef={bannerRef}
-                            name="banner"
-                            label="Banner"
-                            col="col-12"
-                            aspect={3 / 1}
-                            hidden={!Fillable.has('categories', 'banner')}
-                        />
-                        <ImageFormGroup
-                            eRef={imageRef}
-                            name="image"
-                            label="Imagen"
-                            col="col-12"
-                            aspect={16 / 9}
-                            hidden={!Fillable.has('categories', 'image')}
-                        />
+                
+                <div id="categories-container">
+                    {/* Sistema de Pestañas */}
+                    <ul className="nav nav-pills nav-justified mb-4" role="tablist" style={{
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: '8px',
+                        padding: '4px',
+                        border: '1px solid #e9ecef'
+                    }}>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className="nav-link active" 
+                                id="basic-info-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#basic-info" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="basic-info" 
+                                aria-selected="true"
+                                style={{
+                                    borderRadius: '6px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <i className="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </button>
+                        </li>
+                        {(Fillable.has('categories', 'banner') || Fillable.has('categories', 'image')) && (
+                            <li className="nav-item" role="presentation">
+                                <button 
+                                    className="nav-link" 
+                                    id="multimedia-tab" 
+                                    data-bs-toggle="pill" 
+                                    data-bs-target="#multimedia" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="multimedia" 
+                                    aria-selected="false"
+                                    style={{
+                                        borderRadius: '6px',
+                                        fontWeight: '500',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    <i className="fas fa-images me-2"></i>
+                                    Multimedia
+                                </button>
+                            </li>
+                        )}
+                        {Fillable.has('categories', 'banners') && (
+                            <li className="nav-item" role="presentation">
+                                <button 
+                                    className="nav-link" 
+                                    id="banners-tab" 
+                                    data-bs-toggle="pill" 
+                                    data-bs-target="#banners" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="banners" 
+                                    aria-selected="false"
+                                    style={{
+                                        borderRadius: '6px',
+                                        fontWeight: '500',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    <i className="fas fa-panorama me-2"></i>
+                                    Banners del Catálogo
+                                </button>
+                            </li>
+                        )}
+                        {Fillable.has('categories', 'stores') && (
+                            <li className="nav-item" role="presentation">
+                                <button 
+                                    className="nav-link" 
+                                    id="stores-tab" 
+                                    data-bs-toggle="pill" 
+                                    data-bs-target="#stores" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="stores" 
+                                    aria-selected="false"
+                                    style={{
+                                        borderRadius: '6px',
+                                        fontWeight: '500',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    <i className="fas fa-store me-2"></i>
+                                    Ubicaciones
+                                </button>
+                            </li>
+                        )}
+                    </ul>
 
-                    </div>
-                    <div className={!Fillable.has('categories', 'banner') && !Fillable.has('categories', 'image') ? 'col-md-12' : 'col-md-6'}>
-                        <InputFormGroup
-                            eRef={nameRef}
-                            label="Categoría"
-                            rows={2}
-                            required
-                        />
-                        <InputFormGroup
-                            eRef={aliasRef}
-                            label="Alias (Nombre para mostrar)"
-                            col="col-12"
-                        />
-                        <TextareaFormGroup
-                            eRef={descriptionRef}
-                            label="Descripción"
-                            rows={3}
-                        />
-                    </div>
-                    <div className="col-12 mt-3">
-                        <BannersJsonEditor
-                            ref={bannersJsonRef}
-                            name="banners"
-                            label="Banners del Catálogo"
-                            initialValue={[]}
-                            model="category"
-                        />
-                    </div>
-                    <div className="col-12 mt-3">
-                        <SelectAPIFormGroup
-                            id="stores"
-                            eRef={storesRef}
-                            searchAPI="/api/admin/stores/paginate"
-                            searchBy="name"
-                            label="Ubicaciones (Stores)"
-                            dropdownParent="#categories-container"
-                            tags
-                            multiple
-                        />
+                    {/* Contenido de las Pestañas */}
+                    <div className="tab-content">
+                        {/* Pestaña: Información Básica */}
+                        <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                            <div className="row g-3">
+                                <div className="col-12">
+                                    <div className="card border-0 shadow-sm">
+                                        <div className="card-header bg-light">
+                                            <h6 className="mb-0">
+                                                <i className="fas fa-tag me-2 text-primary"></i>
+                                                Identificación
+                                            </h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <InputFormGroup
+                                                        eRef={nameRef}
+                                                        label="Nombre de la Categoría"
+                                                        placeholder="Ej: Electrónica"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <InputFormGroup
+                                                        eRef={aliasRef}
+                                                        label="Alias (Nombre para mostrar)"
+                                                        placeholder="Ej: Tecnología y Electrónica"
+                                                    />
+                                                </div>
+                                                <div className="col-12">
+                                                    <TextareaFormGroup
+                                                        eRef={descriptionRef}
+                                                        label="Descripción"
+                                                        rows={4}
+                                                        placeholder="Descripción detallada de la categoría..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pestaña: Multimedia */}
+                        {(Fillable.has('categories', 'banner') || Fillable.has('categories', 'image')) && (
+                            <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-images me-2 text-success"></i>
+                                                    Imágenes Principales
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <div className="row g-3">
+                                                    {Fillable.has('categories', 'banner') && (
+                                                        <div className="col-md-6">
+                                                            <ImageFormGroup
+                                                                eRef={bannerRef}
+                                                                name="banner"
+                                                                label="Banner Principal"
+                                                                col="col-12"
+                                                                aspect={16 / 9}
+                                                            />
+                                                            <small className="text-muted">
+                                                                <i className="fas fa-info-circle me-1"></i>
+                                                              Recomendado: 1600x900px (proporción 16:9)
+                                                            </small>
+                                                        </div>
+                                                    )}
+                                                    {Fillable.has('categories', 'image') && (
+                                                        <div className="col-md-6">
+                                                            <ImageFormGroup
+                                                                eRef={imageRef}
+                                                                name="image"
+                                                                label="Imagen de Portada"
+                                                                col="col-12"
+                                                                aspect={16 / 9}
+                                                            />
+                                                            <small className="text-muted">
+                                                                <i className="fas fa-info-circle me-1"></i>
+                                                                Recomendado: 1600x900px (proporción 16:9)
+                                                            </small>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pestaña: Banners del Catálogo */}
+                        {Fillable.has('categories', 'banners') && (
+                            <div className="tab-pane fade" id="banners" role="tabpanel" aria-labelledby="banners-tab">
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-panorama me-2 text-info"></i>
+                                                    Banners Personalizados del Catálogo
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <BannersJsonEditor
+                                                    ref={bannersJsonRef}
+                                                    name="banners"
+                                                    label="Banners del Catálogo"
+                                                    initialValue={[]}
+                                                    model="category"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pestaña: Ubicaciones (Stores) */}
+                        {Fillable.has('categories', 'stores') && (
+                            <div className="tab-pane fade" id="stores" role="tabpanel" aria-labelledby="stores-tab">
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-store me-2 text-warning"></i>
+                                                    Ubicaciones y Tiendas
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <SelectAPIFormGroup
+                                                    id="stores"
+                                                    eRef={storesRef}
+                                                    searchAPI="/api/admin/stores/paginate"
+                                                    searchBy="name"
+                                                    label="Ubicaciones (Tiendas)"
+                                                    dropdownParent="#categories-container"
+                                                    tags
+                                                    multiple
+                                                />
+                                                <small className="text-muted mt-2 d-block">
+                                                    <i className="fas fa-info-circle me-1"></i>
+                                                    Selecciona las tiendas donde esta categoría estará disponible
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Modal>

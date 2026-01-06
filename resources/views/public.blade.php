@@ -166,79 +166,25 @@
             }
         </style>
     @endif
-    @php
-        $gradientBg = $data['colors']->firstWhere('name', 'gradient-background');
-    @endphp
     @foreach ($data['colors'] as $color)
         <style>
+            /* Variables CSS para Tailwind */
             :root {
                 --bg-{{ $color->name }}: {{ $color->description }};
             }
             
-            .stroke-{{ $color->name }} {
-                stroke: {{ $color->description }};
-            }
-
-            .background-{{ $color->name }} {
-                background-color: {{ $color->description }};
-            }
-
-            .bg-{{ $color->name }} {
-                @if($color->name == 'primary' && $gradientBg)
-                background-image: {{ $gradientBg->description }} !important;
-                background-color: transparent !important;
-                background-repeat: no-repeat !important;
-                @else
-                background-color: {{ $color->description }};
-                @endif
-            }
-            .group:hover .group-hover\:bg-{{ $color->name }} {
-                background-color: {{ $color->description }};
-            }
-
+            /* Clases customtext-* para migración gradual */
             .customtext-{{ $color->name }} {
                 color: {{ $color->description }};
             }
-            /* Variantes de hover */
             .hover\:customtext-{{ $color->name }}:hover {
                 color: {{ $color->description }};
-            }
-
-            .hover\:bg-{{ $color->name }}:hover {
-                background-color: {{ $color->description }};
-
-            }
-            .hover\:border-{{ $color->name }}:hover{
-                border-color: {{ $color->description }};
-            }
-
-            .placeholder\:customtext-{{ $color->name }}::placeholder {
-                color: {{ $color->description }};
-            }
-            .active\:bg-{{ $color->name }}:active {
-                background-color: {{ $color->description }};
             }
             .active\:customtext-{{ $color->name }}:active {
                 color: {{ $color->description }};
             }
-            .active\:border-{{ $color->name }}:active {
-                border-color: {{ $color->description }};
-            }
-
-            .border-{{ $color->name }} {
-                border-color: {{ $color->description }};
-            }
-
-            .fill-{{ $color->name }} {
-                fill: {{ $color->description }};
-            }
-
-            .before\:.bg-{{ $color->name }} {
-                background-color: {{ $color->description }};
-            }
-
-            .lg\:.bg-{{ $color->name }} {
-                background-color: {{ $color->description }};
+            .placeholder\:customtext-{{ $color->name }}::placeholder {
+                color: {{ $color->description }};
             }
         </style>
     @endforeach

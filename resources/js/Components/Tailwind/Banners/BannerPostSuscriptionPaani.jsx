@@ -162,9 +162,9 @@ const BannerPostSuscriptionPaani = ({ data, items }) => {
                         rotate: 0.5,
                         transition: { type: "spring", damping: 10 }
                     }}
-                    className="col-span-1 md:col-span-1 lg:col-span-1 rounded-2xl"
+                    className="col-span-1 md:col-span-1 h-full lg:col-span-1 rounded-2xl"
                 >
-                    <div className="w-full flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                         <div className="rounded-3xl overflow-hidden shadow-sm h-[500px] lg:h-full w-full" style={{ backgroundImage: `url(${backgroundUrl})`, backgroundSize: "cover", backgroundPosition: "top" }}>
                             <div className="relative z-10 flex flex-col justify-end h-full px-6 py-10 w-full">
                                 <h2 className="text-3xl 2xl:text-4xl font-medium text-white mb-2 drop-shadow-lg">

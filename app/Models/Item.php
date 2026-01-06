@@ -44,6 +44,7 @@ class Item extends Model
         'views',
         'sku',
         'stock',
+        'sold_out',
         'color',
         'texture',
         'pdf',
@@ -59,6 +60,12 @@ class Item extends Model
         'size_m2',
         'room_type',
         'total_rooms',
+        
+        // Campos de control de visibilidad
+        'is_amenities',
+        'is_features',
+        'is_specifications',
+        'is_tags',
     ];
 
     protected $casts = [
@@ -68,11 +75,16 @@ class Item extends Model
         'featured'=>'boolean',
         'most_view'=>'boolean',
         'is_detail'=>'boolean',
+        'sold_out' => 'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',
         'views' => 'integer',
         'pdf' => 'array',
         'linkvideo' => 'array',
+        'is_amenities' => 'boolean',
+        'is_features' => 'boolean',
+        'is_specifications' => 'boolean',
+        'is_tags' => 'boolean',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)
@@ -91,13 +103,13 @@ class Item extends Model
             });
     }
 
-    static function getForeignMany(Builder $builder, string $through, string $model)
+    static function getForeignMany(Builder $builder, string $through, string $model, string $foreignKey = 'tag_id')
     {
         $table = (new $model)->getTable();
         $tableThrough = (new $through)->getTable();
         return $builder->reorder()
             ->join($tableThrough, $tableThrough . '.item_id', '=', 'items.id')
-            ->join($table, $table . '.id', $tableThrough . '.tag_id')
+            ->join($table, $table . '.id', '=', $tableThrough . '.' . $foreignKey)
             ->select($table . '.*')
             ->distinct()
             ->orderBy($table . '.name', 'ASC')
@@ -227,6 +239,20 @@ class Item extends Model
         static::creating(function ($item) {
             if (empty($item->sku)) {
                 $item->sku = 'PROD-' . strtoupper(substr($item->categoria_id, 0, 3)) . '-' . strtoupper(substr($item->name, 0, 3)) . '-' . uniqid();
+            }
+            
+            // Auto marcar como agotado si stock es 0 (solo para productos)
+            if ($item->type === 'product' && isset($item->stock) && $item->stock <= 0) {
+                $item->sold_out = true;
+            }
+        });
+
+        static::updating(function ($item) {
+            // Auto marcar como agotado si stock cambia a 0 (solo para productos)
+            if ($item->type === 'product' && $item->isDirty('stock')) {
+                if ($item->stock <= 0) {
+                    $item->sold_out = true;
+                }
             }
         });
     }

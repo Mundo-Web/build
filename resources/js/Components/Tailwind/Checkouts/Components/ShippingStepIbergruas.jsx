@@ -276,6 +276,21 @@ export default function ShippingStepIbergruas({
         );
     };
 
+    // Verificar si hay métodos de pago disponibles
+    const hasPaymentMethods = (() => {
+        const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
+        const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
+        const ischeckculqiobject = contacts?.find(x => x.correlative === 'checkout_culqi');
+        
+        return (
+            ischeckmpobject?.description === "true" ||
+            ischeckopenpayobject?.description === "true" ||
+            ischeckculqiobject?.description === "true" ||
+            General.get("checkout_dwallet") === "true" ||
+            General.get("checkout_transfer") === "true"
+        );
+    })();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -1684,7 +1699,7 @@ export default function ShippingStepIbergruas({
                             onClick={() => {
                                 setShowLoginModal(false);
                                 // Redirigir a login o abrir modal de login
-                                window.location.href = '/login';
+                                window.location.href = '/iniciar-sesion';
                             }}
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                         >
@@ -2527,8 +2542,10 @@ export default function ShippingStepIbergruas({
                         </div>
                         <div className="space-y-2 pt-4">
                             <button
-                                className={`w-full py-3 px-6 !rounded-none  font-semibold text-lg transition-all duration-300 hover:opacity-90 bg-primary ${data?.class_button ||' customtext-neutral-dark'}`}
+                                className={`w-full py-3 px-6 !rounded-none font-semibold text-lg transition-all duration-300 ${!hasPaymentMethods ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'hover:opacity-90 bg-primary'} ${data?.class_button ||' customtext-neutral-dark'}`}
                                 onClick={handleContinueClick}
+                                disabled={!hasPaymentMethods}
+                                title={!hasPaymentMethods ? 'No hay métodos de pago disponibles' : ''}
                             >
                                 {hasSinglePaymentMethod ? 'Comprar' : 'Continuar'}
                             </button>

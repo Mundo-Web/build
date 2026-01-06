@@ -3,6 +3,7 @@ import { ShoppingCart, User, X, Menu, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartModalLaPetaca from '../Components/CartModalLaPetaca';
 import { CurrencySymbol } from '../../../Utils/Number2Currency';
+import Global from '../../../Utils/Global';
 
 const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart, isUser }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -97,25 +98,21 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const logoAlt = data?.logoAlt || 'Hotel La Petaca';
-    const bgColor = data?.bgColor || '#281409';
+   
+
     const accentColor = data?.accentColor || '#78673A';
 
     return (
         <>
             <header
-                className={`w-full top-0 left-0 right-0 z-50 transition-all duration-300 ${
+                className={`w-full top-0 left-0 right-0 z-50 py-2 transition-all duration-300 ${
                     isHomePage 
-                        ? `fixed ${isScrolled ? 'backdrop-blur-md shadow-lg' : 'bg-transparent'}`
-                        : `${isScrolled ? 'fixed shadow-lg' : 'relative'}`
+                        ? `fixed ${isScrolled ? 'backdrop-blur-md shadow-lg bg-primary' : 'bg-transparent'}`
+                        : `${isScrolled ? 'fixed shadow-lg bg-primary' : 'relative bg-primary'}`
                 }`}
-                style={{
-                    backgroundColor: isHomePage
-                        ? (isScrolled ? `${bgColor}f2` : 'transparent')
-                        : bgColor
-                }}
+               
             >
-                <div className="max-w-7xl mx-auto px-[5%] 2xl:px-0">
+                <div className="2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0">
                     <div className="flex items-center justify-between h-20">
                         {/* Logo */}
                         <a
@@ -125,8 +122,8 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                             <div className="relative">
                                 <img
                                     src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
-                                    alt={logoAlt}
-                                    className="h-12 w-auto transition-transform group-hover:scale-110"
+                                    alt={Global.APP_NAME}
+                                    className="h-16 w-auto transition-transform "
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.src = "/assets/img/logo-bk.svg";
@@ -156,8 +153,8 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                                             {category.subcategories?.length > 0 && (
                                                 <div className="absolute top-full left-0 w-48 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                                     <div 
-                                                        className="rounded-lg shadow-xl overflow-hidden border border-white/10"
-                                                        style={{ backgroundColor: bgColor }}
+                                                        className="rounded-lg shadow-xl bg-primary overflow-hidden border border-white/10"
+                                                       
                                                     >
                                                         {category.subcategories.map((sub) => (
                                                             <a
@@ -182,12 +179,12 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                                         <a
                                             key={`page-${page.id || index}`}
                                             href={page.path}
-                                            className="text-sm font-medium tracking-wide transition-all duration-300 relative group text-gray-300 hover:text-white"
+                                            className="text-lg font-semibold tracking-wide transition-all duration-300 relative group text-white  hover:customtext-secondary"
                                         >
                                             {page.name}
                                             <span
-                                                className="absolute -bottom-1 left-0 w-full h-0.5 transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"
-                                                style={{ backgroundColor: accentColor }}
+                                                className="absolute -bottom-1 left-0 w-full bg-secondary h-0.5 transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"
+                                         
                                             ></span>
                                         </a>
                                     );
@@ -198,38 +195,21 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                             {/* Cart Button */}
                             <button
                                 onClick={() => setModalOpen(true)}
-                                className="relative p-2 rounded-full transition-all duration-300 hover:bg-white/10"
+                                className="relative p-3 rounded-full transition-all duration-300 bg-accent hover:bg-primary"
                                 aria-label="Carrito de compras"
                             >
-                                <ShoppingCart size={22} className="text-gray-300 hover:text-white" />
+                                <ShoppingCart size={22} className="text-white  " />
                                 {totalCount > 0 && (
                                     <span 
-                                        className="absolute -top-1 -right-1 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
-                                        style={{ backgroundColor: accentColor }}
+                                        className="absolute -top-1 -right-1 bg-white customtext-neutral-dark text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
+                                       
                                     >
                                         {totalCount > 99 ? '99+' : totalCount}
                                     </span>
                                 )}
                             </button>
 
-                            {/* User Button (opcional) */}
-                            {isUser ? (
-                                <a
-                                    href="/profile"
-                                    className="p-2 rounded-full transition-all duration-300 hover:bg-white/10"
-                                    aria-label="Mi perfil"
-                                >
-                                    <User size={22} className="text-gray-300 hover:text-white" />
-                                </a>
-                            ) : (
-                                <a
-                                    href="/iniciar-sesion"
-                                    className="p-2 rounded-full transition-all duration-300 hover:bg-white/10"
-                                    aria-label="Iniciar sesión"
-                                >
-                                    <User size={22} className="text-gray-300 hover:text-white" />
-                                </a>
-                            )}
+                       
                         </nav>
 
                         {/* Mobile Right Section */}
@@ -276,10 +256,10 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2 }}
-                            className="md:hidden fixed inset-0 backdrop-blur-lg"
+                            className="md:hidden fixed bg-primary inset-0 backdrop-blur-lg"
                             style={{
                                 top: '80px',
-                                backgroundColor: `${bgColor}fa`
+                               
                             }}
                         >
                             <nav className="flex flex-col items-center justify-center h-full space-y-6 pb-20">

@@ -8,6 +8,7 @@ import BlogPostCardMultivet from "./BlogPostCardMultivet";
 
 export default function BlogListMultivet({ data, posts, postsLatest, loading, isFilter }) {
   // Referencias para animaciones
+  console.log(data)
   const listRef = useRef(null);
   const listInView = useInView(listRef, { once: true, threshold: 0.1 });
 

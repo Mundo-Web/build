@@ -69,17 +69,18 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                 ?.description || ""
         );
     };
+    console.log('product in ProductCardFull:', product);
 
     return (
         <div
             key={product.id}
-            className={`flex flex-col lg:flex-row   w-full font-paragraph customtext-primary`}
+            className={`flex flex-col lg:flex-row w-full font-paragraph customtext-primary`}
         >
             <div
                 className="w-full lg:w-2/5 p-0 flex flex-col justify-end items-start"
             >
-                <div className="relative">
-                    <div className="w-full max-w-[450px] lg:max-w-none lg:min-w-[500px] 2xl:min-w-[700px] overflow-hidden flex items-center justify-center">
+                <div className="relative w-full">
+                    <div className="w-full aspect-video lg:aspect-square overflow-hidden flex items-center justify-center">
                         <img
                             src={`/storage/images/item/${product.banner}`}
                             onError={e => {
@@ -89,7 +90,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                                 };
                             }}
                             alt={product.name}
-                            className="w-full lg:min-w-[500px] 2xl:min-w-[700px] h-full object-cover object-left"
+                            className="w-full h-full object-cover object-center"
                             loading='lazy'
                         />
                     </div>
@@ -104,7 +105,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                
             </div >
 
-            <div className="w-full lg:w-3/5 flex flex-col justify-center items-center px-[5%] lg:px-[10%] mx-auto py-10 md:py-12 2xl:py-14">
+            <div className="w-full lg:w-3/5 flex flex-col justify-center items-center px-[5%] lg:px-[8%] mx-auto pt-10 md:pt-12 2xl:pt-14">
                 <div className='flex flex-col gap-6'>
                     <h3 className="text-center text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl font-medium tracking-normal customtext-neutral-dark leading-normal font-title">
                         {product?.name}
@@ -116,24 +117,24 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
 
                     <div className='grid grid-cols-2 gap-3 lg:gap-10'>
                        
-                        {product?.specifications?.length > 0 && (
-                            product.specifications.map(
-                                (spec, index) =>
-                                    spec.type === "icono" && (
+                        {product?.amenities?.length > 0 && (
+                            product.amenities.map(
+                                (amenity, index) =>(
+                                   
                                         <div key={index} className="text-base 2xl:text-lg gap-2 customtext-primary flex flex-col items-center justify-center text-center">
-                                            <div className='bg-[#FF7F00] rounded-full overflow-hidden'>
+                                            <div className='bg-secondary rounded-full overflow-hidden'>
                                                 <img
-                                                    src={`/storage/images${spec.title}`}
-                                                    alt={spec.description}
+                                                    src={`/storage/images/amenity/${amenity.image}`}
+                                                    alt={amenity.name}
                                                     className="w-14 h-14 object-contain p-2" 
                                                     onError={e => e.target.src = '/assets/img/noimage/noicon.png'}
                                                 />
                                             </div>
-                                            <h2>{spec.description}</h2>
+                                            <h2>{amenity.name}</h2>
                                             
                                         </div>
-                                    )
-                                )
+                                    
+                                ))
                         )}
                     
                     </div>
@@ -142,7 +143,7 @@ const ProductCardFull = ({ product, setCart, cart, contacts }) => {
                         <a target="_blank" href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
                             `Hola, deseo mayor información acerca del producto: ${product?.name}`
                             )}`}
-                         className='bg-secondary text-base lg:text-lg customtext-neutral-light px-10 py-2.5 rounded-lg'>
+                         className='bg-secondary text-base lg:text-lg text-white px-10 py-3 rounded-full'>
                             Solicitar cotizacion
                         </a>
                     </div>

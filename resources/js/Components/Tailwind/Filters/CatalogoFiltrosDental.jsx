@@ -23,7 +23,8 @@ import {
     ListFilter,
     Hash,
     Store,
-    Package
+    Package,
+    Coffee
 } from "lucide-react";
 import ItemsRest from "../../../Actions/ItemsRest";
 import ArrayJoin from "../../../Utils/ArrayJoin";
@@ -38,6 +39,7 @@ import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
 import CardProductMultivet from "../Products/Components/CardProductMultivet";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import ProductCardColors from "../Products/Components/ProductCardColors";
+import LaPetacaCard from "../Products/LaPetacaCard";
 // import CardProductDefault from "../Products/Components/CardProductDefault";
 // import CardProductMinimal from "../Products/Components/CardProductMinimal";
 // import CardProductCompact from "../Products/Components/CardProductCompact";
@@ -233,6 +235,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
     const [stores, setStores] = useState([]);
     const [priceRanges, setPriceRanges] = useState([]);
     const [tags, setTags] = useState([]);
+    const [amenities, setAmenities] = useState([]);
     const [activeSection, setActiveSection] = useState(null);
 
     // Rangos de precios estáticos
@@ -258,6 +261,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                 colores: false,
                 coleccion: false,
                 tienda: false,
+                amenidades: false,
             };
         }
         // En mobile/tablet puedes mantener el comportamiento anterior
@@ -269,6 +273,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
             colores: false,
             coleccion: false,
             tienda: false,
+            amenidades: false,
         };
     });
 
@@ -279,6 +284,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
         subcategory_id: [],
         store_id: [],
         tag_id: GET.tag ? GET.tag.split(',') : [], // Agregar soporte para tags
+        amenity_id: GET.amenity ? GET.amenity.split(',') : [], // Agregar soporte para amenidades
         price: [],
         name: GET.search || null,
         sort: (() => {
@@ -465,6 +471,16 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                 tagId,
             ]);
             transformedFilters.push(ArrayJoin(tagConditions, 'or'));
+        }
+
+        // Filtro de amenidades
+        if (filters.amenity_id && filters.amenity_id.length > 0) {
+            const amenityConditions = filters.amenity_id.map((amenityId) => [
+                "item_amenity.amenity_id",
+                "=",
+                amenityId,
+            ]);
+            transformedFilters.push(ArrayJoin(amenityConditions, 'or'));
         }
 
         if (filters.price && filters.price.length > 0) {
@@ -923,6 +939,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
             setStores(response?.summary?.stores || []);
             setPriceRanges(response?.summary?.priceRanges || []);
             setTags(response?.summary?.tags || []);
+            setAmenities(response?.summary?.amenities || data?.amenities || []);
         } catch (error) {
             console.error("Error fetching products:", error);
 
@@ -1197,6 +1214,22 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
     const [searchBrand, setSearchBrand] = useState("");
     const [searchCollection, setSearchCollection] = useState("");
     const [searchStore, setSearchStore] = useState("");
+    const [searchAmenity, setSearchAmenity] = useState("");
+
+    // Filtrar amenidades según el input
+    const filteredAmenities = amenities.filter((amenity) =>
+        amenity.name.toLowerCase().includes(searchAmenity.toLowerCase())
+    );
+
+    // Obtener rangos de precios - priorizar data.dat_prices si existe
+    const getPriceRanges = () => {
+        if (data?.dat_prices && Array.isArray(data.dat_prices) && data.dat_prices.length > 0) {
+            return data.dat_prices;
+        }
+        return staticPriceRanges;
+    };
+
+    const activePriceRanges = getPriceRanges();
 
     // Filtrar categorías según el input
     const filteredCategories = categories.filter((category) =>
@@ -2053,7 +2086,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                     >
                                                         <div className="space-y-3 max-h-[220px] overflow-y-auto custom-scrollbar">
                                                             <AnimatePresence>
-                                                                {staticPriceRanges.map((range, index) => (
+                                                                {activePriceRanges.map((range, index) => (
                                                                     <motion.label
                                                                         key={`${range.min}-${range.max}`}
                                                                         className={modernFilterStyles.label}
@@ -2099,6 +2132,122 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                         </motion.div>
                                     )}
 
+                                    {/* Sección Amenidades Mejorada */}
+                                    {data?.section_amenities && (
+                                        <motion.div
+                                            className={modernFilterStyles.filterSection}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.45 }}
+                                        >
+                                            <motion.button
+                                                onClick={() => toggleSection("amenidades")}
+                                                className={modernFilterStyles.filterButton}
+                                                whileHover={filterAnimations.hover}
+                                                whileTap={filterAnimations.tap}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <motion.div
+                                                        className="p-2 bg-primary rounded-lg shadow-md"
+                                                        animate={{ rotate: sections.amenidades ? 360 : 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                    >
+                                                        <Coffee className="h-4 w-4 text-white" />
+                                                    </motion.div>
+                                                    <div className="text-left">
+                                                        <span className="font-semibold customtext-neutral-dark">Amenidades</span>
+                                                        <p className="text-xs customtext-neutral-dark">Servicios y comodidades</p>
+                                                    </div>
+                                                </div>
+                                                <motion.div
+                                                    animate={{ rotate: sections.amenidades ? 180 : 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark" />
+                                                </motion.div>
+                                            </motion.button>
+
+                                            <AnimatePresence>
+                                                {sections.amenidades && (
+                                                    <motion.div
+                                                        className={`mt-4 p-4 ${modernFilterStyles.filterContent}`}
+                                                        {...filterAnimations.section}
+                                                    >
+                                                        {/* Barra de búsqueda para amenidades */}
+                                                        <div className="relative mb-4">
+                                                            <motion.div
+                                                                className="absolute left-4 top-4 z-[99]"
+                                                            >
+                                                                <Search className="h-4 w-4" />
+                                                            </motion.div>
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Buscar amenidades..."
+                                                                className={modernFilterStyles.searchInput}
+                                                                value={searchAmenity}
+                                                                onChange={(e) => setSearchAmenity(e.target.value)}
+                                                            />
+                                                        </div>
+
+                                                        {/* Lista de amenidades mejorada */}
+                                                        <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
+                                                            <AnimatePresence>
+                                                                {filteredAmenities.length > 0 ? (
+                                                                    filteredAmenities.map((amenity, index) => (
+                                                                        <motion.label
+                                                                            key={amenity.id}
+                                                                            className={modernFilterStyles.label}
+                                                                            {...filterAnimations.item}
+                                                                            transition={{ delay: index * 0.05 }}
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className={modernFilterStyles.checkbox}
+                                                                                onChange={() => handleFilterChange("amenity_id", amenity.id)}
+                                                                                checked={selectedFilters.amenity_id?.includes(amenity.id)}
+                                                                            />
+                                                                            <div className="flex items-center gap-2">
+                                                                                {amenity.image && (
+                                                                                    <img 
+                                                                                        src={`/storage/images/amenity/${amenity.image}`} 
+                                                                                        alt={amenity.name}
+                                                                                        className="w-5 h-5 object-contain"
+                                                                                        onError={(e) => e.target.style.display = 'none'}
+                                                                                    />
+                                                                                )}
+                                                                                <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark transition-colors duration-200">
+                                                                                    {amenity.name}
+                                                                                </span>
+                                                                            </div>
+                                                                            {selectedFilters.amenity_id?.includes(amenity.id) && (
+                                                                                <motion.div
+                                                                                    className="ml-auto"
+                                                                                    initial={{ scale: 0 }}
+                                                                                    animate={{ scale: 1 }}
+                                                                                    exit={{ scale: 0 }}
+                                                                                >
+                                                                                    <CheckCircle2 className="h-4 w-4 customtext-primary" />
+                                                                                </motion.div>
+                                                                            )}
+                                                                        </motion.label>
+                                                                    ))
+                                                                ) : (
+                                                                    <motion.div
+                                                                        className="text-center py-6 customtext-neutral-dark"
+                                                                        initial={{ opacity: 0 }}
+                                                                        animate={{ opacity: 1 }}
+                                                                    >
+                                                                        <Coffee className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                                                        <p className="text-sm">No se encontraron amenidades</p>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </motion.div>
+                                    )}
 
 
                                     {/* Chips de filtros activos mejorados */}
@@ -2115,6 +2264,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                 selectedFilters.subcategory_id?.length > 0 ||
                                                 selectedFilters.store_id?.length > 0 ||
                                                 selectedFilters.tag_id?.length > 0 ||
+                                                selectedFilters.amenity_id?.length > 0 ||
                                                 (selectedFilters.price && selectedFilters.price.length > 0)) && (
                                                     <motion.div
                                                         className="mb-4"
@@ -2257,9 +2407,30 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                                 ) : null;
                                                             })}
 
+                                                            {/* Chips de amenidades con AnimatedBadge */}
+                                                            {selectedFilters.amenity_id?.map((amenityId) => {
+                                                                const amenity = amenities.find(a => a.id === amenityId);
+                                                                return amenity ? (
+                                                                    <AnimatedBadge
+                                                                        key={amenityId}
+                                                                        onClick={() => handleFilterChange("amenity_id", amenityId)}
+                                                                    >
+                                                                        <Coffee className="h-3 w-3" />
+                                                                        <span>{amenity.name}</span>
+                                                                        <motion.div
+                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                            whileHover={{ scale: 1.2 }}
+                                                                            whileTap={{ scale: 0.9 }}
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </motion.div>
+                                                                    </AnimatedBadge>
+                                                                ) : null;
+                                                            })}
+
                                                             {/* Chips de precio con AnimatedBadge */}
                                                             {selectedFilters.price?.map((priceRange, index) => {
-                                                                const staticRange = staticPriceRanges.find(range =>
+                                                                const matchedRange = activePriceRanges.find(range =>
                                                                     range.min === priceRange.min &&
                                                                     range.max === priceRange.max
                                                                 );
@@ -2270,7 +2441,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                                     >
                                                                         <TrendingUp className="h-3 w-3" />
                                                                         <span>
-                                                                            {staticRange?.label || `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
+                                                                            {matchedRange?.label || `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
                                                                         </span>
                                                                         <motion.div
                                                                             className="ml-1 rounded-full p-0.5 transition-colors duration-200"
@@ -2310,6 +2481,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                         subcategory_id: [],
                                                         store_id: [],
                                                         tag_id: [],
+                                                        amenity_id: [],
                                                         price: [],
                                                         name: null,
                                                         sort: [
@@ -2516,6 +2688,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                                     subcategory_id: [],
                                                                     store_id: [],
                                                                     tag_id: [],
+                                                                    amenity_id: [],
                                                                     price: [],
                                                                     name: null,
                                                                     sort: [

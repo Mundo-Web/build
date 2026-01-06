@@ -6,6 +6,8 @@ const ServiceCarousel = React.lazy(() => import("./Services/ServiceCarousel"));
 const ServiceSelection = React.lazy(() => import("./Services/ServiceSelection"));
 const ServiceSidebar = React.lazy(() => import("./Services/ServiceSidebar"));
 const ServiceLaPetaca = React.lazy(() => import("./Services/ServiceLaPetaca"));
+const ServiceWebQuirurgica = React.lazy(() => import("./Services/ServiceWebQuirurgica"));
+const ServiceWebQuirurgica2 = React.lazy(() => import("./Services/ServiceWebQuirurgica2"));
 
 const Service = ({
     data,
@@ -26,6 +28,10 @@ const Service = ({
                 return <ServiceSidebar data={data} items={items} />;
             case "ServiceLaPetaca":
                 return <ServiceLaPetaca data={data} items={items} />;
+            case "ServiceWebQuirurgica":
+                return <ServiceWebQuirurgica data={data} items={items} />;
+            case "ServiceWebQuirurgica2":
+                return <ServiceWebQuirurgica2 data={data} items={items} />;
             default:
                 return <div>No hay componente {which}</div>;
         }

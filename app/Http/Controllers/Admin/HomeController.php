@@ -11,6 +11,8 @@ use App\Models\General;
 use App\Models\AnalyticsEvent;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Service;
+use App\Models\Message;
 use Carbon\Carbon;
 use Culqi\Culqi;
 use Illuminate\Http\Request;
@@ -146,6 +148,14 @@ class HomeController extends BasicController
         $usersMonth = \App\Models\User::whereBetween('created_at', [$startOfMonth, Carbon::now()])->count();
         $usersYear = \App\Models\User::whereBetween('created_at', [$startOfYear, Carbon::now()])->count();
 
+        // Mensajes de contacto (hoy, mes, año)
+        $messagesToday = Message::whereDate('created_at', $today)->count();
+        $messagesMonth = Message::whereBetween('created_at', [$startOfMonth, Carbon::now()])->count();
+        $messagesYear = Message::whereBetween('created_at', [$startOfYear, Carbon::now()])->count();
+        
+        // Mensajes no leídos
+        $messagesUnread = Message::where('seen', false)->count();
+
         // Satisfacción del cliente (dummy, si no hay tabla de feedback)
         $customerSatisfaction = 94.3;
 
@@ -234,6 +244,86 @@ class HomeController extends BasicController
         $totalBrands = Brand::where('status', 1)->where('visible', true)->count();
         $totalActiveProducts = Item::where('status', 1)->where('visible', true)->count();
 
+        // === ANALYTICS DE SERVICIOS ===
+        
+        // Total de servicios activos
+        $totalServices = Service::where('status', 1)->where('visible', true)->count();
+        
+        // Total de categorías de servicios activas
+        $totalServiceCategories = \App\Models\ServiceCategory::where('status', 1)->where('visible', true)->count();
+        
+        // Servicios destacados
+        $featuredServices = Service::where('status', 1)
+            ->where('visible', true)
+            ->where('featured', true)
+            ->count();
+        
+        // Servicios más vistos (top 10)
+        $mostViewedServices = DB::table('analytics_events')
+            ->select('service_id', DB::raw('COUNT(*) as view_count'))
+            ->where('event_type', 'service_view')
+            ->whereNotNull('service_id')
+            ->groupBy('service_id')
+            ->orderByDesc('view_count')
+            ->limit(10)
+            ->get()
+            ->map(function($row) {
+                $service = Service::find($row->service_id);
+                return [
+                    'id' => $row->service_id,
+                    'name' => $service ? $service->name : 'Servicio Desconocido',
+                    'view_count' => $row->view_count,
+                    'image' => $service ? $service->image : null,
+                    'category' => $service && $service->category ? $service->category->name : null,
+                ];
+            });
+
+        // Vistas de servicios por día del mes actual
+        $serviceVisitsThisMonth = [];
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::now()->startOfMonth()->addDays($day - 1);
+            $visits = AnalyticsEvent::whereDate('created_at', $date)
+                ->where('event_type', 'service_view')
+                ->count();
+            $serviceVisitsThisMonth[] = [
+                'date' => $date->format('Y-m-d'),
+                'day' => $day,
+                'visits' => $visits,
+                'label' => $date->format('d/m')
+            ];
+        }
+
+        // Vistas por dispositivo (servicios)
+        $serviceViewsByDevice = AnalyticsEvent::select('device_type', DB::raw('COUNT(*) as count'))
+            ->where('event_type', 'service_view')
+            ->whereNotNull('service_id')
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
+        // Últimas 30 días de vistas de servicios (para gráfica)
+        $serviceViewsLast30Days = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $views = AnalyticsEvent::whereDate('created_at', $date)
+                ->where('event_type', 'service_view')
+                ->count();
+            $uniqueUsers = AnalyticsEvent::whereDate('created_at', $date)
+                ->where('event_type', 'service_view')
+                ->distinct('session_id')
+                ->count('session_id');
+            $serviceViewsLast30Days[] = [
+                'date' => $date->format('Y-m-d'),
+                'views' => $views,
+                'unique_users' => $uniqueUsers
+            ];
+        }
+
         return [
             'totalProducts' => $totalProducts,
             'totalStock' => $totalStock,
@@ -257,7 +347,12 @@ class HomeController extends BasicController
             'usersMonth' => $usersMonth,
             'usersYear' => $usersYear,
             'customerSatisfaction' => $customerSatisfaction,
-            // Nuevas funcionalidades analíticas
+            // Mensajes de contacto
+            'messagesToday' => $messagesToday,
+            'messagesMonth' => $messagesMonth,
+            'messagesYear' => $messagesYear,
+            'messagesUnread' => $messagesUnread,
+            // Analíticas de productos
             'mostViewedProducts' => $mostViewedProducts,
             'visitsThisMonth' => $visitsThisMonth,
             'categoriesWithProducts' => $categoriesWithProducts,
@@ -265,6 +360,15 @@ class HomeController extends BasicController
             'totalCategories' => $totalCategories,
             'totalBrands' => $totalBrands,
             'totalActiveProducts' => $totalActiveProducts,
+            // Analíticas de servicios
+            'totalServices' => $totalServices,
+            'totalServiceCategories' => $totalServiceCategories,
+            'featuredServices' => $featuredServices,
+            'mostViewedServices' => $mostViewedServices,
+            'serviceVisitsThisMonth' => $serviceVisitsThisMonth,
+            'serviceViewsByDevice' => $serviceViewsByDevice,
+            'serviceViewsLast30Days' => $serviceViewsLast30Days,
+            'hasServicesFeature' => $totalServices > 0, // Indica si el proyecto usa servicios
             'dashboardVisibility' => $this->getDashboardVisibility(),
             'hasRootRole' => $this->hasRootRole(),
         ];
@@ -278,12 +382,19 @@ class HomeController extends BasicController
         $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
         
         if (!$visibilityRecord) {
+            // Verificar si el proyecto usa servicios
+            $hasServices = Service::count() > 0;
+            
             // Configuración por defecto si no existe el registro
-            return [
+            $defaultVisibility = [
                 'total_orders' => true,
                 'total_revenue' => true,
                 'new_users' => true,
+                'contact_messages' => true,
                 'customer_satisfaction' => true,
+                'total_categories' => true,
+                'total_brands' => true,
+                'total_products' => true,
                 'statistics_chart' => true,
                 'orders_statistics' => true,
                 'sales_by_location' => true,
@@ -293,13 +404,25 @@ class HomeController extends BasicController
                 'most_used_discount_rules' => true,
                 'brands_listing' => true,
                 'top_clients' => true,
-                // Nuevas funcionalidades analíticas
+                // Analíticas de productos
                 'most_viewed_products' => true,
                 'visits_chart' => true,
                 'categories_chart' => true,
                 'brands_chart' => true,
-                'analytics_kpis' => true
+                'analytics_kpis' => true,
             ];
+            
+            // Agregar analíticas de servicios solo si el proyecto las usa
+            if ($hasServices) {
+                $defaultVisibility['total_services_kpi'] = false; // Desactivado por defecto
+                $defaultVisibility['total_service_categories'] = false; // Desactivado por defecto
+                $defaultVisibility['most_viewed_services'] = false;
+                $defaultVisibility['service_visits_chart'] = false;
+                $defaultVisibility['service_views_by_device'] = false;
+                $defaultVisibility['service_views_trend'] = false;
+            }
+            
+            return $defaultVisibility;
         }
         
         return json_decode($visibilityRecord->description, true) ?? [];

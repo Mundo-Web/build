@@ -24,6 +24,7 @@ import UploadVoucherModalYape from "./UploadVoucherModalYape";
 import UploadVoucherModalBancs from "./UploadVoucherModalBancs";
 import { toast } from "sonner";
 import Global from "../../../../Utils/Global";
+import General from "../../../../Utils/General";
 import CouponsRest from "../../../../Actions/CouponsRest";
 import Tippy from "@tippyjs/react";
 import ReactModal from "react-modal";
@@ -274,6 +275,21 @@ export default function ShippingStepSF({
         );
     };
 
+    // Verificar si hay métodos de pago disponibles
+    const hasPaymentMethods = (() => {
+        const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
+        const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
+        const ischeckculqiobject = contacts?.find(x => x.correlative === 'checkout_culqi');
+        
+        return (
+            ischeckmpobject?.description === "true" ||
+            ischeckopenpayobject?.description === "true" ||
+            ischeckculqiobject?.description === "true" ||
+            General.get("checkout_dwallet") === "true" ||
+            General.get("checkout_transfer") === "true"
+        );
+    })();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -313,6 +329,10 @@ export default function ShippingStepSF({
 
     // Estado para modal de login
     const [showLoginModal, setShowLoginModal] = useState(false);
+    
+    // Estado para la comisión del método de pago
+    const [paymentCommission, setPaymentCommission] = useState(0);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     // Cargar los departamentos al iniciar el componente
     const numericSubTotal = typeof subTotal === 'number' ? subTotal : parseFloat(subTotal) || 0;
@@ -499,6 +519,7 @@ export default function ShippingStepSF({
             if (response.data.is_agency && response.data.agency) {
                 const agencyPrice = response.data.agency.price || 0;
                 const isPaymentOnDelivery = response.data.agency.payment_on_delivery || false;
+                const needsConsultation = response.data.needs_consultation || false;
                 
                 options.push({
                     type: "agency",
@@ -507,6 +528,7 @@ export default function ShippingStepSF({
                     deliveryType: response.data.agency.type,
                     characteristics: response.data.agency.characteristics,
                     paymentOnDelivery: isPaymentOnDelivery,
+                    showConsultButton: needsConsultation, // Mostrar botón de consulta si no tiene cobertura
                 });
             }
 
@@ -947,6 +969,29 @@ export default function ShippingStepSF({
 
     const handlePaymentComplete = async (paymentMethod) => {  // Cambiado de 'method' a 'paymentMethod'
         try {
+            // Establecer la comisión según el método de pago seleccionado
+            let commission = 0;
+            switch(paymentMethod) {
+                case 'tarjeta':
+                    commission = parseFloat(Global.get("checkout_mercadopago_commission") || 0);
+                    break;
+                case 'culqi':
+                    commission = parseFloat(Global.get("checkout_culqi_commission") || 0);
+                    break;
+                case 'openpay':
+                    commission = parseFloat(Global.get("checkout_openpay_commission") || 0);
+                    break;
+                case 'yape':
+                    commission = parseFloat(Global.get("checkout_dwallet_commission") || 0);
+                    break;
+                case 'transferencia':
+                    commission = parseFloat(Global.get("checkout_transfer_commission") || 0);
+                    break;
+                default:
+                    commission = 0;
+            }
+            setPaymentCommission(commission);
+            setSelectedPaymentMethod(paymentMethod);
             
             setShowPaymentModal(false);
             setCurrentPaymentMethod(paymentMethod);
@@ -968,6 +1013,12 @@ export default function ShippingStepSF({
                 const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                 const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                // Calcular el total con comisión
+                const mercadopagoCommission = parseFloat(Global.get("checkout_mercadopago_commission") || 0);
+                const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (mercadopagoCommission / 100));
+                const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                 const request = {
                     user_id: user?.id || "",
                     name: formData?.name || "",
@@ -985,8 +1036,8 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
-                    delivery: envio,
+                    amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                    delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
                     cart: cart,
                     invoiceType: formData.invoiceType || "",
@@ -996,13 +1047,16 @@ export default function ShippingStepSF({
                     payment_method: paymentMethod || null,
                     // Cupón aplicado
                     coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
+                    coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
+                    // Comisión del método de pago
+                    payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                    payment_commission_percentage: roundToTwoDecimals(mercadopagoCommission || 0),
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
+                    automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                     applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
+                    promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                    total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 };
                 
                 try {
@@ -1078,6 +1132,12 @@ export default function ShippingStepSF({
                     const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                     const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                    // Calcular el total con comisión
+                    const culqiCommission = parseFloat(Global.get("checkout_culqi_commission") || 0);
+                    const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                    const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (culqiCommission / 100));
+                    const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                     const request = {
                         user_id: user?.id || "",
                         name: formData?.name || "",
@@ -1095,8 +1155,8 @@ export default function ShippingStepSF({
                         number: formData?.number || "",
                         comment: formData?.comment || "",
                         reference: formData?.reference || "",
-                        amount: finalTotalWithCoupon || 0,
-                        delivery: envio,
+                        amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                        delivery: roundToTwoDecimals(envio || 0),
                         delivery_type: deliveryType,
                         cart: cart,
                         invoiceType: formData.invoiceType || "",
@@ -1106,13 +1166,16 @@ export default function ShippingStepSF({
                         payment_method: "culqi",
                         // Cupón aplicado
                         coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                        coupon_discount: calculatedCouponDiscount || 0,
+                        coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
+                        // Comisión del método de pago
+                        payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                        payment_commission_percentage: roundToTwoDecimals(culqiCommission || 0),
                         // Descuentos automáticos
                         automatic_discounts: autoDiscounts,
-                        automatic_discount_total: autoDiscountTotal,
+                        automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                         applied_promotions: autoDiscounts,
-                        promotion_discount: autoDiscountTotal || 0,
-                        total_amount: finalTotalWithCoupon || 0,
+                        promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                        total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                     };
 
                     const response = await processCulqiPayment(request);
@@ -1166,6 +1229,12 @@ export default function ShippingStepSF({
                 const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                 const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                // Calcular el total con comisión
+                const yapeCommission = parseFloat(Global.get("checkout_dwallet_commission") || 0);
+                const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (yapeCommission / 100));
+                const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                 const request = {
                     user_id: user?.id || "",
                     name: formData?.name || "",
@@ -1183,8 +1252,8 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
-                    delivery: envio,
+                    amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                    delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
                         id: item.id,
@@ -1198,13 +1267,16 @@ export default function ShippingStepSF({
                     payment_proof: null,
                     // Cupón aplicado
                     coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
+                    coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
+                    // Comisión del método de pago
+                    payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                    payment_commission_percentage: roundToTwoDecimals(yapeCommission || 0),
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
+                    automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                     applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
+                    promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                    total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 };
 
                 setPaymentRequest(request);
@@ -1215,6 +1287,12 @@ export default function ShippingStepSF({
                 const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
                 const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
 
+                // Calcular el total con comisión
+                const transferenciaCommission = parseFloat(Global.get("checkout_transfer_commission") || 0);
+                const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+                const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (transferenciaCommission / 100));
+                const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+
                 const request = {
                     user_id: user?.id || "",
                     name: formData?.name || "",
@@ -1232,8 +1310,8 @@ export default function ShippingStepSF({
                     number: formData?.number || "",
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
-                    amount: finalTotalWithCoupon || 0,
-                    delivery: envio,
+                    amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                    delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
                     details: JSON.stringify(cart.map((item) => ({
                         id: item.id,
@@ -1247,13 +1325,16 @@ export default function ShippingStepSF({
                     payment_proof: null,
                     // Cupón aplicado
                     coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                    coupon_discount: calculatedCouponDiscount || 0,
+                    coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
+                    // Comisión del método de pago
+                    payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                    payment_commission_percentage: roundToTwoDecimals(transferenciaCommission || 0),
                     // Descuentos automáticos
                     automatic_discounts: autoDiscounts,
-                    automatic_discount_total: autoDiscountTotal,
+                    automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                     applied_promotions: autoDiscounts,
-                    promotion_discount: autoDiscountTotal || 0,
-                    total_amount: finalTotalWithCoupon || 0,
+                    promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                    total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 };
                 setPaymentRequest(request);
                 setShowVoucherModalBancs(true);
@@ -1281,6 +1362,25 @@ export default function ShippingStepSF({
             const selectedShippingOption = shippingOptions.find(option => option.type === selectedOption);
             const deliveryType = selectedShippingOption ? selectedShippingOption.deliveryType : 'domicilio';
             
+            // Calcular el total con comisión
+            console.log("🧮 [OpenPay] Calculando montos:");
+            console.log("   - subTotal:", subTotal, typeof subTotal);
+            console.log("   - igv:", igv, typeof igv);
+            console.log("   - envio:", envio, typeof envio);
+            console.log("   - autoDiscountTotal:", autoDiscountTotal, typeof autoDiscountTotal);
+            console.log("   - totalBase (calculado):", totalBase, typeof totalBase);
+            console.log("   - calculatedCouponDiscount:", calculatedCouponDiscount, typeof calculatedCouponDiscount);
+            
+            const openpayCommission = parseFloat(Global.get("checkout_openpay_commission") || 0);
+            const totalBeforeCommissionCalc = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+            const commissionAmount = roundToTwoDecimals(totalBeforeCommissionCalc * (openpayCommission / 100));
+            const finalTotalWithCommission = Math.max(0, roundToTwoDecimals(totalBeforeCommissionCalc + commissionAmount));
+            
+            console.log("   - openpayCommission:", openpayCommission + "%");
+            console.log("   - totalBeforeCommissionCalc:", totalBeforeCommissionCalc);
+            console.log("   - commissionAmount:", commissionAmount);
+            console.log("   - finalTotalWithCommission:", finalTotalWithCommission);
+            
             const request = {
                 user_id: user?.id || "",
                 name: formData?.name || "",
@@ -1298,8 +1398,8 @@ export default function ShippingStepSF({
                 number: formData?.number || "",
                 comment: formData?.comment || "",
                 reference: formData?.reference || "",
-                amount: finalTotalWithCoupon || 0,
-                delivery: envio,
+                amount: roundToTwoDecimals(finalTotalWithCommission || 0),
+                delivery: roundToTwoDecimals(envio || 0),
                 delivery_type: deliveryType,
                 cart: cart,
                 invoiceType: formData.invoiceType || "",
@@ -1311,16 +1411,24 @@ export default function ShippingStepSF({
                 device_session_id: tokenData.device_session_id,
                 // Cupón aplicado
                 coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                coupon_discount: calculatedCouponDiscount || 0,
+                coupon_discount: roundToTwoDecimals(calculatedCouponDiscount || 0),
+                // Comisión del método de pago
+                payment_commission: roundToTwoDecimals(commissionAmount || 0),
+                payment_commission_percentage: roundToTwoDecimals(openpayCommission || 0),
                 // Descuentos automáticos
                 automatic_discounts: autoDiscounts,
-                automatic_discount_total: autoDiscountTotal,
+                automatic_discount_total: roundToTwoDecimals(autoDiscountTotal || 0),
                 applied_promotions: autoDiscounts,
-                promotion_discount: autoDiscountTotal || 0,
-                total_amount: finalTotalWithCoupon || 0,
+                promotion_discount: roundToTwoDecimals(autoDiscountTotal || 0),
+                total_amount: roundToTwoDecimals(finalTotalWithCommission || 0),
             };
             
-            console.log("📤 Enviando request al backend:", request);
+            console.log("📤 [OpenPay] Valores antes de enviar:");
+            console.log("   - amount:", request.amount, "(tipo:", typeof request.amount, ")");
+            console.log("   - delivery:", request.delivery, "(tipo:", typeof request.delivery, ")");
+            console.log("   - coupon_discount:", request.coupon_discount);
+            console.log("   - commission:", request.payment_commission);
+            console.log("📤 Enviando request completo al backend:", request);
             
             const response = await processOpenPayPayment(request);
             console.log("📥 Respuesta del backend:", response);
@@ -1515,6 +1623,10 @@ export default function ShippingStepSF({
     // El descuento del cupón ya viene calculado desde el backend
     let calculatedCouponDiscount = couponDiscount || 0;
     
+    // Calcular comisión del método de pago (sobre el total antes de la comisión)
+    const totalBeforeCommission = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+    const calculatedCommission = roundToTwoDecimals(totalBeforeCommission * (paymentCommission / 100));
+    
     // Sincronizar el estado para mantener compatibilidad visual
     useEffect(() => {
         if (setParentCouponDiscount) {
@@ -1522,7 +1634,7 @@ export default function ShippingStepSF({
         }
     }, [appliedCoupon, couponDiscount, setParentCouponDiscount]);
 
-    const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+    const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBeforeCommission + calculatedCommission));
 
     // Componente Modal de Login
     const LoginModal = () => {
@@ -1549,7 +1661,7 @@ export default function ShippingStepSF({
                             onClick={() => {
                                 setShowLoginModal(false);
                                 // Redirigir a login o abrir modal de login
-                                window.location.href = '/login';
+                                window.location.href = '/iniciar-sesion';
                             }}
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                         >
@@ -2031,28 +2143,41 @@ export default function ShippingStepSF({
                                         Método de envío
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {shippingOptions.map((option) => (
-                                            <OptionCard
-                                                key={option.type}
-                                                title={option.deliveryType}
-                                                price={option.price}
-                                                description={option.description}
-                                                selected={selectedOption === option.type}
-                                                paymentOnDelivery={option.paymentOnDelivery || false}
-                                                onSelect={() => {
-                                                    setSelectedOption(option.type);
-                                                    setEnvio(option.price);
-                                                    
-                                                    // Si selecciona retiro en tienda, mostrar selector
-                                                    if (option.type === "store_pickup") {
-                                                        setShowStoreSelector(true);
-                                                    } else {
-                                                        setShowStoreSelector(false);
-                                                        setSelectedStore(null);
-                                                    }
-                                                }}
-                                            />
-                                        ))}
+                                        {shippingOptions.map((option) => {
+                                            // Generar mensaje personalizado para consulta de envío
+                                            const ubigeoInfo = selectedUbigeo?.data;
+                                            const location = ubigeoInfo 
+                                                ? `${ubigeoInfo.distrito}, ${ubigeoInfo.provincia}, ${ubigeoInfo.departamento}`
+                                                : 'mi ubicación';
+                                            const consultMessage = `Hola, necesito consultar el costo de envío para: ${location}. ¿Me pueden ayudar?`;
+                                            
+                                            return (
+                                                <OptionCard
+                                                    key={option.type}
+                                                    title={option.deliveryType}
+                                                    price={option.price}
+                                                    description={option.description}
+                                                    selected={selectedOption === option.type}
+                                                    paymentOnDelivery={option.paymentOnDelivery || false}
+                                                    showConsultButton={option.showConsultButton || false}
+                                                    advisors={General.whatsapp_advisors || []}
+                                                    class_advisors="rounded-full"
+                                                    consultMessage={consultMessage}
+                                                    onSelect={() => {
+                                                        setSelectedOption(option.type);
+                                                        setEnvio(option.price);
+                                                        
+                                                        // Si selecciona retiro en tienda, mostrar selector
+                                                        if (option.type === "store_pickup") {
+                                                            setShowStoreSelector(true);
+                                                        } else {
+                                                            setShowStoreSelector(false);
+                                                            setSelectedStore(null);
+                                                        }
+                                                    }}
+                                                />
+                                            );
+                                        })}
                                     </div>
                                
 
@@ -2359,6 +2484,17 @@ export default function ShippingStepSF({
                                 )}
                             </span>
                         </div>
+                        
+                        {/* Mostrar comisión del método de pago */}
+                        {paymentCommission > 0 && selectedPaymentMethod && (
+                            <div className="flex justify-between text-yellow-600">
+                                <span>Comisión ({paymentCommission}%)</span>
+                                <span className="font-semibold">
+                                    +{CurrencySymbol()} {Number2Currency(calculatedCommission)}
+                                </span>
+                            </div>
+                        )}
+                        
                         <div className="py-3 border-y-2 mt-6">
                             <div className="flex justify-between font-bold text-[20px] items-center">
                                 <span>Total</span>
@@ -2367,8 +2503,10 @@ export default function ShippingStepSF({
                         </div>
                         <div className="space-y-2 pt-4">
                             <button
-                                className={`w-full py-3 px-6 rounded-full font-semibold text-lg transition-all duration-300 hover:opacity-90 bg-primary ${data?.class_button ||' text-white'}`}
+                                className={`w-full py-3 px-6 rounded-full font-semibold text-lg transition-all duration-300 ${!hasPaymentMethods ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'hover:opacity-90 bg-primary'} ${data?.class_button ||' text-white'}`}
                                 onClick={handleContinueClick}
+                                disabled={!hasPaymentMethods}
+                                title={!hasPaymentMethods ? 'No hay métodos de pago disponibles' : ''}
                             >
                                 Continuar
                             </button>

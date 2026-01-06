@@ -13,7 +13,7 @@ const benefits = [
 const BannerContactMakita = ({ data }) => {
   const imageUrl = resolveSystemAsset(data?.image);
   return (
-    <section className="relative w-full bg-accent py-16 text-white overflow-hidden">
+    <section className="relative w-full bg-sections-color py-16 text-white overflow-hidden">
       <div className="mx-auto px-[5%] 2xl:max-w-7xl 2xl:px-0">
      
         <div className="relative border-2 border-secondary rounded-3xl p-8 md:p-10 backdrop-blur-sm bg-gradient-to-br from-accent/50 to-transparent shadow-2xl hover:shadow-[0_0_40px_rgba(0,0,0,0.3)] transition-all duration-500">

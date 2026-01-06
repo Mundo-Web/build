@@ -15,6 +15,7 @@ import DynamicField from '../Components/Adminto/form/DynamicField';
 import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
+import Fillable from '../Utils/Fillable';
 import Swal from 'sweetalert2';
 
 const Rooms = () => {
@@ -31,7 +32,6 @@ const Rooms = () => {
   const maxOccupancyRef = useRef();
   const bedsCountRef = useRef();
   const sizeM2Ref = useRef();
-  const totalRoomsRef = useRef();
   const priceRef = useRef();
   const discountRef = useRef();
   const imageRef = useRef();
@@ -251,7 +251,6 @@ const Rooms = () => {
     maxOccupancyRef.current.value = data?.max_occupancy ?? 2;
     bedsCountRef.current.value = data?.beds_count ?? 1;
     sizeM2Ref.current.value = data?.size_m2 ?? 0;
-    totalRoomsRef.current.value = data?.total_rooms ?? 1;
     priceRef.current.value = data?.price ?? 0;
     discountRef.current.value = data?.discount ?? 0;
 
@@ -354,7 +353,6 @@ const Rooms = () => {
       max_occupancy: maxOccupancyRef.current.value,
       beds_count: bedsCountRef.current.value,
       size_m2: sizeM2Ref.current.value,
-      total_rooms: totalRoomsRef.current.value,
       price: priceRef.current.value,
       discount: discountRef.current.value,
       features: cleanFeatures,
@@ -580,7 +578,7 @@ const Rooms = () => {
               }
             }
           },
-          {
+          Fillable.has('items', 'sku') ? {
             dataField: 'name',
             caption: 'Habitación',
             width: '20%',
@@ -590,12 +588,30 @@ const Rooms = () => {
                   <strong>{data.name}</strong>
                   <div className="small text-muted">
                     <span className="badge badge-soft-secondary">{data.sku}</span>
-                    {data.room_type && (
+                    {data.room_type && Fillable.has('items', 'room_type') && (
                       <span className="badge badge-soft-info ml-1">
                         {roomTypes[data.room_type] || data.room_type}
                       </span>
                     )}
                   </div>
+                </div>
+              );
+            }
+          } : {
+            dataField: 'name',
+            caption: 'Habitación',
+            width: '20%',
+            cellTemplate: (container, { data }) => {
+              ReactAppend(container,
+                <div>
+                  <strong>{data.name}</strong>
+                  {data.room_type && Fillable.has('items', 'room_type') && (
+                    <div className="small text-muted">
+                      <span className="badge badge-soft-info">
+                        {roomTypes[data.room_type] || data.room_type}
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             }
@@ -607,15 +623,19 @@ const Rooms = () => {
             cellTemplate: (container, { data }) => {
               ReactAppend(container,
                 <div>
-                  <div className="small">
-                    <i className="mdi mdi-account-multiple text-primary mr-1"></i>
-                    {data.max_occupancy || 0} personas
-                  </div>
-                  <div className="small">
-                    <i className="mdi mdi-bed text-success mr-1"></i>
-                    {data.beds_count || 0} cama{data.beds_count !== 1 ? 's' : ''}
-                  </div>
-                  {data.size_m2 > 0 && (
+                  {Fillable.has('items', 'max_occupancy') && (
+                    <div className="small">
+                      <i className="mdi mdi-account-multiple text-primary mr-1"></i>
+                      {data.max_occupancy || 0} personas
+                    </div>
+                  )}
+                  {Fillable.has('items', 'beds_count') && (
+                    <div className="small">
+                      <i className="mdi mdi-bed text-success mr-1"></i>
+                      {data.beds_count || 0} cama{data.beds_count !== 1 ? 's' : ''}
+                    </div>
+                  )}
+                  {Fillable.has('items', 'size_m2') && data.size_m2 > 0 && (
                     <div className="small">
                       <i className="mdi mdi-ruler-square text-info mr-1"></i>
                       {data.size_m2} m²
@@ -623,22 +643,8 @@ const Rooms = () => {
                   )}
                 </div>
               );
-            }
-          },
-          {
-            dataField: 'total_rooms',
-            caption: 'Disponibles',
-            width: '10%',
-            cellTemplate: (container, { data }) => {
-              ReactAppend(container,
-                <div className="text-center">
-                  <h5 className="mb-0">
-                    <span className="badge badge-soft-primary">{data.total_rooms || 0}</span>
-                  </h5>
-                  <small className="text-muted">habitaciones</small>
-                </div>
-              );
-            }
+            },
+            visible: Fillable.has('items', 'max_occupancy') || Fillable.has('items', 'beds_count') || Fillable.has('items', 'size_m2')
           },
           {
             dataField: 'price',
@@ -657,7 +663,7 @@ const Rooms = () => {
               );
             }
           },
-          {
+          Fillable.has('items', 'is_amenities') && {
             dataField: 'amenities',
             caption: 'Amenidades',
             width: '15%',
@@ -686,7 +692,7 @@ const Rooms = () => {
               );
             }
           },
-          {
+          Fillable.has('items', 'featured') && {
             dataField: 'featured',
             caption: 'Destacado',
             dataType: 'boolean',
@@ -701,7 +707,7 @@ const Rooms = () => {
               );
             }
           },
-          {
+          Fillable.has('items', 'visible') && {
             dataField: 'visible',
             caption: 'Visible',
             dataType: 'boolean',
@@ -843,24 +849,24 @@ const Rooms = () => {
                         eRef={skuRef}
                         label="SKU"
                         placeholder="Ej: ROOM-001"
+                        hidden={!Fillable.has('items', 'sku')}
                       />
-                      <div className="mb-3">
-                        <label className="form-label">Tipo de Habitación <span className="text-danger">*</span></label>
-                        <SelectFormGroup
-                          eRef={roomTypeRef}
-                          dropdownParent="#rooms-container"
-                          required
-                        >
-                          <option value="standard">Estándar</option>
-                          <option value="single">Individual</option>
-                          <option value="double">Doble</option>
-                          <option value="suite">Suite</option>
-                          <option value="deluxe">Deluxe</option>
-                          <option value="presidential">Presidencial</option>
-                          <option value="family">Familiar</option>
-                          <option value="executive">Ejecutiva</option>
-                        </SelectFormGroup>
-                      </div>
+                      <SelectFormGroup
+                        eRef={roomTypeRef}
+                        label="Tipo de Habitación"
+                        dropdownParent="#rooms-container"
+                        required
+                        hidden={!Fillable.has('items', 'room_type')}
+                      >
+                        <option value="standard">Estándar</option>
+                        <option value="single">Individual</option>
+                        <option value="double">Doble</option>
+                        <option value="suite">Suite</option>
+                        <option value="deluxe">Deluxe</option>
+                        <option value="presidential">Presidencial</option>
+                        <option value="family">Familiar</option>
+                        <option value="executive">Ejecutiva</option>
+                      </SelectFormGroup>
                     </div>
                   </div>
                 </div>
@@ -876,6 +882,7 @@ const Rooms = () => {
                         label="Resumen"
                         rows={4}
                         placeholder="Breve descripción de la habitación..."
+                        hidden={!Fillable.has('items', 'summary')}
                       />
                     </div>
                   </div>
@@ -887,7 +894,11 @@ const Rooms = () => {
                       <h6 className="mb-0"><i className="fas fa-edit me-2"></i>Descripción Completa</h6>
                     </div>
                     <div className="card-body">
-                      <QuillFormGroup eRef={descriptionRef} label="Descripción Detallada" />
+                      <QuillFormGroup 
+                        eRef={descriptionRef} 
+                        label="Descripción Detallada"
+                        hidden={!Fillable.has('items', 'description')}
+                      />
                     </div>
                   </div>
                 </div>
@@ -910,6 +921,7 @@ const Rooms = () => {
                         required
                         min="1"
                         max="10"
+                        hidden={!Fillable.has('items', 'max_occupancy')}
                       />
                       <InputFormGroup
                         eRef={bedsCountRef}
@@ -918,6 +930,7 @@ const Rooms = () => {
                         required
                         min="1"
                         max="5"
+                        hidden={!Fillable.has('items', 'beds_count')}
                       />
                       <InputFormGroup
                         eRef={sizeM2Ref}
@@ -925,13 +938,7 @@ const Rooms = () => {
                         type="number"
                         min="0"
                         step="0.1"
-                      />
-                      <InputFormGroup
-                        eRef={totalRoomsRef}
-                        label="Total de Habitaciones Disponibles"
-                        type="number"
-                        required
-                        min="1"
+                        hidden={!Fillable.has('items', 'size_m2')}
                       />
                     </div>
                   </div>
@@ -950,6 +957,7 @@ const Rooms = () => {
                         required
                         min="0"
                         step="0.01"
+                        hidden={!Fillable.has('items', 'price')}
                       />
                       <InputFormGroup
                         eRef={discountRef}
@@ -958,36 +966,84 @@ const Rooms = () => {
                         min="0"
                         max="100"
                         step="0.01"
+                        hidden={!Fillable.has('items', 'discount')}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="col-12">
-                  <div className="card border-0 shadow-sm">
-                    <div className="card-header">
-                      <h6 className="mb-0"><i className="fas fa-star me-2"></i>Amenidades</h6>
-                    </div>
-                    <div className="card-body">
-                      <SelectFormGroup
-                        eRef={amenitiesRef}
-                        label="Selecciona las amenidades incluidas"
-                        dropdownParent="#rooms-container"
-                        multiple
-                      >
-                        {amenities.map(amenity => (
-                          <option key={amenity.id} value={amenity.id}>
-                            {amenity.name}
-                          </option>
-                        ))}
-                      </SelectFormGroup>
-                      <small className="text-muted">
-                        <i className="fas fa-info-circle me-1"></i>
-                        Mantén presionado Ctrl para seleccionar múltiples opciones
-                      </small>
+                {Fillable.has('items', 'is_amenities') && (
+                  <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                      <div className="card-header bg-light">
+                        <h6 className="mb-0">
+                          <i className="fas fa-star-circle me-2 text-warning"></i>
+                          Cualidades / Amenidades
+                        </h6>
+                      </div>
+                      <div className="card-body">
+                        <SelectFormGroup
+                          eRef={amenitiesRef}
+                          label="Seleccionar Cualidades / Amenidades"
+                          dropdownParent="#rooms-container"
+                          multiple
+                          templateResult={(state) => {
+                            if (!state.id) return state.text;
+                            const $option = $(state.element);
+                            const image = $option.data('image');
+                            
+                            if (image) {
+                              return $(`
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                  <div style="width: 32px; height: 32px; border-radius: 50%; background: #ebeff2; display: flex; align-items: center; justify-content: center; padding: 5px; flex-shrink: 0;">
+                                    <img src="/storage/images/amenity/${image}" 
+                                         style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
+                                         onerror="this.style.display='none'" />
+                                  </div>
+                                  <span>${state.text}</span>
+                                </div>
+                              `);
+                            }
+                            return state.text;
+                          }}
+                          templateSelection={(state) => {
+                            if (!state.id) return state.text;
+                            const $option = $(state.element);
+                            const image = $option.data('image');
+                            
+                            if (image) {
+                              return $(`
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                  <div style="width: 24px; height: 24px; border-radius: 50%; background: #ebeff2; display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0;">
+                                    <img src="/storage/images/amenity/${image}" 
+                                         style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
+                                         onerror="this.style.display='none'" />
+                                  </div>
+                                  <span>${state.text}</span>
+                                </div>
+                              `);
+                            }
+                            return state.text;
+                          }}
+                        >
+                          {amenities.map((amenity) => (
+                            <option 
+                              key={amenity.id} 
+                              value={amenity.id}
+                              data-image={amenity.image}
+                            >
+                              {amenity.name}
+                            </option>
+                          ))}
+                        </SelectFormGroup>
+                        <small className="text-muted">
+                          <i className="fas fa-info-circle me-1"></i>
+                          Selecciona las cualidades o amenidades que destacan esta habitación
+                        </small>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -1005,6 +1061,7 @@ const Rooms = () => {
                         name="image"
                         label="Imagen Principal"
                         aspect={16 / 9}
+                        hidden={!Fillable.has('items', 'image')}
                       />
                     </div>
                   </div>
@@ -1132,7 +1189,7 @@ const Rooms = () => {
                   </div>
                 </div>
 
-                <div className="col-md-6">
+                <div className="col-md-6" hidden={!Fillable.has('items', 'pdf')}>
                   <div className="card border-0 shadow-sm">
                     <div className="card-header">
                       <h6 className="mb-0">
@@ -1201,7 +1258,7 @@ const Rooms = () => {
                   </div>
                 </div>
 
-                <div className="col-md-6">
+                <div className="col-md-6" hidden={!Fillable.has('items', 'linkvideo')}>
                   <div className="card border-0 shadow-sm">
                     <div className="card-header">
                       <h6 className="mb-0">
@@ -1274,26 +1331,28 @@ const Rooms = () => {
             {/* Pestaña: Características */}
             <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
               <div className="row g-3">
-                <div className="col-12">
-                  <div className="card border-0 shadow-sm">
-                    <div className="card-header">
-                      <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Lista de Características</h6>
-                    </div>
-                    <div className="card-body">
-                      <DynamicField
-                        ref={featuresRef}
-                        label="Características de la Habitación"
-                        structure=""
-                        value={features}
-                        onChange={setFeatures}
-                      />
-                      <small className="text-muted">
-                        <i className="fas fa-info-circle me-1"></i>
-                        Agrega características como: "Vista al río", "Balcón privado", "Servicio 24 horas", etc.
-                      </small>
+                {Fillable.has('items', 'is_features') && (
+                  <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                      <div className="card-header">
+                        <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Lista de Características</h6>
+                      </div>
+                      <div className="card-body">
+                        <DynamicField
+                          ref={featuresRef}
+                          label="Características de la Habitación"
+                          structure=""
+                          value={features}
+                          onChange={setFeatures}
+                        />
+                        <small className="text-muted">
+                          <i className="fas fa-info-circle me-1"></i>
+                          Agrega características como: "Vista al río", "Balcón privado", "Servicio 24 horas", etc.
+                        </small>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

@@ -194,7 +194,7 @@ export default function BlogHeaderMultivet({
               <div className="relative flex-1">
                 <input
                   type="search"
-                  placeholder="Buscar artículos veterinarios..."
+                  placeholder={data?.placeholder_search || "Buscar artículos..."}
                   className="w-full px-6 py-4 pl-12 border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-0 focus:outline-0 transition-all duration-300 text-gray-700 placeholder-gray-400"
                   onChange={(e) => handleFilterChange("name", e.target.value)}
                 />
@@ -255,12 +255,10 @@ export default function BlogHeaderMultivet({
               className="mt-16"
             >
               <div className="text-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                <h2   className="text-4xl md:text-5xl font-bold mb-6 font-title customtext-secondary leading-tight">
                   Artículos Destacados
                 </h2>
-                <p className="text-white/80">
-                  Los contenidos más importantes para el cuidado de tu mascota
-                </p>
+               
               </div>
               
               <div className="grid lg:grid-cols-2 gap-8">

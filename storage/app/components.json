@@ -95,8 +95,8 @@
                     "model": "Social"
                 },
                 "generals": [
-                    "phone_contact",
-                    "email_contact",
+                    "support_phone",
+                    "support_email",
                     "cintillo"
                 ]
             },
@@ -144,7 +144,17 @@
                     "description",
                     "icon",
                     "class_container",
-                    "type_order"
+                    "type_order",
+                    "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "badge_brand_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Category",
@@ -529,6 +539,47 @@
                     "accentColor"
                 ],
                 "generals": []
+            },
+            {
+                "id": "HeaderWebQuirurgica",
+                "name": "Header - Web Quirurgica",
+                "image": "header-webquirurgica.png",
+                "data": [
+                    "logoWidth",
+                    "ctaText",
+                    "ctaLink",
+                    "footerText"
+                ],
+                "using": {
+                    "model": "ServiceCategory",
+                    "with": [
+                        "services"
+                    ]
+                },
+                "generals": [
+                    "header_menu_order"
+                ]
+            },
+               {
+                "id": "HeaderWebQuirurgica2",
+                "name": "Header - Web Quirurgica 2",
+                "image": "header-webquirurgica.png",
+                "data": [
+                    "logoWidth",
+                    "ctaText",
+                    "ctaLink",
+                    "class_cta_button",
+                    "footerText"
+                ],
+                "using": {
+                    "model": "ServiceCategory",
+                    "with": [
+                        "services"
+                    ]
+                },
+                "generals": [
+                    "header_menu_order"
+                ]
             }
         ]
     },
@@ -715,7 +766,9 @@
                 "name": "Interactivo Loop Nav Pag",
                 "image": "slider-simple.png",
                 "data": [
+                    "class_slider_section",
                     "class_slider",
+                    "class_slider_container",
                     "infiniteLoop",
                     "paginationAlignment",
                     "showNavigation",
@@ -732,18 +785,7 @@
                     "only_image"
                 ],
                 "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "name",
-                        "description",
-                        "bg_image",
-                        "bg_image_mobile",
-                        "button_text",
-                        "button_link",
-                        "order_index",
-                        "title_color",
-                        "description_color"
-                    ]
+                    "model": "Slider"
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -771,7 +813,6 @@
                 ],
                 "using": {
                     "model": "Slider"
-                  
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -977,15 +1018,25 @@
                 "name": "Slider - La Petaca Hotel",
                 "image": "slider-lapetaca.png",
                 "data": [
-                    "class_slider",
-                  
+                    "animation_slider",
                     "autoplayDelay",
                     "showNavigation",
-                    "showIndicators"
+                    "showIndicators",
+                    "class_slider",
+                    "class_slider_section",
+                    "class_content_slider",
+                    "class_title",
+                    "class_description",
+                    "class_button",
+                    "class_secondary_button",
+                    "class_overlay",
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "overlayDesktop",
+                    "imageBgPosition"
                 ],
                 "using": {
                     "model": "Slider"
-                  
                 },
                 "generals": []
             }
@@ -1169,19 +1220,24 @@
                     "section_brands",
                     "section_categories",
                     "section_subcategories",
+                    "section_amenities",
+                    "dat_prices",
                     "section_prices",
                     "section_stores",
                     "type_card_product",
                     "class_product_card_container",
                     "class_clear_button",
                     "class_title",
-                      "cardType",
+                    "cardType",
                     "show_categories",
                     "button_top",
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
-                    "is_card_content_description"
+                    "badge_brand_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "options": [
                     {
@@ -1192,11 +1248,15 @@
                             "with": [
                                 "category",
                                 "subcategory",
-                                "brand"
+                                "brand",
+                                "images",
+                                "amenities"
                             ],
                             "relations": [
                                 "category",
-                                "tags"
+                                "tags",
+                                "images",
+                                "amenities"
                             ],
                             "fields": [
                                 "id",
@@ -2050,7 +2110,8 @@
                 "image": "indicator-lapetaca.png",
                 "data": [
                     "accentColor",
-                    "showDirectBooking"
+                    "showDirectBooking",
+                    "class_section"
                 ],
                 "using": {
                     "model": "Indicator",
@@ -2058,7 +2119,7 @@
                         "symbol",
                         "bg_image",
                         "name",
-                       "subtitle",
+                        "subtitle",
                         "badge",
                         "description",
                         "button_text",
@@ -2263,7 +2324,10 @@
                     "button_bottom",
                     "badge_offer_percent",
                     "badge_category_up_name",
-                    "is_card_content_description"
+                    "badge_brand_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Item",
@@ -2397,38 +2461,6 @@
                 }
             },
             {
-                "id": "ProductNavigationSwiperPaani",
-                "name": "NavegacionSwiper Paani",
-                "image": "products-list.png",
-                "data": [
-                    "title",
-                    "path",
-                    "description",
-                    "link_catalog",
-                    "link_cart",
-                    "background",
-                    "text_button",
-                    "backgroundboton"
-                ],
-                "using": {
-                    "model": "Item",
-                    "filters": [
-                        "featured",
-                        "recommended",
-                        "offering",
-                        "is_new",
-                        "views",
-                        "most_view"
-                    ],
-                    "with": [
-                        "category",
-                        "subcategory",
-                        "brand"
-                    ],
-                    "limit": 20
-                }
-            },
-            {
                 "id": "ProductFeaturedSwiper",
                 "name": "Navegacion Swiper Featured",
                 "image": "products-list.png",
@@ -2453,7 +2485,8 @@
                         "category",
                         "subcategory",
                         "brand",
-                        "specifications"
+                        "specifications",
+                        "amenities"
                     ],
                     "limit": 20
                 }
@@ -2526,6 +2559,7 @@
                     "style_offer",
                     "support_favorite",
                     "title",
+                    "class_title",
                     "path",
                     "description",
                     "text_button",
@@ -2587,7 +2621,7 @@
                     "title",
                     "subtitle"
                 ],
-                  "using": {
+                "using": {
                     "model": "Item",
                     "filters": [
                         "featured",
@@ -2595,7 +2629,7 @@
                         "offering",
                         "is_new"
                     ],
-                   "with": [
+                    "with": [
                         "category",
                         "subcategory",
                         "brand",
@@ -2606,7 +2640,6 @@
                 },
                 "generals": []
             }
-          
         ]
     },
     {
@@ -2721,9 +2754,6 @@
             {
                 "id": "BannerStaticSecond",
                 "name": "Estatico 2",
-                "data": [
-                    "title"
-                ],
                 "using": {
                     "model": "Certification"
                 }
@@ -2789,6 +2819,17 @@
                 ],
                 "using": {
                     "model": "App"
+                }
+            },
+            {
+                "id": "BannerAboutStats",
+                "name": "About con Estadísticas - WebQuirurgica",
+                "image": "banner-about-stats.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Indicator"
                 }
             }
         ]
@@ -2898,7 +2939,16 @@
                 "data": [
                     "link_cart",
                     "background",
-                    "backgroundboton"
+                    "backgroundboton",
+                    "especification_tec",
+                    "title",
+                    "style_offer",
+                    "background",
+                    "class_button_primary",
+                    "class_button",
+                    "class_section",
+                    "text_button",
+                    "link_catalog"
                 ],
                 "using": {
                     "model": "Item",
@@ -3004,7 +3054,26 @@
                 "data": [
                     "link_cart",
                     "background",
-                    "buyButton"
+                    "buyButton",
+                    "class_badge_category",
+                    "title",
+                    "type_style_list",
+                    "class_title",
+                    "description",
+                    "link_catalog",
+                    "text_button",
+                    "class_section",
+                    "class_button",
+                    "cardType",
+                    "show_categories",
+                    "button_top",
+                    "button_bottom",
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "badge_brand_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
                 ],
                 "using": {
                     "model": "Item",
@@ -3024,7 +3093,7 @@
                     "message_whatsapp"
                 ]
             },
-                {
+            {
                 "id": "ProductDetailIbergruas",
                 "name": "ProductDetailIbergruas - Ibergruas",
                 "data": [
@@ -3236,7 +3305,7 @@
                     "checkout_transfer_description"
                 ]
             },
-              {
+            {
                 "id": "CheckoutStepsIbegruas",
                 "name": "StepsIbegruas",
                 "data": [
@@ -3265,6 +3334,36 @@
                     "checkout_dwallet_commission",
                     "checkout_dwallet_commission"
                 ]
+            },
+            {
+                "id": "CheckoutStepsRooms",
+                "name": "StepsRooms - Reservas de Habitaciones",
+                "data": [
+                    "title",
+                    "class_button"
+                ],
+                "json": {
+                    "prefixes": "./prefijocelular.json"
+                },
+                "generals": [
+                    "igv_checkout",
+                    "checkout_culqi",
+                    "checkout_culqi_name",
+                    "checkout_culqi_public_key",
+                    "checkout_dwallet",
+                    "checkout_dwallet_qr",
+                    "checkout_dwallet_name",
+                    "checkout_dwallet_description",
+                    "checkout_transfer",
+                    "checkout_transfer_cci",
+                    "checkout_transfer_name",
+                    "checkout_transfer_description",
+                    "checkout_culqi_commission",
+                    "checkout_mercadopago_commission",
+                    "checkout_openpay_commission",
+                    "checkout_dwallet_commission",
+                    "checkout_transfer_commission"
+                ]
             }
         ]
     },
@@ -3291,7 +3390,8 @@
                     "class_card_container",
                     "title_ubication",
                     "description_ubication",
-                    "stores_support"
+                    "stores_support",
+                    "description"
                 ]
             },
             {
@@ -3312,16 +3412,8 @@
                     "email_contact",
                     "address",
                     "phone_contact",
-                    "location"
-                ]
-            },
-            {
-                "id": "ContactAko",
-                "name": "ContactAko",
-                "data": [
-                    "redirect",
-                    "title",
-                    "description"
+                    "location",
+                    "atalaya_leads_api_key"
                 ]
             },
             {
@@ -3371,6 +3463,21 @@
                     "locationImage"
                 ],
                 "generals": []
+            },
+            {
+                "id": "ContactWebQuirurgica",
+                "name": "Contact WebQuirurgica - Diseño Limpio",
+                "image": "contact-webquirurgica.png",
+                "using": {
+                    "model": "Service"
+                },
+                "data": [],
+                "generals": [
+                    "email_contact",
+                    "phone_contact",
+                    "address",
+                    "opening_hours"
+                ]
             }
         ]
     },
@@ -3409,14 +3516,6 @@
                 ]
             },
             {
-                "id": "FaqAko",
-                "name": "Faqs Ako",
-                "data": [
-                    "title",
-                    "description"
-                ]
-            },
-            {
                 "id": "FaqModern",
                 "name": "FAQ Modern - Accordion Moderno",
                 "image": "faq-modern.png",
@@ -3441,6 +3540,15 @@
                     "class_faq_answer",
                     "show_contact_cta"
                 ]
+            },
+            {
+                "id": "FaqWebQuirurgica",
+                "name": "FAQ WebQuirurgica - Diseño Limpio",
+                "image": "faq-webquirurgica.png",
+                "using": {
+                    "model": "Faq"
+                },
+                "data": []
             }
         ]
     },
@@ -3471,7 +3579,9 @@
                     "second_description",
                     "bool:show_seen",
                     "class_title",
-                    "class_second_title"
+                    "class_second_title",
+                    "placeholder_search",
+                    "class_badge_category"
                 ]
             },
             {
@@ -3583,44 +3693,34 @@
                     "title",
                     "subtitle",
                     "posts_per_page",
-                    "show_preview",
-                    "show_view_all",
-                    "view_all_text",
                     "blog_url",
                     "read_more_text",
-                    "prev_text",
-                    "next_text",
-                    "section_background",
-                    "title_color",
-                    "subtitle_color",
-                    "post_title_color",
-                    "post_excerpt_color",
-                    "read_more_color",
-                    "nav_active_bg",
-                    "nav_active_color",
-                    "nav_disabled_bg",
-                    "nav_disabled_color",
-                    "indicator_active",
-                    "indicator_inactive",
-                    "view_all_bg",
+                    "view_all_text",
                     "class_section",
-                    "class_header",
-                    "class_title",
-                    "class_subtitle",
-                    "class_grid",
                     "class_card",
-                    "class_preview_card",
-                    "class_post_title",
-                    "class_post_excerpt",
-                    "class_read_more",
-                    "class_navigation",
-                    "class_nav_button",
-                    "class_view_all_container",
-                    "class_view_all"
+                    "class_button",
+                    "class_badge_category"
                 ],
                 "using": {
                     "model": "Post",
                     "limit": 12,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+            {
+                "id": "BlogWebQuirurgica",
+                "name": "Blog WebQuirúrgica",
+                "image": "blog-webquirurgica.png",
+                "data": [
+                    "name",
+                    "description"
+                ],
+                "using": {
+                    "model": "Post",
+                    "header": 3,
+                    "latest": 20,
                     "with": [
                         "category"
                     ]
@@ -3746,7 +3846,8 @@
                     "url_imagen",
                     "title",
                     "description",
-                    "about_url"
+                    "about_url",
+                    "class_card"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -3768,6 +3869,19 @@
             {
                 "id": "AboutPaani",
                 "name": "AboutPaani",
+                "data": [
+                    "url_imagen",
+                    "title",
+                    "description",
+                    "about_url"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+               {
+                "id": "AboutWebQuirurgica",
+                "name": "AboutWebQuirurgica",
                 "data": [
                     "url_imagen",
                     "title",
@@ -3846,24 +3960,15 @@
                 "image": "about-sidebar.png",
                 "data": [
                     "strengths_title",
-                    "class_container"
+                    "class_container",
+                    "class_sidebar",
+                    "strengths_section",
+                    "class_title_banner",
+                    "class_content_banner"
                 ],
                 "using": {
                     "model": "Aboutus"
                 }
-            },
-            {
-                "id": "AboutLaPetaca",
-                "name": "About - La Petaca Hotel",
-                "image": "about-lapetaca.png",
-                "data": [
-                    "stats",
-                    "values",
-                    "accentColor",
-                    "mainImage",
-                    "ctaImage"
-                ],
-                "generals": []
             }
         ]
     },
@@ -3983,7 +4088,8 @@
                     "class_button",
                     "link_denuncias",
                     "job_button",
-                    "section_newsletter"
+                    "section_newsletter",
+                    "hide_policy_change_return"
                 ],
                 "using": {
                     "model": "Social",
@@ -4002,7 +4108,7 @@
                     "alcance_sistema_gestion"
                 ]
             },
-              {
+            {
                 "id": "FooterIbergruas",
                 "name": "FooterIbergruas",
                 "image": "footer-simple.png",
@@ -4102,6 +4208,9 @@
                 "id": "FooterSalaFabulosa",
                 "name": "FooterSalaFabulosa",
                 "image": "footer-simple.png",
+                "data": [
+                    "class_button"
+                ],
                 "using": {
                     "model": "Social",
                     "limit": 10
@@ -4240,7 +4349,7 @@
                     "tagline",
                     "accentColor"
                 ],
-                 "generals": [
+                "generals": [
                     "address",
                     "support_phone",
                     "support_email",
@@ -4253,7 +4362,6 @@
                 ],
                 "using": {
                     "model": "Service"
-               
                 }
             }
         ]
@@ -4404,6 +4512,24 @@
                     "testimonials",
                     "accentColor"
                 ],
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
+            },
+            {
+                "id": "TestimonialsVideosWebQuirurgica",
+                "name": "Videos de Casos Reales - WebQuirurgica",
+                "data": [],
+                "generals": [],
+                "using": {
+                    "model": "CaseStudy"
+                }
+            },
+            {
+                "id": "TestimonialsTextWebQuirurgica",
+                "name": "Testimonios Escritos - WebQuirurgica",
+                "data": [],
                 "generals": [],
                 "using": {
                     "model": "Testimony"
@@ -4740,11 +4866,87 @@
                     "title",
                     "subtitle"
                 ],
-                 "using": {
+                "using": {
                     "model": "Service"
-               
                 },
                 "generals": []
+            },
+            {
+                "id": "ServiceWebQuirurgica",
+                "name": "Servicios por Categoría - WebQuirurgica",
+                "image": "service-webquirurgica.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": [
+                        "category",
+                        "subcategory"
+                    ]
+                }
+            },
+             {
+                "id": "ServiceWebQuirurgica2",
+                "name": "Servicios por Categoría - WebQuirurgica2",
+                "image": "service-webquirurgica.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": [
+                        "category",
+                        "subcategory"
+                    ],
+                 "filters": [
+                        "featured"
+                       
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": "service-detail",
+        "icon": "mdi mdi-file-document-outline",
+        "name": "Detalle de Servicio",
+        "options": [
+            {
+                "id": "ServiceDetailSimple",
+                "name": "Simple",
+                "image": "service-detail-simple.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "images",
+                        "features",
+                        "specifications"
+                    ]
+                }
+            },
+            {
+                "id": "ServiceDetailCatalog",
+                "name": "Catálogo con Sidebar",
+                "image": "service-detail-catalog.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Service",
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "images",
+                        "features",
+                        "specifications"
+                    ]
+                }
             }
         ]
     },
@@ -5082,7 +5284,7 @@
                 ],
                 "generals": []
             },
-              {
+            {
                 "id": "RoomDetailLaPetaca",
                 "name": "Detalle de Habitación - La Petaca",
                 "image": "hotel-room-detail-lapetaca.png",

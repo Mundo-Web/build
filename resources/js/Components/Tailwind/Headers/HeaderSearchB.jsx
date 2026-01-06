@@ -103,7 +103,9 @@ const HeaderSearchB = ({
                         'or',
                         ['summary', 'contains', query],
                         'or',
-                        ['description', 'contains', query]
+                        ['description', 'contains', query],
+                         'or',
+                        ['sku', 'contains', query]
                     ],
                     // No enviar sort para usar el ordenamiento por relevancia del backend
                     requireTotalCount: false,

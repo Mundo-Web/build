@@ -80,7 +80,7 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
                                 -{Math.abs(Number(100 - Number((product?.discount * 100 / product?.price)))).toFixed(0)}%
                             </span>
                         )}
-                        <div className="aspect-square rounded-3xl overflow-hidden flex items-center justify-center  bg-secondary  bg-white">
+                        <div className="aspect-square rounded-3xl overflow-hidden bg-white">
                             <img
                                 src={`/storage/images/item/${product.image}`}
                                 onError={e => e.target.src = '/assets/img/noimage/no_img.jpg'}
@@ -178,8 +178,18 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
                             </div>
                         )}
 
+                        {/* Botón Ver detalle */}
+                        <div className="mt-3 mb-2">
+                            <a 
+                                href={`/item/${product.slug}`}
+                                className="inline-block bg-secondary text-white px-4 py-3 rounded-full font-medium text-sm hover:bg-accent transition-colors duration-300 w-full text-center"
+                            >
+                                Ver detalle
+                            </a>
+                        </div>
+
                         {/* Precio */}
-                     {product.finalPrice && product.finalPrice>0(
+                        {product.final_price && product.final_price > 0 && (
                            <div className="flex items-baseline gap-4 mt-2">
                             <span className="text-lg sm:text-xl md:text-2xl font-semibold">
                                 {CurrencySymbol()} {product.final_price}
@@ -190,7 +200,7 @@ const ProductCardColors = ({ product, setCart, cart, textcolor = "", fondo = "" 
                                 </span>
                             )}
                         </div>
-                     )}
+                        )}
                     </a>
                 </div>
             </div >

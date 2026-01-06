@@ -31,6 +31,7 @@ const PostDetail = React.lazy(() => import("./Components/Tailwind/PostDetail"));
 const Blog = React.lazy(() => import("./Components/Tailwind/Blog"));
 const Innovation = React.lazy(() => import("./Components/Tailwind/Innovation"));
 const Service = React.lazy(() => import("./Components/Tailwind/Service"));
+const ServiceDetail = React.lazy(() => import("./Components/Tailwind/ServiceDetail"));
 const AboutUs = React.lazy(() => import("./Components/Tailwind/AboutUs"));
 const Login = React.lazy(() => import("./Components/Tailwind/Login"));
 const Signup = React.lazy(() => import("./Components/Tailwind/Signup"));
@@ -350,7 +351,7 @@ const System = ({
             case "checkout":
                 return <Checkout which={value} data={data} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} categorias={categorias} />
             case "contact":
-                return <Contact which={value} data={data} contacts={contacts} generals={generals} />
+                return <Contact which={value} data={data} contacts={contacts} generals={generals} items={getItems(itemsId)} />
             case "faq":
                 return <Faq which={value} data={data} faqs={faqs} />
             case "thank":
@@ -363,6 +364,8 @@ const System = ({
                 return <Innovation which={value} data={data} items={getItems(itemsId)} />
             case "service":
                 return <Service which={value} data={data} items={getItems(itemsId)} />
+            case "service-detail":
+                return <ServiceDetail which={value} data={data} items={getItems(itemsId)} currentService={filteredData.Service ?? null} />
             case "post-detail":
                 return <PostDetail which={value} data={data} item={filteredData.Post} />
             case "about":

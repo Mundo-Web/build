@@ -159,7 +159,7 @@ const BlogListKatya = ({
     return (
         <motion.section
             ref={listRef}
-            className={`font-title bg-[#F2F2F2] ${isFilter ? "py-8 mt-4" : "py-8"}`}
+            className={`font-title bg-sections-color ${isFilter ? "py-8 mt-4" : "py-8"}`}
             variants={containerVariants}
             initial="hidden"
             animate={listInView ? "visible" : "hidden"}

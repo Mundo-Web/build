@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Aboutus extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -18,6 +18,7 @@ class Aboutus extends Model
         'name',
         'title',
         'description',
+        'slogan',
         'image',
         'visible',
         'status',

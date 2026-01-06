@@ -50,7 +50,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
               />
               {post?.category && (
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-2 rounded-full text-xs font-semibold bg-accent  customtext-primary`}>
+                  <span className={`px-3 py-2 rounded-full text-xs font-semibold bg-accent  customtext-primary ${data?.class_badge_category || ''}`}>
                     {post.category?.name}
                   </span>
                 </div>
@@ -113,7 +113,7 @@ export default function BlogPostCardMultivet({ data, flex = false, post, feature
             />
             {post?.category ? (
               <div className="absolute top-4 left-4 ">
-                <span className={`px-3 py-2 t rounded-full text-xs font-semibold bg-accent  customtext-primary `}>
+                <span className={`px-3 py-2 t rounded-full text-xs font-semibold bg-accent  customtext-primary  ${data?.class_badge_category || ''}`}>
                   {post.category?.name}
                 </span>
               </div>

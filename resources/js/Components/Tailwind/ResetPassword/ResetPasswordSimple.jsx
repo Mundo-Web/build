@@ -112,8 +112,7 @@ export default function ResetPasswordSimple() {
                                         Restaurar contraseña
                                     </h1>
                                     <p className="customtext-neutral-light">
-                                        Class aptent taciti sociosqu ad litora torquent
-                                        per conubia nostra, per inceptos himenaeos.
+                                      Crea una clave que sea fácil de recordar para ti, pero difícil de adivinar para otros. Asegúrate de que tenga al menos 8 caracteres, incluyendo una letra mayúscula y un número.
                                     </p>
                                 </div>
                                 <form className="space-y-4 mt-4" onSubmit={onResetSubmit}>

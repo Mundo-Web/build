@@ -115,12 +115,12 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     Términos y Condiciones
                                 </a>
                             </li>
-                            <li>
+                            <li hidden={data?.hide_policy_change_return}>
                                 <a
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(2)}
-                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    className={` cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
                                     Políticas de cambio
                                 </a>

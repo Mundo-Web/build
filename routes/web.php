@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\IndicatorController as AdminIndicatorController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
+use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
@@ -134,6 +135,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/amenities', [App\Http\Controllers\Admin\AmenityController::class, 'reactView'])->name('Admin/Amenities.jsx');
     Route::get('/rooms', [AdminItemController::class, 'roomsView'])->name('Admin/Rooms.jsx');
     Route::get('/bookings', [App\Http\Controllers\Admin\BookingController::class, 'reactView'])->name('Admin/Bookings.jsx');
+    Route::get('/room-availability', [App\Http\Controllers\Admin\RoomAvailabilityController::class, 'reactView'])->name('Admin/RoomAvailability.jsx');
     Route::get('/prices', [AdminDeliveryPriceController::class, 'reactView'])->name('Admin/DeliveryPricesType.jsx');
     Route::get('/stores', [AdminStoreController::class, 'reactView'])->name('Admin/Stores.jsx');
     Route::get('/messages', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Messages.jsx');
@@ -152,6 +154,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/sliders', [AdminSliderController::class, 'reactView'])->name('Admin/Sliders.jsx');
     Route::get('/banners', [AdminBannerController::class, 'reactView'])->name('Admin/Banners.jsx');
     Route::get('/testimonies', [AdminTestimonyController::class, 'reactView'])->name('Admin/Testimonies.jsx');
+    Route::get('/case-studies', [AdminCaseStudyController::class, 'reactView'])->name('Admin/CaseStudies.jsx');
     Route::get('/socials', [AdminSocialController::class, 'reactView'])->name('Admin/Socials.jsx');
     Route::get('/statuses', [AdminSaleStatusController::class, 'reactView'])->name('Admin/Statuses.jsx');
     Route::get('/strengths', [AdminStrengthController::class, 'reactView'])->name('Admin/Strengths.jsx');

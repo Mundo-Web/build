@@ -374,7 +374,7 @@ const ContactGrid = ({ data, contacts }) => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.6, delay: 0.7 }}
                     >
-                        Contáctanos para recibir atención personalizada, cotizaciones rápidas y soporte técnico especializado en nuestra amplia gama de productos dentales.
+                       {data?.description || '¿Tienes preguntas o necesitas más información? Nuestro equipo está aquí para ayudarte. Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.'}
                     </motion.p>
 
                     <motion.form

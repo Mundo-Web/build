@@ -66,6 +66,12 @@ class OpenPayController extends Controller
             if ($request->coupon_id && $request->coupon_discount > 0) {
                 $discountAmount = (float) $request->coupon_discount;
             }
+            
+            // IMPORTANTE: Limpiar y formatear todos los valores a exactamente 2 decimales
+            // El frontend YA envía el amount calculado, NO recalcular aquí
+            $requestAmount = floatval(number_format((float)$request->amount, 2, '.', ''));
+            $requestDelivery = floatval(number_format((float)$request->delivery, 2, '.', ''));
+            $discountAmount = floatval(number_format((float)$discountAmount, 2, '.', ''));
 
             // Generar número de orden
             $orderNumber = $request->orderNumber ?? $this->generateOrderNumber();
@@ -90,8 +96,8 @@ class OpenPayController extends Controller
                 'number' => $request->number,
                 'reference' => $request->reference,
                 'comment' => $request->comment,
-                'amount' => $request->amount + $request->delivery - $discountAmount,
-                'delivery' => $request->delivery,
+                'amount' => $requestAmount,  // Usar directamente el amount del frontend
+                'delivery' => $requestDelivery,
                 'delivery_type' => $request->delivery_type ?? 'domicilio',
                 'payment_status' => 'pendiente',
                 'status_id' => $saleStatusPendiente ? $saleStatusPendiente->id : null,
@@ -102,8 +108,8 @@ class OpenPayController extends Controller
                 'payment_method' => 'openpay',
                 'coupon_id' => $request->coupon_id ?? null,
                 'coupon_discount' => $discountAmount,
-                'promotion_discount' => $request->promotion_discount ?? 0,
-                'total_amount' => $request->amount + $request->delivery - $discountAmount,
+                'promotion_discount' => floatval(number_format((float)($request->promotion_discount ?? 0), 2, '.', '')),
+                'total_amount' => $requestAmount,  // Usar directamente el amount del frontend
             ]);
            
             // Registrar detalles de la venta
@@ -141,7 +147,18 @@ class OpenPayController extends Controller
             }
 
             // Preparar datos para OpenPay
-            $amount = round($request->amount + $request->delivery - $discountAmount, 2);
+            // Usar directamente el amount que viene del frontend (ya calculado y formateado)
+            $amount = $requestAmount;
+            
+            Log::info('OpenPay - Amount a enviar', [
+                'request_amount_original' => $request->amount,
+                'request_amount_cleaned' => $requestAmount,
+                'request_delivery_original' => $request->delivery,
+                'request_delivery_cleaned' => $requestDelivery,
+                'discountAmount' => $discountAmount,
+                'final_amount' => $amount,
+                'amount_type' => gettype($amount)
+            ]);
             
             // URL base según ambiente (producción o sandbox) - OpenPay Perú
             $baseUrl = env('OPENPAY_SANDBOX_MODE', true) 

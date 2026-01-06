@@ -501,7 +501,9 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         { id: 'BannerMultivet', name: 'Banner Multivet', icon: 'mdi mdi-medical-bag' },
         { id: 'BannerPublicitarioKatya', name: 'Banner Publicitario Katya', icon: 'mdi mdi-account-star' },
         { id: 'BannerBlogSectionKatya', name: 'Banner Blog Section Katya', icon: 'mdi mdi-post' },
-        { id: 'BannerMobileApp', name: 'Banner Mobile App - FirstClass', icon: 'mdi mdi-cellphone-link' }
+        { id: 'BannerMobileApp', name: 'Banner Mobile App - FirstClass', icon: 'mdi mdi-cellphone-link' },
+        { id: 'BannerAboutStats', name: 'About con Estadísticas - WebQuirurgica', icon: 'mdi mdi-chart-box' },
+   
     ];
 
     const normalizePageId = (value) => value === undefined || value === null || value === '' ? null : value;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
 const SliderLaPetaca = ({ items, data, generals = [] }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -44,32 +45,62 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                             : 'opacity-0 scale-110'
                     }`}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#281409]/70 via-[#281409]/40 to-[#0a0604]/90 z-10"></div>
-
                     <img
                         src={`/storage/images/slider/${slide.bg_image}`}
                         alt={slide.name}
                         className="w-full h-full object-cover"
                     />
 
-                    <div className="absolute inset-0 z-20 flex items-center justify-center">
-                        <div className="text-center px-4 max-w-4xl animate-fade-in">
-                            <div className="flex items-center justify-center mb-6">
-                                <svg className="w-8 h-8 animate-pulse customtext-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                            </div>
+                    {/* Overlays personalizados por slide */}
+                    {(slide?.show_overlay !== false && slide?.show_overlay !== 0) && (
+                        <div 
+                            className="absolute inset-0 z-10"
+                            style={{
+                                background: `linear-gradient(${
+                                    slide?.overlay_direction === 'to-r' ? 'to right' :
+                                    slide?.overlay_direction === 'to-l' ? 'to left' :
+                                    slide?.overlay_direction === 'to-t' ? 'to top' :
+                                    slide?.overlay_direction === 'to-b' ? 'to bottom' :
+                                    slide?.overlay_direction === 'to-tr' ? 'to top right' :
+                                    slide?.overlay_direction === 'to-tl' ? 'to top left' :
+                                    slide?.overlay_direction === 'to-br' ? 'to bottom right' :
+                                    slide?.overlay_direction === 'to-bl' ? 'to bottom left' :
+                                    'to bottom'
+                                }, ${slide?.overlay_color || '#281409'}${Math.round((slide?.overlay_opacity ?? 70) * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                            }}
+                        ></div>
+                    )}
+                    
+                    {/* Overlays por defecto si el overlay personalizado está desactivado */}
+                    {(slide?.show_overlay === false || slide?.show_overlay === 0) && (
+                        <>
+                            {/* Overlay por defecto desde data.class_overlay */}
+                            {data?.class_overlay && (
+                                <div className={`absolute inset-0 z-10 ${data?.class_overlay}`}></div>
+                            )}
+                            
+                            {/* Overlay hardcodeado original como fallback */}
+                            {!data?.class_overlay && (
+                                <div className="absolute inset-0 bg-gradient-to-b from-[#281409]/70 via-[#281409]/40 to-[#0a0604]/90 z-10"></div>
+                            )}
+                        </>
+                    )}
+
+                    <div className={`absolute inset-0 z-20 flex items-center justify-center ${data?.class_content_slider || ''}`}>
+                        <div className="text-center px-primary  animate-fade-in">
+                        
 
                             <h2 
-                                className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-2xl"
+                                className={`text-5xl max-w-4xl mx-auto md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-2xl  ${data?.class_title || ''}`}
                                 style={{ color: slide.title_color || '#FFFFFF' }}
                             >
-                                {slide.name}
+                                <TextWithHighlight text={slide.name}  color="bg-secondary" />
+                             
                             </h2>
 
                             <p 
-                                className="text-xl md:text-2xl text-white mb-8 font-light tracking-wide drop-shadow-lg"
-                                style={{ color: slide.description_color || '#E5E7EB' }}
+                                className={`text-xl max-w-4xl mx-auto md:text-2xl text-white mb-8 font-light tracking-wide drop-shadow-lg ${data?.class_description || ''}`}
+                            
                             >
                                 {slide.description}
                             </p>
@@ -78,7 +109,9 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.button_link && slide.button_text && (
                                     <a
                                         href={slide.button_link}
-                                        className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                                        className={`px-8 py-4 text-lg font-semibold bg-secondary text-white rounded-full transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                                            data?.class_button || ''
+                                        }`}
                                     >
                                         {slide.button_text}
                                     </a>
@@ -86,7 +119,9 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.secondary_button_link && slide.secondary_button_text && (
                                     <a
                                         href={slide.secondary_button_link}
-                                        className="px-8 py-4 bg-transparent border-2 border-secondary customtext-secondary font-semibold rounded-lg hover:bg-secondary hover:text-white transform hover:scale-105 transition-all duration-300"
+                                        className={`px-8 py-4 text-lg border-2 font-semibold rounded-full transform hover:scale-105 transition-all duration-300 bg-white border-secondary text-secondary hover:text-white hover:bg-secondary ${
+                                            data?.class_secondary_button || ''
+                                        }`}
                                     >
                                         {slide.secondary_button_text}
                                     </a>
@@ -98,22 +133,22 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
             ))}
 
             {/* Navigation buttons */}
-            {showNavigation && (
+            {showNavigation && items.length > 1 && (
                 <>
                     <button
                         onClick={prevSlide}
                         className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
-                        <svg className="w-6 h-6 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6  transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
 
                     <button
                         onClick={nextSlide}
-                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
+                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
-                        <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6  transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
@@ -121,7 +156,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
             )}
 
             {/* Indicators */}
-            {showIndicators && (
+            {showIndicators && items.length > 1 &&(
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex space-x-3">
                     {sortedSlides.map((_, index) => (
                         <button
@@ -130,7 +165,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                             className={`transition-all duration-300 rounded-full ${
                                 index === currentSlide
                                     ? 'w-12 h-3 bg-accent'
-                                    : 'w-3 h-3 bg-white/50 hover:bg-white/80'
+                                    : 'w-3 h-3 bg-white hover:bg-white/80'
                             }`}
                         />
                     ))}
