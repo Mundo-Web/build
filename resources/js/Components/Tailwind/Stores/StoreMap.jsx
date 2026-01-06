@@ -19,7 +19,9 @@ const StoreMap = ({ data, stores = [] }) => {
     const [zoom, setZoom] = useState(6);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const [userInteracted, setUserInteracted] = useState(false); // Flag para saber si el usuario movió el mapa
+    const [currentSlide, setCurrentSlide] = useState(0); // Para paginación personalizada
     const mapRef = useRef(null);
+    const swiperRef = useRef(null);
 
     // Filtrar solo las tiendas visibles y con coordenadas válidas
     const validStores = stores.filter(store =>
@@ -126,14 +128,13 @@ const StoreMap = ({ data, stores = [] }) => {
     const StoreCard = ({ store, isSelected, onClick }) => (
         <div
             onClick={() => onClick(store)}
-            className={`group cursor-pointer rounded-none overflow-hidden transition-all duration-300 h-full ${isSelected
+            className={`group cursor-pointer rounded-none overflow-hidden transition-all duration-300 flex flex-col ${isSelected
                     ? 'ring-4 ring-primary shadow-2xl  scale-[1.02]'
                     : 'hover:shadow-lg hover:scale-[1.01]'
                 }`}
-            style={{ aspectRatio: '4/5' }}
         >
             {/* Imagen o placeholder */}
-            <div className="relative h-1/2 bg-gradient-to-br from-white/20 to-white/5 overflow-hidden">
+            <div className="relative h-48 bg-gradient-to-br from-white/20 to-white/5 overflow-hidden flex-shrink-0">
                 {store.image ? (
                     <img
                         src={`/storage/images/store/${store.image}`}
@@ -152,15 +153,12 @@ const StoreMap = ({ data, stores = [] }) => {
                         </div>
                     </div>
                 )}
-
-
-
             </div>
 
             {/* Contenido */}
-            <div className="h-1/2 bg-secondary/95 backdrop-blur-sm p-4 flex flex-col justify-between">
-                <div>
-                    <h4 className={`font-bold text-lg mb-2 line-clamp-2 transition-colors ${isSelected ? 'customtext-primary' : 'text-white'
+            <div className="flex-1 bg-secondary/95 backdrop-blur-sm p-4 flex flex-col">
+                <div className="flex-1 flex flex-col gap-2">
+                    <h4 className={`font-bold text-lg mb-1 line-clamp-2 transition-colors ${isSelected ? 'customtext-primary' : 'text-white'
                         }`}>
                         {store.name}
                     </h4>
@@ -168,18 +166,19 @@ const StoreMap = ({ data, stores = [] }) => {
                         <i className="fas fa-location-dot text-xs customtext-primary flex-shrink-0 mt-1"></i>
                         <span>{store.address}</span>
                     </p>
-                </div>
-
-                <div className="space-y-2">
-                    {store.phone && (
+                      {store.phone && (
                         <p className="text-sm text-white/60 flex items-center gap-2">
                             <i className="fas fa-phone text-xs customtext-primary flex-shrink-0"></i>
                             <span>{store.phone}</span>
                         </p>
                     )}
+                </div>
+
+                <div className="space-y-2 mt-4">
+                  
 
                     {/* Botón ver en mapa */}
-                    <button className={`w-full py-2.5  px-4 rounded-none text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${isSelected
+                    <button className={`w-full py-2.5 px-4 rounded-none text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${isSelected
                             ? 'bg-primary text-white'
                             : 'bg-white/10 text-white hover:bg-primary hover:text-white'
                         }`}>
@@ -199,71 +198,77 @@ const StoreMap = ({ data, stores = [] }) => {
 
         if (useSwiper) {
             return (
-                <div className="py-10">
+                <div className="pb-10">
                     <div className="relative max-w-7xl mx-auto px-primary 2xl:px-0">
-                        <Swiper
-                            modules={[Navigation, Pagination]}
-                            spaceBetween={20}
-                            slidesPerView={1.2}
-                            centeredSlides={false}
-                            navigation
-                            pagination={{ clickable: true }}
-                            breakpoints={{
-                                480: { slidesPerView: 2, spaceBetween: 16 },
-                                640: { slidesPerView: 2.5, spaceBetween: 20 },
-                                768: { slidesPerView: 3, spaceBetween: 20 },
-                                1024: { slidesPerView: 3.5, spaceBetween: 24 },
-                                1280: { slidesPerView: 4, spaceBetween: 24 }
-                            }}
-                            className="store-cards-swiper !pb-14"
+                        {/* Botones de navegación externos */}
+                        <button 
+                            onClick={() => swiperRef.current?.slidePrev()}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all duration-300 hover:bg-primary hover:border-primary -translate-x-2 lg:-translate-x-6"
+                            aria-label="Anterior"
                         >
-                            {validStores.map((store) => (
-                                <SwiperSlide key={store.id} className="h-auto !flex">
-                                    <StoreCard
-                                        store={store}
-                                        isSelected={selectedStore?.id === store.id}
-                                        onClick={handleStoreSelect}
-                                    />
-                                </SwiperSlide>
+                            <i className="fas fa-chevron-left text-white"></i>
+                        </button>
+                        <button 
+                            onClick={() => swiperRef.current?.slideNext()}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all duration-300 hover:bg-primary hover:border-primary translate-x-2 lg:translate-x-6"
+                            aria-label="Siguiente"
+                        >
+                            <i className="fas fa-chevron-right text-white"></i>
+                        </button>
+
+                        <div className="px-8 lg:px-16">
+                            <Swiper
+                                modules={[Navigation, Pagination]}
+                                spaceBetween={20}
+                                slidesPerView={1}
+                                loop={true}
+                                centeredSlides={false}
+                                onSwiper={(swiper) => swiperRef.current = swiper}
+                                onSlideChange={(swiper) => setCurrentSlide(swiper.realIndex)}
+                                breakpoints={{
+                                    480: { slidesPerView: 2, spaceBetween: 16 },
+                                    768: { slidesPerView: 3, spaceBetween: 20 },
+                                    1024: { slidesPerView: 3, spaceBetween: 24 },
+                                    1280: { slidesPerView: 4, spaceBetween: 24 }
+                                }}
+                                className="store-cards-swiper !px-2 !py-10"
+                            >
+                                {validStores.map((store) => (
+                                    <SwiperSlide key={store.id} className="h-auto">
+                                        <StoreCard
+                                            store={store}
+                                            isSelected={selectedStore?.id === store.id}
+                                            onClick={handleStoreSelect}
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        </div>
+
+                        {/* Paginación personalizada */}
+                        <div className="flex justify-center items-center mt-8 gap-3">
+                            {validStores.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => swiperRef.current?.slideTo(index)}
+                                    className={`transition-all duration-300 ${index === currentSlide
+                                        ? 'w-10 h-3 bg-primary rounded-full shadow-lg shadow-primary/50'
+                                        : 'w-3 h-3 bg-white/50 rounded-full hover:bg-white/80 hover:scale-125'
+                                    }`}
+                                    aria-label={`Ir a tienda ${index + 1}`}
+                                />
                             ))}
-                        </Swiper>
+                        </div>
+
                         <style>{`
-                        .store-cards-swiper .swiper-slide {
-                            height: auto;
-                        }
-                        .store-cards-swiper .swiper-button-next,
-                        .store-cards-swiper .swiper-button-prev {
-                            background: rgba(255,255,255,0.15);
-                            backdrop-filter: blur(8px);
-                            width: 48px;
-                            height: 48px;
-                            border-radius: 50%;
-                            border: 1px solid rgba(255,255,255,0.2);
-                            transition: all 0.3s ease;
-                        }
-                        .store-cards-swiper .swiper-button-next:hover,
-                        .store-cards-swiper .swiper-button-prev:hover {
-                            background: var(--color-primary, #FF0000);
-                            border-color: var(--color-primary, #FF0000);
-                        }
-                        .store-cards-swiper .swiper-button-next:after,
-                        .store-cards-swiper .swiper-button-prev:after {
-                            font-size: 16px;
-                            font-weight: bold;
-                            color: white;
-                        }
-                        .store-cards-swiper .swiper-pagination-bullet {
-                            background: rgba(255,255,255,0.4);
-                            opacity: 1;
-                            width: 10px;
-                            height: 10px;
-                        }
-                        .store-cards-swiper .swiper-pagination-bullet-active {
-                            background: var(--color-primary, #FF0000);
-                            width: 28px;
-                            border-radius: 5px;
-                        }
-                    `}</style>
+                            .store-cards-swiper .swiper-slide {
+                                height: auto;
+                                display: flex;
+                            }
+                            .store-cards-swiper .swiper-slide > div {
+                                width: 100%;
+                            }
+                        `}</style>
                     </div>
                 </div>
             );
