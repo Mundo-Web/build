@@ -113,22 +113,26 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     // Función para cargar todas las tiendas disponibles
     const loadAvailableStores = async () => {
         try {
-            // Cargar todas las tiendas activas desde el endpoint correcto
+            // Cargar todas las tiendas activas y visibles
             const result = await storesRest.paginate({
                 page: 1,
                 per_page: 100, // Cargar hasta 100 tiendas
-                filters: JSON.stringify([
-                    {
-                        field: "status",
-                        operator: "=",
-                        value: 1
-                    }
-                ])
+                status: true,
+                visible: true
             });
 
-        
             if (result && result.data && Array.isArray(result.data)) {
-                setAvailableStores(result.data);
+                // Filtrar solo tiendas del tipo 'tienda' y 'tienda_principal'
+                // Para ser consistente con ShippingStepSF.jsx
+                const filteredStores = result.data.filter(store => {
+                    const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
+                    const isVisible = store.visible === true || store.visible === 1;
+                    const isActive = store.status === true || store.status === 1;
+                    return isCorrectType && isVisible && isActive;
+                });
+                
+                console.log('🏪 Tiendas disponibles para retiro:', filteredStores.length);
+                setAvailableStores(filteredStores);
             } else {
                 setAvailableStores([]);
             }
@@ -1026,7 +1030,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                 <div className="card-header bg-primary text-white">
                                     <h6 className="mb-0">
                                         <i className="fas fa-store-alt me-2"></i>
-                                        Selecciona las tiendas disponibles
+                                        Selecciona las tiendas para retiro
                                     </h6>
                                 </div>
                                 <div className="card-body">
@@ -1045,6 +1049,10 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                                                 <strong>Con selección:</strong> Retiro solo en <span className="badge bg-primary">tiendas marcadas</span>
                                                             </li>
                                                         </ul>
+                                                        <small className="text-muted d-block mt-2">
+                                                            <i className="fas fa-info-circle me-1"></i>
+                                                            Solo se muestran tiendas del tipo <strong>Tienda</strong> y <strong>Tienda Principal</strong>
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1071,30 +1079,34 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                                                             <label className="form-check-label w-100" htmlFor={`store_${store.id}`}>
                                                                 <div className="d-flex">
                                                                     <div className="flex-shrink-0">
-
                                                                         <img
-                                                                            src={`/storage/images/stores/${store.image}`}
+                                                                            src={`/storage/images/store/${store.image}`}
                                                                             alt={store.name}
                                                                             className="rounded"
-                                                                            style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                                                                            style={{ width: "50px", height: "50px", objectFit: "cover" }}
                                                                             onError={(e) =>
                                                                             (e.target.src =
                                                                                 "/api/cover/thumbnail/null")
                                                                             }
                                                                         />
-
                                                                     </div>
                                                                     <div className="flex-grow-1 ms-3">
-                                                                        <h6 className="mb-1">{store.name}</h6>
-                                                                        <small className="text-muted d-block">{store.address}</small>
+                                                                        <div className="d-flex align-items-center gap-2 mb-1">
+                                                                            <h6 className="mb-0">{store.name}</h6>
+                                                                            <span className={`badge ${store.type === 'tienda_principal' ? 'bg-warning text-dark' : 'bg-info'}`}>
+                                                                                {store.type === 'tienda_principal' ? 'Tienda Principal' : 'Tienda'}
+                                                                            </span>
+                                                                        </div>
+                                                                        <small className="text-muted d-block">
+                                                                            <i className="fas fa-map-marker-alt me-1"></i>
+                                                                            {store.address}
+                                                                        </small>
                                                                         {store.phone && (
-                                                                            <small className="text-muted d-block">📞 {store.phone}</small>
+                                                                            <small className="text-muted d-block">
+                                                                                <i className="fas fa-phone me-1"></i>
+                                                                                {store.phone}
+                                                                            </small>
                                                                         )}
-                                                                    </div>
-                                                                    <div className="flex-shrink-0">
-                                                                        <span className={`badge ${store.status ? 'bg-success' : 'bg-danger'}`}>
-                                                                            {store.status ? 'Activa' : 'Inactiva'}
-                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             </label>

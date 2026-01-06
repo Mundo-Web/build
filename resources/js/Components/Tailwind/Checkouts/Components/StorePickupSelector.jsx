@@ -20,6 +20,9 @@ const StorePickupSelector = ({
     }, [specificStores]);
 
     const loadStores = async () => {
+        console.log('🔍 StorePickupSelector - Iniciando carga de tiendas...');
+        console.log('📍 specificStores recibido:', specificStores);
+        
         setLoading(true);
         setError(null);
         
@@ -32,7 +35,10 @@ const StorePickupSelector = ({
                 visible: true
             });
             
+            console.log('📦 Resultado completo del API:', result);
             let allStores = result?.data || [];
+            console.log('🏬 Total de tiendas recibidas del API:', allStores.length);
+            console.log('🏬 Tiendas completas:', allStores);
             
     
             // Filtrar por tipo de tienda (solo tienda y tienda_principal) y que sean visibles
@@ -40,17 +46,27 @@ const StorePickupSelector = ({
                 const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
                 const isVisible = store.visible === true || store.visible === 1;
                 const isActive = store.status === true || store.status === 1;
-                return isCorrectType && isVisible && isActive;
+                const passes = isCorrectType && isVisible && isActive;
+                
+                if (!passes) {
+                    console.log(`❌ Tienda rechazada: ${store.name} - type: ${store.type}, visible: ${store.visible}, status: ${store.status}`);
+                }
+                
+                return passes;
             });
+            
+            console.log('✅ Tiendas después de filtrar por tipo/visible/activo:', allStores.length);
             
             // Filtrar por tiendas específicas si se proporcionaron
             if (specificStores && Array.isArray(specificStores) && specificStores.length > 0) {
+                console.log('🎯 Filtrando por IDs específicos:', specificStores);
                 allStores = allStores.filter(store => specificStores.includes(store.id));
-               
+                console.log('✅ Tiendas después de filtrar por IDs específicos:', allStores.length);
             } else {
                 console.log('🏪 Mostrando TODAS las tiendas disponibles:', allStores.length);
             }
             
+            console.log('🎉 Tiendas finales a mostrar:', allStores);
             setStores(allStores);
         } catch (error) {
             console.error('❌ Error cargando tiendas:', error);
@@ -93,9 +109,9 @@ const StorePickupSelector = ({
 
     if (stores.length === 0) {
         return (
-            <div className={`bg-secondary/30 border border-secondary rounded-xl p-4 md:p-6 ${className}`}>
-                <div className="flex items-center justify-center w-12 h-12 bg-secondary rounded-full mx-auto mb-4">
-                    <svg className="w-6 h-6 customtext-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`bg-secondary/30 border border-accent rounded-xl p-4 md:p-6 ${className}`}>
+                <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-full mx-auto mb-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
