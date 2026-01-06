@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import Global from "../../../Utils/Global";
 
 // Bibliotecas requeridas para Google Maps
@@ -117,8 +122,174 @@ const StoreMap = ({ data, stores = [] }) => {
         // NO hacer zoom automático - mantener el zoom actual
     };
 
+    // Componente de tarjeta de tienda
+    const StoreCard = ({ store, isSelected, onClick }) => (
+        <div
+            onClick={() => onClick(store)}
+            className={`group cursor-pointer rounded-none overflow-hidden transition-all duration-300 h-full ${isSelected
+                    ? 'ring-4 ring-primary shadow-2xl  scale-[1.02]'
+                    : 'hover:shadow-lg hover:scale-[1.01]'
+                }`}
+            style={{ aspectRatio: '4/5' }}
+        >
+            {/* Imagen o placeholder */}
+            <div className="relative h-1/2 bg-gradient-to-br from-white/20 to-white/5 overflow-hidden">
+                {store.image ? (
+                    <img
+                        src={`/storage/images/store/${store.image}`}
+                        alt={store.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                            e.target.style.display = 'none';
+                        }}
+                    />
+                ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 ${isSelected ? 'bg-primary' : 'bg-white/20 group-hover:bg-white/30'
+                            }`}>
+                            <i className={`fas fa-map-marker-alt text-3xl ${isSelected ? 'text-white' : 'customtext-primary'
+                                }`}></i>
+                        </div>
+                    </div>
+                )}
+
+
+
+            </div>
+
+            {/* Contenido */}
+            <div className="h-1/2 bg-secondary/95 backdrop-blur-sm p-4 flex flex-col justify-between">
+                <div>
+                    <h4 className={`font-bold text-lg mb-2 line-clamp-2 transition-colors ${isSelected ? 'customtext-primary' : 'text-white'
+                        }`}>
+                        {store.name}
+                    </h4>
+                    <p className="text-sm text-white/70 line-clamp-2 flex items-start gap-2">
+                        <i className="fas fa-location-dot text-xs customtext-primary flex-shrink-0 mt-1"></i>
+                        <span>{store.address}</span>
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    {store.phone && (
+                        <p className="text-sm text-white/60 flex items-center gap-2">
+                            <i className="fas fa-phone text-xs customtext-primary flex-shrink-0"></i>
+                            <span>{store.phone}</span>
+                        </p>
+                    )}
+
+                    {/* Botón ver en mapa */}
+                    <button className={`w-full py-2.5  px-4 rounded-none text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${isSelected
+                            ? 'bg-primary text-white'
+                            : 'bg-white/10 text-white hover:bg-primary hover:text-white'
+                        }`}>
+                        <i className="fas fa-map"></i>
+                        <span>{isSelected ? 'Seleccionado' : 'Ver en mapa'}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Renderizar las tarjetas de tiendas
+    const renderStoreCards = () => {
+        if (validStores.length === 0) return null;
+
+        const useSwiper = validStores.length > 4;
+
+        if (useSwiper) {
+            return (
+                <div className="py-10">
+                    <div className="relative max-w-7xl mx-auto px-primary 2xl:px-0">
+                        <Swiper
+                            modules={[Navigation, Pagination]}
+                            spaceBetween={20}
+                            slidesPerView={1.2}
+                            centeredSlides={false}
+                            navigation
+                            pagination={{ clickable: true }}
+                            breakpoints={{
+                                480: { slidesPerView: 2, spaceBetween: 16 },
+                                640: { slidesPerView: 2.5, spaceBetween: 20 },
+                                768: { slidesPerView: 3, spaceBetween: 20 },
+                                1024: { slidesPerView: 3.5, spaceBetween: 24 },
+                                1280: { slidesPerView: 4, spaceBetween: 24 }
+                            }}
+                            className="store-cards-swiper !pb-14"
+                        >
+                            {validStores.map((store) => (
+                                <SwiperSlide key={store.id} className="h-auto !flex">
+                                    <StoreCard
+                                        store={store}
+                                        isSelected={selectedStore?.id === store.id}
+                                        onClick={handleStoreSelect}
+                                    />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                        <style>{`
+                        .store-cards-swiper .swiper-slide {
+                            height: auto;
+                        }
+                        .store-cards-swiper .swiper-button-next,
+                        .store-cards-swiper .swiper-button-prev {
+                            background: rgba(255,255,255,0.15);
+                            backdrop-filter: blur(8px);
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 50%;
+                            border: 1px solid rgba(255,255,255,0.2);
+                            transition: all 0.3s ease;
+                        }
+                        .store-cards-swiper .swiper-button-next:hover,
+                        .store-cards-swiper .swiper-button-prev:hover {
+                            background: var(--color-primary, #FF0000);
+                            border-color: var(--color-primary, #FF0000);
+                        }
+                        .store-cards-swiper .swiper-button-next:after,
+                        .store-cards-swiper .swiper-button-prev:after {
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: white;
+                        }
+                        .store-cards-swiper .swiper-pagination-bullet {
+                            background: rgba(255,255,255,0.4);
+                            opacity: 1;
+                            width: 10px;
+                            height: 10px;
+                        }
+                        .store-cards-swiper .swiper-pagination-bullet-active {
+                            background: var(--color-primary, #FF0000);
+                            width: 28px;
+                            border-radius: 5px;
+                        }
+                    `}</style>
+                    </div>
+                </div>
+            );
+        }
+
+        // Grid normal para 4 o menos tiendas
+        return (
+            <div className="py-10">
+                <div className="max-w-7xl mx-auto px-primary 2xl:px-0">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                        {validStores.map((store) => (
+                            <StoreCard
+                                key={store.id}
+                                store={store}
+                                isSelected={selectedStore?.id === store.id}
+                                onClick={handleStoreSelect}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
-        <section className={` ${data?.class_container || ''}`}>
+        <section className={`bg-secondary ${data?.class_container || ''}`}>
             {/* Estilos globales para sobrescribir Google Maps InfoWindow */}
             <style>{`
                 .gm-style-iw-c {
@@ -158,19 +329,24 @@ const StoreMap = ({ data, stores = [] }) => {
             <div className="w-full">
                 {/* Título y descripción */}
                 {(data?.title || data?.description) && (
-                    <div className="text-center mb-8 px-primary">
+                    <div className="text-center pt-12 pb-8 max-w-7xl mx-auto px-primary 2xl:px-0">
                         {data?.title && (
-                            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${data?.class_title || 'customtext-neutral-dark'}`}>
+                            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${data?.class_title || 'text-white'}`}>
                                 {data?.title}
                             </h2>
                         )}
                         {data?.description && (
-                            <p className={`text-lg max-w-3xl mx-auto ${data?.class_description || 'customtext-neutral-light'}`}>
+                            <p className={`text-lg max-w-3xl mx-auto ${data?.class_description || 'text-white/70'}`}>
                                 {data?.description}
                             </p>
                         )}
                     </div>
                 )}
+                {/* Tarjetas de tiendas */}
+                {data?.stored_cards &&
+
+                    renderStoreCards()
+                }
 
                 {validStores.length > 0 ? (
                     <div className="w-full relative">

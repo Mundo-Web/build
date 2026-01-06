@@ -12,15 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         // Agregar campo views a services
-        Schema::table('services', function (Blueprint $table) {
-            $table->unsignedBigInteger('views')->default(0)->after('status');
-        });
+        if (!Schema::hasColumn('services', 'views')) {
+            Schema::table('services', function (Blueprint $table) {
+                $table->unsignedBigInteger('views')->default(0)->after('status');
+            });
+        }
 
         // Agregar campo service_id a analytics_events
-        Schema::table('analytics_events', function (Blueprint $table) {
-            $table->uuid('service_id')->nullable()->after('item_id');
-            $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
-        });
+        if (!Schema::hasColumn('analytics_events', 'service_id')) {
+            Schema::table('analytics_events', function (Blueprint $table) {
+                $table->char('service_id', 36)->nullable()->after('item_id');
+                $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
+            });
+        }
     }
 
     /**

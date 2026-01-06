@@ -13,17 +13,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sale_details', function (Blueprint $table) {
-            // Soporte para reservas
-            $table->foreignUuid('booking_id')->nullable()->after('combo_id')
-                ->constrained('bookings')->nullOnDelete();
+            // Soporte para reservas - solo añadir si no existe
+            if (!Schema::hasColumn('sale_details', 'booking_id')) {
+                $table->foreignUuid('booking_id')->nullable()->after('combo_id')
+                    ->constrained('bookings')->nullOnDelete();
+            }
             
-            // Información de la reserva (JSON)
-            $table->json('booking_data')->nullable()->after('combo_data')
-                ->comment('Datos de la reserva: check_in, check_out, guests, etc');
-            
-            // Modificar el enum de type para incluir 'booking'
-            // Nota: En MySQL, modificar un ENUM requiere recrear la columna
-            // Si ya tienes datos, usa una migración separada con datos temporales
+            // Información de la reserva (JSON) - solo añadir si no existe
+            if (!Schema::hasColumn('sale_details', 'booking_data')) {
+                $table->json('booking_data')->nullable()->after('combo_data')
+                    ->comment('Datos de la reserva: check_in, check_out, guests, etc');
+            }
         });
         
         // Modificar el tipo de columna 'type' en sale_details

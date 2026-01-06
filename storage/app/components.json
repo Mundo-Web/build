@@ -5204,7 +5204,8 @@
                     "class_title",
                     "class_description",
                     "class_store_card",
-                    "class_button"
+                    "class_button",
+                    "stored_cards"
                 ],
                 "using": {
                     "model": "Store",
