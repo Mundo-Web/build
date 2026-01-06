@@ -195,18 +195,24 @@ Route::get('/deploy/migrate/{token}', function ($token) {
     }
     
     try {
+        // 1. Ejecutar migraciones
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
+        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+        
+        // 2. Limpiar todas las cachés
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $optimizeOutput = \Illuminate\Support\Facades\Artisan::output();
         
         return response()->json([
             'success' => true,
-            'message' => 'Migraciones ejecutadas correctamente',
-            'output' => $output
+            'message' => 'Deploy ejecutado correctamente',
+            'migrate' => $migrateOutput,
+            'optimize_clear' => $optimizeOutput
         ]);
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'Error al ejecutar migraciones',
+            'message' => 'Error al ejecutar deploy',
             'error' => $e->getMessage()
         ], 500);
     }
