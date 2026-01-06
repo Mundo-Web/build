@@ -23,7 +23,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
         terms_conditions: "Términos y condiciones",
 
         // 'delivery_policy': 'Políticas de envío',
-        saleback_policy: "Políticas de devolucion y cambio",
+        saleback_policy: "Política de Cambios, Devoluciones y Garantías",
     };
 
     const openModal = (index) => setModalOpen(index);

@@ -112,10 +112,13 @@ export default function MobileMenu({ search, setSearch, pages, items, onClose,da
                 </div>
             );
         } else if (menuLevel === "categories") {
-            // Ordenar categorías alfabéticamente
-            const sortedCategories = [...items].sort((a, b) => 
-                a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
-            );
+            // Ordenar categorías por order_index si type_order es 'order_index', sino alfabéticamente
+            const sortedCategories = [...items].sort((a, b) => {
+                if (data?.type_order === 'order_index') {
+                    return (a.order_index || 0) - (b.order_index || 0);
+                }
+                return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+            });
             
             return (
                 <div className={animationDirection === "right" ? "animate-fade-left animate-duration-300" : "animate-fade-right animate-duration-300"}>
@@ -138,11 +141,14 @@ export default function MobileMenu({ search, setSearch, pages, items, onClose,da
                 (category) => category.name === selectedCategory
             );
             
-            // Ordenar subcategorías alfabéticamente
+            // Ordenar subcategorías por order_index si type_order es 'order_index', sino alfabéticamente
             const sortedSubcategories = selectedSubcategory.subcategories 
-                ? [...selectedSubcategory.subcategories].sort((a, b) => 
-                    a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
-                  )
+                ? [...selectedSubcategory.subcategories].sort((a, b) => {
+                    if (data?.type_order === 'order_index') {
+                        return (a.order_index || 0) - (b.order_index || 0);
+                    }
+                    return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+                  })
                 : [];
                 
             return (

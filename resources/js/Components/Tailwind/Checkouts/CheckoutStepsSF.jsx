@@ -53,13 +53,16 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
 
     // Estados para modales de políticas
     const [modalOpen, setModalOpen] = useState(null);
-    const openModal = (index) => setModalOpen(index);
+    const openModal = (correlative) => {
+      
+        setModalOpen(correlative);
+    };
     const closeModal = () => setModalOpen(null);
 
     const policyItems = {
         privacy_policy: "Políticas de privacidad",
         terms_conditions: "Términos y condiciones",
-        saleback_policy: "Políticas de devolucion y cambio",
+        saleback_policy: "Políticas de devolución y cambio",
     };
 
     // Calcular total final con todos los descuentos
@@ -255,10 +258,12 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                 const content =
                     generals.find((x) => x.correlative == key)?.description ??
                     "";
+             
+                
                 return (
                      <ReactModal
-                        key={index}
-                        isOpen={modalOpen === index}
+                        key={key}
+                        isOpen={modalOpen === key}
                         onRequestClose={closeModal}
                         contentLabel={title}
                         className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"

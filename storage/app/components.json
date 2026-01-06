@@ -247,7 +247,8 @@
                     "class_logo",
                     "input_search_placeholder",
                     "input_search_label",
-                    "input_search_class"
+                    "input_search_class",
+                    "type_order"
                 ],
                 "using": {
                     "model": "Category",
@@ -3302,7 +3303,11 @@
                     "checkout_transfer",
                     "checkout_transfer_cci",
                     "checkout_transfer_name",
-                    "checkout_transfer_description"
+                    "checkout_transfer_description",
+                    "terms_conditions",
+                    "privacy_policy",
+                    "delivery_policy",
+                    "saleback_policy"
                 ]
             },
             {

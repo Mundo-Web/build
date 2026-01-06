@@ -2518,10 +2518,10 @@ export default function ShippingStepSF({
                         <div>
                             <p className="text-sm customtext-neutral-dark">
                                 Al realizar tu pedido, aceptas los 
-                                <a href="#" onClick={() => openModal && openModal(1)} className="customtext-primary font-bold"> Términos y Condiciones</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); openModal && openModal('terms_conditions'); }} className="customtext-primary font-bold"> Términos y Condiciones</a>
                                 , y que nosotros usaremos sus datos personales de
                                 acuerdo con nuestra 
-                                <a href="#" onClick={() => openModal && openModal(0)} className="customtext-primary font-bold"> Política de Privacidad</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); openModal && openModal('privacy_policy'); }} className="customtext-primary font-bold"> Política de Privacidad</a>
                                 .
                             </p>
                         </div>

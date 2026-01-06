@@ -155,7 +155,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                     htmlFor="openpay"
                                                     className="font-medium text-base 2xl:text-lg"
                                                 >
-                                                    Pago con Tarjeta (OpenPay)
+                                                    Pago con Tarjeta
                                                 </label>
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
                                                     Paga de forma segura con tu tarjeta de crédito o débito.
@@ -206,7 +206,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                                     htmlFor="culqi"
                                                     className="font-medium text-base 2xl:text-lg"
                                                 >
-                                                    Pago con Tarjeta (Culqi)
+                                                    Pago con Tarjeta
                                                 </label>
                                                 <p className="text-neutral-light text-sm 2xl:text-base ml-7 mt-1">
                                                     Paga de forma segura con tarjeta de crédito, débito, Yape y más.

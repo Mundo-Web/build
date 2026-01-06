@@ -74,6 +74,7 @@ const Checkout = ({
                         prefixes={prefixes}
                         contacts={contacts}
                         items={items}
+                        generals={generals}
                     />
                 );
             case "CheckoutStepsIbegruas":
