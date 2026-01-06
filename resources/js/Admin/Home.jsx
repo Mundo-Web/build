@@ -2230,15 +2230,7 @@ const Home = ({
                 {Object.entries(CARD_CATEGORIES).map(([categoryKey, category]) => {
                   const categoryCards = Object.entries(DASHBOARD_CARDS).filter(([cardId, card]) => {
                     // Filtrar cards de servicios si el proyecto no las usa
-                    if (!hasServicesFeature && (
-                      cardId === 'total_services_kpi' ||
-                      cardId === 'most_viewed_services' ||
-                      cardId === 'service_visits_chart' ||
-                      cardId === 'service_views_by_device' ||
-                      cardId === 'service_views_trend'
-                    )) {
-                      return false;
-                    }
+                   
                     return card.category === categoryKey;
                   });
 

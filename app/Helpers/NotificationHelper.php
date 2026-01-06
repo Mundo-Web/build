@@ -69,11 +69,12 @@ class NotificationHelper
         return in_array(strtolower($domain), $possibleZohoDomains);
     }    /**
      * Envía una notificación tanto al destinatario original como al administrador
+     * Con timeout protection para evitar bloqueos
      */
     public static function sendToClientAndAdmin($originalNotifiable, $notification, $adminNotification = null)
     {
         try {
-            // Enviar al cliente/destinatario original
+            // Enviar al cliente/destinatario original con timeout protection
             if ($originalNotifiable->email ?? $originalNotifiable->correo_electronico ?? null) {
                 $clientEmail = $originalNotifiable->email ?? $originalNotifiable->correo_electronico;
                 Log::info('NotificationHelper - Enviando notificación al cliente', [
@@ -81,8 +82,15 @@ class NotificationHelper
                     'notification_type' => get_class($notification)
                 ]);
                 
-                $originalNotifiable->notify($notification);
-                Log::info('NotificationHelper - Notificación enviada al cliente exitosamente');
+                try {
+                    $originalNotifiable->notify($notification);
+                    Log::info('NotificationHelper - Notificación enviada al cliente exitosamente');
+                } catch (\Exception $clientEx) {
+                    Log::warning('NotificationHelper - Error enviando al cliente (continuando)', [
+                        'client_email' => $clientEmail,
+                        'error' => $clientEx->getMessage()
+                    ]);
+                }
             } else {
                 Log::warning('NotificationHelper - Cliente sin email, saltando envío al cliente');
             }
@@ -105,28 +113,49 @@ class NotificationHelper
                 // Si se proporciona una notificación específica para admin, usarla
                 if ($adminNotification) {
                     Log::info('NotificationHelper - Enviando notificación específica proporcionada al administrador');
-                    Notification::route('mail', $corporateEmail)->notify($adminNotification);
-                    Log::info('NotificationHelper - Notificación específica enviada al administrador exitosamente', [
-                        'admin_email' => $corporateEmail,
-                        'notification_type' => get_class($adminNotification)
-                    ]);
+                    try {
+                        Notification::route('mail', $corporateEmail)->notify($adminNotification);
+                        Log::info('NotificationHelper - Notificación específica enviada al administrador exitosamente', [
+                            'admin_email' => $corporateEmail,
+                            'notification_type' => get_class($adminNotification)
+                        ]);
+                    } catch (\Exception $adminEx) {
+                        Log::error('NotificationHelper - Error enviando notificación específica al admin', [
+                            'admin_email' => $corporateEmail,
+                            'error' => $adminEx->getMessage()
+                        ]);
+                    }
                 } else {
                     // Crear notificación específica basada en la original
                     $autoAdminNotification = self::createAdminNotification($notification);
                     if ($autoAdminNotification) {
                         Log::info('NotificationHelper - Enviando notificación auto-generada al administrador');
-                        Notification::route('mail', $corporateEmail)->notify($autoAdminNotification);
-                        Log::info('NotificationHelper - Notificación auto-generada enviada al administrador exitosamente', [
-                            'admin_email' => $corporateEmail,
-                            'notification_type' => get_class($autoAdminNotification)
-                        ]);
+                        try {
+                            Notification::route('mail', $corporateEmail)->notify($autoAdminNotification);
+                            Log::info('NotificationHelper - Notificación auto-generada enviada al administrador exitosamente', [
+                                'admin_email' => $corporateEmail,
+                                'notification_type' => get_class($autoAdminNotification)
+                            ]);
+                        } catch (\Exception $adminEx) {
+                            Log::error('NotificationHelper - Error enviando notificación auto-generada al admin', [
+                                'admin_email' => $corporateEmail,
+                                'error' => $adminEx->getMessage()
+                            ]);
+                        }
                     } else {
                         // Fallback: usar la misma notificación
                         Log::info('NotificationHelper - Enviando notificación genérica al administrador');
-                        Notification::route('mail', $corporateEmail)->notify($notification);
-                        Log::info('NotificationHelper - Notificación genérica enviada al administrador exitosamente', [
-                            'admin_email' => $corporateEmail
-                        ]);
+                        try {
+                            Notification::route('mail', $corporateEmail)->notify($notification);
+                            Log::info('NotificationHelper - Notificación genérica enviada al administrador exitosamente', [
+                                'admin_email' => $corporateEmail
+                            ]);
+                        } catch (\Exception $adminEx) {
+                            Log::error('NotificationHelper - Error enviando notificación genérica al admin', [
+                                'admin_email' => $corporateEmail,
+                                'error' => $adminEx->getMessage()
+                            ]);
+                        }
                     }
                 }
 
