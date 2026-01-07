@@ -443,8 +443,8 @@
       "_Number2Currency-jIsa99f9.js"
     ]
   },
-  "_ProductCardSelector-Ci1Bsx1r.js": {
-    "file": "assets/ProductCardSelector-Ci1Bsx1r.js",
+  "_ProductCardSelector-CvJERi7Q.js": {
+    "file": "assets/ProductCardSelector-CvJERi7Q.js",
     "name": "ProductCardSelector",
     "imports": [
       "_preload-helper-BfFHrpNk.js",
@@ -1752,7 +1752,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-Cf5GHelY.js",
+    "file": "assets/About-DFSnh0vS.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -4263,7 +4263,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-DOxpKZAn.js",
+    "file": "assets/Blog-Cc5zhep5.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -4308,7 +4308,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-DL-aq91G.js",
+    "file": "assets/BlogArticle-Dj3tC96S.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -6185,7 +6185,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-CWl1jgkB.js",
+    "file": "assets/Base-DYcAS3hS.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -8714,7 +8714,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-LmgS2iDf.js",
+    "file": "assets/Filter-CAFffa-q.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -9031,7 +9031,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-DhZZ1gca.js",
+    "file": "assets/CatalogoFiltrosDental-BR5LyF4j.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -9043,7 +9043,7 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-DbFcgKj2.js",
       "_main-B6F2O9-U.js",
-      "_ProductCardSelector-Ci1Bsx1r.js",
+      "_ProductCardSelector-CvJERi7Q.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
@@ -9388,7 +9388,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
-    "file": "assets/FilterHuaillys-D2qSzrhF.js",
+    "file": "assets/FilterHuaillys-CX5uQQNe.js",
     "name": "FilterHuaillys",
     "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9400,7 +9400,7 @@
       "_autoplay-E5bqrXsF.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "_ProductCardSelector-Ci1Bsx1r.js",
+      "_ProductCardSelector-CvJERi7Q.js",
       "_ItemsRest-Dp5IKigO.js",
       "_Loading-B-FwDSWi.js",
       "_NoResult-DlL_OOrq.js",
@@ -10209,7 +10209,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-BhcRn6t1.js",
+    "file": "assets/Header-v6n3TqlD.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -11624,7 +11624,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-UQnE-lHH.js",
+    "file": "assets/Product-G0xzVXIW.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -11657,7 +11657,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-YUQFF3iN.js",
+    "file": "assets/ProductDetail-DucbmNiR.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -11951,7 +11951,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-CZ0Ge7xl.js",
+    "file": "assets/ProductDetailHuaillys-DUAv-PDL.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -12700,7 +12700,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx": {
-    "file": "assets/ProductCardSelector-CRo7XdTt.js",
+    "file": "assets/ProductCardSelector-C3Cv3puJ.js",
     "name": "ProductCardSelector",
     "src": "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx",
     "isEntry": true,
@@ -13468,7 +13468,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-bhAvJsK8.js",
+    "file": "assets/Service-BqtxbJK4.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -13586,7 +13586,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx": {
-    "file": "assets/ServiceLaPetaca-DIe4y5s8.js",
+    "file": "assets/ServiceLaPetaca-B4nVa4Eu.js",
     "name": "ServiceLaPetaca",
     "src": "resources/js/Components/Tailwind/Services/ServiceLaPetaca.jsx",
     "isEntry": true,
@@ -13595,7 +13595,6 @@
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "resources/js/Components/About/Strengths.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
     ],
@@ -14193,7 +14192,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-B0KTC6Os.js",
+    "file": "assets/Testimonials-Dl7c7HL3.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -14226,7 +14225,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsLaPetaca.jsx": {
-    "file": "assets/TestimonialsLaPetaca-DIe4y5s8.js",
+    "file": "assets/TestimonialsLaPetaca-B4nVa4Eu.js",
     "name": "TestimonialsLaPetaca",
     "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsLaPetaca.jsx",
     "isEntry": true,
@@ -14235,7 +14234,6 @@
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "resources/js/Components/About/Strengths.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
     ],
@@ -14748,7 +14746,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-B6dta-bn.js",
+    "file": "assets/Contact-B0tzTFFg.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -14794,7 +14792,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-BwBPkKaf.js",
+    "file": "assets/CourseDetails-CG7B-S1_.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -14831,7 +14829,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-Cjq5bY8V.js",
+    "file": "assets/Courses-BhLW49Pw.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -14926,7 +14924,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-D3dry6Y-.js",
+    "file": "assets/Home-gqqisHxt.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -15134,7 +15132,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BUv1q58s.js",
+    "file": "assets/System-Do33M2Gp.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

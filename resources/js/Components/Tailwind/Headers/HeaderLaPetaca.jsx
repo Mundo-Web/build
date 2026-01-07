@@ -123,7 +123,7 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                                 <img
                                     src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                                     alt={Global.APP_NAME}
-                                    className="h-16 w-auto transition-transform "
+                                    className="h-12 lg:h-16 w-auto transition-transform "
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.src = "/assets/img/logo-bk.svg";
@@ -220,7 +220,7 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                                 className="relative p-2 rounded-full transition-all duration-300"
                                 aria-label="Carrito de compras"
                             >
-                                <ShoppingCart size={22} className="text-gray-300" />
+                                <ShoppingCart size={22} className="text-white" />
                                 {totalCount > 0 && (
                                     <span 
                                         className="absolute -top-1 -right-1 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
@@ -233,8 +233,8 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
 
                             {/* Mobile menu button */}
                             <button
-                                className="p-2 transition-colors rounded-full hover:bg-white/10"
-                                style={{ color: accentColor }}
+                                className="p-2 transition-colors text-white rounded-full hover:bg-white/10"
+                          
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                             >
                                 {isMenuOpen ? (
@@ -246,81 +246,127 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                         </div>
                     </div>
                 </div>
+            </header>
 
-                {/* Mobile menu */}
-                <AnimatePresence>
-                    {isMenuOpen && (
+            {/* Mobile Menu Overlay - Fuera del header */}
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="md:hidden fixed inset-0 bg-black/60 z-40"
+                            onClick={() => setIsMenuOpen(false)}
+                        />
+                        
+                        {/* Menu Panel */}
                         <motion.div
                             ref={menuRef}
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.2 }}
-                            className="md:hidden fixed bg-primary inset-0 backdrop-blur-lg"
-                            style={{
-                                top: '80px',
-                               
-                            }}
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "tween", duration: 0.3 }}
+                            className="md:hidden fixed right-0 top-0 h-full w-[85%] max-w-sm bg-primary shadow-2xl z-50 flex flex-col"
                         >
-                            <nav className="flex flex-col items-center justify-center h-full space-y-6 pb-20">
-                                {orderedMenuItems.map((menuItem, index) => {
-                                    if (menuItem.type === 'category') {
-                                        const category = menuItem.data;
-                                        return (
-                                            <div key={`mobile-cat-${category.id}`} className="text-center">
-                                                <a
-                                                    href={`/catalogo?category=${category.slug}`}
-                                                    className="text-xl font-medium tracking-wide transition-all duration-300 text-gray-300 hover:text-white"
+                            {/* Header del menú con logo */}
+                            <div className="flex items-center justify-between p-5 border-b border-white/10">
+                                <img
+                                    src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                                    alt={Global.APP_NAME}
+                                    className="h-10 w-auto"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "/assets/img/logo-bk.svg";
+                                    }}
+                                />
+                                <button
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="w-10 h-10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                                >
+                                    <X size={22} />
+                                </button>
+                            </div>
+
+                            {/* Contenido del menú con scroll */}
+                            <div className="flex-1 overflow-y-auto py-4">
+                                <nav className="px-3">
+                                    {orderedMenuItems.map((menuItem, index) => {
+                                        if (menuItem.type === 'category') {
+                                            const category = menuItem.data;
+                                            return (
+                                                <motion.div 
+                                                    key={`mobile-cat-${category.id}`}
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                    className="mb-1"
+                                                >
+                                                    <a
+                                                        href={`/catalogo?category=${category.slug}`}
+                                                        className="flex items-center gap-3 py-3.5 px-4 text-base font-medium text-white hover:bg-white/10 rounded-xl transition-all"
+                                                        onClick={() => setIsMenuOpen(false)}
+                                                    >
+                                                       
+                                                        {category.alias || category.name}
+                                                    </a>
+                                                    
+                                                    {/* Subcategorías */}
+                                                    {category.subcategories?.length > 0 && (
+                                                        <div className="ml-8 mb-2 pl-4 border-l border-white/10">
+                                                            {category.subcategories.map((sub, subIndex) => (
+                                                                <motion.a
+                                                                    key={sub.id}
+                                                                    initial={{ opacity: 0 }}
+                                                                    animate={{ opacity: 1 }}
+                                                                    transition={{ delay: (index * 0.05) + (subIndex * 0.03) }}
+                                                                    href={`/catalogo?subcategory=${sub.slug}`}
+                                                                    className="block py-2.5 px-3 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                                                                    onClick={() => setIsMenuOpen(false)}
+                                                                >
+                                                                    {sub.name}
+                                                                </motion.a>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            );
+                                        } else if (menuItem.type === 'page') {
+                                            const page = menuItem.data;
+                                            return (
+                                                <motion.a
+                                                    key={`mobile-page-${page.id || index}`}
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                    href={page.path}
+                                                    className="flex items-center gap-3 py-3.5 px-4 text-base font-medium text-white hover:bg-white/10 rounded-xl transition-all mb-1"
                                                     onClick={() => setIsMenuOpen(false)}
                                                 >
-                                                    {category.alias || category.name}
-                                                </a>
-                                                {category.subcategories?.length > 0 && (
-                                                    <div className="mt-2 space-y-1">
-                                                        {category.subcategories.map((sub) => (
-                                                            <a
-                                                                key={sub.id}
-                                                                href={`/catalogo?subcategory=${sub.slug}`}
-                                                                className="block text-sm text-gray-400 hover:text-white transition-colors"
-                                                                onClick={() => setIsMenuOpen(false)}
-                                                            >
-                                                                {sub.name}
-                                                            </a>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    } else if (menuItem.type === 'page') {
-                                        const page = menuItem.data;
-                                        return (
-                                            <a
-                                                key={`mobile-page-${page.id || index}`}
-                                                href={page.path}
-                                                className="text-xl font-medium tracking-wide transition-all duration-300 text-gray-300 hover:text-white"
-                                                onClick={() => setIsMenuOpen(false)}
-                                            >
-                                                {page.name}
-                                            </a>
-                                        );
-                                    }
-                                    return null;
-                                })}
+                                                  
+                                                    {page.name}
+                                                </motion.a>
+                                            );
+                                        }
+                                        return null;
+                                    })}
+                                </nav>
+                            </div>
 
-                                {/* User link in mobile */}
-                                <a
-                                    href={isUser ? "/profile" : "/iniciar-sesion"}
-                                    className="flex items-center gap-2 text-xl font-medium tracking-wide transition-all duration-300 text-gray-300 hover:text-white"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <User size={20} />
-                                    {isUser ? 'Mi Perfil' : 'Iniciar Sesión'}
-                                </a>
-                            </nav>
+                            {/* Footer decorativo */}
+                            <div className="p-5 border-t border-white/10">
+                                <div className="flex items-center justify-center gap-2 text-white/40 text-xs">
+                                    <span className="w-8 h-px bg-white/20"></span>
+                                    <span>La Petaca</span>
+                                    <span className="w-8 h-px bg-white/20"></span>
+                                </div>
+                            </div>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-            </header>
+                    </>
+                )}
+            </AnimatePresence>
 
             {/* Cart Modal */}
             <CartModalLaPetaca
