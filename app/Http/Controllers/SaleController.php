@@ -351,6 +351,8 @@ class SaleController extends BasicController
 
             $saleJpa->amount = Math::round($totalPrice * 10) / 10;
             $saleJpa->delivery = $sale['delivery'] ?? 0;
+            $saleJpa->additional_shipping_cost = $sale['additional_shipping_cost'] ?? 0;
+            $saleJpa->additional_shipping_description = $sale['additional_shipping_description'] ?? null;
             $saleJpa->seguro_importacion_total = $sale['seguro_importacion_total'] ?? 0;
             $saleJpa->derecho_arancelario_total = $sale['derecho_arancelario_total'] ?? 0;
             $saleJpa->flete_total = $sale['flete_total'] ?? 0;

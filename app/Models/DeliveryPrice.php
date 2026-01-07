@@ -21,6 +21,7 @@ class DeliveryPrice extends Model
         'name',
         'price',
         'is_free',
+        'is_standard',
         'is_express',
         'express_price',
         'is_agency',
@@ -36,6 +37,7 @@ class DeliveryPrice extends Model
     ];
     protected $casts = [
         'is_free' => 'boolean',
+        'is_standard' => 'boolean',
         'is_express' => 'boolean',
         'is_agency' => 'boolean',
         'is_store_pickup' => 'boolean',

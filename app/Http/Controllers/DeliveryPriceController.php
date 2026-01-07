@@ -121,6 +121,7 @@ class DeliveryPriceController extends BasicController
             // 3. Estructurar la respuesta
             $result = [
                 'is_free' => $deliveryPrice->is_free,
+                'is_standard' => $deliveryPrice->is_standard,
                 'is_agency'=>$deliveryPrice->is_agency,
                 'qualifies_free_shipping' => $qualifiesForFreeShipping,
                 'free_shipping_threshold' => $minFreeShipping,

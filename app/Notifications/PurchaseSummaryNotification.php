@@ -42,6 +42,9 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             'subtotal'       => 'Subtotal (sin IGV)',
             'igv'            => 'Impuesto General a las Ventas (18%)',
             'costo_envio'    => 'Costo de envío (solo ecommerce)',
+            'costo_adicional_envio' => 'Costo adicional de envío aplicado',
+            'descripcion_costo_adicional' => 'Descripción del costo adicional (ej: "Envío por agencia a provincia")',
+            'tiene_costo_adicional' => 'Indica si hay costo adicional de envío (true/false)',
             'direccion_envio' => 'Dirección de envío',
             'distrito'       => 'Distrito de envío',
             'provincia'      => 'Provincia de envío',
@@ -86,6 +89,8 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
         
         // Calcular valores monetarios correctamente desde los detalles de venta
         $deliveryCost = $this->sale->delivery ?? 0;
+        $additionalShippingCost = $this->sale->additional_shipping_cost ?? 0;
+        $additionalShippingDescription = $this->sale->additional_shipping_description ?? '';
         $couponDiscount = $this->sale->coupon_discount ?? 0;
         $promotionDiscount = $this->sale->promotion_discount ?? 0;
         
@@ -115,8 +120,8 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
         $subtotalAmount = $subtotalConDescuentos / 1.18;  // Subtotal sin IGV (base imponible)
         $igvAmount = $subtotalConDescuentos - $subtotalAmount;  // IGV (18%)
         
-        // Total final = subtotal con descuentos + envío
-        $totalAmount = $subtotalConDescuentos + $deliveryCost;
+        // Total final = subtotal con descuentos + envío + costo adicional de envío
+        $totalAmount = $subtotalConDescuentos + $deliveryCost + $additionalShippingCost;
         
         // Log de valores finales
         Log::info('PurchaseSummaryNotification - Valores calculados:', [
@@ -124,6 +129,7 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             'igv' => $igvAmount,
             'subtotal_con_igv' => $subtotalConDescuentos,
             'envio' => $deliveryCost,
+            'costo_adicional_envio' => $additionalShippingCost,
             'total_calculado' => $totalAmount,
             'total_esperado' => $this->sale->amount
         ]);
@@ -169,6 +175,9 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
                 'referencia'     => $this->sale->reference ?? $this->sale->user->reference ?? '',
                 'total'          => number_format($totalAmount, 2),
                 'subtotal'       => number_format($subtotalAmount, 2),
+                'costo_adicional_envio' => number_format($additionalShippingCost, 2),
+                'descripcion_costo_adicional' => $additionalShippingDescription,
+                'tiene_costo_adicional' => $additionalShippingCost > 0,
                 'igv'            => number_format($igvAmount, 2),
                 'costo_envio'    => number_format($deliveryCost, 2),
                 'year'           => date('Y'),

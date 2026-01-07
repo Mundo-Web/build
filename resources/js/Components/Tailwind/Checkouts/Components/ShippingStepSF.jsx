@@ -64,6 +64,14 @@ export default function ShippingStepSF({
     conversionScripts,
     setConversionScripts,
     onPurchaseComplete,
+    // Props para costos adicionales de envío
+    additionalShippingCost,
+    setAdditionalShippingCost,
+    additionalShippingDescription,
+    setAdditionalShippingDescription,
+    selectedDeliveryMethod,
+    setSelectedDeliveryMethod,
+    calculateAdditionalShippingCost,
 }) {
     // Función para formatear el número de teléfono evitando duplicación de prefijos
     const formatPhoneNumber = (phonePrefix, phoneNumber) => {
@@ -341,6 +349,12 @@ export default function ShippingStepSF({
    
     const subFinal = numericSubTotal + numericIgv - descuentofinal - autoDiscountTotal;
     
+    // Debug: Verificar que la configuración de costos adicionales se cargue correctamente
+    useEffect(() => {
+        console.log('🔍 Configuración de costos adicionales:', General.additional_shipping_costs);
+        console.log('📦 Subtotal actual:', subTotal);
+    }, []);
+    
     // Función de validación mejorada con alertas específicas
     const validateForm = () => {
         const newErrors = {};
@@ -470,8 +484,8 @@ export default function ShippingStepSF({
                 });
             }
 
-            // 2. ENVÍO NORMAL: Si existe standard, siempre agregarlo (excepto para zonas is_free que califican para gratis)
-            if (response.data.standard) {
+            // 2. ENVÍO NORMAL: Si existe standard Y está habilitado (is_standard), agregarlo (excepto para zonas is_free que califican para gratis)
+            if (response.data.is_standard && response.data.standard) {
                 // Solo agregar envío normal si NO es zona gratis que califica, o si es zona gratis que NO califica
                 if (!response.data.is_free || (response.data.is_free && !response.data.qualifies_free_shipping)) {
                     
@@ -552,6 +566,19 @@ export default function ShippingStepSF({
             setSelectedOption(options[0]?.type || null);
             setEnvio(options[0]?.price || 0);
             
+            // Calcular costo adicional para la primera opción seleccionada automáticamente
+            try {
+                if (options[0]?.type && calculateAdditionalShippingCost) {
+                    const additionalCost = calculateAdditionalShippingCost(options[0].type, subTotal);
+                    setAdditionalShippingCost(additionalCost.cost);
+                    setAdditionalShippingDescription(additionalCost.description);
+                    setSelectedDeliveryMethod(options[0].type);
+                }
+            } catch (additionalCostError) {
+                console.error('Error calculando costo adicional:', additionalCostError);
+                // No hacer nada, continuar sin costo adicional
+            }
+            
          
         } catch (error) {
             console.error("Error al obtener precios de envío:", error);
@@ -565,6 +592,9 @@ export default function ShippingStepSF({
             setShippingOptions([]);
             setSelectedOption(null);
             setEnvio(0);
+            setAdditionalShippingCost(0);
+            setAdditionalShippingDescription('');
+            setSelectedDeliveryMethod(null);
         }
         setLoading(false);
     };
@@ -736,6 +766,9 @@ export default function ShippingStepSF({
                 amount: finalTotalWithCoupon || 0,
                 delivery: envio,
                 delivery_type: deliveryType, // Agregar delivery_type
+                // Costos adicionales de envío
+                additional_shipping_cost: roundToTwoDecimals(additionalShippingCost || 0),
+                additional_shipping_description: additionalShippingDescription || '',
                 cart: cart,
                 invoiceType: formData.invoiceType || "",
                 documentType: formData.documentType || "",
@@ -1039,6 +1072,9 @@ export default function ShippingStepSF({
                     amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                     delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
+                    // Costos adicionales de envío
+                    additional_shipping_cost: roundToTwoDecimals(additionalShippingCost || 0),
+                    additional_shipping_description: additionalShippingDescription || '',
                     cart: cart,
                     invoiceType: formData.invoiceType || "",
                     documentType: formData.documentType || "",
@@ -1158,6 +1194,9 @@ export default function ShippingStepSF({
                         amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                         delivery: roundToTwoDecimals(envio || 0),
                         delivery_type: deliveryType,
+                        // Costos adicionales de envío
+                        additional_shipping_cost: roundToTwoDecimals(additionalShippingCost || 0),
+                        additional_shipping_description: additionalShippingDescription || '',
                         cart: cart,
                         invoiceType: formData.invoiceType || "",
                         documentType: formData.documentType || "",
@@ -1255,6 +1294,9 @@ export default function ShippingStepSF({
                     amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                     delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
+                    // Costos adicionales de envío
+                    additional_shipping_cost: roundToTwoDecimals(additionalShippingCost || 0),
+                    additional_shipping_description: additionalShippingDescription || '',
                     details: JSON.stringify(cart.map((item) => ({
                         id: item.id,
                         quantity: item.quantity
@@ -1313,6 +1355,9 @@ export default function ShippingStepSF({
                     amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                     delivery: roundToTwoDecimals(envio || 0),
                     delivery_type: deliveryType, // Agregar delivery_type
+                    // Costos adicionales de envío
+                    additional_shipping_cost: roundToTwoDecimals(additionalShippingCost || 0),
+                    additional_shipping_description: additionalShippingDescription || '',
                     details: JSON.stringify(cart.map((item) => ({
                         id: item.id,
                         quantity: item.quantity
@@ -1401,6 +1446,9 @@ export default function ShippingStepSF({
                 amount: roundToTwoDecimals(finalTotalWithCommission || 0),
                 delivery: roundToTwoDecimals(envio || 0),
                 delivery_type: deliveryType,
+                // Costos adicionales de envío
+                additional_shipping_cost: roundToTwoDecimals(additionalShippingCost || 0),
+                additional_shipping_description: additionalShippingDescription || '',
                 cart: cart,
                 invoiceType: formData.invoiceType || "",
                 documentType: formData.documentType || "",
@@ -1618,7 +1666,7 @@ export default function ShippingStepSF({
     };
 
     // Calcular el total base antes de cupón
-    const totalBase = roundToTwoDecimals(subTotal) + roundToTwoDecimals(igv) + roundToTwoDecimals(envio) - roundToTwoDecimals(autoDiscountTotal);
+    const totalBase = roundToTwoDecimals(subTotal) + roundToTwoDecimals(igv) + roundToTwoDecimals(envio) + roundToTwoDecimals(additionalShippingCost) - roundToTwoDecimals(autoDiscountTotal);
 
     // El descuento del cupón ya viene calculado desde el backend
     let calculatedCouponDiscount = couponDiscount || 0;
@@ -2167,6 +2215,18 @@ export default function ShippingStepSF({
                                                         setSelectedOption(option.type);
                                                         setEnvio(option.price);
                                                         
+                                                        // Calcular costo adicional basado en el método de envío
+                                                        try {
+                                                            if (calculateAdditionalShippingCost) {
+                                                                const additionalCost = calculateAdditionalShippingCost(option.type, subTotal);
+                                                                setAdditionalShippingCost(additionalCost.cost);
+                                                                setAdditionalShippingDescription(additionalCost.description);
+                                                                setSelectedDeliveryMethod(option.type);
+                                                            }
+                                                        } catch (additionalCostError) {
+                                                            console.error('Error calculando costo adicional:', additionalCostError);
+                                                        }
+                                                        
                                                         // Si selecciona retiro en tienda, mostrar selector
                                                         if (option.type === "store_pickup") {
                                                             setShowStoreSelector(true);
@@ -2484,6 +2544,19 @@ export default function ShippingStepSF({
                                 )}
                             </span>
                         </div>
+                        
+                        {/* Mostrar costos adicionales de envío con descripción */}
+                        {additionalShippingCost > 0 && (
+                            <div className="flex justify-between text-danger">
+                                <div className="flex flex-col">
+                                    <span className="font-medium">Costo adicional</span>
+                                    <span className="text-xs text-neutral-light">{additionalShippingDescription}</span>
+                                </div>
+                                <span className="font-semibold">
+                                    +{CurrencySymbol()} {Number2Currency(additionalShippingCost)}
+                                </span>
+                            </div>
+                        )}
                         
                         {/* Mostrar comisión del método de pago */}
                         {paymentCommission > 0 && selectedPaymentMethod && (

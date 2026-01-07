@@ -381,6 +381,8 @@ class MercadoPagoController extends Controller
                     'payment_status' => $order->payment_status,
                     'amount' => $order->amount,
                     'delivery' => $order->delivery,
+                    'additional_shipping_cost' => $order->additional_shipping_cost ?? 0,
+                    'additional_shipping_description' => $order->additional_shipping_description ?? '',
                     'coupon_id' => $order->coupon_id,
                     'coupon_discount' => $order->coupon_discount,
                     'total_amount' => $order->total_amount,

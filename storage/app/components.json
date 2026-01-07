@@ -3307,7 +3307,8 @@
                     "terms_conditions",
                     "privacy_policy",
                     "delivery_policy",
-                    "saleback_policy"
+                    "saleback_policy",
+                    "additional_shipping_costs"
                 ]
             },
             {

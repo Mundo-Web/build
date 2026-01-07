@@ -1278,6 +1278,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
 
     const subtotalReal = saleLoaded?.details?.reduce((sum, detail) => sum + (detail.price * detail.quantity), 0) || 0;
     const totalAmount = subtotalReal + Number(saleLoaded?.delivery || 0) + 
+        Number(saleLoaded?.additional_shipping_cost || 0) + 
         Number(saleLoaded?.seguro_importacion_total || 0) + 
         Number(saleLoaded?.derecho_arancelario_total || 0) + 
         Number(saleLoaded?.flete_total || 0) - 
@@ -1422,6 +1423,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                             // Calcular total con todos los cargos y descuentos
                             const totalAmount = subtotalReal + 
                                 Number(data?.delivery || 0) + 
+                                Number(data?.additional_shipping_cost || 0) + 
                                 Number(data?.seguro_importacion_total || 0) + 
                                 Number(data?.derecho_arancelario_total || 0) + 
                                 Number(data?.flete_total || 0) - 
@@ -1446,6 +1448,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                             // Calcular total con todos los cargos y descuentos
                             const totalAmount = subtotalReal + 
                                 Number(data?.delivery || 0) + 
+                                Number(data?.additional_shipping_cost || 0) + 
                                 Number(data?.seguro_importacion_total || 0) + 
                                 Number(data?.derecho_arancelario_total || 0) + 
                                 Number(data?.flete_total || 0) - 
@@ -1840,6 +1843,23 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     </span>
                                 </div>
                                 
+                                {/* Mostrar costo adicional de envío si existe */}
+                                {saleLoaded?.additional_shipping_cost > 0 && (
+                                    <div className="d-flex justify-content-between text-warning">
+                                        <b>
+                                            Costo adicional de envío:
+                                            {saleLoaded?.additional_shipping_description && (
+                                                <small className="d-block text-muted" style={{fontWeight: 'normal'}}>
+                                                    ({saleLoaded.additional_shipping_description})
+                                                </small>
+                                            )}
+                                        </b>
+                                        <span>
+                                            {CurrencySymbol()} {Number2Currency(saleLoaded?.additional_shipping_cost)}
+                                        </span>
+                                    </div>
+                                )}
+                                
                                 {/* Mostrar costos de importación si existen */}
                                 {(saleLoaded?.seguro_importacion_total > 0 || saleLoaded?.derecho_arancelario_total > 0 || saleLoaded?.flete_total > 0) && (
                                     <>
@@ -1925,6 +1945,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <strong>Cálculo:</strong> 
                                     {Number2Currency(subtotalReal)} (subtotal)
                                     + {Number2Currency(saleLoaded?.delivery)} (envío)
+                                    {saleLoaded?.additional_shipping_cost > 0 && ` + ${Number2Currency(saleLoaded?.additional_shipping_cost)} (costo adicional)`}
                                     {saleLoaded?.seguro_importacion_total > 0 && ` + ${Number2Currency(saleLoaded?.seguro_importacion_total)} (seguro)`}
                                     {saleLoaded?.derecho_arancelario_total > 0 && ` + ${Number2Currency(saleLoaded?.derecho_arancelario_total)} (derecho arancelario)`}
                                     {saleLoaded?.flete_total > 0 && ` + ${Number2Currency(saleLoaded?.flete_total)} (flete)`}

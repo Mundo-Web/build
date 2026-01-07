@@ -100,6 +100,7 @@ class SystemController extends BasicController
         $generals = [
             'currency',
             'whatsapp_advisors',
+            'additional_shipping_costs',
             'site_title',
             'site_description', 
             'site_keywords',

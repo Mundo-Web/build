@@ -60,7 +60,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy', 'politica_sistema_gestion', 'alcance_sistema_gestion'],
     'location': ['location'],
-    'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen'],
+    'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen', 'additional_shipping_costs'],
     'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'],
 
     'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts', 'atalaya_leads_api_key'],
@@ -313,6 +313,16 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     exchange_rate_usd_pen:
       generals.find((x) => x.correlative == "exchange_rate_usd_pen")
         ?.description ?? "3.75",
+    additional_shipping_costs: (() => {
+      const costs = generals.find((x) => x.correlative == "additional_shipping_costs");
+      if (!costs?.description) return [];
+      try {
+        const parsed = JSON.parse(costs.description);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    })(),
     location: {
       lat: Number(location.split(",").map((x) => x.trim())[0]),
       lng: Number(location.split(",").map((x) => x.trim())[1]),
@@ -1362,6 +1372,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: "canonical_url",
         name: "URL Canónica",
         description: formData.canonicalUrl || "",
+      },
+      {
+        correlative: "additional_shipping_costs",
+        name: "Costos Adicionales de Envío",
+        description: JSON.stringify(formData.additional_shipping_costs || []),
       },
     ];
 
@@ -3257,6 +3272,221 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       shippingFree: e.target.value
                     })}
                   />
+                </div>
+              </ConditionalField>
+              
+              <ConditionalField correlative="additional_shipping_costs">
+                <div className="mb-4 mt-4">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h5 className="mb-1">
+                        <i className="mdi mdi-cash-multiple me-2 text-warning"></i>
+                        Costos Adicionales de Envío
+                      </h5>
+                      <small className="text-muted">
+                        Configure costos adicionales según el método de envío y el monto de compra (Ej: embalaje, traslado a agencia, etc.)
+                      </small>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-primary"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          additional_shipping_costs: [
+                            ...formData.additional_shipping_costs,
+                            {
+                              enabled: true,
+                              delivery_method: 'agency',
+                              min_amount: 0,
+                              max_amount: 390,
+                              additional_cost: 15,
+                              description: 'Costo de embalaje y traslado a agencia'
+                            }
+                          ]
+                        });
+                      }}
+                    >
+                      <i className="mdi mdi-plus me-1"></i>
+                      Agregar Regla
+                    </button>
+                  </div>
+
+                  {formData.additional_shipping_costs.length === 0 ? (
+                    <div className="alert alert-info">
+                      <i className="mdi mdi-information me-2"></i>
+                      No hay reglas de costos adicionales configuradas. Haga clic en "Agregar Regla" para crear una.
+                    </div>
+                  ) : (
+                    <div className="row">
+                      {formData.additional_shipping_costs.map((cost, index) => (
+                        <div key={index} className="col-12 mb-3">
+                          <div className="card border">
+                            <div className="card-header bg-light d-flex justify-content-between align-items-center">
+                              <h6 className="mb-0">
+                                <i className="mdi mdi-numeric-{index + 1}-circle me-2"></i>
+                                Regla #{index + 1}
+                              </h6>
+                              <div className="d-flex align-items-center gap-2">
+                                <div className="form-check form-switch mb-0">
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id={`additional-cost-enabled-${index}`}
+                                    checked={cost.enabled}
+                                    onChange={(e) => {
+                                      const newCosts = [...formData.additional_shipping_costs];
+                                      newCosts[index].enabled = e.target.checked;
+                                      setFormData({
+                                        ...formData,
+                                        additional_shipping_costs: newCosts
+                                      });
+                                    }}
+                                  />
+                                  <label className="form-check-label" htmlFor={`additional-cost-enabled-${index}`}>
+                                    {cost.enabled ? 'Activo' : 'Inactivo'}
+                                  </label>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => {
+                                    if (confirm('¿Está seguro de eliminar esta regla?')) {
+                                      const newCosts = [...formData.additional_shipping_costs];
+                                      newCosts.splice(index, 1);
+                                      setFormData({
+                                        ...formData,
+                                        additional_shipping_costs: newCosts
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <i className="mdi mdi-delete"></i>
+                                </button>
+                              </div>
+                            </div>
+                            <div className="card-body">
+                              <div className="row">
+                                <div className="col-md-6 mb-3">
+                                  <label className="form-label">Método de Envío</label>
+                                  <select
+                                    className="form-select"
+                                    value={cost.delivery_method}
+                                    onChange={(e) => {
+                                      const newCosts = [...formData.additional_shipping_costs];
+                                      newCosts[index].delivery_method = e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        additional_shipping_costs: newCosts
+                                      });
+                                    }}
+                                  >
+                                    <option value="all">Todos los métodos</option>
+                                    <option value="agency">Agencia</option>
+                                    <option value="express">Express</option>
+                                    <option value="standard">Estándar</option>
+                                    <option value="store_pickup">Recojo en tienda</option>
+                                  </select>
+                                  <small className="text-muted">Seleccione a qué método de envío aplica</small>
+                                </div>
+                                
+                                <div className="col-md-6 mb-3">
+                                  <label className="form-label">Descripción</label>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Ej: Costo de embalaje y traslado"
+                                    value={cost.description || ''}
+                                    onChange={(e) => {
+                                      const newCosts = [...formData.additional_shipping_costs];
+                                      newCosts[index].description = e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        additional_shipping_costs: newCosts
+                                      });
+                                    }}
+                                  />
+                                  <small className="text-muted">Concepto del costo adicional</small>
+                                </div>
+
+                                <div className="col-md-4 mb-3">
+                                  <label className="form-label">Monto Mínimo de Compra</label>
+                                  <div className="input-group">
+                                    <span className="input-group-text">S/</span>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      className="form-control"
+                                      placeholder="0.00"
+                                      value={cost.min_amount || 0}
+                                      onChange={(e) => {
+                                        const newCosts = [...formData.additional_shipping_costs];
+                                        newCosts[index].min_amount = parseFloat(e.target.value) || 0;
+                                        setFormData({
+                                          ...formData,
+                                          additional_shipping_costs: newCosts
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                  <small className="text-muted">Desde qué monto aplica</small>
+                                </div>
+
+                                <div className="col-md-4 mb-3">
+                                  <label className="form-label">Monto Máximo de Compra</label>
+                                  <div className="input-group">
+                                    <span className="input-group-text">S/</span>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      className="form-control"
+                                      placeholder="390.00"
+                                      value={cost.max_amount || 0}
+                                      onChange={(e) => {
+                                        const newCosts = [...formData.additional_shipping_costs];
+                                        newCosts[index].max_amount = parseFloat(e.target.value) || 0;
+                                        setFormData({
+                                          ...formData,
+                                          additional_shipping_costs: newCosts
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                  <small className="text-muted">Hasta qué monto aplica (0 = sin límite)</small>
+                                </div>
+
+                                <div className="col-md-4 mb-3">
+                                  <label className="form-label">Costo Adicional</label>
+                                  <div className="input-group">
+                                    <span className="input-group-text">S/</span>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      className="form-control"
+                                      placeholder="15.00"
+                                      value={cost.additional_cost || 0}
+                                      onChange={(e) => {
+                                        const newCosts = [...formData.additional_shipping_costs];
+                                        newCosts[index].additional_cost = parseFloat(e.target.value) || 0;
+                                        setFormData({
+                                          ...formData,
+                                          additional_shipping_costs: newCosts
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                  <small className="text-muted">Monto a cobrar adicionalmente</small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </ConditionalField>
             </div>

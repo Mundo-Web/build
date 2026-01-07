@@ -164,6 +164,8 @@ class PaymentController extends Controller
                 'comment' => $request->comment,
                 'amount' => $request->amount,
                 'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'seguro_importacion_total' => $request->seguro_importacion_total ?? 0,
                 'derecho_arancelario_total' => $request->derecho_arancelario_total ?? 0,
                 'flete_total' => $request->flete_total ?? 0,
@@ -180,7 +182,8 @@ class PaymentController extends Controller
                 'invoiceType' => $request->invoiceType,
                 'documentType' => $request->documentType,
                 'document' => $request->document,
-                'businessName' => $request->businessName
+                'businessName' => $request->businessName,
+                'total_amount' => $request->amount
             ]);
 
             Log::info('PaymentController - Venta creada exitosamente', ['sale_id' => $sale->id]);
@@ -333,6 +336,8 @@ class PaymentController extends Controller
                 'sale' => $request->cart,
                 'code' => $request->orderNumber,
                 'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'conversion_scripts' => $conversionScripts,
                 'sale_id' => $sale->id
             ]);
@@ -413,6 +418,8 @@ class PaymentController extends Controller
                 'comment' => $request->comment,
                 'amount' => $request->amount,
                 'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'seguro_importacion_total' => $request->seguro_importacion_total ?? 0,
                 'derecho_arancelario_total' => $request->derecho_arancelario_total ?? 0,
                 'flete_total' => $request->flete_total ?? 0,
@@ -429,7 +436,8 @@ class PaymentController extends Controller
                 'invoiceType' => $request->invoiceType,
                 'documentType' => $request->documentType,
                 'document' => $request->document,
-                'businessName' => $request->businessName
+                'businessName' => $request->businessName,
+                'total_amount' => $request->amount
             ]);
 
             Log::info('PaymentController::chargeCompleted - Venta creada:', ['sale_id' => $sale->id]);
@@ -503,6 +511,8 @@ class PaymentController extends Controller
                 'sale' => $request->cart,
                 'code' => $request->orderNumber,
                 'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'conversion_scripts' => $conversionScripts,
                 'sale_id' => $sale->id
             ]);
@@ -633,6 +643,8 @@ class PaymentController extends Controller
                 'comment' => $request->comment,
                 'amount' => $request->amount,
                 'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'seguro_importacion_total' => $request->seguro_importacion_total ?? 0,
                 'derecho_arancelario_total' => $request->derecho_arancelario_total ?? 0,
                 'flete_total' => $request->flete_total ?? 0,
@@ -649,7 +661,8 @@ class PaymentController extends Controller
                 'invoiceType' => $request->invoiceType,
                 'documentType' => $request->documentType,
                 'document' => $request->document,
-                'businessName' => $request->businessName
+                'businessName' => $request->businessName,
+                'total_amount' => $request->amount
             ]);
 
             Log::info('PaymentController::charge3DS - Venta creada', ['sale_id' => $sale->id]);
@@ -719,6 +732,8 @@ class PaymentController extends Controller
                 'sale' => $request->cart,
                 'code' => $request->orderNumber,
                 'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'conversion_scripts' => $conversionScripts,
                 'sale_id' => $sale->id
             ]);

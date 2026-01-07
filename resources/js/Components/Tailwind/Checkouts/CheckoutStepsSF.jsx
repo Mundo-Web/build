@@ -28,6 +28,11 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
 
     // Estado para el costo de envío
     const [envio, setEnvio] = useState(0);
+    // Estado para costos adicionales de envío (embalaje, traslado, etc.)
+    const [additionalShippingCost, setAdditionalShippingCost] = useState(0);
+    const [additionalShippingDescription, setAdditionalShippingDescription] = useState('');
+    // Estado para el método de envío seleccionado
+    const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(null);
 
     // Obtener configuración de IGV desde General (correlativo: igv_checkout)
     const igvRate = parseFloat(General.igv_checkout || 0);
@@ -65,8 +70,71 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
         saleback_policy: "Políticas de devolución y cambio",
     };
 
+    // Función para calcular costos adicionales de envío basándose en la configuración
+    const calculateAdditionalShippingCost = (deliveryMethod, subtotalAmount) => {
+        // Obtener configuración de costos adicionales desde General
+        const additionalCostsConfig = General.additional_shipping_costs;
+        
+        console.log('💰 Calculando costo adicional:', {
+            deliveryMethod,
+            subtotalAmount,
+            config: additionalCostsConfig
+        });
+        
+        if (!additionalCostsConfig || !Array.isArray(additionalCostsConfig) || additionalCostsConfig.length === 0) {
+            console.log('⚠️ No hay configuración de costos adicionales');
+            return { cost: 0, description: '' };
+        }
+
+        // Buscar una regla que aplique
+        for (const rule of additionalCostsConfig) {
+            console.log('📋 Evaluando regla:', rule);
+            
+            // Verificar si la regla está habilitada
+            if (!rule.enabled) {
+                console.log('❌ Regla deshabilitada');
+                continue;
+            }
+
+            // Verificar si aplica al método de envío
+            const methodMatches = rule.delivery_method === 'all' || 
+                                rule.delivery_method === deliveryMethod;
+            
+            console.log('🎯 Método coincide:', methodMatches, `(config: ${rule.delivery_method}, actual: ${deliveryMethod})`);
+            
+            if (!methodMatches) continue;
+
+            // Verificar rango de montos
+            const minAmount = parseFloat(rule.min_amount) || 0;
+            const maxAmount = parseFloat(rule.max_amount) || 0;
+            
+            // Si max_amount es 0, no hay límite superior
+            const withinRange = subtotalAmount >= minAmount && 
+                              (maxAmount === 0 || subtotalAmount <= maxAmount);
+            
+            console.log('📊 Rango de monto:', {
+                subtotalAmount,
+                minAmount,
+                maxAmount,
+                withinRange
+            });
+            
+            if (!withinRange) continue;
+
+            // Si llegamos aquí, la regla aplica
+            console.log('✅ Regla aplicada:', rule);
+            return {
+                cost: parseFloat(rule.additional_cost) || 0,
+                description: rule.description || 'Costo adicional de envío'
+            };
+        }
+
+        console.log('❌ Ninguna regla aplicó');
+        return { cost: 0, description: '' };
+    };
+
     // Calcular total final con todos los descuentos
-    const totalWithoutDiscounts = subTotal + igv + parseFloat(envio);
+    const totalWithoutDiscounts = subTotal + igv + parseFloat(envio) + parseFloat(additionalShippingCost);
     const totalAllDiscounts = couponDiscount + automaticDiscountTotal + descuentofinal;
     const totalFinal = Math.max(0, totalWithoutDiscounts - totalAllDiscounts);
     
@@ -162,6 +230,8 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         automaticDiscountTotal={automaticDiscountTotal}
                         setAutomaticDiscountTotal={setAutomaticDiscountTotal}
                         totalWithoutDiscounts={totalWithoutDiscounts}
+                        additionalShippingCost={additionalShippingCost}
+                        additionalShippingDescription={additionalShippingDescription}
                     />
                 )}
 
@@ -196,6 +266,13 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         automaticDiscountTotal={automaticDiscountTotal}
                         setAutomaticDiscountTotal={setAutomaticDiscountTotal}
                         totalWithoutDiscounts={totalWithoutDiscounts}
+                        additionalShippingCost={additionalShippingCost}
+                        setAdditionalShippingCost={setAdditionalShippingCost}
+                        additionalShippingDescription={additionalShippingDescription}
+                        setAdditionalShippingDescription={setAdditionalShippingDescription}
+                        selectedDeliveryMethod={selectedDeliveryMethod}
+                        setSelectedDeliveryMethod={setSelectedDeliveryMethod}
+                        calculateAdditionalShippingCost={calculateAdditionalShippingCost}
                     />
                 )}
 
@@ -218,6 +295,8 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         automaticDiscounts={automaticDiscounts}
                         automaticDiscountTotal={automaticDiscountTotal}
                         totalWithoutDiscounts={totalWithoutDiscounts}
+                        additionalShippingCost={additionalShippingCost}
+                        additionalShippingDescription={additionalShippingDescription}
                     />
                 )}
             </div>

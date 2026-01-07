@@ -99,6 +99,8 @@ class OpenPayController extends Controller
                 'amount' => $requestAmount,  // Usar directamente el amount del frontend
                 'delivery' => $requestDelivery,
                 'delivery_type' => $request->delivery_type ?? 'domicilio',
+                'additional_shipping_cost' => floatval(number_format((float)($request->additional_shipping_cost ?? 0), 2, '.', '')),
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'payment_status' => 'pendiente',
                 'status_id' => $saleStatusPendiente ? $saleStatusPendiente->id : null,
                 'invoiceType' => $request->invoiceType,
@@ -248,6 +250,8 @@ class OpenPayController extends Controller
                         'sale' => $sale,
                         'code' => $orderNumber,
                         'delivery' => $request->delivery,
+                        'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                        'additional_shipping_description' => $request->additional_shipping_description ?? '',
                         'transaction_id' => $responseData['id'] ?? null,
                     ]);
                 }

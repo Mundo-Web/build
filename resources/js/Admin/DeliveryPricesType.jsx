@@ -76,7 +76,8 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         const hasExpressPrice = data?.express_price && parseFloat(data.express_price) > 0;
         const hasAgencyPrice = data?.agency_price && parseFloat(data.agency_price) > 0;
         
-        setEnableStandard(hasStandardPrice || !data?.id); // Por defecto activado si es nuevo
+        // Usar is_standard del backend si existe, de lo contrario inferir por precio
+        setEnableStandard(data?.is_standard ?? (hasStandardPrice || !data?.id)); // Por defecto activado si es nuevo
         setEnableExpress(hasExpressPrice);
         setEnableFree(data?.is_free ?? false);
         setEnableAgency(data?.is_agency ?? false);
@@ -153,6 +154,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
             name: `${selected.distrito}, ${selected.provincia} - ${selected.departamento}`.toTitleCase(),
             price: enableStandard ? (priceRef.current.value || 0) : 0,
             is_free: enableFree,
+            is_standard: enableStandard,
             is_express: enableExpress,
             is_agency: enableAgency,
             is_store_pickup: enableStorePickup,

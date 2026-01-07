@@ -88,11 +88,12 @@ export default function ConfirmationStepSF({
     const subTotal = parseFloat((totalPrice / 1.18).toFixed(2));
     const igv = parseFloat((totalPrice - subTotal).toFixed(2));
     const deliveryCost = parseFloat(order.delivery || 0);
+    const additionalShippingCost = parseFloat(order.additional_shipping_cost || 0);
     const couponDiscountAmount = parseFloat(order.coupon_discount || 0);
     const automaticDiscount = parseFloat(order.automatic_discount_total || 0);
     
     // Calcular igual que en ConfirmationStep.jsx
-    const totalBeforeDiscount = parseFloat(subTotal) + parseFloat(igv) + deliveryCost;
+    const totalBeforeDiscount = parseFloat(subTotal) + parseFloat(igv) + deliveryCost + additionalShippingCost;
     const totalFinal = totalBeforeDiscount - couponDiscountAmount - automaticDiscount;
     
    
@@ -206,6 +207,19 @@ export default function ConfirmationStepSF({
                                 <span className="customtext-neutral-dark">Envío</span>
                                 <span className="font-semibold">{CurrencySymbol()} {Number2Currency(order.delivery)}</span>
                             </div>
+                            {order.additional_shipping_cost > 0 && (
+                                <div className="flex justify-between text-danger">
+                                    <span className="text-sm text-start">
+                                        Costo adicional
+                                        {order.additional_shipping_description && (
+                                            <span className="block text-xs text-neutral-dark">
+                                                ({order.additional_shipping_description})
+                                            </span>
+                                        )}
+                                    </span>
+                                    <span className="font-semibold">{CurrencySymbol()} {Number2Currency(order.additional_shipping_cost)}</span>
+                                </div>
+                            )}
                             {order.coupon_id && (
                                 <div className="mb-2 mt-2 flex justify-between items-center border-b pb-2 text-sm font-bold">
                                     <span>
