@@ -207,11 +207,29 @@ class DeliveryPriceController extends BasicController
             if ($deliveryPrice->is_store_pickup) {
                 $storePickupType = TypeDelivery::where('slug', 'retiro-en-tienda')->first();
                 
-                // Si selected_stores está vacío o es null, enviar null (significa TODAS las tiendas)
-                // Si tiene valores, enviar el array de IDs (solo esas tiendas específicas)
+                // Si selected_stores está vacío o es null, cargar TODAS las tiendas disponibles
+                // Si tiene valores, usar solo esas tiendas específicas
                 $selectedStores = $deliveryPrice->selected_stores;
+                
                 if (empty($selectedStores)) {
-                    $selectedStores = null;
+                    // Sin selección = cargar TODAS las tiendas de tipo 'tienda' y 'tienda_principal' activas
+                    $allStores = \App\Models\Store::where('status', true)
+                        ->where('visible', true)
+                        ->whereIn('type', ['tienda', 'tienda_principal'])
+                        ->pluck('id')
+                        ->toArray();
+                    
+                    $selectedStores = $allStores;
+                    
+                    Log::info('Retiro en Tienda - Sin selección específica:', [
+                        'todas_las_tiendas' => count($allStores),
+                        'ids' => $allStores
+                    ]);
+                } else {
+                    Log::info('Retiro en Tienda - Con selección específica:', [
+                        'tiendas_seleccionadas' => count($selectedStores),
+                        'ids' => $selectedStores
+                    ]);
                 }
                 
                 $result['is_store_pickup'] = true;
@@ -220,7 +238,7 @@ class DeliveryPriceController extends BasicController
                     'description' => $storePickupType->description ?? 'Retiro en Tienda',
                     'type' => $storePickupType->name ?? 'Retiro en Tienda',
                     'characteristics' => $storePickupType->characteristics ?? ['Sin costo de envío', 'Horarios flexibles', 'Atención personalizada'],
-                    'selected_stores' => $selectedStores, // null = TODAS las tiendas, array con IDs = solo esas tiendas
+                    'selected_stores' => $selectedStores, // Array con IDs: vacío o null = TODAS, con valores = solo esas
                 ];
             } else {
                 $result['is_store_pickup'] = false;
