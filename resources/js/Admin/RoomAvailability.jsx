@@ -26,6 +26,25 @@ const RoomAvailability = ({ rooms = [] }) => {
   const [blockEndDate, setBlockEndDate] = useState(null);
   const [blockReason, setBlockReason] = useState('');
   const [blockAction, setBlockAction] = useState(true); // true = bloquear, false = desbloquear
+  
+  // Estados para modal de registro directo (walk-in)
+  const modalRegisterRef = useRef();
+  const [registerData, setRegisterData] = useState({
+    fullname: '',
+    email: '',
+    phone: '',
+    phone_prefix: '+51',
+    document_type: 'dni',
+    document: '',
+    guests: 1,
+    nights: 1,
+    check_in: new Date(),
+    check_out: new Date(new Date().setDate(new Date().getDate() + 1)),
+    special_requests: '',
+    payment_method: 'efectivo',
+  });
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   // Cargar resumen de habitaciones
   const loadSummary = async (date = selectedDate) => {
@@ -51,6 +70,13 @@ const RoomAvailability = ({ rooms = [] }) => {
   useEffect(() => {
     loadSummary();
   }, []);
+  
+  // Recalcular precio cuando cambian las noches
+  useEffect(() => {
+    if (selectedRoom && registerData.nights > 0) {
+      setTotalPrice(registerData.nights * Number(selectedRoom?.price || 0));
+    }
+  }, [registerData.nights]);
 
   // Cambiar fecha del resumen
   const handleDateChange = (date) => {
@@ -61,11 +87,11 @@ const RoomAvailability = ({ rooms = [] }) => {
   // Obtener color según estado
   const getStatusColor = (status) => {
     const colors = {
-      available: { bg: '#d4edda', text: '#155724', label: 'Disponible' },
-      occupied: { bg: '#f8d7da', text: '#721c24', label: 'Ocupada' },
-      reserved: { bg: '#fff3cd', text: '#856404', label: 'Reservada' },
-      blocked: { bg: '#e2e3e5', text: '#383d41', label: 'Bloqueada' },
-      full: { bg: '#cce5ff', text: '#004085', label: 'Sin disponibilidad' },
+      available: { bg: '#28a745', text: '#ffffff', label: 'Disponible', icon: 'mdi-check-circle' },
+      occupied: { bg: '#dc3545', text: '#ffffff', label: 'Ocupada', icon: 'mdi-bed' },
+      reserved: { bg: '#ffc107', text: '#000000', label: 'Reservada', icon: 'mdi-clock' },
+      maintenance: { bg: '#6c757d', text: '#ffffff', label: 'Mantenimiento', icon: 'mdi-tools' },
+      full: { bg: '#17a2b8', text: '#ffffff', label: 'Sin disponibilidad', icon: 'mdi-information' },
     };
     return colors[status] || colors.available;
   };
@@ -100,14 +126,39 @@ const RoomAvailability = ({ rooms = [] }) => {
     setCalendarLoading(false);
   };
 
-  // Abrir modal de bloqueo
-  const openBlockModal = (room) => {
+  // Abrir modal de mantenimiento
+  const openMaintenanceModal = (room) => {
     setSelectedRoom(room);
     setBlockStartDate(new Date());
     setBlockEndDate(new Date());
     setBlockReason('');
     setBlockAction(true);
     $(modalBlockRef.current).modal('show');
+  };
+  
+  // Abrir modal de registro directo
+  const openRegisterModal = (room) => {
+    setSelectedRoom(room);
+    const checkIn = new Date();
+    const checkOut = new Date();
+    checkOut.setDate(checkOut.getDate() + 1);
+    
+    setRegisterData({
+      fullname: '',
+      email: '',
+      phone: '',
+      phone_prefix: '+51',
+      document_type: 'dni',
+      document: '',
+      guests: 1,
+      nights: 1,
+      check_in: checkIn,
+      check_out: checkOut,
+      special_requests: '',
+      payment_method: 'efectivo',
+    });
+    setTotalPrice(Number(room?.price || 0));
+    $(modalRegisterRef.current).modal('show');
   };
 
   // Bloquear/Desbloquear fechas
@@ -146,6 +197,118 @@ const RoomAvailability = ({ rooms = [] }) => {
       }
     } catch (error) {
       Swal.fire('Error', 'Error al procesar la solicitud', 'error');
+    }
+  };
+  
+  // Registrar ocupación directa (walk-in)
+  const handleRegisterOccupation = async (e) => {
+    // Prevenir comportamiento por defecto
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
+    
+    console.log('🔍 Iniciando registro de ocupación...');
+    
+    // Validar datos requeridos
+    if (!registerData.fullname || !registerData.document) {
+      await Swal.fire('Error', 'Complete todos los campos obligatorios (Nombre y N° Documento)', 'error');
+      return false;
+    }
+    
+    // Validar email solo si se proporcionó
+    if (registerData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(registerData.email)) {
+        await Swal.fire('Error', 'Ingrese un email válido', 'error');
+        return false;
+      }
+    }
+    
+    setRegisterLoading(true);
+    
+    try {
+      console.log('📤 Enviando datos al servidor...');
+      
+      const response = await fetch('/api/admin/bookings/direct-register', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
+        },
+        body: JSON.stringify({
+          room_id: selectedRoom.id,
+          fullname: registerData.fullname,
+          email: registerData.email || null,
+          phone: registerData.phone,
+          phone_prefix: registerData.phone_prefix,
+          document_type: registerData.document_type,
+          document: registerData.document,
+          guests: registerData.guests,
+          nights: registerData.nights,
+          check_in: moment(registerData.check_in).format('YYYY-MM-DD'),
+          check_out: moment(registerData.check_out).format('YYYY-MM-DD'),
+          special_requests: registerData.special_requests,
+          payment_method: registerData.payment_method,
+          total_price: totalPrice,
+        })
+      });
+      
+      console.log('📥 Respuesta recibida:', response.status);
+      
+      const result = await response.json();
+      console.log('📊 Resultado parseado:', result);
+      
+      if (result.status === 200) {
+        console.log('✅ Registro exitoso!');
+        
+        await Swal.fire({
+          icon: 'success',
+          title: '¡Registro exitoso!',
+          html: `
+            <p>Habitación ocupada correctamente</p>
+            <p><strong>Código de reserva:</strong> ${result.data?.sale?.code || ''}</p>
+          `,
+          confirmButtonText: 'Aceptar'
+        });
+        
+        // Solo cerrar modal y recargar si fue exitoso
+        $(modalRegisterRef.current).modal('hide');
+        loadSummary();
+        return true;
+      } else {
+        console.log('❌ Error en el registro:', result);
+        
+        // Mostrar errores de validación si existen
+        let errorMessage = result.message || 'Error al registrar la ocupación';
+        
+        if (result.errors) {
+          const errorList = Object.values(result.errors).flat();
+          errorMessage = errorList.join('<br>');
+        }
+        
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error en el registro',
+          html: errorMessage,
+          confirmButtonText: 'Aceptar'
+        });
+        
+        return false;
+      }
+    } catch (error) {
+      console.error('💥 Error al registrar:', error);
+      
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'No se pudo conectar con el servidor. Verifique su conexión.',
+        confirmButtonText: 'Aceptar'
+      });
+      
+      return false;
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
@@ -511,25 +674,25 @@ const RoomAvailability = ({ rooms = [] }) => {
               const hasConfirmedBookings = day.bookings.some(b => b.status === 'confirmed');
               const hasPendingBookings = day.bookings.some(b => b.status === 'pending');
               
-              let bgColor = '#d4edda'; // Verde - disponible
-              let textColor = '#155724';
+              let bgColor = '#28a745'; // Verde brillante - disponible
+              let textColor = '#ffffff';
               let statusText = 'Disponible';
               
               if (isBlocked) {
-                bgColor = '#e2e3e5';
-                textColor = '#383d41';
-                statusText = 'Bloqueada';
+                bgColor = '#6c757d'; // Gris - mantenimiento
+                textColor = '#ffffff';
+                statusText = 'Mantenimiento';
               } else if (hasConfirmedBookings) {
-                bgColor = '#f8d7da'; // Rojo - ocupado (huésped activo, ya hizo check-in)
-                textColor = '#721c24';
+                bgColor = '#dc3545'; // Rojo - ocupado (huésped activo, ya hizo check-in)
+                textColor = '#ffffff';
                 statusText = 'Ocupada';
               } else if (hasPendingBookings) {
-                bgColor = '#fff3cd'; // Amarillo - reservado (pagó pero sin check-in)
-                textColor = '#856404';
+                bgColor = '#ffc107'; // Amarillo - reservado (pagó pero sin check-in)
+                textColor = '#000000';
                 statusText = 'Reservada';
               } else if (day.available_rooms === 0) {
-                bgColor = '#fff3cd'; // Amarillo - sin disponibilidad
-                textColor = '#856404';
+                bgColor = '#ffc107'; // Amarillo - sin disponibilidad
+                textColor = '#000000';
                 statusText = 'Sin disponibilidad';
               }
 
@@ -550,7 +713,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                   title={`${day.date}\n${statusText}${day.bookings.map(b => `\n👤 ${b.sale?.name || 'Cliente'}`).join('')}`}
                 >
                   {dayNumber}
-                  {isBlocked && <i className="mdi mdi-lock position-absolute" style={{ fontSize: '10px', top: '2px', right: '2px' }}></i>}
+                  {isBlocked && <i className="mdi mdi-tools position-absolute" style={{ fontSize: '10px', top: '2px', right: '2px' }}></i>}
                 </div>
               );
             })}
@@ -595,17 +758,17 @@ const RoomAvailability = ({ rooms = [] }) => {
 
               {/* Leyenda */}
               <div className="d-flex gap-3 mb-4 flex-wrap">
-                <span className="badge px-3 py-2" style={{ backgroundColor: '#d4edda', color: '#155724' }}>
+                <span className="badge px-3 py-2" style={{ backgroundColor: '#28a745', color: '#ffffff' }}>
                   <i className="mdi mdi-check-circle mr-1"></i> Disponible
                 </span>
-                <span className="badge px-3 py-2" style={{ backgroundColor: '#f8d7da', color: '#721c24' }}>
+                <span className="badge px-3 py-2" style={{ backgroundColor: '#dc3545', color: '#ffffff' }}>
                   <i className="mdi mdi-bed mr-1"></i> Ocupada
                 </span>
-                <span className="badge px-3 py-2" style={{ backgroundColor: '#fff3cd', color: '#856404' }}>
-                  <i className="mdi mdi-clock mr-1"></i> Reservada (pendiente)
+                <span className="badge px-3 py-2" style={{ backgroundColor: '#ffc107', color: '#000000' }}>
+                  <i className="mdi mdi-clock mr-1"></i> Reservada
                 </span>
-                <span className="badge px-3 py-2" style={{ backgroundColor: '#e2e3e5', color: '#383d41' }}>
-                  <i className="mdi mdi-lock mr-1"></i> Bloqueada
+                <span className="badge px-3 py-2" style={{ backgroundColor: '#6c757d', color: '#ffffff' }}>
+                  <i className="mdi mdi-tools mr-1"></i> Mantenimiento
                 </span>
               </div>
 
@@ -614,113 +777,103 @@ const RoomAvailability = ({ rooms = [] }) => {
                 {roomsSummary.map(room => {
                   const statusInfo = getStatusColor(room.status);
                   return (
-                    <div key={room.id} className="col-xl-4 col-lg-6 col-md-6 mb-4">
+                    <div key={room.id} className="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
                       <div 
-                        className="card h-100 border shadow-sm"
-                        style={{ borderLeft: `4px solid ${statusInfo.text}` }}
+                        className="room-card" 
+                        style={{ 
+                          '--status-color': statusInfo.bg,
+                          '--status-text': statusInfo.text
+                        }}
                       >
-                        <div className="card-body p-3">
-                          <div className="d-flex">
-                            {/* Imagen */}
-                            <div className="mr-3" style={{ width: '80px', height: '80px', flexShrink: 0 }}>
-                              <img
-                                src={`/storage/images/item/${room.image}`}
-                                alt={room.name}
-                                className="rounded"
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg'; }}
-                              />
+                        {/* Status Badge Superior */}
+                        <div className="room-status-badge" style={{ backgroundColor: statusInfo.bg }}>
+                          <i className={`mdi ${statusInfo.icon}`}></i>
+                          <span>{statusInfo.label}</span>
+                        </div>
+                        
+                        {/* Header del Card */}
+                        <div className="room-header">
+                          <div className="room-icon" style={{ backgroundColor: `${statusInfo.bg}20`, color: statusInfo.bg }}>
+                            <i className="mdi mdi-bed"></i>
+                          </div>
+                          <h5 className="room-name">{room.name}</h5>
+                        </div>
+                        
+                        {/* Body del Card */}
+                        <div className="room-body">
+                          <div className="room-info-grid">
+                            <div className="room-info-item">
+                              <div className="room-info-icon">
+                                <i className="mdi mdi-account-multiple"></i>
+                              </div>
+                              <div className="room-info-content">
+                                <small className="text-muted">Capacidad</small>
+                                <strong>{room.max_occupancy || room.capacity} personas</strong>
+                              </div>
                             </div>
                             
-                            {/* Info */}
-                            <div className="flex-grow-1 position-relative px-2">
-                              <h5 className="mb-1">{room.name}</h5>
-                              <span 
-                                className="badge mb-2"
-                                style={{ backgroundColor: statusInfo.bg, color: statusInfo.text }}
-                              >
-                                {statusInfo.label}
-                              </span>
-                              
-                              <div className="small text-muted">
-                                <i className="mdi mdi-bed mr-1"></i>
-                                {room.available_rooms ? 'Disponible' : 'Reservada'}
+                            <div className="room-info-item">
+                              <div className="room-info-icon">
+                                <i className="mdi mdi-cash-multiple"></i>
                               </div>
-                              <div className="small text-muted">
-                                <i className="mdi mdi-account-multiple mr-1"></i>
-                                Máx. {room.max_occupancy} personas
-                              </div>
-                              <div className="small text-success font-weight-bold">
-                                {CurrencySymbol()} {Number2Currency(room.price || 0)} /noche
+                              <div className="room-info-content">
+                                <small className="text-muted">Precio/noche</small>
+                                <strong className="text-success">S/ {Number(room.price).toFixed(2)}</strong>
                               </div>
                             </div>
                           </div>
-
-                          {/* Huésped activo */}
+                          
                           {room.active_booking && (
-                            <div className="mt-3 p-2 rounded" style={{ backgroundColor: '#f8f9fa' }}>
-                              <div className="small font-weight-bold text-primary mb-1">
-                                <i className="mdi mdi-account mr-1"></i>
-                                Huésped actual:
+                            <div className="room-booking-info">
+                              <div className="d-flex align-items-center mb-2">
+                                <i className="mdi mdi-account-circle mr-2 text-primary"></i>
+                                <strong>Huésped Actual</strong>
                               </div>
-                              <div className="small">{room.active_booking.guest_name}</div>
-                              <div className="small text-muted">
-                                <i className="mdi mdi-calendar-range mr-1"></i>
-                                {new Date(room.active_booking.check_in).toLocaleDateString('es-PE')} - {new Date(room.active_booking.check_out).toLocaleDateString('es-PE')}
+                              <div className="d-flex justify-content-between mb-1">
+                                <span className="text-muted">Nombre:</span>
+                                <span>{room.active_booking.guest_name || 'N/A'}</span>
                               </div>
-                              <div className="small text-muted">
-                                <i className="mdi mdi-weather-night mr-1"></i>
-                                {room.active_booking.nights} noches · {room.active_booking.guests} huéspedes
-                              </div>
-                              <div className="small">
-                                <span className={`badge badge-${room.active_booking.status === 'confirmed' ? 'success' : 'warning'}`}>
-                                  {room.active_booking.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}
-                                </span>
+                              <div className="d-flex justify-content-between">
+                                <span className="text-muted">Check-out:</span>
+                                <span className="font-weight-bold">{moment(room.active_booking.check_out).format('DD/MM/YYYY')}</span>
                               </div>
                             </div>
                           )}
-
-                          {/* Reservas próximas */}
-                          {!room.active_booking && room.upcoming_bookings > 0 && (
-                            <div className="mt-3 p-2 rounded" style={{ backgroundColor: '#fff3cd' }}>
-                              <div className="small font-weight-bold text-warning mb-1">
-                                <i className="mdi mdi-calendar-clock mr-1"></i>
-                                Próximas reservas:
-                              </div>
-                              <div className="small">
-                                {room.upcoming_bookings} reserva{room.upcoming_bookings > 1 ? 's' : ''} en los próximos 7 días
-                              </div>
+                          
+                          {/* Botones de acción */}
+                          <div className="room-actions">
+                            {room.status === 'available' && (
                               <button 
-                                className="btn btn-xs btn-outline-warning mt-1"
-                                onClick={() => openCalendarModal(room)}
+                                className="room-btn room-btn-primary"
+                                onClick={() => openRegisterModal(room)}
                               >
-                                Ver calendario
+                                <i className="mdi mdi-account-plus mr-1"></i>
+                                Ocupar Ahora
                               </button>
-                            </div>
-                          )}
-
-                          {/* Botones */}
-                          <div className="mt-3 d-flex gap-2 flex-wrap">
-                            <button
-                              className="btn btn-sm btn-outline-primary"
+                            )}
+                            
+                            <button 
+                              className="room-btn room-btn-secondary"
                               onClick={() => openCalendarModal(room)}
-                              title="Ver calendario"
                             >
-                              <i className="mdi mdi-calendar"></i>
+                              <i className="mdi mdi-calendar mr-1"></i>
+                              Ver Calendario
                             </button>
-                            <button
-                              className="btn btn-sm btn-outline-secondary"
-                              onClick={() => openBlockModal(room)}
-                              title="Bloquear fechas"
+                            
+                            <button 
+                              className="room-btn room-btn-secondary"
+                              onClick={() => openMaintenanceModal(room)}
                             >
-                              <i className="mdi mdi-lock"></i>
+                              <i className="mdi mdi-tools mr-1"></i>
+                              Mantenimiento
                             </button>
-                            <button
-                              className="btn btn-sm btn-outline-success"
+                            
+                            <button 
+                              className="room-btn room-btn-outline"
                               onClick={() => handleGenerateAvailability(room.id)}
-                              title="Generar disponibilidad"
                             >
-                              <i className="mdi mdi-plus-circle"></i>
+                              <i className="mdi mdi-calendar-plus mr-1"></i>
+                              Generar Disponibilidad
                             </button>
                           </div>
                         </div>
@@ -729,6 +882,183 @@ const RoomAvailability = ({ rooms = [] }) => {
                   );
                 })}
               </div>
+
+              <style>{`
+                .room-card {
+                  background: white;
+                  border-radius: 16px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                  transition: all 0.3s ease;
+                  height: 100%;
+                  position: relative;
+                  overflow: hidden;
+                  border: 1px solid #f0f0f0;
+                }
+                
+                .room-card:hover {
+                  transform: translateY(-4px);
+                  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                }
+                
+                .room-status-badge {
+                  position: absolute;
+                  top: 12px;
+                  right: 12px;
+                  padding: 6px 12px;
+                  border-radius: 20px;
+                  font-size: 11px;
+                  font-weight: 600;
+                  color: white;
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                  z-index: 1;
+                }
+                
+                .room-status-badge i {
+                  font-size: 14px;
+                }
+                
+                .room-header {
+                  padding: 24px 20px 16px;
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  border-bottom: 1px solid #f0f0f0;
+                }
+                
+                .room-icon {
+                  width: 48px;
+                  height: 48px;
+                  border-radius: 12px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 24px;
+                }
+                
+                .room-name {
+                  margin: 0;
+                  font-size: 1.25rem;
+                  font-weight: 700;
+                  color: #2d3748;
+                }
+                
+                .room-body {
+                  padding: 20px;
+                }
+                
+                .room-info-grid {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 16px;
+                  margin-bottom: 20px;
+                }
+                
+                .room-info-item {
+                  display: flex;
+                  gap: 10px;
+                  align-items: flex-start;
+                }
+                
+                .room-info-icon {
+                  width: 36px;
+                  height: 36px;
+                  background: #f7fafc;
+                  border-radius: 8px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: #4a5568;
+                  font-size: 18px;
+                }
+                
+                .room-info-content {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 2px;
+                }
+                
+                .room-info-content small {
+                  font-size: 11px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+                
+                .room-info-content strong {
+                  font-size: 14px;
+                  color: #2d3748;
+                }
+                
+                .room-booking-info {
+                  background: #f7fafc;
+                  border-radius: 12px;
+                  padding: 14px;
+                  margin-bottom: 16px;
+                  border: 1px solid #e2e8f0;
+                }
+                
+                .room-booking-info > div:first-child {
+                  border-bottom: 1px solid #e2e8f0;
+                  padding-bottom: 8px;
+                  margin-bottom: 8px;
+                }
+                
+                .room-actions {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 8px;
+                }
+                
+                .room-btn {
+                  width: 100%;
+                  padding: 10px 16px;
+                  border: none;
+                  border-radius: 8px;
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: all 0.2s ease;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 6px;
+                }
+                
+                .room-btn-primary {
+                  background: #28a745;
+                  color: white;
+                }
+                
+                .room-btn-primary:hover {
+                  background: #218838;
+                  transform: translateY(-1px);
+                  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+                }
+                
+                .room-btn-secondary {
+                  background: #f7fafc;
+                  color: #4a5568;
+                  border: 1px solid #e2e8f0;
+                }
+                
+                .room-btn-secondary:hover {
+                  background: #edf2f7;
+                  border-color: #cbd5e0;
+                }
+                
+                .room-btn-outline {
+                  background: white;
+                  color: #4a5568;
+                  border: 1px solid #cbd5e0;
+                }
+                
+                .room-btn-outline:hover {
+                  background: #f7fafc;
+                  border-color: #a0aec0;
+                }
+              `}</style>
 
               {roomsSummary.length === 0 && !loading && (
                 <div className="text-center text-muted py-5">
@@ -759,17 +1089,17 @@ const RoomAvailability = ({ rooms = [] }) => {
           <div>
             {/* Leyenda del calendario */}
             <div className="d-flex gap-2 mb-3 flex-wrap justify-content-center">
-              <span className="badge px-2 py-1" style={{ backgroundColor: '#d4edda', color: '#155724', fontSize: '11px' }}>
+              <span className="badge px-2 py-1" style={{ backgroundColor: '#28a745', color: '#ffffff', fontSize: '11px' }}>
                 <i className="mdi mdi-check-circle mr-1"></i> Disponible
               </span>
-              <span className="badge px-2 py-1" style={{ backgroundColor: '#f8d7da', color: '#721c24', fontSize: '11px' }}>
+              <span className="badge px-2 py-1" style={{ backgroundColor: '#dc3545', color: '#ffffff', fontSize: '11px' }}>
                 <i className="mdi mdi-bed mr-1"></i> Ocupado
               </span>
-              <span className="badge px-2 py-1" style={{ backgroundColor: '#fff3cd', color: '#856404', fontSize: '11px' }}>
+              <span className="badge px-2 py-1" style={{ backgroundColor: '#ffc107', color: '#000000', fontSize: '11px' }}>
                 <i className="mdi mdi-clock mr-1"></i> Reservado
               </span>
-              <span className="badge px-2 py-1" style={{ backgroundColor: '#e2e3e5', color: '#383d41', fontSize: '11px' }}>
-                <i className="mdi mdi-lock mr-1"></i> Bloqueado
+              <span className="badge px-2 py-1" style={{ backgroundColor: '#6c757d', color: '#ffffff', fontSize: '11px' }}>
+                <i className="mdi mdi-tools mr-1"></i> Mantenimiento
               </span>
             </div>
 
@@ -982,10 +1312,10 @@ const RoomAvailability = ({ rooms = [] }) => {
         )}
       </Modal>
 
-      {/* Modal Bloquear Fechas */}
+      {/* Modal de Mantenimiento */}
       <Modal
         modalRef={modalBlockRef}
-        title={`Bloquear/Desbloquear - ${selectedRoom?.name || ''}`}
+        title={`Mantenimiento - ${selectedRoom?.name || ''}`}
         size="md"
         buttonSubmit="Aplicar"
         onSubmit={handleBlockDates}
@@ -1002,8 +1332,8 @@ const RoomAvailability = ({ rooms = [] }) => {
                 onChange={() => setBlockAction(true)}
               />
               <label className="form-check-label" htmlFor="blockAction">
-                <i className="mdi mdi-lock mr-1 text-danger"></i>
-                Bloquear fechas
+                <i className="mdi mdi-tools mr-1 text-warning"></i>
+                Poner en mantenimiento
               </label>
             </div>
             <div className="form-check">
@@ -1015,8 +1345,8 @@ const RoomAvailability = ({ rooms = [] }) => {
                 onChange={() => setBlockAction(false)}
               />
               <label className="form-check-label" htmlFor="unblockAction">
-                <i className="mdi mdi-lock-open mr-1 text-success"></i>
-                Desbloquear fechas
+                <i className="mdi mdi-check mr-1 text-success"></i>
+                Finalizar mantenimiento
               </label>
             </div>
           </div>
@@ -1068,11 +1398,363 @@ const RoomAvailability = ({ rooms = [] }) => {
           />
         </div>
 
-        <div className="alert alert-info">
+        <div className="alert alert-warning">
           <i className="mdi mdi-information mr-1"></i>
           {blockAction 
-            ? 'Las fechas bloqueadas no estarán disponibles para reservas.' 
-            : 'Las fechas desbloqueadas volverán a estar disponibles para reservas.'}
+            ? 'Las fechas en mantenimiento no estarán disponibles para reservas.' 
+            : 'Al finalizar el mantenimiento, las fechas volverán a estar disponibles.'}
+        </div>
+      </Modal>
+      
+      {/* Modal de Registro Directo (Walk-in) */}
+      <Modal
+        modalRef={modalRegisterRef}
+        title={`Registrar Ocupación - ${selectedRoom?.name || ''}`}
+        size="xl"
+        buttonSubmit={registerLoading ? 'Procesando...' : 'Registrar Ocupación'}
+        onSubmit={handleRegisterOccupation}
+      >
+        {/* Header Info */}
+        <div className="bg-light border-bottom p-3 mb-4" style={{ margin: '-1rem -1rem 1.5rem -1rem' }}>
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center">
+              <div className="bg-white rounded-circle p-2 mr-3" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <i className="mdi mdi-account-plus mdi-24px text-primary"></i>
+              </div>
+              <div>
+                <h5 className="mb-1">Registro Presencial de Huésped</h5>
+                <small className="text-muted">Complete la información para ocupar la habitación inmediatamente</small>
+              </div>
+            </div>
+            <span className="badge badge-primary badge-lg px-3 py-2">
+              <i className="mdi mdi-bed mr-1"></i>
+              {selectedRoom?.name}
+            </span>
+          </div>
+        </div>
+
+        {/* Sección 1: Información del Huésped */}
+        <div className="mb-5">
+          <h6 className="text-uppercase text-muted mb-4" style={{ fontSize: '12px', fontWeight: '600', letterSpacing: '1px' }}>
+            <i className="mdi mdi-account-circle mr-2"></i>
+            1. Información del Huésped
+          </h6>
+          
+          <div className="row">
+            <div className="col-md-8">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">Nombre Completo <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={registerData.fullname}
+                  onChange={(e) => setRegisterData({...registerData, fullname: e.target.value})}
+                  placeholder="Ej: Juan Pérez García"
+                />
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">Email <small className="text-muted">(opcional)</small></label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={registerData.email}
+                  onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
+                  placeholder="ejemplo@correo.com"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-md-4">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">Teléfono <small className="text-muted">(opcional)</small></label>
+                <div className="input-group">
+                  <select 
+                    className="form-control" 
+                    style={{ maxWidth: '120px' }}
+                    value={registerData.phone_prefix}
+                    onChange={(e) => setRegisterData({...registerData, phone_prefix: e.target.value})}
+                  >
+                    <option value="+51">🇵🇪 +51</option>
+                   {/* <option value="+1">🇺🇸 +1</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+56">🇨🇱 +56</option>
+                    <option value="+57">🇨🇴 +57</option>*/}
+                  </select>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    value={registerData.phone}
+                    onChange={(e) => {
+                      // Solo permitir números
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setRegisterData({...registerData, phone: value});
+                    }}
+                    pattern="[0-9]*"
+                    inputMode="numeric"
+                    placeholder="987654321"
+                    maxLength="15"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">Tipo de Documento <span className="text-danger">*</span></label>
+                <select
+                  className="form-control"
+                  value={registerData.document_type}
+                  onChange={(e) => setRegisterData({...registerData, document_type: e.target.value})}
+                >
+                  <option value="dni">DNI</option>
+                  <option value="ce">Carnet de Extranjería</option>
+                  <option value="pasaporte">Pasaporte</option>
+                  <option value="ruc">RUC</option>
+                </select>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">N° de Documento <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={registerData.document}
+                  onChange={(e) => {
+                    // Solo permitir números
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    setRegisterData({...registerData, document: value});
+                  }}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                  placeholder="12345678"
+                  maxLength="20"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="my-4" />
+
+        {/* Sección 2: Detalles de la Estadía */}
+        <div className="mb-5">
+          <h6 className="text-uppercase text-muted mb-4" style={{ fontSize: '12px', fontWeight: '600', letterSpacing: '1px' }}>
+            <i className="mdi mdi-calendar-check mr-2"></i>
+            2. Detalles de la Estadía
+          </h6>
+          
+          <div className="row">
+            <div className="col-md-3">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">
+                  <i className="mdi mdi-calendar-import text-success mr-1"></i>
+                  Fecha Check-In
+                </label>
+                <DatePicker
+                  selected={registerData.check_in}
+                  onChange={(date) => {
+                    setRegisterData({...registerData, check_in: date});
+                    if (registerData.check_out) {
+                      const nights = Math.ceil((registerData.check_out - date) / (1000 * 60 * 60 * 24));
+                      setRegisterData(prev => ({...prev, nights: nights > 0 ? nights : 1}));
+                    }
+                  }}
+                  minDate={new Date()}
+                  locale={es}
+                  dateFormat="dd/MM/yyyy"
+                  className="form-control"
+                />
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">
+                  <i className="mdi mdi-calendar-export text-danger mr-1"></i>
+                  Fecha Check-Out
+                </label>
+                <DatePicker
+                  selected={registerData.check_out}
+                  onChange={(date) => {
+                    setRegisterData({...registerData, check_out: date});
+                    if (registerData.check_in) {
+                      const nights = Math.ceil((date - registerData.check_in) / (1000 * 60 * 60 * 24));
+                      setRegisterData(prev => ({...prev, nights: nights > 0 ? nights : 1}));
+                    }
+                  }}
+                  minDate={registerData.check_in || new Date()}
+                  locale={es}
+                  dateFormat="dd/MM/yyyy"
+                  className="form-control"
+                />
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">
+                  <i className="mdi mdi-weather-night mr-1"></i>
+                  N° de Noches
+                </label>
+                <input
+                  type="number"
+                  className="form-control text-center"
+                  min="1"
+                  value={registerData.nights}
+                  onChange={(e) => {
+                    const nights = parseInt(e.target.value) || 1;
+                    const newCheckOut = new Date(registerData.check_in);
+                    newCheckOut.setDate(newCheckOut.getDate() + nights);
+                    setRegisterData({...registerData, nights, check_out: newCheckOut});
+                  }}
+                  style={{ fontWeight: 'bold' }}
+                />
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">
+                  <i className="mdi mdi-account-multiple mr-1"></i>
+                  N° de Huéspedes
+                </label>
+                <input
+                  type="number"
+                  className="form-control text-center"
+                  min="1"
+                  max={selectedRoom?.capacity || 10}
+                  value={registerData.guests}
+                  onChange={(e) => setRegisterData({...registerData, guests: parseInt(e.target.value) || 1})}
+                  style={{ fontWeight: 'bold' }}
+                />
+                <small className="text-muted d-block mt-2">Máx: {selectedRoom?.capacity || 0}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="my-4" />
+
+        {/* Sección 3: Pago y Observaciones */}
+        <div className="mb-5">
+          <h6 className="text-uppercase text-muted mb-4" style={{ fontSize: '12px', fontWeight: '600', letterSpacing: '1px' }}>
+            <i className="mdi mdi-cash-multiple mr-2"></i>
+            3. Pago y Observaciones
+          </h6>
+          
+          <div className="row">
+            <div className="col-md-4">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">
+                  <i className="mdi mdi-credit-card mr-1"></i>
+                  Método de Pago
+                </label>
+                <select
+                  className="form-control"
+                  value={registerData.payment_method}
+                  onChange={(e) => setRegisterData({...registerData, payment_method: e.target.value})}
+                >
+                  <option value="efectivo">Efectivo</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="yape">Yape</option>
+                  <option value="plin">Plin</option>
+                </select>
+              </div>
+            </div>
+            <div className="col-md-8">
+              <div className="form-group mb-4">
+                <label className="font-weight-bold mb-2">
+                  <i className="mdi mdi-message-text mr-1"></i>
+                  Solicitudes Especiales
+                </label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  value={registerData.special_requests}
+                  onChange={(e) => setRegisterData({...registerData, special_requests: e.target.value})}
+                  placeholder="Ej: Cama extra, cuna para bebé, late check-out, alergias alimentarias..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="my-4" />
+
+        {/* Sección 4: Total a Pagar */}
+        <div className="bg-light border rounded p-4">
+          <div className="row align-items-center">
+            <div className="col-md-5">
+              <h6 className="text-uppercase text-muted mb-3" style={{ fontSize: '12px', fontWeight: '600', letterSpacing: '1px' }}>
+                <i className="mdi mdi-calculator mr-2"></i>
+                Total a Pagar
+              </h6>
+              <div className="input-group" style={{ height: '60px' }}>
+                <div className="input-group-prepend">
+                  <span className="input-group-text bg-success text-white font-weight-bold" style={{ fontSize: '1.5rem', width: '60px', justifyContent: 'center' }}>S/</span>
+                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  step="0.01"
+                  value={totalPrice}
+                  onChange={(e) => setTotalPrice(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                  style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#28a745' }}
+                />
+              </div>
+              <small className="text-muted d-block mt-2">
+                <i className="mdi mdi-pencil mr-1"></i>
+                Editable según negociación con el cliente
+              </small>
+            </div>
+            <div className="col-md-1 text-center d-none d-md-block">
+              <i className="mdi mdi-arrow-right mdi-36px text-muted"></i>
+            </div>
+            <div className="col-md-6">
+              <div className="card mb-0 shadow-sm">
+                <div className="card-header bg-white py-3">
+                  <h6 className="mb-0 font-weight-bold text-dark">Desglose del Precio</h6>
+                </div>
+                <div className="card-body">
+                  <table className="table table-borderless mb-0">
+                    <tbody>
+                      <tr>
+                        <td className="py-2">
+                          <span className="text-muted">Precio por noche:</span>
+                        </td>
+                        <td className="text-right py-2">
+                          <strong className="text-dark">S/ {Number(selectedRoom?.price || 0).toFixed(2)}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-2">
+                          <span className="text-muted">Número de noches:</span>
+                        </td>
+                        <td className="text-right py-2">
+                          <strong className="text-dark">× {registerData.nights}</strong>
+                        </td>
+                      </tr>
+                      <tr className="border-top">
+                        <td className="py-3">
+                          <strong className="text-dark">Precio sugerido:</strong>
+                        </td>
+                        <td className="text-right py-3">
+                          <h5 className="mb-0 text-success font-weight-bold">
+                            S/ {(registerData.nights * Number(selectedRoom?.price || 0)).toFixed(2)}
+                          </h5>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </Modal>
     </>

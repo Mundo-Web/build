@@ -609,6 +609,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookings/{id}/no-show', [AdminBookingController::class, 'noShow']);
     Route::post('/bookings/{id}/update-sale-status', [AdminBookingController::class, 'updateSaleStatus']);
     Route::get('/bookings/{id}/sale-status-history', [AdminBookingController::class, 'getSaleStatusHistory']);
+    Route::post('/bookings/direct-register', [AdminBookingController::class, 'directRegister']); // Registro directo (walk-in)
     Route::delete('/bookings/{id}', [AdminBookingController::class, 'delete']);
 
     // Room Availability (Disponibilidad de habitaciones)

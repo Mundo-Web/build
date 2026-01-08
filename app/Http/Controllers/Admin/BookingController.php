@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\Auth;
+use SoDe\Extend\Trace;
 
 class BookingController extends BasicController
 {
@@ -23,6 +24,9 @@ class BookingController extends BasicController
     // Evitar filtro automático por status = true (bookings usa status como string: pending, confirmed, etc.)
     public $prefix4filter = null;
     public $skipStatusFilter = true;
+    
+    // Deshabilitar soft delete porque la tabla usa 'status' como ENUM de estados de reserva
+    public $softDeletion = false;
 
     /**
      * Propiedades para la vista React
@@ -244,6 +248,103 @@ class BookingController extends BasicController
             return response([
                 'status' => false,
                 'message' => 'Error al obtener el historial: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Registro directo de ocupación (walk-in)
+     * Para huéspedes que llegan sin reserva previa
+     */
+    public function directRegister(Request $request): HttpResponse|ResponseFactory
+    {
+        try {
+            // Validar datos requeridos
+            $validated = $request->validate([
+                'room_id' => 'required|exists:items,id',
+                'fullname' => 'required|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'phone' => 'nullable|string|max:20',
+                'phone_prefix' => 'nullable|string|max:10',
+                'document_type' => 'required|string|in:dni,ce,pasaporte,ruc',
+                'document' => 'required|string|max:20',
+                'guests' => 'required|integer|min:1',
+                'nights' => 'required|integer|min:1',
+                'check_in' => 'required|date',
+                'check_out' => 'required|date|after:check_in',
+                'special_requests' => 'nullable|string',
+                'payment_method' => 'required|string',
+                'total_price' => 'required|numeric|min:0',
+            ]);
+
+            // Crear el Sale (pedido)
+            $statusPending = SaleStatus::where('name', 'Pendiente')->first();
+            if (!$statusPending) {
+                $statusPending = SaleStatus::first(); // Fallback al primer estado disponible
+            }
+
+            $sale = new Sale();
+            $sale->code = Trace::getId(); // Generar código único
+            $sale->fullname = $validated['fullname'];
+            $sale->name = $validated['fullname'];
+            $sale->lastname = ''; // Campo requerido
+            $sale->email = $validated['email'] ?? '';
+            $sale->phone = $validated['phone'];
+            $sale->phone_prefix = $validated['phone_prefix'] ?? '+51';
+            $sale->documentType = $validated['document_type']; // camelCase
+            $sale->document = $validated['document'];
+            $sale->payment_method = $validated['payment_method'];
+            $sale->status_id = $statusPending->id;
+            $sale->amount = $validated['total_price']; // Campo correcto es 'amount'
+            $sale->delivery = 0; // Campo requerido
+            $sale->country = 'Perú'; // Campo requerido
+            $sale->department = 'Lima'; // Campo requerido
+            $sale->save();
+
+            // Crear el Booking
+            $booking = new Booking();
+            $booking->sale_id = $sale->id;
+            $booking->item_id = $validated['room_id'];
+            $booking->check_in = $validated['check_in'];
+            $booking->check_out = $validated['check_out'];
+            $booking->guests = $validated['guests'];
+            $booking->nights = $validated['nights'];
+            $booking->price_per_night = $validated['total_price'] / $validated['nights'];
+            $booking->total_price = $validated['total_price'];
+            $booking->special_requests = $validated['special_requests'];
+            $booking->status = 'confirmed'; // Ocupación directa = confirmada automáticamente
+            $booking->confirmed_at = now();
+            $booking->save();
+
+            // Registrar en historial de estados
+            $trace = new SaleStatusTrace();
+            $trace->sale_id = $sale->id;
+            $trace->status_id = $statusPending->id;
+            $trace->user_id = auth()->id(); // Usuario actual (si está autenticado)
+            $trace->save();
+
+            // Recargar con relaciones
+            $booking = $booking->fresh(['item', 'sale', 'sale.status']);
+
+            return response([
+                'status' => 200,
+                'success' => true,
+                'message' => 'Ocupación registrada exitosamente',
+                'data' => $booking
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Datos inválidos',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error al registrar la ocupación: ' . $e->getMessage()
             ], 500);
         }
     }
