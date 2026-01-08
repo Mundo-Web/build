@@ -207,13 +207,20 @@ class DeliveryPriceController extends BasicController
             if ($deliveryPrice->is_store_pickup) {
                 $storePickupType = TypeDelivery::where('slug', 'retiro-en-tienda')->first();
                 
+                // Si selected_stores está vacío o es null, enviar null (significa TODAS las tiendas)
+                // Si tiene valores, enviar el array de IDs (solo esas tiendas específicas)
+                $selectedStores = $deliveryPrice->selected_stores;
+                if (empty($selectedStores)) {
+                    $selectedStores = null;
+                }
+                
                 $result['is_store_pickup'] = true;
                 $result['store_pickup'] = [
                     'price' => 0,
                     'description' => $storePickupType->description ?? 'Retiro en Tienda',
                     'type' => $storePickupType->name ?? 'Retiro en Tienda',
                     'characteristics' => $storePickupType->characteristics ?? ['Sin costo de envío', 'Horarios flexibles', 'Atención personalizada'],
-                    'selected_stores' => $deliveryPrice->selected_stores, // Array de IDs de tiendas específicas, o null/[] para todas
+                    'selected_stores' => $selectedStores, // null = TODAS las tiendas, array con IDs = solo esas tiendas
                 ];
             } else {
                 $result['is_store_pickup'] = false;
