@@ -867,6 +867,31 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                             );
                         },
                     },
+                    Fillable.has('items', 'banner') && {
+                        dataField: "banner",
+                        caption: "Imagen Banner",
+                        width: "90px",
+                        allowFiltering: false,
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <img
+                                    src={`/storage/images/item/${data.banner}`}
+                                    style={{
+                                        width: "80px",
+                                        height: "48px",
+                                        objectFit: "contain",
+                                        objectPosition: "center",
+                                        borderRadius: "4px",
+                                    }}
+                                    onError={(e) =>
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
+                                    }
+                                />
+                            );
+                        },
+                    },
                     Fillable.has('items', 'is_new') && {
                         dataField: "is_new",
                         caption: "Nuevo",
