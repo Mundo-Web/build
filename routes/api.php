@@ -618,6 +618,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/room-availability/{roomId}/block', [AdminRoomAvailabilityController::class, 'blockDates']);
     Route::post('/room-availability/{roomId}/update', [AdminRoomAvailabilityController::class, 'updateAvailability']);
     Route::post('/room-availability/{roomId}/generate', [AdminRoomAvailabilityController::class, 'generateAvailability']);
+    Route::post('/room-availability/{roomId}/complete-cleaning', [AdminRoomAvailabilityController::class, 'completeCleaning']);
 
 
     //JOB APLICATIONS

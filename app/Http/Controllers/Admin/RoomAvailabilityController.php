@@ -142,6 +142,7 @@ class RoomAvailabilityController extends BasicController
                         'available_rooms' => ($availability && $availability->is_blocked) ? 0 : ($activeBooking ? 0 : 1),
                         'booked_rooms' => $activeBooking ? 1 : 0,
                         'is_blocked' => $availability->is_blocked ?? false,
+                        'block_type' => $availability->block_type ?? null,
                         'status' => $this->getRoomStatus($room, $activeBooking, $availability),
                         'upcoming_bookings' => $upcomingBookings,
                         'active_booking' => $activeBooking ? [
@@ -186,7 +187,11 @@ class RoomAvailabilityController extends BasicController
     private function getRoomStatus($room, $activeBooking, $availability)
     {
         if ($availability && $availability->is_blocked) {
-            return 'blocked';
+            // Diferenciar entre mantenimiento y limpieza
+            if ($availability->block_type === 'cleaning') {
+                return 'cleaning';
+            }
+            return 'maintenance';
         }
         
         if ($activeBooking) {
@@ -394,6 +399,46 @@ class RoomAvailabilityController extends BasicController
                 'manually_blocked' => $manuallyBlocked, // Solo fechas bloqueadas manualmente
                 'room_id' => $room->id,
             ];
+
+        } catch (\Throwable $th) {
+            $response->status = 400;
+            $response->message = $th->getMessage();
+        }
+
+        return response($response->toArray(), $response->status);
+    }
+
+    /**
+     * Completar limpieza de habitación
+     */
+    public function completeCleaning(Request $request, string $roomId)
+    {
+        $response = new Response();
+
+        try {
+            $validated = $request->validate([
+                'date' => 'nullable|date',
+            ]);
+
+            $room = Item::rooms()->findOrFail($roomId);
+            $date = Carbon::parse($validated['date'] ?? now())->format('Y-m-d');
+
+            // Desbloquear la habitación
+            $availability = RoomAvailability::where('item_id', $room->id)
+                ->where('date', $date)
+                ->where('block_type', 'cleaning')
+                ->first();
+
+            if ($availability) {
+                $availability->update([
+                    'is_blocked' => false,
+                    'block_type' => null
+                ]);
+            }
+
+            $response->status = 200;
+            $response->message = 'Limpieza completada, habitación disponible';
+            $response->data = $availability;
 
         } catch (\Throwable $th) {
             $response->status = 400;
