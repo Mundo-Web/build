@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('subscriptions', function (Blueprint $table) {
-            $table->string('unsubscribe_token')->nullable()->after('description');
-            $table->text('unsubscribe_reason')->nullable()->after('unsubscribe_token');
-            $table->timestamp('unsubscribed_at')->nullable()->after('unsubscribe_reason');
+            if (!Schema::hasColumn('subscriptions', 'unsubscribe_token')) {
+                $table->string('unsubscribe_token')->nullable()->after('description');
+            }
+            if (!Schema::hasColumn('subscriptions', 'unsubscribe_reason')) {
+                $table->text('unsubscribe_reason')->nullable()->after('unsubscribe_token');
+            }
+            if (!Schema::hasColumn('subscriptions', 'unsubscribed_at')) {
+                $table->timestamp('unsubscribed_at')->nullable()->after('unsubscribe_reason');
+            }
         });
     }
 
@@ -24,7 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('subscriptions', function (Blueprint $table) {
-            $table->dropColumn(['unsubscribe_token', 'unsubscribe_reason', 'unsubscribed_at']);
+            if (Schema::hasColumn('subscriptions', 'unsubscribe_token')) {
+                $table->dropColumn('unsubscribe_token');
+            }
+            if (Schema::hasColumn('subscriptions', 'unsubscribe_reason')) {
+                $table->dropColumn('unsubscribe_reason');
+            }
+            if (Schema::hasColumn('subscriptions', 'unsubscribed_at')) {
+                $table->dropColumn('unsubscribed_at');
+            }
         });
     }
 };
