@@ -26,11 +26,14 @@ class Subscription extends Model
     protected $fillable = [
         'name',
         'description',
-        'status'
+        'status',
+        'unsubscribe_token',
+        'unsubscribed_at',
+        'unsubscribe_reason'
     ];
 
     protected $casts = [
-     
         'status' => 'boolean',
+        'unsubscribed_at' => 'datetime',
     ];
 }

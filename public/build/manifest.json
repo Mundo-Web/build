@@ -14599,6 +14599,40 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
+  "resources/js/Components/Tailwind/Unsubscribe.jsx": {
+    "file": "assets/Unsubscribe-DDtuvEYA.js",
+    "name": "Unsubscribe",
+    "src": "resources/js/Components/Tailwind/Unsubscribe.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-BfFHrpNk.js",
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Components/Tailwind/Unsubscribe/UnsubscribeSimple.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Unsubscribe/UnsubscribeSimple.jsx": {
+    "file": "assets/UnsubscribeSimple-DTMBRyqC.js",
+    "name": "UnsubscribeSimple",
+    "src": "resources/js/Components/Tailwind/Unsubscribe/UnsubscribeSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_main-B6F2O9-U.js",
+      "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
+      "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js",
+      "____vite-browser-external_commonjs-proxy-DDYoOVPM.js",
+      "_index-pSueRYGM.js",
+      "_index-B6ujFmsw.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Whistleblowing.jsx": {
     "file": "assets/Whistleblowing-CV2to_ZK.js",
     "name": "Whistleblowing",
@@ -15132,7 +15166,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-DPRHIGWG.js",
+    "file": "assets/System-CwEr1pMw.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
@@ -15190,6 +15224,7 @@
       "resources/js/Components/Tailwind/Signup.jsx",
       "resources/js/Components/Tailwind/ForgotPassword.jsx",
       "resources/js/Components/Tailwind/ResetPassword.jsx",
+      "resources/js/Components/Tailwind/Unsubscribe.jsx",
       "resources/js/Components/Tailwind/Complaint.jsx",
       "resources/js/Components/Tailwind/Whistleblowing.jsx",
       "resources/js/Components/Tailwind/Indicator.jsx",
@@ -15259,6 +15294,7 @@
       "resources/js/Components/Tailwind/Thank.jsx",
       "resources/js/Components/Tailwind/TopBar.jsx",
       "resources/js/Components/Tailwind/Track.jsx",
+      "resources/js/Components/Tailwind/Unsubscribe.jsx",
       "resources/js/Components/Tailwind/Whistleblowing.jsx"
     ],
     "css": [

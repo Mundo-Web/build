@@ -73,6 +73,9 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             'habitaciones'   => 'Bloque repetible de habitaciones: {{#habitaciones}}...{{/habitaciones}}. Variables: nombre_habitacion, tipo_habitacion, check_in, check_out, noches, huespedes, adultos, ninos, precio_noche, total_habitacion, imagen, solicitudes_especiales',
             'total_habitaciones' => 'Número total de habitaciones reservadas',
             'total_noches'   => 'Total de noches reservadas',
+            
+            // Variable global para todos los correos
+            'unsubscribe_link' => 'Enlace para cancelar suscripción a correos',
         ];
     }
 
@@ -158,6 +161,10 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
             ];
         }
         
+        // Generar link de desuscripción
+        $user = $this->sale->user ?? (object)['email' => $this->sale->email];
+        $unsubscribeData = \App\Helpers\UnsubscribeHelper::generateUnsubscribeLink($user);
+        
         $body = $template
             ? \App\Helpers\Text::replaceData($template->description, [
                 'orderId'        => $this->sale->code,
@@ -199,6 +206,7 @@ class PurchaseSummaryNotification extends Notification implements ShouldQueue
                 'metodo_pago' => $this->sale->payment_method ?? '',
                 
                 'productos'      => $productos,
+                'unsubscribe_link' => $unsubscribeData['url'],
             ])
             : 'Plantilla no encontrada';
 

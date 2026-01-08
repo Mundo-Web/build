@@ -35,4 +35,38 @@ class SubscriptionController extends BasicController
         }
         return null;
     }
+
+    public function unsubscribe(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'reason' => 'nullable|string|max:500'
+        ]);
+
+        $token = $request->token;
+        $hashedToken = hash('sha256', $token);
+
+        // Buscar suscripción por token
+        $subscription = Subscription::where('unsubscribe_token', $hashedToken)
+            ->where('status', true)
+            ->first();
+
+        if (!$subscription) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token inválido o la suscripción ya fue cancelada'
+            ], 400);
+        }
+
+        // Marcar como inactiva
+        $subscription->status = false;
+        $subscription->unsubscribe_reason = $request->reason;
+        $subscription->unsubscribed_at = now();
+        $subscription->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Te has desuscrito exitosamente'
+        ]);
+    }
 }

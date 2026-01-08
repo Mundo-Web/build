@@ -25,23 +25,29 @@ class SubscriptionNotification extends Notification implements ShouldQueue
     public static function availableVariables()
     {
         return [
-            // No hay variables dinámicas para este email
             'fecha_suscripcion' => 'Fecha de suscripción',
             'email' => 'Correo electrónico',
             'year' => 'Año actual',
+            'unsubscribe_link' => 'Enlace para desuscribirse',
         ];
     }
 
     public function toMail($notifiable)
     {
         $template = \App\Models\General::where('correlative', 'subscription_email')->first();
+        
+        // Generar link de desuscripción usando el helper
+        $unsubscribeData = \App\Helpers\UnsubscribeHelper::generateUnsubscribeLink($notifiable);
+        
         $body = $template
             ? \App\Helpers\Text::replaceData($template->description, [
                 'fecha_suscripcion' => date('d \d\e F \d\e\l Y'),
                 'email' => $notifiable->description ?? '',
                 'year' => date('Y'),
+                'unsubscribe_link' => $unsubscribeData['url'],
             ])
             : 'Plantilla no encontrada';
+            
         return (new RawHtmlMail($body, '¡Gracias por suscribirte!', $notifiable->description));
     }
 }

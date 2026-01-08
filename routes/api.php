@@ -207,6 +207,7 @@ Route::post('/items/convert-slugs', [ItemController::class, 'convertSlugsToIds']
 
 Route::post('/messages', [MessageController::class, 'save']);
 Route::post('/subscriptions', [SubscriptionController::class, 'save']);
+Route::post('/unsubscribe', [SubscriptionController::class, 'unsubscribe']);
 
 Route::get('/cover/{uuid}', [CoverController::class, 'full']);
 Route::get('/cover/thumbnail/{uuid}', [CoverController::class, 'thumbnail']);

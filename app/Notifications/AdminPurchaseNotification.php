@@ -78,6 +78,9 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             // Variables de pago
             'payment_method'  => 'Método de pago',
             'payment_id'      => 'ID de transacción de pago',
+            
+            // Variable global para todos los correos
+            'unsubscribe_link' => 'Enlace para cancelar suscripción a correos',
         ];
     }
 
@@ -178,6 +181,10 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             return "• {$detail->name} (Cant: {$detail->quantity}) - S/ " . number_format($detail->price, 2);
         })->implode("\n");
 
+        // Generar link de desuscripción (usar email del admin que recibe la notificación)
+        $adminUser = $notifiable ?? (object)['email' => 'admin@example.com'];
+        $unsubscribeData = \App\Helpers\UnsubscribeHelper::generateUnsubscribeLink($adminUser);
+
         $body = $template
             ? \App\Helpers\Text::replaceData($template->description, [
                 'orderId'         => $this->sale->code,
@@ -235,6 +242,7 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
                 // Variables de pago
                 'payment_method'  => $this->sale->payment_method ?? 'Culqi',
                 'payment_id'      => $this->sale->culqi_charge_id ?? '',
+                'unsubscribe_link' => $unsubscribeData['url'],
             ])
             : 'Nueva compra realizada - Pedido #' . $this->sale->code;
 

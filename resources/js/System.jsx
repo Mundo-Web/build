@@ -37,6 +37,7 @@ const Login = React.lazy(() => import("./Components/Tailwind/Login"));
 const Signup = React.lazy(() => import("./Components/Tailwind/Signup"));
 const ForgotPassword = React.lazy(() => import("./Components/Tailwind/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./Components/Tailwind/ResetPassword"));
+const Unsubscribe = React.lazy(() => import("./Components/Tailwind/Unsubscribe"));
 const Complaint = React.lazy(() => import("./Components/Tailwind/Complaint"));
 const Whistleblowing = React.lazy(() => import("./Components/Tailwind/Whistleblowing"));
 const Indicator = React.lazy(() => import("./Components/Tailwind/Indicator"));
@@ -378,6 +379,8 @@ const System = ({
                 return <ForgotPassword which={value} data={data} />
             case "reset-password":
                 return <ResetPassword which={value} data={data} />
+            case "unsubscribe":
+                return <Unsubscribe which={value} data={data} />
             case "frame":
                 return <Frame which={value} data={data} />
             case "footer":

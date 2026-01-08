@@ -4043,6 +4043,16 @@
         ]
     },
     {
+        "id": "unsubscribe",
+        "name": "Unsubscribe",
+        "options": [
+            {
+                "id": "UnsubscribeSimple",
+                "name": "Simple"
+            }
+        ]
+    },
+    {
         "id": "footer",
         "name": "Footer",
         "options": [

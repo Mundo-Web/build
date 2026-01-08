@@ -6,7 +6,8 @@
         "description": "Imagen del formulario del login",
         "src": "login.png",
         "fit": "cover",
-        "aspect": "3/5"
+        "aspect": "3\/5",
+        "is_visible": true
     },
     {
         "name": "Imagen de Crear Cuenta",
@@ -15,34 +16,38 @@
         "description": "Imagen del formulario de crear cuenta",
         "src": "signup.png",
         "fit": "cover",
-        "aspect": "3/5"
+        "aspect": "3\/5",
+        "is_visible": true
     },
     {
-        "name": "Imagen Restablecer Contraseña",
-        "title": "Imagen Restablecer Contraseña",
+        "name": "Imagen Restablecer Contrase\u00f1a",
+        "title": "Imagen Restablecer Contrase\u00f1a",
         "filename": "restore",
-        "description": "Imagen del formulario de restablecer contraseña",
+        "description": "Imagen del formulario de restablecer contrase\u00f1a",
         "src": "restore.png",
         "fit": "cover",
-        "aspect": "2/3"
+        "aspect": "2\/3",
+        "is_visible": true
     },
     {
-        "name": "Imagen de Olvidaste tu Contraseña",
-        "title": "Imagen de Olvidaste tu Contraseña",
+        "name": "Imagen de Olvidaste tu Contrase\u00f1a",
+        "title": "Imagen de Olvidaste tu Contrase\u00f1a",
         "filename": "reset",
-        "description": "Imagen del formulario olvidaste tu contraseña",
+        "description": "Imagen del formulario olvidaste tu contrase\u00f1a",
         "src": "reset.png",
         "fit": "cover",
-        "aspect": "3/5"
+        "aspect": "3\/5",
+        "is_visible": true
     },
     {
-        "name": "Imagen Métodos de Pago",
-        "title": "Imagen Métodos de Pago",
+        "name": "Imagen M\u00e9todos de Pago",
+        "title": "Imagen M\u00e9todos de Pago",
         "filename": "payments",
-        "description": "Imagen del formlario de méteodos de pago",
+        "description": "Imagen del formlario de m\u00e9teodos de pago",
         "src": "payments.png",
         "fit": "cover",
-        "aspect": "3/5"
+        "aspect": "3\/5",
+        "is_visible": true
     },
     {
         "name": "Imagen Subscribete",
@@ -51,7 +56,8 @@
         "description": "Imagen Formulario Subscribete",
         "src": "subscribe.png",
         "fit": "cover",
-        "aspect": "2/3"
+        "aspect": "2\/3",
+        "is_visible": true
     },
     {
         "name": "Imagen Formulario de Trabajo",
@@ -60,16 +66,18 @@
         "description": "Imagen de formulario de trabajo",
         "src": "job-application.png",
         "fit": "cover",
-        "aspect": "9/16"
+        "aspect": "9\/16",
+        "is_visible": true
     },
     {
         "name": "Imagen de Testimonios",
         "title": "Imagen de Testimonios",
         "filename": "testimonials",
-        "description": "Sección de testimonios de la web",
+        "description": "Secci\u00f3n de testimonios de la web",
         "src": "testimonials.png",
         "fit": "cover",
-        "aspect": "3/4"
+        "aspect": "3\/4",
+        "is_visible": true
     },
     {
         "name": "Imagen de Fondo del Footer",
@@ -78,6 +86,16 @@
         "description": "Fondo del footer de la web",
         "src": "footer-overlay.png",
         "fit": "cover",
-        "aspect": "16/9"
+        "aspect": "16\/9",
+        "is_visible": true
+    },
+    {
+        "name": "Imagen de Desuscripci\u00f3n web",
+        "title": "Imagen de Desuscripci\u00f3n web",
+        "filename": "unsubscribe",
+        "description": "Imagen del formulario de desusbrirse de la web",
+        "src": "unsubscribe.png",
+        "fit": "cover",
+        "aspect": "3\/4"
     }
 ]
