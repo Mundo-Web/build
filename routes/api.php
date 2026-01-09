@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategory
 use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
 use App\Http\Controllers\Admin\StrengthController as AdminStrengthController;
+use App\Http\Controllers\Admin\BenefitController as AdminBenefitController;
 use App\Http\Controllers\Admin\AppController as AdminAppController;
 use App\Http\Controllers\Admin\CertificationController as AdminCertificationController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
@@ -96,6 +97,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ScrapController;
 use App\Http\Controllers\StrengthController;
+use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\TemporalyImageController;
 use App\Http\Controllers\UnifiedImportController;
 
@@ -149,6 +151,9 @@ Route::get('/tracking/purchase/{orderId}', [App\Http\Controllers\Ecommerce\Ecomm
 // Strengths API
 Route::get('/strengths', [StrengthController::class, 'getStrengths']);
 
+// Benefits API
+Route::get('/benefits', [BenefitController::class, 'getBenefits']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
 
@@ -193,6 +198,7 @@ Route::get('/indicators/media/{uuid}', [AdminIndicatorController::class, 'media'
 
 Route::get('/aboutuses/media/{uuid}', [AdminAboutusController::class, 'media']);
 Route::get('/strengths/media/{uuid}', [AdminStrengthController::class, 'media']);
+Route::get('/benefits/media/{uuid}', [AdminBenefitController::class, 'media']);
 Route::get('/apps/media/{uuid}', [App\Http\Controllers\Admin\AppController::class, 'media']);
 Route::get('/certifications/media/{uuid}', [AdminCertificationController::class, 'media']);
 Route::get('/partners/media/{uuid}', [AdminCertificationController::class, 'media']);
@@ -567,6 +573,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/strengths/status', [AdminStrengthController::class, 'status']);
     Route::patch('/strengths/{field}', [AdminStrengthController::class, 'boolean']);
     Route::delete('/strengths/{id}', [AdminStrengthController::class, 'delete']);
+
+    Route::post('/benefits', [AdminBenefitController::class, 'save']);
+    Route::post('/benefits/paginate', [AdminBenefitController::class, 'paginate']);
+    Route::patch('/benefits/status', [AdminBenefitController::class, 'status']);
+    Route::patch('/benefits/{field}', [AdminBenefitController::class, 'boolean']);
+    Route::delete('/benefits/{id}', [AdminBenefitController::class, 'delete']);
 
     Route::post('/apps', [AdminAppController::class, 'save']);
     Route::post('/apps/paginate', [AdminAppController::class, 'paginate']);

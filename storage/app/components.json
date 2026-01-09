@@ -548,9 +548,8 @@
                 "data": [
                     "type_header",
                     "logoWidth",
-                     "menu_button",
+                    "menu_button",
                     "ctaText",
-                   
                     "ctaLink",
                     "footerText"
                 ],
@@ -564,7 +563,7 @@
                     "header_menu_order"
                 ]
             },
-               {
+            {
                 "id": "HeaderWebQuirurgica2",
                 "name": "Header - Web Quirurgica 2",
                 "image": "header-webquirurgica.png",
@@ -2644,6 +2643,36 @@
                     "limit": 8
                 },
                 "generals": []
+            },
+              {
+                "id": "ProductListPanelPro",
+                "name": "Productos - Panel Pro",
+                "image": "products-panelpro.png",
+                "data": [
+                    "rooms",
+                    "showFeatured",
+                    "accentColor",
+                    "title",
+                    "subtitle"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand",
+                        "images",
+                        "amenities"
+                    ],
+                    "limit": 8
+                },
+                "generals": []
             }
         ]
     },
@@ -2772,23 +2801,16 @@
                 "name": "Banner Multivet",
                 "image": "banner-multivet.png",
                 "data": [
-                    "section_background",
-                    "container_background",
-                    "title_color",
-                    "title_opacity",
-                    "description_color",
-                    "description_opacity",
-                    "button_background",
-                    "image_position",
-                    "show_image_overlay",
-                    "show_decorations",
-                    "decoration_color",
                     "class_section",
                     "class_container",
                     "class_content",
                     "class_title",
                     "class_description",
                     "class_button",
+                    "image_position",
+                    "show_image_overlay",
+                    "show_decorations",
+                    "decoration_color",
                     "class_image_container",
                     "class_image",
                     "class_overlay"
@@ -2835,13 +2857,12 @@
                     "class_title",
                     "class_indicators_card",
                     "class_indicators_icon"
-
                 ],
                 "using": {
                     "model": "Indicator"
                 }
             },
-             {
+            {
                 "id": "BannerAboutStatsPanelPro",
                 "name": "About con Estadísticas - Panel Pro",
                 "image": "banner-about-stats.png",
@@ -2850,7 +2871,6 @@
                     "class_title",
                     "class_indicators_card",
                     "class_indicators_icon"
-
                 ],
                 "using": {
                     "model": "Indicator"
@@ -3908,7 +3928,7 @@
                     "model": "Aboutus"
                 }
             },
-               {
+            {
                 "id": "AboutWebQuirurgica",
                 "name": "AboutWebQuirurgica",
                 "data": [
@@ -4607,6 +4627,28 @@
         ]
     },
     {
+        "id": "benefit",
+        "icon": "mdi mdi-heart-pulse",
+        "name": "Beneficios",
+        "options": [
+            {
+                "id": "BenefitSimple",
+                "name": "Beneficios Simple",
+                "image": "benefit-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle",
+                    "footer_image"
+                ],
+                "using": {
+                    "model": "Benefit"
+                }
+            }
+        ]
+    },
+    {
         "id": "bananalab",
         "name": "BananaLab",
         "options": [
@@ -4925,12 +4967,15 @@
                     ]
                 }
             },
-             {
+            {
                 "id": "ServiceWebQuirurgica2",
                 "name": "Servicios por Categoría - WebQuirurgica2",
                 "image": "service-webquirurgica.png",
                 "data": [
-                    "class"
+                    "class_section",
+                    "class_card",
+                    "class_card_icon",
+                    "button_card_text"
                 ],
                 "using": {
                     "model": "Service",
@@ -4938,9 +4983,8 @@
                         "category",
                         "subcategory"
                     ],
-                 "filters": [
+                    "filters": [
                         "featured"
-                       
                     ]
                 }
             }

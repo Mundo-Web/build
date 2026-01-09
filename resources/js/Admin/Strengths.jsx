@@ -187,7 +187,7 @@ const Strengths = ({ details }) => {
 
 CreateReactScript((el, properties) => {
 
-  createRoot(el).render(<BaseAdminto {...properties} title='Valores'>
+  createRoot(el).render(<BaseAdminto {...properties} title='Fortalezas'>
     <Strengths {...properties} />
   </BaseAdminto>);
 })

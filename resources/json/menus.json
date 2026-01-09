@@ -69,6 +69,7 @@
       { "label": "Certificaciones", "href": "/admin/certifications", "icon": "mdi mdi-certificate" },
       { "label": "Aliados", "href": "/admin/partners", "icon": "mdi mdi-charity" },
       { "label": "Fortalezas", "href": "/admin/strengths", "icon": "mdi mdi-arm-flex" },
+      { "label": "Beneficios", "href": "/admin/benefits", "icon": "mdi mdi-gift" },
       { "label": "Apps Móviles", "href": "/admin/apps", "icon": "mdi mdi-cellphone-link" },
       { "label": "Banners", "href": "/admin/banners", "icon": "mdi mdi-post-outline" },
       { "label": "Sliders", "href": "/admin/sliders", "icon": "mdi mdi-page-layout-body" },

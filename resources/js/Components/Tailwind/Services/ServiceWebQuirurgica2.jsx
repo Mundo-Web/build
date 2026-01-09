@@ -22,7 +22,7 @@ const getServiceDescription = (service, maxWords = 30) => {
     return '';
 };
 
-const ServiceCard = ({ service, index }) => {
+const ServiceCard = ({ service, index,data }) => {
     const [isHovered, setIsHovered] = useState(false);
     
     const imageUrl = service.image
@@ -48,7 +48,7 @@ const ServiceCard = ({ service, index }) => {
     return (
         <a
             href={serviceUrl}
-            className={`${pattern.cols} group relative overflow-hidden -3xl shadow-xl hover:shadow-2xl transition-all duration-700 cursor-pointer block`}
+            className={`${pattern.cols} group relative overflow-hidden  shadow-xl hover:shadow-2xl transition-all duration-700 cursor-pointer block ${data?.class_card || ''}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -73,7 +73,7 @@ const ServiceCard = ({ service, index }) => {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-1000 ease-out origin-center"></div>
                 
                 {/* Ícono flotante superior derecha con animación mejorada */}
-                <div className="absolute top-6 right-6 w-12 h-12 bg-white/10 backdrop-blur-xl -full flex items-center justify-center border border-accent/50 shadow-2xl transform translate-x-20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out z-10">
+                <div className={`absolute top-6 right-6 w-12 h-12 bg-white/10 backdrop-blur-xl flex items-center justify-center border border-accent/50 shadow-2xl transform translate-x-20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out z-10 ${data?.class_card_icon || ''}`}>
                     <ArrowUpRight className="w-5 h-5 text-white" />
                 </div>
 
@@ -98,6 +98,7 @@ const ServiceCard = ({ service, index }) => {
                     </div>
 
                     {/* Barra decorativa con animación elegante */}
+                    
                     <div className="flex items-center gap-3">
                         <div className={`h-px flex-1 bg-gradient-to-r from-white/80 via-primary to-transparent transition-all duration-1000 ease-out origin-left ${
                             isHovered ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
@@ -105,14 +106,13 @@ const ServiceCard = ({ service, index }) => {
                         <span className={`text-xs font-medium text-white/80 uppercase tracking-wider transition-all duration-700 ${
                             isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
                         }`}>
-                            Ver más
+                            {data?.button_card_text || 'Ver más'}
                         </span>
                     </div>
                 </div>
             </div>
 
-            {/* Borde elegante al hover con color accent */}
-            <div className="absolute inset-0 border-2 border-white/0  -3xl transition-all duration-700 pointer-events-none"></div>
+         
         </a>
     );
 };
@@ -126,7 +126,7 @@ const ServiceWebQuirurgica2 = ({ data, items = [] }) => {
     });
 
     return (
-        <section id="servicios" className={`py-24 bg-sections-color  ${data?.class || ''}`}>
+        <section id="servicios" className={`py-24 bg-sections-color  ${data?.class_section || ''}`}>
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
                 {/* Encabezado con diseño moderno */}
                 <div className="mb-20 max-w-4xl">
@@ -154,6 +154,7 @@ const ServiceWebQuirurgica2 = ({ data, items = [] }) => {
                             key={serviceIndex} 
                             service={service} 
                             index={serviceIndex}
+                            data={data}
                         />
                     ))}
                 </div>

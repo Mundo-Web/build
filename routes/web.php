@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategory
 use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
 use App\Http\Controllers\Admin\StrengthController as AdminStrengthController;
+use App\Http\Controllers\Admin\BenefitController as AdminBenefitController;
 use App\Http\Controllers\Admin\AppController as AdminAppController;
 use App\Http\Controllers\Admin\CertificationController as AdminCertificationController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
@@ -158,6 +159,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/socials', [AdminSocialController::class, 'reactView'])->name('Admin/Socials.jsx');
     Route::get('/statuses', [AdminSaleStatusController::class, 'reactView'])->name('Admin/Statuses.jsx');
     Route::get('/strengths', [AdminStrengthController::class, 'reactView'])->name('Admin/Strengths.jsx');
+    Route::get('/benefits', [AdminBenefitController::class, 'reactView'])->name('Admin/Benefits.jsx');
     Route::get('/apps', [AdminAppController::class, 'reactView'])->name('Admin/Apps.jsx');
     Route::get('/certifications', [AdminCertificationController::class, 'reactView'])->name('Admin/Certifications.jsx');
     Route::get('/partners', [AdminPartnerController::class, 'reactView'])->name('Admin/Partners.jsx');

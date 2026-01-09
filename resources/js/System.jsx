@@ -50,6 +50,7 @@ const DeliveryZone = React.lazy(() => import("./Components/Tailwind/DeliveryZone
 const Ad = React.lazy(() => import("./Components/Tailwind/Ad"));
 const Testimonials = React.lazy(() => import("./Components/Tailwind/Testimonials"));
 const Strength = React.lazy(() => import("./Components/Tailwind/Strength"));
+const Benefit = React.lazy(() => import("./Components/Tailwind/Benefit"));
 const Brands = React.lazy(() => import("./Components/Tailwind/Brands"));
 const Partner = React.lazy(() => import("./Components/Tailwind/Partner"));
 const Subscription = React.lazy(() => import("./Components/Tailwind/Subscription"));
@@ -395,6 +396,8 @@ const System = ({
                 return <Testimonials which={value} data={data} items={getItems(itemsId)} />
             case "strength":
                 return <Strength which={value} data={data} items={getItems(itemsId)} />
+            case "benefit":
+                return <Benefit which={value} data={data} items={getItems(itemsId)} />
             case "brands":
                 return <Brands which={value} data={data} items={getItems(itemsId)} />
             case "partner":

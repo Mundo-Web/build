@@ -18,6 +18,7 @@ const ProductMultivet = React.lazy(() => import("./Products/ProductMultivet"));
 const ProductInfiniteSlider = React.lazy(() => import("./Products/ProductInfiniteSlider"));
 const ProductIbergruasSwiper = React.lazy(() => import("./Products/ProductIbergruasSwiper"));
 const ProductLaPetaca = React.lazy(() => import("./Products/ProductLaPetaca"));
+const ProductListPanelPro = React.lazy(() => import("./Products/ProductListPanelPro"));
 
 const Product = ({
     which,
@@ -200,7 +201,15 @@ const Product = ({
                         setCart={setCart}
                     />
                 );
-
+            case "ProductListPanelPro":
+                return (
+                    <ProductListPanelPro
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">
