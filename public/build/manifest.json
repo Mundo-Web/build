@@ -2020,7 +2020,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-CY4iBN7f.js",
+    "file": "assets/Banners-PlpUaIlX.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -4041,7 +4041,7 @@
     ]
   },
   "resources/js/Admin/System.jsx": {
-    "file": "assets/System-Xv_FxGGm.js",
+    "file": "assets/System-Ctbu4kxq.js",
     "name": "System",
     "src": "resources/js/Admin/System.jsx",
     "isEntry": true,
@@ -5855,7 +5855,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-D0IHxGdG.js",
+    "file": "assets/Banner-1y84ohhE.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -5887,11 +5887,12 @@
       "resources/js/Components/Tailwind/Banners/BannerPublicitarioKatya.jsx",
       "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx",
       "resources/js/Components/Tailwind/Banners/BannerMobileApp.jsx",
-      "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx"
+      "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx",
+      "resources/js/Components/Tailwind/Banners/BannerAboutStatsPanelPro.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx": {
-    "file": "assets/BannerAboutStats-BsOEDRlx.js",
+    "file": "assets/BannerAboutStats-DTA-ArqL.js",
     "name": "BannerAboutStats",
     "src": "resources/js/Components/Tailwind/Banners/BannerAboutStats.jsx",
     "isDynamicEntry": true,
@@ -5902,6 +5903,22 @@
       "_autoplay-E5bqrXsF.js",
       "_bannerUtils-Dj-jRlM8.js",
       "_TextWithHighlight-de4cdOrr.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "css": [
+      "swiper.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Banners/BannerAboutStatsPanelPro.jsx": {
+    "file": "assets/BannerAboutStatsPanelPro-7p2s3xOW.js",
+    "name": "BannerAboutStatsPanelPro",
+    "src": "resources/js/Components/Tailwind/Banners/BannerAboutStatsPanelPro.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js"
     ],
@@ -15166,7 +15183,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B4yn5W7K.js",
+    "file": "assets/System-CmESII_c.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

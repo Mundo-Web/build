@@ -503,6 +503,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         { id: 'BannerBlogSectionKatya', name: 'Banner Blog Section Katya', icon: 'mdi mdi-post' },
         { id: 'BannerMobileApp', name: 'Banner Mobile App - FirstClass', icon: 'mdi mdi-cellphone-link' },
         { id: 'BannerAboutStats', name: 'About con Estadísticas - WebQuirurgica', icon: 'mdi mdi-chart-box' },
+        { id: 'BannerAboutStatsPanelPro', name: 'About con Estadísticas - PanelPro', icon: 'mdi mdi-chart-box' },
    
     ];
 
@@ -680,6 +681,9 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             if (!systemResult) return;
 
             const bannerData = {
+                // Mantener TODOS los campos existentes del banner
+                ...(editingSnapshot?.id ? systems.find(s => s.id === editingSnapshot.id)?.data || {} : {}),
+                // Sobrescribir solo los campos que están en el formulario
                 name: nameRef.current.value,
                 description: descriptionRef.current.value,
                 button_text: buttonTextRef.current.value,

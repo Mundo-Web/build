@@ -2831,7 +2831,26 @@
                 "name": "About con Estadísticas - WebQuirurgica",
                 "image": "banner-about-stats.png",
                 "data": [
-                    "class"
+                    "class",
+                    "class_title",
+                    "class_indicators_card",
+                    "class_indicators_icon"
+
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+             {
+                "id": "BannerAboutStatsPanelPro",
+                "name": "About con Estadísticas - Panel Pro",
+                "image": "banner-about-stats.png",
+                "data": [
+                    "class",
+                    "class_title",
+                    "class_indicators_card",
+                    "class_indicators_icon"
+
                 ],
                 "using": {
                     "model": "Indicator"

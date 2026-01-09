@@ -19,9 +19,14 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
 
   const onDataSubmit = async (e) => {
     e.preventDefault()
+    // CRÍTICO: Hacer merge con los datos existentes en lugar de sobrescribir
+    const mergedData = {
+      ...(dataLoaded?.data || {}), // Mantener todos los campos existentes
+      ...data // Sobrescribir solo los campos editados
+    }
     const result = await systemRest.save({
       id: dataLoaded.id,
-      data,
+      data: mergedData,
       filters: $(usingRef.filters.current).val(),
       filters_method: dataLoaded?.component?.using?.['filters:method'],
       filters_method_values: $(usingRef.filtersMethod.current).val()
@@ -33,9 +38,15 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
   }
 
   useEffect(() => {
-    const newData = {}
+    // CRÍTICO: Inicializar con TODOS los datos existentes, no solo los campos definidos en components.json
+    const existingData = dataLoaded?.data || {}
+    const newData = { ...existingData }
+    
+    // Asegurar que los campos definidos en components.json estén presentes
     dataLoaded?.component?.data?.forEach && dataLoaded?.component?.data?.forEach(key => {
-      newData[key] = dataLoaded?.data?.[key] ?? ''
+      if (!(key in newData)) {
+        newData[key] = ''
+      }
     })
     setData(newData)
     usingRef.model.current.value = dataLoaded?.component?.using?.model ?? ''

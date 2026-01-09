@@ -87,8 +87,19 @@ class BannerController extends BasicController
 
             $newData = $bannerJpa->data ?? [];
 
+            // Solo actualizar campos que vienen en el request y no están vacíos
+            // O si el campo viene explícitamente con un valor (incluso vacío)
             foreach ($body as $key => $value) {
-                $newData[$key] = $value;
+                // Si el valor NO es null y NO es string vacío, actualizar
+                if ($value !== null && $value !== '') {
+                    $newData[$key] = $value;
+                }
+                // Si viene como null o vacío, solo actualizar si NO existe previamente
+                // o si explícitamente se quiere borrar
+                elseif (!isset($newData[$key])) {
+                    $newData[$key] = $value;
+                }
+                // Si existe y viene vacío, NO hacer nada (mantener el valor anterior)
             }
 
             $this->model::where('id', $request->id)

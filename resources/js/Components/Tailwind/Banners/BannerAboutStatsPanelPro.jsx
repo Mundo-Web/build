@@ -5,17 +5,17 @@ import 'swiper/css';
 import { resolveSystemAsset } from './bannerUtils';
 import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
-const BannerAboutStats = ({ data, items = [] }) => {
+const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
     const imageUrl = resolveSystemAsset(data?.image) || '/api/cover/thumbnail/null';
 
     return (
         <section className={`py-24 px-primary 2xl:px-0 bg-white ${data?.class || ''}`}>
             <div className="2xl:max-w-7xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-16 items-center">
+                <div className=" gap-16 items-center">
                     {/* Contenido de texto y estadísticas */}
-                    <div className="space-y-8 min-w-0">
+                    <div className="space-y-8 min-w-0 max-w-4xl mx-auto">
                         <div className="space-y-4">
-                            <h2 className={`text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line`}>
+                            <h2 className={`text-5xl text-center  md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line`}>
                                 <TextWithHighlight
                                     text={data?.name}
                                     color={`bg-primary font-light`}
@@ -25,12 +25,14 @@ const BannerAboutStats = ({ data, items = [] }) => {
 
                         </div>
 
-                        <p className="text-lg text-neutral-dark leading-relaxed font-light whitespace-pre-line">
+                        <p className="text-lg text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line">
                             <TextWithHighlight
                                 text={data?.description}
                                 color="bg-primary"
                             />
                         </p>
+
+                    </div>
 
                         {/* Estadísticas dinámicas desde items (Indicators) */}
                         {items.length > 0 && (
@@ -50,7 +52,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                             spaceBetween: 20,
                                         },
                                         768: {
-                                            slidesPerView: 3,
+                                            slidesPerView: 4,
                                             spaceBetween: 14,
                                             loop: items.length > 3,
                                         },
@@ -93,7 +95,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                                             </div>
 
                                                             {/* Descripción */}
-                                                            <p className="text-sm text-neutral-dark/70 font-light leading-relaxed whitespace-pre-line min-h-[3rem] group-hover:text-neutral-dark transition-colors duration-700">
+                                                            <p className="text-sm text-neutral-dark font-light leading-relaxed whitespace-pre-line min-h-[3rem] group-hover:text-neutral-dark transition-colors duration-700">
                                                                 <TextWithHighlight
                                                                     text={item.description}
                                                                     color="bg-primary"
@@ -110,27 +112,11 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                 </Swiper>
                             </div>
                         )}
-                    </div>
-
-                    {/* Imagen */}
-                    <div className="relative">
-                        <div className="relative  border-secondary border-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500">
-                            <img
-                                src={imageUrl}
-                                alt={data?.name || 'Banner'}
-                                className="aspect-[3/4] w-full object-cover"
-                                onError={(e) =>
-                                (e.target.src =
-                                    "/api/cover/thumbnail/null")
-                                }
-                            />
-                        </div>
-                       
-                    </div>
+                 
                 </div>
             </div>
         </section>
     );
 };
 
-export default BannerAboutStats;
+export default BannerAboutStatsPanelPro;
