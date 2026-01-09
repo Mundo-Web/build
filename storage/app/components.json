@@ -546,8 +546,11 @@
                 "name": "Header - Web Quirurgica",
                 "image": "header-webquirurgica.png",
                 "data": [
+                    "type_header",
                     "logoWidth",
+                     "menu_button",
                     "ctaText",
+                   
                     "ctaLink",
                     "footerText"
                 ],
@@ -1028,6 +1031,7 @@
                     "class_content_slider",
                     "class_title",
                     "class_description",
+                    "class_buttons_container",
                     "class_button",
                     "class_secondary_button",
                     "class_overlay",

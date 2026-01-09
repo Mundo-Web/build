@@ -27,7 +27,7 @@ const ServiceCard = ({ service, index }) => {
     
     const imageUrl = service.image
         ? `/storage/images/service/${service.image}`
-        : `/storage/images/service/${service.background_image}`;
+        : service.background_image ? `/storage/images/service/${service.background_image}`: '/api/cover/thumbnail/null';
 
     const serviceUrl = service.slug ? `/servicio/${service.slug}` : '#';
 
@@ -59,7 +59,7 @@ const ServiceCard = ({ service, index }) => {
                     alt={service.name}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                     onError={(e) => {
-                        e.target.src = "/api/placeholder/800/600";
+                        e.target.src ="/api/cover/thumbnail/null";
                     }}
                 />
 
