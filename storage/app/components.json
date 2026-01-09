@@ -4588,7 +4588,23 @@
             {
                 "id": "TestimonialsTextWebQuirurgica",
                 "name": "Testimonios Escritos - WebQuirurgica",
-                "data": [],
+                "data": ["class_section"],
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
+            },
+            {
+                "id": "TestimonialsSimple",
+                "name": "Testimonials Simple",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "companies_title",
+                    "show_companies",
+                    "companies",
+                    "class_section"
+                ],
                 "generals": [],
                 "using": {
                     "model": "Testimony"
@@ -4619,6 +4635,21 @@
                     "class_icon",
                     "class_benefit_title",
                     "class_benefit_description"
+                ],
+                "using": {
+                    "model": "Strength"
+                }
+            },
+            {
+                "id": "StrengthSimple",
+                "name": "Fortalezas Simple",
+                "image": "strength-simple.png",
+                "data": [
+                    "badge",
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle"
                 ],
                 "using": {
                     "model": "Strength"

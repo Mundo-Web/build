@@ -14210,7 +14210,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Strength.jsx": {
-    "file": "assets/Strength-DqvJw7An.js",
+    "file": "assets/Strength-emld37jP.js",
     "name": "Strength",
     "src": "resources/js/Components/Tailwind/Strength.jsx",
     "isDynamicEntry": true,
@@ -14222,13 +14222,26 @@
       "__commonjsHelpers-D6-XlEtG.js"
     ],
     "dynamicImports": [
-      "resources/js/Components/Tailwind/Strengths/StrengthFirstClass.jsx"
+      "resources/js/Components/Tailwind/Strengths/StrengthFirstClass.jsx",
+      "resources/js/Components/Tailwind/Strengths/StrengthSimple.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Strengths/StrengthFirstClass.jsx": {
     "file": "assets/StrengthFirstClass--pJTheE3.js",
     "name": "StrengthFirstClass",
     "src": "resources/js/Components/Tailwind/Strengths/StrengthFirstClass.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
+  "resources/js/Components/Tailwind/Strengths/StrengthSimple.jsx": {
+    "file": "assets/StrengthSimple--pJTheE3.js",
+    "name": "StrengthSimple",
+    "src": "resources/js/Components/Tailwind/Strengths/StrengthSimple.jsx",
     "isEntry": true,
     "imports": [
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
@@ -14299,7 +14312,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Testimonials.jsx": {
-    "file": "assets/Testimonials-Dl7c7HL3.js",
+    "file": "assets/Testimonials-CRQm2Rke.js",
     "name": "Testimonials",
     "src": "resources/js/Components/Tailwind/Testimonials.jsx",
     "isDynamicEntry": true,
@@ -14316,7 +14329,8 @@
       "resources/js/Components/Tailwind/Testimonials/TestimonialsFirstClass.jsx",
       "resources/js/Components/Tailwind/Testimonials/TestimonialsLaPetaca.jsx",
       "resources/js/Components/Tailwind/Testimonials/TestimonialsVideosWebQuirurgica.jsx",
-      "resources/js/Components/Tailwind/Testimonials/TestimonialsTextWebQuirurgica.jsx"
+      "resources/js/Components/Tailwind/Testimonials/TestimonialsTextWebQuirurgica.jsx",
+      "resources/js/Components/Tailwind/Testimonials/TestimonialsSimple.jsx"
     ]
   },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsFirstClass.jsx": {
@@ -14375,6 +14389,18 @@
     ],
     "css": [
       "swiper.css"
+    ]
+  },
+  "resources/js/Components/Tailwind/Testimonials/TestimonialsSimple.jsx": {
+    "file": "assets/TestimonialsSimple--pJTheE3.js",
+    "name": "TestimonialsSimple",
+    "src": "resources/js/Components/Tailwind/Testimonials/TestimonialsSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Testimonials/TestimonialsTextWebQuirurgica.jsx": {
@@ -15273,7 +15299,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-C5uzitwG.js",
+    "file": "assets/System-CnMar4z0.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
