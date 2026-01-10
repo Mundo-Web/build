@@ -8,17 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Benefit extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
+        'order_index',
         'name',
         'description',
         'visible',
         'status',
         'image',
+        'bg_color',
     ];
 
     protected $casts = [

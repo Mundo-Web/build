@@ -163,7 +163,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
               </div>
             </div>
 
-            <div className="bg-white  p-6 shadow-sm">
+            <div className={`bg-white  p-6 shadow-sm ${data?.class_opening_hours_container || ''}`}>
               <h4 className="text-lg font-light text-primary mb-4">Horarios de Atención</h4>
               <div className="text-neutral-light font-light whitespace-pre-line">
                 {openingHours}
@@ -172,7 +172,7 @@ const ContactWebQuirurgica = ({ data, generals = [], items = [] }) => {
           </div>
 
           {/* Formulario */}
-          <div className="bg-white  shadow-lg p-8 border border-gray-100">
+          <div className={`bg-white  shadow-lg p-8 border border-gray-100 ${data?.class_form_container || ''}`}>
             <form onSubmit={onSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-light text-neutral-dark mb-2">

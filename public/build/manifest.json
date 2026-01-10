@@ -2072,7 +2072,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-BEfmsBLr.js",
+    "file": "assets/Banners-DEKZZwYd.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -2125,7 +2125,7 @@
     ]
   },
   "resources/js/Admin/Benefits.jsx": {
-    "file": "assets/Benefits-BeTgaSQg.js",
+    "file": "assets/Benefits-CWswVmvV.js",
     "name": "Benefits",
     "src": "resources/js/Admin/Benefits.jsx",
     "isEntry": true,
@@ -3075,7 +3075,7 @@
     ]
   },
   "resources/js/Admin/Indicators.jsx": {
-    "file": "assets/Indicators-CKMUvRlv.js",
+    "file": "assets/Indicators-CZNU1PNw.js",
     "name": "Indicators",
     "src": "resources/js/Admin/Indicators.jsx",
     "isEntry": true,
@@ -5985,7 +5985,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-DuMjyOsL.js",
+    "file": "assets/Banner-DIW3hrUB.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -6348,7 +6348,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Benefit.jsx": {
-    "file": "assets/Benefit-BqGcJDbe.js",
+    "file": "assets/Benefit-DCcUfjly.js",
     "name": "Benefit",
     "src": "resources/js/Components/Tailwind/Benefit.jsx",
     "isDynamicEntry": true,
@@ -8557,7 +8557,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact.jsx": {
-    "file": "assets/Contact-Bk6YSfQF.js",
+    "file": "assets/Contact-BrayuuEz.js",
     "name": "Contact",
     "src": "resources/js/Components/Tailwind/Contact.jsx",
     "isDynamicEntry": true,
@@ -8575,7 +8575,6 @@
       "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
       "resources/js/Components/Tailwind/Contact/ContactHuaillys.jsx",
       "resources/js/Components/Tailwind/Contact/ThankContact.jsx",
-      "resources/js/Components/Tailwind/Contact/ContactLaPetaca.jsx",
       "resources/js/Components/Tailwind/Contact/ContactWebQuirurgica.jsx"
     ]
   },
@@ -8657,7 +8656,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Contact/ContactKatya.jsx": {
-    "file": "assets/ContactKatya-CmI__oQ5.js",
+    "file": "assets/ContactKatya-DigpLL_4.js",
     "name": "ContactKatya",
     "src": "resources/js/Components/Tailwind/Contact/ContactKatya.jsx",
     "isDynamicEntry": true,
@@ -8681,18 +8680,6 @@
       "_index-B6ujFmsw.js",
       "_resolve-elements-WL2ErOKm.js",
       "_createLucideIcon-DfjclApS.js"
-    ]
-  },
-  "resources/js/Components/Tailwind/Contact/ContactLaPetaca.jsx": {
-    "file": "assets/ContactLaPetaca--pJTheE3.js",
-    "name": "ContactLaPetaca",
-    "src": "resources/js/Components/Tailwind/Contact/ContactLaPetaca.jsx",
-    "isEntry": true,
-    "imports": [
-      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
-      "_index-BOnQTV8N.js",
-      "_index-yBjzXJbu.js",
-      "__commonjsHelpers-D6-XlEtG.js"
     ]
   },
   "resources/js/Components/Tailwind/Contact/ContactSimple.jsx": {
@@ -11799,7 +11786,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-TlQLFo3C.js",
+    "file": "assets/Product-DLV22xop.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -11833,7 +11820,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-8DSbstKD.js",
+    "file": "assets/ProductDetail-BlYUMPjv.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -12127,7 +12114,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-B72v3g25.js",
+    "file": "assets/ProductDetailHuaillys-Bp3AhOHw.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -15380,7 +15367,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-LjCfHY1X.js",
+    "file": "assets/System-lx5v9w8z.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

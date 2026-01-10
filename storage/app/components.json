@@ -3448,14 +3448,13 @@
                 "name": "Katya",
                 "data": [
                     "redirect",
+                    "class_section",
+                    "title",
+                    "description",
+                    "class_form_container",
                     "class_title",
-                    "class_card_description",
-                    "class_card_title",
-                    "class_card_button",
-                    "class_card_container",
-                    "title_ubication",
-                    "description_ubication",
-                    "stores_support"
+                    "class_description"
+                 
                 ],
                 "generals": [
                     "email_contact",
@@ -3501,18 +3500,7 @@
                     "model": "Social"
                 }
             },
-            {
-                "id": "ContactLaPetaca",
-                "name": "Contact - La Petaca Hotel",
-                "image": "contact-lapetaca.png",
-                "data": [
-                    "contactInfo",
-                    "socials",
-                    "accentColor",
-                    "locationImage"
-                ],
-                "generals": []
-            },
+           
             {
                 "id": "ContactWebQuirurgica",
                 "name": "Contact WebQuirurgica - Diseño Limpio",
@@ -3520,7 +3508,7 @@
                 "using": {
                     "model": "Service"
                 },
-                "data": [],
+                "data": ["class_opening_hours_container","class_form_container"],
                 "generals": [
                     "email_contact",
                     "phone_contact",

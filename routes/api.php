@@ -584,6 +584,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/benefits/status', [AdminBenefitController::class, 'status']);
     Route::patch('/benefits/{field}', [AdminBenefitController::class, 'boolean']);
     Route::delete('/benefits/{id}', [AdminBenefitController::class, 'delete']);
+      Route::put('/benefits/{id}/reorder', [AdminBenefitController::class, 'reorder']);
 
     Route::post('/applications', [AdminApplicationController::class, 'save']);
     Route::post('/applications/paginate', [AdminApplicationController::class, 'paginate']);

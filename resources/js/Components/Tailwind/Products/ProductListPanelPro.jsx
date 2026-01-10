@@ -60,8 +60,8 @@ const ProductListPanelPro = ({ items }) => {
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold font-title text-primary leading-tight">
              Tableros de Ingeniería: La Base de tus Grandes Proyectos
             </h2>
-            <p className="text-lg text-primary font-light leading-relaxed">
-              "En PanelPro, seleccionamos cada tablero bajo estándares de Grado Mueblería. Ya sea que busques la economía del MDP, la versatilidad del MDF o la resistencia estructural del Triplay, nuestras planchas de importación directa (Brasil, Tailandia y China) garantizan cortes limpios y acabados de lujo. Somos especialistas en volumen para el Parque Industrial de Villa El Salvador.
+            <p className="text-lg text-neutral-dark font-light leading-relaxed">
+              En PanelPro, seleccionamos cada tablero bajo estándares de Grado Mueblería. Ya sea que busques la economía del MDP, la versatilidad del MDF o la resistencia estructural del Triplay, nuestras planchas de importación directa (Brasil, Tailandia y China) garantizan cortes limpios y acabados de lujo. Somos especialistas en volumen para el Parque Industrial de Villa El Salvador.
             </p>
           </motion.div>
         </div>

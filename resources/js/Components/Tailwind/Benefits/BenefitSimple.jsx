@@ -12,7 +12,7 @@ const BenefitSimple = ({ data, items }) => {
                         {data?.title || 'Beneficios que Marcan la Diferencia'}
                     </h2>
                     <p className="text-lg sm:text-xl text-neutral-dark  max-w-3xl mx-auto">
-                        {data?.subtitle || 'Por qué los profesionales eligen nuestros productos'}
+                        {data?.subtitle || 'En Panel Pro, combinamos décadas de experiencia en el sector maderero con un servicio ágil y personalizado. Nos especializamos en brindar soluciones eficientes para que carpinteros y fabricantes logren resultados de alta gama con la mejor relación costo-beneficio'}
                     </p>
                 </div>
 
@@ -22,15 +22,20 @@ const BenefitSimple = ({ data, items }) => {
                             key={benefit.id || index}
                             className="group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-gray-100 overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-black/10 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
 
                             <div className="relative">
                                 {benefit.image && (
-                                    <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg overflow-hidden">
+                                    <div 
+                                        className="p-5 max-w-max rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg overflow-hidden"
+                                        style={{
+                                            backgroundColor: benefit.bg_color || '#71b6f9'
+                                        }}
+                                    >
                                         <img 
                                             src={`/storage/images/benefit/${benefit.image}`}
                                             alt={benefit.name}
-                                            className="w-10 h-10 object-contain"
+                                            className="w-12 h-12 object-contain"
                                             onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
                                         />
                                     </div>

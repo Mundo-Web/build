@@ -65,16 +65,21 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                             : '/api/cover/thumbnail/null';
 
                                         return (
-                                            <SwiperSlide key={index}>
+                                            <SwiperSlide key={index} className="h-auto">
                                                 <div className="group h-full">
                                                     {/* Card con diseño premium */}
-                                                    <div className={`relative h-full bg-gradient-to-br from-white via-neutral-50/50 to-white  p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden ${data?.class_indicators_card || ''}`}>
+                                                    <div className={`relative h-full min-h-[320px] bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden flex flex-col ${data?.class_indicators_card || ''}`}>
                                                       
                                                         {/* Contenido */}
-                                                        <div className="relative flex flex-col items-center text-center space-y-4">
+                                                        <div className="relative flex flex-col items-center text-center space-y-4 flex-1">
                                                             {/* Icono con backdrop blur */}
-                                                            <div className="relative">
-                                                                <div className={`relative bg-primary backdrop-blur-sm p-5 -full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ${data?.class_indicators_icon || ''}`}>
+                                                            <div className="relative flex-shrink-0">
+                                                                <div 
+                                                                    className={`relative backdrop-blur-sm p-5 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ${data?.class_indicators_icon || ''}`}
+                                                                    style={{
+                                                                        backgroundColor: item.bg_color || 'transparent'
+                                                                    }}
+                                                                >
                                                                     <img
                                                                         src={symbolUrl}
                                                                         alt={item.name}
@@ -85,7 +90,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                             </div>
 
                                                             {/* Número contador */}
-                                                            <div className="text-5xl font-light text-primary group-hover:scale-105 transition-transform duration-700">
+                                                            <div className="text-5xl font-light text-primary group-hover:scale-105 transition-transform duration-700 flex-shrink-0">
                                                                 <TextWithHighlight
                                                                     text={item.name}
                                                                     counter={true}
@@ -95,7 +100,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                             </div>
 
                                                             {/* Descripción */}
-                                                            <p className="text-sm text-neutral-dark font-light leading-relaxed whitespace-pre-line min-h-[3rem] group-hover:text-neutral-dark transition-colors duration-700">
+                                                            <p className="text-base text-neutral-dark font-light leading-relaxed whitespace-pre-line flex-1 flex items-center justify-center group-hover:text-neutral-dark transition-colors duration-700">
                                                                 <TextWithHighlight
                                                                     text={item.description}
                                                                     color="bg-primary"
