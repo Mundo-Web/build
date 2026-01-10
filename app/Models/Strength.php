@@ -8,17 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Strength extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids,hasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
+        'order_index',
         'name',
         'description',
         'visible',
         'status',
         'image',
+        'bg_color',
     ];
 
     protected $casts = [

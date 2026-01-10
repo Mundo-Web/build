@@ -348,7 +348,7 @@ const Benefits = ({ details }) => {
           {Fillable.has('benefits', 'image') && (
             <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
               <div className="row g-3">
-                <div className="col-12">
+                <div className="col-6">
                   <div className="card border-0 shadow-sm">
                     <div className="card-header bg-light">
                       <h6 className="mb-0">
@@ -374,7 +374,7 @@ const Benefits = ({ details }) => {
                 </div>
 
                 {Fillable.has('benefits', 'bg_color') && (
-                  <div className="col-12">
+                  <div className="col-6">
                     <div className="card border-0 shadow-sm">
                       <div className="card-header bg-light">
                         <h6 className="mb-0">

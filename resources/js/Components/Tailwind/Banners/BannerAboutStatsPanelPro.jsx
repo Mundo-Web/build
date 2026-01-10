@@ -77,7 +77,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                                 <div 
                                                                     className={`relative backdrop-blur-sm p-5 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ${data?.class_indicators_icon || ''}`}
                                                                     style={{
-                                                                        backgroundColor: item.bg_color || 'transparent'
+                                                                       backgroundColor: item.bg_color==='transparent' ? 'var(--bg-primary)' : (item.bg_color || 'var(--bg-primary)')
                                                                     }}
                                                                 >
                                                                     <img

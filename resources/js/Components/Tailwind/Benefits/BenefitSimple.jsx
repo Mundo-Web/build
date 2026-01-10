@@ -27,9 +27,9 @@ const BenefitSimple = ({ data, items }) => {
                             <div className="relative">
                                 {benefit.image && (
                                     <div 
-                                        className="p-5 max-w-max rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg overflow-hidden"
+                                        className="p-5 max-w-max rounded-full bg-primary flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg overflow-hidden"
                                         style={{
-                                            backgroundColor: benefit.bg_color || '#71b6f9'
+                                             backgroundColor: benefit.bg_color==='transparent' ? 'var(--bg-primary)' : (benefit.bg_color || 'var(--bg-primary)')
                                         }}
                                     >
                                         <img 

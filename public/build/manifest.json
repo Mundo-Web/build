@@ -2072,7 +2072,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-DEKZZwYd.js",
+    "file": "assets/Banners-D55qp7-4.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -2125,7 +2125,7 @@
     ]
   },
   "resources/js/Admin/Benefits.jsx": {
-    "file": "assets/Benefits-CWswVmvV.js",
+    "file": "assets/Benefits-FJg2Wp5Q.js",
     "name": "Benefits",
     "src": "resources/js/Admin/Benefits.jsx",
     "isEntry": true,
@@ -4008,7 +4008,7 @@
     ]
   },
   "resources/js/Admin/Strengths.jsx": {
-    "file": "assets/Strengths-CfMPk7d3.js",
+    "file": "assets/Strengths-D6P_fNoN.js",
     "name": "Strengths",
     "src": "resources/js/Admin/Strengths.jsx",
     "isEntry": true,
@@ -5985,7 +5985,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-DIW3hrUB.js",
+    "file": "assets/Banner-DBoNgisT.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -6348,7 +6348,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Benefit.jsx": {
-    "file": "assets/Benefit-DCcUfjly.js",
+    "file": "assets/Benefit-Z9GA6sOL.js",
     "name": "Benefit",
     "src": "resources/js/Components/Tailwind/Benefit.jsx",
     "isDynamicEntry": true,
@@ -14278,7 +14278,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Strength.jsx": {
-    "file": "assets/Strength-emld37jP.js",
+    "file": "assets/Strength-TILfb9ta.js",
     "name": "Strength",
     "src": "resources/js/Components/Tailwind/Strength.jsx",
     "isDynamicEntry": true,
@@ -15367,7 +15367,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-lx5v9w8z.js",
+    "file": "assets/System-KRiPUyiQ.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
