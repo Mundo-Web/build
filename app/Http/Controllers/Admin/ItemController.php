@@ -33,19 +33,22 @@ class ItemController extends BasicController
     public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
-    public $with4get = ['tags', 'amenities'];
+    public $with4get = ['tags', 'amenities', 'applications'];
 
     /**
-     * Override paginate to always include amenities relation
+     * Override paginate to always include amenities and applications relations
      */
     public function paginate(Request $request): HttpResponse|ResponseFactory
     {
-        // Agregar amenities a las relaciones si no está ya incluido
+        // Agregar amenities y applications a las relaciones si no están ya incluidos
         $with = $request->has('with') ? $request->with : '';
         $relations = array_filter(explode(',', $with));
         
         if (!in_array('amenities', $relations)) {
             $relations[] = 'amenities';
+        }
+        if (!in_array('applications', $relations)) {
+            $relations[] = 'applications';
         }
         if (!in_array('tags', $relations)) {
             $relations[] = 'tags';
@@ -474,7 +477,7 @@ class ItemController extends BasicController
             ]);
         }
 
-        // Manejo de Amenidades (solo para habitaciones)
+        // Manejo de Amenidades
         if ($request->has('amenities')) {
             $amenities = $request->input('amenities', []);
             // Log para debug
@@ -483,6 +486,17 @@ class ItemController extends BasicController
             if (is_array($amenities) && count($amenities) > 0) {
                 $jpa->amenities()->sync($amenities);
                 Log::info('Amenities sincronizados correctamente', ['count' => count($amenities)]);
+            }
+        }
+
+        // Manejo de Aplicaciones
+        if ($request->has('applications')) {
+            $applications = $request->input('applications', []);
+            Log::info('Applications recibidos:', ['applications' => $applications, 'item_id' => $jpa->id]);
+            
+            if (is_array($applications) && count($applications) > 0) {
+                $jpa->applications()->sync($applications);
+                Log::info('Applications sincronizados correctamente', ['count' => count($applications)]);
             }
         }
         

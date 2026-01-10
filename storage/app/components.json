@@ -4680,6 +4680,29 @@
         ]
     },
     {
+        "id": "application",
+        "icon": "mdi mdi-application",
+        "name": "Aplicaciones",
+        "options": [
+            {
+                "id": "ApplicationSimple",
+                "name": "Aplicaciones Simple",
+                "image": "application-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle",
+                    "footer_button_text",
+                    "footer_image"
+                ],
+                "using": {
+                    "model": "Application"
+                }
+            }
+        ]
+    },
+    {
         "id": "bananalab",
         "name": "BananaLab",
         "options": [

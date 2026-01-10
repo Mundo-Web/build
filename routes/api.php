@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryContro
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\InnovationController as AdminInnovationController;
+use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
@@ -98,6 +99,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ScrapController;
 use App\Http\Controllers\StrengthController;
 use App\Http\Controllers\BenefitController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\TemporalyImageController;
 use App\Http\Controllers\UnifiedImportController;
 
@@ -153,6 +155,9 @@ Route::get('/strengths', [StrengthController::class, 'getStrengths']);
 
 // Benefits API
 Route::get('/benefits', [BenefitController::class, 'getBenefits']);
+
+// Applications API
+Route::get('/applications', [ApplicationController::class, 'getApplications']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
@@ -579,6 +584,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/benefits/status', [AdminBenefitController::class, 'status']);
     Route::patch('/benefits/{field}', [AdminBenefitController::class, 'boolean']);
     Route::delete('/benefits/{id}', [AdminBenefitController::class, 'delete']);
+
+    Route::post('/applications', [AdminApplicationController::class, 'save']);
+    Route::post('/applications/paginate', [AdminApplicationController::class, 'paginate']);
+    Route::patch('/applications/status', [AdminApplicationController::class, 'status']);
+    Route::patch('/applications/{field}', [AdminApplicationController::class, 'boolean']);
+    Route::delete('/applications/{id}', [AdminApplicationController::class, 'delete']);
 
     Route::post('/apps', [AdminAppController::class, 'save']);
     Route::post('/apps/paginate', [AdminAppController::class, 'paginate']);

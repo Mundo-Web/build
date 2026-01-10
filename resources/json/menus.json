@@ -20,7 +20,9 @@
           { "label": "SubCategorías", "href": "/admin/subcategories", "icon": "mdi mdi-file-tree" },
           { "label": "Marcas", "href": "/admin/brands", "icon": "mdi mdi-label" },
           { "label": "Etiquetas", "href": "/admin/tags", "icon": "mdi mdi-label-multiple" },
-          { "id": "product-amenities", "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" }
+          { "id": "product-amenities", "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
+      { "label": "Aplicaciones", "href": "/admin/applications", "icon": "mdi mdi-apps" }
+        
         ]
       },
       {
