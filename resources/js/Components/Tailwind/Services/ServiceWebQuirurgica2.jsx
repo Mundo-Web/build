@@ -178,7 +178,7 @@ const ServiceWebQuirurgica2 = ({ data, items = [] }) => {
     });
 
     return (
-        <section id="servicios" className={`py-24 bg-sections-color  ${data?.class_section || ''}`}>
+        <section id="serviceWebQuirurgica2" className={`py-24 bg-sections-color  ${data?.class_section || ''}`}>
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
                 {/* Encabezado con diseño moderno */}
                 <div className={`mb-20 max-w-4xl ${data?.class_header_container || ''}`}>

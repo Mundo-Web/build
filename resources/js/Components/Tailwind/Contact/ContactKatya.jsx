@@ -304,6 +304,7 @@ const generalsData = generals || [];
  
     return (
         <motion.div 
+                id="contactKatya"
             className={`font-paragraph text-neutral-dark-dark min-h-screen ${data?.class_section || ''}`}
             initial="hidden"
             animate="visible"

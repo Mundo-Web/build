@@ -4413,6 +4413,40 @@
                 "using": {
                     "model": "Service"
                 }
+            },
+            {
+                "id": "FooterPanelPro",
+                "name": "Footer - Panel Pro Premium",
+                "image": "footer-panelpro.png",
+                "data": [
+                    "logo_footer",
+                    "policies_title",
+                    "privacy_text",
+                    "terms_text",
+                    "complaints_text",
+                    "company_title",
+                    "contact_title",
+                    "email_response_time",
+                    "show_newsletter",
+                    "newsletter_title",
+                    "newsletter_placeholder",
+                    "newsletter_button",
+                    "newsletter_sending",
+                    "copyright"
+                ],
+                "generals": [
+                    "footer_description",
+                    "footer_company_links",
+                    "phone_contact",
+                    "email_contact",
+                    "address",
+                    "opening_hours",
+                    "privacy_policy",
+                    "terms_conditions"
+                ],
+                "using": {
+                    "model": "Social"
+                }
             }
         ]
     },
