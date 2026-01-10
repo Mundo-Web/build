@@ -2644,16 +2644,14 @@
                 },
                 "generals": []
             },
-              {
+            {
                 "id": "ProductListPanelPro",
                 "name": "Productos - Panel Pro",
                 "image": "products-panelpro.png",
                 "data": [
-                    "rooms",
-                    "showFeatured",
-                    "accentColor",
                     "title",
-                    "subtitle"
+                    "subtitle",
+                    "description"
                 ],
                 "using": {
                     "model": "Item",
@@ -2668,12 +2666,16 @@
                         "subcategory",
                         "brand",
                         "images",
-                        "amenities"
+                        "features"
+                        
                     ],
-                    "limit": 8
+                    "limit": 20
                 },
-                "generals": []
+                "generals": [
+                    "whatsapp_advisors"
+                ]
             }
+              
         ]
     },
     {

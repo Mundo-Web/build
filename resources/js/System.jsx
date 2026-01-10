@@ -325,7 +325,7 @@ const System = ({
             case "filter":
                 return <Filter which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} setFavorites={setFavorites} favorites={favorites} />
             case "product":
-                return <Product which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites}
+                return <Product which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites} generals={generals}
                     setFavorites={setFavorites} contacts={contacts} />
             case "category":
                 return <Category which={value} data={data} items={getItems(itemsId)} />

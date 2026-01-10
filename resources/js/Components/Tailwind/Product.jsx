@@ -30,7 +30,8 @@ const Product = ({
     filteredData,
     favorites,
     setFavorites,
-    contacts
+    contacts,
+    generals,
 }) => {
     const getProduct = () => {
         switch (which) {
@@ -208,6 +209,7 @@ const Product = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
+                        generals={generals}
                     />
                 );
             default:
