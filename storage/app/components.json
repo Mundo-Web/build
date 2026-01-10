@@ -3455,7 +3455,8 @@
                     "description",
                     "class_form_container",
                     "class_title",
-                    "class_description"
+                    "class_description",
+                    "class_button_form"
                  
                 ],
                 "generals": [
@@ -5016,21 +5017,31 @@
                 "name": "Servicios por Categoría - WebQuirurgica2",
                 "image": "service-webquirurgica.png",
                 "data": [
-                    "class_section",
+                     "class_section",
+                    "class_header_container",
+                    "class_title",
+                    "class_title_highlight",
+                   
                     "class_card",
                     "class_card_icon",
-                    "button_card_text"
+                    "button_card_text",
+                    "type_web"
                 ],
                 "using": {
                     "model": "Service",
                     "with": [
                         "category",
-                        "subcategory"
+                        "subcategory",
+                        "images",
+                        "features"
                     ],
                     "filters": [
                         "featured"
                     ]
-                }
+                },
+                "generals": [
+                    "whatsapp_advisors"
+                ]
             }
         ]
     },

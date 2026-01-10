@@ -422,7 +422,7 @@ const generalsData = generals || [];
                             />
                             <motion.button 
                                 type="submit" 
-                                className="mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300"
+                                className={`mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300 ${data?.class_button_form || ''}`}
                                 variants={buttonHover}
                                 initial="rest"
                                 whileHover="hover"

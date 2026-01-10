@@ -26,12 +26,14 @@ const StrengthSimple = ({ items, data }) => {
     const renderCard = (item, index) => (
         <div
             key={item.id || index}
-            className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-primary/20"
+            className="group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-gray-200 overflow-hidden"
         >
-            <div className="flex items-start gap-4 mb-6">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+
+            <div className="relative">
                 {item.image && (
                     <div 
-                        className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg overflow-hidden"
+                        className="p-5 max-w-max rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg overflow-hidden"
                         style={{
                             backgroundColor: item.bg_color==='transparent' ? 'var(--bg-primary)' : (item.bg_color || 'var(--bg-primary)')
                         }}
@@ -39,29 +41,33 @@ const StrengthSimple = ({ items, data }) => {
                         <img 
                             src={`/storage/images/strength/${item.image}`}
                             alt={item.name}
-                            className="w-8 h-8 object-contain"
+                            className="w-12 h-12 object-contain"
                             onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
                         />
                     </div>
                 )}
+
+                <h3 className="text-2xl font-bold text-primary mb-4 group-hover:text-primary/80 transition-colors">
+                    {item.name}
+                </h3>
+
+                <p className="text-gray-600 leading-relaxed">
+                    {item.description}
+                </p>
             </div>
 
-            <h3 className="text-xl font-bold text-primary mb-3">
-                {item.name}
-            </h3>
-
-            <p className="text-gray-600 leading-relaxed">
-                {item.description}
-            </p>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
         </div>
     );
 
     return (
-        <section className="py-20 sm:py-24 bg-sections-color">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-20 sm:py-24 bg-swhite relative overflow-hidden">
+            <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -ml-48"></div>
+            <div className="absolute top-1/2 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -mr-48"></div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <div className="text-center mb-16">
-                  
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-7xl font-title font-bold text-primary mb-4">
+                    <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-primary font-title mb-4">
                         {data?.title || '¿Por Qué Elegirnos?'}
                     </h2>
                     <p className="text-lg sm:text-xl text-neutral-dark max-w-3xl mx-auto">
@@ -94,19 +100,29 @@ const StrengthSimple = ({ items, data }) => {
 
                 {/* Footer opcional */}
                 {data?.footer_text && (
-                    <div className="mt-16 relative overflow-hidden rounded-3xl">
-                        <div className="absolute inset-0 bg-primary"></div>
-                        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-10"></div>
-
-                        <div className="relative p-8 sm:p-12 text-white text-center">
-                            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-                                {data.footer_text}
-                            </h3>
-                            {data?.footer_subtitle && (
-                                <p className="text-lg sm:text-xl opacity-90 max-w-2xl mx-auto">
-                                    {data.footer_subtitle}
-                                </p>
+                    <div className="mt-16 text-center">
+                        <div className="relative inline-block rounded-2xl overflow-hidden shadow-2xl">
+                            {data?.footer_image && (
+                                <div className="absolute inset-0">
+                                    <img
+                                        src={`/storage/images/system/${data.footer_image}`}
+                                        alt="Professional work"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
+                                    />
+                                    <div className="absolute inset-0 bg-primary/95"></div>
+                                </div>
                             )}
+                            <div className="relative p-8 sm:p-12 text-white">
+                                <p className="text-2xl sm:text-3xl font-bold mb-2">
+                                    {data.footer_text}
+                                </p>
+                                {data?.footer_subtitle && (
+                                    <p className="text-lg sm:text-xl opacity-90">
+                                        {data.footer_subtitle}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
