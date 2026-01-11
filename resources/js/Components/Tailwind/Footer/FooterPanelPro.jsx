@@ -185,7 +185,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                 {products.map((product) => (
                                     <li key={product.id}>
                                         <a 
-                                            href={`/producto/${product.slug}`}
+                                           href={`#`}
                                             className="hover:text-wood-300 transition-colors line-clamp-1"
                                             title={product.name}
                                         >
