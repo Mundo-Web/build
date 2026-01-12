@@ -73,12 +73,12 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                         onResize={(swiper) => updatePagination(swiper)}
                         breakpoints={{
                             768: { slidesPerView: 2, spaceBetween: 24 },
-                            1024: { slidesPerView: 2, spaceBetween: 28 },
+                            1024: { slidesPerView: 2, spaceBetween: 20 },
                         }}
-                        className="testimonials-swiper lg:px-10"
+                        className="testimonials-swiper !py-5"
                     >
                         {testimonials.map((testimonial, index) => (
-                            <SwiperSlide key={testimonial.id || index} className="!h-auto ">
+                            <SwiperSlide key={testimonial.id || index} className="!h-auto  !p-4">
                                 <div className="group relative h-full cursor-pointer">
                                     {/* Card base */}
                                     <div className="bg-white p-7 rounded-2xl shadow-sm h-full flex flex-col border border-gray-100 transition-all duration-500 ease-out group-hover:opacity-0 group-hover:scale-95">
