@@ -481,6 +481,7 @@ const Rooms = () => {
     'executive': 'Ejecutiva',
     'single': 'Individual',
     'double': 'Doble',
+    'triple': 'Triple'
   };
 
   return (
@@ -843,10 +844,12 @@ const Rooms = () => {
                         <option value="standard">Estándar</option>
                         <option value="single">Individual</option>
                         <option value="double">Doble</option>
+                        <option value="triple">Triple</option>
                         <option value="suite">Suite</option>
                         <option value="deluxe">Deluxe</option>
                         <option value="presidential">Presidencial</option>
                         <option value="family">Familiar</option>
+
                         <option value="executive">Ejecutiva</option>
                       </SelectFormGroup>
                     </div>
