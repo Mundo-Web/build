@@ -208,6 +208,13 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
 
     const [draggedVideoIndex, setDraggedVideoIndex] = useState(null);
     
+    // Verificar qué secciones tienen campos disponibles
+    const hasCategorizationFields = Fillable.has('services', 'service_category_id') || Fillable.has('services', 'service_subcategory_id');
+    const hasIdentificationFields = Fillable.has('services', 'name') || Fillable.has('services', 'path');
+    const hasSummaryField = Fillable.has('services', 'summary');
+    const hasGalleryFields = Fillable.has('services', 'is_gallery') || Fillable.has('services', 'pdf') || Fillable.has('services', 'linkvideo');
+    const hasMainImagesFields = Fillable.has('services', 'image') || Fillable.has('services', 'background_image');
+    
     const handleVideoDragStart = (e, index) => {
         setDraggedVideoIndex(index);
     };
@@ -269,13 +276,13 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
 
         idRef.current.value = data?.id ?? "";
         
-        nameRef.current.value = data?.name ?? "";
-        summaryRef.current.value = data?.summary ?? "";
+        if (nameRef.current) nameRef.current.value = data?.name ?? "";
+        if (summaryRef.current) summaryRef.current.value = data?.summary ?? "";
         if (pathRef.current) pathRef.current.value = data?.path ?? "";
         if (slugRef.current) slugRef.current.value = data?.slug ?? "";
         
         // Establecer el contenido del editor Quill
-        if (descriptionRef.editor) {
+        if (descriptionRef.current && descriptionRef.editor) {
             descriptionRef.editor.root.innerHTML = data?.description ?? "";
         }
         
@@ -291,17 +298,21 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
             if (backgroundImageRef.resetDeleteFlag) backgroundImageRef.resetDeleteFlag();
         }
 
-        $(categoryRef.current)
-            .val(data?.service_category_id || null)
-            .trigger("change");
+        if (categoryRef.current) {
+            $(categoryRef.current)
+                .val(data?.service_category_id || null)
+                .trigger("change");
+        }
         
         if (data?.service_category_id) {
             setSelectedCategory(Number(data.service_category_id));
         }
         
-        $(subcategoryRef.current)
-            .val(data?.service_subcategory_id || null)
-            .trigger("change");
+        if (subcategoryRef.current) {
+            $(subcategoryRef.current)
+                .val(data?.service_subcategory_id || null)
+                .trigger("change");
+        }
 
         if (data?.images && Array.isArray(data.images)) {
             const loadedImages = data.images.map(img => ({
@@ -366,18 +377,22 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
         const formData = new FormData();
         
         if (idRef.current.value) formData.append('id', idRef.current.value);
-        formData.append('name', nameRef.current.value);
-        formData.append('summary', summaryRef.current.value);
-        formData.append('description', descriptionRef.current.value);
+        if (nameRef.current) formData.append('name', nameRef.current.value);
+        if (summaryRef.current) formData.append('summary', summaryRef.current.value);
+        if (descriptionRef.current) formData.append('description', descriptionRef.current.value);
         
-        const categoryValue = categoryRef.current.value;
-        if (categoryValue && categoryValue !== '' && categoryValue !== 'null') {
-            formData.append('service_category_id', categoryValue);
+        if (categoryRef.current) {
+            const categoryValue = categoryRef.current.value;
+            if (categoryValue && categoryValue !== '' && categoryValue !== 'null') {
+                formData.append('service_category_id', categoryValue);
+            }
         }
 
-        const subcategoryValue = subcategoryRef.current.value;
-        if (subcategoryValue && subcategoryValue !== '' && subcategoryValue !== 'null') {
-            formData.append('service_subcategory_id', subcategoryValue);
+        if (subcategoryRef.current) {
+            const subcategoryValue = subcategoryRef.current.value;
+            if (subcategoryValue && subcategoryValue !== '' && subcategoryValue !== 'null') {
+                formData.append('service_subcategory_id', subcategoryValue);
+            }
         }
 
         if (pathRef.current) {
@@ -543,7 +558,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                         caption: "ID",
                         visible: false,
                     },
-                    {
+                    (Fillable.has('services', 'service_category_id') || Fillable.has('services', 'service_subcategory_id')) && {
                         dataField: "category.name",
                         caption: "Categoría",
                         width: "150px",
@@ -562,7 +577,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                             );
                         },
                     },
-                    {
+                    Fillable.has('services', 'name') && {
                         dataField: "name",
                         caption: "Servicio",
                         minWidth: "300px",
@@ -655,7 +670,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                             );
                         },
                     },
-                    {
+                    Fillable.has('services', 'visible') && {
                         dataField: "visible",
                         caption: "Visible",
                         dataType: "boolean",
@@ -676,7 +691,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                             );
                         },
                     },
-                    {
+                    Fillable.has('services', 'featured') && {
                         dataField: "featured",
                         caption: "Destacado",
                         dataType: "boolean",
@@ -809,29 +824,32 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                         {/* Pestaña: Información Básica */}
                         <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
                             <div className="row g-3">
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-tag me-2"></i>Identificación</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <InputFormGroup
-                                                eRef={nameRef}
-                                                label="Nombre del Servicio"
-                                                required
-                                                hidden={!Fillable.has('services', 'name')}
-                                            />
-                                            <InputFormGroup
-                                                eRef={pathRef}
-                                                label="Ruta (Path)"
-                                                placeholder="/mi-servicio"
-                                                hidden={!Fillable.has('services', 'path')}
-                                            />
+                                {hasIdentificationFields && (
+                                    <div className={hasCategorizationFields ? "col-md-6" : "col-12"}>
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0"><i className="fas fa-tag me-2"></i>Identificación</h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <InputFormGroup
+                                                    eRef={nameRef}
+                                                    label="Nombre del Servicio"
+                                                    required
+                                                    hidden={!Fillable.has('services', 'name')}
+                                                />
+                                                <InputFormGroup
+                                                    eRef={pathRef}
+                                                    label="Ruta (Path)"
+                                                    placeholder="/mi-servicio"
+                                                    hidden={!Fillable.has('services', 'path')}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                                 
-                                <div className="col-md-6">
+                                {hasCategorizationFields && (
+                                    <div className="col-md-6">
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
                                             <h6 className="mb-0"><i className="fas fa-sitemap me-2"></i>Categorización</h6>
@@ -867,9 +885,11 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                             </SelectFormGroup>
                                         </div>
                                     </div>
-                                </div>
+                                    </div>
+                                )}
                                 
-                                <div className="col-12">
+                                {hasSummaryField && (
+                                    <div className="col-12">
                                     <div className="card border-0 shadow-sm">
                                         <div className="card-header">
                                             <h6 className="mb-0"><i className="fas fa-align-left me-2"></i>Descripción</h6>
@@ -884,14 +904,16 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                             />
                                         </div>
                                     </div>
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {/* Pestaña: Multimedia */}
                         <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
                             <div className="row g-3">
-                                <div className="col-md-6">
+                                {hasMainImagesFields && (
+                                    <div className={hasGalleryFields ? "col-md-6" : "col-12"}>
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
                                             <h6 className="mb-0"><i className="fas fa-image me-2"></i>Imágenes Principales</h6>
@@ -919,9 +941,11 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    </div>
+                                )}
                                 
-                                <div className="col-md-6">
+                                {hasGalleryFields && (
+                                    <div className={hasMainImagesFields ? "col-md-6" : "col-12"}>
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
                                             <h6 className="mb-0"><i className="fas fa-photo-video me-2"></i>Galería y Multimedia</h6>
@@ -1284,7 +1308,8 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                             )}
                                         </div>
                                     </div>
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
