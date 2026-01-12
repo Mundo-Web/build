@@ -61,12 +61,14 @@ const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
 const Store = React.lazy(() => import("./Components/Tailwind/Store"));
 const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
 
-// Componente de carga para usar con Suspense
+// Componente de carga profesional para usar con Suspense
 const LoadingFallback = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [showFallback, setShowFallback] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
-    const [progress, setProgress] = useState(10);
+    const [progress, setProgress] = useState(0);
+    const [loadingText, setLoadingText] = useState('Cargando');
+    const [fadeOut, setFadeOut] = useState(false);
 
     useEffect(() => {
         // Detectar mobile
@@ -77,116 +79,160 @@ const LoadingFallback = () => {
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
-        // Simular progreso de carga más realista
+        // Animación de puntos en "Cargando..."
+        const textInterval = setInterval(() => {
+            setLoadingText(prev => {
+                const dots = (prev.match(/\./g) || []).length;
+                return dots >= 3 ? 'Cargando' : prev + '.';
+            });
+        }, 400);
+
+        // Progreso suave y realista
         const progressInterval = setInterval(() => {
             setProgress(prev => {
                 if (prev >= 95) return prev;
-                // Progreso más lento al final
-                const increment = prev < 50 ? Math.random() * 15 + 5 : Math.random() * 5 + 1;
+                // Progreso más rápido al inicio, más lento al final
+                const increment = prev < 30 ? Math.random() * 20 + 10 
+                    : prev < 70 ? Math.random() * 10 + 5 
+                    : Math.random() * 3 + 1;
                 return Math.min(prev + increment, 95);
             });
-        }, 200);
+        }, 300);
 
         // Timeout diferenciado para mobile vs desktop
         const timeout = setTimeout(() => {
             setProgress(100);
-            setTimeout(() => setShowFallback(false), 300);
-        }, isMobile ? 1500 : 2500);
+            setFadeOut(true);
+            setTimeout(() => setShowFallback(false), 600);
+        }, isMobile ? 1200 : 2000);
 
         return () => {
             clearTimeout(timeout);
             clearInterval(progressInterval);
+            clearInterval(textInterval);
             window.removeEventListener('resize', checkMobile);
         };
     }, [isMobile]);
 
-    // Si ya no mostrar fallback, hacer transición suave manteniendo la barra de progreso
-    if (!showFallback) {
-        return (
-            <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/95 backdrop-blur-sm z-50">
-                <div className="animate-bounce">
+    // Renderizado con fade-out elegante
+    const containerClasses = `fixed inset-0 flex flex-col justify-center items-center z-50 transition-all duration-600 ${
+        fadeOut 
+            ? 'opacity-0 scale-95' 
+            : 'opacity-100 scale-100'
+    }`;
+
+    const backgroundClasses = `absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white ${
+        fadeOut ? 'backdrop-blur-none' : 'backdrop-blur-sm'
+    }`;
+
+    if (!showFallback) return null;
+
+    return (
+        <div className={containerClasses}>
+            {/* Background con gradiente */}
+            <div className={backgroundClasses}></div>
+            
+            {/* Contenido */}
+            <div className="relative z-10 flex flex-col items-center">
+                {/* Logo con animación pulse suave */}
+                <div className="relative">
+                    {/* Círculo de fondo animado */}
+                    <div className="absolute inset-0 -m-8 rounded-full bg-primary/5 animate-pulse"></div>
+                    
                     <img
-                        src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
+                        src={`/assets/resources/loading.png?v=${crypto.randomUUID()}`}
                         alt={Global.APP_NAME}
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/assets/img/logo-bk.svg";
+                            e.target.src = "/assets/resources/logo.png";
                         }}
-                        className={`${isMobile ? 'w-36' : 'w-48 lg:w-64'
-                            } transition-all duration-300 opacity-50`}
+                        onLoad={() => setIsLoaded(true)}
+                        className={`relative ${
+                            isMobile ? 'w-40 sm:w-52' : 'w-64 lg:w-80'
+                        } transition-all duration-700 ease-out ${
+                            isLoaded 
+                                ? 'opacity-100 scale-100' 
+                                : 'opacity-0 scale-90'
+                        } ${!fadeOut && 'animate-pulse'}`}
+                        style={{
+                            filter: fadeOut ? 'blur(4px)' : 'blur(0px)',
+                            animationDuration: '2s'
+                        }}
                         loading="eager"
                         decoding="async"
                     />
                 </div>
 
-                {/* Mantener barra de progreso pero más sutil */}
-                <div className={`mt-4 bg-gray-200 rounded-full h-1 ${isMobile ? 'w-32' : 'w-48'
+                {/* Texto "Cargando..." */}
+                <div className={`mt-8 text-center transition-opacity duration-500 ${
+                    fadeOut ? 'opacity-0' : 'opacity-100'
+                }`}>
+                    <p className={`font-medium text-gray-700 ${
+                        isMobile ? 'text-base' : 'text-lg'
                     }`}>
-                    <div
-                        className="bg-primary h-1 rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min(progress + 5, 100)}%` }}
-                    ></div>
+                        {loadingText}
+                    </p>
                 </div>
 
+                {/* Barra de progreso moderna con gradiente */}
+                <div className={`mt-6 ${
+                    isMobile ? 'w-48' : 'w-72'
+                } transition-all duration-500 ${
+                    fadeOut ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+                }`}>
+                    {/* Contenedor de la barra */}
+                    <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                        {/* Barra de progreso con gradiente */}
+                        <div
+                            className="absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out"
+                            style={{
+                                width: `${progress}%`,
+                                background: 'linear-gradient(90deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%)',
+                                '--tw-gradient-from': 'var(--primary-color, #6658dd)',
+                                '--tw-gradient-to': 'var(--secondary-color, #4c43a8)'
+                            }}
+                        >
+                            {/* Efecto de brillo animado */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
+                                style={{
+                                    animation: 'shimmer 2s infinite'
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+                    
+                    {/* Porcentaje */}
+                    <div className="mt-2 text-center">
+                        <span className="text-xs text-gray-500 font-medium">
+                            {Math.round(progress)}%
+                        </span>
+                    </div>
+                </div>
 
+                {/* Spinner de respaldo si la imagen no carga */}
+                {!isLoaded && (
+                    <div className="mt-4">
+                        <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-primary ${
+                            isMobile ? 'h-8 w-8' : 'h-10 w-10'
+                        }`}></div>
+                    </div>
+                )}
             </div>
-        );
-    }
 
-    return (
-        <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/95 backdrop-blur-sm z-50">
-            <div className="animate-bounce">
-                <img
-                    src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
-                    alt={Global.APP_NAME}
-                    onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/assets/img/logo-bk.svg";
-                    }}
-                    onLoad={() => {
-                        setIsLoaded(true);
-                        // En mobile, ocultar más rápido una vez cargado
-                        if (isMobile) {
-                            setTimeout(() => setShowFallback(false), 300);
-                        }
-                    }}
-                    className={`${isMobile ? 'w-32 sm:w-48' : 'w-64 lg:w-96'
-                        } transition-all duration-300 transform hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'
-                        }`}
-                    loading="eager"
-                    decoding="async"
-                />
-            </div>
-
-            {/* Spinner de respaldo si la imagen no carga */}
-            {!isLoaded && (
-                <div className={`animate-spin rounded-full border-b-2 border-primary mt-4 ${isMobile ? 'h-8 w-8' : 'h-12 w-12'
-                    }`}></div>
-            )}
-
-            {/* Indicador de progreso mejorado */}
-            {isMobile && (
-                <div className="mt-4 w-32 bg-gray-200 rounded-full h-1.5">
-                    <div
-                        className="bg-primary h-1.5 rounded-full transition-all duration-500 ease-out"
-                        style={{
-                            width: `${Math.max(progress, 10)}%`
-                        }}
-                    ></div>
-                </div>
-            )}
-
-            {/* Barra de progreso para desktop también */}
-            {!isMobile && (
-                <div className="mt-6 w-48 bg-gray-200 rounded-full h-2">
-                    <div
-                        className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
-                        style={{
-                            width: `${Math.max(progress, 10)}%`
-                        }}
-                    ></div>
-                </div>
-            )}
+            {/* Estilos inline para animación de shimmer */}
+            <style>{`
+                @keyframes shimmer {
+                    0% {
+                        transform: translateX(-100%);
+                    }
+                    100% {
+                        transform: translateX(100%);
+                    }
+                }
+                .animate-shimmer {
+                    animation: shimmer 2s infinite;
+                }
+            `}</style>
         </div>
     );
 };

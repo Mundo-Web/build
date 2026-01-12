@@ -29,6 +29,7 @@ composer.lock
 /storage/app/backup.sql
 /public/assets/resources/icon.png
 /public/assets/resources/logo.png
+/public/assets/resources/loading.png
 /public/assets/resources/logo-footer.png
 /public/assets/resources/job-application.png
 /public/assets/resources/testimonials.png

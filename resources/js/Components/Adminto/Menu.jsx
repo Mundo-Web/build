@@ -61,7 +61,7 @@ const Menu = ({ session, hasRole }) => {
   }, [searchQuery]);
 
   return (
-    <div className="left-side-menu">
+    <div className="left-side-menu left-side-menu-admin">
       <div className="h-100" data-simplebar>
         <div className="user-box text-center">
           <img
@@ -154,7 +154,7 @@ const Menu = ({ session, hasRole }) => {
                   style={{
                     paddingLeft: '32px',
                     borderRadius: '4px',
-                    backgroundColor: '#f8f9fa'
+                    backgroundColor: 'transparent',
                   }}
                 />
                 <i 

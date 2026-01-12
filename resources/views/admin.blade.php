@@ -59,7 +59,88 @@
     @vite('resources/js/' . $route)
     @inertiaHead
 
+    @php
+        $colors = \App\Models\SystemColor::all();
+        $primaryColor = $colors->firstWhere('name', 'primary')?->description ?? '#6658dd';
+        $menuAdminColor = $colors->firstWhere('name', 'menu-admin')?->description;
+        // Si menu-admin está vacío o null, usar primary
+        $menuAdminColor = empty($menuAdminColor) ? $primaryColor : $menuAdminColor;
+        
+        // Función para detectar si un color es oscuro o claro
+        function isColorDark($hexColor) {
+            // Eliminar el # si existe
+            $hexColor = ltrim($hexColor, '#');
+            
+            // Convertir a RGB
+            $r = hexdec(substr($hexColor, 0, 2));
+            $g = hexdec(substr($hexColor, 2, 2));
+            $b = hexdec(substr($hexColor, 4, 2));
+            
+            // Calcular la luminosidad percibida (YIQ formula)
+            $yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+            
+            // Si YIQ >= 128, el color es claro; si < 128, es oscuro
+            return $yiq < 128;
+        }
+        
+        $textColor = isColorDark($menuAdminColor) ? '#ffffff' : '#6c757d';
+    @endphp
+
     <style>
+        :root {
+            --menu-admin-color: {{ $menuAdminColor }};
+            --menu-admin-text-color: {{ $textColor }};
+        }
+
+        /* Aplicar color al menú lateral izquierdo completo (Menu.jsx) */
+        .left-side-menu-admin {
+            background-color: var(--menu-admin-color) !important;
+        }
+        
+        /* Ajustar color de texto según luminosidad del fondo - TODOS LOS ELEMENTOS */
+        .left-side-menu-admin,
+        .left-side-menu-admin *,
+        .left-side-menu-admin .user-box .user-name,
+        .left-side-menu-admin .user-box .left-user-info,
+        .left-side-menu-admin .user-box p,
+        .left-side-menu-admin .user-box a,
+        .left-side-menu-admin .list-inline a,
+        .left-side-menu-admin #sidebar-menu .menu-title,
+        .left-side-menu-admin #sidebar-menu .side-nav-link,
+        .left-side-menu-admin #sidebar-menu .side-nav-link span,
+        .left-side-menu-admin #sidebar-menu .side-nav-link i,
+        .left-side-menu-admin #sidebar-menu a,
+        .left-side-menu-admin #sidebar-menu li,
+        .left-side-menu-admin .form-control,
+        .left-side-menu-admin .mdi,
+        .left-side-menu-admin i {
+            color: var(--menu-admin-text-color) !important;
+        }
+        
+        /* Placeholder del buscador */
+        .left-side-menu-admin .form-control::placeholder {
+            color: var(--menu-admin-text-color) !important;
+            opacity: 0.6;
+        }
+        
+        /* Bordes del input del buscador */
+        .left-side-menu-admin .form-control {
+            border-color: var(--menu-admin-text-color) !important;
+            opacity: 0.3;
+        }
+        
+        /* Hover en links del menú */
+        .left-side-menu-admin #sidebar-menu .side-nav-link:hover,
+        .left-side-menu-admin #sidebar-menu .side-nav-link:hover * {
+            color: var(--menu-admin-text-color) !important;
+            opacity: 0.8;
+        }
+
+        /* Aplicar color SOLO a la sección del logo en el navbar (NavBar.jsx) */
+        .navbar-custom .logo-box {
+            background-color: var(--menu-admin-color) !important;
+        }
+
         .cursor-pointer {
             cursor: pointer;
         }

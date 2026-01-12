@@ -18,10 +18,7 @@ class SystemColorSeeder extends Seeder
                 'name' => 'primary',
                 'description' => '#007BFF',
             ],
-            [
-                'name' => 'gradient-background',
-                'description' => '',
-            ],
+           
             [
                 'name' => 'secondary',
                 'description' => '#28A745',
@@ -42,12 +39,33 @@ class SystemColorSeeder extends Seeder
                 'name' => 'sections-color',
                 'description' => '#313A40',
             ],
+              [
+                'name' => 'warning',
+                'description' => '#313A40',
+            ],
+            [
+                'name' => 'danger',
+                'description' => '#313A40',
+            ],
+            [
+                'name' => 'info',
+                'description' => '#313A40',
+            ],
+            [
+                'name' => 'success',
+                'description' => '#313A40',
+            ],
+
+            [
+                'name' => 'menu-admin',
+                'description' => '', // Por defecto usará el color primary
+            ],
 
         ];
 
-        SystemColor::truncate();
+     
         foreach ($colors as $color) {
-            SystemColor::updateOrCreate(['name' => $color['name']], $color);
+            SystemColor::firstOrCreate(['name' => $color['name']], $color);
         }
     }
 }
