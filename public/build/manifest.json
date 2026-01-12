@@ -450,8 +450,8 @@
       "_Number2Currency-ld0bFawA.js"
     ]
   },
-  "_ProductCardSelector-Bnxl-8br.js": {
-    "file": "assets/ProductCardSelector-Bnxl-8br.js",
+  "_ProductCardSelector-RLpyVqv0.js": {
+    "file": "assets/ProductCardSelector-RLpyVqv0.js",
     "name": "ProductCardSelector",
     "imports": [
       "_preload-helper-BfFHrpNk.js",
@@ -8872,7 +8872,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-CcGdMx0u.js",
+    "file": "assets/Filter-DX05u9Fk.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -9197,7 +9197,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-F3GezTvh.js",
+    "file": "assets/CatalogoFiltrosDental-BWSGggqx.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -9209,7 +9209,7 @@
       "_ArrayJoin-2k6ba35P.js",
       "_SelectForm-DbFcgKj2.js",
       "_main-B6F2O9-U.js",
-      "_ProductCardSelector-Bnxl-8br.js",
+      "_ProductCardSelector-RLpyVqv0.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "resources/js/Components/Tailwind/Headers/HeaderSearch.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
@@ -9554,7 +9554,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
-    "file": "assets/FilterHuaillys-B9V7SPhm.js",
+    "file": "assets/FilterHuaillys-BNd_BycL.js",
     "name": "FilterHuaillys",
     "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
     "isDynamicEntry": true,
@@ -9566,7 +9566,7 @@
       "_autoplay-LLsywiyO.js",
       "resources/js/Components/Tailwind/Categories/CategoryInfiniteSlider.jsx",
       "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
-      "_ProductCardSelector-Bnxl-8br.js",
+      "_ProductCardSelector-RLpyVqv0.js",
       "_ItemsRest-aXRCH7e7.js",
       "_Loading-B-FwDSWi.js",
       "_NoResult-DlL_OOrq.js",
@@ -11810,7 +11810,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-HypbGPc6.js",
+    "file": "assets/Product-T7N-FU5I.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isDynamicEntry": true,
@@ -11852,7 +11852,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-CoCE2Pw3.js",
+    "file": "assets/ProductDetail-DtDbT7X2.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -12154,7 +12154,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-B-1u-X96.js",
+    "file": "assets/ProductDetailHuaillys-iteHwXQx.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isDynamicEntry": true,
@@ -12903,7 +12903,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx": {
-    "file": "assets/ProductCardSelector-CmCTNopN.js",
+    "file": "assets/ProductCardSelector-C-YMTINj.js",
     "name": "ProductCardSelector",
     "src": "resources/js/Components/Tailwind/Products/ProductCardSelector.jsx",
     "isEntry": true,
@@ -15421,7 +15421,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BUV-qJe4.js",
+    "file": "assets/System-BBnHUtc0.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
