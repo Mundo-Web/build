@@ -525,6 +525,33 @@ class HomeController extends BasicController
                 ];
             });
 
+        // Vistas de productos por dispositivo (total histórico)
+        $productViewsByDevice = AnalyticsEvent::select('device_type', DB::raw('COUNT(*) as count'))
+            ->where('event_type', 'product_view')
+            ->whereNotNull('item_id')
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
+        // Vistas de productos hoy por dispositivo
+        $productViewsTodayByDevice = AnalyticsEvent::select('device_type', DB::raw('COUNT(*) as count'))
+            ->where('event_type', 'product_view')
+            ->whereNotNull('item_id')
+            ->whereDate('created_at', $today)
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
         return [
             'totalProducts' => $totalProducts,
             'totalStock' => $totalStock,
@@ -590,6 +617,8 @@ class HomeController extends BasicController
             'productClicksThisMonth' => $productClicksThisMonth,
             'productClicksByDevice' => $productClicksByDevice,
             'productClicksTodayByDevice' => $productClicksTodayByDevice,
+            'productViewsByDevice' => $productViewsByDevice,
+            'productViewsTodayByDevice' => $productViewsTodayByDevice,
             'dashboardVisibility' => $this->getDashboardVisibility(),
             'hasRootRole' => $this->hasRootRole(),
         ];

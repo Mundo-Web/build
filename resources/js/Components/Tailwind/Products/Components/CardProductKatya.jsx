@@ -4,7 +4,7 @@ import { Star, Eye, Heart, Tag, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
-const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
+const CardProductKatya = ({ product, data, favorites = [], setFavorites, onClickTracking }) => {
     const [isHovered, setIsHovered] = useState(false);
     // Verificar si el producto está en favoritos
     const isFavorite = favorites.some((fav) => fav.id === product?.id);
@@ -44,6 +44,11 @@ const CardProductKatya = ({ product, data, favorites = [], setFavorites }) => {
 
     // Función para ir al detalle del producto
     const goToDetail = () => {
+        // Trackear el click si la función está disponible
+        if (onClickTracking && product) {
+            onClickTracking(product);
+        }
+        
         const slug = product?.slug || product?.id;
         window.location.href = `/product/${slug}`;
     };

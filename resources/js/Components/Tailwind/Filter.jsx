@@ -1,5 +1,7 @@
 import React from "react"
+import ItemsRest from "../../Actions/ItemsRest";
 
+const itemsRest = new ItemsRest();
 
 const FilterSimple = React.lazy(() => import('./Filters/FilterSimple'))
 const CatalagoFiltros = React.lazy(() => import('./Filters/CatalagoFiltros'))
@@ -15,6 +17,18 @@ const CatalogoFiltrosDental = React.lazy(() => import('./Filters/CatalogoFiltros
 const CatalogoFiltrosKatya = React.lazy(() => import('./Filters/CatalogoFiltrosKatya'))
 const FilterHuaillys = React.lazy(() => import('./Filters/FilterHuaillys'))
 const Filter = ({ which, items, data, cart, setCart, filteredData, setFavorites, favorites }) => {
+  // Función para trackear clicks en productos
+  const handleClickTracking = async (item) => {
+    const request = {
+      id: item?.id,
+      page_url: window.location.href,
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent,
+      timestamp: new Date().toISOString()
+    };
+    await itemsRest.updateClicks(request);
+  };
+
   const getFilter = () => {
     switch (which) {
       case 'FilterSimple':
@@ -39,13 +53,13 @@ const Filter = ({ which, items, data, cart, setCart, filteredData, setFavorites,
       case 'CatalagoFiltrosPaani':
         return <CatalagoFiltrosPaani data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} />
       case 'CatalogoFiltrosDental':
-        return <CatalogoFiltrosDental data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
+        return <CatalogoFiltrosDental data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} onClickTracking={handleClickTracking} />
       case 'CatalogoFiltrosKatya':
-        return <CatalogoFiltrosKatya data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
+        return <CatalogoFiltrosKatya data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} onClickTracking={handleClickTracking} />
       case 'FilterHuaillys':
-        return <FilterHuaillys data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
+        return <FilterHuaillys data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} onClickTracking={handleClickTracking} />
       case 'CatalogoIbergruas':
-        return <CatalogoIbergruas data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} />
+        return <CatalogoIbergruas data={data} items={items} cart={cart} setCart={setCart} filteredData={filteredData} setFavorites={setFavorites} favorites={favorites} onClickTracking={handleClickTracking} />
       default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }

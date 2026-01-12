@@ -184,12 +184,10 @@ const LoadingFallback = () => {
                     <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                         {/* Barra de progreso con gradiente */}
                         <div
-                            className="absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out"
+                            className="absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out"
                             style={{
                                 width: `${progress}%`,
-                                background: 'linear-gradient(90deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%)',
-                                '--tw-gradient-from': 'var(--primary-color, #6658dd)',
-                                '--tw-gradient-to': 'var(--secondary-color, #4c43a8)'
+                              
                             }}
                         >
                             {/* Efecto de brillo animado */}

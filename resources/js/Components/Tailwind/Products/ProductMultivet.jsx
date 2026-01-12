@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCart }) => {
+const ProductMultivet = ({ items, data, favorites = [], setFavorites, cart, setCart, onClickTracking }) => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
   // Referencias para animaciones
@@ -246,6 +246,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCar
                         data={data}
                         favorites={favorites}
                         setFavorites={setFavorites}
+                        onClickTracking={onClickTracking}
                       />
                     ) : cardType === 'bananalab' ? (
                       <CardProductBananaLab
@@ -256,6 +257,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCar
                         cart={cart}
                         setCart={setCart}
                         widthClass='!w-full'
+                        onClickTracking={onClickTracking}
                       />
                     ) : (
                       <CardProductMultivet
@@ -263,6 +265,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCar
                         data={data}
                         favorites={favorites}
                         setFavorites={setFavorites}
+                        onClickTracking={onClickTracking}
                       />
                     )}
                   </div>
@@ -314,6 +317,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCar
                     data={data}
                     favorites={favorites}
                     setFavorites={setFavorites}
+                    onClickTracking={onClickTracking}
                   />
                 ) : cardType === 'bananalab' ? (
                   <CardProductBananaLab
@@ -324,6 +328,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCar
                     cart={cart}
                     setCart={setCart}
                     widthClass='!w-full'
+                    onClickTracking={onClickTracking}
                   />
                 ) : (
                   <CardProductMultivet
@@ -331,6 +336,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites,cart,setCar
                     data={data}
                     favorites={favorites}
                     setFavorites={setFavorites}
+                    onClickTracking={onClickTracking}
                   />
                 )}
               </motion.div>

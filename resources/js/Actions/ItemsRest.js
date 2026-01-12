@@ -184,12 +184,13 @@ class ItemsRest extends BasicRest {
     };
 
     // Método para actualizar vistas de producto
-    viewUpdate = async (itemId) => {
+    viewUpdate = async (request) => {
         try {
             const { status, result } = await Fetch(
-                `/api/${this.path}/${itemId}/view`,
+                `/api/${this.path}/update-views`,
                 {
                     method: "POST",
+                    body: JSON.stringify(request),
                 }
             );
             if (!status)

@@ -206,7 +206,7 @@ const SkeletonCard = ({ delay = 0 }) => {
 };
 
 
-const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFavorites, favorites }) => {
+const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFavorites, favorites, onClickTracking }) => {
 
     // Opciones de ordenación (mover al inicio para evitar problemas de hoisting)
     const sortOptions = [
@@ -2653,6 +2653,7 @@ const CatalogoFiltrosDental = ({ items, data, filteredData, cart, setCart, setFa
                                                     setCart={setCart}
                                                     favorites={favorites}
                                                     setFavorites={setFavorites}
+                                                    onClickTracking={onClickTracking}
                                                 />
                                             </motion.div>
                                         ))

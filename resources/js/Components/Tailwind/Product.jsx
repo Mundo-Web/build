@@ -188,6 +188,7 @@ const Product = ({
                         items={items}
                         favorites={favorites}
                         setFavorites={setFavorites}
+                         onClickTracking={handleClickTracking}
                     />
                 );
             case "ProductInfiniteSlider":

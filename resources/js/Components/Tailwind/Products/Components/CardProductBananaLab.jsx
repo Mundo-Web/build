@@ -17,6 +17,7 @@ const CardProductBananaLab = ({
     cart,
     setFavorites,
     favorites,
+    onClickTracking,
 }) => {
     const itemsRest = new ItemsRest();
     const [modalOpen, setModalOpen] = useState(false);
@@ -100,10 +101,17 @@ const CardProductBananaLab = ({
         }
     }, [product]);
 
+    const handleProductClick = (e) => {
+        if (onClickTracking && product) {
+            onClickTracking(product);
+        }
+    };
+
     return (
         <>
             <motion.a
                 href={`/product/${product?.slug}`}
+                onClick={handleProductClick}
                 initial={{
                     scale: 1,
                 }}

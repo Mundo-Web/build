@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Star, Eye, Heart, Tag, ChevronRightCircle } from "lucide-react";
 import { toast } from "sonner";
 
-const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) => {
+const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onClickTracking }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // Verificar si el producto está en favoritos
@@ -55,6 +55,11 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites }) =>
 
     // Función para ir al detalle del producto
     const goToDetail = () => {
+        // Trackear el click si la función está disponible
+        if (onClickTracking && product) {
+            onClickTracking(product);
+        }
+        
         const slug = product?.slug || product?.id;
         window.location.href = `/product/${slug}`;
     };

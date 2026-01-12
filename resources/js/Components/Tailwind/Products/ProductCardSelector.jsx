@@ -35,6 +35,7 @@ const ProductCardSelector = ({
     favorites, 
     setFavorites,
     handleProductClick,
+    onClickTracking,
     ...additionalProps 
 }) => {
     
@@ -47,6 +48,7 @@ const ProductCardSelector = ({
         setCart: setCart,
         favorites: favorites,
         setFavorites: setFavorites,
+        onClickTracking: onClickTracking,
         ...additionalProps
     };
 

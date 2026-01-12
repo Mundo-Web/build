@@ -77,7 +77,10 @@ const Home = ({
   productCTR,
   productClicksThisMonth,
   productClicksByDevice,
-  productClicksTodayByDevice
+  productClicksTodayByDevice,
+  // Props de vistas de productos por dispositivo
+  productViewsByDevice,
+  productViewsTodayByDevice
 }) => {
   const [startDate, setStartDate] = useState(new Date(Date.now() - 29 * 24 * 60 * 60 * 1000));
   const [endDate, setEndDate] = useState(new Date());
@@ -181,7 +184,8 @@ const Home = ({
     'product_ctr_kpi': { name: 'CTR de Productos', category: 'KPI' },
     'most_clicked_products': { name: 'Productos Más Clickeados', category: 'Tablas' },
     'product_clicks_chart': { name: 'Clicks de Productos del Mes', category: 'Gráficos' },
-    'product_clicks_by_device': { name: 'Clicks de Productos por Dispositivo', category: 'Gráficos' }
+    'product_clicks_by_device': { name: 'Clicks de Productos por Dispositivo', category: 'Gráficos' },
+    'product_views_by_device': { name: 'Vistas de Productos por Dispositivo', category: 'Gráficos' }
   };
 
   const CARD_CATEGORIES = {
@@ -746,7 +750,7 @@ const Home = ({
                       <i className="fas fa-chart-bar text-white fs-5"></i>
                     </div>
                     <div>
-                      <h5 className="mb-0 fw-bold text-dark">Visitas del Mes</h5>
+                      <h5 className="mb-0 fw-bold text-dark">Visitas de Productos del Mes</h5>
                       <p className="text-muted mb-0 small">Tráfico diario del sitio web</p>
                     </div>
                   </div>
@@ -840,6 +844,177 @@ const Home = ({
           </div>
         </div>
       )}
+        {shouldShowCard('product_views_by_device') && (
+          <div className="col-12">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                      <i className="fas fa-mobile-alt text-white fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold text-dark">Vistas de Productos por Dispositivo</h6>
+                      <p className="text-muted mb-0 small">Distribución total y de hoy</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <div className="row g-4">
+                  <div className="col-md-6">
+                    <h6 className="text-muted mb-3 fw-semibold">Total Histórico</h6>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'donut',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        labels: productViewsByDevice.map(d => d.device === 'desktop' ? 'Desktop' : d.device === 'mobile' ? 'Móvil' : d.device === 'tablet' ? 'Tablet' : 'Otro'),
+                        colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'],
+                        plotOptions: {
+                          pie: {
+                            donut: {
+                              size: '65%',
+                              labels: {
+                                show: true,
+                                name: {
+                                  show: true,
+                                  fontSize: '14px',
+                                  color: '#64748b'
+                                },
+                                value: {
+                                  show: true,
+                                  fontSize: '24px',
+                                  fontWeight: 'bold',
+                                  color: '#1e293b'
+                                },
+                                total: {
+                                  show: true,
+                                  label: 'Total',
+                                  fontSize: '14px',
+                                  fontWeight: 'bold',
+                                  color: '#64748b',
+                                  formatter: function (w) {
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        legend: {
+                          position: 'bottom',
+                          fontSize: '12px',
+                          labels: { colors: '#64748b' },
+                          markers: {
+                            width: 12,
+                            height: 12,
+                            radius: 6
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            colors: ['#fff']
+                          },
+                          dropShadow: { enabled: false }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: {
+                            formatter: val => `${val} vistas`
+                          }
+                        }
+                      }}
+                      series={productViewsByDevice.map(d => d.count)}
+                      type="donut"
+                      height={320}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <h6 className="text-muted mb-3 fw-semibold">Vistas de Hoy</h6>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'bar',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        plotOptions: {
+                          bar: {
+                            borderRadius: 8,
+                            horizontal: true,
+                            barHeight: '70%'
+                          }
+                        },
+                        xaxis: {
+                          categories: (productViewsTodayByDevice || []).map(d => 
+                            d.device === 'desktop' ? 'Desktop' : 
+                            d.device === 'mobile' ? 'Móvil' : 
+                            d.device === 'tablet' ? 'Tablet' : 'Otro'
+                          ),
+                          labels: {
+                            style: { colors: '#64748b', fontSize: '11px' }
+                          }
+                        },
+                        yaxis: {
+                          labels: {
+                            style: { colors: '#64748b', fontSize: '12px', fontWeight: 600 }
+                          }
+                        },
+                        grid: {
+                          borderColor: '#e2e8f0',
+                          strokeDashArray: 2,
+                          xaxis: { lines: { show: true } },
+                          yaxis: { lines: { show: false } }
+                        },
+                        colors: ['#10b981'],
+                        fill: {
+                          type: 'gradient',
+                          gradient: {
+                            shade: 'light',
+                            type: 'horizontal',
+                            shadeIntensity: 0.25,
+                            gradientToColors: ['#059669'],
+                            inverseColors: false,
+                            opacityFrom: 0.85,
+                            opacityTo: 0.55
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            colors: ['#fff']
+                          }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: {
+                            formatter: val => `${val} vistas`
+                          }
+                        }
+                      }}
+                      series={[{
+                        name: 'Vistas',
+                        data: (productViewsTodayByDevice || []).map(d => d.count)
+                      }]}
+                      type="bar"
+                      height={320}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* Modern Charts Grid */}
       <div className="row g-4 mb-5">
@@ -1523,7 +1698,7 @@ const Home = ({
                       <i className="fas fa-mobile-alt text-white fs-5"></i>
                     </div>
                     <div>
-                      <h6 className="mb-0 fw-bold text-dark">Vistas por Dispositivo</h6>
+                      <h6 className="mb-0 fw-bold text-dark">Vistas de Servicios por Dispositivo</h6>
                       <p className="text-muted mb-0 small">Distribución total y de hoy</p>
                     </div>
                   </div>
@@ -2381,6 +2556,7 @@ const Home = ({
             </div>
           </div>
         )}
+      
       </div>
 
       {/* Tablas de Productos */}

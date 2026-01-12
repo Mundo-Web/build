@@ -54,7 +54,7 @@ import {
     FloatingFocusManager,
 } from '@floating-ui/react';
 
-const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites, setFavorites }) => {
+const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites, setFavorites, onViewUpdate }) => {
     const itemsRest = new ItemsRest();
     const [selectedImage, setSelectedImage] = useState({
         url: item?.image,
@@ -174,10 +174,12 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
     // Actualizar vista del producto y cargar relacionados
     useEffect(() => {
         if (item?.id) {
-            handleViewUpdate(item);
+            if (onViewUpdate) {
+                onViewUpdate(item);
+            }
             productosRelacionados(item);
         }
-    }, [item]);
+    }, [item, onViewUpdate]);
 
     // Verificar si se necesita expansión de contenido
     useEffect(() => {
@@ -255,14 +257,6 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
             };
         }
     }, [isDragging, isZoomEnabled, lastMousePosition]);
-
-    const handleViewUpdate = async (item) => {
-        try {
-            await itemsRest.viewUpdate(item.id);
-        } catch (error) {
-            console.error('Error updating view:', error);
-        }
-    };
 
     const productosRelacionados = async (item) => {
         try {

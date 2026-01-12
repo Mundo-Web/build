@@ -197,6 +197,11 @@ Route::post('/services/update-views', [AdminServiceController::class, 'updateVie
 // Public route for service clicks tracking
 Route::post('/services/update-clicks', [AdminServiceController::class, 'updateClicks']);
 
+// Public route for product views tracking
+Route::post('/items/update-views', [AdminItemController::class, 'updateViews']);
+// Public route for product clicks tracking  
+Route::post('/items/update-clicks', [AdminItemController::class, 'updateClicks']);
+
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
 Route::get('/item_images/media/{uuid}', [AdminItemImageController::class, 'media']);

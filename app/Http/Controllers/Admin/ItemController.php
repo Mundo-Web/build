@@ -605,6 +605,80 @@ class ItemController extends BasicController
     }
 
     /**
+     * Incrementar contador de vistas del producto y registrar analytics
+     */
+    public function updateViews(Request $request)
+    {
+        try {
+            $item = Item::findOrFail($request->id);
+            
+            // Obtener información del dispositivo y sesión
+            $deviceType = $this->getDeviceType($request);
+            $sessionId = $request->session()->getId();
+            $userId = auth()->check() ? auth()->id() : null;
+            
+            // Verificar si ya existe un evento reciente (últimos 5 minutos) para evitar duplicados
+            $recentEvent = DB::table('analytics_events')
+                ->where('session_id', $sessionId)
+                ->where('item_id', $item->id)
+                ->where('event_type', 'product_view')
+                ->where('created_at', '>', now()->subMinutes(5))
+                ->first();
+            
+            // Solo incrementar si no hay evento reciente (anti-bot básico)
+            if (!$recentEvent) {
+                // Incrementar contador de vistas
+                $item->increment('views');
+                
+                // Registrar evento en analytics
+                DB::table('analytics_events')->insert([
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'event_type' => 'product_view',
+                    'item_id' => $item->id,
+                    'page_url' => $request->input('page_url', url()->previous()),
+                    'device_type' => $deviceType,
+                    'source' => $request->input('source'),
+                    'medium' => $request->input('medium'),
+                    'campaign' => $request->input('campaign'),
+                    'metadata' => json_encode([
+                        'product_name' => $item->name,
+                        'product_category' => $item->category ? $item->category->name : null,
+                        'product_brand' => $item->brand ? $item->brand->name : null,
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+                Log::info('Product view tracked', [
+                    'item_id' => $item->id,
+                    'item_name' => $item->name,
+                    'session_id' => substr($sessionId, 0, 8) . '...',
+                    'device_type' => $deviceType
+                ]);
+            } else {
+                Log::debug('Duplicate product view prevented', [
+                    'item_id' => $item->id,
+                    'session_id' => substr($sessionId, 0, 8) . '...'
+                ]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'views' => $item->views
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error updating product views: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error al actualizar vistas'
+            ], 500);
+        }
+    }
+
+    /**
      * Registrar clicks en productos con protección anti-spam
      * Un usuario (IP + navegador) solo puede contar 1 click cada 24 horas
      */
