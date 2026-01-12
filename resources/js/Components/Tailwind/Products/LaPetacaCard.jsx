@@ -150,7 +150,7 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                 )}
 
                 {/* Footer con precio y CTA */}
-                <div className="flex items-end justify-between gap-2 pt-3 md:pt-4 border-t border-gray-100">
+                <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-2 pt-3 md:pt-4 border-t border-gray-100">
                     {/* Precio */}
                     <div>
                         <div className="flex items-baseline gap-1.5 md:gap-2">
