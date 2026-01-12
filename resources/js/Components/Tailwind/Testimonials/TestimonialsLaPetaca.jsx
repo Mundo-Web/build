@@ -73,7 +73,7 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                         onResize={(swiper) => updatePagination(swiper)}
                         breakpoints={{
                             768: { slidesPerView: 2, spaceBetween: 24 },
-                            1024: { slidesPerView: 3, spaceBetween: 28 },
+                            1024: { slidesPerView: 2, spaceBetween: 28 },
                         }}
                         className="testimonials-swiper lg:px-10"
                     >
