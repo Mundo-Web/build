@@ -75,10 +75,10 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                             768: { slidesPerView: 2, spaceBetween: 24 },
                             1024: { slidesPerView: 3, spaceBetween: 28 },
                         }}
-                        className="testimonials-swiper !overflow-visible"
+                        className="testimonials-swiper lg:px-10"
                     >
                         {testimonials.map((testimonial, index) => (
-                            <SwiperSlide key={testimonial.id || index} className="!h-auto !overflow-visible">
+                            <SwiperSlide key={testimonial.id || index} className="!h-auto ">
                                 <div className="group relative h-full cursor-pointer">
                                     {/* Card base */}
                                     <div className="bg-white p-7 rounded-2xl shadow-sm h-full flex flex-col border border-gray-100 transition-all duration-500 ease-out group-hover:opacity-0 group-hover:scale-95">
