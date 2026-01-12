@@ -1,4 +1,7 @@
 import React from "react";
+import ItemsRest from "../../Actions/ItemsRest";
+
+const itemsRest = new ItemsRest();
 
 const ProductCarousel = React.lazy(() => import("./Products/ProductCarousel"));
 const ProductList = React.lazy(() => import("./Products/ProductList"));
@@ -33,6 +36,18 @@ const Product = ({
     contacts,
     generals,
 }) => {
+    // Función para trackear clicks en productos
+    const handleClickTracking = async (item) => {
+        const request = {
+            id: item?.id,
+            page_url: window.location.href,
+            referrer: document.referrer || null,
+            user_agent: navigator.userAgent,
+            timestamp: new Date().toISOString()
+        };
+        await itemsRest.updateClicks(request);
+    };
+
     const getProduct = () => {
         switch (which) {
             case "Carousel":
@@ -210,6 +225,7 @@ const Product = ({
                         cart={cart}
                         setCart={setCart}
                         generals={generals}
+                        onClickTracking={handleClickTracking}
                     />
                 );
             default:

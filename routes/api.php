@@ -194,6 +194,8 @@ Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryContro
 
 // Public route for service views tracking
 Route::post('/services/update-views', [AdminServiceController::class, 'updateViews']);
+// Public route for service clicks tracking
+Route::post('/services/update-clicks', [AdminServiceController::class, 'updateClicks']);
 
 Route::get('/items/media/{uuid}', [AdminItemController::class, 'media']);
 
@@ -215,6 +217,7 @@ Route::get('/amenities/media/{uuid}', [AdminAmenityController::class, 'media']);
 Route::post('/posts/paginate', [PostController::class, 'paginate']);
 Route::post('/items/paginate', [ItemController::class, 'paginate']);
 Route::post('/items/convert-slugs', [ItemController::class, 'convertSlugsToIds']);
+Route::post('/items/update-clicks', [AdminItemController::class, 'updateClicks']);
 
 Route::post('/messages', [MessageController::class, 'save']);
 Route::post('/subscriptions', [SubscriptionController::class, 'save']);

@@ -7,11 +7,8 @@ import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import TextWithHighlight from '../../../Utils/TextWithHighlight';
-import ServicesRest from '../../../Actions/ServicesRest';
 
-const servicesRest = new ServicesRest();
-
-const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
+const ServiceDetailCatalog = ({ data, items = [], currentService = null, onViewUpdate }) => {
     const [selectedService, setSelectedService] = useState(null);
     const [categoryServices, setCategoryServices] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -22,19 +19,6 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
     const navigationNextRef = useRef(null);
     const lightboxPrevRef = useRef(null);
     const lightboxNextRef = useRef(null);
-
-    // Función para registrar vista del servicio
-    const handleViewUpdate = async (service) => {
-        try {
-            const request = {
-                id: service?.id,
-                page_url: window.location.href,
-            };
-            await servicesRest.updateViews(request);
-        } catch (error) {
-            console.error('Error tracking service view:', error);
-        }
-    };
 
     useEffect(() => {
         // Extraer categorías únicas de los servicios
@@ -70,7 +54,9 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
             }
 
             // Registrar vista del servicio actual
-            handleViewUpdate(currentService);
+            if (onViewUpdate) {
+                onViewUpdate(currentService);
+            }
         } else if (items.length > 0) {
             // Si no hay servicio actual, seleccionar el primero
             setSelectedService(items[0]);
@@ -87,7 +73,9 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null }) => {
             }
 
             // Registrar vista del primer servicio
-            handleViewUpdate(items[0]);
+            if (onViewUpdate) {
+                onViewUpdate(items[0]);
+            }
         }
     }, [currentService, items]);
 

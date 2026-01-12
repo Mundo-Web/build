@@ -63,6 +63,26 @@ class ItemsRest extends BasicRest {
         }
     };
 
+    updateClicks = async (request) => {
+        try {
+            const { status, result } = await Fetch(
+                `/api/${this.path}/update-clicks`,
+                {
+                    method: "POST",
+                    body: JSON.stringify(request),
+                }
+            );
+            if (!status) {
+                console.error('Error al registrar click:', result?.message);
+                return [];
+            }
+            return result.data ?? [];
+        } catch (error) {
+            console.error('Error en updateClicks:', error);
+            return [];
+        }
+    };
+
     productsRelations = async (request) => {
         try {
             const { status, result } = await Fetch(

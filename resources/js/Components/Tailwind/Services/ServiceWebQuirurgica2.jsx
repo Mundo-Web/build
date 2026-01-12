@@ -24,7 +24,7 @@ const getServiceDescription = (service, maxWords = 30) => {
     return '';
 };
 
-const ServiceCard = ({ service, index, data, onCardClick }) => {
+const ServiceCard = ({ service, index, data, onCardClick, onClickTracking }) => {
     const [isHovered, setIsHovered] = useState(false);
     
     const imageUrl = service.image
@@ -35,6 +35,10 @@ const ServiceCard = ({ service, index, data, onCardClick }) => {
     
     // Manejar clic según type_web
     const handleClick = (e) => {
+        // Trackear el click antes de navegar
+        if (onClickTracking) {
+            onClickTracking(service);
+        }
         if (data?.type_web === 'landing') {
             e.preventDefault();
             onCardClick(service);
@@ -131,7 +135,7 @@ const ServiceCard = ({ service, index, data, onCardClick }) => {
     );
 };
 
-const ServiceWebQuirurgica2 = ({ data, items = [] }) => {
+const ServiceWebQuirurgica2 = ({ data, items = [], onClickTracking }) => {
     const [selectedService, setSelectedService] = useState(null);
     const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
     
@@ -208,6 +212,7 @@ const ServiceWebQuirurgica2 = ({ data, items = [] }) => {
                             index={serviceIndex}
                             data={data}
                             onCardClick={setSelectedService}
+                            onClickTracking={onClickTracking}
                         />
                     ))}
                 </div>

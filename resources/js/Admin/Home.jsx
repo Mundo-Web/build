@@ -54,10 +54,30 @@ const Home = ({
   totalServiceCategories,
   featuredServices,
   mostViewedServices,
+  mostClickedServices,
+  serviceClicksToday,
+  serviceClicksMonth,
+  serviceClicksYear,
+  uniqueClickersMonth,
+  serviceCTR,
   serviceVisitsThisMonth,
   serviceViewsByDevice,
   serviceViewsLast30Days,
-  hasServicesFeature // Indica si el proyecto usa servicios
+  serviceClicksThisMonth,
+  serviceClicksByDevice,
+  serviceClicksTodayByDevice,
+  serviceViewsTodayByDevice,
+  hasServicesFeature, // Indica si el proyecto usa servicios
+  // Props de clicks de productos
+  mostClickedProducts,
+  productClicksToday,
+  productClicksMonth,
+  productClicksYear,
+  uniqueProductClickersMonth,
+  productCTR,
+  productClicksThisMonth,
+  productClicksByDevice,
+  productClicksTodayByDevice
 }) => {
   const [startDate, setStartDate] = useState(new Date(Date.now() - 29 * 24 * 60 * 60 * 1000));
   const [endDate, setEndDate] = useState(new Date());
@@ -146,10 +166,22 @@ const Home = ({
     // Analíticas de Servicios
     'total_services_kpi': { name: 'Total Servicios', category: 'KPI' },
     'total_service_categories': { name: 'Categorías de Servicios', category: 'KPI' },
+    'service_clicks_kpi': { name: 'Clicks en Servicios', category: 'KPI' },
+    'service_ctr_kpi': { name: 'CTR de Servicios', category: 'KPI' },
     'most_viewed_services': { name: 'Servicios Más Vistos', category: 'Tablas' },
+    'most_clicked_services': { name: 'Servicios Más Clickeados', category: 'Tablas' },
     'service_visits_chart': { name: 'Visitas de Servicios del Mes', category: 'Gráficos' },
+    'service_clicks_chart': { name: 'Clicks de Servicios del Mes', category: 'Gráficos' },
     'service_views_by_device': { name: 'Vistas por Dispositivo', category: 'Gráficos' },
-    'service_views_trend': { name: 'Tendencia de Vistas de Servicios', category: 'Gráficos' }
+    'service_clicks_by_device': { name: 'Clicks por Dispositivo', category: 'Gráficos' },
+    'service_views_trend': { name: 'Tendencia de Vistas de Servicios', category: 'Gráficos' },
+    'service_clicks_vs_views': { name: 'Clicks vs Vistas (30 días)', category: 'Gráficos' },
+    // Analíticas de Productos
+    'product_clicks_kpi': { name: 'Clicks en Productos', category: 'KPI' },
+    'product_ctr_kpi': { name: 'CTR de Productos', category: 'KPI' },
+    'most_clicked_products': { name: 'Productos Más Clickeados', category: 'Tablas' },
+    'product_clicks_chart': { name: 'Clicks de Productos del Mes', category: 'Gráficos' },
+    'product_clicks_by_device': { name: 'Clicks de Productos por Dispositivo', category: 'Gráficos' }
   };
 
   const CARD_CATEGORIES = {
@@ -423,6 +455,98 @@ const Home = ({
                   <span className="text-muted small">Destacados: {featuredServices || '0'}</span>
                   <div className="badge bg-indigo bg-opacity-10 px-2 py-1 rounded-pill" style={{ background: '#e0e7ff', color: '#6366f1' }}>
                     <i className="fas fa-star me-1"></i>Featured
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('service_clicks_kpi') && (
+          <div className="col-xl-3 col-md-6">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 8px 25px rgba(0,0,0,0.08)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <div className="rounded-3 p-3" style={{ background: '#fef3c7' }}>
+                    <i className="fas fa-mouse-pointer fs-4" style={{ color: '#f59e0b' }}></i>
+                  </div>
+                  <div className="text-end">
+                    <div className="fs-2 fw-bold text-dark mb-0">{serviceClicksMonth || '0'}</div>
+                    <div className="text-muted small">Clicks en Servicios</div>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="text-muted small">Hoy: {serviceClicksToday || '0'}</span>
+                  <div className="badge px-2 py-1 rounded-pill" style={{ background: '#fef3c7', color: '#f59e0b' }}>
+                    <i className="fas fa-hand-pointer me-1"></i>Este mes
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('service_ctr_kpi') && (
+          <div className="col-xl-3 col-md-6">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 8px 25px rgba(0,0,0,0.08)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <div className="rounded-3 p-3" style={{ background: '#dcfce7' }}>
+                    <i className="fas fa-chart-line fs-4" style={{ color: '#16a34a' }}></i>
+                  </div>
+                  <div className="text-end">
+                    <div className="fs-2 fw-bold text-dark mb-0">{serviceCTR || '0'}%</div>
+                    <div className="text-muted small">CTR Servicios</div>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="text-muted small">Usuarios únicos: {uniqueClickersMonth || '0'}</span>
+                  <div className="badge px-2 py-1 rounded-pill" style={{ background: '#dcfce7', color: '#16a34a' }}>
+                    <i className="fas fa-percentage me-1"></i>Click Rate
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('product_clicks_kpi') && (
+          <div className="col-xl-3 col-md-6">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 8px 25px rgba(0,0,0,0.08)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <div className="rounded-3 p-3" style={{ background: '#dbeafe' }}>
+                    <i className="fas fa-mouse-pointer fs-4" style={{ color: '#3b82f6' }}></i>
+                  </div>
+                  <div className="text-end">
+                    <div className="fs-2 fw-bold text-dark mb-0">{productClicksMonth || '0'}</div>
+                    <div className="text-muted small">Clicks en Productos</div>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="text-muted small">Hoy: {productClicksToday || '0'}</span>
+                  <div className="badge px-2 py-1 rounded-pill" style={{ background: '#dbeafe', color: '#3b82f6' }}>
+                    <i className="fas fa-hand-pointer me-1"></i>Productos
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('product_ctr_kpi') && (
+          <div className="col-xl-3 col-md-6">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 8px 25px rgba(0,0,0,0.08)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <div className="rounded-3 p-3" style={{ background: '#ddd6fe' }}>
+                    <i className="fas fa-chart-line fs-4" style={{ color: '#8b5cf6' }}></i>
+                  </div>
+                  <div className="text-end">
+                    <div className="fs-2 fw-bold text-dark mb-0">{productCTR || '0'}%</div>
+                    <div className="text-muted small">CTR Productos</div>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="text-muted small">Usuarios únicos: {uniqueProductClickersMonth || '0'}</span>
+                  <div className="badge px-2 py-1 rounded-pill" style={{ background: '#ddd6fe', color: '#8b5cf6' }}>
+                    <i className="fas fa-percentage me-1"></i>Product CTR
                   </div>
                 </div>
               </div>
@@ -1305,7 +1429,7 @@ const Home = ({
       {/* Analytics de Servicios - Nuevas secciones */}
       <div className="row g-4 mb-5">
         {shouldShowCard('service_visits_chart') && (
-          <div className="col-xl-6 col-lg-6">
+          <div className="col-12">
             <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
               <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
                 <div className="d-flex align-items-center justify-content-between">
@@ -1390,7 +1514,7 @@ const Home = ({
           </div>
         )}
         {shouldShowCard('service_views_by_device') && (
-          <div className="col-xl-6 col-lg-6">
+          <div className="col-12">
             <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
               <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
                 <div className="d-flex align-items-center justify-content-between">
@@ -1400,83 +1524,162 @@ const Home = ({
                     </div>
                     <div>
                       <h6 className="mb-0 fw-bold text-dark">Vistas por Dispositivo</h6>
-                      <p className="text-muted mb-0 small">Distribución de accesos</p>
+                      <p className="text-muted mb-0 small">Distribución total y de hoy</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="card-body p-4">
-                <Chart
-                  options={{
-                    chart: {
-                      type: 'donut',
-                      toolbar: { show: false },
-                      background: 'transparent',
-                      fontFamily: 'Inter, sans-serif'
-                    },
-                    labels: serviceViewsByDevice.map(d => d.device === 'desktop' ? 'Desktop' : d.device === 'mobile' ? 'Móvil' : d.device === 'tablet' ? 'Tablet' : 'Otro'),
-                    colors: ['#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b'],
-                    plotOptions: {
-                      pie: {
-                        donut: {
-                          size: '70%',
-                          labels: {
-                            show: true,
-                            name: {
-                              show: true,
-                              fontSize: '14px',
-                              color: '#64748b'
-                            },
-                            value: {
-                              show: true,
-                              fontSize: '24px',
-                              fontWeight: 'bold',
-                              color: '#1e293b'
-                            },
-                            total: {
-                              show: true,
-                              label: 'Total Visitas',
-                              fontSize: '14px',
-                              fontWeight: 'bold',
-                              color: '#64748b',
-                              formatter: function (w) {
-                                return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                <div className="row g-4">
+                  <div className="col-md-6">
+                    <h6 className="text-muted mb-3 fw-semibold">Total Histórico</h6>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'donut',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        labels: serviceViewsByDevice.map(d => d.device === 'desktop' ? 'Desktop' : d.device === 'mobile' ? 'Móvil' : d.device === 'tablet' ? 'Tablet' : 'Otro'),
+                        colors: ['#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b'],
+                        plotOptions: {
+                          pie: {
+                            donut: {
+                              size: '65%',
+                              labels: {
+                                show: true,
+                                name: {
+                                  show: true,
+                                  fontSize: '14px',
+                                  color: '#64748b'
+                                },
+                                value: {
+                                  show: true,
+                                  fontSize: '24px',
+                                  fontWeight: 'bold',
+                                  color: '#1e293b'
+                                },
+                                total: {
+                                  show: true,
+                                  label: 'Total',
+                                  fontSize: '14px',
+                                  fontWeight: 'bold',
+                                  color: '#64748b',
+                                  formatter: function (w) {
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                  }
+                                }
                               }
                             }
                           }
+                        },
+                        legend: {
+                          position: 'bottom',
+                          fontSize: '12px',
+                          labels: { colors: '#64748b' },
+                          markers: {
+                            width: 12,
+                            height: 12,
+                            radius: 6
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            colors: ['#fff']
+                          },
+                          dropShadow: { enabled: false }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: {
+                            formatter: val => `${val} visitas`
+                          }
                         }
-                      }
-                    },
-                    legend: {
-                      position: 'bottom',
-                      fontSize: '12px',
-                      labels: { colors: '#64748b' },
-                      markers: {
-                        width: 12,
-                        height: 12,
-                        radius: 6
-                      }
-                    },
-                    dataLabels: {
-                      enabled: true,
-                      style: {
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        colors: ['#fff']
-                      },
-                      dropShadow: { enabled: false }
-                    },
-                    tooltip: {
-                      theme: 'light',
-                      y: {
-                        formatter: val => `${val} visitas`
-                      }
-                    }
-                  }}
-                  series={serviceViewsByDevice.map(d => d.count)}
-                  type="donut"
-                  height={280}
-                />
+                      }}
+                      series={serviceViewsByDevice.map(d => d.count)}
+                      type="donut"
+                      height={320}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <h6 className="text-muted mb-3 fw-semibold">Visitas de Hoy</h6>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'bar',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        plotOptions: {
+                          bar: {
+                            borderRadius: 8,
+                            horizontal: true,
+                            barHeight: '70%'
+                          }
+                        },
+                        xaxis: {
+                          categories: (serviceViewsTodayByDevice || []).map(d => 
+                            d.device === 'desktop' ? 'Desktop' : 
+                            d.device === 'mobile' ? 'Móvil' : 
+                            d.device === 'tablet' ? 'Tablet' : 'Otro'
+                          ),
+                          labels: {
+                            style: { colors: '#64748b', fontSize: '11px' }
+                          }
+                        },
+                        yaxis: {
+                          labels: {
+                            style: { colors: '#64748b', fontSize: '12px', fontWeight: 600 }
+                          }
+                        },
+                        grid: {
+                          borderColor: '#e2e8f0',
+                          strokeDashArray: 2,
+                          xaxis: { lines: { show: true } },
+                          yaxis: { lines: { show: false } }
+                        },
+                        colors: ['#8b5cf6'],
+                        fill: {
+                          type: 'gradient',
+                          gradient: {
+                            shade: 'light',
+                            type: 'horizontal',
+                            shadeIntensity: 0.25,
+                            gradientToColors: ['#7c3aed'],
+                            inverseColors: false,
+                            opacityFrom: 0.85,
+                            opacityTo: 0.55
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            colors: ['#fff']
+                          }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: {
+                            formatter: val => `${val} visitas`
+                          }
+                        }
+                      }}
+                      series={[{
+                        name: 'Visitas',
+                        data: (serviceViewsTodayByDevice || []).map(d => d.count)
+                      }]}
+                      type="bar"
+                      height={320}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1576,10 +1779,695 @@ const Home = ({
             </div>
           </div>
         )}
+        {shouldShowCard('service_clicks_chart') && (
+          <div className="col-12">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}>
+                      <i className="fas fa-mouse-pointer text-white fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold text-dark">Clicks de Servicios del Mes</h6>
+                      <p className="text-muted mb-0 small">Interacciones diarias</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <Chart
+                  options={{
+                    chart: {
+                      type: 'bar',
+                      toolbar: { show: false },
+                      background: 'transparent',
+                      fontFamily: 'Inter, sans-serif',
+                      zoom: { enabled: false }
+                    },
+                    plotOptions: {
+                      bar: {
+                        borderRadius: 4,
+                        columnWidth: '80%'
+                      }
+                    },
+                    xaxis: {
+                      categories: (serviceClicksThisMonth || []).map(v => v.label),
+                      labels: {
+                        style: { colors: '#64748b', fontSize: '10px' },
+                        rotate: -45,
+                        rotateAlways: false
+                      },
+                      axisBorder: { show: false },
+                      axisTicks: { show: false }
+                    },
+                    yaxis: {
+                      labels: {
+                        style: { colors: '#64748b', fontSize: '11px' }
+                      }
+                    },
+                    grid: {
+                      borderColor: '#e2e8f0',
+                      strokeDashArray: 2,
+                      xaxis: { lines: { show: false } },
+                      yaxis: { lines: { show: true } }
+                    },
+                    colors: ['#f59e0b'],
+                    fill: {
+                      type: 'gradient',
+                      gradient: {
+                        shade: 'light',
+                        type: 'vertical',
+                        shadeIntensity: 0.25,
+                        gradientToColors: ['#d97706'],
+                        inverseColors: false,
+                        opacityFrom: 0.85,
+                        opacityTo: 0.55,
+                      }
+                    },
+                    tooltip: {
+                      theme: 'light',
+                      y: {
+                        formatter: val => `${val} clicks`
+                      }
+                    },
+                    dataLabels: { enabled: false }
+                  }}
+                  series={[{
+                    name: 'Clicks',
+                    data: (serviceClicksThisMonth || []).map(v => v.clicks)
+                  }]}
+                  type="bar"
+                  height={280}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('service_clicks_by_device') && (
+          <div className="col-12">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}>
+                      <i className="fas fa-hand-pointer text-white fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold text-dark">Clicks por Dispositivo</h6>
+                      <p className="text-muted mb-0 small">Distribución total y de hoy</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <div className="row g-4">
+                  <div className="col-md-6">
+                    <h6 className="text-muted mb-3 fw-semibold">Total Histórico</h6>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'donut',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        labels: (serviceClicksByDevice || []).map(d => d.device === 'desktop' ? 'Desktop' : d.device === 'mobile' ? 'Móvil' : d.device === 'tablet' ? 'Tablet' : 'Otro'),
+                        colors: ['#f59e0b', '#d97706', '#fbbf24', '#fcd34d'],
+                        plotOptions: {
+                          pie: {
+                            donut: {
+                              size: '65%',
+                              labels: {
+                                show: true,
+                                name: {
+                                  show: true,
+                                  fontSize: '14px',
+                                  color: '#64748b'
+                                },
+                                value: {
+                                  show: true,
+                                  fontSize: '24px',
+                                  fontWeight: 'bold',
+                                  color: '#1e293b'
+                                },
+                                total: {
+                                  show: true,
+                                  label: 'Total',
+                                  fontSize: '14px',
+                                  fontWeight: 'bold',
+                                  color: '#64748b',
+                                  formatter: function (w) {
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        legend: {
+                          position: 'bottom',
+                          fontSize: '12px',
+                          labels: { colors: '#64748b' },
+                          markers: {
+                            width: 12,
+                            height: 12,
+                            radius: 6
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            colors: ['#fff']
+                          },
+                          dropShadow: { enabled: false }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: {
+                            formatter: val => `${val} clicks`
+                          }
+                        }
+                      }}
+                      series={(serviceClicksByDevice || []).map(d => d.count)}
+                      type="donut"
+                      height={320}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <h6 className="text-muted mb-3 fw-semibold">Clicks de Hoy</h6>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'bar',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        plotOptions: {
+                          bar: {
+                            borderRadius: 8,
+                            horizontal: true,
+                            barHeight: '70%'
+                          }
+                        },
+                        xaxis: {
+                          categories: (serviceClicksTodayByDevice || []).map(d => 
+                            d.device === 'desktop' ? 'Desktop' : 
+                            d.device === 'mobile' ? 'Móvil' : 
+                            d.device === 'tablet' ? 'Tablet' : 'Otro'
+                          ),
+                          labels: {
+                            style: { colors: '#64748b', fontSize: '11px' }
+                          }
+                        },
+                        yaxis: {
+                          labels: {
+                            style: { colors: '#64748b', fontSize: '12px', fontWeight: 600 }
+                          }
+                        },
+                        grid: {
+                          borderColor: '#e2e8f0',
+                          strokeDashArray: 2,
+                          xaxis: { lines: { show: true } },
+                          yaxis: { lines: { show: false } }
+                        },
+                        colors: ['#f59e0b'],
+                        fill: {
+                          type: 'gradient',
+                          gradient: {
+                            shade: 'light',
+                            type: 'horizontal',
+                            shadeIntensity: 0.25,
+                            gradientToColors: ['#d97706'],
+                            inverseColors: false,
+                            opacityFrom: 0.85,
+                            opacityTo: 0.55
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            colors: ['#fff']
+                          }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: {
+                            formatter: val => `${val} clicks`
+                          }
+                        }
+                      }}
+                      series={[{
+                        name: 'Clicks',
+                        data: (serviceClicksTodayByDevice || []).map(d => d.count)
+                      }]}
+                      type="bar"
+                      height={320}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('service_clicks_vs_views') && (
+          <div className="col-12">
+            <div className="card border-0" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                      <i className="fas fa-chart-bar text-white fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold text-dark">Clicks vs Vistas de Servicios (Últimos 30 Días)</h6>
+                      <p className="text-muted mb-0 small">Comparativa de engagement y CTR diario</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <Chart
+                  options={{
+                    chart: {
+                      type: 'line',
+                      toolbar: { show: false },
+                      background: 'transparent',
+                      fontFamily: 'Inter, sans-serif',
+                      zoom: { enabled: false }
+                    },
+                    xaxis: {
+                      categories: serviceViewsLast30Days.map(d => new Date(d.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })),
+                      labels: {
+                        style: { colors: '#64748b', fontSize: '11px' },
+                        rotate: -45
+                      },
+                      axisBorder: { show: false },
+                      axisTicks: { show: false }
+                    },
+                    yaxis: [
+                      {
+                        title: {
+                          text: 'Vistas / Clicks',
+                          style: { color: '#64748b', fontSize: '12px', fontWeight: 600 }
+                        },
+                        labels: {
+                          style: { colors: '#64748b', fontSize: '11px' }
+                        },
+                        min: 0
+                      },
+                      {
+                        opposite: true,
+                        title: {
+                          text: 'CTR (%)',
+                          style: { color: '#10b981', fontSize: '12px', fontWeight: 600 }
+                        },
+                        labels: {
+                          style: { colors: '#10b981', fontSize: '11px' },
+                          formatter: (val) => `${val}%`
+                        },
+                        min: 0
+                      }
+                    ],
+                    grid: {
+                      borderColor: '#e2e8f0',
+                      strokeDashArray: 2
+                    },
+                    colors: ['#6366f1', '#f59e0b', '#10b981'],
+                    stroke: {
+                      curve: 'smooth',
+                      width: [3, 3, 3]
+                    },
+                    fill: {
+                      opacity: 1
+                    },
+                    legend: {
+                      position: 'top',
+                      horizontalAlign: 'right',
+                      fontSize: '12px',
+                      labels: { colors: '#64748b' },
+                      markers: {
+                        width: 10,
+                        height: 10,
+                        radius: 5
+                      }
+                    },
+                    tooltip: {
+                      theme: 'light',
+                      shared: true,
+                      intersect: false,
+                      y: [
+                        {
+                          formatter: (val) => `${val} vistas`
+                        },
+                        {
+                          formatter: (val) => `${val} clicks`
+                        },
+                        {
+                          formatter: (val) => `${val}%`
+                        }
+                      ]
+                    },
+                    dataLabels: { enabled: false }
+                  }}
+                  series={[
+                    {
+                      name: 'Vistas',
+                      type: 'column',
+                      data: serviceViewsLast30Days.map(d => d.views)
+                    },
+                    {
+                      name: 'Clicks',
+                      type: 'column',
+                      data: serviceViewsLast30Days.map(d => d.clicks)
+                    },
+                    {
+                      name: 'CTR',
+                      type: 'line',
+                      data: serviceViewsLast30Days.map(d => d.ctr)
+                    }
+                  ]}
+                  height={360}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ANALÍTICAS DE PRODUCTOS */}
+      <div className="row g-4 mb-5">
+       
+        {shouldShowCard('product_clicks_chart') && (
+          <div className="col-12">
+            <div className="card border-0" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}>
+                    <i className="fas fa-chart-bar text-white fs-5"></i>
+                  </div>
+                  <div>
+                    <h6 className="mb-0 fw-bold text-dark">Clicks de Productos del Mes</h6>
+                    <p className="text-muted mb-0 small">Clicks diarios en productos - {new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <Chart
+                  options={{
+                    chart: {
+                      type: 'bar',
+                      toolbar: { show: false },
+                      background: 'transparent',
+                      fontFamily: 'Inter, sans-serif'
+                    },
+                    plotOptions: {
+                      bar: {
+                        borderRadius: 8,
+                        columnWidth: '60%',
+                        distributed: false
+                      }
+                    },
+                    dataLabels: { enabled: false },
+                    xaxis: {
+                      categories: productClicksThisMonth.map(d => `Día ${d.day}`),
+                      labels: {
+                        style: { colors: '#64748b', fontSize: '11px' },
+                        rotate: -45
+                      },
+                      axisBorder: { show: false },
+                      axisTicks: { show: false }
+                    },
+                    yaxis: {
+                      labels: {
+                        style: { colors: '#64748b', fontSize: '11px' }
+                      },
+                      title: {
+                        text: 'Clicks',
+                        style: { color: '#64748b', fontSize: '12px', fontWeight: 600 }
+                      }
+                    },
+                    grid: {
+                      borderColor: '#e2e8f0',
+                      strokeDashArray: 2
+                    },
+                    colors: ['#3b82f6'],
+                    fill: {
+                      type: 'gradient',
+                      gradient: {
+                        shade: 'light',
+                        type: 'vertical',
+                        shadeIntensity: 0.5,
+                        gradientToColors: ['#2563eb'],
+                        inverseColors: false,
+                        opacityFrom: 0.9,
+                        opacityTo: 0.7
+                      }
+                    },
+                    tooltip: {
+                      theme: 'light',
+                      y: {
+                        formatter: (val) => `${val} clicks`
+                      }
+                    }
+                  }}
+                  series={[{
+                    name: 'Clicks',
+                    data: productClicksThisMonth.map(d => d.clicks)
+                  }]}
+                  height={280}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {shouldShowCard('product_clicks_by_device') && (
+          <div className="col-12">
+            <div className="card border-0" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}>
+                    <i className="fas fa-mobile-alt text-white fs-5"></i>
+                  </div>
+                  <div>
+                    <h6 className="mb-0 fw-bold text-dark">Clicks de Productos por Dispositivo</h6>
+                    <p className="text-muted mb-0 small">Análisis comparativo histórico vs hoy</p>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <div className="row g-4">
+                  <div className="col-md-6">
+                    <div className="text-center mb-3">
+                      <h6 className="fw-semibold text-dark mb-1">Total Histórico</h6>
+                      <p className="text-muted small mb-0">Todos los clicks registrados</p>
+                    </div>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'donut',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        labels: productClicksByDevice.map(d => {
+                          const deviceMap = { 'mobile': 'Móvil', 'desktop': 'Desktop', 'tablet': 'Tablet', 'unknown': 'Desconocido' };
+                          return deviceMap[d.device] || d.device;
+                        }),
+                        colors: ['#3b82f6', '#8b5cf6', '#10b981', '#94a3b8'],
+                        legend: {
+                          position: 'bottom',
+                          fontSize: '12px',
+                          labels: { colors: '#64748b' }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: { fontSize: '13px', fontWeight: 600 }
+                        },
+                        plotOptions: {
+                          pie: {
+                            donut: {
+                              size: '65%',
+                              labels: {
+                                show: true,
+                                name: { show: true, fontSize: '14px', color: '#64748b' },
+                                value: { show: true, fontSize: '24px', fontWeight: 700, color: '#1e293b' },
+                                total: {
+                                  show: true,
+                                  label: 'Total Clicks',
+                                  fontSize: '12px',
+                                  color: '#64748b',
+                                  formatter: () => productClicksByDevice.reduce((sum, d) => sum + d.count, 0)
+                                }
+                              }
+                            }
+                          }
+                        },
+                        tooltip: {
+                          theme: 'light',
+                          y: { formatter: (val) => `${val} clicks` }
+                        }
+                      }}
+                      series={productClicksByDevice.map(d => d.count)}
+                      type="donut"
+                      height={320}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <div className="text-center mb-3">
+                      <h6 className="fw-semibold text-dark mb-1">Clicks de Hoy</h6>
+                      <p className="text-muted small mb-0">Actividad del día actual</p>
+                    </div>
+                    <Chart
+                      options={{
+                        chart: {
+                          type: 'bar',
+                          toolbar: { show: false },
+                          background: 'transparent',
+                          fontFamily: 'Inter, sans-serif'
+                        },
+                        plotOptions: {
+                          bar: {
+                            horizontal: true,
+                            borderRadius: 8,
+                            barHeight: '60%',
+                            distributed: true
+                          }
+                        },
+                        dataLabels: {
+                          enabled: true,
+                          style: { fontSize: '13px', fontWeight: 600, colors: ['#fff'] }
+                        },
+                        xaxis: {
+                          categories: productClicksTodayByDevice.map(d => {
+                            const deviceMap = { 'mobile': 'Móvil', 'desktop': 'Desktop', 'tablet': 'Tablet', 'unknown': 'Desconocido' };
+                            return deviceMap[d.device] || d.device;
+                          }),
+                          labels: { style: { colors: '#64748b', fontSize: '11px' } },
+                          axisBorder: { show: false }
+                        },
+                        yaxis: {
+                          labels: { style: { colors: '#64748b', fontSize: '12px', fontWeight: 600 } }
+                        },
+                        grid: {
+                          borderColor: '#e2e8f0',
+                          strokeDashArray: 2,
+                          xaxis: { lines: { show: true } },
+                          yaxis: { lines: { show: false } }
+                        },
+                        colors: ['#3b82f6', '#8b5cf6', '#10b981', '#94a3b8'],
+                        legend: { show: false },
+                        tooltip: {
+                          theme: 'light',
+                          y: { formatter: (val) => `${val} clicks` }
+                        }
+                      }}
+                      series={[{
+                        name: 'Clicks Hoy',
+                        data: productClicksTodayByDevice.map(d => d.count)
+                      }]}
+                      type="bar"
+                      height={320}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Tablas de Productos */}
       <div className="row g-4 mb-5">
+         {shouldShowCard('most_clicked_products') && (
+          <div className="col-xl-6">
+            <div className="card border-0" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}>
+                    <i className="fas fa-mouse-pointer text-white fs-5"></i>
+                  </div>
+                  <div>
+                    <h6 className="mb-0 fw-bold text-dark">Productos Más Clickeados</h6>
+                    <p className="text-muted mb-0 small">Top 10 productos con más interacciones</p>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table table-hover mb-0">
+                    <thead className="bg-light">
+                      <tr>
+                        <th className="px-4 py-3 border-0"><small className="text-muted fw-semibold">PRODUCTO</small></th>
+                        <th className="px-4 py-3 border-0 text-end"><small className="text-muted fw-semibold">CLICKS</small></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mostClickedProducts && mostClickedProducts.length > 0 ? (
+                        mostClickedProducts.map((product, index) => (
+                          <tr key={product.id}>
+                            <td className="px-4 py-3">
+                              <div className="d-flex align-items-center gap-3">
+                                <div className="position-relative">
+                                  {product.image ? (
+                                    <img 
+                                      src={product.image} 
+                                      alt={product.name}
+                                      className="rounded"
+                                      style={{ width: '48px', height: '48px', objectFit: 'cover' }}
+                                      onError={(e) => {
+                                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48"%3E%3Crect fill="%23e5e7eb" width="48" height="48"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="14"%3E%3F%3C/text%3E%3C/svg%3E';
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="rounded d-flex align-items-center justify-content-center" style={{ width: '48px', height: '48px', background: '#e5e7eb' }}>
+                                      <i className="fas fa-box text-secondary"></i>
+                                    </div>
+                                  )}
+                                  <span 
+                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                                    style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', fontSize: '9px' }}
+                                  >
+                                    #{index + 1}
+                                  </span>
+                                </div>
+                                <div className="flex-grow-1">
+                                  <div className="fw-semibold text-dark">{product.name}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-end">
+                              <span 
+                                className="badge px-3 py-2 rounded-pill fw-semibold"
+                                style={{ background: '#dbeafe', color: '#3b82f6', fontSize: '13px' }}
+                              >
+                                <i className="fas fa-mouse-pointer me-1"></i>{product.clicks || 0}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="2" className="text-center py-5 text-muted">
+                            <i className="fas fa-inbox fa-2x mb-3 d-block opacity-50"></i>
+                            No hay datos de clicks disponibles
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {shouldShowCard('top_selling_products') && (
           <div className="col-xl-6 col-lg-6">
             <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
@@ -1887,6 +2775,84 @@ const Home = ({
                 </div>
                 <div className="d-flex justify-content-between align-items-center p-4" style={{ background: '#f8fafc', borderRadius: '0 0 1rem 1rem' }}>
                   <span className="text-muted small fw-medium">Mostrando {mostViewedServices.length} servicios</span>
+                  <a href='/admin/services' target='_blank' className="btn btn-sm btn-outline-primary rounded-3 px-3">
+                    Ver todos
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {shouldShowCard('most_clicked_services') && (
+          <div className="col-xl-6 col-lg-6">
+            <div className="card border-0 h-100" style={{ borderRadius: '1rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+              <div className="card-header bg-white border-0 p-4" style={{ borderRadius: '1rem 1rem 0 0' }}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="rounded-3 p-2" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}>
+                      <i className="fas fa-mouse-pointer text-white fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold text-dark">Servicios Más Clickeados</h6>
+                      <p className="text-muted mb-0 small">Mayor interacción de visitantes</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive" style={{ maxHeight: 380 }}>
+                  <table className="table table-hover align-middle mb-0">
+                    <thead style={{ background: '#f8fafc' }}>
+                      <tr>
+                        <th className="border-0 py-3 px-4 fw-semibold text-muted">Servicio</th>
+                        <th className="border-0 py-3 px-4 fw-semibold text-muted">Clicks</th>
+                        <th className="border-0 py-3 px-4 fw-semibold text-muted">Categoría</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mostClickedServices && mostClickedServices.map((service, index) => (
+                        <tr key={service.id} className="border-0">
+                          <td className="px-4 py-3 border-0">
+                            <div className="d-flex align-items-center">
+                              <div className="position-relative me-3">
+                                <img
+                                  src={`/storage/images/service/${service.image}`}
+                                  alt={service.name}
+                                  className="rounded-3 shadow-sm"
+                                  style={{ width: '48px', height: '48px', objectFit: 'cover' }}
+                                  onError={e => e.target.src = '/api/cover/thumbnail/null'}
+                                />
+                                <div className="position-absolute top-0 start-0 translate-middle">
+                                  <span className="badge rounded-pill" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', fontSize: '10px' }}>
+                                    <i className="fas fa-mouse-pointer"></i>
+                                  </span>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="fw-semibold text-dark mb-1">{service.name}</div>
+                                <span className="badge rounded-pill px-2 py-1" style={{ background: '#fef3c7', color: '#f59e0b', fontSize: '11px' }}>
+                                  Alto Engagement
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 border-0">
+                            <span className="badge rounded-pill px-3 py-2 fw-semibold" style={{ background: '#fef3c7', color: '#f59e0b', fontSize: '12px' }}>
+                              {service.clicks}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 border-0">
+                            <span className="badge rounded-pill px-3 py-2 fw-semibold" style={{ background: '#f3f4f6', color: '#6b7280', fontSize: '11px' }}>
+                              {service.category || 'Sin categoría'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="d-flex justify-content-between align-items-center p-4" style={{ background: '#f8fafc', borderRadius: '0 0 1rem 1rem' }}>
+                  <span className="text-muted small fw-medium">Mostrando {mostClickedServices?.length || 0} servicios</span>
                   <a href='/admin/services' target='_blank' className="btn btn-sm btn-outline-primary rounded-3 px-3">
                     Ver todos
                   </a>

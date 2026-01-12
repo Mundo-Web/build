@@ -8,7 +8,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
 
-const ProductListPanelPro = ({ items, generals }) => {
+const ProductListPanelPro = ({ items, generals, onClickTracking }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
@@ -36,6 +36,14 @@ const ProductListPanelPro = ({ items, generals }) => {
   if (!items || items.length === 0) {
     return null;
   }
+
+  const handleProductClick = (item) => {
+    // Trackear el click antes de abrir el modal
+    if (onClickTracking) {
+      onClickTracking(item);
+    }
+    setSelectedImage(item);
+  };
 
   const handleWhatsAppQuote = (advisor, item) => {
     // Construir mensaje personalizado con información del producto
@@ -139,7 +147,7 @@ const ProductListPanelPro = ({ items, generals }) => {
 
                     {/* Click indicator */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 cursor-pointer"
-                         onClick={() => setSelectedImage(item)}>
+                         onClick={() => handleProductClick(item)}>
                       <div className="bg-white rounded-full p-5 transform scale-90 group-hover:scale-100 transition-all duration-300 shadow-2xl">
                         <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -164,7 +172,7 @@ const ProductListPanelPro = ({ items, generals }) => {
 
                     {/* Action button */}
                     <button
-                      onClick={() => setSelectedImage(item)}
+                      onClick={() => handleProductClick(item)}
                       className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-4 transition-all duration-300 group/btn"
                     >
                       <span>Ver más</span>
