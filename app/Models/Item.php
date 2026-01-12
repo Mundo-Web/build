@@ -66,6 +66,7 @@ class Item extends Model
         'is_features',
         'is_specifications',
         'is_tags',
+        'is_applications',
     ];
 
     protected $casts = [
@@ -85,6 +86,7 @@ class Item extends Model
         'is_features' => 'boolean',
         'is_specifications' => 'boolean',
         'is_tags' => 'boolean',
+        'is_applications' => 'boolean',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)
@@ -185,6 +187,14 @@ class Item extends Model
     public function amenities()
     {
         return $this->belongsToMany(Amenity::class, 'item_amenity');
+    }
+
+    /**
+     * Aplicaciones del producto (relación muchos a muchos)
+     */
+    public function applications()
+    {
+        return $this->belongsToMany(Application::class, 'application_item');
     }
 
     /**

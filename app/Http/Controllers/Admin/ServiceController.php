@@ -468,5 +468,98 @@ class ServiceController extends BasicController
         
         return 'desktop';
     }
-}
 
+    /**
+     * Registrar clicks en servicios con protección anti-spam
+     * Un usuario (IP + navegador) solo puede contar 1 click cada 24 horas
+     */
+    public function updateClicks(Request $request): Response|ResponseFactory
+    {
+        try {
+            $serviceId = $request->input('id');
+            $ip = $request->ip();
+            $userAgent = $request->input('user_agent') ?? $request->header('User-Agent');
+            
+            if (!$serviceId) {
+                return response([
+                    'status' => 400,
+                    'message' => 'ID de servicio requerido'
+                ], 400);
+            }
+
+            // Verificar que el servicio existe
+            $service = Service::find($serviceId);
+            if (!$service) {
+                return response([
+                    'status' => 404,
+                    'message' => 'Servicio no encontrado'
+                ], 404);
+            }
+            
+            // Crear un hash único para este usuario (IP + user agent)
+            $userHash = md5($ip . $userAgent);
+            
+            // Detectar tipo de dispositivo
+            $deviceType = $this->getDeviceType($request);
+            
+            // Verificar si ya existe un click de este usuario en las últimas 24 horas
+            $existingClick = DB::table('service_clicks')
+                ->where('service_id', $serviceId)
+                ->where('user_hash', $userHash)
+                ->where('created_at', '>=', now()->subHours(24))
+                ->first();
+            
+            if (!$existingClick) {
+                // Registrar el click en la tabla de clicks
+                DB::table('service_clicks')->insert([
+                    'service_id' => $serviceId,
+                    'user_hash' => $userHash,
+                    'ip_address' => $ip,
+                    'user_agent' => $userAgent,
+                    'device_type' => $deviceType,
+                    'page_url' => $request->input('page_url'),
+                    'referrer' => $request->input('referrer'),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                // Incrementar contador en la tabla services
+                DB::table('services')
+                    ->where('id', $serviceId)
+                    ->increment('clicks');
+
+                Log::info('Service click registered', [
+                    'service_id' => $serviceId,
+                    'user_hash' => substr($userHash, 0, 8) . '...',
+                    'ip' => $ip
+                ]);
+            } else {
+                Log::info('Duplicate service click prevented', [
+                    'service_id' => $serviceId,
+                    'user_hash' => substr($userHash, 0, 8) . '...',
+                    'last_click' => $existingClick->created_at
+                ]);
+            }
+            
+            return response([
+                'status' => 200,
+                'message' => 'Click registrado exitosamente',
+                'data' => [
+                    'service_id' => $serviceId,
+                    'is_new_click' => !$existingClick
+                ]
+            ], 200);
+            
+        } catch (Exception $e) {
+            Log::error('Error registering service click', [
+                'error' => $e->getMessage(),
+                'service_id' => $request->input('id')
+            ]);
+            
+            return response([
+                'status' => 500,
+                'message' => 'Error al registrar el click: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}

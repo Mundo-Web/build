@@ -85,6 +85,16 @@ class GalleryController extends BasicController
                 'fit' => 'cover',
                 'aspect' => '1',
                 'is_system' => true
+            ],
+            'loading.png' => [
+                'name' => 'Imagen de carga',
+                'title' => 'Imagen de loading',
+                'filename' => 'loading',
+                'description' => 'Imagen mostrada durante la carga del sitio web (13:4)',
+                'src' => 'loading.png',
+                'fit' => 'cover',
+                'aspect' => '13/4',
+                'is_system' => true
             ]
         ];
         

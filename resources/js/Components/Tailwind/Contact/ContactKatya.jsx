@@ -304,7 +304,8 @@ const generalsData = generals || [];
  
     return (
         <motion.div 
-            className="font-paragraph customcustomtext-neutral-dark-dark min-h-screen"
+                id="contactKatya"
+            className={`font-paragraph text-neutral-dark-dark min-h-screen ${data?.class_section || ''}`}
             initial="hidden"
             animate="visible"
             variants={containerVariants}
@@ -320,7 +321,7 @@ const generalsData = generals || [];
                 >
                     {/* Left: Contact Form */}
                     <motion.div 
-                        className="bg-[#F3F3F3] rounded-2xl p-8 flex flex-col justify-between shadow-md min-h-[500px]"
+                        className={`bg-sections-color rounded-2xl p-8 flex flex-col justify-between shadow-md min-h-[500px] ${data?.class_form_container || ''}`}
                         variants={slideInLeft}
                         whileHover={{ y: -5, transition: { duration: 0.3 } }}
                     >
@@ -330,7 +331,7 @@ const generalsData = generals || [];
 
                         {/* Título principal */}
                         <motion.h2 
-                            className="text-4xl lg:text-5xl font-medium mb-6 leading-tight "
+                            className={`text-4xl lg:text-5xl font-medium mb-6 leading-tight ${data?.class_title || ''}`}
                             variants={itemVariants}
                         >
 
@@ -339,7 +340,7 @@ const generalsData = generals || [];
                         </motion.h2>
                           
                         <motion.p 
-                            className="mt-4 text-base customtext-neutral-dark max-w-3xl mx-auto"
+                            className={`mt-4 text-base text-neutral-dark max-w-3xl mx-auto ${data?.class_description || ''}`}
                             variants={itemVariants}
                         >
                           {data?.description || "Conectamos el talento con la oportunidad, fomentando el crecimiento, el éxito y un futuro más brillante para las personas y las empresas."}
@@ -351,7 +352,7 @@ const generalsData = generals || [];
                         {/* Contact Form */}
                         <motion.form 
                             onSubmit={onSubmit} 
-                            className="w-full flex flex-col gap-4 mt-2"
+                            className={`w-full flex flex-col gap-4 mt-2`}
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
@@ -422,7 +423,7 @@ const generalsData = generals || [];
                             />
                             <motion.button 
                                 type="submit" 
-                                className="mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300"
+                                className={`mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300 ${data?.class_button_form || ''}`}
                                 variants={buttonHover}
                                 initial="rest"
                                 whileHover="hover"

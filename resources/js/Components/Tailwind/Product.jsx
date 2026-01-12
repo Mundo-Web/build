@@ -1,4 +1,7 @@
 import React from "react";
+import ItemsRest from "../../Actions/ItemsRest";
+
+const itemsRest = new ItemsRest();
 
 const ProductCarousel = React.lazy(() => import("./Products/ProductCarousel"));
 const ProductList = React.lazy(() => import("./Products/ProductList"));
@@ -18,6 +21,7 @@ const ProductMultivet = React.lazy(() => import("./Products/ProductMultivet"));
 const ProductInfiniteSlider = React.lazy(() => import("./Products/ProductInfiniteSlider"));
 const ProductIbergruasSwiper = React.lazy(() => import("./Products/ProductIbergruasSwiper"));
 const ProductLaPetaca = React.lazy(() => import("./Products/ProductLaPetaca"));
+const ProductListPanelPro = React.lazy(() => import("./Products/ProductListPanelPro"));
 
 const Product = ({
     which,
@@ -29,8 +33,21 @@ const Product = ({
     filteredData,
     favorites,
     setFavorites,
-    contacts
+    contacts,
+    generals,
 }) => {
+    // Función para trackear clicks en productos
+    const handleClickTracking = async (item) => {
+        const request = {
+            id: item?.id,
+            page_url: window.location.href,
+            referrer: document.referrer || null,
+            user_agent: navigator.userAgent,
+            timestamp: new Date().toISOString()
+        };
+        await itemsRest.updateClicks(request);
+    };
+
     const getProduct = () => {
         switch (which) {
             case "Carousel":
@@ -200,7 +217,17 @@ const Product = ({
                         setCart={setCart}
                     />
                 );
-
+            case "ProductListPanelPro":
+                return (
+                    <ProductListPanelPro
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        generals={generals}
+                        onClickTracking={handleClickTracking}
+                    />
+                );
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

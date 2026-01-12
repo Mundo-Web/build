@@ -70,13 +70,20 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
     return (
         <>
             <nav
-                className={`w-full top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isHomePage
-                    ? `fixed ${isScrolled ? 'bg-primary backdrop-blur-xl py-5' : 'bg-transparent py-8'}`
-                    : `${isScrolled ? 'fixed bg-primary py-5' : 'relative bg-primary py-5'}`
-                    }`}
+                className={`w-full top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+                    data?.type_header === 'landing'
+                        ? isHomePage
+                            ? 'fixed bg-transparent py-5'
+                            : 'relative bg-primary py-5'
+                        : isHomePage 
+                            ? `fixed ${isScrolled ? 'bg-primary backdrop-blur-xl py-5' : 'bg-transparent py-8'}`
+                            : `${isScrolled ? 'fixed bg-primary py-5' : 'relative bg-primary py-5'}`
+                }`}
                 style={{
-                    boxShadow: (isHomePage ? isScrolled : isScrolled) ? '0 1px 3px 0 rgba(0, 0, 0, 0.02)' : 'none',
-                    borderBottom: (isHomePage ? isScrolled : isScrolled) ? '1px solid rgba(0, 0, 0, 0.03)' : 'none'
+                    boxShadow: (data?.type_header === 'landing' ? false : isScrolled) ? '0 1px 3px 0 rgba(0, 0, 0, 0.02)' : 'none',
+                    borderBottom: (data?.type_header === 'landing' ? false : isScrolled) ? '1px solid rgba(0, 0, 0, 0.03)' : 'none',
+                    transform: (data?.type_header === 'landing' && isHomePage && isScrolled) ? 'translateY(-100%)' : 'translateY(0)',
+                    willChange: 'transform'
                 }}
             >
                 <div className="max-w-[1400px] mx-auto px-8 lg:px-16">
@@ -95,6 +102,7 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
                         </a>
 
                         {/* Menu Button */}
+                        {data?.menu_button && (
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="relative z-50 w-11 h-11 flex items-center justify-center transition-all duration-500 group"
@@ -118,6 +126,7 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
                                 />
                             </div>
                         </button>
+                        )}
                     </div>
                 </div>
             </nav>

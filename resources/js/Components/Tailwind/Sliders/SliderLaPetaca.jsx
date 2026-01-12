@@ -41,8 +41,8 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                     key={index}
                     className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
                         index === currentSlide
-                            ? 'opacity-100 scale-100'
-                            : 'opacity-0 scale-110'
+                            ? 'opacity-100 scale-100 pointer-events-auto'
+                            : 'opacity-0 scale-110 pointer-events-none'
                     }`}
                 >
                     <img
@@ -56,17 +56,19 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                         <div 
                             className="absolute inset-0 z-10"
                             style={{
-                                background: `linear-gradient(${
-                                    slide?.overlay_direction === 'to-r' ? 'to right' :
-                                    slide?.overlay_direction === 'to-l' ? 'to left' :
-                                    slide?.overlay_direction === 'to-t' ? 'to top' :
-                                    slide?.overlay_direction === 'to-b' ? 'to bottom' :
-                                    slide?.overlay_direction === 'to-tr' ? 'to top right' :
-                                    slide?.overlay_direction === 'to-tl' ? 'to top left' :
-                                    slide?.overlay_direction === 'to-br' ? 'to bottom right' :
-                                    slide?.overlay_direction === 'to-bl' ? 'to bottom left' :
-                                    'to bottom'
-                                }, ${slide?.overlay_color || '#281409'}${Math.round((slide?.overlay_opacity ?? 70) * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                                background: slide?.overlay_type === 'solid'
+                                    ? `${slide?.overlay_color || '#281409'}${Math.round((slide?.overlay_opacity ?? 70) * 2.55).toString(16).padStart(2, '0')}`
+                                    : `linear-gradient(${
+                                        slide?.overlay_direction === 'to-r' ? 'to right' :
+                                        slide?.overlay_direction === 'to-l' ? 'to left' :
+                                        slide?.overlay_direction === 'to-t' ? 'to top' :
+                                        slide?.overlay_direction === 'to-b' ? 'to bottom' :
+                                        slide?.overlay_direction === 'to-tr' ? 'to top right' :
+                                        slide?.overlay_direction === 'to-tl' ? 'to top left' :
+                                        slide?.overlay_direction === 'to-br' ? 'to bottom right' :
+                                        slide?.overlay_direction === 'to-bl' ? 'to bottom left' :
+                                        'to bottom'
+                                    }, ${slide?.overlay_color || '#281409'}${Math.round((slide?.overlay_opacity ?? 70) * 2.55).toString(16).padStart(2, '0')}, transparent)`
                             }}
                         ></div>
                     )}
@@ -86,8 +88,8 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                         </>
                     )}
 
-                    <div className={`absolute inset-0 z-20 flex items-center justify-center ${data?.class_content_slider || ''}`}>
-                        <div className="text-center px-primary  animate-fade-in">
+                    <div className={`absolute inset-0 z-20 flex items-center justify-center 2xl:max-w-7xl mx-auto px-primary 2xl:px-0 ${data?.class_content_slider || ''}`}>
+                        <div className="animate-fade-in">
                         
 
                             <h2 
@@ -105,7 +107,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.description}
                             </p>
 
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 ${data?.class_buttons_container || ''}`}>
                                 {slide.button_link && slide.button_text && (
                                     <a
                                         href={slide.button_link}

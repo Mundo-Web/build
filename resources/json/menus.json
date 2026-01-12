@@ -20,7 +20,9 @@
           { "label": "SubCategorías", "href": "/admin/subcategories", "icon": "mdi mdi-file-tree" },
           { "label": "Marcas", "href": "/admin/brands", "icon": "mdi mdi-label" },
           { "label": "Etiquetas", "href": "/admin/tags", "icon": "mdi mdi-label-multiple" },
-          { "id": "product-amenities", "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" }
+          { "id": "product-amenities", "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
+      { "label": "Aplicaciones", "href": "/admin/applications", "icon": "mdi mdi-apps" }
+        
         ]
       },
       {
@@ -69,6 +71,7 @@
       { "label": "Certificaciones", "href": "/admin/certifications", "icon": "mdi mdi-certificate" },
       { "label": "Aliados", "href": "/admin/partners", "icon": "mdi mdi-charity" },
       { "label": "Fortalezas", "href": "/admin/strengths", "icon": "mdi mdi-arm-flex" },
+      { "label": "Beneficios", "href": "/admin/benefits", "icon": "mdi mdi-gift" },
       { "label": "Apps Móviles", "href": "/admin/apps", "icon": "mdi mdi-cellphone-link" },
       { "label": "Banners", "href": "/admin/banners", "icon": "mdi mdi-post-outline" },
       { "label": "Sliders", "href": "/admin/sliders", "icon": "mdi mdi-page-layout-body" },

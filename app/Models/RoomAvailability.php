@@ -22,6 +22,7 @@ class RoomAvailability extends Model
         'base_price',
         'dynamic_price',
         'is_blocked',
+        'block_type',
     ];
 
     protected $casts = [

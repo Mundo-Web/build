@@ -9,6 +9,8 @@ import Modal from '../Components/Adminto/Modal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/locale';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const RoomAvailability = ({ rooms = [] }) => {
   const modalCalendarRef = useRef();
@@ -90,6 +92,7 @@ const RoomAvailability = ({ rooms = [] }) => {
       available: { bg: '#28a745', text: '#ffffff', label: 'Disponible', icon: 'mdi-check-circle' },
       occupied: { bg: '#dc3545', text: '#ffffff', label: 'Ocupada', icon: 'mdi-bed' },
       reserved: { bg: '#ffc107', text: '#000000', label: 'Reservada', icon: 'mdi-clock' },
+      cleaning: { bg: '#fd7e14', text: '#ffffff', label: 'En Limpieza', icon: 'mdi-broom' },
       maintenance: { bg: '#6c757d', text: '#ffffff', label: 'Mantenimiento', icon: 'mdi-tools' },
       full: { bg: '#17a2b8', text: '#ffffff', label: 'Sin disponibilidad', icon: 'mdi-information' },
     };
@@ -406,6 +409,10 @@ const RoomAvailability = ({ rooms = [] }) => {
       html: `
         <p>¿Confirmar el check-out del huésped?</p>
         <small class="text-muted">Fecha y hora: ${new Date().toLocaleString('es-PE')}</small>
+        <div class="alert alert-info mt-3 mb-0">
+          <i class="mdi mdi-information"></i>
+          La habitación pasará a estado de <strong>limpieza</strong>
+        </div>
       `,
       icon: 'question',
       showCancelButton: true,
@@ -432,8 +439,13 @@ const RoomAvailability = ({ rooms = [] }) => {
         Swal.fire({
           icon: 'success',
           title: '¡Check-Out Realizado!',
-          text: 'La reserva ha sido completada correctamente',
-          timer: 2000,
+          html: `
+            <p>La reserva ha sido completada correctamente</p>
+            <div class="alert alert-warning mt-2">
+              <i class="mdi mdi-broom"></i> Habitación en proceso de limpieza
+            </div>
+          `,
+          timer: 2500,
           showConfirmButton: false,
         });
         if (selectedRoom) {
@@ -498,6 +510,65 @@ const RoomAvailability = ({ rooms = [] }) => {
         loadSummary();
       } else {
         Swal.fire('Error', data.message || 'Error al cancelar la reserva', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Error al procesar la solicitud', 'error');
+    }
+  };
+
+  // Completar limpieza
+  const handleCompleteCleaning = async (roomId) => {
+    const result = await Swal.fire({
+      title: 'Finalizar Limpieza',
+      html: `
+        <p>¿Confirmar que la limpieza ha sido completada?</p>
+        <div class="alert alert-success mt-3 mb-0">
+          <i class="mdi mdi-check-circle"></i>
+          La habitación quedará <strong>disponible</strong> para nuevas reservas
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="mdi mdi-check-all"></i> Limpieza Completada',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/room-availability/${roomId}/complete-cleaning`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
+        },
+        body: JSON.stringify({
+          date: new Date().toISOString().split('T')[0]
+        })
+      });
+      
+      const data = await response.json();
+      if (data.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Limpieza Completada!',
+          text: 'La habitación está disponible nuevamente',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        
+        // Recargar resumen
+        loadSummary();
+        
+        // Si el calendario está abierto, actualizarlo
+        if ($(modalCalendarRef.current).hasClass('show') && selectedRoom) {
+          openCalendarModal(selectedRoom);
+        }
+      } else {
+        Swal.fire('Error', data.message || 'Error al completar limpieza', 'error');
       }
     } catch (error) {
       Swal.fire('Error', 'Error al procesar la solicitud', 'error');
@@ -767,6 +838,9 @@ const RoomAvailability = ({ rooms = [] }) => {
                 <span className="badge px-3 py-2" style={{ backgroundColor: '#ffc107', color: '#000000' }}>
                   <i className="mdi mdi-clock mr-1"></i> Reservada
                 </span>
+                <span className="badge px-3 py-2" style={{ backgroundColor: '#fd7e14', color: '#ffffff' }}>
+                  <i className="mdi mdi-broom mr-1"></i> En Limpieza
+                </span>
                 <span className="badge px-3 py-2" style={{ backgroundColor: '#6c757d', color: '#ffffff' }}>
                   <i className="mdi mdi-tools mr-1"></i> Mantenimiento
                 </span>
@@ -793,88 +867,97 @@ const RoomAvailability = ({ rooms = [] }) => {
                         
                         {/* Header del Card */}
                         <div className="room-header">
-                          <div className="room-icon" style={{ backgroundColor: `${statusInfo.bg}20`, color: statusInfo.bg }}>
-                            <i className="mdi mdi-bed"></i>
+                          <div className="room-title-section">
+                            <div className="room-icon-badge" style={{ backgroundColor: `${statusInfo.bg}15`, color: statusInfo.bg }}>
+                              <i className="mdi mdi-bed"></i>
+                            </div>
+                            <h5 className="room-name">{room.name}</h5>
                           </div>
-                          <h5 className="room-name">{room.name}</h5>
                         </div>
                         
                         {/* Body del Card */}
                         <div className="room-body">
-                          <div className="room-info-grid">
-                            <div className="room-info-item">
-                              <div className="room-info-icon">
-                                <i className="mdi mdi-account-multiple"></i>
-                              </div>
-                              <div className="room-info-content">
-                                <small className="text-muted">Capacidad</small>
-                                <strong>{room.max_occupancy || room.capacity} personas</strong>
-                              </div>
+                          <div className="room-quick-info">
+                            <div className="info-pill">
+                              <i className="mdi mdi-account-multiple"></i>
+                              <span>{room.max_occupancy || room.capacity} personas</span>
                             </div>
-                            
-                            <div className="room-info-item">
-                              <div className="room-info-icon">
-                                <i className="mdi mdi-cash-multiple"></i>
-                              </div>
-                              <div className="room-info-content">
-                                <small className="text-muted">Precio/noche</small>
-                                <strong className="text-success">S/ {Number(room.price).toFixed(2)}</strong>
-                              </div>
+                            <div className="info-pill info-pill-price">
+                              <i className="mdi mdi-cash-multiple"></i>
+                              <span>S/ {Number(room.price).toFixed(2)}</span>
                             </div>
                           </div>
                           
                           {room.active_booking && (
                             <div className="room-booking-info">
-                              <div className="d-flex align-items-center mb-2">
-                                <i className="mdi mdi-account-circle mr-2 text-primary"></i>
-                                <strong>Huésped Actual</strong>
+                              <div className="booking-header">
+                                <i className="mdi mdi-account-circle"></i>
+                                <span className="booking-label">Huésped Actual</span>
                               </div>
-                              <div className="d-flex justify-content-between mb-1">
-                                <span className="text-muted">Nombre:</span>
-                                <span>{room.active_booking.guest_name || 'N/A'}</span>
-                              </div>
-                              <div className="d-flex justify-content-between">
-                                <span className="text-muted">Check-out:</span>
-                                <span className="font-weight-bold">{moment(room.active_booking.check_out).format('DD/MM/YYYY')}</span>
+                              <div className="booking-details">
+                                <div className="guest-name">
+                                  {room.active_booking.guest_name || 'N/A'}
+                                </div>
+                                <div className="checkout-date">
+                                  <i className="mdi mdi-calendar-export"></i>
+                                  {moment(room.active_booking.check_out).format('DD/MM/YYYY')}
+                                </div>
                               </div>
                             </div>
                           )}
                           
-                          {/* Botones de acción */}
-                          <div className="room-actions">
+                          {/* Botones de acción con íconos y tooltips */}
+                          <div className="room-actions-icons">
                             {room.status === 'available' && (
-                              <button 
-                                className="room-btn room-btn-primary"
-                                onClick={() => openRegisterModal(room)}
-                              >
-                                <i className="mdi mdi-account-plus mr-1"></i>
-                                Ocupar Ahora
-                              </button>
+                              <Tippy content="Ocupar Ahora" placement="top">
+                                <button 
+                                  className="room-icon-btn room-icon-btn-success"
+                                  onClick={() => openRegisterModal(room)}
+                                >
+                                  <i className="mdi mdi-account-plus mdi-24px"></i>
+                                </button>
+                              </Tippy>
                             )}
                             
-                            <button 
-                              className="room-btn room-btn-secondary"
-                              onClick={() => openCalendarModal(room)}
-                            >
-                              <i className="mdi mdi-calendar mr-1"></i>
-                              Ver Calendario
-                            </button>
+                            {room.status === 'occupied' && room.active_booking && (
+                              <Tippy content="Check-Out" placement="top">
+                                <button 
+                                  className="room-icon-btn room-icon-btn-info"
+                                  onClick={() => handleCheckOut(room.active_booking.id)}
+                                >
+                                  <i className="mdi mdi-logout mdi-24px"></i>
+                                </button>
+                              </Tippy>
+                            )}
                             
-                            <button 
-                              className="room-btn room-btn-secondary"
-                              onClick={() => openMaintenanceModal(room)}
-                            >
-                              <i className="mdi mdi-tools mr-1"></i>
-                              Mantenimiento
-                            </button>
+                            {room.status === 'cleaning' && (
+                              <Tippy content="Limpieza Completada" placement="top">
+                                <button 
+                                  className="room-icon-btn room-icon-btn-success"
+                                  onClick={() => handleCompleteCleaning(room.id)}
+                                >
+                                  <i className="mdi mdi-check-all mdi-24px"></i>
+                                </button>
+                              </Tippy>
+                            )}
                             
-                            <button 
-                              className="room-btn room-btn-outline"
-                              onClick={() => handleGenerateAvailability(room.id)}
-                            >
-                              <i className="mdi mdi-calendar-plus mr-1"></i>
-                              Generar Disponibilidad
-                            </button>
+                            <Tippy content="Ver Calendario" placement="top">
+                              <button 
+                                className="room-icon-btn room-icon-btn-secondary"
+                                onClick={() => openCalendarModal(room)}
+                              >
+                                <i className="mdi mdi-calendar mdi-24px"></i>
+                              </button>
+                            </Tippy>
+                            
+                            <Tippy content="Mantenimiento" placement="top">
+                              <button 
+                                className="room-icon-btn room-icon-btn-warning"
+                                onClick={() => openMaintenanceModal(room)}
+                              >
+                                <i className="mdi mdi-tools mdi-24px"></i>
+                              </button>
+                            </Tippy>
                           </div>
                         </div>
                       </div>
@@ -886,177 +969,250 @@ const RoomAvailability = ({ rooms = [] }) => {
               <style>{`
                 .room-card {
                   background: white;
-                  border-radius: 16px;
+                  border-radius: 12px;
                   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-                  transition: all 0.3s ease;
+                  transition: all 0.2s ease;
                   height: 100%;
                   position: relative;
                   overflow: hidden;
-                  border: 1px solid #f0f0f0;
+                  border: 1px solid #e8e8e8;
+                  display: flex;
+                  flex-direction: column;
                 }
                 
                 .room-card:hover {
-                  transform: translateY(-4px);
-                  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
                 }
                 
                 .room-status-badge {
                   position: absolute;
-                  top: 12px;
-                  right: 12px;
-                  padding: 6px 12px;
-                  border-radius: 20px;
-                  font-size: 11px;
+                  top: 10px;
+                  right: 10px;
+                  padding: 4px 10px;
+                  border-radius: 12px;
+                  font-size: 10px;
                   font-weight: 600;
                   color: white;
                   display: flex;
                   align-items: center;
                   gap: 4px;
-                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
                   z-index: 1;
                 }
                 
                 .room-status-badge i {
-                  font-size: 14px;
+                  font-size: 12px;
                 }
                 
                 .room-header {
-                  padding: 24px 20px 16px;
+                  padding: 16px;
                   display: flex;
                   align-items: center;
-                  gap: 12px;
+                  justify-content: space-between;
                   border-bottom: 1px solid #f0f0f0;
                 }
                 
-                .room-icon {
-                  width: 48px;
-                  height: 48px;
-                  border-radius: 12px;
+                .room-title-section {
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  flex: 1;
+                }
+                
+                .room-icon-badge {
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 8px;
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  font-size: 24px;
+                  font-size: 20px;
+                  flex-shrink: 0;
                 }
                 
                 .room-name {
                   margin: 0;
-                  font-size: 1.25rem;
+                  font-size: 1.1rem;
                   font-weight: 700;
                   color: #2d3748;
                 }
                 
                 .room-body {
-                  padding: 20px;
-                }
-                
-                .room-info-grid {
-                  display: grid;
-                  grid-template-columns: 1fr 1fr;
-                  gap: 16px;
-                  margin-bottom: 20px;
-                }
-                
-                .room-info-item {
-                  display: flex;
-                  gap: 10px;
-                  align-items: flex-start;
-                }
-                
-                .room-info-icon {
-                  width: 36px;
-                  height: 36px;
-                  background: #f7fafc;
-                  border-radius: 8px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  color: #4a5568;
-                  font-size: 18px;
-                }
-                
-                .room-info-content {
+                  padding: 14px;
+                  flex: 1;
                   display: flex;
                   flex-direction: column;
-                  gap: 2px;
                 }
                 
-                .room-info-content small {
-                  font-size: 11px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
+                .room-quick-info {
+                  margin-bottom: 10px;
+                  display: flex;
+                  gap: 8px;
+                  flex-wrap: wrap;
                 }
                 
-                .room-info-content strong {
-                  font-size: 14px;
-                  color: #2d3748;
-                }
-                
-                .room-booking-info {
-                  background: #f7fafc;
+                .info-pill {
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+                  padding: 6px 12px;
                   border-radius: 12px;
-                  padding: 14px;
-                  margin-bottom: 16px;
+                  font-size: 12px;
+                  color: #4a5568;
+                  font-weight: 600;
                   border: 1px solid #e2e8f0;
                 }
                 
-                .room-booking-info > div:first-child {
-                  border-bottom: 1px solid #e2e8f0;
-                  padding-bottom: 8px;
-                  margin-bottom: 8px;
+                .info-pill i {
+                  font-size: 16px;
+                  color: #4299e1;
                 }
                 
-                .room-actions {
+                .info-pill span {
+                  font-weight: 600;
+                }
+                
+                .info-pill-price {
+                  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+                  border-color: #28a745;
+                }
+                
+                .info-pill-price i {
+                  color: #28a745;
+                }
+                
+                .info-pill-price span {
+                  color: #155724;
+                  font-weight: 700;
+                }
+                
+                .room-booking-info {
+                  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+                  border-radius: 10px;
+                  padding: 10px 12px;
+                  margin-bottom: 10px;
+                  border: 1px solid #e2e8f0;
+                }
+                
+                .booking-header {
                   display: flex;
-                  flex-direction: column;
+                  align-items: center;
+                  gap: 6px;
+                  margin-bottom: 8px;
+                  padding-bottom: 6px;
+                  border-bottom: 1px solid #e2e8f0;
+                }
+                
+                .booking-header i {
+                  font-size: 16px;
+                  color: #4299e1;
+                }
+                
+                .booking-label {
+                  font-size: 11px;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  color: #4a5568;
+                  letter-spacing: 0.5px;
+                }
+                
+                .booking-details {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
                   gap: 8px;
                 }
                 
-                .room-btn {
-                  width: 100%;
-                  padding: 10px 16px;
-                  border: none;
-                  border-radius: 8px;
+                .guest-name {
                   font-size: 13px;
                   font-weight: 600;
+                  color: #2d3748;
+                  flex: 1;
+                  min-width: 0;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                }
+                
+                .checkout-date {
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  font-size: 12px;
+                  color: #dc3545;
+                  font-weight: 600;
+                  flex-shrink: 0;
+                }
+                
+                .checkout-date i {
+                  font-size: 14px;
+                }
+                
+                .room-actions-icons {
+                  display: flex;
+                  gap: 6px;
+                  justify-content: center;
+                  flex-wrap: wrap;
+                  margin-top: auto;
+                  padding-top: 10px;
+                }
+                
+                .room-icon-btn {
+                  width: 40px;
+                  height: 40px;
+                  border: none;
+                  border-radius: 8px;
                   cursor: pointer;
                   transition: all 0.2s ease;
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  gap: 6px;
+                  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
                 }
                 
-                .room-btn-primary {
+                .room-icon-btn:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                }
+                
+                .room-icon-btn-success {
                   background: #28a745;
                   color: white;
                 }
                 
-                .room-btn-primary:hover {
+                .room-icon-btn-success:hover {
                   background: #218838;
-                  transform: translateY(-1px);
-                  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
                 }
                 
-                .room-btn-secondary {
+                .room-icon-btn-info {
+                  background: #17a2b8;
+                  color: white;
+                }
+                
+                .room-icon-btn-info:hover {
+                  background: #138496;
+                }
+                
+                .room-icon-btn-secondary {
                   background: #f7fafc;
                   color: #4a5568;
                   border: 1px solid #e2e8f0;
                 }
                 
-                .room-btn-secondary:hover {
+                .room-icon-btn-secondary:hover {
                   background: #edf2f7;
                   border-color: #cbd5e0;
                 }
                 
-                .room-btn-outline {
-                  background: white;
-                  color: #4a5568;
-                  border: 1px solid #cbd5e0;
+                .room-icon-btn-warning {
+                  background: #ffc107;
+                  color: #000;
                 }
                 
-                .room-btn-outline:hover {
-                  background: #f7fafc;
-                  border-color: #a0aec0;
+                .room-icon-btn-warning:hover {
+                  background: #e0a800;
                 }
               `}</style>
 

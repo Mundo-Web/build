@@ -15,11 +15,11 @@ const BannerAboutStats = ({ data, items = [] }) => {
                     {/* Contenido de texto y estadísticas */}
                     <div className="space-y-8 min-w-0">
                         <div className="space-y-4">
-                            <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line">
+                            <h2 className={`text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line`}>
                                 <TextWithHighlight
                                     text={data?.name}
-                                    color="bg-primary font-light"
-                                    className=""
+                                    color={`bg-primary font-light`}
+                                    className={data?.class_title || ""}
                                 />
                             </h2>
 
@@ -66,13 +66,13 @@ const BannerAboutStats = ({ data, items = [] }) => {
                                             <SwiperSlide key={index}>
                                                 <div className="group h-full">
                                                     {/* Card con diseño premium */}
-                                                    <div className="relative h-full bg-gradient-to-br from-white via-neutral-50/50 to-white -3xl p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden">
+                                                    <div className={`relative h-full bg-gradient-to-br from-white via-neutral-50/50 to-white  p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden ${data?.class_indicators_card || ''}`}>
                                                       
                                                         {/* Contenido */}
                                                         <div className="relative flex flex-col items-center text-center space-y-4">
                                                             {/* Icono con backdrop blur */}
                                                             <div className="relative">
-                                                                <div className="relative bg-primary backdrop-blur-sm p-5 -full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700">
+                                                                <div className={`relative bg-primary backdrop-blur-sm p-5 -full group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ${data?.class_indicators_icon || ''}`}>
                                                                     <img
                                                                         src={symbolUrl}
                                                                         alt={item.name}
@@ -114,7 +114,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
 
                     {/* Imagen */}
                     <div className="relative">
-                        <div className="relative -3xl border-secondary border-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500">
+                        <div className="relative  border-secondary border-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500">
                             <img
                                 src={imageUrl}
                                 alt={data?.name || 'Banner'}

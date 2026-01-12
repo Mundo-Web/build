@@ -172,13 +172,14 @@ class Booking extends Model
             'status' => 'completed'
         ]);
 
-        // Liberar disponibilidad después del check-out
-        RoomAvailability::releaseRooms(
-            $this->item_id,
-            $this->check_in,
-            $this->check_out,
-            1
-        );
+        // Marcar habitación como "en limpieza" después del check-out
+        $today = now()->format('Y-m-d');
+        RoomAvailability::where('item_id', $this->item_id)
+            ->where('date', $today)
+            ->update([
+                'is_blocked' => true,
+                'block_type' => 'cleaning'
+            ]);
     }
 
     /**

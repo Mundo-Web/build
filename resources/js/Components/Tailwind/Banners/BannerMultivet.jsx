@@ -9,16 +9,17 @@ const BannerMultivet = ({ data }) => {
     const imageOverflowStyle = 'xl:absolute xl:right-0 xl:bottom-0 xl:top-4 xl:w-1/2 xl:h-auto xl:overflow-visible xl:z-10';
     
     return (
-        <section className={`px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-12 xl:py-16 ${data?.section_background || 'bg-white'} ${data?.class_section || ''}`}>
-            <div className={`flex flex-col xl:flex-row justify-start items-stretch w-full rounded-3xl relative overflow-hidden min-h-[400px] xl:min-h-[500px] ${data?.container_background || 'bg-gradient-to-br from-[#F2F2F2] to-[#91502D1A]'} ${data?.class_container || ''}`}>
+<section className={`w-full py-0 ${data?.class_section || 'bg-white '}`}>
+      <div className={`px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-12 xl:py-16 `}>
+            <div className={`flex flex-col xl:flex-row justify-start items-stretch w-full rounded-3xl relative overflow-hidden min-h-[400px] xl:min-h-[500px]   ${data?.class_container || 'bg-gradient-to-br from-[#F2F2F2] to-[#91502D1A]'}`}>
                 
                 {/* Contenido de texto */}
                 <div className={`flex flex-col gap-5 py-8 px-6 sm:px-8 lg:pl-12 xl:pl-16 2xl:pl-20 justify-center items-start w-full xl:w-7/12 2xl:w-8/12 text-left z-20 relative ${data?.class_content || ''}`}>
-                    <h1 className={`font-bold font-title text-3xl sm:text-4xl lg:text-5xl xl:text-5xl 2xl:text-6xl leading-tight ${data?.title_color || 'customtext-secondary'} ${data?.title_opacity || 'text-opacity-90'} ${data?.class_title || ''}`}>
+                    <h1 className={`font-bold font-title text-3xl sm:text-4xl lg:text-5xl xl:text-5xl 2xl:text-6xl leading-tight text-secondary text-opacity-90  ${data?.class_title || ''}`}>
                       {data?.name}
                     </h1>
 
-                    <p className={`font-normal text-sm sm:text-base lg:text-lg xl:text-lg 2xl:text-xl leading-relaxed max-w-lg xl:max-w-xl 2xl:max-w-2xl ${data?.description_color || 'customtext-neutral-dark'} ${data?.description_opacity || 'opacity-70'} ${data?.class_description || ''}`}>
+                    <p className={`font-normal text-sm sm:text-base lg:text-lg xl:text-lg 2xl:text-xl leading-relaxed max-w-lg xl:max-w-xl 2xl:max-w-2xl  text-neutral-dark  text-opacity-70  ${data?.class_description || ''}`}>
                         {data?.description}
                     </p>
                     
@@ -26,7 +27,7 @@ const BannerMultivet = ({ data }) => {
                         <div className="flex flex-col mt-2">
                             <a 
                                 href={data?.button_link} 
-                                className={`inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 2xl:py-4 2xl:px-8 rounded-lg text-white font-semibold leading-none text-sm sm:text-base 2xl:text-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${data?.button_background || 'bg-secondary hover:bg-primary'} ${data?.class_button || ''}`}
+                                className={`inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 2xl:py-4 2xl:px-8 rounded-lg text-white font-semibold leading-none text-sm sm:text-base 2xl:text-xl transition-all duration-300 hover:scale-105 hover:shadow-lg bg-secondary hover:bg-primary ${data?.class_button || ''}`}
                             >
                                 {data?.button_text}
                             </a>
@@ -63,7 +64,9 @@ const BannerMultivet = ({ data }) => {
                     </>
                 )}
             </div>
-        </section>
+        </div>
+</section>
+      
     );
 };
 

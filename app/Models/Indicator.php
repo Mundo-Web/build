@@ -15,6 +15,7 @@ class Indicator extends Model
 
     protected $fillable = [
         'symbol',
+        'bg_color',
         'bg_image',
         'name',
         'subtitle',

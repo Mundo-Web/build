@@ -53,7 +53,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
-    'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'excel_import_template'],//footer_description
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours','header_menu_order', 'excel_import_template', 'footer_description', 'footer_company_links'],
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email','job_application_email','admin_job_application_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
@@ -469,6 +469,22 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     canonicalUrl:
       generals.find((x) => x.correlative == "canonical_url")
         ?.description ?? "",
+    footerDescription:
+      generals.find((x) => x.correlative == "footer_description")
+        ?.description ?? "",
+    footerCompanyLinks: (() => {
+      try {
+        const links = generals.find((x) => x.correlative == "footer_company_links")?.description;
+        const parsed = links ? JSON.parse(links) : [];
+        // Asegurar que cada enlace tenga el campo visible (por defecto true si no existe)
+        return parsed.map(link => ({
+          ...link,
+          visible: link.visible !== undefined ? link.visible : true
+        }));
+      } catch {
+        return [];
+      }
+    })(),
   }));
 
   // Funciones memoizadas para evitar re-renders y pérdida de foco
@@ -935,11 +951,16 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         name: "Horarios de atención",
         description: formData.openingHours || "",
       },
-     /* {
+      {
         correlative: "footer_description",
         name: "Descripción del Footer",
         description: formData.footerDescription || "",
-      },*/
+      },
+      {
+        correlative: "footer_company_links",
+        name: "Enlaces de Empresa (Footer)",
+        description: JSON.stringify(formData.footerCompanyLinks || []),
+      },
       {
         correlative: "support_phone",
         name: "Número de soporte",
@@ -1475,7 +1496,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 </button>
               </li>
             )}
-            <li className="nav-item" role="presentation">
+            
+              <ConditionalField correlative="cintillo">
+                  <li className="nav-item" role="presentation">
               <button
                 className={`nav-link ${activeTab === "cintillos" ? "active" : ""
                   }`}
@@ -1486,6 +1509,8 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 Gestionar Cintillos
               </button>
             </li>
+              </ConditionalField>
+          
 
             <li className="nav-item" role="presentation">
               <button
@@ -1498,7 +1523,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 Ubicación
               </button>
             </li>
-
+  {shouldShowTab('email') && (
             <li className="nav-item" role="presentation">
               <button
                 className={`nav-link ${activeTab === "email" ? "active" : ""}`}
@@ -1509,6 +1534,8 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 Email
               </button>
             </li>
+         )}
+            
             {shouldShowTab('shippingfree') && (
               <li className="nav-item" role="presentation">
                 <button
@@ -1615,7 +1642,8 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               role="tabpanel"
             >
               <div className="row">
-                <div className="col-md-6 mb-2">
+                   <ConditionalField correlative="cintillo">
+                     <div className="col-md-6 mb-2">
                   <div className="alert alert-info">
                     <h6>
                       <i className="fas fa-info-circle me-2"></i>
@@ -1634,8 +1662,10 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     </button>
                   </div>
                 </div>
+                   </ConditionalField>
+               
                 <ConditionalField correlative="copyright">
-                  <div className="col-md-6 mb-2">
+                  <div className={`mb-2 ${shouldShowField("cintillo") ? "col-md-6 " : "col-md-12 "}`}>
                     <label htmlFor="copyright" className="form-label">
                       Copyright
                     </label>
@@ -1774,7 +1804,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 </div>
               </ConditionalField>
 
-           {/*   <ConditionalField correlative="footer_description">
+              <ConditionalField correlative="footer_description">
                 <div className="mb-2">
                   <TextareaFormGroup
                     label="Descripción del Footer"
@@ -1784,7 +1814,95 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     rows={3}
                   />
                 </div>
-              </ConditionalField>*/}
+              </ConditionalField>
+
+              <ConditionalField correlative="footer_company_links">
+                <div className="mb-2">
+                  <label className="form-label d-block">
+                    <i className="fas fa-link me-2"></i>
+                    Enlaces de Empresa (Footer)
+                  </label>
+                  {formData.footerCompanyLinks.map((link, index) => (
+                    <div key={index} className="card mb-2">
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-md-5 mb-2">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Nombre del enlace"
+                              value={link.name || ''}
+                              onChange={(e) => {
+                                const newLinks = [...formData.footerCompanyLinks];
+                                newLinks[index] = { ...newLinks[index], name: e.target.value };
+                                handleFieldChange('footerCompanyLinks', newLinks);
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="URL del enlace (ej: /nosotros)"
+                              value={link.href || ''}
+                              onChange={(e) => {
+                                const newLinks = [...formData.footerCompanyLinks];
+                                newLinks[index] = { ...newLinks[index], href: e.target.value };
+                                handleFieldChange('footerCompanyLinks', newLinks);
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-1 d-flex gap-1">
+                            <button
+                              type="button"
+                              className={`btn btn-sm flex-fill ${
+                                link.visible !== false ? 'btn-success' : 'btn-secondary'
+                              }`}
+                              onClick={() => {
+                                const newLinks = [...formData.footerCompanyLinks];
+                                newLinks[index] = { 
+                                  ...newLinks[index], 
+                                  visible: !(link.visible !== false) 
+                                };
+                                handleFieldChange('footerCompanyLinks', newLinks);
+                              }}
+                              title={link.visible !== false ? 'Visible' : 'Oculto'}
+                            >
+                              <i className={`fa ${
+                                link.visible !== false ? 'fa-eye' : 'fa-eye-slash'
+                              }`}></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm flex-fill"
+                              onClick={() => {
+                                const newLinks = formData.footerCompanyLinks.filter((_, i) => i !== index);
+                                handleFieldChange('footerCompanyLinks', newLinks);
+                              }}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary d-bolck"
+                    onClick={() => {
+                      const newLinks = [...formData.footerCompanyLinks, { name: '', href: '', visible: true }];
+                      handleFieldChange('footerCompanyLinks', newLinks);
+                    }}
+                  >
+                    <i className="fa fa-plus me-1"></i>
+                    Agregar enlace
+                  </button>
+                  <small className="text-muted d-block mt-2">
+                    Estos enlaces aparecerán en la sección del footer
+                  </small>
+                </div>
+              </ConditionalField>
 
             </div>
 

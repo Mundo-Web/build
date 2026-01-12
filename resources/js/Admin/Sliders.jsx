@@ -46,6 +46,7 @@ const Sliders = () => {
   const [overlayOpacity, setOverlayOpacity] = useState(50)
   const [overlayDirection, setOverlayDirection] = useState('to-b')
   const [overlayColor, setOverlayColor] = useState('#000000')
+  const [overlayType, setOverlayType] = useState('gradient')
 
   const onModalOpen = (data) => {
     if (data?.id) setIsEditing(true)
@@ -77,6 +78,7 @@ const Sliders = () => {
     setOverlayColor(data?.overlay_color ?? '#000000')
     setOverlayOpacity(data?.overlay_opacity ?? 50)
     setOverlayDirection(data?.overlay_direction ?? 'to-b')
+    setOverlayType(data?.overlay_type ?? 'gradient')
 
     $(modalRef.current).modal('show')
   }
@@ -99,6 +101,7 @@ const Sliders = () => {
       overlay_color: overlayColor,
       overlay_opacity: overlayOpacity,
       overlay_direction: overlayDirection,
+      overlay_type: overlayType,
       bg_type: activeTab,
       bg_video: activeTab == 'video' ? iframeSrc : null
     }
@@ -485,7 +488,7 @@ const Sliders = () => {
             
             {/* Overlay Settings */}
             <div className='col-12 mt-4 mb-3'>
-              <h6 className='text-muted border-bottom pb-2'>Configuración del Overlay (Gradiente)</h6>
+              <h6 className='text-muted border-bottom pb-2'>Configuración del Overlay</h6>
             </div>
             <div className='col-sm-3'>
               <label className='form-label'>Mostrar Overlay</label>
@@ -503,36 +506,50 @@ const Sliders = () => {
               </div>
             </div>
             <div className='col-sm-3'>
-              <label className='form-label'>Color del Gradiente</label>
+              <label className='form-label'>Tipo de Overlay</label>
+              <select 
+                className='form-select'
+                value={overlayType}
+                onChange={(e) => setOverlayType(e.target.value)}
+                disabled={!showOverlay}
+              >
+                <option value="gradient">Gradiente</option>
+                <option value="solid">Color Sólido</option>
+              </select>
+            </div>
+            <div className='col-sm-3'>
+              <label className='form-label'>Color del Overlay</label>
               <input 
                 type='color' 
                 className='form-control form-control-color w-100' 
                 value={overlayColor}
                 onChange={(e) => setOverlayColor(e.target.value)}
-                title='Seleccionar color del gradiente'
+                title='Seleccionar color del overlay'
                 disabled={!showOverlay}
               />
             </div>
-            <div className='col-sm-3'>
-              <label className='form-label'>Dirección</label>
-              <select 
-                className='form-select'
-                value={overlayDirection}
-                onChange={(e) => setOverlayDirection(e.target.value)}
-                disabled={!showOverlay}
-              >
-                <option value="to-r">→ Izquierda a Derecha</option>
-                <option value="to-l">← Derecha a Izquierda</option>
-                <option value="to-b">↓ Arriba a Abajo</option>
-                <option value="to-t">↑ Abajo a Arriba</option>
-                <option value="to-tr">↗ Diagonal Arriba-Derecha</option>
-                <option value="to-tl">↖ Diagonal Arriba-Izquierda</option>
-                <option value="to-br">↘ Diagonal Abajo-Derecha</option>
-                <option value="to-bl">↙ Diagonal Abajo-Izquierda</option>
-              </select>
-            </div>
-            <div className='col-sm-3'>
-              <label className='form-label'>Intensidad: {overlayOpacity}%</label>
+            {overlayType === 'gradient' && (
+              <div className='col-sm-3'>
+                <label className='form-label'>Dirección</label>
+                <select 
+                  className='form-select'
+                  value={overlayDirection}
+                  onChange={(e) => setOverlayDirection(e.target.value)}
+                  disabled={!showOverlay}
+                >
+                  <option value="to-r">→ Izquierda a Derecha</option>
+                  <option value="to-l">← Derecha a Izquierda</option>
+                  <option value="to-b">↓ Arriba a Abajo</option>
+                  <option value="to-t">↑ Abajo a Arriba</option>
+                  <option value="to-tr">↗ Diagonal Arriba-Derecha</option>
+                  <option value="to-tl">↖ Diagonal Arriba-Izquierda</option>
+                  <option value="to-br">↘ Diagonal Abajo-Derecha</option>
+                  <option value="to-bl">↙ Diagonal Abajo-Izquierda</option>
+                </select>
+              </div>
+            )}
+            <div className={overlayType === 'gradient' ? 'col-sm-12 mt-2' : 'col-sm-3'}>
+              <label className='form-label'>Opacidad: {overlayOpacity}%</label>
               <input 
                 type='range' 
                 className='form-range' 
@@ -544,24 +561,26 @@ const Sliders = () => {
               />
             </div>
             
-            {/* Preview del overlay con gradiente */}
+            {/* Preview del overlay */}
             {showOverlay && (
               <div className='col-12 mt-3'>
-                <label className='form-label'>Vista previa del gradiente</label>
+                <label className='form-label'>Vista previa del overlay</label>
                 <div 
                   className='rounded border position-relative overflow-hidden' 
                   style={{ 
                     height: '80px',
-                    background: `linear-gradient(${
-                      overlayDirection === 'to-r' ? 'to right' :
-                      overlayDirection === 'to-l' ? 'to left' :
-                      overlayDirection === 'to-t' ? 'to top' :
-                      overlayDirection === 'to-b' ? 'to bottom' :
-                      overlayDirection === 'to-tr' ? 'to top right' :
-                      overlayDirection === 'to-tl' ? 'to top left' :
-                      overlayDirection === 'to-br' ? 'to bottom right' :
-                      'to bottom left'
-                    }, ${overlayColor}${Math.round(overlayOpacity * 2.55).toString(16).padStart(2, '0')}, transparent)`
+                    background: overlayType === 'solid' 
+                      ? `${overlayColor}${Math.round(overlayOpacity * 2.55).toString(16).padStart(2, '0')}`
+                      : `linear-gradient(${
+                          overlayDirection === 'to-r' ? 'to right' :
+                          overlayDirection === 'to-l' ? 'to left' :
+                          overlayDirection === 'to-t' ? 'to top' :
+                          overlayDirection === 'to-b' ? 'to bottom' :
+                          overlayDirection === 'to-tr' ? 'to top right' :
+                          overlayDirection === 'to-tl' ? 'to top left' :
+                          overlayDirection === 'to-br' ? 'to bottom right' :
+                          'to bottom left'
+                        }, ${overlayColor}${Math.round(overlayOpacity * 2.55).toString(16).padStart(2, '0')}, transparent)`
                   }}
                 >
                   <div className='position-absolute w-100 h-100' style={{
@@ -571,7 +590,10 @@ const Sliders = () => {
                   }}></div>
                 </div>
                 <small className='text-muted'>
-                  El gradiente irá desde el color seleccionado hasta transparente
+                  {overlayType === 'solid' 
+                    ? 'Color sólido con la opacidad seleccionada'
+                    : 'El gradiente irá desde el color seleccionado hasta transparente'
+                  }
                 </small>
               </div>
             )}

@@ -278,6 +278,51 @@ class HomeController extends BasicController
                 ];
             });
 
+        // Servicios más clickeados (top 10) - NUEVO
+        $mostClickedServices = Service::select('id', 'name', 'image', 'clicks')
+            ->where('status', 1)
+            ->where('visible', true)
+            ->orderByDesc('clicks')
+            ->limit(10)
+            ->get()
+            ->map(function($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'clicks' => $service->clicks,
+                    'image' => $service->image,
+                    'category' => $service->category ? $service->category->name : null,
+                ];
+            });
+
+        // Clicks de servicios hoy, mes, año - NUEVO
+        $serviceClicksToday = DB::table('service_clicks')
+            ->whereDate('created_at', $today)
+            ->count();
+        
+        $serviceClicksMonth = DB::table('service_clicks')
+            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->count();
+        
+        $serviceClicksYear = DB::table('service_clicks')
+            ->whereBetween('created_at', [$startOfYear, Carbon::now()])
+            ->count();
+
+        // Clicks únicos vs totales del mes - NUEVO
+        $uniqueClickersMonth = DB::table('service_clicks')
+            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->distinct('user_hash')
+            ->count('user_hash');
+
+        // CTR (Click Through Rate) de servicios - NUEVO
+        $serviceViewsMonth = AnalyticsEvent::whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->where('event_type', 'service_view')
+            ->count();
+        
+        $serviceCTR = $serviceViewsMonth > 0 
+            ? round(($serviceClicksMonth / $serviceViewsMonth) * 100, 2) 
+            : 0;
+
         // Vistas de servicios por día del mes actual
         $serviceVisitsThisMonth = [];
         for ($day = 1; $day <= $daysInMonth; $day++) {
@@ -306,23 +351,179 @@ class HomeController extends BasicController
                 ];
             });
 
-        // Últimas 30 días de vistas de servicios (para gráfica)
+        // Últimas 30 días: vistas, clicks y CTR - NUEVO (mejorado)
         $serviceViewsLast30Days = [];
         for ($i = 29; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
+            
             $views = AnalyticsEvent::whereDate('created_at', $date)
                 ->where('event_type', 'service_view')
                 ->count();
+            
+            $clicks = DB::table('service_clicks')
+                ->whereDate('created_at', $date)
+                ->count();
+            
             $uniqueUsers = AnalyticsEvent::whereDate('created_at', $date)
                 ->where('event_type', 'service_view')
                 ->distinct('session_id')
                 ->count('session_id');
+            
+            $dailyCTR = $views > 0 ? round(($clicks / $views) * 100, 2) : 0;
+            
             $serviceViewsLast30Days[] = [
                 'date' => $date->format('Y-m-d'),
                 'views' => $views,
-                'unique_users' => $uniqueUsers
+                'clicks' => $clicks,
+                'unique_users' => $uniqueUsers,
+                'ctr' => $dailyCTR
             ];
         }
+
+        // Clicks de servicios por día del mes actual - NUEVO
+        $serviceClicksThisMonth = [];
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::now()->startOfMonth()->addDays($day - 1);
+            $clicks = DB::table('service_clicks')
+                ->whereDate('created_at', $date)
+                ->count();
+            $serviceClicksThisMonth[] = [
+                'date' => $date->format('Y-m-d'),
+                'day' => $day,
+                'clicks' => $clicks,
+                'label' => $date->format('d/m')
+            ];
+        }
+
+        // Clicks por dispositivo (servicios) - NUEVO
+        $serviceClicksByDevice = DB::table('service_clicks')
+            ->select('device_type', DB::raw('COUNT(*) as count'))
+            ->whereNotNull('device_type')
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
+        // Clicks de hoy por dispositivo - NUEVO
+        $serviceClicksTodayByDevice = DB::table('service_clicks')
+            ->select('device_type', DB::raw('COUNT(*) as count'))
+            ->whereDate('created_at', $today)
+            ->whereNotNull('device_type')
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
+        // Vistas de hoy por dispositivo - NUEVO
+        $serviceViewsTodayByDevice = AnalyticsEvent::select('device_type', DB::raw('COUNT(*) as count'))
+            ->where('event_type', 'service_view')
+            ->whereNotNull('service_id')
+            ->whereDate('created_at', $today)
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
+        // ==================== ANALÍTICAS DE CLICKS DE PRODUCTOS ====================
+        
+        // Productos más clickeados
+        $mostClickedProducts = Item::select('id', 'name', 'image', 'clicks')
+            ->where('status', 1)
+            ->where('visible', true)
+            ->orderByDesc('clicks')
+            ->limit(10)
+            ->get();
+
+        // Clicks de productos - temporal
+        $productClicksToday = DB::table('item_clicks')
+            ->whereDate('created_at', now())
+            ->count();
+
+        $productClicksMonth = DB::table('item_clicks')
+            ->whereBetween('created_at', [
+                now()->startOfMonth(),
+                now()->endOfMonth()
+            ])
+            ->count();
+
+        $productClicksYear = DB::table('item_clicks')
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        // Clicks únicos del mes (usuarios únicos)
+        $uniqueProductClickersMonth = DB::table('item_clicks')
+            ->whereBetween('created_at', [
+                now()->startOfMonth(),
+                now()->endOfMonth()
+            ])
+            ->distinct('user_hash')
+            ->count('user_hash');
+
+        // CTR de productos (Click Through Rate)
+        $productViewsMonth = DB::table('analytics_events')
+            ->where('event_type', 'product_view')
+            ->whereBetween('created_at', [
+                now()->startOfMonth(),
+                now()->endOfMonth()
+            ])
+            ->count();
+
+        $productCTR = $productViewsMonth > 0 
+            ? round(($productClicksMonth / $productViewsMonth) * 100, 2) 
+            : 0;
+
+        // Clicks de productos por día del mes actual
+        $productClicksThisMonth = [];
+        $daysInMonth = now()->daysInMonth;
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = now()->startOfMonth()->addDays($day - 1);
+            $clicks = DB::table('item_clicks')
+                ->whereDate('created_at', $date)
+                ->count();
+            $productClicksThisMonth[] = [
+                'day' => $date->format('d'),
+                'clicks' => $clicks,
+            ];
+        }
+
+        // Clicks de productos por dispositivo (total histórico)
+        $productClicksByDevice = DB::table('item_clicks')
+            ->select('device_type', DB::raw('count(*) as count'))
+            ->whereNotNull('device_type')
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
+
+        // Clicks de productos hoy por dispositivo
+        $productClicksTodayByDevice = DB::table('item_clicks')
+            ->select('device_type', DB::raw('count(*) as count'))
+            ->whereDate('created_at', now())
+            ->whereNotNull('device_type')
+            ->groupBy('device_type')
+            ->get()
+            ->map(function($row) {
+                return [
+                    'device' => $row->device_type ?: 'unknown',
+                    'count' => $row->count,
+                ];
+            });
 
         return [
             'totalProducts' => $totalProducts,
@@ -365,10 +566,30 @@ class HomeController extends BasicController
             'totalServiceCategories' => $totalServiceCategories,
             'featuredServices' => $featuredServices,
             'mostViewedServices' => $mostViewedServices,
+            'mostClickedServices' => $mostClickedServices,
+            'serviceClicksToday' => $serviceClicksToday,
+            'serviceClicksMonth' => $serviceClicksMonth,
+            'serviceClicksYear' => $serviceClicksYear,
+            'uniqueClickersMonth' => $uniqueClickersMonth,
+            'serviceCTR' => $serviceCTR,
             'serviceVisitsThisMonth' => $serviceVisitsThisMonth,
             'serviceViewsByDevice' => $serviceViewsByDevice,
             'serviceViewsLast30Days' => $serviceViewsLast30Days,
+            'serviceClicksThisMonth' => $serviceClicksThisMonth,
+            'serviceClicksByDevice' => $serviceClicksByDevice,
+            'serviceClicksTodayByDevice' => $serviceClicksTodayByDevice,
+            'serviceViewsTodayByDevice' => $serviceViewsTodayByDevice,
             'hasServicesFeature' => $totalServices > 0, // Indica si el proyecto usa servicios
+            // Analíticas de clicks de productos
+            'mostClickedProducts' => $mostClickedProducts,
+            'productClicksToday' => $productClicksToday,
+            'productClicksMonth' => $productClicksMonth,
+            'productClicksYear' => $productClicksYear,
+            'uniqueProductClickersMonth' => $uniqueProductClickersMonth,
+            'productCTR' => $productCTR,
+            'productClicksThisMonth' => $productClicksThisMonth,
+            'productClicksByDevice' => $productClicksByDevice,
+            'productClicksTodayByDevice' => $productClicksTodayByDevice,
             'dashboardVisibility' => $this->getDashboardVisibility(),
             'hasRootRole' => $this->hasRootRole(),
         ];
@@ -416,10 +637,16 @@ class HomeController extends BasicController
             if ($hasServices) {
                 $defaultVisibility['total_services_kpi'] = false; // Desactivado por defecto
                 $defaultVisibility['total_service_categories'] = false; // Desactivado por defecto
+                $defaultVisibility['service_clicks_kpi'] = false;
+                $defaultVisibility['service_ctr_kpi'] = false;
                 $defaultVisibility['most_viewed_services'] = false;
+                $defaultVisibility['most_clicked_services'] = false;
                 $defaultVisibility['service_visits_chart'] = false;
+                $defaultVisibility['service_clicks_chart'] = false;
                 $defaultVisibility['service_views_by_device'] = false;
+                $defaultVisibility['service_clicks_by_device'] = false;
                 $defaultVisibility['service_views_trend'] = false;
+                $defaultVisibility['service_clicks_vs_views'] = false;
             }
             
             return $defaultVisibility;

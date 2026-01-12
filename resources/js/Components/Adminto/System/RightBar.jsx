@@ -13,7 +13,8 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
   const [images, setImages] = useState([
     { uuid: crypto.randomUUID(), col: 'col-3', name: "Icon (1:1)", src: "icon.png", width: '100%', aspectRatio: 1 },
     { uuid: crypto.randomUUID(), col: 'col-5', name: "Logo (13:4)", src: "logo.png", width: '100%', aspectRatio: 13 / 4 },
-    { uuid: crypto.randomUUID(), col: 'col-4', name: "Logo footer (1:1)", src: "logo-footer.png", width: '100%', aspectRatio: 1 }
+    { uuid: crypto.randomUUID(), col: 'col-4', name: "Logo footer (1:1)", src: "logo-footer.png", width: '100%', aspectRatio: 1 },
+    { uuid: crypto.randomUUID(), col: 'col-12', name: "Loading (13:4)", src: "loading.png", width: '100%', aspectRatio: 13 / 4 }
   ])
 
   const onImageChange = async (e) => {
@@ -186,6 +187,9 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
           {
             colors.map((color, index) => {
               const isGradient = color.description?.startsWith('linear-gradient') || color.description?.startsWith('radial-gradient');
+              const isMenuAdmin = color.name == 'menu-admin';
+              const primaryColor = colors.find(c => c.name == 'primary')?.description || '#6658dd';
+              
               return <div key={index}>
                 <div className="input-group input-group-sm">
                   {!isGradient && (
@@ -196,11 +200,11 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
                         border: '1px solid #ced4da',
                         borderRadius: '4px',
                         cursor: 'pointer'
-                      }} defaultValue={color.description} onBlur={onColorChange} />
+                      }} defaultValue={color.description || primaryColor} onBlur={onColorChange} />
                     </span>
                   )}
-                  <input type="text" name='name' data-color-id={color.id} className={`form-control form-control-sm`} placeholder="Color" defaultValue={color.name} onBlur={onColorChange} disabled={color.name == 'primary'} style={{
-                    cursor: color.name == 'primary' ? 'not-allowed' : 'text'
+                  <input type="text" name='name' data-color-id={color.id} className={`form-control form-control-sm`} placeholder="Color" defaultValue={color.name} onBlur={onColorChange} disabled={color.name == 'primary' || isMenuAdmin} style={{
+                    cursor: (color.name == 'primary' || isMenuAdmin) ? 'not-allowed' : 'text'
                   }} />
                 </div>
                 {isGradient ? (
@@ -224,8 +228,8 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
                     name='description' 
                     data-color-id={color.id} 
                     className='form-control form-control-sm mt-1' 
-                    placeholder='Hex color' 
-                    defaultValue={color.description} 
+                    placeholder={isMenuAdmin ? `Color del menú admin (por defecto: primary)` : 'Hex color'}
+                    defaultValue={color.description || (isMenuAdmin ? primaryColor : '')} 
                     onBlur={onColorChange}
                     style={{
                       fontSize: '11px'

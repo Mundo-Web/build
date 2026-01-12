@@ -546,7 +546,9 @@
                 "name": "Header - Web Quirurgica",
                 "image": "header-webquirurgica.png",
                 "data": [
+                    "type_header",
                     "logoWidth",
+                    "menu_button",
                     "ctaText",
                     "ctaLink",
                     "footerText"
@@ -561,7 +563,7 @@
                     "header_menu_order"
                 ]
             },
-               {
+            {
                 "id": "HeaderWebQuirurgica2",
                 "name": "Header - Web Quirurgica 2",
                 "image": "header-webquirurgica.png",
@@ -1028,6 +1030,7 @@
                     "class_content_slider",
                     "class_title",
                     "class_description",
+                    "class_buttons_container",
                     "class_button",
                     "class_secondary_button",
                     "class_overlay",
@@ -2640,7 +2643,39 @@
                     "limit": 8
                 },
                 "generals": []
+            },
+            {
+                "id": "ProductListPanelPro",
+                "name": "Productos - Panel Pro",
+                "image": "products-panelpro.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand",
+                        "images",
+                        "features"
+                        
+                    ],
+                    "limit": 20
+                },
+                "generals": [
+                    "whatsapp_advisors"
+                ]
             }
+              
         ]
     },
     {
@@ -2768,23 +2803,16 @@
                 "name": "Banner Multivet",
                 "image": "banner-multivet.png",
                 "data": [
-                    "section_background",
-                    "container_background",
-                    "title_color",
-                    "title_opacity",
-                    "description_color",
-                    "description_opacity",
-                    "button_background",
-                    "image_position",
-                    "show_image_overlay",
-                    "show_decorations",
-                    "decoration_color",
                     "class_section",
                     "class_container",
                     "class_content",
                     "class_title",
                     "class_description",
                     "class_button",
+                    "image_position",
+                    "show_image_overlay",
+                    "show_decorations",
+                    "decoration_color",
                     "class_image_container",
                     "class_image",
                     "class_overlay"
@@ -2827,7 +2855,24 @@
                 "name": "About con Estadísticas - WebQuirurgica",
                 "image": "banner-about-stats.png",
                 "data": [
-                    "class"
+                    "class",
+                    "class_title",
+                    "class_indicators_card",
+                    "class_indicators_icon"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+            {
+                "id": "BannerAboutStatsPanelPro",
+                "name": "About con Estadísticas - Panel Pro",
+                "image": "banner-about-stats.png",
+                "data": [
+                    "class",
+                    "class_title",
+                    "class_indicators_card",
+                    "class_indicators_icon"
                 ],
                 "using": {
                     "model": "Indicator"
@@ -3405,14 +3450,14 @@
                 "name": "Katya",
                 "data": [
                     "redirect",
+                    "class_section",
+                    "title",
+                    "description",
+                    "class_form_container",
                     "class_title",
-                    "class_card_description",
-                    "class_card_title",
-                    "class_card_button",
-                    "class_card_container",
-                    "title_ubication",
-                    "description_ubication",
-                    "stores_support"
+                    "class_description",
+                    "class_button_form"
+                 
                 ],
                 "generals": [
                     "email_contact",
@@ -3458,18 +3503,7 @@
                     "model": "Social"
                 }
             },
-            {
-                "id": "ContactLaPetaca",
-                "name": "Contact - La Petaca Hotel",
-                "image": "contact-lapetaca.png",
-                "data": [
-                    "contactInfo",
-                    "socials",
-                    "accentColor",
-                    "locationImage"
-                ],
-                "generals": []
-            },
+           
             {
                 "id": "ContactWebQuirurgica",
                 "name": "Contact WebQuirurgica - Diseño Limpio",
@@ -3477,7 +3511,7 @@
                 "using": {
                     "model": "Service"
                 },
-                "data": [],
+                "data": ["class_opening_hours_container","class_form_container"],
                 "generals": [
                     "email_contact",
                     "phone_contact",
@@ -3885,7 +3919,7 @@
                     "model": "Aboutus"
                 }
             },
-               {
+            {
                 "id": "AboutWebQuirurgica",
                 "name": "AboutWebQuirurgica",
                 "data": [
@@ -4379,6 +4413,40 @@
                 "using": {
                     "model": "Service"
                 }
+            },
+            {
+                "id": "FooterPanelPro",
+                "name": "Footer - Panel Pro Premium",
+                "image": "footer-panelpro.png",
+                "data": [
+                    "logo_footer",
+                    "policies_title",
+                    "privacy_text",
+                    "terms_text",
+                    "complaints_text",
+                    "company_title",
+                    "contact_title",
+                    "email_response_time",
+                    "show_newsletter",
+                    "newsletter_title",
+                    "newsletter_placeholder",
+                    "newsletter_button",
+                    "newsletter_sending",
+                    "copyright"
+                ],
+                "generals": [
+                    "footer_description",
+                    "footer_company_links",
+                    "phone_contact",
+                    "email_contact",
+                    "address",
+                    "opening_hours",
+                    "privacy_policy",
+                    "terms_conditions"
+                ],
+                "using": {
+                    "model": "Social"
+                }
             }
         ]
     },
@@ -4545,7 +4613,23 @@
             {
                 "id": "TestimonialsTextWebQuirurgica",
                 "name": "Testimonios Escritos - WebQuirurgica",
-                "data": [],
+                "data": ["class_section"],
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
+            },
+            {
+                "id": "TestimonialsSimple",
+                "name": "Testimonials Simple",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "companies_title",
+                    "show_companies",
+                    "companies",
+                    "class_section"
+                ],
                 "generals": [],
                 "using": {
                     "model": "Testimony"
@@ -4579,6 +4663,66 @@
                 ],
                 "using": {
                     "model": "Strength"
+                }
+            },
+            {
+                "id": "StrengthSimple",
+                "name": "Fortalezas Simple",
+                "image": "strength-simple.png",
+                "data": [
+                    "badge",
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle"
+                ],
+                "using": {
+                    "model": "Strength"
+                }
+            }
+        ]
+    },
+    {
+        "id": "benefit",
+        "icon": "mdi mdi-heart-pulse",
+        "name": "Beneficios",
+        "options": [
+            {
+                "id": "BenefitSimple",
+                "name": "Beneficios Simple",
+                "image": "benefit-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle",
+                    "footer_image"
+                ],
+                "using": {
+                    "model": "Benefit"
+                }
+            }
+        ]
+    },
+    {
+        "id": "application",
+        "icon": "mdi mdi-application",
+        "name": "Aplicaciones",
+        "options": [
+            {
+                "id": "ApplicationSimple",
+                "name": "Aplicaciones Simple",
+                "image": "application-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle",
+                    "footer_button_text",
+                    "footer_image"
+                ],
+                "using": {
+                    "model": "Application"
                 }
             }
         ]
@@ -4902,24 +5046,36 @@
                     ]
                 }
             },
-             {
+            {
                 "id": "ServiceWebQuirurgica2",
                 "name": "Servicios por Categoría - WebQuirurgica2",
                 "image": "service-webquirurgica.png",
                 "data": [
-                    "class"
+                     "class_section",
+                    "class_header_container",
+                    "class_title",
+                    "class_title_highlight",
+                   
+                    "class_card",
+                    "class_card_icon",
+                    "button_card_text",
+                    "type_web"
                 ],
                 "using": {
                     "model": "Service",
                     "with": [
                         "category",
-                        "subcategory"
+                        "subcategory",
+                        "images",
+                        "features"
                     ],
-                 "filters": [
+                    "filters": [
                         "featured"
-                       
                     ]
-                }
+                },
+                "generals": [
+                    "whatsapp_advisors"
+                ]
             }
         ]
     },

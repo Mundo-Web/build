@@ -7,6 +7,7 @@ import { renderToString } from "react-dom/server";
 import Swal from "sweetalert2";
 import ItemsRest from "../Actions/Admin/ItemsRest";
 import AmenitiesRest from "../Actions/Admin/AmenitiesRest";
+import ApplicationsRest from "../Actions/Admin/ApplicationsRest";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
@@ -27,6 +28,7 @@ import Fillable from "../Utils/Fillable";
 
 const itemsRest = new ItemsRest();
 const amenitiesRest = new AmenitiesRest();
+const applicationsRest = new ApplicationsRest();
 
 
 
@@ -66,6 +68,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const specificationsRef = useRef([]);
     const weightRef = useRef();
     const amenitiesRef = useRef();
+    const applicationsRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -83,6 +86,8 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const videoUrlRef = useRef();
     const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [amenities, setAmenities] = useState([]);
+    const [selectedApplications, setSelectedApplications] = useState([]);
+    const [applications, setApplications] = useState([]);
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -105,12 +110,20 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
 
     useEffect(() => {
         getAmenities();
+        getApplications();
     }, []);
 
     const getAmenities = async () => {
         const result = await amenitiesRest.paginate({ page: 1, pageSize: 1000 });
         if (result?.data) {
             setAmenities(result.data);
+        }
+    };
+
+    const getApplications = async () => {
+        const result = await applicationsRest.paginate({ page: 1, pageSize: 1000 });
+        if (result?.data) {
+            setApplications(result.data);
         }
     };
 
@@ -399,6 +412,20 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             }, 100);
         }
 
+        // Cargar aplicaciones seleccionadas
+        if (data?.applications && Array.isArray(data.applications)) {
+            const applicationsIds = data.applications.map(a => a.id || a);
+            setSelectedApplications(applicationsIds);
+            setTimeout(() => {
+                $(applicationsRef.current).val(applicationsIds).trigger('change');
+            }, 100);
+        } else {
+            setSelectedApplications([]);
+            setTimeout(() => {
+                $(applicationsRef.current).val([]).trigger('change');
+            }, 100);
+        }
+
         // Reset delete flags using direct references - only when opening modal
         if (bannerRef.deleteRef) bannerRef.deleteRef.value = '';
         if (imageRef.deleteRef) imageRef.deleteRef.value = '';
@@ -444,6 +471,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             weight: weightRef.current.value || 0,
             store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
             amenities: $(amenitiesRef.current).val() || [],
+            applications: $(applicationsRef.current).val() || [],
         };
 
 
@@ -1935,6 +1963,87 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                                 <small className="text-muted">
                                                     <i className="fas fa-info-circle me-1"></i>
                                                     Selecciona las cualidades o atributos que destacan este producto
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Selector de Aplicaciones */}
+                                {Fillable.has('items', 'is_applications') && (
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-th-large me-2 text-info"></i>
+                                                    Aplicaciones / Usos
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <SelectFormGroup
+                                                    eRef={applicationsRef}
+                                                    label="Seleccionar Aplicaciones"
+                                                    dropdownParent="#principal-container"
+                                                    multiple
+                                                    templateResult={(state) => {
+                                                        if (!state.id) return state.text;
+                                                        const $option = $(state.element);
+                                                        const image = $option.data('image');
+                                                        const icon = $option.data('icon');
+                                                        
+                                                        if (image) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                                    <div class="bg-primary p-2" style="width: 48px; height: 48px; border-radius: 8px; overflow: hidden; flex-shrink: 0;display: flex; align-items: center; justify-content: center;">
+                                                                        <img src="/storage/images/application/${image}" 
+                                                                             style="width: 100%; height: 100%; object-fit: cover;" 
+                                                                             onerror="this.style.display='none'" />
+                                                                    </div>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        } else if (icon) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #4CAF50; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                                                                        <i class="${icon}"></i>
+                                                                    </div>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        }
+                                                        return state.text;
+                                                    }}
+                                                    templateSelection={(state) => {
+                                                        if (!state.id) return state.text;
+                                                        const $option = $(state.element);
+                                                        const icon = $option.data('icon');
+                                                        
+                                                        if (icon) {
+                                                            return $(`
+                                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                                    <i class="${icon}" style="color: #4CAF50;"></i>
+                                                                    <span>${state.text}</span>
+                                                                </div>
+                                                            `);
+                                                        }
+                                                        return state.text;
+                                                    }}
+                                                >
+                                                    {applications.map((application) => (
+                                                        <option 
+                                                            key={application.id} 
+                                                            value={application.id}
+                                                            data-image={application.image}
+                                                            data-icon={application.icon}
+                                                        >
+                                                            {application.name}
+                                                        </option>
+                                                    ))}
+                                                </SelectFormGroup>
+                                                <small className="text-muted">
+                                                    <i className="fas fa-info-circle me-1"></i>
+                                                    Selecciona las industrias o usos donde se aplica este producto
                                                 </small>
                                             </div>
                                         </div>

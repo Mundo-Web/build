@@ -24,6 +24,27 @@ class ServicesRest extends BasicRest {
             return null;
         }
     };
+
+    updateClicks = async (request) => {
+        try {
+            const { status, result } = await Fetch(
+                `/api/${this.path}/update-clicks`,
+                {
+                    method: "POST",
+                    body: JSON.stringify(request),
+                }
+            );
+            if (!status)
+                throw new Error(
+                    result?.message ?? "Ocurrió un error al registrar el click"
+                );
+
+            return result.data ?? [];
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    };
 }
 
 export default ServicesRest;

@@ -21,6 +21,7 @@ const BannerPublicitarioKatya = lazy(() => import("./Banners/BannerPublicitarioK
 const BannerBlogSectionKatya = lazy(() => import("./Banners/BannerBlogSectionKatya"));
 const BannerMobileApp = lazy(() => import("./Banners/BannerMobileApp"));
 const BannerAboutStats = lazy(() => import("./Banners/BannerAboutStats"));
+const BannerAboutStatsPanelPro = lazy(() => import("./Banners/BannerAboutStatsPanelPro"));
 
 const Banner = ({ which, data, items, generals }) => {
     const getBanner = () => {
@@ -67,6 +68,8 @@ const Banner = ({ which, data, items, generals }) => {
                 return <BannerMobileApp data={data} generals={generals} items={items} />;
             case "BannerAboutStats":
                 return <BannerAboutStats data={data} items={items} />;
+            case "BannerAboutStatsPanelPro":
+                return <BannerAboutStatsPanelPro data={data} items={items} />;
 
             default:
                 return (

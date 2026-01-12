@@ -33,19 +33,22 @@ class ItemController extends BasicController
     public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
-    public $with4get = ['tags', 'amenities'];
+    public $with4get = ['tags', 'amenities', 'applications'];
 
     /**
-     * Override paginate to always include amenities relation
+     * Override paginate to always include amenities and applications relations
      */
     public function paginate(Request $request): HttpResponse|ResponseFactory
     {
-        // Agregar amenities a las relaciones si no está ya incluido
+        // Agregar amenities y applications a las relaciones si no están ya incluidos
         $with = $request->has('with') ? $request->with : '';
         $relations = array_filter(explode(',', $with));
         
         if (!in_array('amenities', $relations)) {
             $relations[] = 'amenities';
+        }
+        if (!in_array('applications', $relations)) {
+            $relations[] = 'applications';
         }
         if (!in_array('tags', $relations)) {
             $relations[] = 'tags';
@@ -474,7 +477,7 @@ class ItemController extends BasicController
             ]);
         }
 
-        // Manejo de Amenidades (solo para habitaciones)
+        // Manejo de Amenidades
         if ($request->has('amenities')) {
             $amenities = $request->input('amenities', []);
             // Log para debug
@@ -483,6 +486,17 @@ class ItemController extends BasicController
             if (is_array($amenities) && count($amenities) > 0) {
                 $jpa->amenities()->sync($amenities);
                 Log::info('Amenities sincronizados correctamente', ['count' => count($amenities)]);
+            }
+        }
+
+        // Manejo de Aplicaciones
+        if ($request->has('applications')) {
+            $applications = $request->input('applications', []);
+            Log::info('Applications recibidos:', ['applications' => $applications, 'item_id' => $jpa->id]);
+            
+            if (is_array($applications) && count($applications) > 0) {
+                $jpa->applications()->sync($applications);
+                Log::info('Applications sincronizados correctamente', ['count' => count($applications)]);
             }
         }
         
@@ -570,5 +584,118 @@ class ItemController extends BasicController
         $this->reactView = $originalView;
         
         return $response;
+    }
+
+    /**
+     * Detectar tipo de dispositivo
+     */
+    private function getDeviceType(Request $request)
+    {
+        $userAgent = $request->userAgent();
+        
+        if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', $userAgent)) {
+            return 'tablet';
+        }
+        
+        if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', $userAgent)) {
+            return 'mobile';
+        }
+        
+        return 'desktop';
+    }
+
+    /**
+     * Registrar clicks en productos con protección anti-spam
+     * Un usuario (IP + navegador) solo puede contar 1 click cada 24 horas
+     */
+    public function updateClicks(Request $request): HttpResponse|ResponseFactory
+    {
+        try {
+            $itemId = $request->input('id');
+            $ip = $request->ip();
+            $userAgent = $request->input('user_agent') ?? $request->header('User-Agent');
+            
+            if (!$itemId) {
+                return response([
+                    'status' => 400,
+                    'message' => 'ID de producto requerido'
+                ], 400);
+            }
+
+            // Verificar que el producto existe
+            $item = Item::find($itemId);
+            if (!$item) {
+                return response([
+                    'status' => 404,
+                    'message' => 'Producto no encontrado'
+                ], 404);
+            }
+            
+            // Crear un hash único para este usuario (IP + user agent)
+            $userHash = md5($ip . $userAgent);
+            
+            // Detectar tipo de dispositivo
+            $deviceType = $this->getDeviceType($request);
+            
+            // Verificar si ya existe un click de este usuario en las últimas 24 horas
+            $existingClick = DB::table('item_clicks')
+                ->where('item_id', $itemId)
+                ->where('user_hash', $userHash)
+                ->where('created_at', '>=', now()->subHours(24))
+                ->first();
+            
+            if (!$existingClick) {
+                // Registrar el click en la tabla de clicks
+                DB::table('item_clicks')->insert([
+                    'item_id' => $itemId,
+                    'user_hash' => $userHash,
+                    'ip_address' => $ip,
+                    'user_agent' => $userAgent,
+                    'device_type' => $deviceType,
+                    'page_url' => $request->input('page_url'),
+                    'referrer' => $request->input('referrer'),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                // Incrementar contador en la tabla items
+                DB::table('items')
+                    ->where('id', $itemId)
+                    ->increment('clicks');
+
+                Log::info('Item click registered', [
+                    'item_id' => $itemId,
+                    'user_hash' => substr($userHash, 0, 8) . '...',
+                    'ip' => $ip,
+                    'device' => $deviceType
+                ]);
+            } else {
+                Log::info('Duplicate item click prevented', [
+                    'item_id' => $itemId,
+                    'user_hash' => substr($userHash, 0, 8) . '...',
+                    'last_click' => $existingClick->created_at
+                ]);
+            }
+            
+            return response([
+                'status' => 200,
+                'message' => 'Click registrado exitosamente',
+                'data' => [
+                    'item_id' => $itemId,
+                    'is_new_click' => !$existingClick
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error registering item click: ' . $e->getMessage(), [
+                'exception' => $e,
+                'item_id' => $request->input('id')
+            ]);
+            
+            return response([
+                'status' => 500,
+                'message' => 'Error al registrar el click',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

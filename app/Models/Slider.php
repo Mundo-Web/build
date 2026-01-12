@@ -32,6 +32,7 @@ class Slider extends Model
         'overlay_color',
         'overlay_opacity',
         'overlay_direction',
+        'overlay_type',
         'visible',
         'status',
         'order_index',
