@@ -23,12 +23,14 @@ class OpenPayController extends Controller
         $privateKey = General::where('correlative', 'checkout_openpay_private_key')->first();
         $publicKey = General::where('correlative', 'checkout_openpay_public_key')->first();
         $enabled = General::where('correlative', 'checkout_openpay')->first();
+        $isSandbox = General::where('correlative', 'checkout_openpay_sandbox_mode')->first();
         
         return [
             'merchant_id' => $merchantId ? $merchantId->description : null,
             'private_key' => $privateKey ? $privateKey->description : null,
             'public_key' => $publicKey ? $publicKey->description : null,
             'enabled' => $enabled ? $enabled->description === 'true' : false,
+            'is_sandbox' => $isSandbox ? in_array(strtolower($isSandbox->description), ['true', '1', 'on', 'yes', 'si']) : false,
         ];
     }
 
@@ -163,7 +165,7 @@ class OpenPayController extends Controller
             ]);
             
             // URL base según ambiente (producción o sandbox) - OpenPay Perú
-            $baseUrl = env('OPENPAY_SANDBOX_MODE', true) 
+            $baseUrl = $credentials['is_sandbox']
                 ? 'https://sandbox-api.openpay.pe/v1'
                 : 'https://api.openpay.pe/v1';
             

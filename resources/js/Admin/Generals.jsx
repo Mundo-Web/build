@@ -56,7 +56,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'general': ['address', 'cintillo', 'copyright', 'opening_hours','header_menu_order', 'excel_import_template', 'footer_description', 'footer_company_links'],
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email','job_application_email','admin_job_application_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
-    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
+    'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_openpay_sandbox_mode', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy', 'politica_sistema_gestion', 'alcance_sistema_gestion'],
     'location': ['location'],
@@ -346,6 +346,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     checkout_openpay_public_key: generals.find(x => x.correlative == 'checkout_openpay_public_key')?.description ?? "",
     checkout_openpay_private_key: generals.find(x => x.correlative == 'checkout_openpay_private_key')?.description ?? "",
     checkout_openpay_commission: generals.find(x => x.correlative == 'checkout_openpay_commission')?.description ?? "",
+    checkout_openpay_sandbox_mode: generals.find(x => x.correlative == 'checkout_openpay_sandbox_mode')?.description ?? "false",
     checkout_dwallet: generals.find(x => x.correlative == 'checkout_dwallet')?.description ?? "",
     checkout_dwallet_qr: generals.find(x => x.correlative == 'checkout_dwallet_qr')?.description ?? "",
     checkout_dwallet_name: generals.find(x => x.correlative == 'checkout_dwallet_name')?.description ?? "",
@@ -1155,6 +1156,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: 'checkout_openpay_commission',
         name: 'Comisión OpenPay (%)',
         description: formData.checkout_openpay_commission || "",
+      },
+      {
+        correlative: 'checkout_openpay_sandbox_mode',
+        name: 'Modo Sandbox OpenPay',
+        description: formData.checkout_openpay_sandbox_mode || "false",
       },
       {
         correlative: 'checkout_dwallet',
@@ -2470,6 +2476,21 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           <label className="form-check-label form-label" htmlFor="checkout-openpay">
                             Habilitar pago con OpenPay
                             <small className="text-muted d-block">Al habilitar esta opción, permite pagos por OpenPay (tarjetas de crédito/débito)</small>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="checkout-openpay-sandbox"
+                            checked={formData.checkout_openpay_sandbox_mode == 'true'}
+                            onChange={(e) => setFormData({ ...formData, checkout_openpay_sandbox_mode: String(e.target.checked) })}
+                          />
+                          <label className="form-check-label form-label" htmlFor="checkout-openpay-sandbox">
+                            Modo Sandbox (Pruebas)
+                            <small className="text-muted d-block">Activar solo para pruebas. Desactivar en producción para procesar pagos reales.</small>
                           </label>
                         </div>
                       </div>

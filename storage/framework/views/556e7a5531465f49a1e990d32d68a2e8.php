@@ -230,6 +230,8 @@
         $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
         $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
         $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
+        $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
+        $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
     ?>
     <?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
         <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
@@ -238,7 +240,7 @@
             // Configurar OpenPay globalmente ANTES de que React se monte
             window.OPENPAY_MERCHANT_ID = "<?php echo e($openpayMerchantId); ?>";
             window.OPENPAY_PUBLIC_KEY = "<?php echo e($openpayPublicKey); ?>";
-            window.OPENPAY_SANDBOX_MODE = true; // Cambiar a false en producción
+            window.OPENPAY_SANDBOX_MODE = <?php echo e($openpayIsSandbox ? 'true' : 'false'); ?>;
             
             // Log de configuración (solo desarrollo)
             console.log("✅ OpenPay configurado:", {

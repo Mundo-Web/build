@@ -10,26 +10,44 @@ return new class extends Migration
     {
         Schema::table('services', function (Blueprint $table) {
             // Campos para control de visibilidad de secciones
-            $table->boolean('is_features')->default(true)->after('status');
-            $table->boolean('is_specifications')->default(true)->after('is_features');
-            $table->boolean('is_gallery')->default(true)->after('is_specifications');
+            if (!Schema::hasColumn('services', 'is_features')) {
+                $table->boolean('is_features')->default(true)->after('status');
+            }
+            if (!Schema::hasColumn('services', 'is_specifications')) {
+                $table->boolean('is_specifications')->default(true)->after('is_features');
+            }
+            if (!Schema::hasColumn('services', 'is_gallery')) {
+                $table->boolean('is_gallery')->default(true)->after('is_specifications');
+            }
             
             // Campos adicionales
-            $table->json('pdf')->nullable()->after('background_image');
-            $table->json('linkvideo')->nullable()->after('pdf');
+            if (!Schema::hasColumn('services', 'pdf')) {
+                $table->json('pdf')->nullable()->after('background_image');
+            }
+            if (!Schema::hasColumn('services', 'linkvideo')) {
+                $table->json('linkvideo')->nullable()->after('pdf');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->dropColumn([
-                'is_features',
-                'is_specifications',
-                'is_gallery',
-                'pdf',
-                'linkvideo'
-            ]);
+            if (Schema::hasColumn('services', 'is_features')) {
+                $table->dropColumn('is_features');
+            }
+            if (Schema::hasColumn('services', 'is_specifications')) {
+                $table->dropColumn('is_specifications');
+            }
+            if (Schema::hasColumn('services', 'is_gallery')) {
+                $table->dropColumn('is_gallery');
+            }
+            if (Schema::hasColumn('services', 'pdf')) {
+                $table->dropColumn('pdf');
+            }
+            if (Schema::hasColumn('services', 'linkvideo')) {
+                $table->dropColumn('linkvideo');
+            }
         });
     }
 };

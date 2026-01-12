@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->string('slug')->nullable()->after('name');
-            $table->string('path')->nullable()->after('description');
-            $table->string('background_image')->nullable()->after('image');
+            if (!Schema::hasColumn('services', 'slug')) {
+                $table->string('slug')->nullable()->after('name');
+            }
+            if (!Schema::hasColumn('services', 'path')) {
+                $table->string('path')->nullable()->after('description');
+            }
+            if (!Schema::hasColumn('services', 'background_image')) {
+                $table->string('background_image')->nullable()->after('image');
+            }
         });
     }
 
@@ -24,7 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->dropColumn(['slug', 'path', 'background_image']);
+            if (Schema::hasColumn('services', 'slug')) {
+                $table->dropColumn('slug');
+            }
+            if (Schema::hasColumn('services', 'path')) {
+                $table->dropColumn('path');
+            }
+            if (Schema::hasColumn('services', 'background_image')) {
+                $table->dropColumn('background_image');
+            }
         });
     }
 };
