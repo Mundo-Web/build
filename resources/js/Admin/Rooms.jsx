@@ -286,45 +286,42 @@ const Rooms = () => {
       setFeatures([]);
     }
 
-    // Load gallery
-    if (data?.gallery) {
-      try {
-        const galleryData = typeof data.gallery === 'string' ? JSON.parse(data.gallery) : data.gallery;
-        setGallery(galleryData.map(img => ({
-          url: `/storage/images/item/${img}`,
-          toDelete: false
-        })));
-      } catch (e) {
-        setGallery([]);
-      }
+    // Load gallery - CORREGIDO: usar 'images' como en Items.jsx
+    if (data?.images && Array.isArray(data.images)) {
+      const loadedImages = data.images.map(img => ({
+        id: img.id,
+        url: `/storage/images/item/${img.url}`,
+        order: img.order,
+        file: null,
+        toDelete: false
+      }));
+      setGallery(loadedImages);
     } else {
       setGallery([]);
     }
 
-    // Load PDFs
-    if (data?.pdf) {
-      try {
-        const pdfData = typeof data.pdf === 'string' ? JSON.parse(data.pdf) : data.pdf;
-        setPdfs(pdfData.map(pdf => ({
-          name: pdf.split('/').pop(),
-          url: `/storage/images/item/${pdf}`,
-          toDelete: false
-        })));
-      } catch (e) {
-        setPdfs([]);
-      }
+    // Load PDFs - CORREGIDO: usar 'pdf' array de objetos como en Items.jsx
+    if (data?.pdf && Array.isArray(data.pdf)) {
+      setPdfs(data.pdf.map(pdf => ({
+        id: pdf.id,
+        name: pdf.name || pdf.path?.split('/').pop() || 'Documento.pdf',
+        url: `/storage/pdfs/item/${pdf.path}`,
+        path: pdf.path,
+        order: pdf.order,
+        toDelete: false
+      })));
     } else {
       setPdfs([]);
     }
 
-    // Load videos
-    if (data?.linkvideo) {
-      try {
-        const videoData = typeof data.linkvideo === 'string' ? JSON.parse(data.linkvideo) : data.linkvideo;
-        setVideos(videoData.map(url => ({ url, toDelete: false })));
-      } catch (e) {
-        setVideos([]);
-      }
+    // Load videos - CORREGIDO: usar 'linkvideo' array de objetos como en Items.jsx
+    if (data?.linkvideo && Array.isArray(data.linkvideo)) {
+      setVideos(data.linkvideo.map(video => ({
+        id: video.id,
+        url: video.url,
+        order: video.order,
+        toDelete: false
+      })));
     } else {
       setVideos([]);
     }
@@ -379,27 +376,13 @@ const Rooms = () => {
     }
 
     // Gallery - Separar imágenes nuevas y existentes con orden correcto
-    let galleryIndex = 0;
-    let galleryIdsIndex = 0;
-    const galleryOrder = [];
-    
-    gallery.forEach((img, index) => {
+    gallery.forEach((img) => {
       if (!img.toDelete) {
         if (img.file) {
-          formData.append(`gallery[${galleryIndex}]`, img.file);
-          galleryOrder.push({ type: 'new', index: galleryIndex });
-          galleryIndex++;
-        } else if (img.id) {
-          formData.append(`gallery_ids[${galleryIdsIndex}]`, img.id);
-          galleryOrder.push({ type: 'existing', id: img.id, index: galleryIdsIndex });
-          galleryIdsIndex++;
+          formData.append('gallery[]', img.file);
         }
       }
     });
-    
-    if (galleryOrder.length > 0) {
-      formData.append('gallery_order', JSON.stringify(galleryOrder));
-    }
 
     const deletedImages = gallery
       .filter((img) => img.toDelete && img.id)
@@ -410,44 +393,30 @@ const Rooms = () => {
       });
     }
 
-    // PDFs
-    const pdfFiles = pdfs.filter(pdf => !pdf.toDelete);
-    let pdfIndex = 0;
-    pdfFiles.forEach((pdf) => {
-      if (pdf.file) {
-        formData.append(`pdf[${pdfIndex}]`, pdf.file);
-        pdfIndex++;
+    // PDFs - CORREGIDO: igual que Items.jsx
+    pdfs.forEach((pdf) => {
+      if (!pdf.toDelete && pdf.file) {
+        formData.append('pdf[]', pdf.file);
       }
     });
-    
-    const pdfOrder = pdfFiles.map((pdf, index) => ({
-      index,
-      order: index + 1,
-      name: pdf.name || 'Documento.pdf'
-    }));
-    if (pdfOrder.length > 0) {
-      formData.append('pdf_order', JSON.stringify(pdfOrder));
-    }
-    
+
     const deletedPdfs = pdfs
-      .map((pdf, index) => pdf.toDelete ? index : null)
-      .filter(index => index !== null);
+      .filter((pdf) => pdf.toDelete && pdf.path)
+      .map((pdf) => pdf.path);
     if (deletedPdfs.length > 0) {
       formData.append('deleted_pdfs', JSON.stringify(deletedPdfs));
     }
 
-    // Videos
-    const videoLinks = videos.filter(video => !video.toDelete);
-    const videoData = videoLinks.map((video, index) => ({
-      url: video.url,
-      order: index + 1
-    }));
-    if (videoData.length > 0) {
-      formData.append('linkvideo', JSON.stringify(videoData));
+    // Videos - CORREGIDO: igual que Items.jsx
+    const videoUrls = videos
+      .filter(video => !video.toDelete)
+      .map(v => v.url);
+    if (videoUrls.length > 0) {
+      formData.append('linkvideo', JSON.stringify(videoUrls));
     }
-    
+
     const deletedVideos = videos
-      .map((video, index) => video.toDelete ? index : null)
+      .map((video, index) => video.toDelete && video.id ? index : null)
       .filter(index => index !== null);
     if (deletedVideos.length > 0) {
       formData.append('deleted_videos', JSON.stringify(deletedVideos));
@@ -581,7 +550,7 @@ const Rooms = () => {
           Fillable.has('items', 'sku') ? {
             dataField: 'name',
             caption: 'Habitación',
-            width: '20%',
+           
             cellTemplate: (container, { data }) => {
               ReactAppend(container,
                 <div>
@@ -612,6 +581,19 @@ const Rooms = () => {
                       </span>
                     </div>
                   )}
+                </div>
+              );
+            }
+          },
+           {
+            dataField: 'summary',
+            caption: 'Descripción',
+            width: '20%',
+            cellTemplate: (container, { data }) => {
+              ReactAppend(container,
+                <div>
+                  <p>{data.summary}</p>
+               
                 </div>
               );
             }
