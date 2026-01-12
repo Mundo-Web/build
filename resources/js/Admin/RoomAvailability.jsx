@@ -1006,7 +1006,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                 }
                 
                 .room-header {
-                  padding: 16px;
+                  padding: 16px 120px 16px 16px;
                   display: flex;
                   align-items: center;
                   justify-content: space-between;
