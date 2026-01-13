@@ -497,13 +497,13 @@ const generalsData = generals || [];
                             >
                                 {/* Email */}
                                 <motion.div 
-                                    className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6]"
+                                    className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6] overflow-hidden"
                                     variants={cardHover}
                                     initial="rest"
                                     whileHover="hover"
                                 >
                                     <motion.span 
-                                        className="bg-secondary text-white rounded-full p-2"
+                                        className="bg-secondary text-white rounded-full p-2 flex-shrink-0"
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
                                     >
@@ -511,7 +511,7 @@ const generalsData = generals || [];
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-.659 1.591l-7.5 7.5a2.25 2.25 0 01-3.182 0l-7.5-7.5A2.25 2.25 0 012.25 6.993V6.75" />
                                         </svg>
                                     </motion.span>
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <motion.div 
                                             className="font-semibold customtext-neutral-dark"
                                             initial={{ opacity: 0, x: -10 }}
@@ -521,7 +521,7 @@ const generalsData = generals || [];
                                             Correo electrónico
                                         </motion.div>
                                         <motion.div 
-                                            className="customtext-neutral-dark text-sm"
+                                            className="customtext-neutral-dark text-sm break-words overflow-hidden"
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.3 }}
@@ -530,12 +530,18 @@ const generalsData = generals || [];
                                                const emailData = generalsData.find(item => item.correlative === "email_contact")?.description || "";
                                                if (emailData.includes(',')) {
                                                    return emailData.split(',').map((email, index) => (
-                                                       <div key={index} className="block">
-                                                           {email.trim()}
+                                                       <div key={index} className="block break-words">
+                                                           <a href={`mailto:${email.trim()}`} className="hover:text-secondary transition-colors">
+                                                               {email.trim()}
+                                                           </a>
                                                        </div>
                                                    ));
                                                }
-                                               return emailData;
+                                               return (
+                                                   <a href={`mailto:${emailData}`} className="hover:text-secondary transition-colors">
+                                                       {emailData}
+                                                   </a>
+                                               );
                                            })()}
                                         </motion.div>
                                     </div>
@@ -543,19 +549,19 @@ const generalsData = generals || [];
                                 
                                 {/* Phone */}
                                 <motion.div 
-                                    className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6]"
+                                    className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6] overflow-hidden"
                                     variants={cardHover}
                                     initial="rest"
                                     whileHover="hover"
                                 >
                                     <motion.span 
-                                        className="bg-secondary text-white rounded-full p-2"
+                                        className="bg-secondary text-white rounded-full p-2 flex-shrink-0"
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
                                     >
                                       <Phone/>
                                     </motion.span>
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <motion.div 
                                             className="font-semibold customtext-neutral-dark"
                                             initial={{ opacity: 0, x: -10 }}
@@ -565,7 +571,7 @@ const generalsData = generals || [];
                                             Contacto
                                         </motion.div>
                                         <motion.div 
-                                            className="customtext-neutral-dark text-sm"
+                                            className="customtext-neutral-dark text-sm break-words overflow-hidden"
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.3 }}
@@ -574,12 +580,18 @@ const generalsData = generals || [];
                                                 const phoneData = generalsData.find(item => item.correlative === "phone_contact")?.description || "";
                                                 if (phoneData.includes(',')) {
                                                     return phoneData.split(',').map((phone, index) => (
-                                                        <div key={index} className="block">
-                                                            {phone.trim()}
+                                                        <div key={index} className="block break-words">
+                                                            <a href={`tel:${phone.trim()}`} className="hover:text-secondary transition-colors">
+                                                                {phone.trim()}
+                                                            </a>
                                                         </div>
                                                     ));
                                                 }
-                                                return phoneData;
+                                                return (
+                                                    <a href={`tel:${phoneData}`} className="hover:text-secondary transition-colors">
+                                                        {phoneData}
+                                                    </a>
+                                                );
                                             })()}
                                         </motion.div>
                                     </div>
@@ -588,13 +600,13 @@ const generalsData = generals || [];
                             
                             {/* Location */}
                             <motion.div 
-                                className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6]"
+                                className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6] overflow-hidden"
                                 variants={cardHover}
                                 initial="rest"
                                 whileHover="hover"
                             >
                                 <motion.span 
-                                    className="bg-secondary text-white rounded-full p-2"
+                                    className="bg-secondary text-white rounded-full p-2 flex-shrink-0"
                                     whileHover={{ rotate: 360, scale: 1.1 }}
                                     transition={{ duration: 0.5 }}
                                 >
@@ -603,7 +615,7 @@ const generalsData = generals || [];
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                                     </svg>
                                 </motion.span>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <motion.div 
                                         className="font-semibold customtext-neutral-dark"
                                         initial={{ opacity: 0, x: -10 }}
@@ -613,7 +625,7 @@ const generalsData = generals || [];
                                         Ubicación
                                     </motion.div>
                                     <motion.div 
-                                        className="customtext-neutral-dark text-sm"
+                                        className="customtext-neutral-dark text-sm break-words overflow-hidden"
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.3 }}
