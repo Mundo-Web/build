@@ -567,9 +567,11 @@ export default function ShippingStepSF({
             setEnvio(options[0]?.price || 0);
             
             // Calcular costo adicional para la primera opción seleccionada automáticamente
+            // Usamos subTotal + igv (total) para comparar contra el monto mínimo de la regla
             try {
                 if (options[0]?.type && calculateAdditionalShippingCost) {
-                    const additionalCost = calculateAdditionalShippingCost(options[0].type, subTotal);
+                    const totalAmount = parseFloat(subTotal) + parseFloat(igv);
+                    const additionalCost = calculateAdditionalShippingCost(options[0].type, totalAmount);
                     setAdditionalShippingCost(additionalCost.cost);
                     setAdditionalShippingDescription(additionalCost.description);
                     setSelectedDeliveryMethod(options[0].type);
@@ -2216,9 +2218,11 @@ export default function ShippingStepSF({
                                                         setEnvio(option.price);
                                                         
                                                         // Calcular costo adicional basado en el método de envío
+                                                        // Usamos subTotal + igv (total) para comparar contra el monto mínimo de la regla
                                                         try {
                                                             if (calculateAdditionalShippingCost) {
-                                                                const additionalCost = calculateAdditionalShippingCost(option.type, subTotal);
+                                                                const totalAmount = parseFloat(subTotal) + parseFloat(igv);
+                                                                const additionalCost = calculateAdditionalShippingCost(option.type, totalAmount);
                                                                 setAdditionalShippingCost(additionalCost.cost);
                                                                 setAdditionalShippingDescription(additionalCost.description);
                                                                 setSelectedDeliveryMethod(option.type);
