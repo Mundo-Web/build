@@ -25,6 +25,7 @@ class Store extends Model
         'image',
         'status',
         'visible',
+        'pickup_available',
         'business_hours',
         'manager',
         'capacity',
@@ -36,6 +37,7 @@ class Store extends Model
 
     protected $casts = [
         'status' => 'boolean',
+        'pickup_available' => 'boolean',
         'business_hours' => 'array',
         'gallery' => 'array',
         'latitude' => 'decimal:8',

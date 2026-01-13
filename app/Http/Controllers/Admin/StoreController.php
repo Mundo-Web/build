@@ -77,6 +77,7 @@ class StoreController extends BasicController
         ]);
 
         $data['status'] = $request->boolean('status', true);
+        $data['pickup_available'] = $request->boolean('pickup_available', true);
         
         // Validar tienda principal - solo puede existir una
         if ($data['type'] === 'tienda_principal') {
@@ -156,7 +157,8 @@ class StoreController extends BasicController
                 ->byUbigeo($ubigeo)
                 ->select([
                     'id', 'name', 'address', 'phone', 'email', 'image',
-                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'type'
+                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'type',
+                    'visible', 'pickup_available'
                 ])
                 ->get();
 
@@ -173,7 +175,8 @@ class StoreController extends BasicController
             $stores = Store::active()
                 ->select([
                     'id', 'name', 'address', 'phone', 'email', 'image',
-                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'ubigeo', 'type', 'status', 'link'
+                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'ubigeo', 'type', 'status', 'link',
+                    'visible', 'pickup_available'
                 ])
                 ->get();
 
@@ -191,7 +194,8 @@ class StoreController extends BasicController
                 ->where('type', 'tienda_principal')
                 ->select([
                     'id', 'name', 'address', 'phone', 'email', 'image',
-                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'ubigeo', 'type', 'status', 'link'
+                    'latitude', 'longitude', 'business_hours', 'manager', 'description', 'ubigeo', 'type', 'status', 'link',
+                    'visible', 'pickup_available'
                 ])
                 ->first();
 

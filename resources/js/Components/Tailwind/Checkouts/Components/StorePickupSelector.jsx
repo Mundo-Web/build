@@ -41,15 +41,16 @@ const StorePickupSelector = ({
             console.log('🏬 Tiendas completas:', allStores);
             
     
-            // Filtrar por tipo de tienda (solo tienda y tienda_principal) y que sean visibles
+            // Filtrar por tipo de tienda (tienda, tienda_principal y showroom) y que sean visibles y permitan pickup
             allStores = allStores.filter(store => {
-                const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
                 const isVisible = store.visible === true || store.visible === 1;
                 const isActive = store.status === true || store.status === 1;
-                const passes = isCorrectType && isVisible && isActive;
+                // pickup_available: true si es true/1 o si no está definido (retrocompatibilidad, default true)
+                const isPickupEnabled = store.pickup_available === true || store.pickup_available === 1 || store.pickup_available === undefined;
+                const passes =  isVisible && isActive && isPickupEnabled;
                 
                 if (!passes) {
-                    console.log(`❌ Tienda rechazada: ${store.name} - type: ${store.type}, visible: ${store.visible}, status: ${store.status}`);
+                    console.log(`❌ Tienda rechazada: ${store.name} - type: ${store.type}, visible: ${store.visible}, status: ${store.status}, pickup_available: ${store.pickup_available}`);
                 }
                 
                 return passes;

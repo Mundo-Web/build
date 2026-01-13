@@ -212,10 +212,12 @@ class DeliveryPriceController extends BasicController
                 $selectedStores = $deliveryPrice->selected_stores;
                 
                 if (empty($selectedStores)) {
-                    // Sin selección = cargar TODAS las tiendas de tipo 'tienda' y 'tienda_principal' activas
+                    // Sin selección = cargar TODAS las tiendas habilitadas para recojo
+                    // Incluye: tienda, tienda_principal y showroom con pickup_available=true
                     $allStores = \App\Models\Store::where('status', true)
                         ->where('visible', true)
-                        ->whereIn('type', ['tienda', 'tienda_principal'])
+                        ->where('pickup_available', true)
+                    
                         ->pluck('id')
                         ->toArray();
                     

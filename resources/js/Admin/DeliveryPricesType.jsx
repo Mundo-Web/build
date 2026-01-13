@@ -123,13 +123,15 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
             });
 
             if (result && result.data && Array.isArray(result.data)) {
-                // Filtrar solo tiendas del tipo 'tienda' y 'tienda_principal'
-                // Para ser consistente con ShippingStepSF.jsx
+                // Filtrar solo tiendas que:
+                // 1. Sean tipo 'tienda', 'tienda_principal' o 'showroom'
+                // 2. Estén visibles y activas
+                // 3. Tengan pickup_available habilitado
                 const filteredStores = result.data.filter(store => {
-                    const isCorrectType = store.type === 'tienda' || store.type === 'tienda_principal';
                     const isVisible = store.visible === true || store.visible === 1;
                     const isActive = store.status === true || store.status === 1;
-                    return isCorrectType && isVisible && isActive;
+                    const isPickupEnabled = store.pickup_available === true || store.pickup_available === 1 || store.pickup_available === undefined;
+                    return  isVisible && isActive && isPickupEnabled;
                 });
                 
                 console.log('🏪 Tiendas disponibles para retiro:', filteredStores.length);

@@ -522,6 +522,16 @@ const Stores = ({ ubigeos = [] }) => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    const onPickupAvailableChange = async ({ id, value }) => {
+        const result = await storesRest.boolean({
+            id,
+            field: "pickup_available",
+            value,
+        });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
     return (
         <>
             <Table
@@ -664,6 +674,27 @@ const Stores = ({ ubigeos = [] }) => {
                                         onVisibleChange({
                                             id: data.id,
                                             value: !data.visible,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
+                    {
+                        dataField: "pickup_available",
+                        caption: "Recojo",
+                        dataType: "boolean",
+                        width: "80px",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.pickup_available === true || data.pickup_available === 1}
+                                    onChange={() =>
+                                        onPickupAvailableChange({
+                                            id: data.id,
+                                            value: !data.pickup_available,
                                         })
                                     }
                                 />
