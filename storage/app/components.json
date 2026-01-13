@@ -5329,18 +5329,8 @@
                 "name": "Pop-up / Modal",
                 "image": "ad-modal.png",
                 "using": {
-                    "model": "Ad",
-                    "fields": [
-                        "name",
-                        "description",
-                        "image",
-                        "link",
-                        "seconds",
-                        "date_begin",
-                        "date_end",
-                        "invasivo",
-                        "visible"
-                    ]
+                    "model": "Ad"
+                  
                 }
             },
             {
