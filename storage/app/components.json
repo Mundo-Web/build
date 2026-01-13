@@ -74,12 +74,13 @@
                 "name": "Copyright",
                 "image": "top-bar-copyright.png",
                 "generals": [
-                    "copyright",
-                    "creditPapayaDigital"
+                    "copyright"
+                   
                 ],
                 "data": [
                     "class_container",
-                    "showJobApplicationButton"
+                    "showJobApplicationButton",
+                     "creditPapayaDigital"
                 ]
             },
             {
