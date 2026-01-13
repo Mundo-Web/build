@@ -230,7 +230,11 @@ export default function CartStepSF({
                     </div>
                     <div className="flex justify-between">
                         <span className="customtext-neutral-dark">Envío</span>
-                        <span className="font-semibold">{CurrencySymbol()} {Number2Currency(envio)}</span>
+                        <span className="font-semibold">
+                            {envio > 0 
+                                ? `${CurrencySymbol()} ${Number2Currency(envio)}` 
+                                : 'Por calcular'}
+                        </span>
                     </div>
 
                     {/* Descuentos Automáticos */}

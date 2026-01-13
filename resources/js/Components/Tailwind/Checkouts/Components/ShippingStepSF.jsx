@@ -2249,7 +2249,7 @@ export default function ShippingStepSF({
                                                     (char, index) => (
                                                         <div
                                                             key={`char-${index}`}
-                                                            className="flex items-start gap-4 bg-[#F7F9FB] p-4 rounded-xl"
+                                                            className="flex items-start gap-4 bg-[#F7F9FB] px-4 rounded-xl"
                                                         >
                                                             <div className="w-5 flex-shrink-0">
                                                                 <svg
@@ -2535,13 +2535,39 @@ export default function ShippingStepSF({
                             </div>
                         )}
                         <div className="flex justify-between">
-                            <span className="customtext-neutral-dark">Envío</span>
+                            <span className="customtext-neutral-dark">
+                                {selectedOption === "store_pickup" 
+                                    ? "Retiro en tienda" 
+                                    : selectedOption === "agency" 
+                                        ? "Envío por agencia" 
+                                        : "Envío"}
+                            </span>
                             <span className="font-semibold">
-                                {selectedOption === "free" || selectedOption === "store_pickup" || envio === 0 ? (
-                                    <span className="customtext-neutral-dark">Gratis</span>
-                                ) : (
-                                    `${CurrencySymbol()} ${Number2Currency(envio)}`
-                                )}
+                                {(() => {
+                                    // Caso 1: Retiro en tienda - siempre gratis
+                                    if (selectedOption === "store_pickup") {
+                                        return <span className="customtext-neutral-dark">Gratis</span>;
+                                    }
+                                    
+                                    // Caso 2: Agencia con pago en destino
+                                    const agencyOption = shippingOptions.find(o => o.type === "agency");
+                                    if (selectedOption === "agency" && agencyOption?.paymentOnDelivery) {
+                                        return <span className="customtext-neutral-dark text-sm">Pago en destino</span>;
+                                    }
+                                    
+                                    // Caso 3: Agencia con costo definido
+                                    if (selectedOption === "agency" && !agencyOption?.paymentOnDelivery && envio > 0) {
+                                        return `${CurrencySymbol()} ${Number2Currency(envio)}`;
+                                    }
+                                    
+                                    // Caso 4: Envío gratis (free o precio 0)
+                                    if (selectedOption === "free" || envio === 0) {
+                                        return <span className="customtext-neutral-dark">Gratis</span>;
+                                    }
+                                    
+                                    // Caso 5: Envío con costo (standard, express, etc)
+                                    return `${CurrencySymbol()} ${Number2Currency(envio)}`;
+                                })()}
                             </span>
                         </div>
                         

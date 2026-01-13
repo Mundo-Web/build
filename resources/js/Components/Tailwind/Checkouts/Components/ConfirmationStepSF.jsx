@@ -204,8 +204,22 @@ export default function ConfirmationStepSF({
                                 <span className="font-semibold">{CurrencySymbol()} {Number2Currency(igv)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="customtext-neutral-dark">Envío</span>
-                                <span className="font-semibold">{CurrencySymbol()} {Number2Currency(order.delivery)}</span>
+                                <span className="customtext-neutral-dark">
+                                    {order.delivery_type === 'store_pickup' ? 'Retiro en tienda' : 
+                                     order.delivery_type === 'agency' ? 'Envío por agencia' : 'Envío'}
+                                </span>
+                                <span className="font-semibold">
+                                    {(() => {
+                                        // Store pickup is always free
+                                        if (order.delivery_type === 'store_pickup') return 'Gratis';
+                                        // Agency with payment on delivery
+                                        if (order.delivery_type === 'agency' && parseFloat(order.delivery) === 0) return 'Pago en destino';
+                                        // Free shipping
+                                        if (parseFloat(order.delivery) === 0) return 'Gratis';
+                                        // Regular shipping with cost
+                                        return `${CurrencySymbol()} ${Number2Currency(order.delivery)}`;
+                                    })()}
+                                </span>
                             </div>
                             {order.additional_shipping_cost > 0 && (
                                 <div className="flex justify-between text-danger">
