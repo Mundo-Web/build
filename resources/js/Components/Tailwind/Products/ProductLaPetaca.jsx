@@ -21,8 +21,8 @@ const ProductLaPetaca = ({ data, items }) => {
   
 
     return (
-        <section className="py-16 lg:py-20 px-primary bg-sections-color">
-            <div className="2xl:max-w-7xl mx-auto  2xl:px-0">
+        <section className="py-16 lg:py-20 px-primary 2xl:px-0 bg-sections-color">
+            <div className="2xl:max-w-7xl mx-auto  ">
                 {/* Header */}
                 <div className="text-center mb-16">
                     <h2 className="text-4xl customtext-neutral-dark md:text-5xl font-bold mb-4" >

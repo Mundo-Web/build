@@ -463,8 +463,7 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
     // Calcular precio total
     const pricePerNight = parseFloat(item?.final_price || item?.price) || 0;
     const totalPrice = pricePerNight * nights;
-    const serviceFee = nights > 0 ? Math.round(totalPrice * 0.05) : 0;
-    const grandTotal = totalPrice + serviceFee;
+    const grandTotal = totalPrice;
     
     // Verificar descuento
     const hasDiscount = item?.price && item?.discount && parseFloat(item.discount) > 0;
@@ -762,7 +761,7 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                         // Solo una imagen - mostrar en grande
                         <div className="hidden md:block h-[500px] rounded-2xl overflow-hidden">
                             <div 
-                                className="relative cursor-pointer group h-full"
+                                className="relative cursor-pointer group h-full overflow-hidden"
                                 onClick={() => setShowGalleryModal(true)}
                             >
                                 <img
@@ -780,7 +779,7 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                             {allImages.map((img, index) => (
                                 <div 
                                     key={index}
-                                    className="relative cursor-pointer group"
+                                    className="relative cursor-pointer group overflow-hidden"
                                     onClick={() => {
                                         setSelectedImage(index);
                                         setShowGalleryModal(true);
@@ -797,10 +796,10 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                             ))}
                         </div>
                     ) : allImages.length === 3 ? (
-                        // Tres imágenes - layout principal + 2 pequeñas
-                        <div className="hidden md:grid md:grid-cols-2 gap-2 h-[500px] rounded-2xl overflow-hidden">
+                        // Tres imágenes - una mitad del ancho, las otras dos en la otra mitad divididas verticalmente
+                        <div className="hidden md:flex gap-2 h-[500px] rounded-2xl overflow-hidden">
                             <div 
-                                className="relative cursor-pointer group"
+                                className="w-1/2 relative cursor-pointer group overflow-hidden"
                                 onClick={() => setShowGalleryModal(true)}
                             >
                                 <img
@@ -811,11 +810,11 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                             </div>
-                            <div className="grid grid-rows-2 gap-2">
+                            <div className="w-1/2 flex flex-col gap-2">
                                 {allImages.slice(1, 3).map((img, index) => (
                                     <div 
                                         key={index}
-                                        className="relative cursor-pointer group"
+                                        className="h-1/2 relative cursor-pointer group overflow-hidden"
                                         onClick={() => {
                                             setSelectedImage(index + 1);
                                             setShowGalleryModal(true);
@@ -832,12 +831,34 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                 ))}
                             </div>
                         </div>
+                    ) : allImages.length === 4 ? (
+                        // Cuatro imágenes - grid 2x2 (mitad ancho y mitad altura cada una)
+                        <div className="hidden md:grid md:grid-cols-2 md:grid-rows-2 gap-2 h-[500px] rounded-2xl overflow-hidden">
+                            {allImages.map((img, index) => (
+                                <div 
+                                    key={index}
+                                    className="relative cursor-pointer group overflow-hidden"
+                                    onClick={() => {
+                                        setSelectedImage(index);
+                                        setShowGalleryModal(true);
+                                    }}
+                                >
+                                    <img
+                                        src={`/storage/images/item/${img.url}`}
+                                        alt={img.alt}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        onError={(e) => e.target.src = '/assets/img/noimage/no_img.jpg'}
+                                    />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                </div>
+                            ))}
+                        </div>
                     ) : (
-                        // 4 o más imágenes - layout completo
-                        <div className="hidden md:grid md:grid-cols-4 gap-2 h-[500px] rounded-2xl overflow-hidden">
-                            {/* Imagen principal */}
+                        // 5 o más imágenes - una grande (mitad ancho) y 4 pequeñas (mitad ancho en grid 2x2)
+                        <div className="hidden md:flex gap-2 h-[500px] rounded-2xl overflow-hidden">
+                            {/* Imagen principal - ocupa la mitad del ancho */}
                             <div 
-                                className="col-span-2 row-span-2 relative cursor-pointer group"
+                                className="w-1/2 relative cursor-pointer group overflow-hidden rounded-l-2xl"
                                 onClick={() => setShowGalleryModal(true)}
                             >
                                 <img
@@ -849,43 +870,45 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                             </div>
                             
-                            {/* Imágenes secundarias */}
-                            {[1, 2, 3, 4].map((index) => (
-                                <div 
-                                    key={index}
-                                    className="relative cursor-pointer group overflow-hidden"
-                                    onClick={() => {
-                                        setSelectedImage(index);
-                                        setShowGalleryModal(true);
-                                    }}
-                                >
-                                    {allImages[index] ? (
-                                        <>
-                                            <img
-                                                src={`/storage/images/item/${allImages[index].url}`}
-                                                alt={`${item?.name} - ${index}`}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                onError={(e) => e.target.src = '/assets/img/noimage/no_img.jpg'}
-                                            />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
-                                        </>
-                                    ) : (
-                                        <div className="w-full h-full bg-sections-color flex items-center justify-center">
-                                            <ImageIcon size={40} className="customtext-neutral-light opacity-30" />
-                                        </div>
-                                    )}
-                                    
-                                    {/* Botón ver todas - en la última imagen */}
-                                    {index === 4 && allImages.length > 5 && (
-                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                            <button className="bg-white customtext-primary px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-sections-color transition-colors shadow-lg">
-                                                <ImageIcon size={18} />
-                                                Ver todas ({allImages.length})
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                            {/* Grid de 4 imágenes secundarias - 2x2 en la otra mitad del ancho */}
+                            <div className="w-1/2 grid grid-cols-2 grid-rows-2 gap-2">
+                                {[1, 2, 3, 4].map((index) => (
+                                    <div 
+                                        key={index}
+                                        className="relative cursor-pointer group overflow-hidden"
+                                        onClick={() => {
+                                            setSelectedImage(index);
+                                            setShowGalleryModal(true);
+                                        }}
+                                    >
+                                        {allImages[index] ? (
+                                            <>
+                                                <img
+                                                    src={`/storage/images/item/${allImages[index].url}`}
+                                                    alt={`${item?.name} - ${index}`}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                    onError={(e) => e.target.src = '/assets/img/noimage/no_img.jpg'}
+                                                />
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                                
+                                                {/* Botón ver todas - en la última imagen */}
+                                                {index === 4 && allImages.length > 5 && (
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                        <button className="bg-white customtext-primary px-2 py-1.5 rounded-lg font-semibold text-[10px] flex items-center gap-1 hover:bg-sections-color transition-colors shadow-lg">
+                                                            <ImageIcon size={12} />
+                                                            +{allImages.length - 5}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="w-full h-full bg-sections-color flex items-center justify-center">
+                                                <ImageIcon size={20} className="customtext-neutral-light opacity-30" />
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                     
@@ -1250,10 +1273,6 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                                     {CurrencySymbol()}{pricePerNight.toFixed(0)} × {nights} {nights === 1 ? 'noche' : 'noches'}
                                                 </span>
                                                 <span className="font-medium customtext-primary">{CurrencySymbol()}{totalPrice.toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                                <span className="customtext-neutral-light underline decoration-dotted cursor-help">Tarifa de servicio</span>
-                                                <span className="font-medium customtext-primary">{CurrencySymbol()}{serviceFee.toFixed(2)}</span>
                                             </div>
                                             {totalSavings > 0 && (
                                                 <div className="flex justify-between text-sm">

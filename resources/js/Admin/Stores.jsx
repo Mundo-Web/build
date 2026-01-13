@@ -684,7 +684,7 @@ const Stores = ({ ubigeos = [] }) => {
                         dataField: "pickup_available",
                         caption: "Recojo",
                         dataType: "boolean",
-                        width: "80px",
+                       
                         cellTemplate: (container, { data }) => {
                             $(container).empty();
                             ReactAppend(

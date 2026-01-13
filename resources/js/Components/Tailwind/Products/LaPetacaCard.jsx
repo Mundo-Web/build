@@ -132,7 +132,7 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                 {/* Amenities */}
                 {amenities.length > 0 && (
                     <div className="flex flex-wrap gap-1 md:gap-1.5 mb-4 md:mb-5">
-                        {amenities.slice(0, 3).map((amenity, i) => (
+                        {amenities.slice(0, 2).map((amenity, i) => (
                             <div
                                 key={typeof amenity === 'object' ? amenity.id : i}
                                 className="flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1 bg-sections-color rounded-full text-[10px] md:text-xs font-medium customtext-secondary"
@@ -141,24 +141,24 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                                 <span className="hidden sm:inline">{getAmenityName(amenity)}</span>
                             </div>
                         ))}
-                        {amenities.length > 3 && (
+                        {amenities.length > 2 && (
                             <div className="flex items-center px-2 py-0.5 md:px-3 md:py-1 bg-accent rounded-full text-[10px] md:text-xs font-medium text-white">
-                                +{amenities.length - 3}
+                                +{amenities.length - 2}
                             </div>
                         )}
                     </div>
                 )}
 
                 {/* Footer con precio y CTA */}
-                <div className="flex items-end justify-between gap-2 pt-3 md:pt-4 border-t border-gray-100">
+                <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-2 pt-3 md:pt-4 border-t border-gray-100">
                     {/* Precio */}
-                    <div>
-                        <div className="flex items-baseline gap-1.5 md:gap-2">
+                    <div className='flex flex-row lg:flex-col items-center gap-2'>
+                        <div className="flex flex-row lg:flex-col items-baseline gap-1.5 md:gap-2">
                             <span className="text-xl md:text-3xl font-bold customtext-primary">
                                 {CurrencySymbol()}{finalPrice.toFixed(0)}
                             </span>
                             {hasDiscount && (
-                                <span className="text-[10px] md:text-sm customtext-neutral-light line-through">
+                                <span className="text-[10px] md:text-sm text-neutral-light line-through">
                                     {CurrencySymbol()}{price.toFixed(0)}
                                 </span>
                             )}
@@ -172,7 +172,7 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                             e.preventDefault();
                             handleClick();
                         }}
-                        className="flex items-center justify-center gap-1 bg-primary hover:bg-secondary text-white px-3 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 shadow-md hover:shadow-lg group/btn"
+                        className="flex w-full lg:max-w-max items-center justify-center gap-1 bg-primary hover:bg-secondary text-white px-3 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 shadow-md hover:shadow-lg group/btn"
                     >
                         <span>Reservar</span>
                         <ChevronRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform duration-300" />

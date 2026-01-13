@@ -39,18 +39,33 @@ const Testimonies = ({ countries, details }) => {
         else setIsEditing(false);
 
         // Reset delete flag when opening modal
-        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
         idRef.current.value = data?.id ?? "";
         nameRef.current.value = data?.name ?? "";
-        roleRef.current.value = data?.role ?? "";
-        ratingRef.current.value = data?.rating ?? "5";
-        $(countryRef.current)
-            .val(data?.country_id ?? "89")
-            .trigger("change");
-        descriptionRef.current.value = data?.description ?? "";
-        imageRef.image.src = data?.image ? `/storage/images/testimony/${data.image}` : '';
-        imageRef.current.value = null;
+        
+        if (Fillable.has('testimonies', 'role')) {
+            roleRef.current.value = data?.role ?? "";
+        }
+        
+        if (Fillable.has('testimonies', 'rating')) {
+            ratingRef.current.value = data?.rating ?? "5";
+        }
+        
+        if (Fillable.has('testimonies', 'country_id')) {
+            $(countryRef.current)
+                .val(data?.country_id ?? "89")
+                .trigger("change");
+        }
+        
+        if (Fillable.has('testimonies', 'description')) {
+            descriptionRef.current.value = data?.description ?? "";
+        }
+        
+        if (imageRef.current && imageRef.image && Fillable.has('testimonies', 'image')) {
+            imageRef.image.src = data?.image ? `/storage/images/testimony/${data.image}` : '';
+            imageRef.current.value = null;
+        }
 
         $(modalRef.current).modal("show");
     };
@@ -60,27 +75,41 @@ const Testimonies = ({ countries, details }) => {
 
         const request = {
             id: idRef.current.value || undefined,
-            country_id: $(countryRef.current).val(),
-            country: $(countryRef.current).find("option:selected").text(),
             name: nameRef.current.value,
-            role: roleRef.current.value,
-            rating: ratingRef.current.value,
-            description: descriptionRef.current.value,
         };
+        
+        if (Fillable.has('testimonies', 'country_id')) {
+            request.country_id = $(countryRef.current).val();
+            request.country = $(countryRef.current).find("option:selected").text();
+        }
+        
+        if (Fillable.has('testimonies', 'role')) {
+            request.role = roleRef.current.value;
+        }
+        
+        if (Fillable.has('testimonies', 'rating')) {
+            request.rating = ratingRef.current.value;
+        }
+        
+        if (Fillable.has('testimonies', 'description')) {
+            request.description = descriptionRef.current.value;
+        }
 
         const formData = new FormData();
         for (const key in request) {
             formData.append(key, request[key]);
         }
 
-        const file = imageRef.current.files[0]
-        if (file) {
-            formData.append('image', file)
-        }
+        if (imageRef.current && Fillable.has('testimonies', 'image')) {
+            const file = imageRef.current.files[0];
+            if (file) {
+                formData.append('image', file);
+            }
 
-        // Check for image deletion flag
-        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
+            // Check for image deletion flag
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
         }
 
         const result = await testimoniesRest.save(formData);
@@ -156,7 +185,7 @@ const Testimonies = ({ countries, details }) => {
                         caption: "ID",
                         visible: false,
                     },
-                    {
+                    Fillable.has('testimonies', 'image') && {
                         dataField: "name",
                         caption: "Autor",
                         cellTemplate: (container, { data }) => {
@@ -188,17 +217,21 @@ const Testimonies = ({ countries, details }) => {
                             }
                         },
                     },
-                    {
+                    !Fillable.has('testimonies', 'image') && {
+                        dataField: "name",
+                        caption: "Autor",
+                    },
+                    Fillable.has('testimonies', 'role') && {
                         dataField: "role",
                         caption: "Cargo/Rol",
                         width: "150px",
                     },
-                    {
+                    Fillable.has('testimonies', 'country_id') && {
                         dataField: "country",
                         caption: "País",
                         width: "120px",
                     },
-                    {
+                    Fillable.has('testimonies', 'rating') && {
                         dataField: "rating",
                         caption: "Rating",
                         width: "120px",
@@ -207,7 +240,7 @@ const Testimonies = ({ countries, details }) => {
                             container.html(`<span title="${data.rating}/5">${stars}</span>`);
                         },
                     },
-                    {
+                    Fillable.has('testimonies', 'description') && {
                         dataField: "description",
                         caption: "Testimonio",
                         minWidth: "300px",
@@ -287,19 +320,21 @@ const Testimonies = ({ countries, details }) => {
                                 </div>
                                 <div className="card-body">
                                     <div className="row g-3">
-                                        <div className="col-md-4">
-                                            <ImageFormGroup
-                                                eRef={imageRef}
-                                                name="image"
-                                                label="Foto del Autor"
-                                                col="col-12"
-                                                aspect={1}
-                                            />
-                                            <small className="text-muted">
-                                                <i className="fas fa-info-circle me-1"></i>
-                                                Imagen cuadrada 1:1
-                                            </small>
-                                        </div>
+                                        {Fillable.has('testimonies', 'image') && (
+                                            <div className="col-md-4">
+                                                <ImageFormGroup
+                                                    eRef={imageRef}
+                                                    name="image"
+                                                    label="Foto del Autor"
+                                                    col="col-12"
+                                                    aspect={1}
+                                                />
+                                                <small className="text-muted">
+                                                    <i className="fas fa-info-circle me-1"></i>
+                                                    Imagen cuadrada 1:1
+                                                </small>
+                                            </div>
+                                        )}
                                         <div className="col-md-8">
                                             <div className="row ">
                                                 <div className="col-md-12">
@@ -310,43 +345,48 @@ const Testimonies = ({ countries, details }) => {
                                                         required
                                                     />
                                                 </div>
-                                                <div className="col-md-12">
-                                                    <InputFormGroup
-                                                        eRef={roleRef}
-                                                        label="Cargo/Profesión"
-                                                        placeholder="Ej: Paciente Operado"
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <SelectFormGroup
-                                                        eRef={countryRef}
-                                                        label="País de Origen"
-                                                        required
-                                                        dropdownParent="#testimony-container"
-                                                    >
-                                                        {countries.map((country, i) => (
-                                                            <option
-                                                                key={`country-${i}`}
-                                                                value={country.id}
-                                                            >
-                                                                {country.name}
-                                                            </option>
-                                                        ))}
-                                                    </SelectFormGroup>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <InputFormGroup
-                                                        eRef={ratingRef}
-                                                        label="Calificación (1-5 estrellas)"
-                                                        type="number"
-                                                        min="1"
-                                                        max="5"
-                                                        placeholder="5"
-                                                        required
-                                                    />
-                                                  
-                                                </div>
+                                                {Fillable.has('testimonies', 'role') && (
+                                                    <div className="col-md-12">
+                                                        <InputFormGroup
+                                                            eRef={roleRef}
+                                                            label="Cargo/Profesión"
+                                                            placeholder="Ej: Paciente Operado"
+                                                            required
+                                                        />
+                                                    </div>
+                                                )}
+                                                {Fillable.has('testimonies', 'country_id') && (
+                                                    <div className="col-md-12">
+                                                        <SelectFormGroup
+                                                            eRef={countryRef}
+                                                            label="País de Origen"
+                                                            required
+                                                            dropdownParent="#testimony-container"
+                                                        >
+                                                            {countries.map((country, i) => (
+                                                                <option
+                                                                    key={`country-${i}`}
+                                                                    value={country.id}
+                                                                >
+                                                                    {country.name}
+                                                                </option>
+                                                            ))}
+                                                        </SelectFormGroup>
+                                                    </div>
+                                                )}
+                                                {Fillable.has('testimonies', 'rating') && (
+                                                    <div className="col-md-12">
+                                                        <InputFormGroup
+                                                            eRef={ratingRef}
+                                                            label="Calificación (1-5 estrellas)"
+                                                            type="number"
+                                                            min="1"
+                                                            max="5"
+                                                            placeholder="5"
+                                                            required
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -355,7 +395,8 @@ const Testimonies = ({ countries, details }) => {
                         </div>
 
                         {/* Testimonio */}
-                        <div className="col-12">
+                        {Fillable.has('testimonies', 'description') && (
+                            <div className="col-12">
                             <div className="card border-0 shadow-sm">
                                 <div className="card-header bg-light">
                                     <h6 className="mb-0">
@@ -378,6 +419,7 @@ const Testimonies = ({ countries, details }) => {
                                 </div>
                             </div>
                         </div>
+                        )}
                     </div>
                 </div>
             </Modal>

@@ -154,8 +154,8 @@ const ServiceLaPetaca = ({ data, items }) => {
                                         </h3>
 
                                         {/* Description */}
-                                        <p className="text-white/60 text-sm leading-relaxed line-clamp-3 flex-grow">
-                                            {service.description}
+                                        <p className="text-white text-sm leading-relaxed line-clamp-3 flex-grow" dangerouslySetInnerHTML={{ __html: service.description }}>
+                                           
                                         </p>
 
                                         {/* Bottom accent line */}
