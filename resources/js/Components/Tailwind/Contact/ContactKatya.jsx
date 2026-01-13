@@ -285,7 +285,7 @@ const generalsData = generals || [];
 
   //location = -12.08572604235328,-76.99121088594794
 
-  const location = generalsData.find(item => item.correlative === "location")?.value || "-12.08572604235328,-76.99121088594794";
+  const location = generalsData.find(item => item.correlative === "location")?.description || "-12.08572604235328,-76.99121088594794";
   const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&q=${location}`;
   const mapSrcWithZoom = `${mapSrc}&zoom=12`;
   const mapSrcWithOutput = `${mapSrc}&output=embed`;
