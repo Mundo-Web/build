@@ -19,6 +19,7 @@ class Ad extends Model
         'description',
         'image',
         'link',
+        'button_text',
         'seconds',
         'date_begin',
         'date_end',

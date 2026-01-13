@@ -29,6 +29,7 @@ const Ads = ({ }) => {
   const dateEndRef = useRef()
   const secondsRef = useRef()
   const linkRef = useRef()
+  const buttonTextRef = useRef()
   const invasivoRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
@@ -49,6 +50,7 @@ const Ads = ({ }) => {
     dateEndRef.current.value = data?.date_end ?? ''
     secondsRef.current.value = data?.seconds ?? 0
     linkRef.current.value = data?.link ?? ''
+    buttonTextRef.current.value = data?.button_text ?? 'Ver más'
     if (data?.invasivo) {
       $(invasivoRef.current).prop('checked', false).trigger('click')
     } else {
@@ -68,6 +70,7 @@ const Ads = ({ }) => {
       date_end: dateEndRef.current.value,
       seconds: secondsRef.current.value || 0,
       link: linkRef.current.value,
+      button_text: buttonTextRef.current.value || 'Ver más',
       invasivo: invasivoRef.current.checked ? 1 : 0
     }
 
@@ -146,83 +149,112 @@ const Ads = ({ }) => {
         {
           dataField: 'image',
           caption: 'Imagen',
-          width: '60px',
+          width: '90px',
           allowFiltering: false,
           cellTemplate: (container, { data }) => {
-            ReactAppend(container, <img src={`/api/ads/media/${data.image}`} style={{ width: '50px', aspectRatio: 1, objectFit: 'contain', objectPosition: 'center', borderRadius: '4px' }} />)
+            ReactAppend(container, 
+              <div className="d-flex align-items-center justify-content-center">
+                <img 
+                  src={`/api/ads/media/${data.image}`} 
+                  style={{ 
+                    width: '80px', 
+                    height: '80px',
+                    objectFit: 'cover', 
+                    objectPosition: 'center', 
+                   
+                   
+                  }} 
+                />
+              </div>
+            )
           }
         },
         {
           dataField: 'name',
           caption: 'Contenido',
-          width: '50%',
+          width: '35%',
           cellTemplate: (container, { data }) => {
             ReactAppend(container, (data.name || data.description)
-              ? <p className='mb-0' style={{ width: '100%' }}>
-                <b className='d-block'>{data.name}</b>
-                <small className='text-wrap text-muted' style={{
+              ? <div style={{ width: '100%' }}>
+                <p className='mb-1 font-weight-bold' style={{ fontSize: '14px' }}>{data.name}</p>
+                <p className='mb-0 text-muted' style={{
                   overflow: 'hidden',
                   display: '-webkit-box',
                   WebkitBoxOrient: 'vertical',
                   WebkitLineClamp: 2,
-                }}>{data.description}</small>
-              </p>
-              : <i className='text-muted'>- Sin contenido textual -</i>
+                  fontSize: '12px',
+                  lineHeight: '1.4'
+                }}>{data.description}</p>
+              </div>
+              : <span className='text-muted font-italic'>- Sin contenido -</span>
             )
           }
         },
         {
           dataField: 'date_begin',
-          caption: 'Mostrar',
+          caption: 'Configuración',
+          width: '25%',
           cellTemplate: (container, { data }) => {
-            container.html(renderToString(<>
-              {
-                (data.date_begin && data.date_end)
-                  ? <>
-                    <p className='mb-0'><b>Desde:</b> {moment(data.date_begin).format('DD [de] MMMM')}</p>
-                    <p className='mb-0'><b>Hasta:</b> {moment(data.date_end).format('DD [de] MMMM')}</p>
-                  </>
-                  : <p className='mb-0'><b>Visible:</b> Siempre</p>
-              }
-              <p className='mb-0'>
-                <b>Se muestra:</b> {
-                  data.seconds > 0
-                    ? <>Después de {data.seconds}s</>
-                    : <>Al cargar la página</>
-                }
-              </p>
-              <p className='mb-0'>
-                <b>Invasivo:</b> {data.invasivo ? 'Si' : 'No'}
-              </p>
-            </>))
+            ReactAppend(container, 
+              <div className="small">
+                <div className="d-flex align-items-center mb-1">
+                  <i className="fas fa-calendar-alt text-primary mr-2" style={{ width: '14px' }}></i>
+                  {(data.date_begin && data.date_end)
+                    ? <span>{moment(data.date_begin).format('DD/MM')} - {moment(data.date_end).format('DD/MM/YY')}</span>
+                    : <span className="text-success">Siempre visible</span>
+                  }
+                </div>
+                <div className="d-flex align-items-center mb-1">
+                  <i className="fas fa-clock text-info mr-2" style={{ width: '14px' }}></i>
+                  <span>{data.seconds > 0 ? `${data.seconds}s de delay` : 'Sin delay'}</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <i className={`fas fa-${data.invasivo ? 'exclamation-triangle text-warning' : 'check-circle text-success'} mr-2`} style={{ width: '14px' }}></i>
+                  <span>{data.invasivo ? 'Invasivo' : 'Normal'}</span>
+                </div>
+              </div>
+            )
           }
         },
         {
           dataField: 'link',
-          caption: 'Link',
+          caption: 'Enlace',
           cellTemplate: (container, { data }) => {
-            if (data.link) {
-              container.html(renderToString(<a href={data.link}>{data.link}</a>))
-            } else {
-              container.html(renderToString(<i className='text-muted'>- Sin link -</i>))
-            }
+            ReactAppend(container, data.link 
+              ? <div>
+                  <a href={data.link} target="_blank" rel="noopener noreferrer" className="text-primary d-block text-truncate" style={{ maxWidth: '200px' }}>
+                    <i className="fas fa-external-link-alt mr-1"></i>
+                    {data.link}
+                  </a>
+                  {data.button_text && (
+                    <small className="text-muted">
+                      <i className="fas fa-mouse-pointer mr-1"></i>
+                      "{data.button_text}"
+                    </small>
+                  )}
+                </div>
+              : <span className='text-muted font-italic'>- Sin enlace -</span>
+            )
           }
         },
         {
           dataField: 'visible',
           caption: 'Visible',
           dataType: 'boolean',
-          width: '120px',
+          width: '90px',
+          alignment: 'center',
           cellTemplate: (container, { data }) => {
             ReactAppend(container, <SwitchFormGroup checked={data.visible} onChange={(e) => onVisibleChange({ id: data.id, value: e.target.checked })} />)
           }
         },
         {
           caption: 'Acciones',
+          width: '100px',
+          alignment: 'center',
           cellTemplate: (container, { data }) => {
             container.css('text-overflow', 'unset')
             container.append(DxButton({
-              className: 'btn btn-xs btn-soft-primary',
+              className: 'btn btn-xs btn-soft-primary mr-1',
               title: 'Editar',
               icon: 'fa fa-pen',
               onClick: () => onModalOpen(data)
@@ -238,20 +270,78 @@ const Ads = ({ }) => {
           allowExporting: false
         }
       ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar anuncio' : 'Agregar anuncio'} onSubmit={onModalSubmit} size='md'>
+    <Modal modalRef={modalRef} title={isEditing ? 'Editar anuncio' : 'Nuevo anuncio'} onSubmit={onModalSubmit} size='lg'>
       <div className='row' id='principal-container'>
         <input ref={idRef} type='hidden' />
-        <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-md-4' aspect={1} fit='contain' required />
-        <div className="col-md-8">
-          <SwitchFormGroup eRef={invasivoRef} label='¿El anuncio es invasivo?' specification='Solo se mostrará este anuncio y no los demás' />
-          <TextareaFormGroup eRef={nameRef} label='Título' rows={1} />
-          <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={2} />
+        
+        {/* Columna izquierda - Imagen */}
+        <div className="col-md-5">
+          <ImageFormGroup 
+            eRef={imageRef} 
+            name="image" 
+            label='Imagen del anuncio' 
+            col='col-12' 
+            aspect={4/5} 
+            fit='cover' 
+            required 
+          />
+          <div className="alert alert-light border small mt-2">
+            <i className="fas fa-info-circle text-info mr-1"></i>
+            Tamaño recomendado: 800x1000px (4:5)
+          </div>
         </div>
-        <label>Mostrar</label>
-        <InputFormGroup eRef={dateBeginRef} label='Desde' type='date' col='col-md-6' />
-        <InputFormGroup eRef={dateEndRef} label='Hasta' type='date' col='col-md-6' />
-        <InputFormGroup eRef={secondsRef} label='Mostrar despues de (segundos)' type='number' />
-        <InputFormGroup eRef={linkRef} label='Link' />
+        
+        {/* Columna derecha - Contenido */}
+        <div className="col-md-7">
+          {/* Contenido del anuncio */}
+          <div className="card border-0 shadow-sm mb-3">
+            <div className="card-header bg-light py-2">
+              <h6 className="mb-0"><i className="fas fa-align-left mr-2"></i>Contenido</h6>
+            </div>
+            <div className="card-body py-3">
+              <InputFormGroup eRef={nameRef} label='Título' placeholder="Ej: ¡Gran Oferta!" />
+              <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} placeholder="Descripción del anuncio..." />
+            </div>
+          </div>
+          
+          {/* Enlace y botón */}
+          <div className="card border-0 shadow-sm mb-3">
+            <div className="card-header bg-light py-2">
+              <h6 className="mb-0"><i className="fas fa-link mr-2"></i>Enlace</h6>
+            </div>
+            <div className="card-body py-3">
+              <div className="row">
+                <div className="col-md-7">
+                  <InputFormGroup eRef={linkRef} label='URL de destino' placeholder="https://ejemplo.com/oferta" />
+                </div>
+                <div className="col-md-5">
+                  <InputFormGroup eRef={buttonTextRef} label='Texto del botón' placeholder="Ver más" />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Configuración de visualización */}
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-light py-2">
+              <h6 className="mb-0"><i className="fas fa-cog mr-2"></i>Configuración</h6>
+            </div>
+            <div className="card-body py-3">
+              <div className="row">
+                <div className="col-md-6">
+                  <InputFormGroup eRef={dateBeginRef} label='Mostrar desde' type='date' />
+                </div>
+                <div className="col-md-6">
+                  <InputFormGroup eRef={dateEndRef} label='Mostrar hasta' type='date' />
+                </div>
+              </div>
+              <InputFormGroup eRef={secondsRef} label='Delay de aparición (segundos)' type='number' col='col-12' placeholder="0 = aparece inmediatamente" />
+              <div className="mt-2">
+                <SwitchFormGroup eRef={invasivoRef} label='Anuncio invasivo' specification='No se puede cerrar haciendo clic fuera del modal' />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Modal>
   </>

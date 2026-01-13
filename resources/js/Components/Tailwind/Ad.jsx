@@ -11,8 +11,8 @@ const Ad = ({ which, data, items, generals }) => {
         return <AdSubscription data={data} items={items} generals={generals} />
       case 'AdModal':
         return <AdModal data={data} items={items} />
-      case 'AdBanner':
-        return <AdBanner data={data} items={items} />
+     /* case 'AdBanner':
+        return <AdBanner data={data} items={items} />*/
       default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }

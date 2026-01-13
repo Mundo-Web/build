@@ -1889,7 +1889,7 @@
     ]
   },
   "resources/js/Admin/Ads.jsx": {
-    "file": "assets/Ads-DA7Jk4hN.js",
+    "file": "assets/Ads-CwhhLWY_.js",
     "name": "Ads",
     "src": "resources/js/Admin/Ads.jsx",
     "isEntry": true,
@@ -5494,7 +5494,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Ad.jsx": {
-    "file": "assets/Ad-CS9Iyqrz.js",
+    "file": "assets/Ad-C3Zk3z5f.js",
     "name": "Ad",
     "src": "resources/js/Components/Tailwind/Ad.jsx",
     "isDynamicEntry": true,
@@ -5529,7 +5529,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Ads/AdModal.jsx": {
-    "file": "assets/AdModal-Bvyf-lBx.js",
+    "file": "assets/AdModal-Dl4h6xrF.js",
     "name": "AdModal",
     "src": "resources/js/Components/Tailwind/Ads/AdModal.jsx",
     "isDynamicEntry": true,
@@ -5537,23 +5537,15 @@
       "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
       "_index-BOnQTV8N.js",
       "resources/js/Components/Tailwind/Checkouts/Components/PolicyModal.jsx",
-      "resources/js/Components/Tailwind/Blogs/BlogCarousel.jsx",
-      "_navigation-DdIoTQkk.js",
-      "_pagination-BcqDuUvN.js",
-      "_autoplay-LLsywiyO.js",
       "_HtmlContent-ghmllTyl.js",
-      "resources/js/Components/About/Strengths.jsx",
-      "resources/js/Components/Tailwind/Blogs/Components/BlogCarrusel.jsx",
       "_x-fof_H3Vv.js",
+      "_chevron-left-JcR9Fe4w.js",
+      "_chevron-right-Cug7tVUE.js",
       "_createLucideIcon-DfjclApS.js",
       "_index-yBjzXJbu.js",
       "__commonjsHelpers-D6-XlEtG.js",
       "_index-B6ujFmsw.js",
-      "_index-Chjiymov.js",
-      "_create-element-if-not-defined-Do1cW1KI.js"
-    ],
-    "css": [
-      "swiper.css"
+      "_index-Chjiymov.js"
     ]
   },
   "resources/js/Components/Tailwind/Ads/AdSubscription.jsx": {
@@ -15421,7 +15413,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B_aCqD0e.js",
+    "file": "assets/System-Dndwit7p.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

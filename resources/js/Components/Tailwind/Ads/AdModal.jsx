@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ReactModal from "react-modal";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { X, ExternalLink } from "lucide-react";
+import { X, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import HtmlContent from "../../../Utils/HtmlContent";
-
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 
 const AdModal = ({ data, items = [] }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [hasShown, setHasShown] = useState(false);
     const [adsToShow, setAdsToShow] = useState([]);
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     // Función auxiliar para generar una clave única para el anuncio
     const getStorageKey = (ad) => {
@@ -69,6 +64,32 @@ const AdModal = ({ data, items = [] }) => {
         return () => clearTimeout(timer);
     }, [adsToShow, hasShown]);
 
+    // Autoplay para múltiples slides - usa los segundos configurados en cada anuncio
+    useEffect(() => {
+        if (!modalOpen || adsToShow.length <= 1) return;
+
+        // Obtener los segundos del anuncio actual (para duración del slide)
+        // Si no tiene segundos configurados, usar 5 segundos por defecto
+        const currentAd = adsToShow[currentSlide];
+        const slideDelay = (currentAd?.seconds || 5) * 1000;
+
+        console.log(`AdModal: Slide ${currentSlide + 1} durará ${slideDelay}ms`);
+
+        const timer = setTimeout(() => {
+            setCurrentSlide((prev) => (prev + 1) % adsToShow.length);
+        }, slideDelay);
+
+        return () => clearTimeout(timer);
+    }, [modalOpen, adsToShow.length, currentSlide]);
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev + 1) % adsToShow.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prev) => (prev - 1 + adsToShow.length) % adsToShow.length);
+    };
+
     const closeModal = () => {
         console.log("AdModal: Cerrando y guardando estado 'visto'...");
         setModalOpen(false);
@@ -103,43 +124,77 @@ const AdModal = ({ data, items = [] }) => {
             shouldCloseOnEsc={!hasInvasiveAd}
             onRequestClose={closeModal}
             contentLabel="Anuncio"
-            className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-white w-[90%] max-w-4xl outline-none shadow-2xl rounded-lg overflow-visible"
+            className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-white w-[90%] max-w-4xl outline-none shadow-2xl rounded-2xl overflow-visible"
             overlayClassName="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center"
             ariaHideApp={false}
         >
-            {/* Botón de cerrar - SIEMPRE VISIBLE y con alto contraste */}
+            {/* Botón de cerrar - Estilo mejorado */}
             <button
                 onClick={closeModal}
-                className="absolute -top-4 -right-4 md:-top-5 md:-right-5 z-[9999] p-2 bg-white text-gray-800 rounded-full shadow-xl border-2 border-gray-100 hover:bg-gray-50 hover:scale-110 transition-all duration-200 flex items-center justify-center"
+                className="absolute -top-3 -right-3 md:-top-4 md:-right-4 z-[9999] w-10 h-10 md:w-12 md:h-12 bg-white text-gray-700 rounded-full shadow-xl border border-gray-100 hover:bg-gray-50 hover:scale-110 hover:text-red-500 transition-all duration-300 flex items-center justify-center group"
                 aria-label="Cerrar anuncio"
-                style={{ width: '40px', height: '40px' }}
             >
-                <X size={24} strokeWidth={3} className="text-gray-800" />
+                <X size={22} strokeWidth={2.5} className="transition-transform group-hover:rotate-90 duration-300" />
             </button>
 
-            {/* Contenedor Principal con overflow hidden para respetar bordes */}
-            <div className="w-full h-full bg-white rounded-lg overflow-hidden relative z-10">
-                {adsToShow.length === 1 ? (
-                    <AdContent ad={adsToShow[0]} handleAdClick={handleAdClick} />
-                ) : (
-                    <Swiper
-                        modules={[Autoplay, Pagination, Navigation]}
-                        autoplay={{
-                            delay: 5000,
-                            disableOnInteraction: false,
-                            pauseOnMouseEnter: true
-                        }}
-                        pagination={{ clickable: true }}
-                        navigation={true}
-                        loop={adsToShow.length > 1}
-                        className="w-full h-full ad-swiper-custom"
-                    >
-                        {adsToShow.map((ad, index) => (
-                            <SwiperSlide key={ad.id || index}>
-                                <AdContent ad={ad} handleAdClick={handleAdClick} />
-                            </SwiperSlide>
+            {/* Contenedor Principal */}
+            <div className="w-full h-full bg-white rounded-2xl overflow-hidden relative">
+                {/* Slides Container */}
+                <div className="relative">
+                    {adsToShow.map((ad, index) => (
+                        <div
+                            key={ad.id || index}
+                            className={`transition-all duration-500 ease-in-out ${
+                                index === currentSlide
+                                    ? 'opacity-100 relative'
+                                    : 'opacity-0 absolute inset-0 pointer-events-none'
+                            }`}
+                        >
+                            <AdContent 
+                                ad={ad} 
+                                handleAdClick={handleAdClick} 
+                            />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Navigation Arrows - Estilo SliderLaPetaca */}
+                {adsToShow.length > 1 && (
+                    <>
+                        <button
+                            onClick={prevSlide}
+                            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 p-2 md:p-3 rounded-full bg-white/90 hover:bg-primary text-gray-700 hover:text-white transition-all duration-300 hover:scale-110 shadow-lg group"
+                            aria-label="Anterior"
+                        >
+                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:-translate-x-0.5" />
+                        </button>
+
+                        <button
+                            onClick={nextSlide}
+                            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 p-2 md:p-3 rounded-full bg-white/90 hover:bg-primary text-gray-700 hover:text-white transition-all duration-300 hover:scale-110 shadow-lg group"
+                            aria-label="Siguiente"
+                        >
+                            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:translate-x-0.5" />
+                        </button>
+                    </>
+                )}
+
+                {/* Indicators - Estilo SliderLaPetaca */}
+                {adsToShow.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex space-x-2">
+                        {adsToShow.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentSlide(index)}
+                                className={`transition-all duration-300 rounded-full ${
+                                    index === currentSlide
+                                        ? 'w-8 h-2.5 bg-primary'
+                                        : 'w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400'
+                                }`}
+                                aria-label={`Ir al anuncio ${index + 1}`}
+                            />
                         ))}
-                    </Swiper>
+                    </div>
                 )}
             </div>
         </ReactModal>
@@ -147,31 +202,32 @@ const AdModal = ({ data, items = [] }) => {
 };
 
 const AdContent = ({ ad, handleAdClick }) => {
+    const buttonText = ad.button_text || 'Ver más detalles';
+    
     return (
-        <div className="flex flex-col md:flex-row w-full min-h-[450px] md:h-[500px]">
-            {/* Columna Izquierda: Imagen (Fondo) */}
-            <div className="w-full md:w-1/2 h-64 md:h-full relative bg-gray-100 overflow-hidden group">
+        <div className="flex flex-col md:flex-row w-full min-h-[400px] md:min-h-[450px] md:h-[500px]">
+            {/* Columna Izquierda: Imagen */}
+            <div className="w-full md:w-1/2 h-56 md:h-full relative bg-gray-100 overflow-hidden group">
                 <img
                     src={`/api/ads/media/${ad.image}`}
                     alt={ad.name || "Anuncio"}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                {/* Overlay sutil */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/5 pointer-events-none" />
+                {/* Overlay sutil con gradiente */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-black/10 pointer-events-none" />
             </div>
 
             {/* Columna Derecha: Contenido */}
-            <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center items-start text-left bg-white relative">
-
-                <div className="w-full">
+            <div className="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col justify-center items-start text-left bg-white relative">
+                <div className="w-full space-y-4 md:space-y-6">
                     {ad.name && (
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
                             {ad.name}
                         </h2>
                     )}
 
                     {ad.description && (
-                        <div className="prose prose-sm md:prose-base text-gray-600 mb-8 line-clamp-4 md:line-clamp-6">
+                        <div className="prose prose-sm md:prose-base text-gray-600 line-clamp-4 md:line-clamp-6">
                             <HtmlContent html={ad.description} />
                         </div>
                     )}
@@ -179,10 +235,10 @@ const AdContent = ({ ad, handleAdClick }) => {
                     {ad.link && (
                         <button
                             onClick={() => handleAdClick(ad.link)}
-                            className="w-full md:w-auto bg-primary hover:bg-secondary text-white font-bold py-3 px-8 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+                            className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 group"
                         >
-                            <span>Ver más detalles</span>
-                            <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            <span>{buttonText}</span>
+                            <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
                         </button>
                     )}
                 </div>
