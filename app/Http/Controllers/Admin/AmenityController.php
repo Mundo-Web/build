@@ -14,6 +14,8 @@ class AmenityController extends BasicController
     
     public function beforeSave(Request $request)
     {
+ 
+        
         $body = $request->all();
         
         // Limpiar campos undefined o null innecesarios
@@ -25,6 +27,8 @@ class AmenityController extends BasicController
             // Mantener los campos necesarios aunque sean null
             return true;
         }, ARRAY_FILTER_USE_BOTH);
+        
+   
         
         return $body;
     }

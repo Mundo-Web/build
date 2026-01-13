@@ -57,6 +57,8 @@ const Amenities = () => {
       description: descriptionRef.current.value,
     };
 
+   
+
     const formData = new FormData();
     for (const key in request) {
       formData.append(key, request[key]);
@@ -65,8 +67,9 @@ const Amenities = () => {
     if (imageRef.current) {
       const file = imageRef.current.files[0];
       if (file) {
+     
         formData.append('image', file);
-      }
+      } 
 
       // Check for image deletion flag
       if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
@@ -74,12 +77,18 @@ const Amenities = () => {
       }
     }
 
+   
     const result = await amenitiesRest.save(formData);
-    if (!result) return;
+  
+    if (!result) {
+    
+      return;
+    }
 
     // Reset delete flag after successful save
     if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
+ 
     $(gridRef.current).dxDataGrid('instance').refresh();
     $(modalRef.current).modal('hide');
   };

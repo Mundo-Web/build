@@ -150,7 +150,7 @@ class ItemController extends BasicController
                     'discount' => $request->input('discount'),
                     'description' => $request->input('description'),
                     'weight' => $request->input('weight'),
-                    'stock' => $request->input('stock'),
+                    'stock' => $request->input('stock', 0), // Default 0 para habitaciones
                     // Campos específicos para habitaciones (hotel)
                     'type' => $request->input('type', 'product'),
                     'room_type' => $request->input('room_type'),

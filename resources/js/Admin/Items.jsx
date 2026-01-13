@@ -84,8 +84,6 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const pdfRef = useRef();
     const [videos, setVideos] = useState([]);
     const videoUrlRef = useRef();
-    const [selectedAmenities, setSelectedAmenities] = useState([]);
-    const [amenities, setAmenities] = useState([]);
     const [selectedApplications, setSelectedApplications] = useState([]);
     const [applications, setApplications] = useState([]);
 
@@ -109,16 +107,8 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     };
 
     useEffect(() => {
-        getAmenities();
         getApplications();
     }, []);
-
-    const getAmenities = async () => {
-        const result = await amenitiesRest.paginate({ page: 1, pageSize: 1000 });
-        if (result?.data) {
-            setAmenities(result.data);
-        }
-    };
 
     const getApplications = async () => {
         const result = await applicationsRest.paginate({ page: 1, pageSize: 1000 });
@@ -399,18 +389,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
         stockRef.current.value = data?.stock;
 
         // Cargar amenidades seleccionadas
-        if (data?.amenities && Array.isArray(data.amenities)) {
-            const amenitiesIds = data.amenities.map(a => a.id || a);
-            setSelectedAmenities(amenitiesIds);
-            setTimeout(() => {
-                $(amenitiesRef.current).val(amenitiesIds).trigger('change');
-            }, 100);
-        } else {
-            setSelectedAmenities([]);
-            setTimeout(() => {
-                $(amenitiesRef.current).val([]).trigger('change');
-            }, 100);
-        }
+        SetSelectValue(amenitiesRef.current, data?.amenities ?? [], 'id', 'name');
 
         // Cargar aplicaciones seleccionadas
         if (data?.applications && Array.isArray(data.applications)) {
@@ -1906,60 +1885,15 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                                 </h6>
                                             </div>
                                             <div className="card-body">
-                                                <SelectFormGroup
+                                                <SelectAPIFormGroup
                                                     eRef={amenitiesRef}
+                                                    searchAPI='/api/admin/amenities/paginate'
+                                                    searchBy='name'
                                                     label="Seleccionar Cualidades"
                                                     dropdownParent="#principal-container"
                                                     multiple
-                                                    templateResult={(state) => {
-                                                        if (!state.id) return state.text;
-                                                        const $option = $(state.element);
-                                                        const image = $option.data('image');
-                                                        
-                                                        if (image) {
-                                                            return $(`
-                                                                <div style="display: flex; align-items: center; gap: 10px;">
-                                                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #71b6f9; display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0;">
-                                                                        <img src="/storage/images/amenity/${image}" 
-                                                                             style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
-                                                                             onerror="this.style.display='none'" />
-                                                                    </div>
-                                                                    <span>${state.text}</span>
-                                                                </div>
-                                                            `);
-                                                        }
-                                                        return state.text;
-                                                    }}
-                                                    templateSelection={(state) => {
-                                                        if (!state.id) return state.text;
-                                                        const $option = $(state.element);
-                                                        const image = $option.data('image');
-                                                        
-                                                        if (image) {
-                                                            return $(`
-                                                                <div style="display: flex; align-items: center; gap: 8px;">
-                                                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #71b6f9; display: flex; align-items: center; justify-content: center; padding: 3px; flex-shrink: 0;">
-                                                                        <img src="/storage/images/amenity/${image}" 
-                                                                             style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
-                                                                             onerror="this.style.display='none'" />
-                                                                    </div>
-                                                                    <span>${state.text}</span>
-                                                                </div>
-                                                            `);
-                                                        }
-                                                        return state.text;
-                                                    }}
-                                                >
-                                                    {amenities.map((amenity) => (
-                                                        <option 
-                                                            key={amenity.id} 
-                                                            value={amenity.id}
-                                                            data-image={amenity.image}
-                                                        >
-                                                            {amenity.name}
-                                                        </option>
-                                                    ))}
-                                                </SelectFormGroup>
+                                                  
+                                                />
                                                 <small className="text-muted">
                                                     <i className="fas fa-info-circle me-1"></i>
                                                     Selecciona las cualidades o atributos que destacan este producto

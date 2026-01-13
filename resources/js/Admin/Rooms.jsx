@@ -7,6 +7,7 @@ import Table from '../Components/Adminto/Table';
 import Modal from '../Components/Adminto/Modal';
 import InputFormGroup from '../Components/Adminto/form/InputFormGroup';
 import SelectFormGroup from '../Components/Adminto/form/SelectFormGroup';
+import SelectAPIFormGroup from '../Components/Adminto/form/SelectAPIFormGroup';
 import TextareaFormGroup from '../Components/Adminto/form/TextareaFormGroup';
 import ImageFormGroup from '../Components/Adminto/form/ImageFormGroup';
 import SwitchFormGroup from '../Components/Adminto/form/SwitchFormGroup';
@@ -15,6 +16,7 @@ import DynamicField from '../Components/Adminto/form/DynamicField';
 import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
+import SetSelectValue from '../Utils/SetSelectValue';
 import Fillable from '../Utils/Fillable';
 import Swal from 'sweetalert2';
 
@@ -46,7 +48,6 @@ const Rooms = () => {
   const featuresRef = useRef([]);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [amenities, setAmenities] = useState([]);
 
   // Features state (como en Items.jsx)
   const [features, setFeatures] = useState([]);
@@ -63,19 +64,6 @@ const Rooms = () => {
 
   const itemsRest = new ItemsRest();
   const amenitiesRest = new AmenitiesRest();
-
-  useEffect(() => {
-    getAmenities();
-  }, []);
-
-  const getAmenities = async () => {
-    const response = await amenitiesRest.paginate({
-      page: 1,
-      per_page: 100,
-      filters: JSON.stringify([['status', '=', 1]]),
-    });
-    setAmenities(response.data || []);
-  };
 
   // ===================== GALLERY HANDLERS =====================
   const handleGalleryChange = (e) => {
@@ -236,7 +224,7 @@ const Rooms = () => {
   };
 
   // ===================== MODAL HANDLERS =====================
-  const onModalOpen = (data) => {
+  const onModalOpen = async (data) => {
     if (data?.id) setIsEditing(true);
     else setIsEditing(false);
 
@@ -264,11 +252,8 @@ const Rooms = () => {
       $(roomTypeRef.current).val(data?.room_type || 'standard').trigger('change');
     }, 100);
 
-    // Set amenities - CORREGIDO
-    const selectedAmenities = data?.amenities?.map(a => a.id.toString()) || [];
-    setTimeout(() => {
-      $(amenitiesRef.current).val(selectedAmenities).trigger('change');
-    }, 100);
+    // Set amenities
+    SetSelectValue(amenitiesRef.current, data?.amenities ?? [], 'id', 'name');
 
     // Load features (características)
     if (data?.features) {
@@ -967,60 +952,16 @@ const Rooms = () => {
                         </h6>
                       </div>
                       <div className="card-body">
-                        <SelectFormGroup
+                        <SelectAPIFormGroup
                           eRef={amenitiesRef}
+                          searchAPI='/api/admin/amenities/paginate'
+                          searchBy='name'
                           label="Seleccionar Cualidades / Amenidades"
                           dropdownParent="#rooms-container"
                           multiple
-                          templateResult={(state) => {
-                            if (!state.id) return state.text;
-                            const $option = $(state.element);
-                            const image = $option.data('image');
-                            
-                            if (image) {
-                              return $(`
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                  <div style="width: 32px; height: 32px; border-radius: 50%; background: #ebeff2; display: flex; align-items: center; justify-content: center; padding: 5px; flex-shrink: 0;">
-                                    <img src="/storage/images/amenity/${image}" 
-                                         style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
-                                         onerror="this.style.display='none'" />
-                                  </div>
-                                  <span>${state.text}</span>
-                                </div>
-                              `);
-                            }
-                            return state.text;
-                          }}
-                          templateSelection={(state) => {
-                            if (!state.id) return state.text;
-                            const $option = $(state.element);
-                            const image = $option.data('image');
-                            
-                            if (image) {
-                              return $(`
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                  <div style="width: 24px; height: 24px; border-radius: 50%; background: #ebeff2; display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0;">
-                                    <img src="/storage/images/amenity/${image}" 
-                                         style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" 
-                                         onerror="this.style.display='none'" />
-                                  </div>
-                                  <span>${state.text}</span>
-                                </div>
-                              `);
-                            }
-                            return state.text;
-                          }}
-                        >
-                          {amenities.map((amenity) => (
-                            <option 
-                              key={amenity.id} 
-                              value={amenity.id}
-                              data-image={amenity.image}
-                            >
-                              {amenity.name}
-                            </option>
-                          ))}
-                        </SelectFormGroup>
+                          additionalData={['image']}
+                        
+                        />
                         <small className="text-muted">
                           <i className="fas fa-info-circle me-1"></i>
                           Selecciona las cualidades o amenidades que destacan esta habitación
