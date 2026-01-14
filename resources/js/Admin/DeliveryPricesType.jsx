@@ -20,7 +20,7 @@ const deliverypricesRest = new DeliveryPricesRest();
 const deliverypricesTypeRest = new TypesDeliveryRest();
 const storesRest = new StoresRest();
 
-const DeliveryPricesType = ({ ubigeo = [] }) => {
+const DeliveryPricesType = ({ ubigeo = [], hasRootRole = false }) => {
     const gridRef = useRef();
     const gridTypeRef = useRef();
     const modalRef = useRef();
@@ -40,6 +40,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isEditingType, setIsEditingType] = useState(false);
     const [inHome, setInHome] = useState(false);
+    const [isValidatingReniec, setIsValidatingReniec] = useState(false);
     
     // Estados para habilitar cada opción de delivery
     const [enableStandard, setEnableStandard] = useState(false);
@@ -148,12 +149,23 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
     const onModalSubmit = async (e) => {
         e.preventDefault();
 
+        const selectedUbigeo = ubigeoRef.current.value;
         const selected = ubigeo.find(
-            (x) => x.reniec == ubigeoRef.current.value
+            (x) => String(x.reniec) === String(selectedUbigeo)
         );
+        
+        if (!selected) {
+            await Swal.fire({
+                title: "Error",
+                text: "No se encontró el ubigeo seleccionado",
+                icon: "error",
+            });
+            return;
+        }
+
         const request = {
             id: idRef.current.value || undefined,
-            name: `${selected.distrito}, ${selected.provincia} - ${selected.departamento}`.toTitleCase(),
+            name: `${selected.distrito.toUpperCase()}, ${selected.provincia.toUpperCase()} - ${selected.departamento.toUpperCase()}`,
             price: enableStandard ? (priceRef.current.value || 0) : 0,
             is_free: enableFree,
             is_standard: enableStandard,
@@ -163,7 +175,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
             express_price: enableExpress ? (express_priceRef.current.value || 0) : 0,
             agency_price: enableAgency && !agencyPaymentOnDelivery ? (agency_priceRef.current.value || 0) : 0,
             agency_payment_on_delivery: enableAgency ? agencyPaymentOnDelivery : false,
-            ubigeo: ubigeoRef.current.value,
+            ubigeo: selectedUbigeo,
             selected_stores: enableStorePickup ?
                 (selectedStores.length > 0 ? selectedStores : null) :
                 null
@@ -301,6 +313,66 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    const handleValidateReniec = async () => {
+        const { isConfirmed } = await Swal.fire({
+            title: "Validar y Actualizar Nombres de Ubigeo",
+            html: `
+                <div class="text-start">
+                    <p>Esta acción validará y actualizará los nombres de todos los registros de envío según el archivo ubigeo.json.</p>
+                    <p class="mb-2"><strong>El proceso:</strong></p>
+                    <ul class="text-start">
+                        <li>Verificará cada código ubigeo en la base de datos</li>
+                        <li>Buscará el distrito, provincia y departamento correspondiente</li>
+                        <li>Actualizará el nombre al formato: "DISTRITO, PROVINCIA - DEPARTAMENTO"</li>
+                    </ul>
+                    <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> Esta operación puede tardar varios minutos.</p>
+                </div>
+            `,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Sí, validar y actualizar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+        });
+
+        if (!isConfirmed) return;
+
+        setIsValidatingReniec(true);
+
+        try {
+            const result = await deliverypricesRest.validateReniec();
+            
+            if (result && result.success) {
+                await Swal.fire({
+                    title: "Validación Completada",
+                    html: `
+                        <div class="text-start">
+                            <p><strong>Resultados:</strong></p>
+                            <ul>
+                                <li>Total registros procesados: ${result.processed || 0}</li>
+                                <li>Registros actualizados: ${result.updated || 0}</li>
+                                <li>Registros sin coincidencia: ${result.notFound || 0}</li>
+                            </ul>
+                        </div>
+                    `,
+                    icon: "success",
+                });
+                $(gridRef.current).dxDataGrid("instance").refresh();
+            } else {
+                throw new Error(result?.message || "Error al validar ubigeo");
+            }
+        } catch (error) {
+            await Swal.fire({
+                title: "Error",
+                text: error.message || "Ocurrió un error al validar los nombres de ubigeo",
+                icon: "error",
+            });
+        } finally {
+            setIsValidatingReniec(false);
+        }
+    };
+
     return (
         <>
             <input
@@ -317,6 +389,22 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                 exportable={true}
                 exportableName="delivery.prices"
                 toolBar={(container) => {
+                    // Botón de validación RENIEC solo para root role
+                    if (hasRootRole) {
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "check",
+                                text: "Validar Ubigeo",
+                                hint: "Validar y actualizar nombres de ubigeo desde ubigeo.json",
+                                type: "success",
+                                disabled: isValidatingReniec,
+                                onClick: handleValidateReniec,
+                            },
+                        });
+                    }
+                    
                     container.unshift({
                         widget: "dxButton",
                         location: "after",
@@ -379,9 +467,7 @@ const DeliveryPricesType = ({ ubigeo = [] }) => {
                         allowExporting: false,
                         calculateCellValue: (data) => {
                             // Buscar el ubigeo en el array para obtener el formato correcto
-                            if (data.data && data.data.distrito) {
-                                return `${data.data.distrito}, ${data.data.provincia} - ${data.data.departamento}`;
-                            }
+                         
                             // Si no hay data, mostrar el name guardado
                             return data.name;
                         },

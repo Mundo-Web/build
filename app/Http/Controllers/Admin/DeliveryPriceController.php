@@ -25,8 +25,12 @@ class DeliveryPriceController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $ubigeo = JSON::parse(File::get('../storage/app/utils/ubigeo.json'));
+        $user = auth()->user();
+        $hasRootRole = $user ? $user->hasRole('Root') : false;
+        
         return [
-            'ubigeo' => $ubigeo
+            'ubigeo' => $ubigeo,
+            'hasRootRole' => $hasRootRole
         ];
     }
 
@@ -404,5 +408,96 @@ class DeliveryPriceController extends BasicController
         // Por defecto: Delivery normal
         $type = TypeDelivery::where('slug', 'delivery-normal')->first();
         return $type ? $type->id : null;
+    }
+
+    /**
+     * Validate and update ubigeo names from ubigeo.json
+     */
+    public function validateReniec(Request $request)
+    {
+        try {
+            // Verificar que el usuario tenga rol root
+            $user = auth()->user();
+            if (!$user || !$user->hasRole('Root')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permisos para realizar esta acción'
+                ], 403);
+            }
+
+            // Cargar el archivo ubigeo.json
+            $ubigeoPath = storage_path('app/utils/ubigeo.json');
+            if (!file_exists($ubigeoPath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Archivo ubigeo.json no encontrado'
+                ], 404);
+            }
+
+            $ubigeoData = JSON::parse(File::get($ubigeoPath));
+            
+            // Crear un mapa de RENIEC => Datos completos para búsqueda rápida
+            $ubigeoMap = [];
+            foreach ($ubigeoData as $item) {
+                if (isset($item['reniec']) && isset($item['distrito']) && isset($item['provincia']) && isset($item['departamento'])) {
+                    $ubigeoMap[$item['reniec']] = [
+                        'distrito' => $item['distrito'],
+                        'provincia' => $item['provincia'],
+                        'departamento' => $item['departamento']
+                    ];
+                }
+            }
+
+            // Obtener todos los registros de delivery_prices
+            $deliveryPrices = DeliveryPrice::all();
+            
+            $processed = 0;
+            $updated = 0;
+            $notFound = 0;
+
+            foreach ($deliveryPrices as $price) {
+                $processed++;
+                
+                // Si el ubigeo existe en el mapa
+                if (isset($ubigeoMap[$price->ubigeo])) {
+                    $data = $ubigeoMap[$price->ubigeo];
+                    
+                    // Crear el nombre en formato: "DISTRITO, PROVINCIA - DEPARTAMENTO"
+                    $newName = strtoupper($data['distrito']) . ', ' . 
+                               strtoupper($data['provincia']) . ' - ' . 
+                               strtoupper($data['departamento']);
+                    
+                    // Solo actualizar si el nombre es diferente
+                    if ($price->name !== $newName) {
+                        $price->name = $newName;
+                        $price->save();
+                        $updated++;
+                    }
+                } else {
+                    $notFound++;
+                    Log::warning("Ubigeo no encontrado en ubigeo.json", [
+                        'ubigeo' => $price->ubigeo,
+                        'id' => $price->id
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'processed' => $processed,
+                'updated' => $updated,
+                'notFound' => $notFound,
+                'message' => "Validación completada: $updated registros actualizados de $processed procesados"
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error en validateReniec: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al validar ubigeo: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

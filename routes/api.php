@@ -541,6 +541,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/prices', [AdminDeliveryPriceController::class, 'save']);
     Route::post('/prices/paginate', [AdminDeliveryPriceController::class, 'paginate']);
     Route::post('/prices/massive', [AdminDeliveryPriceController::class, 'massive']);
+    Route::post('/prices/validate-reniec', [AdminDeliveryPriceController::class, 'validateReniec']);
     Route::patch('/prices/status', [AdminDeliveryPriceController::class, 'status']);
     Route::patch('/prices/{field}', [AdminDeliveryPriceController::class, 'boolean']);
     Route::delete('/prices/{id}', [AdminDeliveryPriceController::class, 'delete']);

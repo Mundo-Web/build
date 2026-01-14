@@ -190,8 +190,8 @@
       "tippy.css"
     ]
   },
-  "_DeliveryPricesRest-Dr3vM_Yk.js": {
-    "file": "assets/DeliveryPricesRest-Dr3vM_Yk.js",
+  "_DeliveryPricesRest-BNysSyO4.js": {
+    "file": "assets/DeliveryPricesRest-BNysSyO4.js",
     "name": "DeliveryPricesRest",
     "imports": [
       "_BasicRest-BML1C-ua.js",
@@ -2687,7 +2687,7 @@
     ]
   },
   "resources/js/Admin/DeliveryPrices.jsx": {
-    "file": "assets/DeliveryPrices-CckdKdOP.js",
+    "file": "assets/DeliveryPrices-yuOZWPt4.js",
     "name": "DeliveryPrices",
     "src": "resources/js/Admin/DeliveryPrices.jsx",
     "isEntry": true,
@@ -2696,7 +2696,7 @@
       "_index-BOnQTV8N.js",
       "resources/js/Utils/ReactAppend.jsx",
       "_server.browser-Bf4gQIc7.js",
-      "_DeliveryPricesRest-Dr3vM_Yk.js",
+      "_DeliveryPricesRest-BNysSyO4.js",
       "_CreateReactScript-d60iGIqA.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "_Base-B7OhQLEN.js",
@@ -2733,7 +2733,7 @@
     ]
   },
   "resources/js/Admin/DeliveryPricesType.jsx": {
-    "file": "assets/DeliveryPricesType-BdYCGK_p.js",
+    "file": "assets/DeliveryPricesType-ajoVZvDu.js",
     "name": "DeliveryPricesType",
     "src": "resources/js/Admin/DeliveryPricesType.jsx",
     "isEntry": true,
@@ -2742,7 +2742,7 @@
       "_index-BOnQTV8N.js",
       "resources/js/Utils/ReactAppend.jsx",
       "_server.browser-Bf4gQIc7.js",
-      "_DeliveryPricesRest-Dr3vM_Yk.js",
+      "_DeliveryPricesRest-BNysSyO4.js",
       "_main-B6F2O9-U.js",
       "_BasicRest-BML1C-ua.js",
       "_StoresRest-Bb6TODpG.js",
