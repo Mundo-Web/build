@@ -357,8 +357,8 @@ class DeliveryPriceController extends BasicController
             ->values()
             ->map(function ($item) {
                 return [
-                    'ieni' => $item['inei'],
-                    'reniec' => $item['reniec'] ?? $item['inei'],
+                    'inei' => $item['inei'] ?? $item['reniec'] ?? null,
+                    'reniec' => $item['reniec'] ?? null,
                     'departamento' => $item['departamento'],
                     'provincia' => $item['provincia'],
                     'distrito' => $item['distrito']
@@ -370,8 +370,8 @@ class DeliveryPriceController extends BasicController
     {
         $ubigeo = collect(config('app.ubigeo'))
             ->first(function ($item) use ($code) {
-                return $item['reniec'] == $code || 
-                       $item['inei'] == $code;
+                return ($item['reniec'] ?? null) == $code || 
+                       ($item['inei'] ?? null) == $code;
             });
 
         if (!$ubigeo) {
@@ -381,8 +381,8 @@ class DeliveryPriceController extends BasicController
         }
 
         return response()->json([
-            'inei' => $ubigeo['inei'],
-            'reniec' => $ubigeo['reniec'] ?? $ubigeo['inei'],
+            'inei' => $ubigeo['inei'] ?? $ubigeo['reniec'] ?? null,
+            'reniec' => $ubigeo['reniec'] ?? null,
             'departamento' => $ubigeo['departamento'],
             'provincia' => $ubigeo['provincia'],
             'distrito' => $ubigeo['distrito']

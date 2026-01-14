@@ -2063,10 +2063,6 @@ export default function ShippingStepSF({
                                     onInputChange={(value, { action }) => {
                                         if (action === "input-change") setSearchInput(value);
                                     }}
-                                    onFocus={() => {
-                                        setSelectedUbigeo(null); // Limpiar selección al enfocar
-                                        setSearchInput("");      // Limpiar input de búsqueda
-                                    }}
                                     onMenuOpen={() => {
                                         if (selectedUbigeo) {
                                             setSelectedUbigeo(null);
