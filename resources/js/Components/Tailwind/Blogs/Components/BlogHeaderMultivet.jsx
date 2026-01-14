@@ -127,10 +127,10 @@ export default function BlogHeaderMultivet({
   };
 
   return (
-    <main className={`relative bg-gray-50 ${isFilter ? "":"min-h-screen"} font-title`}>
+    <main className={`relative bg-sections-color ${isFilter ? "":"min-h-screen"} font-title`}>
       {/* Hero Section con estilo Multivet */}
       <section
-        className={`relative bg-gradient-to-br from-primary to-secondary overflow-visible z-10 ${
+        className={`relative  overflow-visible z-10 ${
           isFilter ? "pt-16 pb-8" : "py-16"
         }`}
       >
