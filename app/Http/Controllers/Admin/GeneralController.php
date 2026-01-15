@@ -205,4 +205,46 @@ class GeneralController extends BasicController
 
         return response($response->toArray(), $response->status);
     }
+
+    public function generateRobotsTxt(Request $request): HttpResponse|ResponseFactory
+    {
+        $response = Response::simpleTryCatch(function () use ($request) {
+            // Ejecutar el comando de generación de robots.txt
+            \Artisan::call('robots:generate');
+            
+            $output = \Artisan::output();
+            
+            Log::info('GeneralController generateRobotsTxt - Robots.txt generado exitosamente');
+            
+            return [
+                'success' => true,
+                'message' => 'robots.txt generado exitosamente',
+                'output' => $output,
+                'file_path' => public_path('robots.txt'),
+                'url' => url('/robots.txt')
+            ];
+        });
+        return response($response->toArray(), $response->status);
+    }
+
+    public function generateSitemap(Request $request): HttpResponse|ResponseFactory
+    {
+        $response = Response::simpleTryCatch(function () use ($request) {
+            // Ejecutar el comando de generación de sitemap
+            \Artisan::call('sitemap:generate');
+            
+            $output = \Artisan::output();
+            
+            Log::info('GeneralController generateSitemap - Sitemap generado exitosamente');
+            
+            return [
+                'success' => true,
+                'message' => 'sitemap.xml generado exitosamente',
+                'output' => $output,
+                'file_path' => public_path('sitemap.xml'),
+                'url' => url('/sitemap.xml')
+            ];
+        });
+        return response($response->toArray(), $response->status);
+    }
 }
