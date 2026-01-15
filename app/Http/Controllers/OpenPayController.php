@@ -69,11 +69,11 @@ class OpenPayController extends Controller
                 $discountAmount = (float) $request->coupon_discount;
             }
             
-            // IMPORTANTE: Limpiar y formatear todos los valores a exactamente 2 decimales
-            // El frontend YA envía el amount calculado, NO recalcular aquí
-            $requestAmount = floatval(number_format((float)$request->amount, 2, '.', ''));
-            $requestDelivery = floatval(number_format((float)$request->delivery, 2, '.', ''));
-            $discountAmount = floatval(number_format((float)$discountAmount, 2, '.', ''));
+            // IMPORTANTE: Usar round() para evitar problemas de precisión de punto flotante
+            // round() en PHP garantiza exactamente 2 decimales sin errores de representación binaria
+            $requestAmount = round((float)$request->amount, 2);
+            $requestDelivery = round((float)$request->delivery, 2);
+            $discountAmount = round((float)$discountAmount, 2);
 
             // Generar número de orden
             $orderNumber = $request->orderNumber ?? $this->generateOrderNumber();
@@ -101,7 +101,7 @@ class OpenPayController extends Controller
                 'amount' => $requestAmount,  // Usar directamente el amount del frontend
                 'delivery' => $requestDelivery,
                 'delivery_type' => $request->delivery_type ?? 'domicilio',
-                'additional_shipping_cost' => floatval(number_format((float)($request->additional_shipping_cost ?? 0), 2, '.', '')),
+                'additional_shipping_cost' => round((float)($request->additional_shipping_cost ?? 0), 2),
                 'additional_shipping_description' => $request->additional_shipping_description ?? '',
                 'payment_status' => 'pendiente',
                 'status_id' => $saleStatusPendiente ? $saleStatusPendiente->id : null,
@@ -112,7 +112,7 @@ class OpenPayController extends Controller
                 'payment_method' => 'openpay',
                 'coupon_id' => $request->coupon_id ?? null,
                 'coupon_discount' => $discountAmount,
-                'promotion_discount' => floatval(number_format((float)($request->promotion_discount ?? 0), 2, '.', '')),
+                'promotion_discount' => round((float)($request->promotion_discount ?? 0), 2),
                 'total_amount' => $requestAmount,  // Usar directamente el amount del frontend
             ]);
            
@@ -152,7 +152,8 @@ class OpenPayController extends Controller
 
             // Preparar datos para OpenPay
             // Usar directamente el amount que viene del frontend (ya calculado y formateado)
-            $amount = $requestAmount;
+            // Aplicar round() una vez más para garantizar precisión antes de enviar a la API
+            $amount = round($requestAmount, 2);
             
             Log::info('OpenPay - Amount a enviar', [
                 'request_amount_original' => $request->amount,
