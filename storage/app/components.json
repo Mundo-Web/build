@@ -4711,6 +4711,29 @@
         ]
     },
     {
+        "id": "specification",
+        "icon": "mdi mdi-file-document-outline",
+        "name": "Especificaciones",
+        "options": [
+            {
+                "id": "SpecificationSimple",
+                "name": "Especificaciones Simple",
+                "image": "specification-simple.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "footer_text",
+                    "footer_subtitle",
+                    "footer_image"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": ["attributes", "applications"]
+                }
+            }
+        ]
+    },
+    {
         "id": "application",
         "icon": "mdi mdi-application",
         "name": "Aplicaciones",

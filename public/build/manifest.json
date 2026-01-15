@@ -14290,6 +14290,34 @@
       "swiper.css"
     ]
   },
+  "resources/js/Components/Tailwind/Specification.jsx": {
+    "file": "assets/Specification-DNf_ewPN.js",
+    "name": "Specification",
+    "src": "resources/js/Components/Tailwind/Specification.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-BfFHrpNk.js",
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Components/Tailwind/Specifications/SpecificationSimple.jsx"
+    ]
+  },
+  "resources/js/Components/Tailwind/Specifications/SpecificationSimple.jsx": {
+    "file": "assets/SpecificationSimple--pJTheE3.js",
+    "name": "SpecificationSimple",
+    "src": "resources/js/Components/Tailwind/Specifications/SpecificationSimple.jsx",
+    "isEntry": true,
+    "imports": [
+      "resources/js/Components/Tailwind/AboutUs/AboutSimple.jsx",
+      "_index-BOnQTV8N.js",
+      "_index-yBjzXJbu.js",
+      "__commonjsHelpers-D6-XlEtG.js"
+    ]
+  },
   "resources/js/Components/Tailwind/Step.jsx": {
     "file": "assets/Step-CIzlKtY6.js",
     "name": "Step",
@@ -15468,7 +15496,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-0fh5QBRc.js",
+    "file": "assets/System-BlzNpFMe.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
@@ -15540,6 +15568,7 @@
       "resources/js/Components/Tailwind/Testimonials.jsx",
       "resources/js/Components/Tailwind/Strength.jsx",
       "resources/js/Components/Tailwind/Benefit.jsx",
+      "resources/js/Components/Tailwind/Specification.jsx",
       "resources/js/Components/Tailwind/Application.jsx",
       "resources/js/Components/Tailwind/Brands.jsx",
       "resources/js/Components/Tailwind/Partner.jsx",
@@ -15591,6 +15620,7 @@
       "resources/js/Components/Tailwind/ServiceDetail.jsx",
       "resources/js/Components/Tailwind/Signup.jsx",
       "resources/js/Components/Tailwind/Slider.jsx",
+      "resources/js/Components/Tailwind/Specification.jsx",
       "resources/js/Components/Tailwind/Step.jsx",
       "resources/js/Components/Tailwind/Store.jsx",
       "resources/js/Components/Tailwind/Strength.jsx",
