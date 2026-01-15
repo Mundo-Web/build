@@ -61,7 +61,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'policies': ['privacy_policy', 'terms_conditions', 'delivery_policy', 'saleback_policy', 'politica_sistema_gestion', 'alcance_sistema_gestion'],
     'location': ['location'],
     'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen', 'additional_shipping_costs'],
-    'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'],
+    'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url', 'robots_additional_rules'],
 
     'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts', 'atalaya_leads_api_key'],
     'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
@@ -469,6 +469,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         ?.description ?? "",
     canonicalUrl:
       generals.find((x) => x.correlative == "canonical_url")
+        ?.description ?? "",
+    robotsAdditionalRules:
+      generals.find((x) => x.correlative == "robots_additional_rules")
         ?.description ?? "",
     footerDescription:
       generals.find((x) => x.correlative == "footer_description")
@@ -1399,6 +1402,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         correlative: "canonical_url",
         name: "URL Canónica",
         description: formData.canonicalUrl || "",
+      },
+      {
+        correlative: "robots_additional_rules",
+        name: "Reglas Adicionales robots.txt",
+        description: formData.robotsAdditionalRules || "",
       },
       {
         correlative: "additional_shipping_costs",
@@ -4001,6 +4009,130 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       <small className="text-muted">URL de la imagen para Twitter Cards</small>
                     </div>
                   </ConditionalSeoField>
+                </div>
+              </div>
+
+              {/* Robots.txt Configuration */}
+              <div className="row mt-4">
+                <div className="col-12">
+                  <hr />
+                  <h6 className="mb-3">
+                    <i className="fas fa-robot me-2"></i>Configuración de robots.txt
+                  </h6>
+                  <p className="text-muted small mb-3">
+                    Aquí puedes agregar reglas personalizadas adicionales.
+                  </p>
+                </div>
+                
+                <div className="col-md-8">
+                  <ConditionalSeoField correlative="robots_additional_rules">
+                    <div className="mb-3">
+                      <label className="form-label">Reglas Adicionales de robots.txt</label>
+                      <textarea
+                        className="form-control"
+                        rows="8"
+                        placeholder="# Bloquear rutas adicionales&#10;Disallow: /ruta-privada&#10;Disallow: /otra-ruta&#10;&#10;# Configurar crawler específico&#10;User-agent: Googlebot&#10;Crawl-delay: 10"
+                        value={formData.robotsAdditionalRules}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          robotsAdditionalRules: e.target.value
+                        })}
+                      />
+                      <small className="text-muted">Agrega reglas personalizadas como Disallow adicionales o configuración de User-agents específicos. Ejemplo: "Disallow: /mi-ruta" o "User-agent: Bingbot\nCrawl-delay: 5"</small>
+                    </div>
+                  </ConditionalSeoField>
+                </div>
+
+                <div className="col-12">
+                  <div className="d-flex gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={async () => {
+                        try {
+                          setIsLoading(true);
+                          const response = await fetch('/api/admin/generals/generate-robots', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json'
+                            }
+                          });
+                          const data = await response.json();
+                          if (data.success) {
+                            toast.success('robots.txt generado exitosamente');
+                            console.log('Output:', data.output);
+                          } else {
+                            toast.error(data.message || 'Error al generar robots.txt');
+                          }
+                        } catch (error) {
+                          toast.error('Error al generar robots.txt');
+                          console.error(error);
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                      disabled={isLoading}
+                    >
+                      <i className="fas fa-robot me-2"></i>
+                      {isLoading ? 'Generando...' : 'Generar robots.txt'}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn btn-success"
+                      onClick={async () => {
+                        try {
+                          setIsLoading(true);
+                          const response = await fetch('/api/admin/generals/generate-sitemap', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json'
+                            }
+                          });
+                          const data = await response.json();
+                          if (data.success) {
+                            toast.success('Sitemap generado exitosamente');
+                            console.log('Output:', data.output);
+                          } else {
+                            toast.error(data.message || 'Error al generar sitemap');
+                          }
+                        } catch (error) {
+                          toast.error('Error al generar sitemap');
+                          console.error(error);
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                      disabled={isLoading}
+                    >
+                      <i className="fas fa-sitemap me-2"></i>
+                      {isLoading ? 'Generando...' : 'Generar Sitemap'}
+                    </button>
+
+                    <a
+                      href="/robots.txt"
+                      target="_blank"
+                      className="btn btn-outline-secondary"
+                    >
+                      <i className="fas fa-external-link-alt me-2"></i>
+                      Ver robots.txt
+                    </a>
+
+                    <a
+                      href="/sitemap.xml"
+                      target="_blank"
+                      className="btn btn-outline-secondary"
+                    >
+                      <i className="fas fa-external-link-alt me-2"></i>
+                      Ver sitemap.xml
+                    </a>
+                  </div>
+                  <small className="text-muted mt-2 d-block">
+                    <i className="fas fa-info-circle me-1"></i>
+                    Recuerda guardar los cambios antes de generar los archivos para que se incluyan las nuevas configuraciones.
+                  </small>
                 </div>
               </div>
 

@@ -16,6 +16,12 @@ class GenerateSitemap extends Command
     {
         $sitemap = Sitemap::create();
 
+        // Agregar página principal (Home) con máxima prioridad
+        $sitemap->add(Url::create('/')
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+            ->setPriority(1.0));
+        $this->line("Agregada ruta: / (Home)");
+
         // Agregar rutas desde pages.json
         $this->addPagesFromJson($sitemap);
 

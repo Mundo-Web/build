@@ -511,7 +511,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/categories/{id}', [AdminCategoryController::class, 'delete']);
 
 
- Route::post('/blog-categories', [AdminBlogCategoryController::class, 'save']);
+    Route::post('/blog-categories', [AdminBlogCategoryController::class, 'save']);
     Route::post('/blog-categories/paginate', [AdminBlogCategoryController::class, 'paginate']);
     Route::patch('/blog-categories/status', [AdminBlogCategoryController::class, 'status']);
     Route::patch('/blog-categories/{field}', [AdminBlogCategoryController::class, 'boolean']);
@@ -723,6 +723,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/generals', [AdminGeneralController::class, 'save']);
     Route::post('/generals/paginate', [AdminGeneralController::class, 'paginate']);
     Route::post('/generals/visibility', [AdminGeneralController::class, 'updateVisibility']);
+    Route::post('/generals/generate-robots', [AdminGeneralController::class, 'generateRobotsTxt']);
+    Route::post('/generals/generate-sitemap', [AdminGeneralController::class, 'generateSitemap']);
     Route::patch('/generals/status', [AdminGeneralController::class, 'status']);
     Route::patch('/generals/{field}', [AdminGeneralController::class, 'boolean']);
     Route::delete('/generals/{id}', [AdminGeneralController::class, 'delete']);
