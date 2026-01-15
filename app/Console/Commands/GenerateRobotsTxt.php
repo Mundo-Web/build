@@ -13,7 +13,7 @@ class GenerateRobotsTxt extends Command
     public function handle()
     {
         // Obtener configuraciones de la base de datos
-        $sitemapUrl =  config('app.url') ?? General::where('correlative', 'canonical_url')->first()?->description;
+        $sitemapUrl = General::where('correlative', 'canonical_url')->first()?->description ?? config('app.url');
         $robotsAdditionalRules = General::where('correlative', 'robots_additional_rules')->first()?->description ?? '';
         
         // Construir el contenido del robots.txt
