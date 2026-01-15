@@ -69,11 +69,12 @@ class OpenPayController extends Controller
                 $discountAmount = (float) $request->coupon_discount;
             }
             
-            // IMPORTANTE: Usar round() para evitar problemas de precisión de punto flotante
-            // round() en PHP garantiza exactamente 2 decimales sin errores de representación binaria
-            $requestAmount = round((float)$request->amount, 2);
-            $requestDelivery = round((float)$request->delivery, 2);
-            $discountAmount = round((float)$discountAmount, 2);
+            // IMPORTANTE: Usar number_format para forzar exactamente 2 decimales como string
+            // y luego convertir a float. Esto evita problemas de precisión de punto flotante
+            // que ocurren cuando JavaScript envía valores como 7.29999999999999982236...
+            $requestAmount = (float) number_format((float) $request->amount, 2, '.', '');
+            $requestDelivery = (float) number_format((float) $request->delivery, 2, '.', '');
+            $discountAmount = (float) number_format((float) $discountAmount, 2, '.', '');
 
             // Generar número de orden
             $orderNumber = $request->orderNumber ?? $this->generateOrderNumber();
@@ -173,10 +174,12 @@ class OpenPayController extends Controller
             $url = "{$baseUrl}/{$credentials['merchant_id']}/charges";
 
             // Datos del cargo según documentación de OpenPay
+            // IMPORTANTE: Usar number_format para garantizar exactamente 2 decimales
+            // y evitar que json_encode serialice con muchos decimales
             $chargeData = [
                 'method' => 'card',
                 'source_id' => $request->source_id ?? $request->token,  // Token de la tarjeta (source_id es el nombre correcto en OpenPay)
-                'amount' => $amount,
+                'amount' => (float) number_format($amount, 2, '.', ''),
                 'currency' => 'PEN',  // Moneda de Perú
                 'description' => "Pedido {$orderNumber}",
                 'order_id' => $orderNumber,
@@ -200,14 +203,27 @@ class OpenPayController extends Controller
 
             Log::info('OpenPay - Enviando cargo', [
                 'url' => $url,
-                'data' => $chargeData
+                'data' => $chargeData,
+                'amount_check' => number_format($amount, 2, '.', '')
             ]);
 
             // Realizar petición a OpenPay
+            // Usamos withBody para tener control total sobre la serialización JSON
+            // y evitar problemas de precisión de punto flotante
+            $jsonBody = json_encode($chargeData, JSON_PRESERVE_ZERO_FRACTION);
+            // Reemplazar el amount con precisión exacta usando regex
+            $jsonBody = preg_replace(
+                '/"amount":\s*[\d.]+/',
+                '"amount":' . number_format($amount, 2, '.', ''),
+                $jsonBody
+            );
+            
+            Log::info('OpenPay - JSON Body final', ['body' => $jsonBody]);
+            
             $response = Http::withBasicAuth(
                 $credentials['private_key'],
                 '' // OpenPay usa la private key como usuario y contraseña vacía
-            )->post($url, $chargeData);
+            )->withBody($jsonBody, 'application/json')->post($url);
 
             $responseData = $response->json();
 
