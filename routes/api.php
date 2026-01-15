@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\CollectionController as AdminCollectionController
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\InnovationController as AdminInnovationController;
 use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
+use App\Http\Controllers\Admin\AttributeController as AdminAttributeController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
@@ -600,6 +601,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/applications/status', [AdminApplicationController::class, 'status']);
     Route::patch('/applications/{field}', [AdminApplicationController::class, 'boolean']);
     Route::delete('/applications/{id}', [AdminApplicationController::class, 'delete']);
+
+    Route::post('/attributes', [AdminAttributeController::class, 'save']);
+    Route::post('/attributes/paginate', [AdminAttributeController::class, 'paginate']);
+    Route::patch('/attributes/status', [AdminAttributeController::class, 'status']);
+    Route::patch('/attributes/{field}', [AdminAttributeController::class, 'boolean']);
+    Route::put('/attributes/{id}/reorder', [AdminAttributeController::class, 'reorder']);
+    Route::delete('/attributes/{id}', [AdminAttributeController::class, 'delete']);
 
     Route::post('/apps', [AdminAppController::class, 'save']);
     Route::post('/apps/paginate', [AdminAppController::class, 'paginate']);

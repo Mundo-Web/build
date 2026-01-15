@@ -67,6 +67,7 @@ class Item extends Model
         'is_specifications',
         'is_tags',
         'is_applications',
+        'is_attributes',
     ];
 
     protected $casts = [
@@ -87,6 +88,7 @@ class Item extends Model
         'is_specifications' => 'boolean',
         'is_tags' => 'boolean',
         'is_applications' => 'boolean',
+        'is_attributes' => 'boolean',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)
@@ -195,6 +197,17 @@ class Item extends Model
     public function applications()
     {
         return $this->belongsToMany(Application::class, 'application_item');
+    }
+
+    /**
+     * Atributos del producto (relación muchos a muchos con valor)
+     */
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, 'item_attribute')
+                    ->withPivot('value', 'order_index')
+                    ->withTimestamps()
+                    ->orderBy('item_attribute.order_index');
     }
 
     /**

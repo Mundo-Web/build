@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import ItemsRest from "../Actions/Admin/ItemsRest";
 import AmenitiesRest from "../Actions/Admin/AmenitiesRest";
 import ApplicationsRest from "../Actions/Admin/ApplicationsRest";
+import AttributesRest from "../Actions/Admin/AttributesRest";
 import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
@@ -29,10 +30,11 @@ import Fillable from "../Utils/Fillable";
 const itemsRest = new ItemsRest();
 const amenitiesRest = new AmenitiesRest();
 const applicationsRest = new ApplicationsRest();
+const attributesRest = new AttributesRest();
 
 
 
-const Items = ({ categories, brands, collections, stores, generals }) => {
+const Items = ({ categories, brands, collections, stores, generals, attributes: initialAttributes }) => {
     //!FALTA EDIT AND DELETEDE GALERIA
 
     const [itemData, setItemData] = useState([]);
@@ -86,6 +88,10 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
     const videoUrlRef = useRef();
     const [selectedApplications, setSelectedApplications] = useState([]);
     const [applications, setApplications] = useState([]);
+    
+    // Estados para atributos dinámicos
+    const [availableAttributes, setAvailableAttributes] = useState(initialAttributes || []);
+    const [itemAttributes, setItemAttributes] = useState([]); // {attribute_id, value, attribute}
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -108,12 +114,20 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
 
     useEffect(() => {
         getApplications();
+        getAttributes();
     }, []);
 
     const getApplications = async () => {
         const result = await applicationsRest.paginate({ page: 1, pageSize: 1000 });
         if (result?.data) {
             setApplications(result.data);
+        }
+    };
+    
+    const getAttributes = async () => {
+        const result = await attributesRest.paginate({ page: 1, pageSize: 1000 });
+        if (result?.data) {
+            setAvailableAttributes(result.data);
         }
     };
 
@@ -404,6 +418,18 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                 $(applicationsRef.current).val([]).trigger('change');
             }, 100);
         }
+        
+        // Cargar atributos del item con sus valores
+        if (data?.attributes && Array.isArray(data.attributes)) {
+            const attrs = data.attributes.map(attr => ({
+                attribute_id: attr.id,
+                value: attr.pivot?.value || '',
+                attribute: attr
+            }));
+            setItemAttributes(attrs);
+        } else {
+            setItemAttributes([]);
+        }
 
         // Reset delete flags using direct references - only when opening modal
         if (bannerRef.deleteRef) bannerRef.deleteRef.value = '';
@@ -451,6 +477,10 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
             store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
             amenities: $(amenitiesRef.current).val() || [],
             applications: $(applicationsRef.current).val() || [],
+            attributes: itemAttributes.filter(a => a.attribute_id && a.value).map(a => ({
+                id: a.attribute_id,
+                value: a.value
+            })),
         };
 
 
@@ -478,6 +508,20 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                     amenitiesValue.forEach((amenityId, index) => {
                         formData.append(`amenities[${index}]`, amenityId);
                     });
+                }
+            } else if (key === 'applications') {
+                // Enviar applications como array de items individuales
+                const applicationsValue = request[key];
+                if (Array.isArray(applicationsValue) && applicationsValue.length > 0) {
+                    applicationsValue.forEach((applicationId, index) => {
+                        formData.append(`applications[${index}]`, applicationId);
+                    });
+                }
+            } else if (key === 'attributes') {
+                // Enviar atributos como JSON con id y valor
+                const attributesValue = request[key];
+                if (Array.isArray(attributesValue) && attributesValue.length > 0) {
+                    formData.append('attributes', JSON.stringify(attributesValue));
                 }
             } else {
                 formData.append(key, request[key]);
@@ -1375,6 +1419,16 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                             />
                                         </div>
                                     </div>
+                                      <div className="col-12">
+                                    <div className="card border-0 shadow-sm">
+                                        <div className="card-header">
+                                            <h6 className="mb-0"><i className="fas fa-edit me-2"></i>Descripción Detallada</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <QuillFormGroup eRef={descriptionRef} label="Descripción Completa" />
+                                        </div>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -1881,7 +1935,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                             <div className="card-header bg-light">
                                                 <h6 className="mb-0">
                                                     <i className="fas fa-star-circle me-2 text-warning"></i>
-                                                    Cualidades / Atributos
+                                                    Cualidades
                                                 </h6>
                                             </div>
                                             <div className="card-body">
@@ -1919,50 +1973,7 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                                     label="Seleccionar Aplicaciones"
                                                     dropdownParent="#principal-container"
                                                     multiple
-                                                    templateResult={(state) => {
-                                                        if (!state.id) return state.text;
-                                                        const $option = $(state.element);
-                                                        const image = $option.data('image');
-                                                        const icon = $option.data('icon');
-                                                        
-                                                        if (image) {
-                                                            return $(`
-                                                                <div style="display: flex; align-items: center; gap: 10px;">
-                                                                    <div class="bg-primary p-2" style="width: 48px; height: 48px; border-radius: 8px; overflow: hidden; flex-shrink: 0;display: flex; align-items: center; justify-content: center;">
-                                                                        <img src="/storage/images/application/${image}" 
-                                                                             style="width: 100%; height: 100%; object-fit: cover;" 
-                                                                             onerror="this.style.display='none'" />
-                                                                    </div>
-                                                                    <span>${state.text}</span>
-                                                                </div>
-                                                            `);
-                                                        } else if (icon) {
-                                                            return $(`
-                                                                <div style="display: flex; align-items: center; gap: 10px;">
-                                                                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #4CAF50; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-                                                                        <i class="${icon}"></i>
-                                                                    </div>
-                                                                    <span>${state.text}</span>
-                                                                </div>
-                                                            `);
-                                                        }
-                                                        return state.text;
-                                                    }}
-                                                    templateSelection={(state) => {
-                                                        if (!state.id) return state.text;
-                                                        const $option = $(state.element);
-                                                        const icon = $option.data('icon');
-                                                        
-                                                        if (icon) {
-                                                            return $(`
-                                                                <div style="display: flex; align-items: center; gap: 8px;">
-                                                                    <i class="${icon}" style="color: #4CAF50;"></i>
-                                                                    <span>${state.text}</span>
-                                                                </div>
-                                                            `);
-                                                        }
-                                                        return state.text;
-                                                    }}
+                                                  
                                                 >
                                                     {applications.map((application) => (
                                                         <option 
@@ -1984,16 +1995,288 @@ const Items = ({ categories, brands, collections, stores, generals }) => {
                                     </div>
                                 )}
                                 
-                                <div className="col-12">
-                                    <div className="card border-0 shadow-sm">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-edit me-2"></i>Descripción Detallada</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <QuillFormGroup eRef={descriptionRef} label="Descripción Completa" />
+                                {/* Sección de Atributos Dinámicos */}
+                                {Fillable.has('items', 'is_attributes') && availableAttributes.length > 0 && (
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm overflow-hidden">
+                                            <div className="card-header bg-gradient" >
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <i className="fas fa-sliders-h text-primarye"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 className="mb-0  fw-bold">Atributos Técnicos</h6>
+                                                            <small className="">Especificaciones del producto</small>
+                                                        </div>
+                                                    </div>
+                                                    <div className="d-flex align-items-center gap-2">
+                                                        {itemAttributes.length > 0 && (
+                                                            <span className="badge bg-white text-primary fw-bold px-3 py-2" style={{ fontSize: '0.85rem' }}>
+                                                                {itemAttributes.length} {itemAttributes.length === 1 ? 'atributo' : 'atributos'}
+                                                            </span>
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2"
+                                                            onClick={() => {
+                                                                setItemAttributes([...itemAttributes, { attribute_id: '', value: '', attribute: null }]);
+                                                            }}
+                                                            style={{ borderRadius: '20px', padding: '8px 16px' }}
+                                                        >
+                                                            <i className="fas fa-plus"></i>
+                                                            <span>Agregar</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="card-body p-4" style={{ backgroundColor: '#f8f9ff' }}>
+                                                {itemAttributes.length === 0 ? (
+                                                    <div className="text-center py-5">
+                                                        <div className="mb-4">
+                                                            <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center" style={{
+                                                                width: '80px',
+                                                                height: '80px',
+                                                                background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
+                                                                border: '2px dashed #667eea50'
+                                                            }}>
+                                                                <i className="fas fa-layer-group fa-2x" style={{ color: '#667eea' }}></i>
+                                                            </div>
+                                                        </div>
+                                                        <h6 className="text-muted mb-2">Sin atributos configurados</h6>
+                                                        <p className="text-muted small mb-4" style={{ maxWidth: '300px', margin: '0 auto' }}>
+                                                            Agrega atributos técnicos como dimensiones, peso, material y más para detallar tu producto.
+                                                        </p>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-outline-primary btn-sm px-4"
+                                                            onClick={() => {
+                                                                setItemAttributes([...itemAttributes, { attribute_id: '', value: '', attribute: null }]);
+                                                            }}
+                                                            style={{ borderRadius: '20px' }}
+                                                        >
+                                                            <i className="fas fa-plus me-2"></i>
+                                                            Agregar primer atributo
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="attributes-list">
+                                                        {itemAttributes.map((attr, index) => {
+                                                            const selectedAttr = availableAttributes.find(a => a.id === attr.attribute_id);
+                                                            const typeIcons = {
+                                                                'text': 'fa-font',
+                                                                'number': 'fa-hashtag',
+                                                                'select': 'fa-list-ul',
+                                                                'color': 'fa-palette'
+                                                            };
+                                                            const typeColors = {
+                                                                'text': '#3b82f6',
+                                                                'number': '#10b981',
+                                                                'select': '#f59e0b',
+                                                                'color': '#ec4899'
+                                                            };
+                                                            return (
+                                                                <div 
+                                                                    key={index} 
+                                                                    className="attribute-item mb-3 p-3 bg-white rounded-3 border"
+                                                                    style={{
+                                                                        borderColor: selectedAttr ? typeColors[selectedAttr.type] + '40' : '#e5e7eb',
+                                                                        borderLeftWidth: '4px',
+                                                                        borderLeftColor: selectedAttr ? typeColors[selectedAttr.type] : '#e5e7eb',
+                                                                        transition: 'all 0.2s ease',
+                                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                                    }}
+                                                                >
+                                                                    <div className="row g-3 align-items-center">
+                                                                        {/* Número de orden */}
+                                                                        <div className="col-auto">
+                                                                            <div 
+                                                                                className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                                                                style={{
+                                                                                    width: '32px',
+                                                                                    height: '32px',
+                                                                                    backgroundColor: selectedAttr ? typeColors[selectedAttr.type] + '15' : '#f3f4f6',
+                                                                                    color: selectedAttr ? typeColors[selectedAttr.type] : '#9ca3af',
+                                                                                    fontSize: '0.85rem'
+                                                                                }}
+                                                                            >
+                                                                                {index + 1}
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        {/* Selector de atributo */}
+                                                                        <div className="col-md-4">
+                                                                            <label className="form-label small text-muted mb-1 d-flex align-items-center gap-2">
+                                                                                <i className="fas fa-tag" style={{ fontSize: '0.7rem' }}></i>
+                                                                                Atributo
+                                                                            </label>
+                                                                            <select
+                                                                                className="form-select"
+                                                                                value={attr.attribute_id}
+                                                                                onChange={(e) => {
+                                                                                    const newAttrs = [...itemAttributes];
+                                                                                    const foundAttr = availableAttributes.find(a => a.id === e.target.value);
+                                                                                    newAttrs[index] = {
+                                                                                        ...newAttrs[index],
+                                                                                        attribute_id: e.target.value,
+                                                                                        attribute: foundAttr,
+                                                                                        value: ''
+                                                                                    };
+                                                                                    setItemAttributes(newAttrs);
+                                                                                }}
+                                                                                style={{ borderRadius: '8px' }}
+                                                                            >
+                                                                                <option value="">Seleccionar...</option>
+                                                                                {availableAttributes
+                                                                                    .filter(a => !itemAttributes.some((ia, i) => i !== index && ia.attribute_id === a.id))
+                                                                                    .map(a => (
+                                                                                        <option key={a.id} value={a.id}>{a.name}</option>
+                                                                                    ))}
+                                                                            </select>
+                                                                        </div>
+                                                                        
+                                                                        {/* Input de valor */}
+                                                                        <div className="col">
+                                                                            <label className="form-label small text-muted mb-1 d-flex align-items-center gap-2">
+                                                                                {selectedAttr && (
+                                                                                    <i className={`fas ${typeIcons[selectedAttr.type]}`} style={{ fontSize: '0.7rem', color: typeColors[selectedAttr.type] }}></i>
+                                                                                )}
+                                                                                Valor
+                                                                                {selectedAttr?.unit && (
+                                                                                    <span 
+                                                                                        className="badge ms-1"
+                                                                                        style={{ 
+                                                                                            backgroundColor: typeColors[selectedAttr.type] + '20',
+                                                                                            color: typeColors[selectedAttr.type],
+                                                                                            fontSize: '0.7rem',
+                                                                                            fontWeight: '600'
+                                                                                        }}
+                                                                                    >
+                                                                                        {selectedAttr.unit}
+                                                                                    </span>
+                                                                                )}
+                                                                            </label>
+                                                                            {selectedAttr?.type === 'select' && selectedAttr?.options ? (
+                                                                                <select
+                                                                                    className="form-select"
+                                                                                    value={attr.value}
+                                                                                    onChange={(e) => {
+                                                                                        const newAttrs = [...itemAttributes];
+                                                                                        newAttrs[index].value = e.target.value;
+                                                                                        setItemAttributes(newAttrs);
+                                                                                    }}
+                                                                                    style={{ borderRadius: '8px' }}
+                                                                                >
+                                                                                    <option value="">Seleccionar opción...</option>
+                                                                                    {selectedAttr.options.map((opt, optIdx) => (
+                                                                                        <option key={optIdx} value={opt}>{opt}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            ) : selectedAttr?.type === 'color' ? (
+                                                                                <div className="d-flex gap-2 align-items-center">
+                                                                                    <input
+                                                                                        type="color"
+                                                                                        className="form-control form-control-color p-1"
+                                                                                        value={attr.value || '#6366f1'}
+                                                                                        onChange={(e) => {
+                                                                                            const newAttrs = [...itemAttributes];
+                                                                                            newAttrs[index].value = e.target.value;
+                                                                                            setItemAttributes(newAttrs);
+                                                                                        }}
+                                                                                        style={{ 
+                                                                                            width: '50px', 
+                                                                                            height: '38px', 
+                                                                                            borderRadius: '8px',
+                                                                                            cursor: 'pointer'
+                                                                                        }}
+                                                                                    />
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        value={attr.value || '#6366f1'}
+                                                                                        onChange={(e) => {
+                                                                                            const newAttrs = [...itemAttributes];
+                                                                                            newAttrs[index].value = e.target.value;
+                                                                                            setItemAttributes(newAttrs);
+                                                                                        }}
+                                                                                        placeholder="#000000"
+                                                                                        style={{ borderRadius: '8px', fontFamily: 'monospace' }}
+                                                                                    />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <input
+                                                                                    type={selectedAttr?.type === 'number' ? 'number' : 'text'}
+                                                                                    className="form-control"
+                                                                                    placeholder={selectedAttr ? `Ingresa ${selectedAttr.name.toLowerCase()}${selectedAttr?.unit ? ` en ${selectedAttr.unit}` : ''}` : 'Selecciona un atributo primero'}
+                                                                                    value={attr.value}
+                                                                                    disabled={!selectedAttr}
+                                                                                    onChange={(e) => {
+                                                                                        const newAttrs = [...itemAttributes];
+                                                                                        newAttrs[index].value = e.target.value;
+                                                                                        setItemAttributes(newAttrs);
+                                                                                    }}
+                                                                                    style={{ borderRadius: '8px' }}
+                                                                                />
+                                                                            )}
+                                                                        </div>
+                                                                        
+                                                                        {/* Botón eliminar */}
+                                                                        <div className="col-auto">
+                                                                            <button
+                                                                                type="button"
+                                                                                className="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center"
+                                                                                onClick={() => {
+                                                                                    setItemAttributes(itemAttributes.filter((_, i) => i !== index));
+                                                                                }}
+                                                                                title="Eliminar atributo"
+                                                                                style={{ 
+                                                                                    width: '38px', 
+                                                                                    height: '38px', 
+                                                                                    borderRadius: '8px',
+                                                                                    marginTop: '24px'
+                                                                                }}
+                                                                            >
+                                                                                <i className="fas fa-trash-alt"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                        
+                                                        {/* Botón agregar más al final */}
+                                                        <div 
+                                                            className="add-more-btn text-center py-3 rounded-3 mt-2"
+                                                            style={{
+                                                                border: '2px dashed #667eea50',
+                                                                backgroundColor: '#667eea08',
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s ease'
+                                                            }}
+                                                            onClick={() => {
+                                                                setItemAttributes([...itemAttributes, { attribute_id: '', value: '', attribute: null }]);
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.backgroundColor = '#667eea15';
+                                                                e.currentTarget.style.borderColor = '#667eea';
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.backgroundColor = '#667eea08';
+                                                                e.currentTarget.style.borderColor = '#667eea50';
+                                                            }}
+                                                        >
+                                                            <i className="fas fa-plus me-2" style={{ color: '#667eea' }}></i>
+                                                            <span style={{ color: '#667eea', fontWeight: '500' }}>Agregar otro atributo</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                          
                                         </div>
                                     </div>
-                                </div>
+                                )}
+                                
+                              
                             </div>
                         </div>
                     </div>

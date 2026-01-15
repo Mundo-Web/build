@@ -2668,7 +2668,11 @@
                         "subcategory",
                         "brand",
                         "images",
-                        "features"
+                        "features",
+                        "amenities",
+                        "specifications",
+                        "attributes",
+                        "applications"
                         
                     ],
                     "limit": 20

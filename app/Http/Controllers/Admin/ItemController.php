@@ -33,7 +33,7 @@ class ItemController extends BasicController
     public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
-    public $with4get = ['tags', 'amenities', 'applications'];
+    public $with4get = ['tags', 'amenities', 'applications', 'attributes'];
 
     /**
      * Override paginate to always include amenities and applications relations
@@ -52,6 +52,9 @@ class ItemController extends BasicController
         }
         if (!in_array('tags', $relations)) {
             $relations[] = 'tags';
+        }
+        if (!in_array('attributes', $relations)) {
+            $relations[] = 'attributes';
         }
         
         $request->merge(['with' => implode(',', $relations)]);
@@ -396,20 +399,22 @@ class ItemController extends BasicController
         $collections = Collection::where('status', 1)->get();
         $stores = Store::where('status', 1)->get();
         $generals = \App\Models\General::all();
+        $attributes = \App\Models\Attribute::where('status', 1)->orderBy('order_index')->orderBy('name')->get();
 
         return [
             'categories' => $categories,
             'brands' => $brands,
             'collections' => $collections,
             'stores' => $stores,
-            'generals' => $generals
+            'generals' => $generals,
+            'attributes' => $attributes
         ];
     }
 
     public function setPaginationInstance(Request $request, string $model)
     {
         return $model::select(['items.*'])
-            ->with(['category','tags' ,'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features'])
+            ->with(['category','tags' ,'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features', 'attributes'])
             ->leftJoin('categories AS category', 'category.id', 'items.category_id')
             ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
             ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
@@ -499,6 +504,40 @@ class ItemController extends BasicController
                 Log::info('Applications sincronizados correctamente', ['count' => count($applications)]);
             }
         }
+
+        // Manejo de Atributos con valores
+        if ($request->has('attributes')) {
+            $attributesData = $request->input('attributes', []);
+            Log::info('Attributes recibidos:', ['attributes' => $attributesData, 'item_id' => $jpa->id]);
+            
+            // Si viene como JSON string, decodificar
+            if (is_string($attributesData)) {
+                $attributesData = json_decode($attributesData, true) ?? [];
+            }
+            
+            if (is_array($attributesData) && count($attributesData) > 0) {
+                // Preparar datos para sync con pivot
+                $syncData = [];
+                foreach ($attributesData as $index => $attr) {
+                    $attrId = is_array($attr) ? ($attr['id'] ?? $attr['attribute_id'] ?? null) : $attr;
+                    $value = is_array($attr) ? ($attr['value'] ?? $attr['pivot']['value'] ?? null) : null;
+                    $orderIndex = is_array($attr) ? ($attr['order_index'] ?? $attr['pivot']['order_index'] ?? $index) : $index;
+                    
+                    if ($attrId) {
+                        $syncData[$attrId] = [
+                            'value' => $value,
+                            'order_index' => $orderIndex
+                        ];
+                    }
+                }
+                
+                $jpa->attributes()->sync($syncData);
+                Log::info('Attributes sincronizados correctamente', ['count' => count($syncData)]);
+            } else {
+                // Si no hay atributos, limpiar la relación
+                $jpa->attributes()->detach();
+            }
+        }
         
         // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
 
@@ -517,26 +556,7 @@ class ItemController extends BasicController
             (new ItemSpecificationController())->saveSpecifications($jpa, $specifications);
         }
 
-        // if ($specifications && is_array($specifications)) {
-        //     // Primero eliminar las que ya no existen
-        //     $existingIds = collect($specifications)->pluck('id')->filter();
-        //     ItemSpecification::where('item_id', $jpa->id)
-        //         ->whereNotIn('id', $existingIds)
-        //         ->delete();
-            
-        //     // Luego crear/actualizar las restantes
-        //     foreach ($specifications as $spec) {
-        //         ItemSpecification::updateOrCreate(
-        //             ['id' => $spec['id'] ?? null],
-        //             [
-        //                 'item_id' => $jpa->id,
-        //                 'type' => $spec['type'],
-        //                 'title' => $spec['title'],
-        //                 'description' => $spec['description']
-        //             ]
-        //         );
-        //     }
-        // }
+    
     }
 
     /**
