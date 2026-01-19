@@ -15,20 +15,20 @@ import 'tippy.js/dist/tippy.css';
 const RoomAvailability = ({ rooms = [] }) => {
   const modalCalendarRef = useRef();
   const modalBlockRef = useRef();
-  
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [roomsSummary, setRoomsSummary] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [calendarData, setCalendarData] = useState(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
-  
+
   // Estados para bloqueo de fechas
   const [blockStartDate, setBlockStartDate] = useState(null);
   const [blockEndDate, setBlockEndDate] = useState(null);
   const [blockReason, setBlockReason] = useState('');
   const [blockAction, setBlockAction] = useState(true); // true = bloquear, false = desbloquear
-  
+
   // Estados para modal de registro directo (walk-in)
   const modalRegisterRef = useRef();
   const [registerData, setRegisterData] = useState({
@@ -72,7 +72,7 @@ const RoomAvailability = ({ rooms = [] }) => {
   useEffect(() => {
     loadSummary();
   }, []);
-  
+
   // Recalcular precio cuando cambian las noches
   useEffect(() => {
     if (selectedRoom && registerData.nights > 0) {
@@ -104,12 +104,12 @@ const RoomAvailability = ({ rooms = [] }) => {
     setSelectedRoom(room);
     setCalendarLoading(true);
     $(modalCalendarRef.current).modal('show');
-    
+
     try {
       const startDate = new Date();
       const endDate = new Date();
       endDate.setMonth(endDate.getMonth() + 3);
-      
+
       const response = await fetch(
         `/api/admin/room-availability/${room.id}/calendar?start_date=${startDate.toISOString().split('T')[0]}&end_date=${endDate.toISOString().split('T')[0]}`,
         {
@@ -138,14 +138,14 @@ const RoomAvailability = ({ rooms = [] }) => {
     setBlockAction(true);
     $(modalBlockRef.current).modal('show');
   };
-  
+
   // Abrir modal de registro directo
   const openRegisterModal = (room) => {
     setSelectedRoom(room);
     const checkIn = new Date();
     const checkOut = new Date();
     checkOut.setDate(checkOut.getDate() + 1);
-    
+
     setRegisterData({
       fullname: '',
       email: '',
@@ -186,7 +186,7 @@ const RoomAvailability = ({ rooms = [] }) => {
           reason: blockReason,
         })
       });
-      
+
       const result = await response.json();
       if (result.status === 200) {
         Swal.fire('¡Éxito!', result.message, 'success');
@@ -202,22 +202,22 @@ const RoomAvailability = ({ rooms = [] }) => {
       Swal.fire('Error', 'Error al procesar la solicitud', 'error');
     }
   };
-  
+
   // Registrar ocupación directa (walk-in)
   const handleRegisterOccupation = async (e) => {
     // Prevenir comportamiento por defecto
     if (e && e.preventDefault) {
       e.preventDefault();
     }
-    
+
     console.log('🔍 Iniciando registro de ocupación...');
-    
+
     // Validar datos requeridos
     if (!registerData.fullname || !registerData.document) {
       await Swal.fire('Error', 'Complete todos los campos obligatorios (Nombre y N° Documento)', 'error');
       return false;
     }
-    
+
     // Validar email solo si se proporcionó
     if (registerData.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -226,12 +226,12 @@ const RoomAvailability = ({ rooms = [] }) => {
         return false;
       }
     }
-    
+
     setRegisterLoading(true);
-    
+
     try {
       console.log('📤 Enviando datos al servidor...');
-      
+
       const response = await fetch('/api/admin/bookings/direct-register', {
         method: 'POST',
         headers: {
@@ -256,15 +256,15 @@ const RoomAvailability = ({ rooms = [] }) => {
           total_price: totalPrice,
         })
       });
-      
+
       console.log('📥 Respuesta recibida:', response.status);
-      
+
       const result = await response.json();
       console.log('📊 Resultado parseado:', result);
-      
+
       if (result.status === 200) {
         console.log('✅ Registro exitoso!');
-        
+
         await Swal.fire({
           icon: 'success',
           title: '¡Registro exitoso!',
@@ -274,41 +274,41 @@ const RoomAvailability = ({ rooms = [] }) => {
           `,
           confirmButtonText: 'Aceptar'
         });
-        
+
         // Solo cerrar modal y recargar si fue exitoso
         $(modalRegisterRef.current).modal('hide');
         loadSummary();
         return true;
       } else {
         console.log('❌ Error en el registro:', result);
-        
+
         // Mostrar errores de validación si existen
         let errorMessage = result.message || 'Error al registrar la ocupación';
-        
+
         if (result.errors) {
           const errorList = Object.values(result.errors).flat();
           errorMessage = errorList.join('<br>');
         }
-        
+
         await Swal.fire({
           icon: 'error',
           title: 'Error en el registro',
           html: errorMessage,
           confirmButtonText: 'Aceptar'
         });
-        
+
         return false;
       }
     } catch (error) {
       console.error('💥 Error al registrar:', error);
-      
+
       await Swal.fire({
         icon: 'error',
         title: 'Error de conexión',
         text: 'No se pudo conectar con el servidor. Verifique su conexión.',
         confirmButtonText: 'Aceptar'
       });
-      
+
       return false;
     } finally {
       setRegisterLoading(false);
@@ -340,7 +340,7 @@ const RoomAvailability = ({ rooms = [] }) => {
         },
         body: JSON.stringify({ days: 365 })
       });
-      
+
       const data = await response.json();
       if (data.status === 200) {
         Swal.fire('¡Éxito!', data.message, 'success');
@@ -380,7 +380,7 @@ const RoomAvailability = ({ rooms = [] }) => {
           'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
         }
       });
-      
+
       const data = await response.json();
       if (data.status) {
         Swal.fire({
@@ -433,7 +433,7 @@ const RoomAvailability = ({ rooms = [] }) => {
           'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
         }
       });
-      
+
       const data = await response.json();
       if (data.status) {
         Swal.fire({
@@ -494,7 +494,7 @@ const RoomAvailability = ({ rooms = [] }) => {
         },
         body: JSON.stringify({ reason })
       });
-      
+
       const data = await response.json();
       if (data.status) {
         Swal.fire({
@@ -549,7 +549,7 @@ const RoomAvailability = ({ rooms = [] }) => {
           date: new Date().toISOString().split('T')[0]
         })
       });
-      
+
       const data = await response.json();
       if (data.status === 200) {
         Swal.fire({
@@ -559,10 +559,10 @@ const RoomAvailability = ({ rooms = [] }) => {
           timer: 2000,
           showConfirmButton: false,
         });
-        
+
         // Recargar resumen
         loadSummary();
-        
+
         // Si el calendario está abierto, actualizarlo
         if ($(modalCalendarRef.current).hasClass('show') && selectedRoom) {
           openCalendarModal(selectedRoom);
@@ -599,7 +599,7 @@ const RoomAvailability = ({ rooms = [] }) => {
           'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN')),
         }
       });
-      
+
       const data = await response.json();
       if (data.status) {
         Swal.fire({
@@ -624,7 +624,7 @@ const RoomAvailability = ({ rooms = [] }) => {
   // Normalizar fecha a formato YYYY-MM-DD
   const normalizeDate = (dateInput) => {
     if (!dateInput) return null;
-    
+
     let date;
     if (typeof dateInput === 'string') {
       // Si es string, agregar T00:00:00 para evitar conversión UTC
@@ -633,7 +633,7 @@ const RoomAvailability = ({ rooms = [] }) => {
       // Si ya es un objeto Date, usarlo directamente
       date = dateInput;
     }
-    
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -643,9 +643,9 @@ const RoomAvailability = ({ rooms = [] }) => {
   // Renderizar calendario visual
   const renderCalendar = () => {
     if (!calendarData) return null;
-    
+
     const { availability, bookings } = calendarData;
-    
+
     console.log('📅 DEBUG CALENDARIO:', {
       totalBookings: bookings?.length,
       bookings: bookings?.map(b => ({
@@ -657,7 +657,7 @@ const RoomAvailability = ({ rooms = [] }) => {
       })),
       availabilityDates: availability?.slice(0, 5).map(d => d.date)
     });
-    
+
     // Crear mapa de reservas por fecha
     const bookingsByDate = {};
     bookings?.forEach(booking => {
@@ -665,21 +665,21 @@ const RoomAvailability = ({ rooms = [] }) => {
       // booking.check_in puede venir como "2026-01-01" o "2026-01-01 00:00:00"
       const checkInDate = booking.check_in.split(' ')[0]; // Obtener solo YYYY-MM-DD
       const checkOutDate = booking.check_out.split(' ')[0];
-      
+
       const [startYear, startMonth, startDay] = checkInDate.split('-');
       const [endYear, endMonth, endDay] = checkOutDate.split('-');
-      
+
       const startDate = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
       const endDate = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
       let current = new Date(startDate);
-      
+
       // Incluir día de check-out para limpieza
       while (current <= endDate) {
         const year = current.getFullYear();
         const month = String(current.getMonth() + 1).padStart(2, '0');
         const day = String(current.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
-        
+
         if (!bookingsByDate[dateStr]) {
           bookingsByDate[dateStr] = [];
         }
@@ -687,7 +687,7 @@ const RoomAvailability = ({ rooms = [] }) => {
         current.setDate(current.getDate() + 1);
       }
     });
-    
+
     console.log('🗓️ MAPA DE BOOKINGS POR FECHA:', {
       totalDates: Object.keys(bookingsByDate).length,
       dates: Object.keys(bookingsByDate).slice(0, 10),
@@ -703,18 +703,18 @@ const RoomAvailability = ({ rooms = [] }) => {
       const [year, month, dayNum] = dayDateStr.split('-');
       const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(dayNum));
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!months[monthKey]) {
         months[monthKey] = [];
       }
-      
+
       months[monthKey].push({
         ...day,
         date: dayDateStr, // Usar formato YYYY-MM-DD en lugar del timestamp
         bookings: bookingsByDate[dayDateStr] || [] // Buscar con YYYY-MM-DD
       });
     });
-    
+
     console.log('📊 DÍAS CON BOOKINGS:', {
       totalDays: Object.values(months).flat().length,
       daysWithBookings: Object.values(months).flat().filter(d => d.bookings.length > 0).length,
@@ -728,7 +728,7 @@ const RoomAvailability = ({ rooms = [] }) => {
     return Object.entries(months).map(([monthKey, days]) => {
       const [year, month] = monthKey.split('-');
       const monthName = new Date(year, month - 1).toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
-      
+
       return (
         <div key={monthKey} className="mb-4">
           <h5 className="text-capitalize mb-3">{monthName}</h5>
@@ -740,15 +740,15 @@ const RoomAvailability = ({ rooms = [] }) => {
               const dayNumber = date.getDate();
               const isBlocked = day.is_blocked;
               const hasBookings = day.bookings.length > 0;
-              
+
               // Verificar si hay reservas confirmadas (check-in realizado) o pendientes (pagó pero sin check-in)
               const hasConfirmedBookings = day.bookings.some(b => b.status === 'confirmed');
               const hasPendingBookings = day.bookings.some(b => b.status === 'pending');
-              
+
               let bgColor = '#28a745'; // Verde brillante - disponible
               let textColor = '#ffffff';
               let statusText = 'Disponible';
-              
+
               if (isBlocked) {
                 bgColor = '#6c757d'; // Gris - mantenimiento
                 textColor = '#ffffff';
@@ -816,7 +816,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                       className="form-control form-control-sm"
                     />
                   </div>
-                  <button 
+                  <button
                     className="btn btn-primary btn-sm"
                     onClick={() => loadSummary()}
                     disabled={loading}
@@ -852,9 +852,9 @@ const RoomAvailability = ({ rooms = [] }) => {
                   const statusInfo = getStatusColor(room.status);
                   return (
                     <div key={room.id} className="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
-                      <div 
-                        className="room-card" 
-                        style={{ 
+                      <div
+                        className="room-card"
+                        style={{
                           '--status-color': statusInfo.bg,
                           '--status-text': statusInfo.text
                         }}
@@ -864,7 +864,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                           <i className={`mdi ${statusInfo.icon}`}></i>
                           <span>{statusInfo.label}</span>
                         </div>
-                        
+
                         {/* Header del Card */}
                         <div className="room-header">
                           <div className="room-title-section">
@@ -874,7 +874,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                             <h5 className="room-name">{room.name}</h5>
                           </div>
                         </div>
-                        
+
                         {/* Body del Card */}
                         <div className="room-body">
                           <div className="room-quick-info">
@@ -887,7 +887,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                               <span>S/ {Number(room.price).toFixed(2)}</span>
                             </div>
                           </div>
-                          
+
                           {room.active_booking && (
                             <div className="room-booking-info">
                               <div className="booking-header">
@@ -905,12 +905,12 @@ const RoomAvailability = ({ rooms = [] }) => {
                               </div>
                             </div>
                           )}
-                          
+
                           {/* Botones de acción con íconos y tooltips */}
                           <div className="room-actions-icons">
                             {room.status === 'available' && (
                               <Tippy content="Ocupar Ahora" placement="top">
-                                <button 
+                                <button
                                   className="room-icon-btn room-icon-btn-success"
                                   onClick={() => openRegisterModal(room)}
                                 >
@@ -918,10 +918,10 @@ const RoomAvailability = ({ rooms = [] }) => {
                                 </button>
                               </Tippy>
                             )}
-                            
+
                             {room.status === 'occupied' && room.active_booking && (
                               <Tippy content="Check-Out" placement="top">
-                                <button 
+                                <button
                                   className="room-icon-btn room-icon-btn-info"
                                   onClick={() => handleCheckOut(room.active_booking.id)}
                                 >
@@ -929,10 +929,10 @@ const RoomAvailability = ({ rooms = [] }) => {
                                 </button>
                               </Tippy>
                             )}
-                            
+
                             {room.status === 'cleaning' && (
                               <Tippy content="Limpieza Completada" placement="top">
-                                <button 
+                                <button
                                   className="room-icon-btn room-icon-btn-success"
                                   onClick={() => handleCompleteCleaning(room.id)}
                                 >
@@ -940,18 +940,18 @@ const RoomAvailability = ({ rooms = [] }) => {
                                 </button>
                               </Tippy>
                             )}
-                            
+
                             <Tippy content="Ver Calendario" placement="top">
-                              <button 
+                              <button
                                 className="room-icon-btn room-icon-btn-secondary"
                                 onClick={() => openCalendarModal(room)}
                               >
                                 <i className="mdi mdi-calendar mdi-24px"></i>
                               </button>
                             </Tippy>
-                            
+
                             <Tippy content="Mantenimiento" placement="top">
-                              <button 
+                              <button
                                 className="room-icon-btn room-icon-btn-warning"
                                 onClick={() => openMaintenanceModal(room)}
                               >
@@ -1285,12 +1285,12 @@ const RoomAvailability = ({ rooms = [] }) => {
                           return badges[status] || { badge: 'badge-secondary', label: status || 'Sin estado', color: '#6c757d', bg: '#e2e3e5', icon: 'mdi-help-circle' };
                         };
                         const statusInfo = getBookingStatusBadge(booking.status);
-                        
+
                         return (
-                          <div 
-                            key={booking.id} 
-                            className="card mb-3 shadow-sm" 
-                            style={{ 
+                          <div
+                            key={booking.id}
+                            className="card mb-3 shadow-sm"
+                            style={{
                               borderLeft: `4px solid ${statusInfo.color}`,
                               transition: 'all 0.2s ease'
                             }}
@@ -1299,7 +1299,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                               {/* Header con nombre y estado */}
                               <div className="d-flex justify-content-between align-items-center mb-2">
                                 <div className="d-flex align-items-center">
-                                  <div 
+                                  <div
                                     className="rounded-circle d-flex align-items-center justify-content-center mr-2"
                                     style={{
                                       width: '40px',
@@ -1315,7 +1315,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                                     <small className="text-muted">#{booking.sale?.code || 'N/A'}</small>
                                   </div>
                                 </div>
-                                <span 
+                                <span
                                   className="badge px-2 py-1"
                                   style={{
                                     backgroundColor: statusInfo.bg,
@@ -1328,7 +1328,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                                   {statusInfo.label.toUpperCase()}
                                 </span>
                               </div>
-                              
+
                               {/* Información de contacto */}
                               <div className="mb-2 pb-2 border-bottom">
                                 <div className="d-flex align-items-center mb-1">
@@ -1344,7 +1344,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                                   </small>
                                 </div>
                               </div>
-                              
+
                               {/* Fechas de reserva */}
                               <div className="mb-3">
                                 <div className="row text-center">
@@ -1368,7 +1368,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                                       <i className="mdi mdi-logout text-danger d-block mb-1"></i>
                                       <small className="d-block text-muted" style={{ fontSize: '10px' }}>CHECK-OUT</small>
                                       <strong className="d-block" style={{ fontSize: '13px' }}>
-                                        {new Date(booking.check_out ).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}
+                                        {new Date(booking.check_out).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}
                                       </strong>
                                     </div>
                                   </div>
@@ -1556,12 +1556,12 @@ const RoomAvailability = ({ rooms = [] }) => {
 
         <div className="alert alert-warning">
           <i className="mdi mdi-information mr-1"></i>
-          {blockAction 
-            ? 'Las fechas en mantenimiento no estarán disponibles para reservas.' 
+          {blockAction
+            ? 'Las fechas en mantenimiento no estarán disponibles para reservas.'
             : 'Al finalizar el mantenimiento, las fechas volverán a estar disponibles.'}
         </div>
       </Modal>
-      
+
       {/* Modal de Registro Directo (Walk-in) */}
       <Modal
         modalRef={modalRegisterRef}
@@ -1595,7 +1595,7 @@ const RoomAvailability = ({ rooms = [] }) => {
             <i className="mdi mdi-account-circle mr-2"></i>
             1. Información del Huésped
           </h6>
-          
+
           <div className="row">
             <div className="col-md-8">
               <div className="form-group mb-4">
@@ -1604,7 +1604,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                   type="text"
                   className="form-control"
                   value={registerData.fullname}
-                  onChange={(e) => setRegisterData({...registerData, fullname: e.target.value})}
+                  onChange={(e) => setRegisterData({ ...registerData, fullname: e.target.value })}
                   placeholder="Ej: Juan Pérez García"
                 />
               </div>
@@ -1616,7 +1616,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                   type="email"
                   className="form-control"
                   value={registerData.email}
-                  onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
+                  onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                   placeholder="ejemplo@correo.com"
                 />
               </div>
@@ -1628,14 +1628,14 @@ const RoomAvailability = ({ rooms = [] }) => {
               <div className="form-group mb-4">
                 <label className="font-weight-bold mb-2">Teléfono <small className="text-muted">(opcional)</small></label>
                 <div className="input-group">
-                  <select 
-                    className="form-control" 
+                  <select
+                    className="form-control"
                     style={{ maxWidth: '120px' }}
                     value={registerData.phone_prefix}
-                    onChange={(e) => setRegisterData({...registerData, phone_prefix: e.target.value})}
+                    onChange={(e) => setRegisterData({ ...registerData, phone_prefix: e.target.value })}
                   >
                     <option value="+51">🇵🇪 +51</option>
-                   {/* <option value="+1">🇺🇸 +1</option>
+                    {/* <option value="+1">🇺🇸 +1</option>
                     <option value="+54">🇦🇷 +54</option>
                     <option value="+56">🇨🇱 +56</option>
                     <option value="+57">🇨🇴 +57</option>*/}
@@ -1647,7 +1647,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                     onChange={(e) => {
                       // Solo permitir números
                       const value = e.target.value.replace(/[^0-9]/g, '');
-                      setRegisterData({...registerData, phone: value});
+                      setRegisterData({ ...registerData, phone: value });
                     }}
                     pattern="[0-9]*"
                     inputMode="numeric"
@@ -1663,7 +1663,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                 <select
                   className="form-control"
                   value={registerData.document_type}
-                  onChange={(e) => setRegisterData({...registerData, document_type: e.target.value})}
+                  onChange={(e) => setRegisterData({ ...registerData, document_type: e.target.value })}
                 >
                   <option value="dni">DNI</option>
                   <option value="ce">Carnet de Extranjería</option>
@@ -1681,12 +1681,10 @@ const RoomAvailability = ({ rooms = [] }) => {
                   value={registerData.document}
                   onChange={(e) => {
                     // Solo permitir números
-                    const value = e.target.value.replace(/[^0-9]/g, '');
-                    setRegisterData({...registerData, document: value});
+                   const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                    setRegisterData({ ...registerData, document: value });
                   }}
-                  pattern="[0-9]*"
-                  inputMode="numeric"
-                  placeholder="12345678"
+                  placeholder="Nro. de documento o pasaporte"
                   maxLength="20"
                   required
                 />
@@ -1703,7 +1701,7 @@ const RoomAvailability = ({ rooms = [] }) => {
             <i className="mdi mdi-calendar-check mr-2"></i>
             2. Detalles de la Estadía
           </h6>
-          
+
           <div className="row">
             <div className="col-md-3">
               <div className="form-group mb-4">
@@ -1714,10 +1712,10 @@ const RoomAvailability = ({ rooms = [] }) => {
                 <DatePicker
                   selected={registerData.check_in}
                   onChange={(date) => {
-                    setRegisterData({...registerData, check_in: date});
+                    setRegisterData({ ...registerData, check_in: date });
                     if (registerData.check_out) {
                       const nights = Math.ceil((registerData.check_out - date) / (1000 * 60 * 60 * 24));
-                      setRegisterData(prev => ({...prev, nights: nights > 0 ? nights : 1}));
+                      setRegisterData(prev => ({ ...prev, nights: nights > 0 ? nights : 1 }));
                     }
                   }}
                   minDate={new Date()}
@@ -1736,10 +1734,10 @@ const RoomAvailability = ({ rooms = [] }) => {
                 <DatePicker
                   selected={registerData.check_out}
                   onChange={(date) => {
-                    setRegisterData({...registerData, check_out: date});
+                    setRegisterData({ ...registerData, check_out: date });
                     if (registerData.check_in) {
                       const nights = Math.ceil((date - registerData.check_in) / (1000 * 60 * 60 * 24));
-                      setRegisterData(prev => ({...prev, nights: nights > 0 ? nights : 1}));
+                      setRegisterData(prev => ({ ...prev, nights: nights > 0 ? nights : 1 }));
                     }
                   }}
                   minDate={registerData.check_in || new Date()}
@@ -1764,7 +1762,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                     const nights = parseInt(e.target.value) || 1;
                     const newCheckOut = new Date(registerData.check_in);
                     newCheckOut.setDate(newCheckOut.getDate() + nights);
-                    setRegisterData({...registerData, nights, check_out: newCheckOut});
+                    setRegisterData({ ...registerData, nights, check_out: newCheckOut });
                   }}
                   style={{ fontWeight: 'bold' }}
                 />
@@ -1782,7 +1780,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                   min="1"
                   max={selectedRoom?.capacity || 10}
                   value={registerData.guests}
-                  onChange={(e) => setRegisterData({...registerData, guests: parseInt(e.target.value) || 1})}
+                  onChange={(e) => setRegisterData({ ...registerData, guests: parseInt(e.target.value) || 1 })}
                   style={{ fontWeight: 'bold' }}
                 />
                 <small className="text-muted d-block mt-2">Máx: {selectedRoom?.capacity || 0}</small>
@@ -1799,7 +1797,7 @@ const RoomAvailability = ({ rooms = [] }) => {
             <i className="mdi mdi-cash-multiple mr-2"></i>
             3. Pago y Observaciones
           </h6>
-          
+
           <div className="row">
             <div className="col-md-4">
               <div className="form-group mb-4">
@@ -1810,7 +1808,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                 <select
                   className="form-control"
                   value={registerData.payment_method}
-                  onChange={(e) => setRegisterData({...registerData, payment_method: e.target.value})}
+                  onChange={(e) => setRegisterData({ ...registerData, payment_method: e.target.value })}
                 >
                   <option value="efectivo">Efectivo</option>
                   <option value="tarjeta">Tarjeta</option>
@@ -1830,7 +1828,7 @@ const RoomAvailability = ({ rooms = [] }) => {
                   className="form-control"
                   rows="3"
                   value={registerData.special_requests}
-                  onChange={(e) => setRegisterData({...registerData, special_requests: e.target.value})}
+                  onChange={(e) => setRegisterData({ ...registerData, special_requests: e.target.value })}
                   placeholder="Ej: Cama extra, cuna para bebé, late check-out, alergias alimentarias..."
                 />
               </div>
