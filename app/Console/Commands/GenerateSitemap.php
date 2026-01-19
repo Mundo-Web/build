@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -10,7 +11,7 @@ use Spatie\Sitemap\Tags\Url;
 class GenerateSitemap extends Command
 {
     protected $signature = 'sitemap:generate';
-    protected $description = 'Genera el archivo sitemap.xml';
+    protected $description = 'Genera el archivo sitemap.xml basándose en las páginas con sitemapable=true';
 
     public function handle()
     {
@@ -22,14 +23,21 @@ class GenerateSitemap extends Command
             ->setPriority(1.0));
         $this->line("Agregada ruta: / (Home)");
 
-        // Agregar rutas desde pages.json
-        $this->addPagesFromJson($sitemap);
+        // Obtener páginas desde pages.json
+        $pages = $this->getPages();
 
-        // Agregar productos dinámicamente
-        $this->addProductsFromDatabase($sitemap);
+        if (empty($pages)) {
+            $this->warn('⚠️ No se encontraron páginas configuradas');
+            $sitemap->writeToFile(public_path('sitemap.xml'));
+            $this->info('✅ Sitemap generado con solo la página principal');
+            return;
+        }
 
-        // Agregar otras entidades dinámicas según el pages.json
-        $this->addDynamicEntities($sitemap);
+        // Agregar páginas estáticas marcadas como sitemapable
+        $this->addSitemapablePages($sitemap, $pages);
+
+        // Agregar entidades dinámicas de páginas con sitemapable=true y parámetros
+        $this->addDynamicEntities($sitemap, $pages);
 
         $sitemap->writeToFile(public_path('sitemap.xml'));
 
@@ -37,13 +45,13 @@ class GenerateSitemap extends Command
     }
 
     /**
-     * Agrega las páginas definidas en pages.json al sitemap
+     * Obtiene las páginas desde pages.json
      */
-    private function addPagesFromJson(Sitemap $sitemap)
+    private function getPages(): array
     {
         if (!Storage::exists('pages.json')) {
             $this->warn('⚠️ El archivo pages.json no existe en storage/app');
-            return;
+            return [];
         }
 
         $pagesJson = Storage::get('pages.json');
@@ -51,147 +59,164 @@ class GenerateSitemap extends Command
 
         if (!is_array($pages)) {
             $this->warn('⚠️ El formato del archivo pages.json no es válido');
-            return;
+            return [];
         }
 
+        return $pages;
+    }
+
+    /**
+     * Agrega páginas estáticas (sin parámetros dinámicos) marcadas como sitemapable
+     */
+    private function addSitemapablePages(Sitemap $sitemap, array $pages): void
+    {
         foreach ($pages as $page) {
-            // Solo agregar páginas con menuable = true y que tengan una ruta definida
-            if (isset($page['menuable']) && $page['menuable'] === true && isset($page['path']) && $page['path'] !== null) {
-                $path = $page['path'];
-                
-                // Usar pseudo_path si está disponible, de lo contrario usar path
-                if (isset($page['pseudo_path']) && $page['pseudo_path'] !== null) {
-                    $path = $page['pseudo_path'];
+            // Solo procesar páginas con sitemapable = true
+            if (!$this->isSitemapable($page)) {
+                continue;
+            }
+
+            $path = $page['pseudo_path'] ?? $page['path'] ?? null;
+            $originalPath = $page['path'] ?? null;
+
+            if ($path === null) {
+                continue;
+            }
+
+            // Verificar en el path ORIGINAL si tiene parámetros dinámicos
+            // Si tiene {}, es una ruta dinámica y se procesa en addDynamicEntities
+            if ($originalPath !== null && strpos($originalPath, '{') !== false) {
+                continue;
+            }
+
+            $priority = $page['sitemap_priority'] ?? 0.8;
+            $frequency = $page['sitemap_frequency'] ?? Url::CHANGE_FREQUENCY_WEEKLY;
+
+            $sitemap->add(Url::create($path)
+                ->setChangeFrequency($frequency)
+                ->setPriority((float) $priority));
+
+            $this->line("Agregada ruta estática: {$path}");
+        }
+    }
+
+    /**
+     * Agrega entidades dinámicas de páginas con parámetros y sitemapable=true
+     */
+    private function addDynamicEntities(Sitemap $sitemap, array $pages): void
+    {
+        foreach ($pages as $page) {
+            // Solo procesar páginas con sitemapable = true
+            if (!$this->isSitemapable($page)) {
+                continue;
+            }
+
+            $path = $page['path'] ?? null;
+            $pseudoPath = $page['pseudo_path'] ?? null;
+
+            if ($path === null) {
+                continue;
+            }
+
+            // Solo procesar rutas con parámetros dinámicos
+            if (strpos($path, '{') === false) {
+                continue;
+            }
+
+            // Verificar si tiene configuración 'using' para modelos
+            $using = $page['using'] ?? [];
+
+            if (empty($using)) {
+                $this->warn("⚠️ La página '{$page['name']}' tiene parámetros pero no tiene configuración 'using'");
+                continue;
+            }
+
+            // Procesar cada parámetro configurado
+            foreach ($using as $param => $config) {
+                if (!isset($config['model'])) {
+                    continue;
                 }
-                
-                // Asegurarse de que la ruta no tenga parámetros dinámicos
-                if (strpos($path, '{') === false) {
-                    $sitemap->add(Url::create($path)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                        ->setPriority(0.8));
-                    
-                    $this->line("Agregada ruta: {$path}");
-                }
+
+                $this->addModelEntities($sitemap, $page, $param, $config);
             }
         }
     }
 
     /**
-     * Agrega productos desde la base de datos al sitemap
+     * Agrega entidades de un modelo específico al sitemap
      */
-    private function addProductsFromDatabase(Sitemap $sitemap)
+    private function addModelEntities(Sitemap $sitemap, array $page, string $param, array $config): void
     {
-        // Buscar la configuración de productos en pages.json
-        $productConfig = $this->getProductConfig();
-        
-        if (!$productConfig) {
-            $this->warn('⚠️ No se encontró configuración para productos en pages.json');
-            return;
-        }
-        
-        $productPath = $productConfig['pseudo_path'] ?? '/product';
-        $modelName = $productConfig['using']['slug']['model'] ?? 'Item';
-        
-        // Determinar el namespace completo del modelo
+        $modelName = $config['model'];
         $modelClass = "\\App\\Models\\{$modelName}";
-        
+
         if (!class_exists($modelClass)) {
             $this->warn("⚠️ El modelo {$modelClass} no existe");
             return;
         }
+
+        // Determinar el campo a usar para la URL (por defecto 'slug')
+        $slugField = $config['field'] ?? 'slug';
+
+        // Obtener la ruta base
+        $basePath = $page['pseudo_path'] ?? $page['path'];
         
-        // Obtener todos los productos
-        $products = $modelClass::all();
-        
-        foreach ($products as $product) {
-            $sitemap->add(Url::create("{$productPath}/{$product->slug}")
-                ->setLastModificationDate($product->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
-            
-            $this->line("Agregado producto: {$productPath}/{$product->slug}");
+        // Limpiar la ruta de parámetros para obtener la base
+        $basePath = preg_replace('/\{[^}]+\}/', '', $basePath);
+        $basePath = rtrim($basePath, '/');
+
+        // Prioridad para entidades dinámicas
+        $priority = $page['sitemap_priority'] ?? 0.7;
+        $frequency = $page['sitemap_frequency'] ?? Url::CHANGE_FREQUENCY_WEEKLY;
+
+        try {
+            // Obtener registros activos y visibles del modelo
+            $query = $modelClass::query();
+
+            // Filtrar por status si existe el campo
+            if (in_array('status', (new $modelClass)->getFillable()) || Schema::hasColumn((new $modelClass)->getTable(), 'status')) {
+                $query->where('status', true);
+            }
+
+            // Filtrar por visible si existe el campo
+            if (in_array('visible', (new $modelClass)->getFillable()) || Schema::hasColumn((new $modelClass)->getTable(), 'visible')) {
+                $query->where('visible', true);
+            }
+
+            $entities = $query->get();
+
+            foreach ($entities as $entity) {
+                $slugValue = $entity->{$slugField} ?? null;
+
+                if ($slugValue === null) {
+                    continue;
+                }
+
+                $url = "{$basePath}/{$slugValue}";
+
+                $urlTag = Url::create($url)
+                    ->setChangeFrequency($frequency)
+                    ->setPriority((float) $priority);
+
+                // Agregar fecha de última modificación si existe
+                if (isset($entity->updated_at)) {
+                    $urlTag->setLastModificationDate($entity->updated_at);
+                }
+
+                $sitemap->add($urlTag);
+
+                $this->line("Agregada entidad ({$modelName}): {$url}");
+            }
+        } catch (\Exception $e) {
+            $this->error("❌ Error al obtener entidades de {$modelName}: {$e->getMessage()}");
         }
     }
 
     /**
-     * Agrega otras entidades dinámicas basadas en pages.json
+     * Verifica si una página está marcada como sitemapable
      */
-    private function addDynamicEntities(Sitemap $sitemap)
+    private function isSitemapable(array $page): bool
     {
-        // Buscar configuraciones para blogs, categorías, etc.
-        $pagesJson = Storage::get('pages.json');
-        $pages = json_decode($pagesJson, true);
-        
-        if (!is_array($pages)) {
-            return;
-        }
-        
-        // Buscar configuración de blogs
-        $blogConfig = null;
-        foreach ($pages as $page) {
-            if (isset($page['name']) && $page['name'] === 'Blogs' || $page['name'] === 'Blog' || $page['name'] === 'Posts') {
-                $blogConfig = $page;
-                break;
-            }
-        }
-        
-        if ($blogConfig && isset($blogConfig['using']['posts']['model'])) {
-            $this->addBlogPosts($sitemap, $blogConfig);
-        }
-        
-        // Aquí puedes agregar más entidades dinámicas según sea necesario
-    }
-
-    /**
-     * Agrega posts de blog al sitemap
-     */
-    private function addBlogPosts(Sitemap $sitemap, $blogConfig)
-    {
-        $blogPath = $blogConfig['pseudo_path'] ?? '/blogs';
-        $modelName = $blogConfig['using']['posts']['model'] ?? 'Post';
-        
-        // Determinar el namespace completo del modelo
-        $modelClass = "\\App\\Models\\{$modelName}";
-        
-        if (!class_exists($modelClass)) {
-            $this->warn("⚠️ El modelo {$modelClass} no existe");
-            return;
-        }
-        
-        // Obtener todos los posts
-        $posts = $modelClass::all();
-        
-        foreach ($posts as $post) {
-            // Asumiendo que los posts tienen un campo slug
-            if (isset($post->slug)) {
-                $sitemap->add(Url::create("{$blogPath}/{$post->slug}")
-                    ->setLastModificationDate($post->updated_at ?? now())
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setPriority(0.6));
-                
-                $this->line("Agregado post: {$blogPath}/{$post->slug}");
-            }
-        }
-    }
-
-    /**
-     * Obtiene la configuración de productos desde pages.json
-     */
-    private function getProductConfig()
-    {
-        $pagesJson = Storage::get('pages.json');
-        $pages = json_decode($pagesJson, true);
-        
-        if (!is_array($pages)) {
-            return null;
-        }
-        
-        foreach ($pages as $page) {
-            if (isset($page['name']) && $page['name'] === 'Producto' || $page['name'] === 'Product') {
-                return $page;
-            }
-        }
-        
-        return null;
+        return isset($page['sitemapable']) && $page['sitemapable'] === true;
     }
 }

@@ -9,12 +9,13 @@ const systemRest = new SystemRest()
 
 const BasicEditing4System = (page) => {
 
-  const { id, name, path, extends_base = false, menuable = false, setPages, onSEOClicked, onParamsClicked } = page
+  const { id, name, path, extends_base = false, menuable = false, sitemapable = false, setPages, onSEOClicked, onParamsClicked } = page
 
   const [nameEditing, setNameEditing] = useState(false)
   const [pathEditing, setPathEditing] = useState(false)
   const [extendsBaseEditing, setExtendsBaseEditing] = useState(false)
   const [menuableEditing, setMenuableEditing] = useState(false)
+  const [sitemapableEditing, setSitemapableEditing] = useState(false)
 
   const onNameChange = async (e) => {
     if (name === e.target.value) return setNameEditing(false)
@@ -79,6 +80,18 @@ const BasicEditing4System = (page) => {
     setPages(old => old.map(page => page.id === id ? { ...page, menuable: checked } : page))
   }
 
+  const onSitemapableChange = async (e) => {
+    setSitemapableEditing(true)
+    const checked = e.target.checked
+    const result = systemRest.savePage({
+      id,
+      sitemapable: checked
+    })
+    setSitemapableEditing(false)
+    if (!result) return
+    setPages(old => old.map(page => page.id === id ? { ...page, sitemapable: checked } : page))
+  }
+
   const onDeletePageClicked = async (page) => {
     const result = await systemRest.deletePage(page.id);
     if (!result) return;
@@ -135,6 +148,7 @@ const BasicEditing4System = (page) => {
     <div className="row">
       <SwitchFormGroup label="Extiende de base" col={'col-lg-6 col-md-12 col-sm-6'} checked={extends_base} onChange={onExtendsBaseChange} disabled={extendsBaseEditing} />
       <SwitchFormGroup label="Mostrar en menu" col={'col-lg-6 col-md-12 col-sm-6'} checked={menuable} onChange={onMenuableChange} disabled={menuableEditing} />
+      <SwitchFormGroup label="Incluir en sitemap" col={'col-lg-6 col-md-12 col-sm-6'} checked={sitemapable} onChange={onSitemapableChange} disabled={sitemapableEditing} />
     </div>
   </>
 }
