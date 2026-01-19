@@ -23,6 +23,8 @@ class RoomAvailabilityController extends BasicController
         // Obtener todas las habitaciones
         $rooms = Item::where('type', 'room')
             ->where('visible', true)
+            ->where('status',true)
+            
             ->orderBy('name')
             ->get();
 
@@ -100,6 +102,7 @@ class RoomAvailabilityController extends BasicController
             
             $rooms = Item::where('type', 'room')
                 ->where('visible', true)
+                ->where('status',true)
                 ->with(['availability' => function($q) use ($date) {
                     $q->where('date', $date);
                 }])
