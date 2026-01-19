@@ -1663,12 +1663,12 @@ const RoomAvailability = ({ rooms = [] }) => {
                 <select
                   className="form-control"
                   value={registerData.document_type}
-                  onChange={(e) => setRegisterData({ ...registerData, document_type: e.target.value })}
+                  onChange={(e) => setRegisterData({ ...registerData, document_type: e.target.value, document: '' })}
                 >
-                  <option value="dni">DNI</option>
+                  <option value="dni">DNI (8 dígitos)</option>
                   <option value="ce">Carnet de Extranjería</option>
                   <option value="pasaporte">Pasaporte</option>
-                  <option value="ruc">RUC</option>
+                  <option value="ruc">RUC (11 dígitos)</option>
                 </select>
               </div>
             </div>
@@ -1680,14 +1680,45 @@ const RoomAvailability = ({ rooms = [] }) => {
                   className="form-control"
                   value={registerData.document}
                   onChange={(e) => {
-                    // Solo permitir números
-                   const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                    let value = e.target.value;
+                    const docType = registerData.document_type;
+                    
+                    // Validación según tipo de documento
+                    if (docType === 'dni') {
+                      // DNI: Solo números, máximo 8 dígitos
+                      value = value.replace(/[^0-9]/g, '').slice(0, 8);
+                    } else if (docType === 'ruc') {
+                      // RUC: Solo números, máximo 11 dígitos
+                      value = value.replace(/[^0-9]/g, '').slice(0, 11);
+                    } else if (docType === 'ce') {
+                      // Carnet de Extranjería: Alfanumérico, máximo 12 caracteres
+                      value = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 12);
+                    } else if (docType === 'pasaporte') {
+                      // Pasaporte: Alfanumérico, máximo 20 caracteres
+                      value = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 20);
+                    }
+                    
                     setRegisterData({ ...registerData, document: value });
                   }}
-                  placeholder="Nro. de documento o pasaporte"
-                  maxLength="20"
+                  placeholder={
+                    registerData.document_type === 'dni' ? '8 dígitos numéricos' :
+                    registerData.document_type === 'ruc' ? '11 dígitos numéricos' :
+                    registerData.document_type === 'ce' ? 'Alfanumérico (máx. 12)' :
+                    'Alfanumérico (máx. 20)'
+                  }
+                  maxLength={
+                    registerData.document_type === 'dni' ? 8 :
+                    registerData.document_type === 'ruc' ? 11 :
+                    registerData.document_type === 'ce' ? 12 : 20
+                  }
                   required
                 />
+                <small className="text-muted d-block mt-1">
+                  {registerData.document_type === 'dni' && `${registerData.document.length}/8 dígitos`}
+                  {registerData.document_type === 'ruc' && `${registerData.document.length}/11 dígitos`}
+                  {registerData.document_type === 'ce' && `${registerData.document.length}/12 caracteres`}
+                  {registerData.document_type === 'pasaporte' && `${registerData.document.length}/20 caracteres`}
+                </small>
               </div>
             </div>
           </div>
