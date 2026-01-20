@@ -466,7 +466,7 @@ const HeaderSearchB = ({
                                                 {suggestion.category.name}
                                             </div>
                                         )}
-                                        {suggestion.final_price && (
+                                        {suggestion.final_price && suggestion.final_price > 0 && (
                                             <div className="text-sm font-semibold customtext-primary">
                                                 {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
