@@ -32,6 +32,10 @@ class BlogPublishedNotification extends Notification implements ShouldQueue
             'titulo' => 'Título del blog',
             'descripcion' => 'Descripción del blog',
             'url'   => 'Enlace al blog',
+            'name' => 'Email del suscriptor',
+            'year' => 'Año actual',
+            'fecha_publicacion' => 'Fecha de publicación del blog',
+            'unsubscribe_link' => 'Enlace para cancelar suscripción',
         ];
     }
 
@@ -42,8 +46,12 @@ class BlogPublishedNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-         \Log::info('Enviando a: ' . $notifiable->description);
+        \Log::info('Enviando a: ' . $notifiable->description);
         $template = \App\Models\General::where('correlative', 'blog_published_email')->first();
+        
+        // Generar link de desuscripción usando el helper
+        $unsubscribeData = \App\Helpers\UnsubscribeHelper::generateUnsubscribeLink($notifiable);
+        
         $body = $template
             ? \App\Helpers\Text::replaceData($template->description, [
                 'imagen' => url(Storage::url("images/post/".$this->blog->image ?? '')),
@@ -55,6 +63,7 @@ class BlogPublishedNotification extends Notification implements ShouldQueue
                 'fecha_publicacion' => $this->blog->created_at
                     ? $this->blog->created_at->translatedFormat('d \d\e F \d\e\l Y')
                     : '',
+                'unsubscribe_link' => $unsubscribeData['url'],  // ✅ Agregamos el link de desuscripción
             ])
             : 'Plantilla no encontrada';
         return (new RawHtmlMail($body, 'Nuevo blog publicado: ' . $this->blog->name, $notifiable->description));

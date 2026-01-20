@@ -218,6 +218,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         data={data}
                         cart={cart}
                         setCart={setCart}
+                        user={user}
                         onContinue={() => handleStepChange(2)}
                         subTotal={subTotal}
                         totalPrice={totalPrice}

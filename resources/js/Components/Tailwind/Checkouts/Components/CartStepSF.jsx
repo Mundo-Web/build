@@ -12,6 +12,7 @@ export default function CartStepSF({
     data,
     cart,
     setCart,
+    user,
     onContinue,
     subTotal,
     envio,
@@ -32,8 +33,55 @@ export default function CartStepSF({
     const [showPromotionModal, setShowPromotionModal] = useState(false);
     const [selectedPromotion, setSelectedPromotion] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const isCartEmpty = cart.length === 0;
+
+    // Función para manejar el click en continuar
+    const handleContinueClick = () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+        onContinue();
+    };
+
+    // Componente Modal de Login
+    const LoginModal = () => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl relative">
+                {/* Botón X para cerrar */}
+                <button
+                    onClick={() => setShowLoginModal(false)}
+                    className="absolute top-4 right-4 text-danger transition-colors"
+                    aria-label="Cerrar"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-center mt-2">Inicia sesión para continuar</h3>
+                <p className="text-neutral-light mb-6 text-center">
+                    Para continuar con tu compra, necesitas iniciar sesión o crear una cuenta.
+                </p>
+                <div className="flex flex-col gap-3">
+                    <a
+                        href="/iniciar-sesion"
+                        className={`w-full py-3 px-6 rounded-full font-semibold text-center text-lg transition-all duration-300 hover:opacity-90 bg-primary text-white ${data?.class_button || ''}`}
+                    >
+                        Iniciar Sesión
+                    </a>
+                    <a
+                        href="/crear-cuenta"
+                        className="w-full py-3 px-6 rounded-full font-semibold text-center text-lg transition-all duration-300 border-2 border-primary text-primary hover:shadow-lg "
+                    >
+                        Crear Cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
 
     // Apply discount rules when cart changes
     useEffect(() => {
@@ -290,7 +338,7 @@ export default function CartStepSF({
                     </div>
                     <div className="space-y-2 pt-3 md:pt-4">
                         <ButtonPrimary
-                            onClick={onContinue}
+                            onClick={handleContinueClick}
                             disabled={isCartEmpty}
                             className={`w-full py-3 px-6 font-semibold focus:outline-none outline-none focus:border-0 text-lg transition-all duration-300 hover:opacity-90 bg-primary  rounded-2xl xl:rounded-3xl ${data?.class_button || ' text-white'}`}
                         >
@@ -316,6 +364,9 @@ export default function CartStepSF({
                 onAddToCart={handleAddPromotionalItem}
                 productName={selectedProduct?.name || ''}
             />
+
+            {/* Login Modal */}
+            {showLoginModal && <LoginModal />}
         </div>
     );
 }

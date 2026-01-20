@@ -64,13 +64,13 @@ const NavBar = ({ session = {}, title = 'Pagina' }) => {
       <div className="logo-box">
         <a href="/" className="logo logo-light text-center">
           <span className="logo-sm">
-            <img src="/assets/resources/icon.png" alt="" height="22" onError={(e) => {
+            <img src="/assets/resources/icon.png" alt="" width="70%" onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/img/icon-bk.svg';
             }} />
           </span>
           <span className="logo-lg">
-            <img src="/assets/resources/logo.png" alt="" style={{ height: '32px' }} onError={(e) => {
+            <img src="/assets/resources/logo.png" alt="" style={{ width: '70%' }} onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/img/logo-bk.svg';
             }} />
@@ -78,13 +78,13 @@ const NavBar = ({ session = {}, title = 'Pagina' }) => {
         </a>
         <a href="/" className="logo logo-dark text-center">
           <span className="logo-sm">
-            <img src="/assets/resources/icon.png" alt="" height="22" onError={(e) => {
+            <img src="/assets/resources/icon.png" alt="" width="70%" onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/img/icon-bk.svg';
             }} />
           </span>
           <span className="logo-lg">
-            <img src="/assets/resources/logo.png" alt="" style={{ height: '32px' }} onError={(e) => {
+            <img src="/assets/resources/logo.png" alt="" style={{ width: '70%' }} onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/img/logo-bk.svg';
             }} />
