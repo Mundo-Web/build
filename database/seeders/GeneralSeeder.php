@@ -223,12 +223,22 @@ HTML
                 'correlative' => 'location',
                 'name' => 'Ubicación',
                 'description' => '-12.097029,-77.037251'
-            ]
-            ,
-             [
+            ],
+            [
                 'correlative' => 'admin_claim_email',
                 'name' => 'Plantilla Email Admin - Nuevo Reclamo',
                 'description' => 'soporte@trasciende.com'
+            ],
+            // Configuración de Hotel
+            [
+                'correlative' => 'hotel_checkin_time',
+                'name' => 'Horario de Check-In',
+                'description' => '14:00'
+            ],
+            [
+                'correlative' => 'hotel_checkout_time',
+                'name' => 'Horario de Check-Out',
+                'description' => '12:00'
             ]
         ];
 

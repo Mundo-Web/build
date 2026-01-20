@@ -62,7 +62,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'location': ['location'],
     'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen', 'additional_shipping_costs'],
     'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url', 'robots_additional_rules'],
-
+    'hotel': ['hotel_checkin_time', 'hotel_checkout_time'],
     'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts', 'atalaya_leads_api_key'],
     'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
   };
@@ -489,6 +489,13 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         return [];
       }
     })(),
+    // Configuración de Hotel
+    hotelCheckinTime:
+      generals.find((x) => x.correlative == "hotel_checkin_time")
+        ?.description ?? "14:00",
+    hotelCheckoutTime:
+      generals.find((x) => x.correlative == "hotel_checkout_time")
+        ?.description ?? "12:00",
   }));
 
   // Funciones memoizadas para evitar re-renders y pérdida de foco
@@ -1413,6 +1420,17 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         name: "Costos Adicionales de Envío",
         description: JSON.stringify(formData.additional_shipping_costs || []),
       },
+      // Configuración de Hotel
+      {
+        correlative: "hotel_checkin_time",
+        name: "Horario de Check-In",
+        description: formData.hotelCheckinTime || "14:00",
+      },
+      {
+        correlative: "hotel_checkout_time",
+        name: "Horario de Check-Out",
+        description: formData.hotelCheckoutTime || "12:00",
+      },
     ];
 
     try {
@@ -1595,6 +1613,19 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   role="tab"
                 >
                   OAuth & Autenticación
+                </button>
+              </li>
+            )}
+            {shouldShowTab('hotel') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "hotel" ? "active" : ""}`}
+                  onClick={() => setActiveTab("hotel")}
+                  type="button"
+                  role="tab"
+                >
+                  <i className="fas fa-hotel me-1"></i>
+                  Hotel
                 </button>
               </li>
             )}
@@ -4499,6 +4530,92 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       </div>
                     </>
                   )}
+                </div>
+              </div>
+            </div>
+
+            {/* Tab de Configuración de Hotel */}
+            <div
+              className={`tab-pane fade ${activeTab === "hotel" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-12">
+                  <h5 className="mb-4">
+                    <i className="fas fa-hotel me-2"></i>
+                    Configuración de Horarios del Hotel
+                  </h5>
+                  
+                  <div className="alert alert-info mb-4">
+                    <i className="fas fa-info-circle me-2"></i>
+                    <strong>Horarios de Check-In y Check-Out:</strong> Estos horarios definen cuándo los huéspedes pueden ingresar y deben retirarse de las habitaciones. 
+                    El día de check-out, la habitación estará disponible para nuevas reservas a partir del horario configurado.
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="card">
+                        <div className="card-body">
+                          <h6 className="card-title">
+                            <i className="fas fa-sign-in-alt text-success me-2"></i>
+                            Horario de Check-In
+                          </h6>
+                          <p className="text-muted small mb-3">
+                            Hora a partir de la cual los huéspedes pueden ingresar a la habitación
+                          </p>
+                          <div className="mb-3">
+                            <label className="form-label">Hora de entrada</label>
+                            <input
+                              type="time"
+                              className="form-control"
+                              value={formData.hotelCheckinTime}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                hotelCheckinTime: e.target.value
+                              })}
+                            />
+                            <small className="text-muted">Por defecto: 14:00 (2:00 PM)</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="card">
+                        <div className="card-body">
+                          <h6 className="card-title">
+                            <i className="fas fa-sign-out-alt text-danger me-2"></i>
+                            Horario de Check-Out
+                          </h6>
+                          <p className="text-muted small mb-3">
+                            Hora límite para que los huéspedes desocupen la habitación
+                          </p>
+                          <div className="mb-3">
+                            <label className="form-label">Hora de salida</label>
+                            <input
+                              type="time"
+                              className="form-control"
+                              value={formData.hotelCheckoutTime}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                hotelCheckoutTime: e.target.value
+                              })}
+                            />
+                            <small className="text-muted">Por defecto: 12:00 (12:00 PM - Mediodía)</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="alert alert-warning mt-4">
+                    <h6><i className="fas fa-calendar-alt me-2"></i>¿Cómo funciona?</h6>
+                    <ul className="mb-0">
+                      <li>Si un huésped reserva del <strong>día 5 al día 8</strong>, el check-out es el <strong>día 8</strong>.</li>
+                      <li>El <strong>día 8</strong> estará disponible para nuevas reservas, ya que el huésped debe retirarse a las <strong>{formData.hotelCheckoutTime || '12:00'}</strong>.</li>
+                      <li>Un nuevo huésped puede hacer check-in el mismo <strong>día 8</strong> a partir de las <strong>{formData.hotelCheckinTime || '14:00'}</strong>.</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>

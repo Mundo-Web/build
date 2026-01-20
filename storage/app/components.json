@@ -5492,7 +5492,10 @@
                     ]
                 },
                 "generals": [
-                    "phone_whatsapp"
+                    "phone_whatsapp",
+                    "hotel_checkin_time", 
+                    
+                    "hotel_checkout_time"
                 ]
             },
             {

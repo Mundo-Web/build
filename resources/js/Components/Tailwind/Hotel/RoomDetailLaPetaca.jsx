@@ -1042,6 +1042,59 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
                                 </div>
                             </div>
                         )}
+
+                        {/* Horarios de Check-In y Check-Out */}
+                        <div className="bg-white rounded-2xl p-6 shadow-sm">
+                            <h2 className="text-xl font-bold customtext-primary mb-4">Políticas del establecimiento</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="flex items-start gap-4 p-4 bg-sections-color rounded-xl">
+                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <Clock size={24} className="text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold customtext-primary text-sm">Check-In</p>
+                                        <p className="text-lg font-bold text-primary">
+                                            {(() => {
+                                                // Buscar en el array de generals
+                                                const checkinGeneral = Array.isArray(generals) 
+                                                    ? generals.find(g => g.correlative === 'hotel_checkin_time')
+                                                    : null;
+                                                const time = checkinGeneral?.description || generals?.hotel_checkin_time || '14:00';
+                                                const [hours, minutes] = time.split(':');
+                                                const hour = parseInt(hours);
+                                                const ampm = hour >= 12 ? 'PM' : 'AM';
+                                                const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+                                                return `${displayHour}:${minutes} ${ampm}`;
+                                            })()}
+                                        </p>
+                                        <p className="text-xs customtext-neutral-light mt-1">A partir de esta hora</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4 p-4 bg-sections-color rounded-xl">
+                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <Clock size={24} className="text-neutral-light" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold customtext-primary text-sm">Check-Out</p>
+                                        <p className="text-lg font-bold text-neutral-light">
+                                            {(() => {
+                                                // Buscar en el array de generals
+                                                const checkoutGeneral = Array.isArray(generals) 
+                                                    ? generals.find(g => g.correlative === 'hotel_checkout_time')
+                                                    : null;
+                                                const time = checkoutGeneral?.description || generals?.hotel_checkout_time || '12:00';
+                                                const [hours, minutes] = time.split(':');
+                                                const hour = parseInt(hours);
+                                                const ampm = hour >= 12 ? 'PM' : 'AM';
+                                                const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+                                                return `${displayHour}:${minutes} ${ampm}`;
+                                            })()}
+                                        </p>
+                                        <p className="text-xs customtext-neutral-light mt-1">Antes de esta hora</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     {/* Columna derecha - Card de reserva sticky */}

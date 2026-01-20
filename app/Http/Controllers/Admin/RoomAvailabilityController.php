@@ -380,8 +380,10 @@ class RoomAvailabilityController extends BasicController
                 $current = Carbon::parse($booking->check_in);
                 $checkOut = Carbon::parse($booking->check_out);
                 
-                // Incluir día de check-out para limpieza
-                while ($current <= $checkOut) {
+                // NO incluir el día de check-out porque el huésped se retira 
+                // a la hora de checkout (ej: 12:00 PM) y la habitación queda disponible
+                // para nuevas reservas ese mismo día
+                while ($current < $checkOut) {
                     $dateStr = $current->format('Y-m-d');
                     if (!in_array($dateStr, $bookedDates)) {
                         $bookedDates[] = $dateStr;
