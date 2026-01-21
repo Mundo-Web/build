@@ -1,0 +1,1 @@
+import"./vendor-react-DD0uBW7s.js";import{M as o}from"./MessagesRest-BEsKasoM.js";import"./GoogleSignInButton-BciphYP2.js";import"./vendor-swiper-BQwfPLwm.js";import"./BasicRest-BuuGWTMX.js";import"./BooleanLimit-q2Ad9fGY.js";new o;

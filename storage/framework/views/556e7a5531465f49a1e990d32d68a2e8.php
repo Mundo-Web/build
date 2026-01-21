@@ -31,6 +31,12 @@
     <!-- Favicon -->
       <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e(uniqid()); ?>" type="image/png">
 
+    <!-- Preload recursos críticos -->
+    <link rel="preload" href="/assets/resources/logo.png" as="image" type="image/png">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+
     <!-- Meta básicas -->
     <meta name="description" content="<?php echo e($data['description'] ?? $ogDescription ?? $siteDescription); ?>">
     <?php if($siteKeywords || (isset($data['keywords']) && $data['keywords'])): ?>
@@ -204,6 +210,29 @@
 </head>
 
 <body class="font-general">
+    <!-- Loading Screen Nativo (aparece ANTES de que React cargue) -->
+    <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(135deg,#ffffff 0%,#f8f9fa 100%);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
+        <style>
+            @keyframes pulse-loader{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.98)}}
+            #native-loader img{animation:pulse-loader 2s ease-in-out infinite}
+        </style>
+        <div style="position:relative;">
+            <div style="position:absolute;inset:0;margin:-2rem;border-radius:50%;opacity:0.05;animation:pulse-loader 2s ease-in-out infinite;"></div>
+            <img src="/assets/resources/loading.png?v=<?php echo e(uniqid()); ?>" alt="Cargando..." style="width:300px;max-width:80vw;height:auto;position:relative;" onerror="this.src='/assets/resources/logo.png?v=<?php echo e(uniqid()); ?>';this.style.background='white';this.style.padding='0.5rem';this.style.borderRadius='8px';">
+        </div>
+    </div>
+    <script>
+        (function(){
+            window.addEventListener('load',function(){
+                setTimeout(function(){
+                    var loader=document.getElementById('native-loader');
+                    if(loader){loader.style.opacity='0';loader.style.visibility='hidden';}
+                    setTimeout(function(){if(loader&&loader.parentNode)loader.parentNode.removeChild(loader);},500);
+                },300);
+            });
+        })();
+    </script>
+
     <?php
         $pixelScripts = App\Helpers\PixelHelper::getPixelScripts();
     ?>
@@ -213,15 +242,22 @@
 
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->body; } else { ?><div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div><?php } ?>
 
-    
-
-    <!-- Vendor js -->
+    <!-- Vendor js (diferido para no bloquear) -->
     <script src="/lte/assets/js/vendor.min.js" defer></script>
 
-    <!-- Culqi Custom Checkout v4 -->
-    <script src="https://js.culqi.com/checkout-js"></script>
-    <!-- Culqi 3DS para autenticación segura -->
-    <script src="https://3ds.culqi.com" defer></script>
+    <!-- SDKs de pago cargados solo cuando se necesitan -->
+    <script>
+        // Cargar Culqi solo cuando se accede a checkout
+        window.loadCulqi = function() {
+            if (window.Culqi) return Promise.resolve();
+            return new Promise(function(resolve) {
+                var script = document.createElement('script');
+                script.src = 'https://js.culqi.com/checkout-js';
+                script.onload = resolve;
+                document.head.appendChild(script);
+            });
+        };
+    </script>
 
     <!-- OpenPay SDK -->
     <?php

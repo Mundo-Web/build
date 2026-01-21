@@ -8,6 +8,25 @@ const AdModal = ({ data, items = [] }) => {
     const [hasShown, setHasShown] = useState(false);
     const [adsToShow, setAdsToShow] = useState([]);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [pageReady, setPageReady] = useState(false);
+
+    // Esperar a que la página esté completamente cargada
+    useEffect(() => {
+        // Si el documento ya está cargado
+        if (document.readyState === 'complete') {
+            // Agregar un pequeño delay adicional para asegurar que React terminó de renderizar
+            const timer = setTimeout(() => setPageReady(true), 500);
+            return () => clearTimeout(timer);
+        }
+        
+        // Si no, esperar al evento load
+        const handleLoad = () => {
+            setTimeout(() => setPageReady(true), 500);
+        };
+        
+        window.addEventListener('load', handleLoad);
+        return () => window.removeEventListener('load', handleLoad);
+    }, []);
 
     // Función auxiliar para generar una clave única para el anuncio
     const getStorageKey = (ad) => {
@@ -77,13 +96,15 @@ const AdModal = ({ data, items = [] }) => {
     }, [items]);
 
     useEffect(() => {
+        // No mostrar hasta que la página esté lista
+        if (!pageReady) return;
         if (adsToShow.length === 0 || hasShown) return;
 
         // Determinar el delay basado en el primer anuncio
         const firstAd = adsToShow[0];
         const delay = (firstAd.seconds || 0) * 1000;
 
-        console.log(`AdModal: Programando apertura en ${delay}ms`);
+        console.log(`AdModal: Página lista. Programando apertura en ${delay}ms`);
 
         const timer = setTimeout(() => {
             setModalOpen(true);
@@ -91,7 +112,7 @@ const AdModal = ({ data, items = [] }) => {
         }, delay);
 
         return () => clearTimeout(timer);
-    }, [adsToShow, hasShown]);
+    }, [adsToShow, hasShown, pageReady]);
 
     // Autoplay para múltiples slides - usa los segundos configurados en cada anuncio
     useEffect(() => {

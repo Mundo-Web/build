@@ -62,176 +62,46 @@ const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
 const Store = React.lazy(() => import("./Components/Tailwind/Store"));
 const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
 
-// Componente de carga profesional para usar con Suspense
+// Componente de carga ligero para Suspense (debe ser igual al native-loader de public.blade.php)
 const LoadingFallback = () => {
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [showFallback, setShowFallback] = useState(true);
-    const [isMobile, setIsMobile] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [loadingText, setLoadingText] = useState('Cargando');
-    const [fadeOut, setFadeOut] = useState(false);
-
-    useEffect(() => {
-        // Detectar mobile
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
-
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-
-        // Animación de puntos en "Cargando..."
-        const textInterval = setInterval(() => {
-            setLoadingText(prev => {
-                const dots = (prev.match(/\./g) || []).length;
-                return dots >= 3 ? 'Cargando' : prev + '.';
-            });
-        }, 400);
-
-        // Progreso suave y realista
-        const progressInterval = setInterval(() => {
-            setProgress(prev => {
-                if (prev >= 95) return prev;
-                // Progreso más rápido al inicio, más lento al final
-                const increment = prev < 30 ? Math.random() * 20 + 10 
-                    : prev < 70 ? Math.random() * 10 + 5 
-                    : Math.random() * 3 + 1;
-                return Math.min(prev + increment, 95);
-            });
-        }, 300);
-
-        // Timeout diferenciado para mobile vs desktop
-        const timeout = setTimeout(() => {
-            setProgress(100);
-            setFadeOut(true);
-            setTimeout(() => setShowFallback(false), 600);
-        }, isMobile ? 1200 : 2000);
-
-        return () => {
-            clearTimeout(timeout);
-            clearInterval(progressInterval);
-            clearInterval(textInterval);
-            window.removeEventListener('resize', checkMobile);
-        };
-    }, [isMobile]);
-
-    // Renderizado con fade-out elegante
-    const containerClasses = `fixed inset-0 flex flex-col justify-center items-center z-50 transition-all duration-600 ${
-        fadeOut 
-            ? 'opacity-0 scale-95' 
-            : 'opacity-100 scale-100'
-    }`;
-
-    const backgroundClasses = `absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white ${
-        fadeOut ? 'backdrop-blur-none' : 'backdrop-blur-sm'
-    }`;
-
-    if (!showFallback) return null;
-
     return (
-        <div className={containerClasses}>
-            {/* Background con gradiente */}
-            <div className={backgroundClasses}></div>
-            
-            {/* Contenido */}
-            <div className="relative z-10 flex flex-col items-center">
-                {/* Logo con animación pulse suave */}
-                <div className="relative">
-                    {/* Círculo de fondo animado */}
-                    <div className="absolute inset-0 -m-8 rounded-full bg-primary/5 animate-pulse"></div>
-                    
-                    <img
-                        src={`/assets/resources/loading.png?v=${crypto.randomUUID()}`}
-                        alt={Global.APP_NAME}
-                        onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/assets/resources/logo.png";
-                        }}
-                        onLoad={() => setIsLoaded(true)}
-                        className={`relative ${
-                            isMobile ? 'w-40 sm:w-52' : 'w-64 lg:w-80'
-                        } transition-all duration-700 ease-out ${
-                            isLoaded 
-                                ? 'opacity-100 scale-100' 
-                                : 'opacity-0 scale-90'
-                        } ${!fadeOut && 'animate-pulse'}`}
-                        style={{
-                            filter: fadeOut ? 'blur(4px)' : 'blur(0px)',
-                            animationDuration: '2s'
-                        }}
-                        loading="eager"
-                        decoding="async"
-                    />
-                </div>
-
-                {/* Texto "Cargando..." */}
-                <div className={`mt-8 text-center transition-opacity duration-500 ${
-                    fadeOut ? 'opacity-0' : 'opacity-100'
-                }`}>
-                    <p className={`font-medium text-gray-700 ${
-                        isMobile ? 'text-base' : 'text-lg'
-                    }`}>
-                        {loadingText}
-                    </p>
-                </div>
-
-                {/* Barra de progreso moderna con gradiente */}
-                <div className={`mt-6 ${
-                    isMobile ? 'w-48' : 'w-72'
-                } transition-all duration-500 ${
-                    fadeOut ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-                }`}>
-                    {/* Contenedor de la barra */}
-                    <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                        {/* Barra de progreso con gradiente */}
-                        <div
-                            className="absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out"
-                            style={{
-                                width: `${progress}%`,
-                              
-                            }}
-                        >
-                            {/* Efecto de brillo animado */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
-                                style={{
-                                    animation: 'shimmer 2s infinite'
-                                }}
-                            ></div>
-                        </div>
-                    </div>
-                    
-                    {/* Porcentaje */}
-                    <div className="mt-2 text-center">
-                        <span className="text-xs text-gray-500 font-medium">
-                            {Math.round(progress)}%
-                        </span>
-                    </div>
-                </div>
-
-                {/* Spinner de respaldo si la imagen no carga */}
-                {!isLoaded && (
-                    <div className="mt-4">
-                        <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-primary ${
-                            isMobile ? 'h-8 w-8' : 'h-10 w-10'
-                        }`}></div>
-                    </div>
-                )}
-            </div>
-
-            {/* Estilos inline para animación de shimmer */}
+        <div 
+            className="fixed inset-0 flex flex-col justify-center items-center z-50"
+            style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)' }}
+        >
             <style>{`
-                @keyframes shimmer {
-                    0% {
-                        transform: translateX(-100%);
-                    }
-                    100% {
-                        transform: translateX(100%);
-                    }
-                }
-                .animate-shimmer {
-                    animation: shimmer 2s infinite;
+                @keyframes pulse-loader {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.7; transform: scale(0.98); }
                 }
             `}</style>
+            <div className="relative">
+                <div 
+                    className="absolute inset-0 rounded-full"
+                    style={{ 
+                      
+                        opacity: 0.05,
+                        animation: 'pulse-loader 2s ease-in-out infinite'
+                    }}
+                />
+                <img
+                    src="/assets/resources/loading.png"
+                    alt="Cargando..."
+                    className="relative"
+                    style={{ 
+                        width: '300px', 
+                        maxWidth: '80vw',
+                        animation: 'pulse-loader 2s ease-in-out infinite'
+                    }}
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/assets/resources/logo.png';
+                       
+                    }}
+                    loading="eager"
+                />
+            </div>
+         
         </div>
     );
 };

@@ -1,0 +1,1 @@
+import{j as e}from"./vendor-react-DD0uBW7s.js";import"./vendor-swiper-BQwfPLwm.js";const a=({which:a})=>e.jsxs("div",{className:"w-full px-[5%] replace-max-w-here p-4 mx-auto",children:["- No Hay componente ",e.jsx("b",{children:a})," -"]});export{a as default};
