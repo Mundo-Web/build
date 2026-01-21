@@ -54,25 +54,40 @@ const Sliders = () => {
     else setIsEditing(false)
 
     idRef.current.value = data?.id ?? ''
-    nameRef.current.value = data?.name ?? ''
-    subtitleRef.current.value = data?.subtitle ?? ''
-    descriptionRef.current.value = data?.description ?? ''
+    
+    // Content fields
+    if (nameRef.current) nameRef.current.value = data?.name ?? ''
+    if (subtitleRef.current) subtitleRef.current.value = data?.subtitle ?? ''
+    if (descriptionRef.current) descriptionRef.current.value = data?.description ?? ''
+    
     setActiveTab(data?.bg_type ?? 'image')
     setActiveFormTab('content')
     setIframeSrc(data?.bg_video ?? '')
-    imageRef.current.value = null
-    imageRef.image.src = data?.image ? `/storage/images/slider/${data.image}` : ''
-    bgImageRef.current.value = null
-    bgImageRef.image.src = data?.bg_image ? `/storage/images/slider/${data.bg_image}` : ''
-    bgImageMobileRef.current.value = null
-    bgImageMobileRef.image.src = data?.bg_image_mobile ? `/storage/images/slider/${data.bg_image_mobile}` : ''
-    bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
-    buttonTextRef.current.value = data?.button_text ?? ''
-    buttonLinkRef.current.value = data?.button_link ?? ''
-    secondaryButtonTextRef.current.value = data?.secondary_button_text ?? ''
-    secondaryButtonLinkRef.current.value = data?.secondary_button_link ?? ''
-    titleColorRef.current.value = data?.title_color ?? '#000000'
-    descriptionColorRef.current.value = data?.description_color ?? '#000000'
+    
+    // Image fields
+    if (imageRef.current) {
+      imageRef.current.value = null
+      if (imageRef.image) imageRef.image.src = data?.image ? `/storage/images/slider/${data.image}` : ''
+    }
+    if (bgImageRef.current) {
+      bgImageRef.current.value = null
+      if (bgImageRef.image) bgImageRef.image.src = data?.bg_image ? `/storage/images/slider/${data.bg_image}` : ''
+    }
+    if (bgImageMobileRef.current) {
+      bgImageMobileRef.current.value = null
+      if (bgImageMobileRef.image) bgImageMobileRef.image.src = data?.bg_image_mobile ? `/storage/images/slider/${data.bg_image_mobile}` : ''
+    }
+    if (bgVideoRef.current) bgVideoRef.current.value = data?.bg_video ? `https://youtu.be/${data.bg_video}` : ''
+    
+    // Button fields
+    if (buttonTextRef.current) buttonTextRef.current.value = data?.button_text ?? ''
+    if (buttonLinkRef.current) buttonLinkRef.current.value = data?.button_link ?? ''
+    if (secondaryButtonTextRef.current) secondaryButtonTextRef.current.value = data?.secondary_button_text ?? ''
+    if (secondaryButtonLinkRef.current) secondaryButtonLinkRef.current.value = data?.secondary_button_link ?? ''
+    
+    // Color fields
+    if (titleColorRef.current) titleColorRef.current.value = data?.title_color ?? '#000000'
+    if (descriptionColorRef.current) descriptionColorRef.current.value = data?.description_color ?? '#000000'
     
     // Overlay settings
     setShowOverlay(data?.show_overlay !== false && data?.show_overlay !== 0)
@@ -92,51 +107,73 @@ const Sliders = () => {
 
     const request = {
       id: idRef.current.value || undefined,
-      name: nameRef.current.value,
-      subtitle: subtitleRef.current.value,
-      description: descriptionRef.current.value,
-      button_text: buttonTextRef.current.value,
-      button_link: buttonLinkRef.current.value,
-      button_new_tab: buttonNewTab ? 1 : 0,
-      secondary_button_text: secondaryButtonTextRef.current.value,
-      secondary_button_link: secondaryButtonLinkRef.current.value,
-      title_color: titleColorRef.current.value,
-      description_color: descriptionColorRef.current.value,
-      show_overlay: showOverlay ? 1 : 0,
-      overlay_color: overlayColor,
-      overlay_opacity: overlayOpacity,
-      overlay_direction: overlayDirection,
-      overlay_type: overlayType,
-      bg_type: activeTab,
-      bg_video: activeTab == 'video' ? iframeSrc : null
+    }
+    
+    // Content fields
+    if (nameRef.current) request.name = nameRef.current.value
+    if (subtitleRef.current) request.subtitle = subtitleRef.current.value
+    if (descriptionRef.current) request.description = descriptionRef.current.value
+    
+    // Button fields
+    if (buttonTextRef.current) request.button_text = buttonTextRef.current.value
+    if (buttonLinkRef.current) request.button_link = buttonLinkRef.current.value
+    if (Fillable.has('sliders', 'button_new_tab')) request.button_new_tab = buttonNewTab ? 1 : 0
+    if (secondaryButtonTextRef.current) request.secondary_button_text = secondaryButtonTextRef.current.value
+    if (secondaryButtonLinkRef.current) request.secondary_button_link = secondaryButtonLinkRef.current.value
+    
+    // Color fields
+    if (titleColorRef.current) request.title_color = titleColorRef.current.value
+    if (descriptionColorRef.current) request.description_color = descriptionColorRef.current.value
+    
+    // Overlay fields
+    if (Fillable.has('sliders', 'show_overlay')) {
+      request.show_overlay = showOverlay ? 1 : 0
+      request.overlay_color = overlayColor
+      request.overlay_opacity = overlayOpacity
+      request.overlay_direction = overlayDirection
+      request.overlay_type = overlayType
+    }
+    
+    // Media fields
+    request.bg_type = activeTab
+    if (activeTab == 'video' && Fillable.has('sliders', 'bg_video')) {
+      request.bg_video = iframeSrc
     }
 
     const formData = new FormData()
     for (const key in request) {
-      formData.append(key, request[key])
+      if (request[key] !== undefined) {
+        formData.append(key, request[key])
+      }
     }
 
     if (activeTab == 'image') {
-      const file = bgImageRef.current.files[0]
-      if (file) {
-        formData.append('bg_image', file)
+      if (bgImageRef.current) {
+        const file = bgImageRef.current.files?.[0]
+        if (file) {
+          formData.append('bg_image', file)
+        }
       }
 
-      const mobileFile = bgImageMobileRef.current.files[0]
-      if (mobileFile) {
-        formData.append('bg_image_mobile', mobileFile)
+      if (bgImageMobileRef.current) {
+        const mobileFile = bgImageMobileRef.current.files?.[0]
+        if (mobileFile) {
+          formData.append('bg_image_mobile', mobileFile)
+        }
       }
 
-      const image = imageRef.current.files[0]
-      if (image) {
-        formData.append('image', image)
+      if (imageRef.current) {
+        const image = imageRef.current.files?.[0]
+        if (image) {
+          formData.append('image', image)
+        }
       }
     } else {
       formData.append('bg_image', null)
       formData.append('bg_image_mobile', null)
     }
 
-      // Check for image deletion flags
+    // Check for image deletion flags
     if (bgImageRef.getDeleteFlag && bgImageRef.getDeleteFlag()) {
         formData.append('bg_image_delete', 'DELETE');
     }
@@ -357,68 +394,87 @@ const Sliders = () => {
         {/* Form Tabs Navigation */}
         <div className="col-12 mb-3">
           <ul className="nav nav-pills nav-fill">
-            <li className="nav-item">
-              <a 
-                href="#form-tab-content" 
-                className={`nav-link ${activeFormTab === 'content' ? 'active' : ''}`}
-                onClick={() => setActiveFormTab('content')}
-              >
-                Contenido
-              </a>
-            </li>
-            <li className="nav-item">
-              <a 
-                href="#form-tab-media" 
-                className={`nav-link ${activeFormTab === 'media' ? 'active' : ''}`}
-                onClick={() => setActiveFormTab('media')}
-              >
-                Multimedia
-              </a>
-            </li>
-            <li className="nav-item">
-              <a 
-                href="#form-tab-buttons" 
-                className={`nav-link ${activeFormTab === 'buttons' ? 'active' : ''}`}
-                onClick={() => setActiveFormTab('buttons')}
-              >
-                Botones
-              </a>
-            </li>
-            <li className="nav-item">
-              <a 
-                href="#form-tab-colors" 
-                className={`nav-link ${activeFormTab === 'colors' ? 'active' : ''}`}
-                onClick={() => setActiveFormTab('colors')}
-              >
-                Colores
-              </a>
-            </li>
+            {(Fillable.has('sliders', 'name') || Fillable.has('sliders', 'subtitle') || Fillable.has('sliders', 'description')) && (
+              <li className="nav-item">
+                <a 
+                  href="#form-tab-content" 
+                  className={`nav-link ${activeFormTab === 'content' ? 'active' : ''}`}
+                  onClick={() => setActiveFormTab('content')}
+                >
+                  Contenido
+                </a>
+              </li>
+            )}
+            {(Fillable.has('sliders', 'bg_image') || Fillable.has('sliders', 'bg_image_mobile') || Fillable.has('sliders', 'image') || Fillable.has('sliders', 'bg_video')) && (
+              <li className="nav-item">
+                <a 
+                  href="#form-tab-media" 
+                  className={`nav-link ${activeFormTab === 'media' ? 'active' : ''}`}
+                  onClick={() => setActiveFormTab('media')}
+                >
+                  Multimedia
+                </a>
+              </li>
+            )}
+            {(Fillable.has('sliders', 'button_text') || Fillable.has('sliders', 'button_link') || Fillable.has('sliders', 'secondary_button_text') || Fillable.has('sliders', 'secondary_button_link')) && (
+              <li className="nav-item">
+                <a 
+                  href="#form-tab-buttons" 
+                  className={`nav-link ${activeFormTab === 'buttons' ? 'active' : ''}`}
+                  onClick={() => setActiveFormTab('buttons')}
+                >
+                  Botones
+                </a>
+              </li>
+            )}
+            {(Fillable.has('sliders', 'title_color') || Fillable.has('sliders', 'description_color') || Fillable.has('sliders', 'show_overlay')) && (
+              <li className="nav-item">
+                <a 
+                  href="#form-tab-colors" 
+                  className={`nav-link ${activeFormTab === 'colors' ? 'active' : ''}`}
+                  onClick={() => setActiveFormTab('colors')}
+                >
+                  Colores
+                </a>
+              </li>
+            )}
           </ul>
         </div>
 
         {/* Content Tab */}
-        <div className={`col-12 ${activeFormTab !== 'content' ? 'd-none' : ''}`}>
-          <div className='row'>
-            <TextareaFormGroup eRef={nameRef} label='Título principal' col='col-12' rows={2} required />
-            <TextareaFormGroup eRef={subtitleRef} label='Subtítulo (aparecerá resaltado)' col='col-12' rows={2} />
-            <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} col='col-12' />
+        {(Fillable.has('sliders', 'name') || Fillable.has('sliders', 'subtitle') || Fillable.has('sliders', 'description')) && (
+          <div className={`col-12 ${activeFormTab !== 'content' ? 'd-none' : ''}`}>
+            <div className='row'>
+              {Fillable.has('sliders', 'name') && (
+                <TextareaFormGroup eRef={nameRef} label='Título principal' col='col-12' rows={2} required />
+              )}
+              {Fillable.has('sliders', 'subtitle') && (
+                <TextareaFormGroup eRef={subtitleRef} label='Subtítulo (aparecerá resaltado)' col='col-12' rows={2} />
+              )}
+              {Fillable.has('sliders', 'description') && (
+                <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} col='col-12' />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Media Tab */}
-        <div className={`col-12 ${activeFormTab !== 'media' ? 'd-none' : ''}`}>
-          <ul hidden={!Fillable.has('sliders', 'image') || !Fillable.has('sliders', 'bg_image') || !Fillable.has('sliders', 'bg_video')} className="nav nav-pills navtab-bg nav-justified">
-            <li className="nav-item">
-              <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" className={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
-                Imagen
-              </a>
-            </li>
-            <li className="nav-item">
-              <a href="#tab-video" data-bs-toggle="tab" aria-expanded="true" className={`nav-link ${activeTab == 'video' && 'active'}`} onClick={() => setActiveTab('video')}>
-                Video
-              </a>
-            </li>
-          </ul>
+        {(Fillable.has('sliders', 'bg_image') || Fillable.has('sliders', 'bg_image_mobile') || Fillable.has('sliders', 'image') || Fillable.has('sliders', 'bg_video')) && (
+          <div className={`col-12 ${activeFormTab !== 'media' ? 'd-none' : ''}`}>
+            {Fillable.has('sliders', 'bg_video') && (
+              <ul className="nav nav-pills navtab-bg nav-justified">
+                <li className="nav-item">
+                  <a href="#tab-image" data-bs-toggle="tab" aria-expanded="false" className={`nav-link ${activeTab == 'image' && 'active'}`} onClick={() => setActiveTab('image')}>
+                    Imagen
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a href="#tab-video" data-bs-toggle="tab" aria-expanded="true" className={`nav-link ${activeTab == 'video' && 'active'}`} onClick={() => setActiveTab('video')}>
+                    Video
+                  </a>
+                </li>
+              </ul>
+            )}
           <div className="tab-content">
             <div className={`tab-pane ${activeTab == 'image' && 'show active'}`} id="tab-image">
               <div className='row'>
@@ -441,75 +497,105 @@ const Sliders = () => {
               </div>
               <ImageFormGroup hidden={!Fillable.has('sliders', 'image')} eRef={imageRef} name="image" label='Imagen' />
             </div>
-            <div hidden={!Fillable.has('sliders', 'bg_video')} className={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
-              <InputFormGroup eRef={bgVideoRef} label='URL (Youtube)' type='link' onChange={e => setIframeSrc(getYTVideoId(e.target.value))} />
-              <iframe src={`https://www.youtube.com/embed/${iframeSrc}`} className='w-100 rounded border mb-2' style={{
-                aspectRatio: 21 / 9
-              }} />
-            </div>
+            {Fillable.has('sliders', 'bg_video') && (
+              <div className={`tab-pane ${activeTab == 'video' && 'show active'}`} id="tab-video">
+                <InputFormGroup eRef={bgVideoRef} label='URL (Youtube)' type='link' onChange={e => setIframeSrc(getYTVideoId(e.target.value))} />
+                <iframe src={`https://www.youtube.com/embed/${iframeSrc}`} className='w-100 rounded border mb-2' style={{
+                  aspectRatio: 21 / 9
+                }} />
+              </div>
+            )}
           </div>
         </div>
+        )}
 
         {/* Buttons Tab */}
-        <div className={`col-12 ${activeFormTab !== 'buttons' ? 'd-none' : ''}`}>
-          <div className='row'>
-            <div className='col-12 mb-3'>
-              <h6 className='text-muted'>Botón Principal</h6>
+        {(Fillable.has('sliders', 'button_text') || Fillable.has('sliders', 'button_link') || Fillable.has('sliders', 'secondary_button_text') || Fillable.has('sliders', 'secondary_button_link')) && (
+          <div className={`col-12 ${activeFormTab !== 'buttons' ? 'd-none' : ''}`}>
+            <div className='row'>
+              {(Fillable.has('sliders', 'button_text') || Fillable.has('sliders', 'button_link')) && (
+                <>
+                  <div className='col-12 mb-3'>
+                    <h6 className='text-muted'>Botón Principal</h6>
+                  </div>
+                  {Fillable.has('sliders', 'button_text') && (
+                    <InputFormGroup eRef={buttonTextRef} label='Texto del botón' col='col-sm-6' required />
+                  )}
+                  {Fillable.has('sliders', 'button_link') && (
+                    <InputFormGroup eRef={buttonLinkRef} label='URL del botón' col='col-sm-6' required />
+                  )}
+                  {Fillable.has('sliders', 'button_new_tab') && (
+                    <div className='col-sm-6 mt-2'>
+                      <label className='form-label'>Abrir en nueva pestaña</label>
+                      <div className='form-check form-switch'>
+                        <input 
+                          className='form-check-input' 
+                          type='checkbox' 
+                          checked={buttonNewTab}
+                          onChange={(e) => setButtonNewTab(e.target.checked)}
+                          style={{ width: '50px', height: '25px' }}
+                        />
+                        <label className='form-check-label ms-2'>
+                          {buttonNewTab ? 'Sí' : 'No'}
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {(Fillable.has('sliders', 'secondary_button_text') || Fillable.has('sliders', 'secondary_button_link')) && (
+                <>
+                  <div className='col-12 mt-3 mb-3'>
+                    <h6 className='text-muted'>Botón Secundario</h6>
+                  </div>
+                  {Fillable.has('sliders', 'secondary_button_text') && (
+                    <InputFormGroup eRef={secondaryButtonTextRef} label='Texto del botón secundario' col='col-sm-6' />
+                  )}
+                  {Fillable.has('sliders', 'secondary_button_link') && (
+                    <InputFormGroup eRef={secondaryButtonLinkRef} label='URL del botón secundario' col='col-sm-6' />
+                  )}
+                </>
+              )}
             </div>
-            <InputFormGroup eRef={buttonTextRef} label='Texto del botón' col='col-sm-6' required />
-            <InputFormGroup eRef={buttonLinkRef} label='URL del botón' col='col-sm-6' required />
-            <div className='col-sm-6 mt-2'>
-              <label className='form-label'>Abrir en nueva pestaña</label>
-              <div className='form-check form-switch'>
-                <input 
-                  className='form-check-input' 
-                  type='checkbox' 
-                  checked={buttonNewTab}
-                  onChange={(e) => setButtonNewTab(e.target.checked)}
-                  style={{ width: '50px', height: '25px' }}
-                />
-                <label className='form-check-label ms-2'>
-                  {buttonNewTab ? 'Sí' : 'No'}
-                </label>
-              </div>
-            </div>
-            
-            <div className='col-12 mt-3 mb-3'>
-              <h6 className='text-muted'>Botón Secundario</h6>
-            </div>
-            <InputFormGroup eRef={secondaryButtonTextRef} label='Texto del botón secundario' col='col-sm-6' />
-            <InputFormGroup eRef={secondaryButtonLinkRef} label='URL del botón secundario' col='col-sm-6' />
           </div>
-        </div>
+        )}
 
         {/* Colors Tab */}
-        <div className={`col-12 ${activeFormTab !== 'colors' ? 'd-none' : ''}`}>
-          <div className='row'>
-            <div className='col-sm-6'>
-              <label className='form-label'>Color del título</label>
-              <input 
-                ref={titleColorRef} 
-                type='color' 
-                className='form-control form-control-color' 
-                defaultValue='#000000'
-                title='Seleccionar color del título'
-              />
-            </div>
-            <div className='col-sm-6'>
-              <label className='form-label'>Color de la descripción</label>
-              <input 
-                ref={descriptionColorRef} 
-                type='color' 
-                className='form-control form-control-color' 
-                defaultValue='#000000'
-                title='Seleccionar color de la descripción'
-              />
-            </div>
-            
-            {/* Overlay Settings */}
-            <div className='col-12 mt-4 mb-3'>
-              <h6 className='text-muted border-bottom pb-2'>Configuración del Overlay</h6>
-            </div>
+        {(Fillable.has('sliders', 'title_color') || Fillable.has('sliders', 'description_color') || Fillable.has('sliders', 'show_overlay')) && (
+          <div className={`col-12 ${activeFormTab !== 'colors' ? 'd-none' : ''}`}>
+            <div className='row'>
+              {Fillable.has('sliders', 'title_color') && (
+                <div className='col-sm-6'>
+                  <label className='form-label'>Color del título</label>
+                  <input 
+                    ref={titleColorRef} 
+                    type='color' 
+                    className='form-control form-control-color' 
+                    defaultValue='#000000'
+                    title='Seleccionar color del título'
+                  />
+                </div>
+              )}
+              {Fillable.has('sliders', 'description_color') && (
+                <div className='col-sm-6'>
+                  <label className='form-label'>Color de la descripción</label>
+                  <input 
+                    ref={descriptionColorRef} 
+                    type='color' 
+                    className='form-control form-control-color' 
+                    defaultValue='#000000'
+                    title='Seleccionar color de la descripción'
+                  />
+                </div>
+              )}
+              
+              {/* Overlay Settings */}
+              {Fillable.has('sliders', 'show_overlay') && (
+                <>
+                  <div className='col-12 mt-4 mb-3'>
+                    <h6 className='text-muted border-bottom pb-2'>Configuración del Overlay</h6>
+                  </div>
             <div className='col-sm-3'>
               <label className='form-label'>Mostrar Overlay</label>
               <div className='form-check form-switch'>
@@ -615,10 +701,13 @@ const Sliders = () => {
                     : 'El gradiente irá desde el color seleccionado hasta transparente'
                   }
                 </small>
-              </div>
-            )}
+                </div>
+              )}
+            </>
+          )}
           </div>
         </div>
+        )}
 
       </div>
     </Modal>
