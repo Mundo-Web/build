@@ -24,6 +24,7 @@ class Slider extends Model
         'image',
         'button_text',
         'button_link',
+        'button_new_tab',
         'secondary_button_text',
         'secondary_button_link',
         'title_color',
@@ -43,5 +44,6 @@ class Slider extends Model
         'visible' => 'boolean',
         'status' => 'boolean',
         'show_overlay' => 'boolean',
+        'button_new_tab' => 'boolean',
     ];
 }

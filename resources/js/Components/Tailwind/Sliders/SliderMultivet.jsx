@@ -328,6 +328,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                         >
                           <a
                             href={slide?.button_link}
+                            target={slide?.button_new_tab ? "_blank" : "_self"}
+                            rel={slide?.button_new_tab ? "noopener noreferrer" : undefined}
                             className={`bg-primary border-none flex items-center justify-center gap-2 py-3 lg:gap-3 lg:px-8 lg:py-4 text-base rounded-md tracking-wide font-bold text-white ${data?.class_button_primary || ""} transform hover:scale-105 transition-all duration-300`}
                           >
                             <span>{slide?.button_text}</span>

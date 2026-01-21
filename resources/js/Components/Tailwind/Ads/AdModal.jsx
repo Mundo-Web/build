@@ -22,19 +22,48 @@ const AdModal = ({ data, items = [] }) => {
 
         console.log("AdModal: Procesando anuncios...", validAds);
 
-        // 2. Filtrar anuncios que NO han sido vistos/cerrados recientemente
-        const filteredAds = validAds.filter(ad => {
+        // 2. Filtrar por fechas de inicio y fin
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Solo fecha, sin hora
+        
+        const dateFilteredAds = validAds.filter(ad => {
+            // Si no tiene fechas configuradas, siempre mostrar
+            if (!ad.date_begin && !ad.date_end) {
+                console.log(`AdModal: Anuncio ${ad.id || ad.image} sin fechas, siempre visible.`);
+                return true;
+            }
+
+            const dateBegin = ad.date_begin ? new Date(ad.date_begin + 'T00:00:00') : null;
+            const dateEnd = ad.date_end ? new Date(ad.date_end + 'T23:59:59') : null;
+
+            // Verificar si estamos dentro del rango de fechas
+            if (dateBegin && today < dateBegin) {
+                console.log(`AdModal: Anuncio ${ad.id || ad.image} aún no inicia (${ad.date_begin}).`);
+                return false;
+            }
+
+            if (dateEnd && now > dateEnd) {
+                console.log(`AdModal: Anuncio ${ad.id || ad.image} ya expiró (${ad.date_end}).`);
+                return false;
+            }
+
+            console.log(`AdModal: Anuncio ${ad.id || ad.image} está dentro del rango de fechas.`);
+            return true;
+        });
+
+        // 3. Filtrar anuncios que NO han sido vistos/cerrados recientemente
+        const filteredAds = dateFilteredAds.filter(ad => {
             const storageKey = getStorageKey(ad);
             const expiryTimestamp = localStorage.getItem(storageKey);
 
             // Si no existe marca de visto, mostrar
             if (!expiryTimestamp) return true;
 
-            const now = Date.now();
+            const nowMs = Date.now();
             const expiry = parseInt(expiryTimestamp, 10);
 
             // Si la fecha de expiración ya pasó, limpiar y mostrar de nuevo
-            if (isNaN(expiry) || now > expiry) {
+            if (isNaN(expiry) || nowMs > expiry) {
                 console.log(`AdModal: Anuncio ${ad.id || ad.image} expiró su marca de visto. Mostrando de nuevo.`);
                 localStorage.removeItem(storageKey);
                 return true;
@@ -203,46 +232,53 @@ const AdModal = ({ data, items = [] }) => {
 
 const AdContent = ({ ad, handleAdClick }) => {
     const buttonText = ad.button_text || 'Ver más detalles';
+    const hasContent = ad.name || ad.description || ad.link;
     
     return (
-        <div className="flex flex-col md:flex-row w-full min-h-[400px] md:min-h-[450px] md:h-[500px]">
-            {/* Columna Izquierda: Imagen */}
-            <div className="w-full md:w-1/2 h-56 md:h-full relative bg-gray-100 overflow-hidden group">
-                <img
-                    src={`/api/ads/media/${ad.image}`}
-                    alt={ad.name || "Anuncio"}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* Overlay sutil con gradiente */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-black/10 pointer-events-none" />
-            </div>
-
-            {/* Columna Derecha: Contenido */}
-            <div className="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col justify-center items-start text-left bg-white relative">
-                <div className="w-full space-y-4 md:space-y-6">
-                    {ad.name && (
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
-                            {ad.name}
-                        </h2>
-                    )}
-
-                    {ad.description && (
-                        <div className="prose prose-sm md:prose-base text-gray-600 line-clamp-4 md:line-clamp-6">
-                            <HtmlContent html={ad.description} />
-                        </div>
-                    )}
-
-                    {ad.link && (
-                        <button
-                            onClick={() => handleAdClick(ad.link)}
-                            className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 group"
-                        >
-                            <span>{buttonText}</span>
-                            <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
-                        </button>
-                    )}
+        <div className={`flex flex-col w-full ${hasContent ? 'md:flex-row' : ''}`}>
+            {/* Imagen 1:1 */}
+            <div className={`w-full ${hasContent ? 'md:w-1/2' : ''} relative bg-gray-100 overflow-hidden group`}>
+                <div className="aspect-square w-full">
+                    <img
+                        src={`/api/ads/media/${ad.image}`}
+                        alt={ad.name || "Anuncio"}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                 </div>
+                {/* Overlay sutil con gradiente */}
+                {hasContent && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-black/10 pointer-events-none" />
+                )}
             </div>
+
+            {/* Columna Derecha: Contenido (solo si hay contenido) */}
+            {hasContent && (
+                <div className="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col justify-center items-start text-left bg-white relative">
+                    <div className="w-full space-y-4 md:space-y-6">
+                        {ad.name && (
+                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                                {ad.name}
+                            </h2>
+                        )}
+
+                        {ad.description && (
+                            <div className="prose prose-sm md:prose-base text-gray-600 line-clamp-4 md:line-clamp-6">
+                                <HtmlContent html={ad.description} />
+                            </div>
+                        )}
+
+                        {ad.link && (
+                            <button
+                                onClick={() => handleAdClick(ad.link)}
+                                className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 group"
+                            >
+                                <span>{buttonText}</span>
+                                <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

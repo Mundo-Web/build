@@ -47,6 +47,7 @@ const Sliders = () => {
   const [overlayDirection, setOverlayDirection] = useState('to-b')
   const [overlayColor, setOverlayColor] = useState('#000000')
   const [overlayType, setOverlayType] = useState('gradient')
+  const [buttonNewTab, setButtonNewTab] = useState(false)
 
   const onModalOpen = (data) => {
     if (data?.id) setIsEditing(true)
@@ -79,6 +80,9 @@ const Sliders = () => {
     setOverlayOpacity(data?.overlay_opacity ?? 50)
     setOverlayDirection(data?.overlay_direction ?? 'to-b')
     setOverlayType(data?.overlay_type ?? 'gradient')
+    
+    // Button settings
+    setButtonNewTab(data?.button_new_tab === true || data?.button_new_tab === 1)
 
     $(modalRef.current).modal('show')
   }
@@ -93,6 +97,7 @@ const Sliders = () => {
       description: descriptionRef.current.value,
       button_text: buttonTextRef.current.value,
       button_link: buttonLinkRef.current.value,
+      button_new_tab: buttonNewTab ? 1 : 0,
       secondary_button_text: secondaryButtonTextRef.current.value,
       secondary_button_link: secondaryButtonLinkRef.current.value,
       title_color: titleColorRef.current.value,
@@ -453,6 +458,21 @@ const Sliders = () => {
             </div>
             <InputFormGroup eRef={buttonTextRef} label='Texto del botón' col='col-sm-6' required />
             <InputFormGroup eRef={buttonLinkRef} label='URL del botón' col='col-sm-6' required />
+            <div className='col-sm-6 mt-2'>
+              <label className='form-label'>Abrir en nueva pestaña</label>
+              <div className='form-check form-switch'>
+                <input 
+                  className='form-check-input' 
+                  type='checkbox' 
+                  checked={buttonNewTab}
+                  onChange={(e) => setButtonNewTab(e.target.checked)}
+                  style={{ width: '50px', height: '25px' }}
+                />
+                <label className='form-check-label ms-2'>
+                  {buttonNewTab ? 'Sí' : 'No'}
+                </label>
+              </div>
+            </div>
             
             <div className='col-12 mt-3 mb-3'>
               <h6 className='text-muted'>Botón Secundario</h6>

@@ -281,13 +281,13 @@ const Ads = ({ }) => {
             name="image" 
             label='Imagen del anuncio' 
             col='col-12' 
-            aspect={4/5} 
+            aspect={1/1} 
             fit='cover' 
             required 
           />
           <div className="alert alert-light border small mt-2">
             <i className="fas fa-info-circle text-info mr-1"></i>
-            Tamaño recomendado: 800x1000px (4:5)
+            Tamaño recomendado: 800x800px (1:1)
           </div>
         </div>
         
