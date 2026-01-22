@@ -590,6 +590,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/strengths/status', [AdminStrengthController::class, 'status']);
     Route::patch('/strengths/{field}', [AdminStrengthController::class, 'boolean']);
     Route::delete('/strengths/{id}', [AdminStrengthController::class, 'delete']);
+       Route::put('/strengths/{id}/reorder', [AdminStrengthController::class, 'reorder']);
 
     Route::post('/benefits', [AdminBenefitController::class, 'save']);
     Route::post('/benefits/paginate', [AdminBenefitController::class, 'paginate']);
