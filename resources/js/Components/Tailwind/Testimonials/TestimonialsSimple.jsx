@@ -47,7 +47,7 @@ console.log("TestimonialsSimple items:", items);
 
                   {/* Rating Stars */}
                   <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating || 5)].map((_, i) => (
+                    {[...Array(parseInt(testimonial.rating) || 5)].map((_, i) => (
                       <svg
                         key={i}
                         className="w-5 h-5 fill-yellow-400 text-yellow-400"
