@@ -266,7 +266,7 @@ const System = ({
                       <div className="tab-content">
                         <div className="tab-pane active" id="base-template">
                           <div className="row">
-                            <div className="col-md-4">
+                            <div className="col-md-4" style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
                               <div className='d-flex flex-column gap-2 components-container' data-page-id={null}>
                                 {
                                   SortByAfterField(systems).filter(x => x.page_id == null).map(system => {
@@ -307,7 +307,7 @@ const System = ({
                           pages.map((page, index) => (
                             <div className="tab-pane" id={`page-${page.id}`} data-id={page.id} key={index}>
                               <div className="row">
-                                <div className="col-md-4">
+                                <div className="col-md-4" style={{ maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>
                                   <BasicEditing4System {...page} models={models} setPages={setPages} onSEOClicked={onEditSEOClicked} onParamsClicked={onManageParamsClicked} />
                                   <hr className='my-2' />
                                   <div className='d-flex flex-column gap-2 components-container' data-page-id={page.id}>

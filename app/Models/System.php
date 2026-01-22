@@ -21,6 +21,7 @@ class System extends Model
         'after_component',
         'component',
         'value',
+        'element_id',
         'data',
         'filters',
         'filters_method',

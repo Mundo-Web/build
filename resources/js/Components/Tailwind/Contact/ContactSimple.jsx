@@ -56,7 +56,7 @@ const ContactSimple = ({ data, contacts }) => {
     descriptionRef.current.value = null
   }
 
-  return <div className="bg-white">
+  return <div id={data?.element_id} className="bg-white">
     <div className="px-[5%] 2xl:max-w-7xl 2xl:px-0 w-full mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32 2xl:gap-44">
         <div className="flex flex-col gap-5 aos-init aos-animate" data-aos="fade-up" data-aos-offset="150">

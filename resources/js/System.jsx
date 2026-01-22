@@ -195,11 +195,14 @@ const System = ({
         }
     }, []);
 
-    const getSystem = ({ component, value, data, itemsId, visible }) => {
+    const getSystem = ({ component, value, data, itemsId, visible, element_id }) => {
         if (visible == 0) return <></>;
 
+        // Incluir element_id en data para que esté disponible en todos los componentes
+        const dataWithElementId = { ...data, element_id };
+
         const componentProps = {
-            data,
+            data: dataWithElementId,
             which: value,
             items: getItems(itemsId),
             cart,
@@ -216,14 +219,14 @@ const System = ({
         switch (component) {
             case "top_bar":
                 return (
-                    <TopBar {...componentProps} data={data} />
+                    <TopBar {...componentProps} data={dataWithElementId} />
                 );
             case "header":
                 return (
                     <Header {...componentProps} />
                 );
             case "menu":
-                return <Menu data={data} which={value} items={getItems(itemsId)} cart={cart} setCart={setCart} pages={pages} />
+                return <Menu data={dataWithElementId} which={value} items={getItems(itemsId)} cart={cart} setCart={setCart} pages={pages} />
             case "content":
                 if (!page.id) {
                     return null
@@ -238,96 +241,96 @@ const System = ({
                 }
                 break;
             case "filter":
-                return <Filter which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} setFavorites={setFavorites} favorites={favorites} />
+                return <Filter which={value} data={dataWithElementId} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} setFavorites={setFavorites} favorites={favorites} />
             case "product":
-                return <Product which={value} data={data} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites} generals={generals}
+                return <Product which={value} data={dataWithElementId} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites} generals={generals}
                     setFavorites={setFavorites} contacts={contacts} />
             case "category":
-                return <Category which={value} data={data} items={getItems(itemsId)} />
+                return <Category which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "collection":
-                return <Collection which={value} data={data} items={getItems(itemsId)} />
+                return <Collection which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "slider":
-                return <Slider which={value} data={data} sliders={getItems(itemsId)} generals={generals} />
+                return <Slider which={value} data={dataWithElementId} sliders={getItems(itemsId)} generals={generals} />
             case "carrusel":
-                return <Carrusel which={value} data={data} items={getItems(itemsId)} />
+                return <Carrusel which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "indicator":
-                return <Indicator which={value} data={data} items={getItems(itemsId)} />
+                return <Indicator which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "banner":
-                return <Banner which={value} data={data} items={getItems(itemsId)} generals={generals} />
+                return <Banner which={value} data={dataWithElementId} items={getItems(itemsId)} generals={generals} />
             case "ads":
-                return <Ad which={value} data={data} items={getItems(itemsId)} />
+                return <Ad which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "image":
-                return <Image which={value} data={data} />
+                return <Image which={value} data={dataWithElementId} />
             case "step":
-                return <Step which={value} data={data} />
+                return <Step which={value} data={dataWithElementId} />
             case 'delivery-zones':
-                return <DeliveryZone which={value} data={data} items={getItems(itemsId)} />
+                return <DeliveryZone which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "product-detail":
-                return <ProductDetail which={value} item={filteredData.Item} cart={cart} setCart={setCart} data={data} generals={generals} favorites={favorites} setFavorites={setFavorites} textstatic={textstatic} contacts={contacts} />
+                return <ProductDetail which={value} item={filteredData.Item} cart={cart} setCart={setCart} data={dataWithElementId} generals={generals} favorites={favorites} setFavorites={setFavorites} textstatic={textstatic} contacts={contacts} />
             case "cart":
-                return <Cart which={value} data={data} cart={cart} setCart={setCart} />
+                return <Cart which={value} data={dataWithElementId} cart={cart} setCart={setCart} />
             case "checkout":
-                return <Checkout which={value} data={data} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} categorias={categorias} />
+                return <Checkout which={value} data={dataWithElementId} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} categorias={categorias} />
             case "contact":
-                return <Contact which={value} data={data} contacts={contacts} generals={generals} items={getItems(itemsId)} />
+                return <Contact which={value} data={dataWithElementId} contacts={contacts} generals={generals} items={getItems(itemsId)} />
             case "faq":
-                return <Faq which={value} data={data} faqs={faqs} />
+                return <Faq which={value} data={dataWithElementId} faqs={faqs} />
             case "thank":
-                return <ThankSimple which={value} data={data} item={filteredData.Sale} />
+                return <ThankSimple which={value} data={dataWithElementId} item={filteredData.Sale} />
             case "track":
-                return <Track which={value} data={data} />
+                return <Track which={value} data={dataWithElementId} />
             case "blog":
-                return <Blog which={value} data={data} items={getItems(itemsId)} headerPosts={headerPosts} postsLatest={postsLatest} filteredData={filteredData} />
+                return <Blog which={value} data={dataWithElementId} items={getItems(itemsId)} headerPosts={headerPosts} postsLatest={postsLatest} filteredData={filteredData} />
             case "innovation":
-                return <Innovation which={value} data={data} items={getItems(itemsId)} />
+                return <Innovation which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "service":
-                return <Service which={value} data={data} items={getItems(itemsId)} />
+                return <Service which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "service-detail":
-                return <ServiceDetail which={value} data={data} items={getItems(itemsId)} currentService={filteredData.Service ?? null} />
+                return <ServiceDetail which={value} data={dataWithElementId} items={getItems(itemsId)} currentService={filteredData.Service ?? null} />
             case "post-detail":
-                return <PostDetail which={value} data={data} item={filteredData.Post} />
+                return <PostDetail which={value} data={dataWithElementId} item={filteredData.Post} />
             case "about":
-                return <AboutUs which={value} data={data} filteredData={filteredData} items={getItems(itemsId)} />
+                return <AboutUs which={value} data={dataWithElementId} filteredData={filteredData} items={getItems(itemsId)} />
             case "login":
-                return <Login which={value} data={data} />
+                return <Login which={value} data={dataWithElementId} />
             case "signup":
-                return <Signup which={value} data={data} />
+                return <Signup which={value} data={dataWithElementId} />
             case "forgot-password":
-                return <ForgotPassword which={value} data={data} />
+                return <ForgotPassword which={value} data={dataWithElementId} />
             case "reset-password":
-                return <ResetPassword which={value} data={data} />
+                return <ResetPassword which={value} data={dataWithElementId} />
             case "unsubscribe":
-                return <Unsubscribe which={value} data={data} />
+                return <Unsubscribe which={value} data={dataWithElementId} />
             case "frame":
-                return <Frame which={value} data={data} />
+                return <Frame which={value} data={dataWithElementId} />
             case "footer":
-                return <Footer {...componentProps} contacts={contacts} generals={generals} data={data} stores={stores} />
+                return <Footer {...componentProps} contacts={contacts} generals={generals} stores={stores} />
             case "complaints":
-                return <Complaint which={value} data={data} generals={generals} />
+                return <Complaint which={value} data={dataWithElementId} generals={generals} />
             case "whistleblowings":
-                return <Whistleblowing which={value} data={data} generals={generals} />
+                return <Whistleblowing which={value} data={dataWithElementId} generals={generals} />
             case "floating":
-                return <Floating which={value} data={data} />
+                return <Floating which={value} data={dataWithElementId} />
             case "testimonials":
-                return <Testimonials which={value} data={data} items={getItems(itemsId)} />
+                return <Testimonials which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "strength":
-                return <Strength which={value} data={data} items={getItems(itemsId)} />
+                return <Strength which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "benefit":
-                return <Benefit which={value} data={data} items={getItems(itemsId)} />
+                return <Benefit which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "specification":
-                return <Specification which={value} data={data} items={getItems(itemsId)} />
+                return <Specification which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "application":
-                return <Application which={value} data={data} items={getItems(itemsId)} />
+                return <Application which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "brands":
-                return <Brands which={value} data={data} items={getItems(itemsId)} />
+                return <Brands which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "partner":
-                return <Partner which={value} data={data} items={getItems(itemsId)} />
+                return <Partner which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "subscription":
-                return <Subscription which={value} data={data} />
+                return <Subscription which={value} data={dataWithElementId} />
             case "agradecimientos":
-                return <Agradecimientos which={value} data={data} items={getItems(itemsId)} contacts={contacts} />
+                return <Agradecimientos which={value} data={dataWithElementId} items={getItems(itemsId)} contacts={contacts} />
             case "support":
-                return <Support which={value} data={data} items={getItems(itemsId)} />
+                return <Support which={value} data={dataWithElementId} items={getItems(itemsId)} />
             case "firstclass":
                 return <FirstClass {...componentProps} />
             case "store":

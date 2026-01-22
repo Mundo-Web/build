@@ -342,6 +342,7 @@ const ContactGrid = ({ data, contacts }) => {
     };
     return (
         <motion.section
+            id={data?.element_id}
             className=" bg-[#F7F9FB] py-12 px-primary "
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

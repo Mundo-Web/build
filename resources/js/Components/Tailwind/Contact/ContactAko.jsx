@@ -124,6 +124,7 @@ const ContactAko = ({ data, contacts }) => {
     };
     return (
         <motion.section 
+            id={data?.element_id}
             className="py-10 px-primary"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

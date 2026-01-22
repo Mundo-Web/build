@@ -18,6 +18,33 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
     const showIndicators = data?.showIndicators !== 'false' && data?.showIndicators !== false;
     const sliderClass = data?.class_slider || '';
 
+    // Función para scroll suave personalizado con animación más lenta
+    const smoothScrollTo = (targetElement, duration = 1200) => {
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        const startPosition = window.pageYOffset;
+        const distance = targetPosition - startPosition - 80; // Offset de 80px desde el top
+        let startTime = null;
+
+        const animation = (currentTime) => {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            
+            // Función de easing para suavizar la animación (ease-in-out)
+            const easing = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            
+            window.scrollTo(0, startPosition + distance * easing);
+
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+            }
+        };
+
+        requestAnimationFrame(animation);
+    };
+
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % sortedSlides.length);
@@ -111,6 +138,30 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.button_link && slide.button_text && (
                                     <a
                                         href={slide.button_link}
+                                        onClick={(e) => {
+                                            const href = slide.button_link;
+                                            console.log('Click en botón, href:', href);
+                                            if (href && href.includes('#')) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                const hashIndex = href.indexOf('#');
+                                                const targetId = href.substring(hashIndex + 1);
+                                                console.log('Buscando elemento con id:', targetId);
+                                                const targetElement = document.getElementById(targetId);
+                                                console.log('Elemento encontrado:', targetElement);
+                                                
+                                                if (targetElement) {
+                                                    smoothScrollTo(targetElement, 1200);
+                                                    setTimeout(() => {
+                                                        window.history.pushState(null, '', href);
+                                                    }, 100);
+                                                } else {
+                                                    // Listar todos los IDs disponibles en la página
+                                                    const allIds = [...document.querySelectorAll('[id]')].map(el => el.id);
+                                                    console.warn(`Elemento con id "${targetId}" no encontrado. IDs disponibles:`, allIds);
+                                                }
+                                            }
+                                        }}
                                         className={`px-8 py-4 text-lg font-semibold bg-secondary text-white rounded-full transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl ${
                                             data?.class_button || ''
                                         }`}
@@ -121,6 +172,29 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 {slide.secondary_button_link && slide.secondary_button_text && (
                                     <a
                                         href={slide.secondary_button_link}
+                                        onClick={(e) => {
+                                            const href = slide.secondary_button_link;
+                                            console.log('Click en botón secundario, href:', href);
+                                            if (href && href.includes('#')) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                const hashIndex = href.indexOf('#');
+                                                const targetId = href.substring(hashIndex + 1);
+                                                console.log('Buscando elemento con id:', targetId);
+                                                const targetElement = document.getElementById(targetId);
+                                                console.log('Elemento encontrado:', targetElement);
+                                                
+                                                if (targetElement) {
+                                                    smoothScrollTo(targetElement, 1200);
+                                                    setTimeout(() => {
+                                                        window.history.pushState(null, '', href);
+                                                    }, 100);
+                                                } else {
+                                                    const allIds = [...document.querySelectorAll('[id]')].map(el => el.id);
+                                                    console.warn(`Elemento con id "${targetId}" no encontrado. IDs disponibles:`, allIds);
+                                                }
+                                            }
+                                        }}
                                         className={`px-8 py-4 text-lg border-2 font-semibold rounded-full transform hover:scale-105 transition-all duration-300 bg-white border-secondary text-secondary hover:text-white hover:bg-secondary ${
                                             data?.class_secondary_button || ''
                                         }`}

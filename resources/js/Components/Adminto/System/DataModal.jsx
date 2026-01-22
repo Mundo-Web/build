@@ -10,6 +10,7 @@ const systemRest = new SystemRest()
 
 const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
   const [data, setData] = useState(dataLoaded?.data || {})
+  const [elementId, setElementId] = useState(dataLoaded?.element_id || '')
   const [methodValues, setMethodValues] = useState([])
 
   const usingRef = {}
@@ -27,6 +28,7 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
     const result = await systemRest.save({
       id: dataLoaded.id,
       data: mergedData,
+      element_id: elementId,
       filters: $(usingRef.filters.current).val(),
       filters_method: dataLoaded?.component?.using?.['filters:method'],
       filters_method_values: $(usingRef.filtersMethod.current).val()
@@ -49,6 +51,7 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
       }
     })
     setData(newData)
+    setElementId(dataLoaded?.element_id || '')
     usingRef.model.current.value = dataLoaded?.component?.using?.model ?? ''
     $(usingRef.filters.current).val(dataLoaded?.filters ?? []).trigger('change')
     $(usingRef.filtersMethod.current).val(dataLoaded?.filtersMethod ?? []).trigger('change')
@@ -68,8 +71,13 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
   return (
     <Modal modalRef={modalRef} title={dataLoaded?.name} onSubmit={onDataSubmit} size={dataLoaded?.component?.data?.some(x => x.startsWith('code:')) ? 'lg' : 'md'}>
       <ul className="nav nav-tabs nav-bordered">
+        <li className="nav-item">
+          <a href="#tab-general" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
+            General
+          </a>
+        </li>
         <li className="nav-item" hidden={!dataLoaded?.component?.data?.length}>
-          <a href="#tab-info" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
+          <a href="#tab-info" data-bs-toggle="tab" aria-expanded="true" className="nav-link">
             Información
           </a>
         </li>
@@ -80,12 +88,23 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
         </li>
       </ul>
       <div className="tab-content" id="data-modal-container">
-        <div className="tab-pane active" id="tab-info" hidden={!dataLoaded?.component?.data?.length}>
+        <div className="tab-pane active" id="tab-general">
+          <InputFormGroup 
+            label='ID del elemento' 
+            value={elementId} 
+            onChange={e => setElementId(e.target.value)}
+            placeholder="ej: contacto-principal, formulario-1"
+          />
+          <small className="text-muted d-block mb-3">
+            Este ID se usa para anclas (#id), CSS personalizado y navegación. Se genera automáticamente pero puedes personalizarlo.
+          </small>
+        </div>
+        <div className="tab-pane" id="tab-info" hidden={!dataLoaded?.component?.data?.length}>
           {
             dataLoaded?.component?.data?.map((element, index) => (
               element.startsWith('code:')
                 ? <EditorFormGroup key={index} label={element.replace('code:', '')} value={data[element] ?? ''} rows={1} onChange={e => setData({ ...data, [element]: e.target.value })} />
-                : <>
+                : <React.Fragment key={index}>
                   {
                     element.startsWith('bool:')
                       ? <div className="form-group">
@@ -117,9 +136,9 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
                           </div>
                         </div>
                       </div>
-                      : <TextareaFormGroup key={index} label={element} value={data[element] ?? ''} rows={1} onChange={e => setData({ ...data, [element]: e.target.value })} />
+                      : <TextareaFormGroup label={element} value={data[element] ?? ''} rows={1} onChange={e => setData({ ...data, [element]: e.target.value })} />
                   }
-                </>
+                </React.Fragment>
 
             ))
           }

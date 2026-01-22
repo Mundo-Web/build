@@ -301,10 +301,10 @@ const generalsData = generals || [];
   const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutput = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed`;
   const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutputAndEmbed = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed&embed=true`;
   const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutputAndEmbedAndZoom = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed&embed=true&zoom=12`;
- 
+ console.log("data katya",data);
     return (
         <motion.div 
-                id="contactKatya"
+            id={data?.element_id || 'contact-katya'}
             className={`font-paragraph text-neutral-dark-dark min-h-screen ${data?.class_section || ''}`}
             initial="hidden"
             animate="visible"

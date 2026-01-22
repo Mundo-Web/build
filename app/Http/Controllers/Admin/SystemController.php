@@ -94,6 +94,17 @@ class SystemController extends BasicController
 
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
     {
+        // Generar element_id automático solo si es nuevo y no tiene uno asignado
+        if ($isNew && empty($jpa->element_id)) {
+            // Formato: component-value-shortId (ej: contact-katya-a7f3b2)
+            $component = strtolower($jpa->component ?? 'section');
+            $value = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $jpa->value ?? ''));
+            $shortId = Crypto::short();
+            
+            $jpa->element_id = "{$component}-{$value}-{$shortId}";
+            $jpa->save();
+        }
+        
         return $jpa;
     }
 
