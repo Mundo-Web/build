@@ -2674,8 +2674,8 @@
                         "attributes",
                         "applications"
                         
-                    ],
-                    "limit": 20
+                    ]
+                   
                 },
                 "generals": [
                     "whatsapp_advisors"
