@@ -59,7 +59,7 @@ const ApplicationSimple = ({ data, items }) => {
                                             </div>
                                         )}
 
-                                        <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-white/90 transition-colors">
+                                        <h3 className="text-5xl font-light text-white mb-4 group-hover:text-white/90 transition-colors">
                                             {application.name}
                                         </h3>
 

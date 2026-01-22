@@ -343,7 +343,7 @@ const generalsData = generals || [];
                             className={`mt-4 text-base text-neutral-dark max-w-3xl mx-auto ${data?.class_description || ''}`}
                             variants={itemVariants}
                         >
-                          {data?.description || "Conectamos el talento con la oportunidad, fomentando el crecimiento, el éxito y un futuro más brillante para las personas y las empresas."}
+                          {data?.description || ""}
                         </motion.p>
                         </div>
 

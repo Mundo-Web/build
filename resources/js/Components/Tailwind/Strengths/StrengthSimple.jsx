@@ -47,11 +47,11 @@ const StrengthSimple = ({ items, data }) => {
                     </div>
                 )}
 
-                <h3 className="text-2xl font-bold text-primary mb-4 group-hover:text-primary/80 transition-colors">
+                <h3 className="text-5xl font-light text-primary mb-4 group-hover:text-primary/80 transition-colors">
                     {item.name}
                 </h3>
 
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-neutral-light leading-relaxed">
                     {item.description}
                 </p>
             </div>
@@ -61,7 +61,7 @@ const StrengthSimple = ({ items, data }) => {
     );
 
     return (
-        <section id={data?.element_id || null} className="py-20 sm:py-24 bg-swhite relative overflow-hidden">
+        <section id={data?.element_id || null} className="py-20 sm:py-24 bg-sections-color relative overflow-hidden">
             <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -ml-48"></div>
             <div className="absolute top-1/2 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -mr-48"></div>
 

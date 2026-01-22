@@ -41,11 +41,11 @@ const BenefitSimple = ({ data, items }) => {
                                     </div>
                                 )}
 
-                                <h3 className="text-2xl font-bold text-primary mb-4 group-hover:text-primary/80 transition-colors">
+                                <h3 className="text-5xl font-light text-primary mb-4 group-hover:text-primary transition-colors">
                                     {benefit.name}
                                 </h3>
 
-                                <p className="text-gray-600 leading-relaxed">
+                                <p className="text-neutral-dark leading-relaxed">
                                     {benefit.description}
                                 </p>
                             </div>
