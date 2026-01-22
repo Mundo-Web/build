@@ -68,7 +68,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                             <SwiperSlide key={index} className="h-auto">
                                                 <div className="group h-full">
                                                     {/* Card con diseño premium */}
-                                                    <div className={`relative h-full min-h-[320px] bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden flex flex-col ${data?.class_indicators_card || ''}`}>
+                                                    <div className={`relative h-full min-h-[320px] bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden flex flex-col rounded-2xl ${data?.class_indicators_card || ''}`}>
                                                       
                                                         {/* Contenido */}
                                                         <div className="relative flex flex-col items-center text-center space-y-4 flex-1">
