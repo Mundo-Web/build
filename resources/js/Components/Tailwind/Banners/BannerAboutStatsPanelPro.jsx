@@ -25,7 +25,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
 
                         </div>
 
-                        <p className="text-lg text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line">
+                        <p className="text-lg sm:text-xl  text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line">
                             <TextWithHighlight
                                 text={data?.description}
                                 color="bg-primary"
