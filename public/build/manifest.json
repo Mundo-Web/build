@@ -991,7 +991,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-B--pc24l.js",
+    "file": "assets/Banners-BNUMQD2s.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -3824,7 +3824,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-Cc97GFG_.js",
+    "file": "assets/Banner-BNFdupTa.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -4096,7 +4096,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Benefit.jsx": {
-    "file": "assets/Benefit-CwgAKH9F.js",
+    "file": "assets/Benefit-Db8Jpev_.js",
     "name": "Benefit",
     "src": "resources/js/Components/Tailwind/Benefit.jsx",
     "isDynamicEntry": true,
@@ -7652,7 +7652,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-BSfNIYA-.js",
+    "file": "assets/Product-DUxSo9BC.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isEntry": true,
@@ -7688,7 +7688,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-Bma0mxnY.js",
+    "file": "assets/ProductDetail-D-Vqz5ji.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -7825,7 +7825,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-BIFH4uDB.js",
+    "file": "assets/ProductDetailHuaillys-DpzI1pW1.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isEntry": true,
@@ -9911,7 +9911,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-ZGRVmvLh.js",
+    "file": "assets/System-BkHP-L0x.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
