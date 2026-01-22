@@ -1,9 +1,47 @@
-import { Fetch } from "sode-extend-react";
+import { Fetch, Cookies } from "sode-extend-react";
 import BasicRest from "../BasicRest";
+import { toast } from "sonner";
 
 class ItemsRest extends BasicRest {
     path = "admin/items";
     hasFiles = true;
+
+    clone = async (id) => {
+        try {
+            const response = await fetch(`/api/${this.path}/${id}/clone`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+                }
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result?.message || 'Error al clonar el item');
+            }
+            
+            toast.success("¡Excelente!", {
+                description: result.message || 'Item clonado exitosamente',
+                duration: 3000,
+                position: "bottom-center",
+                richColors: true
+            });
+            
+            return result;
+        } catch (error) {
+            toast.error("¡Error!", {
+                description: error.message,
+                duration: 3000,
+                position: "bottom-center",
+                richColors: true
+            });
+            console.error('Error cloning item:', error);
+            return null;
+        }
+    };
 
     importData = async (request) => {
         console.log("FormData recibido en importData:", [...request.entries()]);

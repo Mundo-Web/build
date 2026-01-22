@@ -18,6 +18,7 @@ class Item extends Model
 
     protected $fillable = [
         // 'id',
+        'order_index',
         'type', // 'product' o 'room'
         'slug',
         'name',

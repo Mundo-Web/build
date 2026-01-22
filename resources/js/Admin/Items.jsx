@@ -481,6 +481,11 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                 id: a.attribute_id,
                 value: a.value
             })),
+            // Campos para clonación de imágenes
+            clone_from_id: itemData?.clone_from_id || null,
+            clone_image: itemData?.clone_image || null,
+            clone_banner: itemData?.clone_banner || null,
+            clone_texture: itemData?.clone_texture || null,
         };
 
 
@@ -522,6 +527,16 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                 const attributesValue = request[key];
                 if (Array.isArray(attributesValue) && attributesValue.length > 0) {
                     formData.append('attributes', JSON.stringify(attributesValue));
+                }
+            } else if (key === 'clone_from_id' || key === 'clone_image' || key === 'clone_banner' || key === 'clone_texture') {
+                // Solo enviar campos de clonación si tienen valor real
+                if (request[key] && request[key] !== null && request[key] !== 'null') {
+                    formData.append(key, request[key]);
+                }
+            } else if (key === 'id') {
+                // Solo enviar id si tiene valor real (no undefined, null, o string vacío)
+                if (request[key] && request[key] !== '' && request[key] !== 'undefined') {
+                    formData.append(key, request[key]);
                 }
             } else {
                 formData.append(key, request[key]);
@@ -688,6 +703,39 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         if (!result) return;
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
+
+    // Función para clonar item - Abre el modal con los datos pero sin ID para crear uno nuevo
+    const onCloneClicked = (data) => {
+        // Crear una copia de los datos sin el ID pero guardando referencia al original
+        const clonedData = {
+            ...data,
+            id: null, // Sin ID para que se cree como nuevo
+            name: data.name + ' (Copia)',
+            sku: data.sku ? data.sku + '-COPY' : '',
+            // Guardar referencia al item original para copiar imágenes
+            clone_from_id: data.id,
+            clone_image: data.image,
+            clone_banner: data.banner,
+            clone_texture: data.texture,
+        };
+        
+        // Abrir el modal con los datos clonados
+        onModalOpen(clonedData);
+    };
+
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        const newOrderIndex = e.toIndex;
+        try {
+            const result = await itemsRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                $(gridRef.current).dxDataGrid("instance").refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering item:', error);
+        }
+    };
+
     const [features, setFeatures] = useState([]); // Características
     const [specifications, setSpecifications] = useState([]); // Especificaciones
 
@@ -782,11 +830,26 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                 }}
                 exportable={true}
                 exportableName="Items"
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
                 columns={[
                     {
                         dataField: "id",
                         caption: "ID",
                         visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
                     },
                     Fillable.has('items', 'category_id') && {
                         dataField: "category.name",
@@ -1141,7 +1204,7 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                     },
                     {
                         caption: "Acciones",
-                        width: "100px",
+                        width: "130px",
                         cellTemplate: (container, { data }) => {
                             container.css("text-overflow", "unset");
                             container.append(
@@ -1150,6 +1213,14 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                     title: "Editar",
                                     icon: "fa fa-pen",
                                     onClick: () => onModalOpen(data),
+                                })
+                            );
+                            container.append(
+                                DxButton({
+                                    className: "btn btn-xs btn-soft-info",
+                                    title: "Clonar",
+                                    icon: "fa fa-clone",
+                                    onClick: () => onCloneClicked(data),
                                 })
                             );
                             container.append(
