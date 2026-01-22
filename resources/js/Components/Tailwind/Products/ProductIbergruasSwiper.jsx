@@ -18,7 +18,7 @@ const ProductIbergruasSwiper = ({ items, data, cart, setCart }) => {
     }
 
     return (
-        <section className="py-12 lg:py-16 bg-secondary overflow-hidden">
+        <section id={data?.element_id || null} className="py-12 lg:py-16 bg-secondary overflow-hidden">
             <div className="mx-auto px-4 sm:px-6 lg:px-8 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
                 {(data?.title || data?.description) && (

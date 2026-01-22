@@ -52,7 +52,7 @@ const ProductNavigation = ({ items, data, setCart, cart }) => {
     }, []);
 
     return (
-        <section className="pt-10 lg:pt-16">
+        <section  id={data?.element_id || null} className="pt-10 lg:pt-16">
             <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl font-paragraph">
                 {/* Header */}
                 {data?.title && (

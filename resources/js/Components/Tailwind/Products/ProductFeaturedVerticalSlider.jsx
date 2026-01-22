@@ -64,7 +64,7 @@ const ProductFeaturedVerticalSlider = ({ items, data, setCart, cart }) => {
     const visibleProducts = sliderProducts.slice(currentIndex, currentIndex + itemsPerSlide);
 
     return (
-        <section className="py-8 lg:py-20 font-paragraph bg-secondary">
+        <section id={data?.element_id || null} className="py-8 lg:py-20 font-paragraph bg-secondary">
             <div className="w-full px-[5%] 2xl:px-0  2xl:max-w-7xl mx-auto ">
                 {/* Contenedor principal */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">

@@ -26,7 +26,7 @@ const ProductSlider = ({ data, items = [], cart, setCart }) => {
     })
   }
 
-  return <div className="px-[5%] replace-max-w-here w-full mx-auto py-4" style={{
+  return <div id={data?.element_id || null} className="px-[5%] replace-max-w-here w-full mx-auto py-4" style={{
     backgroundColor: data?.background_color,
     color: data?.text_color,
   }}>

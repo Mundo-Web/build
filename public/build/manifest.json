@@ -7652,7 +7652,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-sOJ5Xhh4.js",
+    "file": "assets/Product-BSfNIYA-.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isEntry": true,
@@ -7688,7 +7688,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-VbbxyT9i.js",
+    "file": "assets/ProductDetail-CMtqqvbT.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -7730,7 +7730,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailAko.jsx": {
-    "file": "assets/ProductDetailAko-L21DpxJn.js",
+    "file": "assets/ProductDetailAko-DVt1EJw_.js",
     "name": "ProductDetailAko",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailAko.jsx",
     "isDynamicEntry": true,
@@ -7776,7 +7776,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailBananaLab.jsx": {
-    "file": "assets/ProductDetailBananaLab-F0y9YxOi.js",
+    "file": "assets/ProductDetailBananaLab-Q7jxdTEg.js",
     "name": "ProductDetailBananaLab",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailBananaLab.jsx",
     "isDynamicEntry": true,
@@ -7825,7 +7825,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-CXxdsTN_.js",
+    "file": "assets/ProductDetailHuaillys-BIFH4uDB.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isEntry": true,
@@ -7862,7 +7862,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailIbergruas.jsx": {
-    "file": "assets/ProductDetailIbergruas-DIC0UC5B.js",
+    "file": "assets/ProductDetailIbergruas-CNZ_Hlpe.js",
     "name": "ProductDetailIbergruas",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailIbergruas.jsx",
     "isDynamicEntry": true,
@@ -9911,7 +9911,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-V4-dWyw3.js",
+    "file": "assets/System-Brcr3xgy.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

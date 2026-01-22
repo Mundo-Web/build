@@ -125,6 +125,7 @@ const ProductBananaLab = ({ items, data, setCart, cart ,setFavorites,favorites})
 
     return (
         <motion.section 
+            id={data?.element_id || null}
             ref={sectionRef}
             variants={sectionVariants}
             initial="hidden"
