@@ -5,7 +5,7 @@ const TestimonialsSimple = ({ items, data }) => {
     return null;
   }
 
-
+console.log("TestimonialsSimple items:", items);
 
   return (
     <section id={data?.element_id || 'testimonialsSimple'} className={`py-20 sm:py-24 bg-sections-color ${data?.class_section || ''}`}>
