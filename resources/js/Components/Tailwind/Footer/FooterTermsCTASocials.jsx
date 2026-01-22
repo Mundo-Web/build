@@ -48,7 +48,7 @@ const FooterTermsCTASocials = ({ data, pages, socials, generals }) => {
     emailRef.current.value = null;
   };
   return (
-    <footer className="bg-primary text-white py-12  text-sm font-font-secondary">
+    <footer id={data?.element_id || null} className="bg-primary text-white py-12  text-sm font-font-secondary">
       <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-6  md:gap-12">
         {/* Menu Columns */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:col-span-4 justify-between md:mr-6">

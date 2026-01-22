@@ -81,7 +81,7 @@ const FAQ = ({ data, items = [], generals, cart, setCart, pages, isUser, contact
     ];
 
     return (
-        <div className="w-full bg-gray-50">
+        <div id={data?.element_id || null} className="w-full bg-gray-50">
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
                 {/* Animated Background */}

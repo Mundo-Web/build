@@ -240,7 +240,7 @@ export default function ProductDetailAko({ item, data, setCart, cart, textstatic
 
     return (
         <>
-            <div className="px-primary mx-auto pt-4 md:pt-6 xl:pt-8 bg-white">
+            <div id={data?.element_id || null} className="px-primary mx-auto pt-4 md:pt-6 xl:pt-8 bg-white">
                 <div className="bg-white rounded-xl p-4 md:p-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20 2xl:gap-32">
                         

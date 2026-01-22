@@ -4,7 +4,7 @@ import "swiper/swiper-bundle.css";
 
 const CategoryOneLine = ({ data = {}, items = [] }) => {
     return (
-        <section className="w-full px-[5%] relative mx-auto bg-accent">
+        <section id={data?.element_id || null} className="w-full px-[5%] relative mx-auto bg-accent">
             <div className="w-full">
                 <Swiper
                     spaceBetween={10}

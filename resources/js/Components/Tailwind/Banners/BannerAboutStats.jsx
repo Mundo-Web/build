@@ -9,7 +9,7 @@ const BannerAboutStats = ({ data, items = [] }) => {
     const imageUrl = resolveSystemAsset(data?.image) || '/api/cover/thumbnail/null';
 
     return (
-        <section className={`py-24 px-primary 2xl:px-0 bg-white ${data?.class || ''}`}>
+        <section id={data?.element_id || null} className={`py-24 px-primary 2xl:px-0 bg-white ${data?.class || ''}`}>
             <div className="2xl:max-w-7xl mx-auto">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
                     {/* Contenido de texto y estadísticas */}

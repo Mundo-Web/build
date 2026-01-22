@@ -8,7 +8,7 @@ const TestimonialsSimple = ({ items, data }) => {
 
 
   return (
-    <section id='testimonialsSimple' className={`py-20 sm:py-24 bg-sections-color ${data?.class_section || ''}`}>
+    <section id={data?.element_id || 'testimonialsSimple'} className={`py-20 sm:py-24 bg-sections-color ${data?.class_section || ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">

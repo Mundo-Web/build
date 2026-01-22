@@ -41,7 +41,7 @@ const IndicatorLaPetaca = ({ data, items }) => {
     const sortedIndicators = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
 
     return (
-        <section className={`relative py-16 md:py-20 bg-sections-color overflow-hidden ${data?.class_section || ''}`}>
+        <section id={data?.element_id || null} className={`relative py-16 md:py-20 bg-sections-color overflow-hidden ${data?.class_section || ''}`}>
             {/* Decoraciones de fondo */}
             <div className="absolute top-0 left-0 w-96 h-96 bg-gray-100 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-gray-100 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />

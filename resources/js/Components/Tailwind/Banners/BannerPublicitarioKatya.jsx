@@ -7,7 +7,7 @@ const BannerPublicitarioKatya = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
     const imageUrl = resolveSystemAsset(data?.image);
     return (
-        <div className={`${data?.class_content || ''} overflow-hidden`}
+        <div id={data?.element_id || null} className={`${data?.class_content || ''} overflow-hidden`}
             style={{
                 backgroundImage: `url(${backgroundUrl})`,
                 backgroundSize: "cover",

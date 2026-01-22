@@ -8,7 +8,7 @@ const BlogCarousel = ({ data, items }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoId = getYTVideoId(data?.url_video);
   return <>
-    <div className="w-full mx-auto p-[5%]">
+    <div id={data?.element_id || null} className="w-full mx-auto p-[5%]">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">{data?.title}</h2>
         <a href={data?.link_blog} className="font-bold">

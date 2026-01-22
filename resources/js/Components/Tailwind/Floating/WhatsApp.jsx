@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import General from "../../../Utils/General";
 import { motion, AnimatePresence } from "framer-motion";
 
-const WhatsApp = () => {
+const WhatsApp = ({ data }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     
@@ -48,7 +48,7 @@ const WhatsApp = () => {
     if (advisors.length === 0) return null;
 
     return (
-        <div ref={dropdownRef} className="flex justify-end w-full mx-auto z-[100] relative">
+        <div id={data?.element_id || null} ref={dropdownRef} className="flex justify-end w-full mx-auto z-[100] relative">
             <div className="fixed bottom-[5%] right-[5%] z-20">
                 {/* Botón de WhatsApp */}
                 <motion.button

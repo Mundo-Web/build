@@ -90,7 +90,7 @@ const SliderFirstClass = ({ sliders = [], data }) => {
     const currentSlideData = slides[currentSlide];
 
     return (
-        <section className={`relative overflow-hidden ${data?.class_slider || ''}`} 
+        <section id={data?.element_id || null} className={`relative overflow-hidden ${data?.class_slider || ''}`} 
                  style={{ margin: 0, padding: 0 }}>
             {/* Background with gradient and image */}
             <div className={`absolute inset-0 bg-gradient-to-br ${currentSlideData.bgGradient || 'from-primary to-secondary'} transition-all duration-1000 ease-in-out ${data?.class_overlay || ''}`}>

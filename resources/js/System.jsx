@@ -338,7 +338,7 @@ const System = ({
             case "hotel":
                 return <Hotel {...componentProps} filteredData={filteredData} favorites={favorites} setFavorites={setFavorites} />
             default:
-                return <NoComponent which={value} />
+                return <NoComponent which={value} data={dataWithElementId} />
         }
     };
 

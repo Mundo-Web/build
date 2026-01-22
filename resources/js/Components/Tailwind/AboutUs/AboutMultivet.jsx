@@ -61,7 +61,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 px-4 md:px-6 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-8 md:py-12 lg:py-16">
+        <main id={data?.element_id || null} className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 px-4 md:px-6 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-8 md:py-12 lg:py-16">
 
             {/* Hero Section */}
             <motion.section

@@ -20,7 +20,7 @@ const HeaderHuaillys = ({ data, pages, generals }) => {
 
     return (
         <>
-            <section className={`bg-secondary customtext-neutral-dark shadow-lg z-50 transition-all duration-300 ${
+            <section id={data?.element_id || null} className={`bg-secondary customtext-neutral-dark shadow-lg z-50 transition-all duration-300 ${
                 isFixed 
                     ? 'fixed top-0 left-0 right-0 shadow-2xl backdrop-blur-sm bg-secondary/95' 
                     : 'relative'

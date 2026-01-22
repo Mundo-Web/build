@@ -225,7 +225,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
     }
 
     return (
-        <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 ${data?.class_base || ''}`}>
+        <div id={data?.element_id || null} className={`min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 ${data?.class_base || ''}`}>
             <div className="container mx-auto max-w-5xl">
                 <div className="mb-8 text-center">
                     <div className="flex items-center justify-center gap-3 mb-4">

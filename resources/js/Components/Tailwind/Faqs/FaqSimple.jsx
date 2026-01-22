@@ -15,7 +15,7 @@ const FaqSimple = ({ data,faqs }) => {
     };
 
     return (
-        <section className="bg-[#F7F9FB] pb-12 px-primary">
+        <section id={data?.element_id || null} className="bg-[#F7F9FB] pb-12 px-primary">
             <div className="mx-auto    2xl:max-w-7xl gap-12 bg-white rounded-xl p-4 md:p-8">
                 <h1 className={`text-[40px] font-bold text-center mb-4 ${data?.class_title || 'customtext-neutral-dark'}`}>
                     Preguntas frecuentes

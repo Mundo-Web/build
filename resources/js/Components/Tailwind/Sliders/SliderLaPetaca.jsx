@@ -62,7 +62,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
     };
 
     return (
-        <section className={`relative h-screen w-full overflow-hidden ${sliderClass}`}>
+        <section id={data?.element_id || null} className={`relative h-screen w-full overflow-hidden ${sliderClass}`}>
             {sortedSlides.map((slide, index) => (
                 <div
                     key={index}

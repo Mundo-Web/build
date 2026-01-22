@@ -7,13 +7,13 @@ import "swiper/css/pagination";
 import "aos/dist/aos.css";
 import em from "../../../Utils/em";
 
-const SliderBoxed = ({ sliders }) => {
+const SliderBoxed = ({ sliders, data }) => {
   useEffect(() => {
     Aos.init();
   }, []);
 
   return (
-    <section className="bg-gradient-to-r from-[#c4b8d3] to-[#dbc8c9] md:px-[10%] md:py-[2.5%]">
+    <section id={data?.element_id || null} className="bg-gradient-to-r from-[#c4b8d3] to-[#dbc8c9] md:px-[10%] md:py-[2.5%]">
       <Swiper
         modules={[Autoplay, Pagination]}
         autoplay={{

@@ -4,7 +4,7 @@ import "swiper/swiper-bundle.css";
 
 const CategorySimple = ({ data = {}, items = [] }) => {
     return (
-        <section className="w-full px-[5%] relative mx-auto pt-12 lg:pt-16">
+        <section id={data?.element_id || null} className="w-full px-[5%] relative mx-auto pt-12 lg:pt-16">
             <div className="w-full">
                 <Swiper
                     spaceBetween={30}

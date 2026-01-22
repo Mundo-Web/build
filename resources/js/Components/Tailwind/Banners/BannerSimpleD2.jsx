@@ -5,7 +5,7 @@ import TextWithHighlightD2en1 from "../../../Utils/TextWithHighlightD2en1";
 const BannerSimpleD2 = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
     return (
-        <section>
+        <section id={data?.element_id || null}>
             <div className="px-primary replace-max-w-here w-full mx-auto py-[5%] md:py-[1.5%]">
                 <div
                     className="w-full aspect-[5/2] rounded-2xl flex flex-col gap-5 items-center justify-center bg-white shadow-lg text-center"

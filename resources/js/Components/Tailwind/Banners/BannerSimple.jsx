@@ -4,7 +4,7 @@ import { resolveSystemAsset } from "./bannerUtils";
 const BannerSimple = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
     return (
-        <section className="bg-gray-50">
+        <section id={data?.element_id || null} className="bg-gray-50">
             <div className="px-primary 2xl:max-w-7xl 2xl:px-0  w-full mx-auto py-10 md:py-10">
                 <div
                     className="w-full aspect-[5/2] rounded-2xl flex flex-col items-center justify-center bg-white shadow-lg"

@@ -44,7 +44,7 @@ export default function PostDetailSimple({ item,data }) {
     };
 
     return (
-        <article className="min-h-screen bg-white font-title">
+        <article id={data?.element_id || null} className="min-h-screen bg-white font-title">
             <div className="px-[5%] 2xl:max-w-6xl mx-auto py-8 flex flex-col justify-center">
                 {/* Metadata */}
                 <div className="flex customtext-neutral-light items-center gap-2 text-base mb-4 customtext-primary font-semibold 2xl:text-lg max-w-xl mx-auto">

@@ -6,7 +6,7 @@ import image from "../../../../sources/images/signup.png";
 import AuthClientRest from "../../../Actions/AuthClientRest";
 import Swal from "sweetalert2";
 
-export default function SignUpSimple() {
+export default function SignUpSimple({ data }) {
     const jsEncrypt = new JSEncrypt();
     jsEncrypt.setPublicKey(Global.PUBLIC_RSA_KEY);
 
@@ -73,7 +73,7 @@ export default function SignUpSimple() {
         }
     };
     return (
-        <div className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0 ">
+        <div id={data?.element_id || null} className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0 ">
             <div className="2xl:max-w-7xl w-full mx-auto py-16">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row">

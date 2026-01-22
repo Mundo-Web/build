@@ -6,7 +6,7 @@ import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 
-const FooterMakita = ({ pages, generals }) => {
+const FooterMakita = ({ pages, generals, data }) => {
     const subscriptionsRest = new SubscriptionsRest();
     const emailRef = useRef();
 
@@ -46,7 +46,7 @@ const FooterMakita = ({ pages, generals }) => {
     };
 
     return (
-        <footer className="bg-[#0e6984] text-white py-16">
+        <footer id={data?.element_id || null} className="bg-[#0e6984] text-white py-16">
             <div className="container mx-auto px-4 md:px-[5%]">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Column 1: Logo and company info */}

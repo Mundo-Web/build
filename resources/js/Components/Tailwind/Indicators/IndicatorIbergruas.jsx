@@ -13,7 +13,7 @@ const IndicatorIbergruas = ({ items, data, generals }) => {
     }
 
     return (
-        <section className="w-full py-16 bg-primary relative overflow-hidden">
+        <section id={data?.element_id || null} className="w-full py-16 bg-primary relative overflow-hidden">
           
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">

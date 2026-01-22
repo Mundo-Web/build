@@ -7,7 +7,7 @@ import { GET } from "sode-extend-react";
 import AuthClientRest from "../../../Actions/AuthClientRest";
 import InputFormSF from "../Checkouts/Components/InputFormSF";
 
-export default function LoginBananaLab() {
+export default function LoginBananaLab({ data }) {
     const jsEncrypt = new JSEncrypt();
     jsEncrypt.setPublicKey(Global.PUBLIC_RSA_KEY);
 
@@ -133,6 +133,7 @@ export default function LoginBananaLab() {
 
     return (
         <motion.div 
+            id={data?.element_id || null}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

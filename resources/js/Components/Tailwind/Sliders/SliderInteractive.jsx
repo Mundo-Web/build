@@ -396,7 +396,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     }, [currentIndex, duplicatedItems]);
 
     return (
-        <div className={`relative w-full mx-auto ${data?.class_slider_section|| ""}`}>
+        <div id={data?.element_id || null} className={`relative w-full mx-auto ${data?.class_slider_section|| ""}`}>
             <div
                 className={`overflow-hidden relative ${isDragging.current ? 'cursor-grabbing' : 'cursor-grab'} ease`}
                 onMouseDown={handleMouseDown}

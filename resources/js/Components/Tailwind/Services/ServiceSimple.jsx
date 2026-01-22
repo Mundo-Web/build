@@ -2,7 +2,7 @@ import React from "react";
 
 const ServiceSimple = ({ data, items = [] }) => {
     return (
-        <section className="py-12" style={{ backgroundColor: data?.bg_color }}>
+        <section id={data?.element_id || null} className="py-12" style={{ backgroundColor: data?.bg_color }}>
             <div className="max-w-7xl mx-auto px-5 2xl:px-0">
                 {data?.title && (
                     <div className="text-center mb-12">

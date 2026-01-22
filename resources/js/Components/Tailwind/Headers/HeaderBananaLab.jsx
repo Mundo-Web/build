@@ -88,6 +88,7 @@ const HeaderBananaLab = ({
 
     return (
         <motion.nav 
+            id={data?.element_id || null}
             className="bg-[#F8F9FA] shadow-md fonts-paragraph"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

@@ -40,7 +40,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
 
   if (!blogPosts.length) {
     return (
-      <section className={`py-16 bg-gray-50 ${data?.class_section || ''}`}>
+      <section id={data?.element_id || null} className={`py-16 bg-gray-50 ${data?.class_section || ''}`}>
         <div className="max-w-7xl mx-auto px-primary text-center">
           <h2 className="text-3xl font-title md:text-4xl font-bold mb-4 customtext-secondary">
             {data?.title || 'Últimas Publicaciones del Blog'}
@@ -52,7 +52,7 @@ const BlogSectionMultivet = ({ items = [], data }) => {
   }
 
   return (
-    <section className={`py-16 bg-gray-50 ${data?.class_section || ''}`}>
+    <section id={data?.element_id || null} className={`py-16 bg-gray-50 ${data?.class_section || ''}`}>
       <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
         {/* Header */}
         <div className="text-center mb-12">

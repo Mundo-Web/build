@@ -12,7 +12,7 @@ const HeaderSimple = ({ data, cart, setCart, pages }) => {
   }, 0);
 
   return <>
-    <section className={`bg-white shadow-lg z-20 ${data?.class}`}>
+    <section id={data?.element_id || null} className={`bg-white shadow-lg z-20 ${data?.class}`}>
       <header className="px-[5%] replace-max-w-here mx-auto flex p-4 justify-between items-center">
         <a href="/">
           <img className="h-10 aspect-[13/4] object-contain object-center w-auto" src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} onError={(e) => {

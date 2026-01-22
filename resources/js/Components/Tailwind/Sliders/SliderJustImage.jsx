@@ -11,6 +11,7 @@ const SliderJustImage = ({ data, items }) => {
 
   return (
     <Swiper
+      id={data?.element_id || null}
       className="slider"
       slidesPerView={1}
       modules={[Autoplay]}

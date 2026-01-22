@@ -105,6 +105,7 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
     return (
         <>
             <header
+                id={data?.element_id || null}
                 className={`w-full top-0 left-0 right-0 z-50 py-2 transition-all duration-300 ${
                     isHomePage 
                         ? `fixed ${isScrolled ? 'backdrop-blur-md shadow-lg bg-primary' : 'bg-transparent'}`

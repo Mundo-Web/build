@@ -16,7 +16,7 @@ const FaqChat = ({ data, faqs }) => {
     );
 
     return (
-        <section className="py-12 lg:py-20 px-[5%] bg-gray-50">
+        <section id={data?.element_id || null} className="py-12 lg:py-20 px-[5%] bg-gray-50">
             <div className="mx-auto 2xl:max-w-6xl">
                 {/* Header */}
                 <div className="text-center mb-8 lg:mb-12">

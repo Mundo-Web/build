@@ -12,7 +12,7 @@ const AboutKatya = ({ data, filteredData, items }) => {
     const valores = items?.find((item) => item.correlative === "section-valores");
     const sectionValores = items?.find((item) => item.correlative === "section-equipo");
     return (
-        <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <main id={data?.element_id || null} className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
             {/* SECTION NOSOTROS */}
             <HomeSeccionNosotros
                 data={sectionNosotros}

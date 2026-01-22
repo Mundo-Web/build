@@ -2,7 +2,7 @@ import React from "react";
 
 const InnovationGrid = ({ data, items = [] }) => {
     return (
-        <section className="py-12 bg-gray-50" style={{ backgroundColor: data?.bg_color }}>
+        <section id={data?.element_id || null} className="py-12 bg-gray-50" style={{ backgroundColor: data?.bg_color }}>
             <div className="container mx-auto px-4">
                 {data?.title && (
                     <div className="text-center mb-12">

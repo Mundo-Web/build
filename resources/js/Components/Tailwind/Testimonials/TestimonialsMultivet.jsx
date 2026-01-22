@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 
 const TestimonialsMultivet = ({ items = [], data }) => {
+    const elementId = data?.element_id || null;
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
     const [imageErrors, setImageErrors] = useState({});
 
@@ -59,7 +60,7 @@ const TestimonialsMultivet = ({ items = [], data }) => {
 
 
     return (
-        <section className={`py-16 ${data?.section_background || 'bg-primary'} text-white ${data?.class_section || ''}`}>
+        <section id={data?.element_id || null} className={`py-16 ${data?.section_background || 'bg-primary'} text-white ${data?.class_section || ''}`}>
             <div className="max-w-7xl mx-auto px-primary">
                 {/* Header */}
                 <div className={`text-center mb-12 ${data?.class_header || ''}`}>

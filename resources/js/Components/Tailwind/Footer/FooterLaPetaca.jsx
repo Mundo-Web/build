@@ -68,7 +68,7 @@ const FooterLaPetaca = ({ pages, generals, data, items = [] }) => {
     };
 
     return (
-        <footer className="bg-primary relative overflow-hidden">
+        <footer id={data?.element_id || null} className="bg-primary relative overflow-hidden">
             {/* Decoración de fondo */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl opacity-5 translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent rounded-full blur-3xl opacity-5 -translate-x-1/2 translate-y-1/2"></div>

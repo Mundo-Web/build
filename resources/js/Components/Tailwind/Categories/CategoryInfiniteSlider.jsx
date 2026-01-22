@@ -21,7 +21,7 @@ const CategoryInfiniteSlider = ({ items, data }) => {
     };
 
     return (
-        <section className="py-8 lg:py-20 font-paragraph bg-scondary">
+        <section id={data?.element_id || null} className="py-8 lg:py-20 font-paragraph bg-scondary">
             <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <div className="flex mb-8 w-full justify-between items-center">
 

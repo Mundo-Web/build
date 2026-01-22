@@ -11,7 +11,7 @@ const AgradecimientoAko = ({ data, contacts, items = [] }) => {
     );
   };
 
-  return <div className="bg-white">
+  return <div id={data?.element_id || null} className="bg-white">
             <main className="w-11/12 mx-auto max-w-[868px]">
                 <div className="flex flex-col gap-10 pt-10 ">
                     

@@ -7,7 +7,7 @@ const BannerPublicitario = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
     const imageUrl = resolveSystemAsset(data?.image);
     return (
-        <div className={`${data?.class_content || ''}`}>
+        <div id={data?.element_id || null} className={`${data?.class_content || ''}`}>
             <AnimatePresence>
                 <motion.div
                     initial={{ opacity: 0, y: 100 }}

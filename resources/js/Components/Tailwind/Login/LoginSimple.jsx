@@ -9,7 +9,7 @@ import InputForm from "../Checkouts/Components/InputForm";
 import { toast } from "sonner";
 import GoogleSignInButton from "../../Google/GoogleSignInButton";
 
-export default function LoginSimple() {
+export default function LoginSimple({ data }) {
     const jsEncrypt = new JSEncrypt();
     jsEncrypt.setPublicKey(Global.PUBLIC_RSA_KEY);
 
@@ -69,7 +69,7 @@ export default function LoginSimple() {
     };
 
     return (
-        <div className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0  ">
+        <div id={data?.element_id || null} className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0  ">
             <div className="2xl:max-w-7xl w-full mx-auto ">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row">

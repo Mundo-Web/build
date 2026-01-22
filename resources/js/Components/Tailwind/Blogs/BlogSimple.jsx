@@ -9,7 +9,7 @@ const BlogSimple = ({ data, headerPosts, filteredData, postsLatest }) => {
     const [loading, setLoading] = useState(false);
     const [isFilter, setIsFilter] = useState(false);
     return (
-        <>
+        <div id={data?.element_id || null}>
             <BlogHeader
                 data={data}
                 headerPosts={headerPosts}
@@ -31,7 +31,7 @@ const BlogSimple = ({ data, headerPosts, filteredData, postsLatest }) => {
                 isFilter={isFilter}
                 setIsFilter={setIsFilter}
             />
-        </>
+        </div>
     );
 
 

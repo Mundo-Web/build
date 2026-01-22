@@ -11,7 +11,7 @@ const TestimonialsTextWebQuirurgica = ({ items,data }) => {
   }
 
   return (
-    <section id="testimonios" className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class_section || ''}`}>
+    <section id={data?.element_id || 'testimonios'} className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class_section || ''}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight">

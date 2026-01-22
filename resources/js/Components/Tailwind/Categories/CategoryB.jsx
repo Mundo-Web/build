@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { CurrencySymbol } from "../../../Utils/Number2Currency"
-const CategoryB = () => {
+const CategoryB = ({ data }) => {
     const [currentSlide, setCurrentSlide] = useState(0)
 
     const products = [
@@ -27,7 +27,7 @@ const CategoryB = () => {
     }
 
     return (
-        <section className="py-12">
+        <section id={data?.element_id || null} className="py-12">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-2xl font-bold">Productos destacados</h2>

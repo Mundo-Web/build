@@ -2,7 +2,7 @@ import Tippy from "@tippyjs/react";
 import React, { useEffect, useRef, useState } from "react";
 import Global from "../../../Utils/Global";
 
-const HeaderContact = ({ items, generals = [] }) => {
+const HeaderContact = ({ items, data, generals = [] }) => {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef(null)
 
@@ -28,7 +28,7 @@ const HeaderContact = ({ items, generals = [] }) => {
   }, [])
 
   return (
-    <header className="sticky top-0 w-screen z-40">
+    <header id={data?.element_id || null} className="sticky top-0 w-screen z-40">
       <div className={`flex justify-between items-center bg-gray-600 ${!isOpen && location.pathname == '/' && 'bg-opacity-80'} text-white ps-[5%] border-b`}>
         <div className="py-4">
           <a href="/">

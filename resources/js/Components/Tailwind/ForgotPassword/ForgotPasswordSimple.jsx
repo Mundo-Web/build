@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { GET } from "sode-extend-react";
 import Global from "../../../Utils/Global";
-export default function ForgotPasswordSimple() {
+export default function ForgotPasswordSimple({ data }) {
     const jsEncrypt = new JSEncrypt();
     jsEncrypt.setPublicKey(Global.PUBLIC_RSA_KEY);
 
@@ -98,7 +98,7 @@ export default function ForgotPasswordSimple() {
         }, 4000);
     };
     return (
-        <div className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0  ">
+        <div id={data?.element_id || null} className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0  ">
             <div className="2xl:max-w-7xl w-full mx-auto">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row lg:min-h-[600px]">

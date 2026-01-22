@@ -423,7 +423,7 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
     console.log('ITEMS DETIAL:', item);
 
     return (
-        <div className="bg-secondary min-h-screen overflow-x-hidden">
+        <div id={data?.element_id || null} className="bg-secondary min-h-screen overflow-x-hidden">
 
 
             <div className="max-w-7xl mx-auto px-4 py-4 lg:py-8">

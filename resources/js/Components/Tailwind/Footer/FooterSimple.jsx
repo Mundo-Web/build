@@ -8,7 +8,7 @@ import HtmlContent from "../../../Utils/HtmlContent";
 
 ReactModal.setAppElement('#app')
 
-const FooterSimple = ({ socials = [], terms = {}, footerLinks = [] }) => {
+const FooterSimple = ({ socials = [], terms = {}, footerLinks = [], data }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -20,7 +20,7 @@ const FooterSimple = ({ socials = [], terms = {}, footerLinks = [] }) => {
 
   return (
     <>
-      <footer className="px-[5%] py-[10%] md:px-[10%] md:py-[7.5%] lg:py-[5%] text-white relative grid grid-cols-3 md:grid-cols-2 gap-x-4 gap-y-6 text-sm bg-primary">
+      <footer id={data?.element_id || null} className="px-[5%] py-[10%] md:px-[10%] md:py-[7.5%] lg:py-[5%] text-white relative grid grid-cols-3 md:grid-cols-2 gap-x-4 gap-y-6 text-sm bg-primary">
         <div className="col-span-2 flex flex-col gap-4 md:flex-row-reverse items-start justify-evenly md:col-span-1">
           <ul className="flex flex-col gap-2">
           

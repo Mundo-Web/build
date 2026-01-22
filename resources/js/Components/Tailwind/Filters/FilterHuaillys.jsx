@@ -183,7 +183,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
     };
 
     return (
-        <div className="w-full bg-white font-paragraph">
+        <div id={data?.element_id || null} className="w-full bg-white font-paragraph">
             {/* Hero Section con Imagen de Fondo */}
             {data?.background_image && (
                 <div 

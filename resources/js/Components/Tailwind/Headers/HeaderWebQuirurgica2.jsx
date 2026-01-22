@@ -77,6 +77,7 @@ const HeaderWebQuirurgica2 = ({ data, items, pages, generals = [], isUser }) => 
     return (
         <>
             <nav
+                id={data?.element_id || null}
                 className={`w-full top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isHomePage
                     ? `fixed ${isScrolled ? 'bg-primary backdrop-blur-xl py-5' : 'bg-transparent py-8'}`
                     : `${isScrolled ? 'fixed bg-primary py-5' : 'relative bg-primary py-5'}`

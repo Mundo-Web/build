@@ -21,6 +21,7 @@ const TopBarAddress = ({ data }) => {
 
     return (
         <div
+            id={data?.element_id || null}
             ref={divRef}
             className={`bg-primary py-1 font-semibold  text-sm font-paragraph ${data?.class_content || ""}`}
         >

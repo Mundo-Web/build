@@ -25,7 +25,7 @@ const AboutHuaillys = ({ data, filteredData, items }) => {
     };
 
     return (
-        <div className="w-full bg-white font-paragraph">
+        <div id={data?.element_id || null} className="w-full bg-white font-paragraph">
             {/* Sección Hero - Título izquierda + Texto derecha */}
             {hero && hero.visible && (
                 <motion.section

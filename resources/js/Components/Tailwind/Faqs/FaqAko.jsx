@@ -16,7 +16,7 @@ const FaqAko = ({ data, faqs }) => {
     };
 
     return (
-        <section className="pb-10 xl:pb-16 px-primary">
+        <section id={data?.element_id || null} className="pb-10 xl:pb-16 px-primary">
             <div className="flex flex-col bg-white rounded-xl gap-5 md:gap-6">
                 
                 <h1 className="text-3xl md:text-[40px] 2xl:text-5xl mx-auto 2xl:max-w-7xl font-semibold text-center cusomtext-neutral-dark">

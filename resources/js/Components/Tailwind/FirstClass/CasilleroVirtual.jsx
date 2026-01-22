@@ -154,7 +154,7 @@ const CasilleroVirtual = ({ data, items, generals, cart, setCart, pages, isUser,
   ];
 
   return (
-    <div className="min-h-screen bg-white" style={{ margin: 0, padding: 0 }}>
+    <div id={data?.element_id || null} className="min-h-screen bg-white" style={{ margin: 0, padding: 0 }}>
       {/* Hero Section */}
   <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-secondary" style={{ margin: 0, padding: 0, position: 'relative', top: 0 }}>
         {/* Animated Background */}

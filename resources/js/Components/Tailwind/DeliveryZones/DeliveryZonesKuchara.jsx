@@ -74,7 +74,7 @@ const DeliveryZonesKuchara = ({ data, items }) => {
     const maxLength = Math.max(...Object.values(zonesByNumber || {}).map(zone => zone.length))
     const maxLength2 = Math.max(...Object.values(districtsByDay || {}).map(districts => districts.length))
 
-    return <div className="w-full mx-auto p-[5%]">
+    return <div id={data?.element_id || null} className="w-full mx-auto p-[5%]">
         <div>
             <div>
 

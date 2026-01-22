@@ -40,6 +40,7 @@ const BlogCarruselBananaLab = ({ data, items }) => {
 
     return (
         <motion.div
+            id={data?.element_id || null}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}

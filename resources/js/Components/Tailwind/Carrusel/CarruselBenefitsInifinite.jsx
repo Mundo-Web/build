@@ -17,7 +17,7 @@ const CarruselBenefitsInifinite = ({ items=[], data }) => {
   const shouldScroll = items.length > 4;
 
   return (
-    <div ref={benefitsRef} className={` py-4 lg:py-6 overflow-hidden ${data?.background || 'bg-primary' } `}>
+    <div id={data?.element_id || null} ref={benefitsRef} className={` py-4 lg:py-6 overflow-hidden ${data?.background || 'bg-primary' } `}>
       <div className={`px-primary 2xl:px-0 2xl:max-w-7xl mx-auto relative ${data?.class_container }`}>
         {shouldCenter ? (
           // Versión estática centrada para menos de 4 items en desktop

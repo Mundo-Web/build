@@ -176,6 +176,7 @@ const MenuMultivet = ({ pages = [], items, data, visible = false }) => {
             )}
 
             <nav
+                id={data?.element_id || null}
                 className={
                     `${showOnlyTagsMobile
                         ? " block w-full relative md:block  font-paragraph text-sm"

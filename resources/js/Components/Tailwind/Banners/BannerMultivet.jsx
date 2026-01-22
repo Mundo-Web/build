@@ -9,7 +9,7 @@ const BannerMultivet = ({ data }) => {
     const imageOverflowStyle = 'xl:absolute xl:right-0 xl:bottom-0 xl:top-4 xl:w-1/2 xl:h-auto xl:overflow-visible xl:z-10';
     
     return (
-<section className={`w-full py-0 ${data?.class_section || 'bg-white '}`}>
+<section id={data?.element_id || null} className={`w-full py-0 ${data?.class_section || 'bg-white '}`}>
       <div className={`px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-12 xl:py-16 `}>
             <div className={`flex flex-col xl:flex-row justify-start items-stretch w-full rounded-3xl relative overflow-hidden min-h-[400px] xl:min-h-[500px]   ${data?.class_container || 'bg-gradient-to-br from-[#F2F2F2] to-[#91502D1A]'}`}>
                 

@@ -58,7 +58,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
         emailRef.current.value = null;
     };
     return (
-        <footer className={` py-12  text-sm font-paragraph ${data?.class_footer || 'bg-accent text-white'
+        <footer id={data?.element_id || null} className={` py-12  text-sm font-paragraph ${data?.class_footer || 'bg-accent text-white'
 
             }`}>
             <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-6  md:gap-12">

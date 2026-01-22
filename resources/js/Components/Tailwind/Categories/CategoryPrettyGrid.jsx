@@ -2,7 +2,7 @@ import CategoryCardWithBanner from "./Components/CategoryCardWithBanner";
 
 const CategoryPrettyGrid = ({ data, items }) => {
     return (
-      <section className={`font-paragraph ${data?.class_section || ""}`}>
+      <section id={data?.element_id || null} className={`font-paragraph ${data?.class_section || ""}`}>
           <div className={`px-primary mx-auto p-[5%]  2xl:px-0 2xl:max-w-7xl`}>
             <h2 className="text-4xl text-center font-bold mb-16">{data?.title}</h2>
             <div className="flex flex-col md:flex-row gap-[2.5%]">

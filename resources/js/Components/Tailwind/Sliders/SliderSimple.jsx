@@ -1,10 +1,11 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-const SliderSimple = ({ items }) => {
+const SliderSimple = ({ items, data }) => {
 
   return (
     <Swiper
+      id={data?.element_id || null}
       className="slider"
       slidesPerView={1}
       loop={true}

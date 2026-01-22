@@ -23,6 +23,7 @@ const TopBarSimple = ({data}) => {
     
     return (
         <div
+            id={data?.element_id || null}
             ref={divRef}
             className={`hidden bg-primary py-3 font-bold px-primary md:flex justify-center items-center text-sm font-font-secondary ${data?.class_content || ""}`}
         >

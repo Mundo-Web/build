@@ -203,7 +203,7 @@ const CatalagoFiltrosPidelo2 = ({
     };
 
     return (
-        <section className="py-12 bg-[#F7F9FB] font-paragraph">
+        <section id={data?.element_id || null} className="py-12 bg-[#F7F9FB] font-paragraph">
             <div className="mx-auto px-primary">
                 <div className="flex justify-between items-center mb-8 pb-4 border-b-2">
                     <h2 className="text-4xl font-bold w-6/12">

@@ -100,7 +100,7 @@ const FooterFirstClass = ({ data, socials = [], generals = [] }) => {
         .flatMap(cat => cat.services || []);
 
     return (
-        <footer className={`bg-gray-900 text-white ${data?.class_footer || ''}`}>
+        <footer id={data?.element_id || null} className={`bg-gray-900 text-white ${data?.class_footer || ''}`}>
             <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${data?.class_container || ''}`}>
                 <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     

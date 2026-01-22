@@ -6,6 +6,7 @@ const IndicatorHuaillys = ({ items, data, generals }) => {
 
   return (
     <section 
+      id={data?.element_id || null}
       className={`bg-accent bg-cover bg-opacity-100 relative ${data?.class || ""}`}
       style={{ backgroundImage: `url(${data?.url_background || ""})` }}
     >

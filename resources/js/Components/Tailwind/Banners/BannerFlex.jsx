@@ -14,7 +14,7 @@ const BannerFlex = ({ data }) => {
     });
 
     return (
-        <div className="px-primary py-0 2xl:max-w-7xl 2xl:px-0 mx-auto font-paragraph h-full">
+        <div id={data?.element_id || null} className="px-primary py-0 2xl:max-w-7xl 2xl:px-0 mx-auto font-paragraph h-full">
             <div className="flex flex-col lg:flex-row md:items-center rounded-3xl bg-[#F5F5F5] overflow-hidden lg:max-h-[75vh]">
 
                 <div className="w-full lg:w-6/12 h-full relative">

@@ -79,7 +79,7 @@ const BlogSectionDental = ({ data, items }) => {
     };
 
     return (
-        <div className="bg-secondary ">
+        <div id={data?.element_id || null} className="bg-secondary ">
             <motion.div
                 initial="hidden"
                 whileInView="visible"

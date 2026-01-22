@@ -6,7 +6,7 @@ import image from "../../../../sources/images/registerd2.png";
 import AuthClientRest from "../../../Actions/AuthClientRest";
 import Swal from "sweetalert2";
 
-export default function SignUpSimpleD2() {
+export default function SignUpSimpleD2({ data }) {
     const jsEncrypt = new JSEncrypt();
     jsEncrypt.setPublicKey(Global.PUBLIC_RSA_KEY);
 
@@ -61,7 +61,7 @@ export default function SignUpSimpleD2() {
         window.location.href = "/";
     };
     return (
-        <div className="w-full px-primary mx-auto py-16 bg-white">
+        <div id={data?.element_id || null} className="w-full px-primary mx-auto py-16 bg-white">
             <div className="lg:grid grid-cols-1 lg:grid-cols-2 gap-0 bg-[#f9f9f9] rounded-xl max-w-xl lg:max-w-none mx-auto">
                 <div className="flex">
                     <img

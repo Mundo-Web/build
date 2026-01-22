@@ -186,6 +186,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
 
     return (
         <motion.div
+            id={data?.element_id || null}
             initial="hidden"
             animate="visible"
             variants={fadeIn}

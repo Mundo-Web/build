@@ -4,7 +4,7 @@ import { GET } from "sode-extend-react";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 
-export default function UnsubscribeSimple() {
+export default function UnsubscribeSimple({ data }) {
     const [loading, setLoading] = useState(false);
     const [reason, setReason] = useState("");
     const [success, setSuccess] = useState(false);
@@ -85,7 +85,7 @@ export default function UnsubscribeSimple() {
 
     if (success) {
         return (
-            <div className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0">
+            <div id={data?.element_id || null} className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0">
                 <div className="2xl:max-w-7xl w-full mx-auto">
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                         <div className="p-12 text-center">
@@ -111,7 +111,7 @@ export default function UnsubscribeSimple() {
     }
 
     return (
-        <div className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-sections-color px-primary 2xl:px-0">
+        <div id={data?.element_id || null} className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-sections-color px-primary 2xl:px-0">
             <div className="2xl:max-w-7xl w-full mx-auto">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row lg:min-h-[600px]">

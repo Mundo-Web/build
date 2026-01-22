@@ -750,7 +750,7 @@ const RoomDetailLaPetaca = ({ item, data, cart, setCart, generals }) => {
     };
 
     return (
-        <div className="bg-sections-color min-h-screen">
+        <div id={data?.element_id || null} className="bg-sections-color min-h-screen">
            
 
             {/* Galería estilo Booking */}

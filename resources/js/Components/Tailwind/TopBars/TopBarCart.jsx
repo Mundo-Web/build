@@ -42,6 +42,7 @@ const TopBarCart = ({ data, cart, setCart, isUser, items }) => {
 
     return (
         <section
+            id={data?.element_id || null}
             ref={sectionRef}
             className="font-semibold text-lg bg-primary text-white font-paragraph"
         >

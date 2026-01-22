@@ -37,6 +37,7 @@ const FooterHuaillys = ({ socials = [], pages = [], generals = [],data }) => {
     return (
         <>
             <footer
+                id={data?.element_id || null}
                 className="py-4 font-paragraph px-[5%] md:px-[8%] pt-[calc(45px)] bg-[#54340E] bg-cover text-white relative"
                 style={{ backgroundImage: `url(${data?.footer_background})` }}
             >

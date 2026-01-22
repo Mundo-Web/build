@@ -438,7 +438,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     return (
         <>
             {/* Versión Mobile */}
-            <div className="md:hidden bg-gray-50 min-h-screen">
+            <div id={data?.element_id || null} className="md:hidden bg-gray-50 min-h-screen">
                 {/* Header Estilo App */}
                 <div className="sticky top-0 bg-white shadow-sm z-20">
                     <div className="flex items-center p-4 gap-4 border-b">

@@ -102,7 +102,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null, onViewU
 
     if (!selectedService) {
         return (
-            <section className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
+            <section id={data?.element_id || null} className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
                 <div className="2xl:max-w-7xl  mx-auto text-center">
                     <p className="text-neutral-dark">No hay servicios disponibles</p>
                 </div>
@@ -116,7 +116,7 @@ const ServiceDetailCatalog = ({ data, items = [], currentService = null, onViewU
         <>
             {/* Sección de Categorías con Swiper */}
             {categories && categories.length > 0 && (
-                <section className="py-8 lg:py-12 bg-gradient-to-b from-gray-50 to-white">
+                <section id={data?.element_id || null} className="py-8 lg:py-12 bg-gradient-to-b from-gray-50 to-white">
                     <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
                         <div className="text-center mb-8">
                             <h2 className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line">

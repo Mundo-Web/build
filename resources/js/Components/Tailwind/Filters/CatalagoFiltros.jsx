@@ -1163,7 +1163,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     }, [filtersOpen]);
 
     return (
-        <section className="py-4 lg:py-12 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30">
+        <section id={data?.element_id || null} className="py-4 lg:py-12 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30">
             <div className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header mejorado con estadísticas y acciones rápidas */}
                 <motion.div

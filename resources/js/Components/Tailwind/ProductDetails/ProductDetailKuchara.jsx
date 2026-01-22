@@ -6,7 +6,7 @@ import { useRef, useState } from "react"
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Add this with other imports at the top
 
-const ProductDetailKuchara = ({ item, cart, setCart }) => {
+const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
   // Add this state near other states
   const [currentImage, setCurrentImage] = useState(item?.image);
 
@@ -47,7 +47,7 @@ const ProductDetailKuchara = ({ item, cart, setCart }) => {
   }
 
   return (
-    <section className="w-full px-[5%] py-8">
+    <section id={data?.element_id || null} className="w-full px-[5%] py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Columna izquierda - Imágenes */}
         <div className="flex flex-col gap-4">

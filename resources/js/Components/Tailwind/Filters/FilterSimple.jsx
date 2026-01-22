@@ -155,7 +155,7 @@ const FilterSimple = ({ data, category, subcategory, cart, setCart }) => {
     };
 
     return (
-        <section className="bg-white">
+        <section id={data?.element_id || null} className="bg-white">
             <div className="px-[5%] replace-max-w-here w-full mx-auto px-4 py-[5%] md:py-[2.5%]">
                 {(data?.title || data?.description) && (
                     <div className="mb-[2%]">

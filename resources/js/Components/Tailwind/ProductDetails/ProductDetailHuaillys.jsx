@@ -222,7 +222,7 @@ const ProductDetailHuaillys = ({ item, data, setCart, cart, generals, favorites,
     ];
 
     return (
-        <div className="bg-white min-h-screen font-paragraph">
+        <div id={data?.element_id || null} className="bg-white min-h-screen font-paragraph">
             {/* Versión Mobile */}
             <div className="md:hidden">
                 {/* Header */}

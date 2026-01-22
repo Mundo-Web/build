@@ -195,7 +195,7 @@ const HeaderSearchMenuSF = ({
 
 
   return (
-    <header id="main-header" className="sticky top-0 w-full z-[9999999] bg-white font-paragraph">
+    <header id={data?.element_id || "main-header"} className="sticky top-0 w-full z-[9999999] bg-white font-paragraph">
       {/* TopBar */}
       <TopBar
         data={data}

@@ -26,7 +26,7 @@ const SliderBrandsPaani = ({ items, data }) => {
     };
 
     return (
-        <div className="bg-secondary my-10">
+        <div id={data?.element_id || null} className="bg-secondary my-10">
           <div className="w-full flex items-center justify-center">
               <h2 className="text-[36px] max-w-sm leading-tight md:text-5xl lg:max-w-lg  text-center font-bold font-title customtext-primary py-4 md:py-8">
                 {data?.title}

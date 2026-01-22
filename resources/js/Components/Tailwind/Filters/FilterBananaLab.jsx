@@ -309,6 +309,7 @@ const FilterBananaLab = ({ items, data, filteredData, cart, setCart }) => {
 
     return (
         <motion.section 
+            id={data?.element_id || null}
             initial="hidden"
             animate="visible"
             variants={fadeIn}

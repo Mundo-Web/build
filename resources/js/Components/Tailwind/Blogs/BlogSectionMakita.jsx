@@ -18,7 +18,7 @@ const BlogSectionMakita = ({ data, items }) => {
     };
 
     return (
-        <section className="bg-white py-16 md:py-20">
+        <section id={data?.element_id || null} className="bg-white py-16 md:py-20">
             <div className="container mx-auto px-4 md:px-[5%]">
                 {/* Center aligned header */}
                 <div className="text-center mb-10 md:mb-16 max-w-2xl mx-auto">

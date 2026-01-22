@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { GET } from "sode-extend-react";
 import Global from "../../../Utils/Global";
 
-export default function ForgotBananaLab() {
+export default function ForgotBananaLab({ data }) {
     const jsEncrypt = new JSEncrypt();
     jsEncrypt.setPublicKey(Global.PUBLIC_RSA_KEY);
 
@@ -142,6 +142,7 @@ export default function ForgotBananaLab() {
 
     return (
         <motion.div 
+            id={data?.element_id || null}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

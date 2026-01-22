@@ -48,7 +48,7 @@ const AboutModern = ({ data, filteredData, items }) => {
     };
 
     return (
-        <div className="w-full bg-white font-paragraph overflow-hidden">
+        <div id={data?.element_id || null} className="w-full bg-white font-paragraph overflow-hidden">
             
             {/* 1. SECCIÓN HERO - Quiénes Somos */}
             {hero && hero.visible && (

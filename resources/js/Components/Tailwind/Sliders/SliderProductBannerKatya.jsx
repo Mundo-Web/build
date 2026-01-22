@@ -23,7 +23,7 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
     const swiperRef = useRef(null);
 
     return (
-        <section className="relative w-full py-8 md:py-12 bg-accent">
+        <section id={data?.element_id || null} className="relative w-full py-8 md:py-12 bg-accent">
             <div className="px-primary overflow-hidden 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <div className="relative ">
                     {productsWithBanner.length > 0 && (

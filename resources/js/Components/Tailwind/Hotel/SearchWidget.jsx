@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/locale';
 
-const SearchWidget = ({ onSearch, className = '' }) => {
+const SearchWidget = ({ onSearch, className = '', data }) => {
     const [checkIn, setCheckIn] = useState(null);
     const [checkOut, setCheckOut] = useState(null);
     const [guests, setGuests] = useState(2);
@@ -94,7 +94,7 @@ const SearchWidget = ({ onSearch, className = '' }) => {
     };
 
     return (
-        <div className={`${className}`}>
+        <div id={data?.element_id || null} className={`${className}`}>
             <div className="bg-white rounded-lg shadow-lg">
                 <div className="p-6">
                     <h3 className="text-center text-2xl font-bold text-gray-900 mb-6">

@@ -5,7 +5,7 @@ import "swiper/css";
 import Global from "../../../Utils/Global";
 
 
-const CarruselBenefitsPaani = ({ items }) => {
+const CarruselBenefitsPaani = ({ items, data }) => {
   const benefitsRef = useRef(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const CarruselBenefitsPaani = ({ items }) => {
     img.onerror = () => setImageExists(false);
   }, [imageUrl]);
   return (
-    <div ref={benefitsRef} className="bg-primary py-10 overflow-hidden relative">
+    <div id={data?.element_id || null} ref={benefitsRef} className="bg-primary py-10 overflow-hidden relative">
       {imageExists && (<img
         src={`/assets/${Global.APP_CORRELATIVE}/overlay.png`}
         alt={`${Global.APP_NAME} - ${Global.APP_CORRELATIVE}`}

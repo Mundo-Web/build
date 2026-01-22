@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import getYTVideoId from '../../../Utils/getYTVideoId';
 
-const TestimonialsVideosWebQuirurgica = ({ items }) => {
+const TestimonialsVideosWebQuirurgica = ({ items, data }) => {
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   if (!items || items.length === 0) {
@@ -45,7 +45,7 @@ const TestimonialsVideosWebQuirurgica = ({ items }) => {
 
   return (
     <>
-      <section id="casos" className="w-full bg-secondary py-0">
+      <section id={data?.element_id || 'casos'} className="w-full bg-secondary py-0">
         {/* Header con padding */}
         <div className="py-16 px-4">
           <motion.div 

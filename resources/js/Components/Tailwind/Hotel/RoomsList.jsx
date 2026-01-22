@@ -3,7 +3,7 @@ import SearchWidget from './SearchWidget';
 import RoomCard from './RoomCard';
 import Swal from 'sweetalert2';
 
-const RoomsList = () => {
+const RoomsList = ({ data }) => {
     const [rooms, setRooms] = useState([]);
     const [searchParams, setSearchParams] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ const RoomsList = () => {
     };
 
     return (
-        <div className="py-8 px-[5%] replace-max-w-here mx-auto">
+        <div id={data?.element_id || null} className="py-8 px-[5%] replace-max-w-here mx-auto">
             {/* Search Widget */}
             <div className="mb-8">
                 <SearchWidget onSearch={handleSearch} />

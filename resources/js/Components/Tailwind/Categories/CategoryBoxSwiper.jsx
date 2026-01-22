@@ -11,7 +11,7 @@ const CategoryBoxSwiper = ({ data, items }) => {
     }
 
     return (
-        <div className="relative bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerako.png)' }}>
+        <div id={data?.element_id || null} className="relative bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerako.png)' }}>
             <div className="px-[5%] replace-max-w-here w-full mx-auto pt-12 md:pt-16 xl:pt-20 space-y-10">
                 {data?.title && (
                     <div className="flex flex-col max-w-2xl 2xl:max-w-3xl mx-auto">

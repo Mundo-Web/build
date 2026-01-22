@@ -611,7 +611,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
 
 
     return (
-        <>
+        <div id={data?.element_id || null}>
             {/* Botón flotante fijo */}
             {/* <button
                 onClick={openModal}
@@ -898,7 +898,7 @@ const FilterSalaFabulosa = ({ items, data, filteredData, cart, setCart }) => {
                 </div>
             </section>
 
-        </>
+        </div>
     );
 };
 

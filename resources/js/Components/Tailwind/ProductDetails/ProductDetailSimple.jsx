@@ -4,7 +4,7 @@ import HtmlContent from "../../../Utils/HtmlContent"
 import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency"
 import { useRef } from "react"
 
-const ProductDetailSimple = ({ item, cart, setCart }) => {
+const ProductDetailSimple = ({ item, data, cart, setCart }) => {
 
   const quantityRef = useRef()
 
@@ -26,7 +26,7 @@ const ProductDetailSimple = ({ item, cart, setCart }) => {
     })
   }
 
-  return <section className="w-full px-[5%] py-12 md:py20">
+  return <section id={data?.element_id || null} className="w-full px-[5%] py-12 md:py20">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16">
       <div className="flex flex-col md:flex-row justify-center items-center gap-5">
         <div className="flex flex-row justify-between md:flex-col md:justify-start md:items-center h-full gap-4 md:gap-10 md:basis-1/4 order-2 md:order-1 w-full">

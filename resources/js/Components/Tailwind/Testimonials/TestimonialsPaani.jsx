@@ -9,7 +9,7 @@ import Global from "../../../Utils/Global";
 const backgroundImage =
     `/assets/${Global.APP_CORRELATIVE}/testimonials.png`
 
-const TestimonialsPaani = ({items}) => {
+const TestimonialsPaani = ({items, data}) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const swiperRef = useRef(null);
 
@@ -26,7 +26,7 @@ const TestimonialsPaani = ({items}) => {
     );
   };
     return (
-        <section className="hidden lg:block w-full py-12 md:py-24 bg-white px-primary 2xl:px-0 2xl:max-w-7xl mx-auto  overflow-hidden">
+        <section id={data?.element_id || null} className="hidden lg:block w-full py-12 md:py-24 bg-white px-primary 2xl:px-0 2xl:max-w-7xl mx-auto  overflow-hidden">
             <div className="  ">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center ">
                    

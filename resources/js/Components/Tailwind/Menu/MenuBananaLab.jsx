@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const MenuBananaLab = ({ pages = [], items }) => {
+const MenuBananaLab = ({ pages = [], items, data }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [openCategory, setOpenCategory] = useState(null);
     const menuRef = useRef(null);
@@ -23,7 +23,7 @@ const MenuBananaLab = ({ pages = [], items }) => {
     };
 
     return (
-        <nav className="hidden md:block  font-paragraph font-normal text-sm py-4">
+        <nav id={data?.element_id || null} className="hidden md:block  font-paragraph font-normal text-sm py-4">
             <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto flex justify-between">
                 <ul className="flex items-center gap-6 text-sm" ref={menuRef}>
                    

@@ -207,7 +207,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
   }
 
   return (
-    <section className="relative h-[calc(100dvh-12dvh)] lg:h-[700px] overflow-hidden">
+    <section id={data?.element_id || null} className="relative h-[calc(100dvh-12dvh)] lg:h-[700px] overflow-hidden">
       {/* Slides Container */}
       <div 
         className="relative w-full h-full"

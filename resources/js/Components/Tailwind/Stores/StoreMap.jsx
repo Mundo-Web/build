@@ -294,7 +294,7 @@ const StoreMap = ({ data, stores = [] }) => {
     };
 
     return (
-        <section className={`bg-secondary ${data?.class_container || ''}`}>
+        <section id={data?.element_id || null} className={`bg-secondary ${data?.class_container || ''}`}>
             {/* Estilos globales para sobrescribir Google Maps InfoWindow */}
             <style>{`
                 .gm-style-iw-c {

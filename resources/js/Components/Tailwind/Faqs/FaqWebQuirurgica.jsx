@@ -8,7 +8,7 @@ const FaqWebQuirurgica = ({ data, faqs }) => {
   }
 
   return (
-    <section id="faq" className="py-24 px-primary 2xl:px-0 bg-white">
+    <section id={data?.element_id || null} className="py-24 px-primary 2xl:px-0 bg-white">
       <div className="2xl:max-w-4xl mx-auto">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-5xl md:text-6xl font-extralight text-primary leading-tight">

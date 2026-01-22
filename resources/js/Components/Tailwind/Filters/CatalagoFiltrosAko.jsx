@@ -560,7 +560,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     }, [filtersOpen]);
 
     return (
-        <section className=" bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 font-title">
+        <section id={data?.element_id || null} className=" bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 font-title">
 
             {/* {currentCategory?.banner && (
                     <motion.div 
