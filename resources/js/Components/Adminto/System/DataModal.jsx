@@ -8,6 +8,37 @@ import EditorFormGroup from "../../Adminto/form/EditorFormGroup";
 
 const systemRest = new SystemRest()
 
+// Opciones de animación disponibles
+const animationOptions = [
+  { value: 'fade-up', label: 'Fade Up (por defecto)' },
+  { value: 'fade-down', label: 'Fade Down' },
+  { value: 'fade-left', label: 'Fade Left' },
+  { value: 'fade-right', label: 'Fade Right' },
+  { value: 'fade', label: 'Fade (solo opacidad)' },
+  { value: 'zoom-in', label: 'Zoom In' },
+  { value: 'zoom-out', label: 'Zoom Out' },
+  { value: 'slide-up', label: 'Slide Up' },
+  { value: 'slide-down', label: 'Slide Down' },
+  { value: 'slide-left', label: 'Slide Left' },
+  { value: 'slide-right', label: 'Slide Right' },
+  { value: 'blur-in', label: 'Blur In' },
+  { value: 'scale-up', label: 'Scale Up' },
+  { value: 'rotate-in', label: 'Rotate In' },
+  { value: 'reveal', label: 'Reveal (máscara)' },
+  { value: 'none', label: 'Sin animación' }
+];
+
+const easingOptions = [
+  { value: 'gcigc', label: 'GCIGC (suave profesional)' },
+  { value: 'smooth', label: 'Smooth' },
+  { value: 'ease', label: 'Ease' },
+  { value: 'ease-in', label: 'Ease In' },
+  { value: 'ease-out', label: 'Ease Out' },
+  { value: 'ease-in-out', label: 'Ease In Out' },
+  { value: 'spring', label: 'Spring (rebote suave)' },
+  { value: 'bounce', label: 'Bounce (rebote fuerte)' }
+];
+
 const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
   const [data, setData] = useState(dataLoaded?.data || {})
   const [elementId, setElementId] = useState(dataLoaded?.element_id || '')
@@ -81,6 +112,12 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
             Información
           </a>
         </li>
+        <li className="nav-item">
+          <a href="#tab-animation" data-bs-toggle="tab" aria-expanded="true" className="nav-link">
+            <i className="mdi mdi-animation-play me-1"></i>
+            Animación
+          </a>
+        </li>
         <li className="nav-item" hidden={!dataLoaded?.component?.using?.filters && !dataLoaded?.component?.using?.['filters:method']}>
           <a href="#tab-db" data-bs-toggle="tab" aria-expanded="true" className="nav-link">
             Base de datos
@@ -142,6 +179,107 @@ const DataModal = ({ dataLoaded, setDataLoaded, setSystems, modalRef }) => {
 
             ))
           }
+        </div>
+        <div className="tab-pane" id="tab-animation">
+          <div className="alert alert-info alert-dismissible fade show mb-3" role="alert">
+            <i className="mdi mdi-information-outline me-1"></i>
+            Configura animaciones de scroll estilo <strong>gcigc.com</strong>. Los elementos aparecerán animados al hacer scroll.
+          </div>
+          
+          <div className="row">
+            <div className="col-md-6">
+              <div className="form-group mb-3">
+                <label className="form-label">Tipo de Animación</label>
+                <select 
+                  className="form-control"
+                  value={data.scroll_animation || 'fade-up'}
+                  onChange={e => setData({ ...data, scroll_animation: e.target.value })}
+                >
+                  {animationOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="form-group mb-3">
+                <label className="form-label">Easing (curva de velocidad)</label>
+                <select 
+                  className="form-control"
+                  value={data.scroll_easing || 'gcigc'}
+                  onChange={e => setData({ ...data, scroll_easing: e.target.value })}
+                >
+                  {easingOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div className="row">
+            <div className="col-md-6">
+              <div className="form-group mb-3">
+                <label className="form-label">Duración (segundos)</label>
+                <input 
+                  type="number" 
+                  className="form-control"
+                  step="0.1"
+                  min="0.1"
+                  max="3"
+                  value={data.scroll_duration || 0.8}
+                  onChange={e => setData({ ...data, scroll_duration: e.target.value })}
+                  placeholder="0.8"
+                />
+                <small className="text-muted">Recomendado: 0.6 - 1.0 segundos</small>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="form-group mb-3">
+                <label className="form-label">Delay (segundos)</label>
+                <input 
+                  type="number" 
+                  className="form-control"
+                  step="0.1"
+                  min="0"
+                  max="2"
+                  value={data.scroll_delay || 0}
+                  onChange={e => setData({ ...data, scroll_delay: e.target.value })}
+                  placeholder="0"
+                />
+                <small className="text-muted">Tiempo de espera antes de iniciar</small>
+              </div>
+            </div>
+          </div>
+          
+          <div className="form-group mb-3">
+            <div className="form-check">
+              <input 
+                type="checkbox" 
+                className="form-check-input"
+                id="scroll_disabled"
+                checked={data.scroll_disabled === true}
+                onChange={e => setData({ ...data, scroll_disabled: e.target.checked })}
+              />
+              <label className="form-check-label" htmlFor="scroll_disabled">
+                Desactivar animación para este componente
+              </label>
+            </div>
+          </div>
+          
+          {/* Preview de la animación */}
+          <div className="card bg-light mb-0">
+            <div className="card-body py-2">
+              <small className="text-muted d-block mb-1">Vista previa:</small>
+              <div className="d-flex align-items-center gap-2">
+                <span className="badge bg-primary">{data.scroll_animation || 'fade-up'}</span>
+                <span className="badge bg-secondary">{data.scroll_easing || 'gcigc'}</span>
+                <span className="badge bg-info">{data.scroll_duration || 0.8}s</span>
+                {data.scroll_delay > 0 && <span className="badge bg-warning">delay: {data.scroll_delay}s</span>}
+                {data.scroll_disabled && <span className="badge bg-danger">desactivado</span>}
+              </div>
+            </div>
+          </div>
         </div>
         <div className="tab-pane show" id="tab-db">
           <InputFormGroup eRef={usingRef.model} label='Modelo' disabled />

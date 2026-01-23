@@ -424,7 +424,7 @@ const ProductDetailMultivet = ({ item, data, setCart, cart, generals, favorites,
    
 
     return (
-        <div className="bg-gray-50 min-h-screen overflow-x-hidden">
+        <div id={data?.element_id || null} className="bg-gray-50 min-h-screen overflow-x-hidden">
 
 
             <div className="max-w-7xl mx-auto px-4 py-4 lg:py-8">

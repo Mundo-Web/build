@@ -335,7 +335,7 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     return (
         <>
             {/* Versión Mobile */}
-            <div className="md:hidden  min-h-screen font-paragraph">
+            <div id={data?.element_id || null} className="md:hidden  min-h-screen font-paragraph">
                 {/* Header Estilo App */}
                 <div className="sticky top-0 bg-white shadow-sm z-20">
                     <div className="flex items-center p-4 gap-4 border-b">

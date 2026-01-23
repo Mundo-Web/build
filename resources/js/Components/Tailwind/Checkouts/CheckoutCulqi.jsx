@@ -1,7 +1,7 @@
 import React from "react"
 
-const CheckoutCulqi = () => {
-  return <div class="flex flex-col gap-8">
+const CheckoutCulqi = ({ data }) => {
+  return <div id={data?.element_id || null} class="flex flex-col gap-8">
 
     <input type="hidden" name="_token" value="KetUXGJHlBNXwBFdNlcg8R9ueYHpfGMUECXmlNyQ" autocomplete="off" />
     <div class="flex flex-col gap-5 pb-10 border-b-2 border-gray-200 dark:border-gray-700">

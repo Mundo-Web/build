@@ -63,7 +63,7 @@ export default function BannerStaticSecond({ data, items }) {
 
 
     return (
-        <section className="customtext-primary bg-[#F2F2F2] font-paragraph bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerm.png)' }}>
+        <section id={data?.element_id || null} className="customtext-primary bg-[#F2F2F2] font-paragraph bg-cover bg-center" style={{ backgroundImage: 'url(/assets/img/backgrounds/sliders/bannerm.png)' }}>
             <div className="overflow-hidden px-primary 2xl:px-0">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 xl:gap-40 py-10 2xl:py-12 2xl:max-w-7xl mx-auto">
                     {/* Text Content */}

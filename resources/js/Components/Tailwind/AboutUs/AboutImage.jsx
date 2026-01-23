@@ -2,7 +2,7 @@ import React from "react"
 
 const AboutImage = ({ data }) => {
     return (
-        <div className="mx-auto p-[5%]">
+        <div id={data?.element_id || null} className="mx-auto p-[5%]">
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
                 <div className="relative w-full md:w-1/2 aspect-square max-w-lg mx-auto">
                     <img alt="Productos ecológicos Kuchara" decoding="async" data-nimg="fill" className="object-contain w-full aspect-square" src={data?.url_imagen} />

@@ -1,8 +1,8 @@
 import React from "react"
 
-const IndicatorSimple = ({ items }) => {
+const IndicatorSimple = ({ items, data }) => {
   return (
-    <section className="bg-accent w-full">
+    <section id={data?.element_id || null} className="bg-accent w-full">
       <div className="px-primary py-[2.5%] 2xl:max-w-7xl mx-auto relative">
         <div className="flex flex-col md:flex-row md:justify-center w-full gap-6 md:gap-4 lg:gap-8">
           {items.map((benefit, index) => (

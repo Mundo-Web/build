@@ -732,7 +732,7 @@ const HeaderSearchKatya = ({
         isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
     }
     return (
-        <header className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-primary shadow-lg" : "relative bg-primary"}`}>
+        <header id={data?.element_id || null} className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-primary shadow-lg" : "relative bg-primary"}`}>
             <div className="px-primary  bg-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}

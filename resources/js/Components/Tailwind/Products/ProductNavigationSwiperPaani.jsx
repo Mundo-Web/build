@@ -26,7 +26,7 @@ const ProductNavigationSwiperPaani = ({ items, data, setCart, cart }) => {
     }, []);
     
     return (
-        <section className={`py-12 lg:pt-16 lg:pb-8 ${data.background ? data.background : 'bg-white'}`}>
+        <section id={data?.element_id || null} className={`py-12 lg:pt-16 lg:pb-8 ${data.background ? data.background : 'bg-white'}`}>
             <div className="px-primary w-full font-title">
                 {/* Header */}
                 {data?.title && (

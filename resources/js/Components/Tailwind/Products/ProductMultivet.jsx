@@ -133,6 +133,7 @@ const ProductMultivet = ({ items, data, favorites = [], setFavorites, cart, setC
 
   return (
     <motion.section
+      id={data?.element_id || null}
       ref={sectionRef}
       variants={sectionVariants}
       initial="hidden"

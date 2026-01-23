@@ -12,7 +12,7 @@ const CartKuchara = ({ data, cart, setCart }) => {
 
   const igv = Number(General.igv_checkout) / 100
 
-  return <section className="bg-white">
+  return <section id={data?.element_id || null} className="bg-white">
     <div className="px-[5%] replace-max-w-here w-full mx-auto py-[2.5%] grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2">
         {cart.length > 0 ? (

@@ -79,7 +79,7 @@ const CategoryGridInfinite = ({ data, items }) => {
     };
 
     return (
-        <div>
+        <div id={data?.element_id || null}>
             {items && items.length > 0 && (
                 <motion.div 
                     ref={containerRef}

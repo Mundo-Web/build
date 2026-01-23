@@ -9,6 +9,7 @@ const BannerAd = ({ data }) => {
 
     return (
         <section
+            id={data?.element_id || null}
             className="relative bg-gray-50 text-white w-full px-[5%] mx-auto py-4"
             style={{
                 backgroundColor: data?.background_color,

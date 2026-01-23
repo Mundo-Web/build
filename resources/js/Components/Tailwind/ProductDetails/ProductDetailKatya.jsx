@@ -467,7 +467,7 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
     ];
 
     return (
-        <div className="bg-white min-h-screen overflow-x-hidden">
+        <div id={data?.element_id || null} className="bg-white min-h-screen overflow-x-hidden">
 
 
             <div className="max-w-7xl mx-auto px-4 py-4 lg:py-8">

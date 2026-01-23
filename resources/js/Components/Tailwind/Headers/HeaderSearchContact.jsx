@@ -63,7 +63,7 @@ const HeaderSearchContact = ({ data, cart, setCart, pages }) => {
 
   return (
     <>
-      <section className="bg-white shadow z-20 sticky top-0">
+      <section id={data?.element_id || null} className="bg-white shadow z-20 sticky top-0">
         <header className="px-[5%] mx-auto flex p-3 justify-between items-center">
           <a href="/" className="flex-shrink-0">
             <img

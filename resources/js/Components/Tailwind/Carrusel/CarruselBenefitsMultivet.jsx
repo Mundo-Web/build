@@ -29,7 +29,7 @@ const CarruselBenefitsMultivet = ({ items = [], data }) => {
   };
 
   return (
-    <section ref={parallaxRef} className={`relative py-12  overflow-hidden ${data?.background || 'bg-primary'}`}>
+    <section id={data?.element_id || null} ref={parallaxRef} className={`relative py-12  overflow-hidden ${data?.background || 'bg-primary'}`}>
     
 
 

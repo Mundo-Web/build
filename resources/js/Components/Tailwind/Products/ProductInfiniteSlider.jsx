@@ -22,7 +22,7 @@ const ProductInfiniteSlider = ({ items, data, cart, setCart }) => {
     };
 
     return (
-        <section className="py-8 lg:py-20 font-paragraph bg-secondary">
+        <section id={data?.element_id || null} className="py-8 lg:py-20 font-paragraph bg-secondary">
             <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <div className="flex mb-4 w-full flex-col gap-6 lg:flex-row justify-between items-center">
                     {/* Título */}

@@ -34,7 +34,7 @@ const SubscriptionSimple = ({ data }) => {
     };
 
     return (
-        <section className="bg-[#54340E] bg-cover bg-opacity-100 relative flex flex-col gap-2">
+        <section id={data?.element_id || null} className="bg-[#54340E] bg-cover bg-opacity-100 relative flex flex-col gap-2">
             <div 
                 className="bg-cover bg-center w-full relative" 
                 style={{ 

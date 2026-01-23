@@ -260,7 +260,7 @@ export default function PQRS({ generals = [],data }) {
     }
     
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full px-4 py-8 font-paragraph">
+        <div id={data?.element_id || null} className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full px-4 py-8 font-paragraph">
             <div className="max-w-5xl mx-auto">
                 {/* Header mejorado */}
                 <div className="text-center mb-12">

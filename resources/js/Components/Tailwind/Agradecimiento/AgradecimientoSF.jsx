@@ -10,7 +10,7 @@ const AgradecimientoSF = ({ data, contacts }) => {
     );
   };
 
-  return <div className="bg-white">
+  return <div id={data?.element_id || null} className="bg-white">
             <main className="w-11/12 mx-auto max-w-[868px] pb-16">
                 <div className="flex flex-col gap-10 py-10 ">
                     

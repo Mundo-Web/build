@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 
-const CarruselBananaLab = ({ items }) => {
+const CarruselBananaLab = ({ items, data }) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [hoveredIndex, setHoveredIndex] = useState(null);
     
@@ -97,7 +97,8 @@ const CarruselBananaLab = ({ items }) => {
     };
 
     return (
-        <motion.div 
+        <motion.div
+            id={data?.element_id || null} 
             initial="hidden"
             animate="visible"
             variants={containerVariants}

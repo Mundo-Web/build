@@ -38,7 +38,7 @@ const SliderImagen = ({ items, data }) => {
     };
 
     return (
-        <div className={`${data?.class_section || "bg-[#F7F9FB]"}`}>
+        <div id={data?.element_id || null} className={`${data?.class_section || "bg-[#F7F9FB]"}`}>
             <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-title py-4 md:py-8 ">
                 {data?.title}
             </h2>

@@ -31,7 +31,7 @@ const TestimonialsLaPetaca = ({ data, items }) => {
     const subtitle = data?.subtitle || 'Las experiencias de quienes nos visitaron hablan por sí solas';
 
     return (
-        <section className="py-20 md:py-20 px-4 bg-sections-color relative overflow-hidden">
+        <section id={data?.element_id || null} className="py-20 md:py-20 px-4 bg-sections-color relative overflow-hidden">
             {/* Decoraciones de fondo sutiles */}
             <div className="absolute top-0 left-0 w-80 h-80 bg-accent rounded-full blur-3xl opacity-5 -translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl opacity-5 translate-x-1/2 translate-y-1/2"></div>

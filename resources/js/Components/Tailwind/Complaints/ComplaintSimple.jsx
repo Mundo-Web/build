@@ -8,7 +8,7 @@ import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { Send, X } from "lucide-react";
 import { toast } from "sonner";
-export default function ComplaintSimple({ generals }) {
+export default function ComplaintSimple({ generals, data }) {
     const recaptchaRef = useRef(null);
     const [messageCaptcha, setMessageCaptcha] = useState("");
     const [formData, setFormData] = useState({
@@ -186,7 +186,7 @@ export default function ComplaintSimple({ generals }) {
     const openModal = (index) => setModalOpen(index);
     const closeModal = () => setModalOpen(null);
     return (
-        <div className=" w-full px-primary mx-auto pt-8 pb-16 font-paragraph">
+        <div id={data?.element_id || null} className=" w-full px-primary mx-auto pt-8 pb-16 font-paragraph">
             <div className="max-w-7xl mx-auto  bg-white shadow-lg rounded-2xl customtext-neutral-dark p-8">
                 <h1 className="text-2xl font-bold mb-10 text-center uppercase">
                     Libro de Reclamaciones

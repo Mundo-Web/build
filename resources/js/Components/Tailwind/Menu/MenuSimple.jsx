@@ -128,6 +128,7 @@ const MenuSimple = ({ pages = [], items, data ,visible=false}) => {
             )}
             
             <nav
+                id={data?.element_id || null}
                 className={
                     `${
                     showOnlyTagsMobile

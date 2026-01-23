@@ -57,7 +57,7 @@ const ThankSimple = ({ data, item }) => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div id={data?.element_id || null} className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto p-[5%]">
 
         {/* Mensaje de agradecimiento */}

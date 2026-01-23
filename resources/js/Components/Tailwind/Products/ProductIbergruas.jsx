@@ -18,7 +18,7 @@ const ProductIbergruas = ({ items, data }) => {
     }
 
     return (
-        <section className="relative  py-16 bg-secondary overflow-hidden">
+        <section id={data?.element_id || null} className="relative  py-16 bg-secondary overflow-hidden">
             <div className="relative mx-auto px-4 sm:px-6 lg:px-8 2xl:max-w-7xl">
                 {/* Header */}
                 {data?.title && (

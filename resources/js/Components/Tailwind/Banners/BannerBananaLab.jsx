@@ -7,7 +7,7 @@ const BannerBananaLab = ({ data }) => {
     const imageUrl = resolveSystemAsset(data?.image);
     
     return (
-        <div className=" px-primary 2xl:px-0 2xl:max-w-7xl mx-auto font-paragraph lg:py-10">    
+        <div id={data?.element_id || null} className=" px-primary 2xl:px-0 2xl:max-w-7xl mx-auto font-paragraph lg:py-10">    
             <div
                 className="relative rounded-3xl md:rounded-2xl h-[630px] lg:h-[450px] p-4 md:p-0"
                 style={{

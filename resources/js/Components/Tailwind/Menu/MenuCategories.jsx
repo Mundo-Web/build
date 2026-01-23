@@ -324,6 +324,7 @@ const MenuCategories = ({ pages = [], items, data ,visible=false}) => {
 
     return (
         <nav
+            id={data?.element_id || null}
             className={
                 " relative w-full md:block bg-secondary font-paragraph text-sm"
                 

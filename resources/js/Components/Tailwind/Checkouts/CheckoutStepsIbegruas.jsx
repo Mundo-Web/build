@@ -112,7 +112,7 @@ export default function CheckoutStepsIbegruas({ cart, setCart, user, prefixes, u
     };
 
     return (
-        <div className="min-h-screen bg-secondary py-4 md:py-12 ">
+        <div id={data?.element_id || null} className="min-h-screen bg-secondary py-4 md:py-12 ">
             <div className="bg-secondary px-primary 2xl:px-0 2xl:max-w-7xl mx-auto rounded-lg md:rounded-xl shadow-sm">
                 {/* Steps indicator */}
                 <div className="mb-4 md:mb-8">

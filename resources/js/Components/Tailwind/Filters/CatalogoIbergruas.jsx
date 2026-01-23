@@ -639,7 +639,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
     };
 
     return (
-        <>
+        <div id={data?.element_id || null}>
            {/* Banners / Hero Section */}
            <div className="">
                 {renderBanners()}
@@ -993,7 +993,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                 </div>
             </motion.section>
         )}
-        </>
+        </div>
     );
 };
 

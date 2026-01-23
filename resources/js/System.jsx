@@ -7,6 +7,9 @@ import ItemsRest from "./Actions/ItemsRest";
 import SortByAfterField from "./Utils/SortByAfterField";
 import { Toaster } from "sonner";
 
+// Componente de animación de scroll
+const ScrollAnimation = React.lazy(() => import("./Components/Tailwind/Components/ScrollAnimation"));
+
 // Importaciones lazy
 const NoComponent = React.lazy(() => import("./NoComponent"));
 const TopBar = React.lazy(() => import("./Components/Tailwind/TopBar"));
@@ -200,6 +203,19 @@ const System = ({
 
         // Incluir element_id en data para que esté disponible en todos los componentes
         const dataWithElementId = { ...data, element_id };
+        
+        // Configuración de animación desde data (configurable desde admin)
+        const animationConfig = {
+            animation: data?.scroll_animation || 'fade-up', // Tipo de animación
+            duration: parseFloat(data?.scroll_duration) || 0.8,
+            delay: parseFloat(data?.scroll_delay) || 0,
+            easing: data?.scroll_easing || 'gcigc',
+            disabled: data?.scroll_animation === 'none' || data?.scroll_disabled === true
+        };
+        
+        // Componentes que NO deben tener animación de scroll (fixed, floating, etc)
+        const noAnimationComponents = ['floating', 'header', 'top_bar', 'footer', 'menu'];
+        const shouldAnimate = !noAnimationComponents.includes(component);
 
         const componentProps = {
             data: dataWithElementId,
@@ -214,6 +230,21 @@ const System = ({
             headerPosts,
             contacts,
             categorias
+        };
+        
+        // Función helper para envolver con animación
+        const wrapWithAnimation = (content, customConfig = {}) => {
+            if (!shouldAnimate || animationConfig.disabled) {
+                return content;
+            }
+            return (
+                <ScrollAnimation
+                    animationConfig={{ ...animationConfig, ...customConfig }}
+                    key={element_id}
+                >
+                    {content}
+                </ScrollAnimation>
+            );
         };
 
         switch (component) {
@@ -241,104 +272,104 @@ const System = ({
                 }
                 break;
             case "filter":
-                return <Filter which={value} data={dataWithElementId} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} setFavorites={setFavorites} favorites={favorites} />
+                return wrapWithAnimation(<Filter which={value} data={dataWithElementId} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} setFavorites={setFavorites} favorites={favorites} />);
             case "product":
-                return <Product which={value} data={dataWithElementId} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites} generals={generals}
-                    setFavorites={setFavorites} contacts={contacts} />
+                return wrapWithAnimation(<Product which={value} data={dataWithElementId} items={getItems(itemsId)} filteredData={filteredData} cart={cart} setCart={setCart} pages={pages} favorites={favorites} generals={generals}
+                    setFavorites={setFavorites} contacts={contacts} />);
             case "category":
-                return <Category which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Category which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "collection":
-                return <Collection which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Collection which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "slider":
                 return <Slider which={value} data={dataWithElementId} sliders={getItems(itemsId)} generals={generals} />
             case "carrusel":
-                return <Carrusel which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Carrusel which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "indicator":
-                return <Indicator which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Indicator which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "banner":
-                return <Banner which={value} data={dataWithElementId} items={getItems(itemsId)} generals={generals} />
+                return wrapWithAnimation(<Banner which={value} data={dataWithElementId} items={getItems(itemsId)} generals={generals} />);
             case "ads":
-                return <Ad which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Ad which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "image":
-                return <Image which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Image which={value} data={dataWithElementId} />);
             case "step":
-                return <Step which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Step which={value} data={dataWithElementId} />);
             case 'delivery-zones':
-                return <DeliveryZone which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<DeliveryZone which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "product-detail":
-                return <ProductDetail which={value} item={filteredData.Item} cart={cart} setCart={setCart} data={dataWithElementId} generals={generals} favorites={favorites} setFavorites={setFavorites} textstatic={textstatic} contacts={contacts} />
+                return wrapWithAnimation(<ProductDetail which={value} item={filteredData.Item} cart={cart} setCart={setCart} data={dataWithElementId} generals={generals} favorites={favorites} setFavorites={setFavorites} textstatic={textstatic} contacts={contacts} />);
             case "cart":
-                return <Cart which={value} data={dataWithElementId} cart={cart} setCart={setCart} />
+                return wrapWithAnimation(<Cart which={value} data={dataWithElementId} cart={cart} setCart={setCart} />);
             case "checkout":
                 return <Checkout which={value} data={dataWithElementId} items={getItems(itemsId)} cart={cart} setCart={setCart} isUser={session} prefixes={jsons?.prefixes ?? []} ubigeos={jsons?.ubigeos ?? []} contacts={contacts} generals={generals} categorias={categorias} />
             case "contact":
-                return <Contact which={value} data={dataWithElementId} contacts={contacts} generals={generals} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Contact which={value} data={dataWithElementId} contacts={contacts} generals={generals} items={getItems(itemsId)} />);
             case "faq":
-                return <Faq which={value} data={dataWithElementId} faqs={faqs} />
+                return wrapWithAnimation(<Faq which={value} data={dataWithElementId} faqs={faqs} />);
             case "thank":
-                return <ThankSimple which={value} data={dataWithElementId} item={filteredData.Sale} />
+                return wrapWithAnimation(<ThankSimple which={value} data={dataWithElementId} item={filteredData.Sale} />);
             case "track":
-                return <Track which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Track which={value} data={dataWithElementId} />);
             case "blog":
-                return <Blog which={value} data={dataWithElementId} items={getItems(itemsId)} headerPosts={headerPosts} postsLatest={postsLatest} filteredData={filteredData} />
+                return wrapWithAnimation(<Blog which={value} data={dataWithElementId} items={getItems(itemsId)} headerPosts={headerPosts} postsLatest={postsLatest} filteredData={filteredData} />);
             case "innovation":
-                return <Innovation which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Innovation which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "service":
-                return <Service which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Service which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "service-detail":
-                return <ServiceDetail which={value} data={dataWithElementId} items={getItems(itemsId)} currentService={filteredData.Service ?? null} />
+                return wrapWithAnimation(<ServiceDetail which={value} data={dataWithElementId} items={getItems(itemsId)} currentService={filteredData.Service ?? null} />);
             case "post-detail":
-                return <PostDetail which={value} data={dataWithElementId} item={filteredData.Post} />
+                return wrapWithAnimation(<PostDetail which={value} data={dataWithElementId} item={filteredData.Post} />);
             case "about":
-                return <AboutUs which={value} data={dataWithElementId} filteredData={filteredData} items={getItems(itemsId)} />
+                return wrapWithAnimation(<AboutUs which={value} data={dataWithElementId} filteredData={filteredData} items={getItems(itemsId)} />);
             case "login":
-                return <Login which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Login which={value} data={dataWithElementId} />);
             case "signup":
-                return <Signup which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Signup which={value} data={dataWithElementId} />);
             case "forgot-password":
-                return <ForgotPassword which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<ForgotPassword which={value} data={dataWithElementId} />);
             case "reset-password":
-                return <ResetPassword which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<ResetPassword which={value} data={dataWithElementId} />);
             case "unsubscribe":
-                return <Unsubscribe which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Unsubscribe which={value} data={dataWithElementId} />);
             case "frame":
-                return <Frame which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Frame which={value} data={dataWithElementId} />);
             case "footer":
                 return <Footer {...componentProps} contacts={contacts} generals={generals} stores={stores} />
             case "complaints":
-                return <Complaint which={value} data={dataWithElementId} generals={generals} />
+                return wrapWithAnimation(<Complaint which={value} data={dataWithElementId} generals={generals} />);
             case "whistleblowings":
-                return <Whistleblowing which={value} data={dataWithElementId} generals={generals} />
+                return wrapWithAnimation(<Whistleblowing which={value} data={dataWithElementId} generals={generals} />);
             case "floating":
                 return <Floating which={value} data={dataWithElementId} />
             case "testimonials":
-                return <Testimonials which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Testimonials which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "strength":
-                return <Strength which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Strength which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "benefit":
-                return <Benefit which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Benefit which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "specification":
-                return <Specification which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Specification which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "application":
-                return <Application which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Application which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "brands":
-                return <Brands which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Brands which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "partner":
-                return <Partner which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Partner which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "subscription":
-                return <Subscription which={value} data={dataWithElementId} />
+                return wrapWithAnimation(<Subscription which={value} data={dataWithElementId} />);
             case "agradecimientos":
-                return <Agradecimientos which={value} data={dataWithElementId} items={getItems(itemsId)} contacts={contacts} />
+                return wrapWithAnimation(<Agradecimientos which={value} data={dataWithElementId} items={getItems(itemsId)} contacts={contacts} />);
             case "support":
-                return <Support which={value} data={dataWithElementId} items={getItems(itemsId)} />
+                return wrapWithAnimation(<Support which={value} data={dataWithElementId} items={getItems(itemsId)} />);
             case "firstclass":
-                return <FirstClass {...componentProps} />
+                return wrapWithAnimation(<FirstClass {...componentProps} />);
             case "store":
-                return <Store {...componentProps} />
+                return wrapWithAnimation(<Store {...componentProps} />);
             case "hotel":
-                return <Hotel {...componentProps} filteredData={filteredData} favorites={favorites} setFavorites={setFavorites} />
+                return wrapWithAnimation(<Hotel {...componentProps} filteredData={filteredData} favorites={favorites} setFavorites={setFavorites} />);
             default:
-                return <NoComponent which={value} />
+                return <NoComponent which={value} data={dataWithElementId} />
         }
     };
 

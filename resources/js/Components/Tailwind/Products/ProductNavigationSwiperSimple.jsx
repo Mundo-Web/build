@@ -86,7 +86,7 @@ const ProductNavigationSwiperSimple = ({ items, data, setCart, cart }) => {
     }, []);
     
     return (
-        <section className="py-12 lg:py-16">
+        <section id={data?.element_id || null} className="py-12 lg:py-16">
             <div className="px-primary 2xl:px-0 w-full font-title">
                 <div className="2xl:max-w-7xl mx-auto">
                 {/* Header */}

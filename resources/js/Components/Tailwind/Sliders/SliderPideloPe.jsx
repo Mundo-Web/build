@@ -77,6 +77,7 @@ const SliderPideloPe = ({ items, data }) => {
 
     return (
         <motion.div 
+            id={data?.element_id || null}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

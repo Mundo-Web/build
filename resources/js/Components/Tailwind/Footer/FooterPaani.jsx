@@ -101,7 +101,7 @@ export default function FooterPaani({ data = footerData, generals, socials }) {
     };
  
     return (
-        <footer className="w-full bg-primary text-white py-12 relative overflow-hidden">
+        <footer id={data?.element_id || null} className="w-full bg-primary text-white py-12 relative overflow-hidden">
             {/* Imagen overlay decorativa con blend mode */}
 
             {showFooterOverlay && (

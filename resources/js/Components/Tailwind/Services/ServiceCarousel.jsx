@@ -9,7 +9,7 @@ const ServiceCarousel = ({ data, items = [] }) => {
     const activeItems = items?.filter(item => item.visible && item.status) || [];
 
     return (
-        <section className="py-12" style={{ backgroundColor: data?.bg_color }}>
+        <section id={data?.element_id || null} className="py-12" style={{ backgroundColor: data?.bg_color }}>
             <div className="2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0">
                 <div className="text-center mb-8">
                     {data?.title && (

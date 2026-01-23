@@ -62,7 +62,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
     };
 
     return (
-        <section className={`relative h-screen w-full overflow-hidden ${sliderClass}`}>
+        <section id={data?.element_id || null} className={`relative h-screen w-full overflow-hidden ${sliderClass}`}>
             {sortedSlides.map((slide, index) => (
                 <div
                     key={index}
@@ -213,7 +213,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                 <>
                     <button
                         onClick={prevSlide}
-                        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
+                        className="hidden xl:block absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-accent/80 hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
                         <svg className="w-6 h-6  transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -222,7 +222,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
 
                     <button
                         onClick={nextSlide}
-                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
+                        className="hidden xl:block absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full hover:bg-accent text-white transition-all duration-300 hover:scale-110 group"
                     >
                         <svg className="w-6 h-6  transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

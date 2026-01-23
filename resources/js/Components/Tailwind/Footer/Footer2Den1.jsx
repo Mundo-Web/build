@@ -8,7 +8,7 @@ import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { X } from "lucide-react";
 
-const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
+const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores, data }) => {
   const subscriptionsRest = new SubscriptionsRest();
   const emailRef = useRef();
 
@@ -109,7 +109,7 @@ const Footer2Den1 = ({ socials = [], pages, generals, contacts, stores }) => {
   };
 
   return (
-    <footer className="bg-primary text-white py-12 !font-paragraph text-sm ">
+    <footer id={data?.element_id || null} className="bg-primary text-white py-12 !font-paragraph text-sm ">
       <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5 px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto">
 
         {/* Logo Column */}

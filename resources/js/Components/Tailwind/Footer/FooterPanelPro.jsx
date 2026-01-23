@@ -128,7 +128,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
     const openingHours = generals.find(g => g.correlative === 'opening_hours')?.description || '';
 
     return (
-        <footer className="bg-primary text-white">
+        <footer id={data?.element_id || null} className="bg-primary text-white">
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0 py-16">
                 <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
                     {/* Logo y Redes Sociales */}
@@ -251,13 +251,13 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                             <div className="mb-4">
                                 <div className="flex items-start gap-2 mb-2">
                                     <Mail className="w-4 h-4 text-wood-300 flex-shrink-0 mt-1" />
-                                    <div className="text-sm">
+                                    <div className="text-sm min-w-0 flex-1">
                                 
-                                        <div className="text-gray-300">
+                                        <div className="text-gray-300 break-all">
                                             {(() => {
                                                 if (email.includes(',')) {
                                                     return email.split(',').map((em, index) => (
-                                                        <div key={index} className="block">
+                                                        <div key={index} className="block break-all">
                                                             {em.trim()}
                                                         </div>
                                                     ));

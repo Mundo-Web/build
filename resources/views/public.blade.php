@@ -26,7 +26,7 @@
         $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
     @endphp
 
-    <title>{{ $data['name'] ?? $ogTitle ?? $siteTitle }}</title>
+    <title>{{ $data['name'] ?? $ogTitle ?? $siteTitle }} | {{ env('APP_NAME', 'Base Template') }}</title>
 
     <!-- Favicon -->
       <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ uniqid() }}" type="image/png">

@@ -92,6 +92,7 @@ const MenuExpertFarma = ({ pages = [], items, data ,visible=false}) => {
 
     return (
         <nav
+            id={data?.element_id || null}
             className={
                 `${
                 showOnlyTagsMobile

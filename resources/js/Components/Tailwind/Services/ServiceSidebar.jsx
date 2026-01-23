@@ -5,7 +5,7 @@ const ServiceSidebar = ({ data, items = [] }) => {
     const [selectedService, setSelectedService] = useState(items[0] || null);
 
     return (
-        <section className={`${data?.class_container || 'bg-neutral-900'}`}>
+        <section id={data?.element_id || null} className={`${data?.class_container || 'bg-neutral-900'}`}>
             <div className="mx-auto py-20 px-4 md:px-6 lg:px-8 2xl:px-0 2xl:max-w-7xl">
                 {/* Main Content Grid */}
                 <div className="grid lg:grid-cols-12 gap-0">

@@ -169,6 +169,7 @@ const MenuKatya = ({ pages = [], items, data, visible = false }) => {
 
     return (
         <nav
+            id={data?.element_id || null}
             ref={menuRef}
             className="block relative w-full bg-secondary text-white font-medium text-sm"
             style={{

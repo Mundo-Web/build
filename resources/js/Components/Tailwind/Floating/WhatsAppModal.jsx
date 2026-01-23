@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
-const WhatsAppModal = ({ isOpen, onClose, advisors }) => {
+const WhatsAppModal = ({ data, isOpen, onClose, advisors }) => {
     const handleAdvisorClick = (advisor) => {
         const whatsappUrl = `https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(advisor.message || '¡Hola! Necesito información')}`;
         window.open(whatsappUrl, '_blank');
@@ -13,6 +13,7 @@ const WhatsAppModal = ({ isOpen, onClose, advisors }) => {
         <AnimatePresence>
             {isOpen && (
                 <motion.div
+                    id={data?.element_id || null}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

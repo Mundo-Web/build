@@ -81,7 +81,7 @@ const SupportDownloadCenter = ({ data, items }) => {
 
     return (
         <>
-            <section className="w-full my-10 lg:my-16 bg-white">
+            <section id={data?.element_id || null} className="w-full my-10 lg:my-16 bg-white">
                 <div className=" mx-auto px-[5%]  2xl:px-0">
                     {/* Header Premium */}
                     <div className="text-center mb-16">

@@ -27,7 +27,7 @@ const CartSimple = ({ data, cart, setCart }) => {
   const hasBookings = cart.some(item => item.type === 'booking');
   const hasProducts = cart.some(item => item.type !== 'booking');
 
-  return <section className="bg-white">
+  return <section id={data?.element_id || null} className="bg-white">
     <div className="px-[5%] replace-max-w-here w-full mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-3 gap-4">
       <div className="md:col-span-3 lg:col-span-2 min-h-80">
         {

@@ -6,7 +6,7 @@ import 'swiper/css';
 import TextWithHighlight from '../../../Utils/TextWithHighlight';
 import { motion } from 'framer-motion';
 
-const SliderTwoColumnSwiper = ({ items }) => {
+const SliderTwoColumnSwiper = ({ items, data }) => {
   // Animación Ken Burns
   const kenBurnsAnimation = {
     initial: { scale: 1.1, x: 0, y: 0 },
@@ -24,7 +24,7 @@ const SliderTwoColumnSwiper = ({ items }) => {
   };
 
   return (
-    <div className="relative">
+    <div id={data?.element_id || null} className="relative">
       <Swiper
         className="slider"
         modules={[Pagination]}

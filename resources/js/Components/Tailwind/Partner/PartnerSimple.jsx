@@ -95,7 +95,7 @@ const PartnerSimple = ({ data, items }) => {
     }
 
     return (
-        <section className={`${data.background ? data.background : 'bg-[#F2F2F2]'}  customtext-primary font-paragraph bg-cover bg-center mt-10`}>
+        <section id={data?.element_id || null} className={`${data.background ? data.background : 'bg-[#F2F2F2]'}  customtext-primary font-paragraph bg-cover bg-center mt-10`}>
             <div className="overflow-hidden px-primary 2xl:px-0 ">
                 <div className="grid grid-cols-1 gap-8 xl:gap-10 pt-12 pb-16 2xl:py-12 2xl:max-w-7xl mx-auto">
                     {/* Text Content */}

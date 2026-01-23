@@ -9,7 +9,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
     const imageUrl = resolveSystemAsset(data?.image) || '/api/cover/thumbnail/null';
 
     return (
-        <section id='bannerAboutStatsPanelPro' className={`py-24 px-primary 2xl:px-0 bg-white ${data?.class || ''}`}>
+        <section id={data?.element_id || null} className={`py-24 px-primary 2xl:px-0 bg-white ${data?.class || ''}`}>
             <div className="2xl:max-w-7xl mx-auto">
                 <div className=" gap-16 items-center">
                     {/* Contenido de texto y estadísticas */}
@@ -25,7 +25,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
 
                         </div>
 
-                        <p className="text-lg text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line">
+                        <p className="text-lg sm:text-xl  text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line">
                             <TextWithHighlight
                                 text={data?.description}
                                 color="bg-primary"
@@ -52,10 +52,22 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                             spaceBetween: 20,
                                         },
                                         768: {
-                                            slidesPerView: 4,
+                                            slidesPerView: 3,
                                             spaceBetween: 14,
                                             loop: items.length > 3,
                                         },
+                                        1024: {
+                                            slidesPerView: 3,
+                                            spaceBetween: 14,
+                                            loop: items.length > 4,
+                                        },
+                                        1280: {
+                                            slidesPerView: 4,
+                                            spaceBetween: 20,
+                                            loop: items.length > 5,
+                                        },
+
+
                                     }}
                                     className="!overflow-visible"
                                 >
@@ -68,7 +80,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                             <SwiperSlide key={index} className="h-auto">
                                                 <div className="group h-full">
                                                     {/* Card con diseño premium */}
-                                                    <div className={`relative h-full min-h-[320px] bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-2xl border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden flex flex-col ${data?.class_indicators_card || ''}`}>
+                                                    <div className={`relative h-full min-h-[320px] bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-xl cursor-pointer border border-neutral-200/50 hover:border-accent/30 transition-all duration-700 overflow-hidden flex flex-col rounded-2xl ${data?.class_indicators_card || ''}`}>
                                                       
                                                         {/* Contenido */}
                                                         <div className="relative flex flex-col items-center text-center space-y-4 flex-1">
@@ -103,7 +115,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                             <p className="text-base text-neutral-dark font-light leading-relaxed whitespace-pre-line flex-1 flex items-center justify-center group-hover:text-neutral-dark transition-colors duration-700">
                                                                 <TextWithHighlight
                                                                     text={item.description}
-                                                                    color="bg-primary"
+                                                                    color="bg-primary font-bold"
                                                                 />
                                                             </p>
                                                         </div>

@@ -73,6 +73,7 @@ const TopBarPages = ({ items, data, pages = [] }) => {
   }
   return (
     <section
+      id={data?.element_id || null}
       ref={sectionRef}
       className={`${data?.background_color ? data?.background_color : "bg-primary"}  font-paragraph font-bold transition-all duration-300 w-full z-50  ${data?.border_color ? `border-t-2 ${data?.border_color}` : ""} text-white`}
     >

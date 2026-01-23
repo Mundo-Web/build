@@ -14,7 +14,7 @@ const getStatusBGColor = (color = '#111111', percent = 0.1) => {
     return `rgba(${parseInt(color.slice(1, 3), 16)}, ${parseInt(color.slice(3, 5), 16)}, ${parseInt(color.slice(5, 7), 16)}, ${percent})`
 }
 
-const TrackSimple = () => {
+const TrackSimple = ({ data }) => {
     const [orderCode, setOrderCode] = useState(GET?.code ?? '')
     const [statusTracking, setStatusTracking] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -65,7 +65,7 @@ const TrackSimple = () => {
     const currentStatus = statusTracking?.[0] ?? null
 
     return (
-        <div className="min-h-screen bg-gray-50 p-[5%]">
+        <div id={data?.element_id || null} className="min-h-screen bg-gray-50 p-[5%]">
             <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-[5%]">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Rastreo de Pedidos</h1>

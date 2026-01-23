@@ -9,7 +9,7 @@ import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { X } from "lucide-react";
 
-const FooterPideloPe = ({ pages, generals }) => {
+const FooterPideloPe = ({ pages, generals, data }) => {
     const subscriptionsRest = new SubscriptionsRest();
     const emailRef = useRef()
 
@@ -49,7 +49,7 @@ const FooterPideloPe = ({ pages, generals }) => {
         emailRef.current.value = null
     }
     return (
-        <footer className="bg-accent text-white py-12  text-sm font-font-secondary">
+        <footer id={data?.element_id || null} className="bg-accent text-white py-12  text-sm font-font-secondary">
             <div className="px-primary mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
 
                 {/* Menu Columns */}

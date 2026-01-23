@@ -5,7 +5,7 @@ const ServiceDetailSimple = ({ data, items = [], currentService = null }) => {
 
     if (!service) {
         return (
-            <section className={`py-24 px-4 bg-sections-color ${data?.class || ''}`}>
+            <section id={data?.element_id || null} className={`py-24 px-4 bg-sections-color ${data?.class || ''}`}>
                 <div className="max-w-7xl mx-auto text-center">
                     <p className="text-gray-600">No hay servicio disponible</p>
                 </div>
@@ -14,7 +14,7 @@ const ServiceDetailSimple = ({ data, items = [], currentService = null }) => {
     }
 
     return (
-        <section className={`py-12 px-4 bg-sections-color ${data?.class || ''}`}>
+        <section id={data?.element_id || null} className={`py-12 px-4 bg-sections-color ${data?.class || ''}`}>
             <div className="max-w-5xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     {/* Header con imagen de fondo */}

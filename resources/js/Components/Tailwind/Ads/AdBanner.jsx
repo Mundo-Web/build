@@ -20,7 +20,7 @@ const AdBanner = ({ data, items = [] }) => {
     };
 
     return (
-        <section className="w-full px-[5%] replace-max-w-here py-8 md:py-12">
+        <section id={data?.element_id || null} className="w-full px-[5%] replace-max-w-here py-8 md:py-12">
             <div className="max-w-7xl mx-auto">
                 {validAds.length === 1 ? (
                     // Un solo anuncio

@@ -13,7 +13,7 @@ const PartnerMblens = ({ items = [], data = {} }) => {
     // -------------------------------------------------
     if (!items.length) {
         return (
-            <section className="py-12 bg-gray-50">
+            <section id={data?.element_id || null} className="py-12 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <h2 className="text-2xl md:text-5xl font-bold customtext-secondary mb-4 font-title">
                         {data?.title || "Marcas de Confianza"}
@@ -52,7 +52,7 @@ const PartnerMblens = ({ items = [], data = {} }) => {
     return (
         <>
             <style>{scrollStyles}</style>
-            <section className="py-12 bg-gray-50 overflow-hidden">
+            <section id={data?.element_id || null} className="py-12 bg-gray-50 overflow-hidden">
                 {/* Cabecera */}
                 <div className="max-w-7xl mx-auto px-4 mb-8 text-center">
                     <h2 className="text-2xl md:text-5xl font-bold customtext-secondary mb-4 font-title">

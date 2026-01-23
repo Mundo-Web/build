@@ -39,7 +39,7 @@ const ServiceLaPetaca = ({ data, items }) => {
     const subtitle = data?.subtitle || 'Experiencias únicas diseñadas para hacer de tu estadía un momento inolvidable';
 
     return (
-        <section className="py-16 md:py-24 px-4 bg-primary relative overflow-hidden">
+        <section id={data?.element_id || null} className="py-16 md:py-24 px-4 bg-primary relative overflow-hidden">
             {/* Background decorations */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/5 rounded-full blur-3xl"></div>

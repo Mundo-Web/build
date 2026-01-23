@@ -9,7 +9,7 @@ const BlogKatya = ({ data, headerPosts, filteredData, postsLatest }) => {
     const [isFilter, setIsFilter] = useState(false);
     
     return (
-        <>
+        <div id={data?.element_id || null}>
             <BlogHeaderKatya
                 data={data}
                 headerPosts={headerPosts}
@@ -26,7 +26,7 @@ const BlogKatya = ({ data, headerPosts, filteredData, postsLatest }) => {
                 setIsFilter={setIsFilter}
                 filteredData={filteredData}
             />
-        </>
+        </div>
     );
 }
 

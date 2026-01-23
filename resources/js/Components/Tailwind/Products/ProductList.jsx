@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import ProductCard from "../Components/ProductCard";
 
 const ProductList = ({cart, setCart, data, items }) => {
-  return <div className="bg-gray-50">
+  return <div className="bg-gray-50"  id={data?.element_id || null}>
     <div className="px-[5%] replace-max-w-here w-full mx-auto  py-[5%] md:py-[2.5%]">
       {
         (data?.title || data?.description || data?.link_catalog) &&

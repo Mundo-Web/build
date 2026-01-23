@@ -34,7 +34,7 @@ const HeaderSearchMenu = ({
 
 
   return (
-    <header className="w-full">
+    <header id={data?.element_id || null} className="w-full">
       <div className="px-primary mx-auto py-4 font-paragraph customtext-primary text-base font-semibold">
         <div className="flex items-center justify-between gap-4 ">
 

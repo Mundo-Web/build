@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 const CategoryCarousel = ({ data, items }) => {
     return (
-        <div className="bg-white">
+        <div id={data?.element_id || null} className="bg-white">
             <div className="px-[5%] replace-max-w-here w-full mx-auto  py-[5%] md:py-[2.5%]">
                 <div className="flex flex-wrap justify-between mb-[2%]">
                     <div>

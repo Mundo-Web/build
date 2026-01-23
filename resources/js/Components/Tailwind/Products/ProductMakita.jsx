@@ -86,7 +86,7 @@ const ProductMakita = ({ items, data, setCart, cart }) => {
     }, [swiperInstance]);
 
     return (
-        <section className="relative bg-white py-8">
+        <section id={data?.element_id || null} className="relative bg-white py-8">
             <div className="relative mx-auto px-primary py-10 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">

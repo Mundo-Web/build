@@ -14,7 +14,7 @@ const CarruselBenefitsInifinite2dn1 = ({ items, data }) => {
   });
 
   return (
-    <div ref={benefitsRef} className={`${data.background ? data.background : 'bg-primary' }  py-4 2xl:py-6 mt-12 lg:mt-16 overflow-hidden font-title customtext-neutral-dark`}>
+    <div id={data?.element_id || null} ref={benefitsRef} className={`${data.background ? data.background : 'bg-primary' }  py-4 2xl:py-6 mt-12 lg:mt-16 overflow-hidden font-title customtext-neutral-dark`}>
       <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto relative">
         <Swiper
           slidesPerView={1}

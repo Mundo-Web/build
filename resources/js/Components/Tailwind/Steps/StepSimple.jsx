@@ -5,7 +5,7 @@ const StepSimple = ({ data }) => {
   const steps = data?.steps?.split('>') ?? ['Step 1', 'Step 2', 'Step 3']
   const selected = data?.selected ?? 1;
 
-  return <section className="bg-white">
+  return <section id={data?.element_id || null} className="bg-white">
     <ol className="w-full px-[5%] my-[5%] md:my-[2.5%] flex flex-wrap gap-4 justify-center items-center font-bold text-center">
       {
         steps.map((step, index) => {

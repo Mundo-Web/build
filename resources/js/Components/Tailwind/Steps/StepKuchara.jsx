@@ -5,7 +5,7 @@ const StepKuchara = ({ data }) => {
   const selected = data?.selected ?? 1;
 
   return (
-    <section className="bg-white px-[5%] py-8">
+    <section id={data?.element_id || null} className="bg-white px-[5%] py-8">
       <div className="flex justify-between items-start relative max-w-3xl mx-auto">
         {/* Línea de progreso */}
         <div className="absolute h-0.5 bg-primary top-4 left-[10%] right-[10%] z-0"></div>

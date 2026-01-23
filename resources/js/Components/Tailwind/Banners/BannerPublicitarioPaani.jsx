@@ -10,6 +10,7 @@ const BannerPublicitarioPaani = ({ data }) => {
     return (
         <AnimatePresence>
             <motion.div 
+                id={data?.element_id || null}
                 initial={{ opacity: 0, y: 100 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -100 }}

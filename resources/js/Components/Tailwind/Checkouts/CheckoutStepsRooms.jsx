@@ -109,7 +109,7 @@ export default function CheckoutStepsRooms({ cart, setCart, user, prefixes, ubig
     };
 
     return (
-       <div className="bg-sections-color">
+       <div id={data?.element_id || null} className="bg-sections-color">
         <div className="min-h-screen  py-4 md:py-12 px-2 sm:px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
             <div className="bg-white p-3 md:p-8 rounded-xl md:rounded-3xl shadow-sm">
                 {/* Steps indicator */}

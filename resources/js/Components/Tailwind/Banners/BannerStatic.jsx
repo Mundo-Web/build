@@ -14,7 +14,7 @@ export default function BannerStatic( {data, items} ) {
     };
 
     return (
-        <section className="px-primary mx-auto customtext-primary font-paragraph mt-10 lg:mt-16">
+        <section id={data?.element_id || null} className="px-primary mx-auto customtext-primary font-paragraph mt-10 lg:mt-16">
             <div className="bg-secondary rounded-3xl overflow-hidden">
                 <div className="grid grid-cols-1 xl:grid-cols-3 items-center xl:gap-8 px-8 md:px-12">
                     {/* Text Content */}

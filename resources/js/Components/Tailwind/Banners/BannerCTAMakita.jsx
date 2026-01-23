@@ -12,7 +12,7 @@ const benefits = [
 const BannerCTAMakita = ({data,items}) => {
   const imageUrl = resolveSystemAsset(data?.image);
   return (
-    <div className="bg-secondary w-full min-h-screen flex items-center justify-center ">
+    <div id={data?.element_id || null} className="bg-secondary w-full min-h-screen flex items-center justify-center ">
       <div className="px-primary 2xl:max-w-7xl 2xl:px-0 w-full flex flex-col md:flex-row gap-12 md:gap-16 items-center justify-center py-16">
         {/* Left: Video/Image with Play Button */}
         <div className="w-full md:w-1/2 flex items-center justify-center">

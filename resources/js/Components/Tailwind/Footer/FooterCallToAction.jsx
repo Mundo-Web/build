@@ -9,7 +9,7 @@ import HtmlContent from "../../../Utils/HtmlContent";
 
 const subscriptionsRest = new SubscriptionsRest();
 
-const FooterCallToAction = ({ socials = [], summary = '', generals = [], pages = [] }) => {
+const FooterCallToAction = ({ socials = [], summary = '', generals = [], pages = [], data }) => {
 
   const emailRef = useRef()
 
@@ -52,7 +52,7 @@ const FooterCallToAction = ({ socials = [], summary = '', generals = [], pages =
   return (
     <>
       <img src="/assets/resources/subscription.png" alt="" className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] object-cover object-center w-full" onError={e => e.target.src = '/assets/resources/cover-404.svg'} />
-      <footer className=" p-[5%] pt-[calc(5%+64px)] bg-white text-textPrimary relative">
+      <footer id={data?.element_id || null} className=" p-[5%] pt-[calc(5%+64px)] bg-white text-textPrimary relative">
         <form className="absolute left-1/4 right-[5%] bottom-[calc(100%-64px)] p-[5%] bg-primary text-white"
           onSubmit={onEmailSubmit}>
           <div className="grid md:grid-cols-2 items-end gap-4">

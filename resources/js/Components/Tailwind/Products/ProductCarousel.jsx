@@ -8,7 +8,7 @@ const ProductCarousel = ({ data, items, cart, setCart }) => {
     if (items.length == 0) return;
 
     return (
-        <div className="bg-gray-50">
+        <div className="bg-gray-50" id={data?.element_id || null}>
             <div className="px-[5%] w-full mx-auto py-[5%] md:py-[2.5%]">
                 <div className="flex flex-wrap justify-between items-center mb-[2%]">
                     <div>

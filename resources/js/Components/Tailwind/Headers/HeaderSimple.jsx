@@ -179,7 +179,7 @@ const HeaderSimple = ({ data, cart, setCart, pages, generals = [] }) => {
 
   return (
     <>
-      <header className={`w-full top-0 left-0 z-[100] transition-all duration-300 sticky ${isFixed ? "shadow-lg" : ""} bg-primary ${data?.class || ''}`}>
+      <header id={data?.element_id || null} className={`w-full top-0 left-0 z-[100] transition-all duration-300 sticky ${isFixed ? "shadow-lg" : ""} bg-primary ${data?.class || ''}`}>
         <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo Section */}

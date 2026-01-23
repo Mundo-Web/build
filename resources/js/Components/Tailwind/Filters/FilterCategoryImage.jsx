@@ -400,7 +400,7 @@ const FilterCategoryImage = ({ items, data, filteredData, cart, setCart }) => {
     </div>
   );
   return (
-    <section className="p-[5%] mx-auto w-full">
+    <section id={data?.element_id || null} className="p-[5%] mx-auto w-full">
       {/* Modal de filtros (solo se muestra en móvil) */}
       {showMobileFilters && <FiltersModal />}
 

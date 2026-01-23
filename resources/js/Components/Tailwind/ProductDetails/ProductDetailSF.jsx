@@ -292,7 +292,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
     };
     return (
         <>
-            <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
+            <div id={data?.element_id || null} className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
                 <div className="bg-white rounded-xl py-4 md:py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20 2xl:gap-16">
                         {/* Left Column - Images and Delivery Options */}

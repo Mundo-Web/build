@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const BrandsCarousel = () => {
+const BrandsCarousel = ({ data }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -148,7 +148,7 @@ const BrandsCarousel = () => {
   }, []);
 
   return (
-    <div className="relative">
+    <div id={data?.element_id || null} className="relative">
       {/* Main Carousel Container */}
       <div 
         className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-50 to-white border border-gray-200 shadow-xl"

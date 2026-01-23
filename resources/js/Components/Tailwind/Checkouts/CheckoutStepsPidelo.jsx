@@ -160,7 +160,7 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const closeModal = () => setModalOpen(null);
 
     return (
-        <div className="min-h-screen bg-[#F7F9FB] py-4 md:py-12 px-2 sm:px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
+        <div id={data?.element_id || null} className="min-h-screen bg-[#F7F9FB] py-4 md:py-12 px-2 sm:px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
             <div className="bg-white p-3 md:p-8 rounded-lg md:rounded-xl shadow-sm">
                 {/* Steps indicator */}
                 <div className="mb-4 md:mb-8">

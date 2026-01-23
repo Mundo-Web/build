@@ -137,7 +137,7 @@ const ServiceWebQuirurgica = ({ data, items = [] }) => {
     };
 
     return (
-        <section id="servicios" className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
+        <section id={data?.element_id || null} className={`py-24 px-primary 2xl:px-0 bg-sections-color ${data?.class || ''}`}>
             <div className=" 2xl:max-w-7xl mx-auto space-y-20">
                 {/* Encabezado */}
                 <div className="text-center space-y-4 max-w-3xl mx-auto">

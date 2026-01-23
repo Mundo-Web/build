@@ -33,7 +33,7 @@ const technologies = [
 
 const BrandMakita = ({ data }) => {
   return (
-    <section className="w-full bg-[#1e1e1e] text-white py-16 md:py-24">
+    <section id={data?.element_id || null} className="w-full bg-[#1e1e1e] text-white py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-[5%]">
         {/* Main Title */}
         <div className="text-center mb-12">

@@ -54,7 +54,7 @@ const ProductFeaturedSwiper = ({ items, data, setCart, cart, contacts }) => {
     }
 
     return (
-        <section className="py-0">
+        <section id={data?.element_id || null} className="py-0">
             <div className="w-full font-paragraph px-primary 2xl:px-0 overflow-hidden">
                 <div className="2xl:max-w-7xl mx-auto">
                     {/* Swiper Carousel */}

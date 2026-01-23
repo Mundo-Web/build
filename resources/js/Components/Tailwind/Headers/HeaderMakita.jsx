@@ -216,6 +216,7 @@ const HeaderMakita = ({
     <>
       <style>{scrollbarStyles}</style>
       <header
+        id={data?.element_id || null}
         className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed" : "relative"} bg-primary`}
         style={{ boxShadow: isFixed ? "0 2px 8px rgba(0,0,0,0.08)" : "none" }}
       >

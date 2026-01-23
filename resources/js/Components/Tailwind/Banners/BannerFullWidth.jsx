@@ -6,6 +6,7 @@ const BannerFullWidth = ({ data }) => {
     const imageUrl = resolveSystemAsset(data?.image);
     return (
         <section
+            id={data?.element_id || null}
             className="bg-gray-50 overflow-hidden max-h-max relative"
             style={{
                 backgroundImage: `url('${backgroundUrl}')`,

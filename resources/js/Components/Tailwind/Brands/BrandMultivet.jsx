@@ -32,7 +32,7 @@ const BrandMultivet = ({ items, data }) => {
   return (
     <>
       <style>{scrollStyles}</style>
-      <section className="py-12 bg-gray-50 overflow-hidden">
+      <section id={data?.element_id || null} className="py-12 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 mb-8">
           <div className="text-center">
             <h2 className="text-2xl md:text-5xl font-bold customtext-secondary mb-4 font-title">

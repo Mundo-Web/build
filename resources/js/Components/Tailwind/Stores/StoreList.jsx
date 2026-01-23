@@ -33,7 +33,7 @@ const StoreList = ({ data, stores = [] }) => {
     };
 
     return (
-        <section className={`py-12 px-primary ${data?.class_container || ''}`}>
+        <section id={data?.element_id || null} className={`py-12 px-primary ${data?.class_container || ''}`}>
             <div className="mx-auto 2xl:max-w-7xl">
                 {/* Título y descripción */}
                 {(data?.title || data?.description) && (

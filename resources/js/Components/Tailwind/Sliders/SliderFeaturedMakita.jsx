@@ -13,7 +13,7 @@ const SliderFeaturedMakita = ({
   const [currentIndex, setCurrentIndex] = useState(1);
   const swiperRef = useRef(null);
   return (
-    <div className="relative bg-primary overflow-hidden py-8 lg:py-12">
+    <div id={data?.element_id || null} className="relative bg-primary overflow-hidden py-8 lg:py-12">
       {/* Fondo patrón */}
       <div className="absolute inset-0 opacity-30 z-0"
         style={{

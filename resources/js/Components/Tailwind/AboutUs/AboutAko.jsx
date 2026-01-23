@@ -78,7 +78,7 @@ const AboutAko = ({ data, filteredData, items }) => {
     };
 
     return (
-        <main className="min-h-screen bg-white px-primary 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-10 md:py-14">
+        <main id={data?.element_id || null} className="min-h-screen bg-white px-primary 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-10 md:py-14">
 
             {/* Hero Section */}
             <motion.section

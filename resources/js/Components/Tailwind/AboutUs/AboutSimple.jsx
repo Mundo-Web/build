@@ -26,7 +26,7 @@ export default function AboutSimple({ data, filteredData }) {
     };
 
     return (
-        <main className="min-h-screen bg-white">
+        <main id={data?.element_id || null} className="min-h-screen bg-white">
             {/* Hero Section */}
             <motion.section 
                 initial="initial"

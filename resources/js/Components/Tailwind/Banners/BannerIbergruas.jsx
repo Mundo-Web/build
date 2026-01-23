@@ -15,7 +15,7 @@ const BannerIbergruas = ({ data }) => {
     }, []);
 
     return (
-        <section className="w-full">
+        <section id={data?.element_id || null} className="w-full">
             <div className="grid lg:grid-cols-2 min-h-[500px] lg:min-h-[400px]">
 
                 {/* Left side - Content with bg-primary (50% width) */}

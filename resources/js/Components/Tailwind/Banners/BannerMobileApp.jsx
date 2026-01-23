@@ -61,7 +61,7 @@ const BannerMobileApp = ({ data = {}, generals = {}, items = [] }) => {
     : resolveSystemAsset(safeData.image);
 
   return (
-    <section className={`py-20 ${safeData.class_section || 'bg-primary'}`}>
+    <section id={data?.element_id || null} className={`py-20 ${safeData.class_section || 'bg-primary'}`}>
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${safeData.class_container || ''}`}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}

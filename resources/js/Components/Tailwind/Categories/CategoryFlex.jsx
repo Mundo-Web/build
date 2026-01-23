@@ -11,7 +11,7 @@ const CategoryFlex = ({ data, items }) => {
     const count = categories.length;
 
     return (
-        <div className="px-primary mx-auto py-10 lg:py-16 2xl:max-w-7xl 2xl:px-0">
+        <div id={data?.element_id || null} className="px-primary mx-auto py-10 lg:py-16 2xl:max-w-7xl 2xl:px-0">
             {/* Header */}
             {data?.title && (
                 <div className="flex flex-wrap gap-4 justify-between items-center ">

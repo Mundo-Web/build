@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use App\Exports\UnifiedItemExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ItemImage;
 
 class ItemController extends BasicController
 {
@@ -34,6 +35,100 @@ class ItemController extends BasicController
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
     public $with4get = ['tags', 'amenities', 'applications', 'attributes'];
+
+    /**
+     * Clone an item with all its relations
+     */
+    public function clone(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $originalItem = Item::with(['tags', 'amenities', 'applications', 'attributes', 'features', 'specifications', 'images'])->findOrFail($id);
+            
+            // Crear una copia del item
+            $newItem = $originalItem->replicate();
+            $newItem->id = Str::uuid()->toString();
+            $newItem->name = $originalItem->name . ' (Copia)';
+            $newItem->slug = Str::slug($newItem->name) . '-' . time();
+            $newItem->order_index = Item::max('order_index') + 1;
+            $newItem->views = 0;
+            $newItem->created_at = now();
+            $newItem->updated_at = now();
+            $newItem->save();
+            
+            // Clonar tags
+            if ($originalItem->tags && $originalItem->tags->count() > 0) {
+                foreach ($originalItem->tags as $tag) {
+                    $newItem->tags()->attach($tag->id);
+                }
+            }
+            
+            // Clonar amenities
+            if ($originalItem->amenities && $originalItem->amenities->count() > 0) {
+                foreach ($originalItem->amenities as $amenity) {
+                    $newItem->amenities()->attach($amenity->id);
+                }
+            }
+            
+            // Clonar applications
+            if ($originalItem->applications && $originalItem->applications->count() > 0) {
+                foreach ($originalItem->applications as $application) {
+                    $newItem->applications()->attach($application->id);
+                }
+            }
+            
+            // Clonar attributes con sus valores pivot
+            if ($originalItem->attributes && $originalItem->attributes->count() > 0) {
+                foreach ($originalItem->attributes as $attribute) {
+                    $newItem->attributes()->attach($attribute->id, [
+                        'value' => $attribute->pivot->value ?? null,
+                        'order_index' => $attribute->pivot->order_index ?? 0
+                    ]);
+                }
+            }
+            
+            // Clonar features
+            if ($originalItem->features && $originalItem->features->count() > 0) {
+                foreach ($originalItem->features as $feature) {
+                    $newItem->features()->create([
+                        'feature' => $feature->feature,
+                        'order_index' => $feature->order_index ?? 0
+                    ]);
+                }
+            }
+            
+            // Clonar specifications
+            if ($originalItem->specifications && $originalItem->specifications->count() > 0) {
+                foreach ($originalItem->specifications as $spec) {
+                    $newItem->specifications()->create([
+                        'key' => $spec->key,
+                        'value' => $spec->value,
+                        'order_index' => $spec->order_index ?? 0
+                    ]);
+                }
+            }
+            
+            DB::commit();
+            
+            return response([
+                'status' => true,
+                'message' => 'Item clonado exitosamente',
+                'data' => $newItem
+            ], 200);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error cloning item: ' . $e->getMessage(), [
+                'exception' => $e,
+                'item_id' => $id
+            ]);
+            
+            return response([
+                'status' => false,
+                'message' => 'Error al clonar el item: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Override paginate to always include amenities and applications relations
@@ -281,6 +376,96 @@ class ItemController extends BasicController
                 Storage::put($path, file_get_contents($full));
                 $item->texture = "{$uuid}.{$ext}";
                 $item->save();
+            }
+
+            // Copiar imágenes del item original cuando se clona (solo si no se subió una imagen nueva)
+            $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+            $cloneFromId = $request->input('clone_from_id');
+            $requestId = $request->input('id');
+            
+            // Log para debug
+            Log::info('Clone check', [
+                'clone_from_id' => $cloneFromId,
+                'request_id' => $requestId,
+                'is_clone' => $cloneFromId && ($requestId === null || $requestId === '' || $requestId === 'undefined'),
+                'clone_image' => $request->input('clone_image'),
+                'clone_banner' => $request->input('clone_banner'),
+                'clone_texture' => $request->input('clone_texture'),
+            ]);
+            
+            // Verificar si es un clon: tiene clone_from_id y NO tiene id (o id es vacío/undefined)
+            $isClone = $cloneFromId && 
+                       $cloneFromId !== 'null' && 
+                       ($requestId === null || $requestId === '' || $requestId === 'undefined');
+            
+            if ($isClone) {
+                // Es un item clonado (nuevo registro basado en otro)
+                Log::info('Processing clone from item: ' . $cloneFromId);
+                
+                // Copiar imagen principal
+                if (!$request->hasFile('image') && $request->input('clone_image')) {
+                    $originalImage = $request->input('clone_image');
+                    $originalPath = "images/{$snake_case}/{$originalImage}";
+                    
+                    if (Storage::exists($originalPath)) {
+                        $ext = pathinfo($originalImage, PATHINFO_EXTENSION);
+                        $uuid = Crypto::randomUUID();
+                        $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                        Storage::copy($originalPath, $newPath);
+                        $item->image = "{$uuid}.{$ext}";
+                        $item->save();
+                    }
+                }
+                
+                // Copiar banner
+                if (!$request->hasFile('banner') && $request->input('clone_banner')) {
+                    $originalBanner = $request->input('clone_banner');
+                    $originalPath = "images/{$snake_case}/{$originalBanner}";
+                    
+                    if (Storage::exists($originalPath)) {
+                        $ext = pathinfo($originalBanner, PATHINFO_EXTENSION);
+                        $uuid = Crypto::randomUUID();
+                        $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                        Storage::copy($originalPath, $newPath);
+                        $item->banner = "{$uuid}.{$ext}";
+                        $item->save();
+                    }
+                }
+                
+                // Copiar textura
+                if (!$request->hasFile('texture') && $request->input('clone_texture')) {
+                    $originalTexture = $request->input('clone_texture');
+                    $originalPath = "images/{$snake_case}/{$originalTexture}";
+                    
+                    if (Storage::exists($originalPath)) {
+                        $ext = pathinfo($originalTexture, PATHINFO_EXTENSION);
+                        $uuid = Crypto::randomUUID();
+                        $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                        Storage::copy($originalPath, $newPath);
+                        $item->texture = "{$uuid}.{$ext}";
+                        $item->save();
+                    }
+                }
+                
+                // Copiar galería de imágenes del item original
+                $originalItem = Item::with('images')->find($cloneFromId);
+                if ($originalItem && $originalItem->images->count() > 0) {
+                    foreach ($originalItem->images as $originalGalleryImage) {
+                        $originalPath = "images/{$snake_case}/{$originalGalleryImage->url}";
+                        
+                        if (Storage::exists($originalPath)) {
+                            $ext = pathinfo($originalGalleryImage->url, PATHINFO_EXTENSION);
+                            $uuid = Crypto::randomUUID();
+                            $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                            Storage::copy($originalPath, $newPath);
+                            
+                            $item->images()->create([
+                                'url' => "{$uuid}.{$ext}",
+                                'order' => $originalGalleryImage->order
+                            ]);
+                        }
+                    }
+                }
             }
 
             // Manejar eliminación de archivos

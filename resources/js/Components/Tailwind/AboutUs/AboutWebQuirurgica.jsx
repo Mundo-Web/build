@@ -51,7 +51,7 @@ const AboutWebQuirurgica = ({ data, filteredData, items }) => {
     };
 
     return (
-        <main className="min-h-screen bg-white overflow-hidden">
+        <main id={data?.element_id || null} className="min-h-screen bg-white overflow-hidden">
             
             {/* Hero Section - Historia con parallax */}
             <section className="relative py-24 px-primary 2xl:px-0">

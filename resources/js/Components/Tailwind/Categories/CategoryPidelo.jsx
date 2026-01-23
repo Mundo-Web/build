@@ -56,7 +56,7 @@ const CategoryPidelo = ({ items, data }) => {
     const groupedItems = chunkArray(items, chunkSize);
 
     return (
-        <section className={`${data?.backgroundColor ? data.backgroundColor : 'bg-white'} py-12`}>
+        <section id={data?.element_id || null} className={`${data?.backgroundColor ? data.backgroundColor : 'bg-white'} py-12`}>
             <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl py-[2.5%] mx-auto">
                 <div className="flex items-center justify-between pb-4 mb-8 border-b customborder-neutral-light">
                     <h2 className="text-[28px] md:text-4xl font-bold font-font-secondary">

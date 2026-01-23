@@ -1,0 +1,1 @@
+import{j as e}from"./vendor-react-DD0uBW7s.js";import{H as a}from"./HtmlContent-CEAddvHS.js";import"./vendor-swiper-BQwfPLwm.js";const t=({data:t})=>e.jsx("div",{id:t?.element_id||null,className:"bg-white",children:e.jsx("div",{className:"px-[5%] replace-max-w-here w-full mx-auto py-[5%] md:py-[2.5%]",children:e.jsx(a,{html:t?.["code:html"]??""})})});export{t as default};

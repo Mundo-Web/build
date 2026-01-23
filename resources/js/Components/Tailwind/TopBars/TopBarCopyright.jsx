@@ -19,7 +19,7 @@ const TopBarCopyright = ({ data }) => {
   const closeModal = () => setModalOpen(false)
 
   return (
-    <div className={` text-sm font-medium py-3  text-center px-primary l flex justify-between items-center  flex-wrap ${data?.class_container || "bg-white customtext-neutral-light"} `}>
+    <div id={data?.element_id || null} className={` text-sm font-medium py-3  text-center px-primary l flex justify-between items-center  flex-wrap ${data?.class_container || "bg-white customtext-neutral-light"} `}>
       <div className={` text-sm font-medium text-center px-primary 2xl:px-0 2xl:max-w-7xl flex justify-between items-center  flex-wrap mx-auto`}>
         <p>{content}   <span className="italic">  Powered by  {" "}
           {data?.creditPapayaDigital ?

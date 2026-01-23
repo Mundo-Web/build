@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/locale';
 
-const RoomDetail = ({ room, searchParams: initialSearchParams, cart, setCart }) => {
+const RoomDetail = ({ room, searchParams: initialSearchParams, cart, setCart, data }) => {
     const [checkIn, setCheckIn] = useState(
         initialSearchParams?.check_in ? new Date(initialSearchParams.check_in) : null
     );
@@ -180,7 +180,7 @@ const RoomDetail = ({ room, searchParams: initialSearchParams, cart, setCart }) 
     }
 
     return (
-        <div className="py-8 px-[5%] replace-max-w-here mx-auto">
+        <div id={data?.element_id || null} className="py-8 px-[5%] replace-max-w-here mx-auto">
             {/* Breadcrumb */}
             <nav className="mb-6" aria-label="breadcrumb">
                 <ol className="flex flex-wrap items-center gap-2 text-sm">

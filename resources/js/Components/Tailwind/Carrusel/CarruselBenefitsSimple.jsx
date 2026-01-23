@@ -31,6 +31,7 @@ const CarruselBenefitsSimple = ({ items, data }) => {
     // va en el div antes de hacer el map ref={sliderRef}
     return (
         <div
+            id={data?.element_id || null}
             className={`${
                 data?.background ? data?.background : "bg-secondary"
             } py-6 overflow-hidden customtext-primary font-paragraph `}

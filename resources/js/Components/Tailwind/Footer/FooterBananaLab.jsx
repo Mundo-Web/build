@@ -9,7 +9,7 @@ import HtmlContent from "../../../Utils/HtmlContent";
 import { CheckCircleIcon, X } from "lucide-react";
 import { toast } from "sonner";
 
-const FooterBananaLab = ({ socials = [], pages, generals, contacts }) => {
+const FooterBananaLab = ({ socials = [], pages, generals, contacts, data }) => {
     const subscriptionsRest = new SubscriptionsRest();
     const emailRef = useRef();
 
@@ -56,7 +56,7 @@ const FooterBananaLab = ({ socials = [], pages, generals, contacts }) => {
         emailRef.current.value = null;
     };
     return (
-        <footer className="bg-accent text-white py-12 font-paragraph  text-sm px-[5%]">
+        <footer id={data?.element_id || null} className="bg-accent text-white py-12 font-paragraph  text-sm px-[5%]">
             <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-5">
                 {/* Logo Column */}
                 <div className="max-w-xs lg:col-span-2">

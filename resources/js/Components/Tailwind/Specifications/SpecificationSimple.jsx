@@ -25,7 +25,7 @@ const SpecificationSimple = ({ data, items }) => {
     }, [items]);
 
     return (
-        <section id='specificationSimple' className="py-20 sm:py-24 bg-white relative overflow-hidden">
+        <section id={data?.element_id || null} className="py-20 sm:py-24 bg-white relative overflow-hidden">
          
             <div className="2xl:max-w-7xl mx-auto  px-primary 2xl:px-0 relative">
                 <div className="text-center mb-16">

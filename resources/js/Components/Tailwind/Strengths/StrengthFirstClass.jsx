@@ -10,7 +10,7 @@ const StrengthFirstClass = ({ items = [], data = {} }) => {
   }
 
   return (
-    <section className={`py-20 ${safeData.class_section || 'bg-gray-50'}`}>
+    <section id={data?.element_id || null} className={`py-20 ${safeData.class_section || 'bg-gray-50'}`}>
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${safeData.class_container || ''}`}>
         <div className={`text-center mb-16 ${safeData.class_header || ''}`}>
           <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${safeData.class_title || 'customtext-primary-dark'}`}>
