@@ -131,7 +131,7 @@ const TestimonialsLaPetaca = ({ data, items }) => {
 
                                     {/* Card expandido en hover - con animación suave */}
                                     <div className="absolute inset-0 z-30 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none group-hover:pointer-events-auto origin-center">
-                                        <div className="bg-white p-7 rounded-2xl shadow-2xl flex flex-col h-full ring-2 ring-accent">
+                                        <div className="bg-white p-7 rounded-2xl shadow-xl flex flex-col h-full ring-2 ring-accent">
                                         
                                             {/* Rating */}
                                             {testimonial.rating && (
