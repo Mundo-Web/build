@@ -120,7 +120,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                         
 
                             <h2 
-                                className={`text-5xl max-w-4xl mx-auto md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-2xl  ${data?.class_title || ''}`}
+                                className={`text-5xl max-w-4xl mx-auto md:text-7xl text-center font-bold text-white mb-6 tracking-tight drop-shadow-2xl  ${data?.class_title || ''}`}
                                 style={{ color: slide.title_color || '#FFFFFF' }}
                             >
                                 <TextWithHighlight text={slide.name}  color="bg-secondary" />
@@ -128,7 +128,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                             </h2>
 
                             <p 
-                                className={`text-xl max-w-4xl mx-auto md:text-2xl text-white mb-8 font-light tracking-wide drop-shadow-lg ${data?.class_description || ''}`}
+                                className={`text-xl max-w-4xl mx-auto text-center md:text-2xl text-white mb-8 font-light tracking-wide drop-shadow-lg ${data?.class_description || ''}`}
                             
                             >
                                 {slide.description}
