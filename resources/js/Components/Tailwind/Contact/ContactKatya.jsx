@@ -316,7 +316,7 @@ const generalsData = generals || [];
                 variants={itemVariants}
             >
                 <motion.div 
-                    className="w-full px-[5%] 2xl:max-w-7xl 2xl:px-0 mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 bg-transparent"
+                    className="w-full px-[5%] 2xl:max-w-7xl 2xl:px-0 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 xl:gap-20 bg-transparent"
                     variants={containerVariants}
                 >
                     {/* Left: Contact Form */}
@@ -358,7 +358,7 @@ const generalsData = generals || [];
                             animate="visible"
                         >
                             <motion.div 
-                                className="flex flex-col lg:flex-row gap-3"
+                                className="flex flex-col xl:flex-row gap-3"
                                 variants={itemVariants}
                             >
                                 <motion.input 
@@ -385,7 +385,7 @@ const generalsData = generals || [];
                                 />
                             </motion.div>
                             <motion.div 
-                                className="flex flex-col lg:flex-row gap-3"
+                                className="flex flex-col xl:flex-row gap-3"
                                 variants={itemVariants}
                             >
                                 <motion.input 

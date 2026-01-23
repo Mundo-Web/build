@@ -52,10 +52,22 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                             spaceBetween: 20,
                                         },
                                         768: {
-                                            slidesPerView: 4,
+                                            slidesPerView: 3,
                                             spaceBetween: 14,
                                             loop: items.length > 3,
                                         },
+                                        1024: {
+                                            slidesPerView: 3,
+                                            spaceBetween: 14,
+                                            loop: items.length > 4,
+                                        },
+                                        1280: {
+                                            slidesPerView: 4,
+                                            spaceBetween: 20,
+                                            loop: items.length > 5,
+                                        },
+
+
                                     }}
                                     className="!overflow-visible"
                                 >

@@ -251,13 +251,13 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                             <div className="mb-4">
                                 <div className="flex items-start gap-2 mb-2">
                                     <Mail className="w-4 h-4 text-wood-300 flex-shrink-0 mt-1" />
-                                    <div className="text-sm">
+                                    <div className="text-sm min-w-0 flex-1">
                                 
-                                        <div className="text-gray-300">
+                                        <div className="text-gray-300 break-all">
                                             {(() => {
                                                 if (email.includes(',')) {
                                                     return email.split(',').map((em, index) => (
-                                                        <div key={index} className="block">
+                                                        <div key={index} className="block break-all">
                                                             {em.trim()}
                                                         </div>
                                                     ));
