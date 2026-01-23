@@ -527,6 +527,55 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                       
                       if (!hasGroupAttributes) return null;
                       
+                      // Función para verificar si un valor de atributo está disponible
+                      // basándose en las selecciones actuales de otros atributos
+                      const isValueAvailable = (attrName, valueToCheck) => {
+                        // Buscar variantes que tengan este valor Y todos los demás atributos seleccionados
+                        return group.variants.some(variant => {
+                          // Verificar que esta variante tiene el valor que estamos evaluando
+                          const hasThisValue = variant.attributes?.some(attr => {
+                            const name = attr.name || attr.slug;
+                            const value = attr.pivot?.value || attr.value;
+                            return name === attrName && value === valueToCheck;
+                          });
+                          
+                          if (!hasThisValue) return false;
+                          
+                          // Verificar que la variante también tiene todos los otros atributos seleccionados
+                          for (const [selectedAttrName, selectedValueData] of Object.entries(selectedAttributes)) {
+                            if (selectedAttrName === attrName) continue; // Skip el atributo actual
+                            
+                            const hasSelectedAttr = variant.attributes?.some(attr => {
+                              const name = attr.name || attr.slug;
+                              const value = attr.pivot?.value || attr.value;
+                              return name === selectedAttrName && value === selectedValueData.value;
+                            });
+                            
+                            if (!hasSelectedAttr) return false;
+                          }
+                          
+                          return true;
+                        });
+                      };
+                      
+                      // Función para encontrar la variante que coincide con un conjunto de atributos
+                      const findMatchingVariant = (attrName, valueData) => {
+                        const newSelections = { ...selectedAttributes, [attrName]: valueData };
+                        
+                        return group.variants.find(variant => {
+                          // La variante debe tener TODOS los atributos seleccionados
+                          for (const [selAttrName, selValueData] of Object.entries(newSelections)) {
+                            const hasAttr = variant.attributes?.some(attr => {
+                              const name = attr.name || attr.slug;
+                              const value = attr.pivot?.value || attr.value;
+                              return name === selAttrName && value === selValueData.value;
+                            });
+                            if (!hasAttr) return false;
+                          }
+                          return true;
+                        });
+                      };
+                      
                       return (
                         <div className="mb-10">
                           {Object.entries(group.allAttributes).map(([attrName, attrData]) => {
@@ -543,15 +592,44 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                 <div className="flex flex-wrap gap-3">
                                   {values.map((valueData, idx) => {
                                     const isSelected = selectedValue?.value === valueData.value;
+                                    const isAvailable = isValueAvailable(attrName, valueData.value);
+                                    
                                     return (
                                       <button
                                         key={idx}
-                                        onClick={() => handleAttributeSelect(attrName, valueData)}
+                                        onClick={() => {
+                                          if (!isAvailable) return;
+                                          // Buscar la variante que coincide con la nueva selección
+                                          const matchingVariant = findMatchingVariant(attrName, valueData);
+                                          if (matchingVariant) {
+                                            setSelectedVariant(matchingVariant);
+                                            // Actualizar selectedAttributes con los valores de la variante encontrada
+                                            const newAttributes = {};
+                                            matchingVariant.attributes?.forEach(attr => {
+                                              const name = attr.name || attr.slug;
+                                              const value = attr.pivot?.value || attr.value;
+                                              if (value) {
+                                                newAttributes[name] = {
+                                                  value,
+                                                  itemId: matchingVariant.id,
+                                                  item: matchingVariant
+                                                };
+                                              }
+                                            });
+                                            setSelectedAttributes(newAttributes);
+                                          } else {
+                                            handleAttributeSelect(attrName, valueData);
+                                          }
+                                        }}
+                                        disabled={!isAvailable}
                                         className={`min-w-[70px] px-5 py-3 text-lg font-medium transition-all duration-200 rounded-xl border-2 ${
                                           isSelected
                                             ? 'border-primary text-primary shadow-sm'
-                                            : 'border-neutral-200 text-neutral-dark  hover:border-neutral-300 hover:bg-neutral-50'
+                                            : isAvailable
+                                              ? 'border-neutral-200 text-neutral-dark hover:border-neutral-300 hover:bg-neutral-50'
+                                              : 'border-neutral-100 text-neutral-300 bg-neutral-50 cursor-not-allowed line-through'
                                         }`}
+                                        title={!isAvailable ? 'No disponible con la selección actual' : ''}
                                       >
                                         {valueData.value}
                                       </button>
