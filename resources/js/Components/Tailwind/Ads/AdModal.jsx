@@ -28,13 +28,6 @@ const AdModal = ({ data, items = [] }) => {
         return () => window.removeEventListener('load', handleLoad);
     }, []);
 
-    // Función auxiliar para generar una clave única para el anuncio
-    const getStorageKey = (ad) => {
-        // Usamos ID si existe, si no, usamos el nombre de la imagen como fallback
-        const identifier = ad.id || ad.image;
-        return `mblens_ad_seen_${identifier}`;
-    };
-
     useEffect(() => {
         // 1. Filtrar anuncios válidos (con imagen)
         const validAds = items.filter(item => item && item.image);
@@ -70,29 +63,7 @@ const AdModal = ({ data, items = [] }) => {
             return true;
         });
 
-        // 3. Filtrar anuncios que NO han sido vistos/cerrados recientemente
-        const filteredAds = dateFilteredAds.filter(ad => {
-            const storageKey = getStorageKey(ad);
-            const expiryTimestamp = localStorage.getItem(storageKey);
-
-            // Si no existe marca de visto, mostrar
-            if (!expiryTimestamp) return true;
-
-            const nowMs = Date.now();
-            const expiry = parseInt(expiryTimestamp, 10);
-
-            // Si la fecha de expiración ya pasó, limpiar y mostrar de nuevo
-            if (isNaN(expiry) || nowMs > expiry) {
-                console.log(`AdModal: Anuncio ${ad.id || ad.image} expiró su marca de visto. Mostrando de nuevo.`);
-                localStorage.removeItem(storageKey);
-                return true;
-            }
-
-            console.log(`AdModal: Anuncio ${ad.id || ad.image} ya fue visto. Ocultando.`);
-            return false; // Todavía válido (no mostrar)
-        });
-
-        setAdsToShow(filteredAds);
+        setAdsToShow(dateFilteredAds);
     }, [items]);
 
     useEffect(() => {
@@ -141,19 +112,8 @@ const AdModal = ({ data, items = [] }) => {
     };
 
     const closeModal = () => {
-        console.log("AdModal: Cerrando y guardando estado 'visto'...");
+        console.log("AdModal: Cerrando modal...");
         setModalOpen(false);
-
-        // Guardar en localStorage que estos anuncios ya fueron vistos/cerrados
-        // Expiración: 24 horas (1 día)
-        const oneDayInMs = 24 * 60 * 60 * 1000;
-        const expiry = Date.now() + oneDayInMs;
-
-        adsToShow.forEach(ad => {
-            const storageKey = getStorageKey(ad);
-            localStorage.setItem(storageKey, expiry.toString());
-            console.log(`AdModal: Guardado ${storageKey} expira en ${new Date(expiry).toLocaleString()}`);
-        });
     };
 
     const handleAdClick = (link) => {
