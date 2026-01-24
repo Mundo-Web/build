@@ -2737,8 +2737,43 @@
                     "limit": 12
                 },
                 "generals": []
+            },
+            {
+                "id": "ProductListHostinfinityFilter",
+                "name": "Productos - Hostinfinity Filter (SaaS)",
+                "image": "products-hostinfinity-filter.png",
+                "data": [
+                    "badge",
+                    "title",
+                    "subtitle",
+                    "description",
+                    "class",
+                    "show_all_link",
+                    "all_link"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "category_id",
+                        "subcategory_id",
+                        "brand_id"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand",
+                        "images",
+                        "features",
+                        "attributes"
+                    ],
+                    "limit": 24
+                },
+                "generals": []
             }
-              
         ]
     },
     {
@@ -3652,6 +3687,20 @@
                     "model": "Faq"
                 },
                 "data": []
+            },
+            {
+                "id": "FaqHostinfinity",
+                "name": "FAQ Hostinfinity (SaaS)",
+                "image": "faq-hostinfinity.png",
+                "data": [
+                    "title",
+                    "description",
+                    "bool:show_contact",
+                    "contact_link"
+                ],
+                "using": {
+                    "model": "Faq"
+                }
             }
         ]
     },
@@ -4494,8 +4543,8 @@
                     "newsletter_title",
                     "newsletter_placeholder",
                     "newsletter_button",
-                    "newsletter_sending",
-                    "copyright"
+                    "newsletter_sending"
+                    
                 ],
                 "generals": [
                     "footer_description",
@@ -4505,7 +4554,44 @@
                     "address",
                     "opening_hours",
                     "privacy_policy",
-                    "terms_conditions"
+                    "terms_conditions",
+                    "copyright"
+                ],
+                "using": {
+                    "model": "Social"
+                }
+            },
+            {
+                "id": "FooterHostinfinity",
+                "name": "Footer - Hostinfinity (SaaS)",
+                "image": "footer-hostinfinity.png",
+                "data": [
+                    "logo_footer",
+                    "products_title",
+                    "product_links",
+                    "support_title",
+                    "support_links",
+                    "legal_title",
+                    "terms_text",
+                    "privacy_text",
+                    "returns_text",
+                    "complaints_text",
+                    "ruc_label",
+                    "address_label",
+                    "email_label",
+                    "phone_label"
+              
+                ],
+                "generals": [
+                    "footer_description",
+                    "phone_contact",
+                    "email_contact",
+                    "address",
+                    "ruc",
+                    "privacy_policy",
+                    "terms_conditions",
+                    "saleback_policy",
+                    "copyright"
                 ],
                 "using": {
                     "model": "Social"
@@ -4697,6 +4783,26 @@
                 "using": {
                     "model": "Testimony"
                 }
+            },
+            {
+                "id": "TestimonialsHostinfinity",
+                "name": "Testimonials Hostinfinity (SaaS)",
+                "image": "testimonials-hostinfinity.png",
+                "data": [
+                    "title",
+                    "description",
+                    "bool:show_stats",
+                    "stat_1_value",
+                    "stat_1_label",
+                    "stat_2_value",
+                    "stat_2_label",
+                    "stat_3_value",
+                    "stat_3_label"
+                ],
+                "generals": [],
+                "using": {
+                    "model": "Testimony"
+                }
             }
         ]
     },
@@ -4742,6 +4848,20 @@
                 "using": {
                     "model": "Strength"
                 }
+            },
+            {
+                "id": "StrengthHostinfinity",
+                "name": "Fortalezas Hostinfinity (SaaS)",
+                "image": "strength-hostinfinity.png",
+                "data": [
+                    "title",
+                    "description"
+                   
+                ],
+                "using": {
+                    "model": "Strength"
+                },
+                "generals": []
             }
         ]
     },

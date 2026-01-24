@@ -150,11 +150,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                     }
                 `}
             >
-                {/* Glow effect para featured */}
-                {isFeatured && (
-                    <div className="absolute -inset-[2px] bg-gradient-to-r from-warning via-warning to-warning rounded-3xl opacity-75 blur-sm animate-pulse" />
-                )}
-
+               
                 {/* Card Container */}
                 <div className={`
                     relative h-full rounded-3xl overflow-hidden
@@ -192,14 +188,9 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                     >
                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                     </motion.svg>
-                                    Más Popular
+                                    Recomendado
                                 </span>
-                                {/* Sparkles */}
-                                <motion.div
-                                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                                    transition={{ duration: 1.5, repeat: Infinity }}
-                                    className="absolute -top-1 -right-2 w-3 h-3 bg-warning rounded-full"
-                                />
+                               
                                 <motion.div
                                     animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.8, 0.3] }}
                                     transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
@@ -252,9 +243,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                             )}
                         </div>
 
-                        {/* Línea separadora con gradiente */}
-                        <div className={`h-[2px] rounded-full mx-auto mb-6 ${isFeatured ? 'w-24 bg-gradient-to-r from-transparent via-warning to-transparent' : 'w-16 bg-gradient-to-r from-transparent via-secondary to-transparent'}`} />
-
+                      
                         {/* Lista de características */}
                         <div className="flex-1 relative z-10 mb-6">
                             <ul className="space-y-3">
@@ -275,8 +264,8 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
-                                            <span className="text-sm text-white/80">
-                                                {attr.name}: <span className="font-semibold text-white">{value} {unit}</span>
+                                            <span className="text-lg text-neutral-light">
+                                                {attr.name}: <span className="font-semibold text-white block">{value} {unit}</span>
                                             </span>
                                         </motion.li>
                                     );
@@ -289,14 +278,14 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.3 + (idx * 0.05) }}
-                                            className="flex items-center gap-3"
+                                            className="flex items-center gap-3 text-lg"
                                         >
                                             <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isFeatured ? 'bg-warning/20' : 'bg-secondary/20'}`}>
                                                 <svg className={`w-3 h-3 ${isFeatured ? 'text-warning' : 'text-secondary'}`} fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
-                                            <span className="text-sm text-white/80">
+                                            <span className=" text-neutral-light">
                                                 {feature.name || feature.title}
                                             </span>
                                         </motion.li>
@@ -304,7 +293,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                 )}
 
                                 {attributes.length === 0 && (!item.features || item.features.length === 0) && (
-                                    <p className="text-center text-white/40 text-sm py-4">Sin características configuradas</p>
+                                    <p className="text-center text-neutral-light/40 text-sm py-4">Sin características configuradas</p>
                                 )}
                             </ul>
                         </div>
@@ -315,7 +304,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                             whileTap={{ scale: 0.98 }}
                             onClick={handleBuyClick}
                             className={`
-                                relative w-full py-4 px-6 rounded-2xl font-bold text-lg
+                                relative w-full py-4 px-6 rounded-full font-bold text-lg
                                 flex items-center justify-center gap-3
                                 transition-all duration-300 overflow-hidden group
                                 ${isFeatured 
@@ -342,7 +331,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
     }
 
     return (
-        <section className={`relative bg-primary py-20 lg:py-28 overflow-hidden ${data?.class || ''}`}>
+        <section className={`relative bg-primary py-16 lg:py-24 overflow-hidden ${data?.class || ''}`}>
             {/* Fondo con efectos */}
             <div className="absolute inset-0">
                 <div 
@@ -367,16 +356,16 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                     className="text-center mb-16"
                 >
                     {data?.title ? (
-                        <h2 className="text-4xl lg:text-6xl font-bold text-white mb-4 tracking-tight">
+                        <h2 className="text-4xl lg:text-6xl font-bold text-neutral-dark  mb-4 tracking-tight">
                             <TextWithHighlight text={data.title} color="bg-secondary" />
                         </h2>
                     ) : (
-                        <h2 className="text-4xl lg:text-6xl font-bold text-white mb-4 tracking-tight">
+                        <h2 className="text-4xl lg:text-6xl font-bold text-neutral-dark  mb-4 tracking-tight">
                             Explora Nuestras <span className="text-secondary">Soluciones</span>
                         </h2>
                     )}
                     {data?.description && (
-                        <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                        <p className="text-xl text-neutral-light max-w-2xl mx-auto">
                             <TextWithHighlight text={data.description} color="bg-accent" />
                         </p>
                     )}
@@ -404,7 +393,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                         setSelectedPackage('all');
                                     }}
                                     className={`
-                                        group relative overflow-hidden rounded-2xl p-8
+                                        group relative overflow-hidden rounded-full p-8
                                         transition-all duration-500 text-left
                                         ${isSelected
                                             ? 'bg-gradient-to-br from-secondary via-secondary to-secondary shadow-2xl shadow-secondary/40'
@@ -474,13 +463,13 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                         animate={{ opacity: 1, y: 0 }}
                         className="flex justify-center mb-12"
                     >
-                        <div className="inline-flex items-center gap-2 p-2 rounded-2xl bg-accent/80 backdrop-blur-xl border border-white/10">
+                        <div className="inline-flex items-center gap-2 p-2 rounded-full bg-accent/80 backdrop-blur-xl border border-white/10">
                             {packageGroups.map(pkg => (
                                 <button
                                     key={pkg.slug}
                                     onClick={() => setSelectedPackage(pkg.slug)}
                                     className={`
-                                        relative px-8 py-3 rounded-xl font-semibold transition-all duration-300
+                                        relative px-8 py-3 rounded-full font-semibold transition-all duration-300
                                         ${selectedPackage === pkg.slug
                                             ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
                                             : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -537,7 +526,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                         centeredSlides: false,
                                     },
                                 }}
-                                className="!pb-16 !px-4"
+                                className=" !px-4"
                             >
                                 {currentPackage.items.map((item, index) => (
                                     <SwiperSlide key={item.id} className="h-auto !flex">
@@ -580,25 +569,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                     )}
                 </AnimatePresence>
 
-                {/* Botón ver todos */}
-                {data?.show_all_link && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mt-12"
-                    >
-                        <a
-                            href={data.all_link || '/productos'}
-                            className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-semibold text-white bg-accent/80 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 group"
-                        >
-                            Ver todos los productos
-                            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </a>
-                    </motion.div>
-                )}
+               
             </div>
         </section>
     );

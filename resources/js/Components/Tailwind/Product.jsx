@@ -23,6 +23,7 @@ const ProductIbergruasSwiper = React.lazy(() => import("./Products/ProductIbergr
 const ProductLaPetaca = React.lazy(() => import("./Products/ProductLaPetaca"));
 const ProductListPanelPro = React.lazy(() => import("./Products/ProductListPanelPro"));
 const ProductListHostinfinity = React.lazy(() => import("./Products/ProductListHostinfinity"));
+const ProductListHostinfinityFilter = React.lazy(() => import("./Products/ProductListHostinfinityFilter"));
 
 const Product = ({
     which,
@@ -233,6 +234,16 @@ const Product = ({
             case "ProductListHostinfinity":
                 return (
                     <ProductListHostinfinity
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        onClickTracking={handleClickTracking}
+                    />
+                );
+            case "ProductListHostinfinityFilter":
+                return (
+                    <ProductListHostinfinityFilter
                         data={data}
                         items={items}
                         cart={cart}

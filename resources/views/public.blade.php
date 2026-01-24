@@ -208,7 +208,7 @@
     
 </head>
 
-<body class="font-general">
+<body class="font-general" style="background-color: var(--bg-page-background);">
     <!-- Loading Screen Nativo (aparece ANTES de que React cargue) -->
     <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(135deg,#ffffff 0%,#f8f9fa 100%);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
         <style>

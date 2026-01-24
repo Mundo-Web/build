@@ -15,6 +15,10 @@ class SystemColorSeeder extends Seeder
     {
         $colors = [
             [
+                'name' => 'page-background',
+                'description' => '#FFFFFF',
+            ],
+            [
                 'name' => 'primary',
                 'description' => '#007BFF',
             ],

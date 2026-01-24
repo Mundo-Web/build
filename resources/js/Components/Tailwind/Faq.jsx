@@ -6,6 +6,7 @@ const FaqAko = React.lazy(() => import('./Faqs/FaqAko'))
 const FaqModern = React.lazy(() => import('./Faqs/FaqModern'))
 const FaqChat = React.lazy(() => import('./Faqs/FaqChat'))
 const FaqWebQuirurgica = React.lazy(() => import('./Faqs/FaqWebQuirurgica'))
+const FaqHostinfinity = React.lazy(() => import('./Faqs/FaqHostinfinity'))
 
 const Faq = ({ which, data, faqs }) => {
   const getFaq = () => {
@@ -20,6 +21,8 @@ const Faq = ({ which, data, faqs }) => {
         return <FaqChat data={data} faqs={faqs} />
       case 'FaqWebQuirurgica':
         return <FaqWebQuirurgica data={data} faqs={faqs} />
+      case 'FaqHostinfinity':
+        return <FaqHostinfinity data={data} faqs={faqs} />
       default:
         return <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }

@@ -69,8 +69,8 @@ const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
 const LoadingFallback = () => {
     return (
         <div 
-            className="fixed inset-0 flex flex-col justify-center items-center z-50"
-            style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)' }}
+            className="fixed inset-0 flex flex-col justify-center items-center z-50 "
+            style={{ background: "var(--bg-page-background)" }}
         >
             <style>{`
                 @keyframes pulse-loader {

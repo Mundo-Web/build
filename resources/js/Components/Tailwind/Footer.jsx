@@ -21,6 +21,7 @@ const FooterHuaillys = React.lazy(() => import("./Footer/FooterHuaillys"));
 const FooterFirstClass = React.lazy(() => import("./Footer/FooterFirstClass"));
 const FooterLaPetaca = React.lazy(() => import("./Footer/FooterLaPetaca"));
 const FooterPanelPro = React.lazy(() => import("./Footer/FooterPanelPro"));
+const FooterHostinfinity = React.lazy(() => import("./Footer/FooterHostinfinity"));
 
 const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
     const getFooter = () => {
@@ -169,6 +170,15 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
             case "FooterPanelPro":
                 return (
                     <FooterPanelPro
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterHostinfinity":
+                return (
+                    <FooterHostinfinity
                         socials={items}
                         pages={pages}
                         generals={generals}

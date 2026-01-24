@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Global from "../../../Utils/Global";
 import HtmlContent from "../../../Utils/HtmlContent";
+import General from "../../../Utils/General";
 
 const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
     const subscriptionsRest = new SubscriptionsRest();
@@ -347,7 +348,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                 <div className="border-t border-white/10 pt-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-white text-md">
-                            {data?.copyright || `© ${currentYear} ${Global.APP_NAME}. Todos los derechos reservados.`}
+                            {General.get('copyright') || `© ${currentYear} ${Global.APP_NAME}. Todos los derechos reservados.`}
                              <span className="italic">  Powered by  <a href="https://www.mundoweb.pe" target="_blank" rel="noopener noreferrer">MundoWeb</a></span>
                         </p>
                         <div className="flex flex-wrap gap-4 md:gap-6 text-md text-white justify-center">
@@ -395,7 +396,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                 <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
                                 <button
                                     onClick={closeModal}
-                                    className="flex-shrink-0 text-white hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                    className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
                                     aria-label="Cerrar modal"
                                 >
                                     <X size={24} strokeWidth={2} />
