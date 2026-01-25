@@ -79,7 +79,7 @@ const FooterHostinfinity = ({ pages = [], generals = [], data, socials = [] }) =
     return (
         <footer 
             id={data?.element_id || null} 
-            className={`border-t border-white/10 backdrop-blur-xl bg-primary ${data?.class || ''}`}
+            className={`border-t border-white/10    ${data?.class || ''}`}
         >
             <div className="2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">

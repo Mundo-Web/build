@@ -157,7 +157,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                     transition-all duration-500
                     ${isFeatured 
                         ? 'bg-gradient-to-br from-accent via-accent to-primary border-2 border-warning/50' 
-                        : 'bg-gradient-to-br from-accent/90 via-accent to-primary/90 border border-white/10 hover:border-secondary/50'
+                        : 'bg-gradient-to-br from-accent/90 via-accent to-secondary/90 border border-white/10 hover:border-secondary/50'
                     }
                 `}>
                     {/* Patrón de fondo sutil */}

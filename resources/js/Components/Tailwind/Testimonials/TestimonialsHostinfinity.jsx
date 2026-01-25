@@ -101,25 +101,11 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
             id={data?.element_id || null} 
             className={`relative py-16 lg:py-24 overflow-hidden ${data?.class || ''}`}
         >
-            {/* Fondo con gradientes */}
-            <div className="absolute inset-0 bg-gradient-to-b from-primary via-accent to-primary" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-warning/10 via-transparent to-transparent" />
+                 <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-800/30 to-slate-900/50" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-transparent to-transparent" />
 
-            {/* Efectos de luz */}
-            <motion.div 
-                className="absolute top-20 left-10 w-72 h-72 bg-warning/10 rounded-full blur-3xl"
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.3 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                viewport={{ once: true }}
-            />
-            <motion.div 
-                className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.2 }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                viewport={{ once: true }}
-            />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
 
             <div className="relative 2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0">
                 {/* Header */}
@@ -137,7 +123,7 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
                         variants={titleVariants}
                     >
                         {data?.title && (
-                            <TextWithHighlight text={data.title} color="bg-warning" />
+                            <TextWithHighlight text={data.title} color="bg-secondary" />
                         ) }
                     </motion.h2>
                     {data?.description && (
@@ -215,7 +201,7 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
                                             flex flex-col
                                         `}>
                                             {/* Efecto de brillo en hover */}
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-secondary to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-warning/50 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 
                                             {/* Quote icon y rating */}
                                             <div className="flex items-start justify-between mb-4 relative z-10">

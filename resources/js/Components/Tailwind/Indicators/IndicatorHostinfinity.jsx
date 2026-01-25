@@ -152,22 +152,19 @@ const IndicatorHostinfinity = ({ data, items = [] }) => {
                                             className="group h-full"
                                             initial="hidden"
                                             whileInView="visible"
-                                            viewport={{ once: true, margin: "-80px" }}
                                             variants={cardVariants}
-                                            whileHover={{ 
-                                                y: -6,
-                                                transition: { duration: 0.2, ease: "easeOut" }
-                                            }}
+                                            whileHover={{ y: -6 }}
+                                            transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.5 }}
                                         >
                                             {/* Card Premium con Glassmorphism */}
                                             <div className={`
-                                                relative h-full min-h-[300px] p-8 
+                                                relative h-full p-8 
                                                 rounded-3xl overflow-hidden
                                                 backdrop-blur-xl
                                                 border border-white/10
-                                                transition-all duration-200 ease-out
-                                                hover:border-secondary/40
-                                                hover:shadow-[0_8px_40px_rgba(124,55,254,0.15)]
+                                                transition-colors duration-150
+                                                group-hover:border-secondary/40
+                                                group-hover:shadow-[0_8px_40px_rgba(124,55,254,0.15)]
                                                 ${data?.class_indicators_card || 'bg-gradient-to-br from-neutral-light/5 via-neutral-light/[0.02] to-transparent'}
                                             `}>
                                                 {/* Efecto de brillo en hover */}
@@ -180,47 +177,14 @@ const IndicatorHostinfinity = ({ data, items = [] }) => {
 
                                               
                                                 {/* Contenido */}
-                                                <div className="relative flex flex-col items-center text-center h-full">
-                                                    {/* Icono con efectos premium */}
-                                                    <motion.div 
-                                                        className="relative mb-6"
-                                                        variants={iconVariants}
-                                                    >
-                                                        {/* Glow del icono */}
-                                                        <div 
-                                                            className="absolute inset-0 rounded-full blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-200"
-                                                            style={{
-                                                                backgroundColor: item.bg_color === 'transparent' ? 'var(--bg-secondary)' : (item.bg_color || 'var(--bg-secondary)')
-                                                            }}
-                                                        />
-                                                        <div 
-                                                            className={`
-                                                                relative p-4 
-                                                                backdrop-blur-sm
-                                                                transition-all duration-200 ease-out
-                                                                rounded-full shadow-lg
-                                                                group-hover:scale-105
-                                                                ${data?.class_indicators_icon || ''}
-                                                            `}
-                                                            style={{
-                                                                backgroundColor: item.bg_color === 'transparent' ? 'var(--bg-secondary)' : (item.bg_color || 'var(--bg-secondary)')
-                                                            }}
-                                                        >
-                                                            <img
-                                                                src={symbolUrl}
-                                                                alt={item.name}
-                                                                className="w-12 h-12 object-contain filter brightness-0 invert opacity-90 group-hover:opacity-100 transition-all duration-300"
-                                                                onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
-                                                            />
-                                                        </div>
-                                                    </motion.div>
-
+                                                <div className="relative flex flex-col items-center text-center">
+                                                   
                                                     {/* Número contador con gradiente */}
                                                     <motion.div 
                                                         className="mb-4 flex-shrink-0"
                                                         variants={numberVariants}
                                                     >
-                                                        <div className="text-5xl lg:text-6xl font-bold text-neutral-dark group-hover:from-secondary group-hover:via-secondary group-hover:to-accent transition-all duration-500">
+                                                        <div className="text-5xl lg:text-6xl font-bold text-secondary group-hover:from-secondary group-hover:via-secondary group-hover:to-accent transition-all duration-500">
                                                             <TextWithHighlight
                                                                 text={item.name}
                                                                 counter={true}

@@ -186,17 +186,17 @@ const StrengthHostinfinity = ({ items = [], data = {} }) => {
 
                           
                                             {/* Contenido */}
-                                            <div className="relative flex flex-col items-center text-center h-full">
+                                            <div className="relative flex flex-col items-start text-start h-full">
                                                 {/* Icono con efectos premium */}
                                                 <motion.div 
                                                     className="relative mb-6"
                                                     variants={iconVariants}
                                                 >
                                                     {/* Glow del icono */}
-                                                    <div className="absolute inset-0 rounded-full blur-xl bg-secondary opacity-0 group-hover:opacity-40 transition-opacity duration-200" />
+                                                    <div className="absolute inset-0 rounded-lg blur-xl bg-secondary opacity-0 group-hover:opacity-40 transition-opacity duration-200" />
                                                     
                                                     <div className={`
-                                                        relative p-4 rounded-full
+                                                        relative p-4 rounded-xl
                                                         bg-secondary
                                                         backdrop-blur-sm
                                                         transition-all duration-200 ease-out
@@ -205,19 +205,19 @@ const StrengthHostinfinity = ({ items = [], data = {} }) => {
                                                         <img
                                                             src={imageUrl}
                                                             alt={strength.name}
-                                                            className="w-12 h-12 object-contain filter brightness-0 invert opacity-90 group-hover:opacity-100 transition-all duration-200"
+                                                            className="w-8 h-8 object-contain filter brightness-0 invert opacity-90 group-hover:opacity-100 transition-all duration-200"
                                                             onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
                                                         />
                                                     </div>
                                                 </motion.div>
 
                                                 {/* Título */}
-                                                <h3 className="text-4xl lg:text-4xl  text-white mb-4 tracking-tight  transition-colors duration-200">
+                                                <h3 className="text-lg lg:text-xl  text-white mb-4 tracking-tight font-bold  transition-colors duration-200">
                                                     <TextWithHighlight text={strength.name} color="bg-secondary" />
                                                 </h3>
 
                                                 {/* Descripción */}
-                                                <p className="text-lg text-neutral-dark font-light leading-relaxed flex-1 group-hover:text-white/80 transition-colors duration-200">
+                                                <p className="text-base text-neutral-light-50 font-light leading-relaxed flex-1 group-hover:text-white/80 transition-colors duration-200">
                                                     <TextWithHighlight text={strength.description} color="bg-secondary" />
                                                 </p>
                                             </div>
