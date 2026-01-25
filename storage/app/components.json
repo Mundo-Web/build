@@ -1067,6 +1067,28 @@
                     "model": "Slider"
                 },
                 "generals": []
+            },
+              {
+                "id": "SliderHostinfinityV2",
+                "name": "Slider - Hostinfinity (SaaS) V2",
+                "image": "slider-hostinfinity.png",
+                "data": [
+                    "autoplayDelay",
+                    "showNavigation",
+                    "showIndicators",
+                    "showCounter",
+                    "class_slider",
+                    "class_content_slider",
+                    "class_title",
+                    "class_description",
+                    "class_buttons_container",
+                    "class_button",
+                    "class_secondary_button"
+                ],
+                "using": {
+                    "model": "Slider"
+                },
+                "generals": []
             }
         ]
     },
@@ -2160,6 +2182,35 @@
              {
                 "id": "IndicatorHostinfinity",
                 "name": "Indicadores - Hostinfinity (Stats Grid)",
+                "image": "indicator-hostinfinity.png",
+                "data": [
+                    "element_id",
+                    "title",
+                    "description",
+                    "class_section",
+                    "class_title",
+                    "class_description",
+                    "class_indicators_card"
+                ],
+                "using": {
+                    "model": "Indicator",
+                    "fields": [   
+                        "symbol",
+                        "bg_image",
+                        "name",
+                        "subtitle",
+                        "badge",
+                        "description",
+                        "button_text",
+                        "button_link",
+                        "order_index"
+                    ]
+                },
+                "generals": []
+            },
+                         {
+                "id": "IndicatorHostinfinityImage",
+                "name": "Indicadores - Hostinfinity (Stats Grid) Image",
                 "image": "indicator-hostinfinity.png",
                 "data": [
                     "element_id",

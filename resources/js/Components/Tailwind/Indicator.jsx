@@ -5,6 +5,7 @@ const IndicatorHuaillys = React.lazy(() => import('./Indicators/IndicatorHuailly
 const IndicatorIbergruas = React.lazy(() => import('./Indicators/IndicatorIbergruas.jsx'))
 const IndicatorLaPetaca = React.lazy(() => import('./Indicators/IndicatorLaPetaca'))
 const IndicatorHostinfinity = React.lazy(() => import('./Indicators/IndicatorHostinfinity'))
+const IndicatorHostinfinityImage = React.lazy(() => import('./Indicators/IndicatorHostinfinityImage'))
 
 const Indicator = ({ data, which, items, generals }) => {
     const getIndicator = () => {
@@ -22,6 +23,8 @@ const Indicator = ({ data, which, items, generals }) => {
                 return <IndicatorLaPetaca data={data} items={items} />
             case 'IndicatorHostinfinity':
                 return <IndicatorHostinfinity data={data} items={items} />
+            case 'IndicatorHostinfinityImage':
+                return <IndicatorHostinfinityImage data={data} items={items} />
 
 
             default:

@@ -5,7 +5,7 @@ const colors = ['page-background','primary', 'secondary', 'accent', 'neutral-lig
 const colorShades = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
 // Opacidades comunes usadas en Tailwind (5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95)
 const opacities = ['5', '10', '15', '20', '25', '30', '40', '50', '60', '70', '75', '80', '90', '95'];
-const properties = ['bg', 'text', 'border', 'ring', 'outline'];
+const properties = ['bg', 'text', 'border', 'ring', 'outline', 'shadow'];
 const states = ['hover', 'focus', 'active'];
 
 const generateSafelist = () => {
@@ -105,8 +105,56 @@ const generateColorScale = (cssVar) => {
 // Plugin para agregar utilidades de opacidad con color-mix
 const opacityPlugin = require('tailwindcss/plugin');
 
-const colorOpacityPlugin = opacityPlugin(function({ addUtilities, theme }) {
+const colorOpacityPlugin = opacityPlugin(function({ addUtilities, matchUtilities, theme }) {
     const newUtilities = {};
+    
+    // Generar utilidades de shadow color que funcionen con cualquier tamaño de shadow
+    colors.forEach(color => {
+        const cssVar = `--bg-${color}`;
+        
+        // shadow-{color} base
+        newUtilities[`.shadow-${color}`] = {
+            '--tw-shadow-color': `var(${cssVar}) !important`,
+            '--tw-shadow': 'var(--tw-shadow-colored) !important',
+        };
+        
+        // shadow-{color}/{opacity} - color base con opacidad
+        opacities.forEach(opacity => {
+            const opacityValue = parseInt(opacity);
+            newUtilities[`.shadow-${color}\\/${opacity}`] = {
+                '--tw-shadow-color': `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent) !important`,
+                '--tw-shadow': 'var(--tw-shadow-colored) !important',
+            };
+        });
+        
+        // shadow-{color}-{shade}
+        colorShades.forEach(shade => {
+            let shadeValue;
+            if (shade === '500') {
+                shadeValue = `var(${cssVar})`;
+            } else if (parseInt(shade) < 500) {
+                const whiteMix = shade === '50' ? 95 : shade === '100' ? 90 : shade === '200' ? 75 : shade === '300' ? 50 : 25;
+                shadeValue = `color-mix(in srgb, var(${cssVar}), white ${whiteMix}%)`;
+            } else {
+                const blackMix = shade === '600' ? 10 : shade === '700' ? 25 : shade === '800' ? 40 : shade === '900' ? 55 : 70;
+                shadeValue = `color-mix(in srgb, var(${cssVar}), black ${blackMix}%)`;
+            }
+            
+            newUtilities[`.shadow-${color}-${shade}`] = {
+                '--tw-shadow-color': `${shadeValue} !important`,
+                '--tw-shadow': 'var(--tw-shadow-colored) !important',
+            };
+            
+            // shadow-{color}-{shade}/{opacity} - shade con opacidad
+            opacities.forEach(opacity => {
+                const opacityValue = parseInt(opacity);
+                newUtilities[`.shadow-${color}-${shade}\\/${opacity}`] = {
+                    '--tw-shadow-color': `color-mix(in srgb, ${shadeValue} ${opacityValue}%, transparent) !important`,
+                    '--tw-shadow': 'var(--tw-shadow-colored) !important',
+                };
+            });
+        });
+    });
     
     colors.forEach(color => {
         const cssVar = `--bg-${color}`;
@@ -203,7 +251,7 @@ const colorOpacityPlugin = opacityPlugin(function({ addUtilities, theme }) {
         });
     });
     
-    addUtilities(newUtilities, ['responsive', 'hover', 'focus', 'active', 'group-hover']);
+    addUtilities(newUtilities);
 });
 
 export default {
@@ -229,6 +277,19 @@ export default {
                 danger: generateColorScale('--bg-danger'),
                 success: generateColorScale('--bg-success'),
                 'sections-color': generateColorScale('--bg-sections-color'),
+            },
+            boxShadowColor: {
+                'page-background': 'var(--bg-page-background)',
+                primary: 'var(--bg-primary)',
+                secondary: 'var(--bg-secondary)',
+                accent: 'var(--bg-accent)',
+                'neutral-light': 'var(--bg-neutral-light)',
+                'neutral-dark': 'var(--bg-neutral-dark)',
+                warning: 'var(--bg-warning)',
+                info: 'var(--bg-info)',
+                danger: 'var(--bg-danger)',
+                success: 'var(--bg-success)',
+                'sections-color': 'var(--bg-sections-color)',
             },
             
             margin: {
