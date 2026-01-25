@@ -76,22 +76,8 @@ const IndicatorHostinfinity = ({ data, items = [] }) => {
     };
 
     return (
-        <section className={`relative py-16 lg:py-24 bg-primary overflow-hidden ${data?.class || ''}`}>
-            {/* Efectos de fondo animados */}
-            <motion.div 
-                className="absolute top-1/2 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 -ml-48"
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.3 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                viewport={{ once: true }}
-            />
-            <motion.div 
-                className="absolute top-1/2 right-0 w-96 h-96 bg-warning/10 rounded-full blur-3xl -translate-y-1/2 -mr-48"
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.2 }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                viewport={{ once: true }}
-            />
+        <section className={`relative py-16 lg:py-24 bg-transparent overflow-hidden ${data?.class || ''}`}>
+           
         
             <div className="relative 2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0">
                 {/* Header opcional */}

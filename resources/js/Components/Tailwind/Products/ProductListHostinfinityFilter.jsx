@@ -286,28 +286,22 @@ const ProductListHostinfinityFilter = ({
     const hasAnyFilter = availableCategories.length > 0 || availableBrands.length > 0 || filteredSubcategories.length > 0;
 
     return (
-        <section className={`relative py-20 lg:py-28 overflow-hidden bg-sections-color ${data?.class || ''}`}>
+        <section className={`relative py-20 lg:py-28 overflow-hidden  ${data?.class || ''}`}>
            
-            
-            {/* Efectos de luz animados */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <motion.div 
-                    animate={{ 
-                        scale: [1, 1.2, 1],
-                        opacity: [0.3, 0.5, 0.3]
-                    }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute top-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[150px]" 
-                />
-                <motion.div 
-                    animate={{ 
-                        scale: [1, 1.3, 1],
-                        opacity: [0.2, 0.4, 0.2]
-                    }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    className="absolute bottom-0 right-1/4 w-96 h-96 bg-warning/10 rounded-full blur-[150px]" 
-                />
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+
+      <div className="absolute inset-0">
+        <div className="absolute top-10 left-10 w-2 h-2 bg-blue-400 rounded-full animate-ping" />
+        <div className="absolute top-20 right-20 w-2 h-2 bg-cyan-400 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-20 left-20 w-2 h-2 bg-blue-300 rounded-full animate-ping" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-10 right-10 w-2 h-2 bg-cyan-300 rounded-full animate-ping" style={{ animationDelay: '1.5s' }} />
+      </div>
+        
 
          
 

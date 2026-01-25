@@ -1045,6 +1045,28 @@
                     "model": "Slider"
                 },
                 "generals": []
+            },
+            {
+                "id": "SliderHostinfinity",
+                "name": "Slider - Hostinfinity (SaaS)",
+                "image": "slider-hostinfinity.png",
+                "data": [
+                    "autoplayDelay",
+                    "showNavigation",
+                    "showIndicators",
+                    "showCounter",
+                    "class_slider",
+                    "class_content_slider",
+                    "class_title",
+                    "class_description",
+                    "class_buttons_container",
+                    "class_button",
+                    "class_secondary_button"
+                ],
+                "using": {
+                    "model": "Slider"
+                },
+                "generals": []
             }
         ]
     },
@@ -2137,16 +2159,20 @@
             },
              {
                 "id": "IndicatorHostinfinity",
-                "name": "Indicadores - Hostinfinity",
+                "name": "Indicadores - Hostinfinity (Stats Grid)",
                 "image": "indicator-hostinfinity.png",
                 "data": [
-                    "class_indicators_card",
-                    "showDirectBooking",
-                    "class_section"
+                    "element_id",
+                    "title",
+                    "description",
+                    "class_section",
+                    "class_title",
+                    "class_description",
+                    "class_indicators_card"
                 ],
                 "using": {
                     "model": "Indicator",
-                    "fields": [
+                    "fields": [   
                         "symbol",
                         "bg_image",
                         "name",

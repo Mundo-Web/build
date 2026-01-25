@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 
 // Generar safelist dinámico para colores de la DB
-const colors = ['primary', 'secondary', 'accent', 'neutral-light', 'neutral-dark', 'warning', 'info', 'danger', 'success', 'sections-color'];
+const colors = ['page-background','primary', 'secondary', 'accent', 'neutral-light', 'neutral-dark', 'warning', 'info', 'danger', 'success', 'sections-color'];
+const colorShades = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
+// Opacidades comunes usadas en Tailwind (5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95)
+const opacities = ['5', '10', '15', '20', '25', '30', '40', '50', '60', '70', '75', '80', '90', '95'];
 const properties = ['bg', 'text', 'border', 'ring', 'outline'];
 const states = ['hover', 'focus', 'active'];
 
@@ -22,16 +25,186 @@ const generateSafelist = () => {
             
             // Group hover
             safelist.push(`group-hover:${prop}-${color}`);
+            
+            // Agregar variantes numéricas para todos los colores
+            colorShades.forEach(shade => {
+                safelist.push(`${prop}-${color}-${shade}`);
+                states.forEach(state => {
+                    safelist.push(`${state}:${prop}-${color}-${shade}`);
+                });
+                safelist.push(`group-hover:${prop}-${color}-${shade}`);
+                
+                // Opacidades para cada shade (ej: bg-primary-500/20)
+                opacities.forEach(opacity => {
+                    safelist.push(`${prop}-${color}-${shade}/${opacity}`);
+                    states.forEach(state => {
+                        safelist.push(`${state}:${prop}-${color}-${shade}/${opacity}`);
+                    });
+                });
+            });
+            
+            // Opacidades para color base (ej: bg-primary/20)
+            opacities.forEach(opacity => {
+                safelist.push(`${prop}-${color}/${opacity}`);
+                states.forEach(state => {
+                    safelist.push(`${state}:${prop}-${color}/${opacity}`);
+                });
+                safelist.push(`group-hover:${prop}-${color}/${opacity}`);
+            });
         });
         
         // Extras
         safelist.push(`placeholder:text-${color}`);
         safelist.push(`from-${color}`, `via-${color}`, `to-${color}`);
+        safelist.push(`hover:from-${color}`, `hover:via-${color}`, `hover:to-${color}`);
         safelist.push(`divide-${color}`, `caret-${color}`);
+        
+        // Gradientes con opacidad para color base (ej: from-primary/50)
+        opacities.forEach(opacity => {
+            safelist.push(`from-${color}/${opacity}`, `via-${color}/${opacity}`, `to-${color}/${opacity}`);
+            safelist.push(`hover:from-${color}/${opacity}`, `hover:via-${color}/${opacity}`, `hover:to-${color}/${opacity}`);
+        });
+        
+        // Extras con shades para gradientes (incluyendo estados hover)
+        colorShades.forEach(shade => {
+            safelist.push(`from-${color}-${shade}`, `via-${color}-${shade}`, `to-${color}-${shade}`);
+            safelist.push(`hover:from-${color}-${shade}`, `hover:via-${color}-${shade}`, `hover:to-${color}-${shade}`);
+            
+            // Gradientes con shade y opacidad (ej: from-secondary-600/50)
+            opacities.forEach(opacity => {
+                safelist.push(`from-${color}-${shade}/${opacity}`, `via-${color}-${shade}/${opacity}`, `to-${color}-${shade}/${opacity}`);
+                safelist.push(`hover:from-${color}-${shade}/${opacity}`, `hover:via-${color}-${shade}/${opacity}`, `hover:to-${color}-${shade}/${opacity}`);
+            });
+        });
     });
     
     return safelist;
 };
+
+// Función helper para generar escala de colores con soporte de opacidad
+// Usamos color-mix con transparent para simular opacidades
+const generateColorScale = (cssVar) => {
+    const scale = {
+        DEFAULT: `var(${cssVar})`,
+        50: `color-mix(in srgb, var(${cssVar}), white 95%)`,
+        100: `color-mix(in srgb, var(${cssVar}), white 90%)`,
+        200: `color-mix(in srgb, var(${cssVar}), white 75%)`,
+        300: `color-mix(in srgb, var(${cssVar}), white 50%)`,
+        400: `color-mix(in srgb, var(${cssVar}), white 25%)`,
+        500: `var(${cssVar})`,
+        600: `color-mix(in srgb, var(${cssVar}), black 10%)`,
+        700: `color-mix(in srgb, var(${cssVar}), black 25%)`,
+        800: `color-mix(in srgb, var(${cssVar}), black 40%)`,
+        900: `color-mix(in srgb, var(${cssVar}), black 55%)`,
+        950: `color-mix(in srgb, var(${cssVar}), black 70%)`,
+    };
+    
+    return scale;
+};
+
+// Plugin para agregar utilidades de opacidad con color-mix
+const opacityPlugin = require('tailwindcss/plugin');
+
+const colorOpacityPlugin = opacityPlugin(function({ addUtilities, theme }) {
+    const newUtilities = {};
+    
+    colors.forEach(color => {
+        const cssVar = `--bg-${color}`;
+        
+        // Opacidades para color base
+        opacities.forEach(opacity => {
+            const opacityValue = parseInt(opacity);
+            const transparentPercent = 100 - opacityValue;
+            
+            // bg-{color}/{opacity}
+            newUtilities[`.bg-${color}\\/${opacity}`] = {
+                backgroundColor: `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent)`
+            };
+            
+            // text-{color}/{opacity}
+            newUtilities[`.text-${color}\\/${opacity}`] = {
+                color: `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent)`
+            };
+            
+            // border-{color}/{opacity}
+            newUtilities[`.border-${color}\\/${opacity}`] = {
+                borderColor: `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent)`
+            };
+            
+            // ring-{color}/{opacity}
+            newUtilities[`.ring-${color}\\/${opacity}`] = {
+                '--tw-ring-color': `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent)`
+            };
+            
+            // Gradientes: from-{color}/{opacity}, via-{color}/{opacity}, to-{color}/{opacity}
+            newUtilities[`.from-${color}\\/${opacity}`] = {
+                '--tw-gradient-from': `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent) var(--tw-gradient-from-position)`,
+                '--tw-gradient-to': `color-mix(in srgb, var(${cssVar}) 0%, transparent) var(--tw-gradient-to-position)`,
+                '--tw-gradient-stops': 'var(--tw-gradient-from), var(--tw-gradient-to)'
+            };
+            
+            newUtilities[`.via-${color}\\/${opacity}`] = {
+                '--tw-gradient-to': `color-mix(in srgb, var(${cssVar}) 0%, transparent) var(--tw-gradient-to-position)`,
+                '--tw-gradient-stops': `var(--tw-gradient-from), color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent) var(--tw-gradient-via-position), var(--tw-gradient-to)`
+            };
+            
+            newUtilities[`.to-${color}\\/${opacity}`] = {
+                '--tw-gradient-to': `color-mix(in srgb, var(${cssVar}) ${opacityValue}%, transparent) var(--tw-gradient-to-position)`
+            };
+        });
+        
+        // Opacidades para cada shade
+        colorShades.forEach(shade => {
+            let shadeVar;
+            if (shade === '500') {
+                shadeVar = `var(${cssVar})`;
+            } else if (parseInt(shade) < 500) {
+                const whiteMix = shade === '50' ? 95 : shade === '100' ? 90 : shade === '200' ? 75 : shade === '300' ? 50 : 25;
+                shadeVar = `color-mix(in srgb, var(${cssVar}), white ${whiteMix}%)`;
+            } else {
+                const blackMix = shade === '600' ? 10 : shade === '700' ? 25 : shade === '800' ? 40 : shade === '900' ? 55 : 70;
+                shadeVar = `color-mix(in srgb, var(${cssVar}), black ${blackMix}%)`;
+            }
+            
+            opacities.forEach(opacity => {
+                const opacityValue = parseInt(opacity);
+                
+                // bg-{color}-{shade}/{opacity}
+                newUtilities[`.bg-${color}-${shade}\\/${opacity}`] = {
+                    backgroundColor: `color-mix(in srgb, ${shadeVar} ${opacityValue}%, transparent)`
+                };
+                
+                // text-{color}-{shade}/{opacity}
+                newUtilities[`.text-${color}-${shade}\\/${opacity}`] = {
+                    color: `color-mix(in srgb, ${shadeVar} ${opacityValue}%, transparent)`
+                };
+                
+                // border-{color}-{shade}/{opacity}
+                newUtilities[`.border-${color}-${shade}\\/${opacity}`] = {
+                    borderColor: `color-mix(in srgb, ${shadeVar} ${opacityValue}%, transparent)`
+                };
+                
+                // Gradientes con shade: from-{color}-{shade}/{opacity}
+                newUtilities[`.from-${color}-${shade}\\/${opacity}`] = {
+                    '--tw-gradient-from': `color-mix(in srgb, ${shadeVar} ${opacityValue}%, transparent) var(--tw-gradient-from-position)`,
+                    '--tw-gradient-to': `color-mix(in srgb, ${shadeVar} 0%, transparent) var(--tw-gradient-to-position)`,
+                    '--tw-gradient-stops': 'var(--tw-gradient-from), var(--tw-gradient-to)'
+                };
+                
+                newUtilities[`.via-${color}-${shade}\\/${opacity}`] = {
+                    '--tw-gradient-to': `color-mix(in srgb, ${shadeVar} 0%, transparent) var(--tw-gradient-to-position)`,
+                    '--tw-gradient-stops': `var(--tw-gradient-from), color-mix(in srgb, ${shadeVar} ${opacityValue}%, transparent) var(--tw-gradient-via-position), var(--tw-gradient-to)`
+                };
+                
+                newUtilities[`.to-${color}-${shade}\\/${opacity}`] = {
+                    '--tw-gradient-to': `color-mix(in srgb, ${shadeVar} ${opacityValue}%, transparent) var(--tw-gradient-to-position)`
+                };
+            });
+        });
+    });
+    
+    addUtilities(newUtilities, ['responsive', 'hover', 'focus', 'active', 'group-hover']);
+});
 
 export default {
     content: [
@@ -44,32 +217,20 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Colores dinámicos desde la DB usando variables CSS
-                primary: 'var(--bg-primary)',
-                secondary: 'var(--bg-secondary)',
-                accent: 'var(--bg-accent)',
-                'neutral-light': 'var(--bg-neutral-light)',
-                'neutral-dark': 'var(--bg-neutral-dark)',
-                warning: 'var(--bg-warning)',
-                info: 'var(--bg-info)',
-                danger: 'var(--bg-danger)',
-                success: 'var(--bg-success)',
-                'sections-color': 'var(--bg-sections-color)',
+                // Colores dinámicos desde la DB usando variables CSS con escala completa
+                'page-background': generateColorScale('--bg-page-background'),
+                primary: generateColorScale('--bg-primary'),
+                secondary: generateColorScale('--bg-secondary'),
+                accent: generateColorScale('--bg-accent'),
+                'neutral-light': generateColorScale('--bg-neutral-light'),
+                'neutral-dark': generateColorScale('--bg-neutral-dark'),
+                warning: generateColorScale('--bg-warning'),
+                info: generateColorScale('--bg-info'),
+                danger: generateColorScale('--bg-danger'),
+                success: generateColorScale('--bg-success'),
+                'sections-color': generateColorScale('--bg-sections-color'),
             },
-            screens: {
-                '3xl': '1400px', 
-            },
-            maxWidth: {
-                '1500': '1500px',
-            },
-            fontFamily: {
-                "font-general": ["Lato", "serif"], //"Lato" "serif" usado para Sala Fabulosa
-                "font-primary": ["Rajdhani", "sans-serif"], // usado para Stech Peru
-                "font-secondary": ["Open Sans", "serif"],
-                "playfair": ["Playfair", "serif"],
-                'inter': ['Inter', 'sans-serif'],
-            },
-           
+            
             margin: {
                 primary: "5%",
             },
@@ -80,13 +241,7 @@ export default {
                 "right-25": "75% center", // Esto desplaza la imagen 75% a la derecha y la centra verticalmente
                 "right-10": "90% center", // Esto desplaza la imagen 90% a la derecha y la centra verticalmente
             },
-            fontStyle: {
-                'oblique-light': 'oblique 5deg',
-            },
-            backgroundImage: {
-                // Here's your custom gradient
-                'primary-gradient': 'linear-gradient(37deg, #F9A519 -0.01%, #ECC774 37.09%, #ECBB0D 68.49%, #C3922E 99.99%)',
-            },
+
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-in-out',
                 'slide-up': 'slideUp 0.5s ease-out',
@@ -111,6 +266,7 @@ export default {
         require('@tailwindcss/forms')({
             strategy: 'class',
         }),
+        colorOpacityPlugin,
     ],
 
 };

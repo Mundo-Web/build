@@ -24,6 +24,7 @@ const SliderIbergruas = React.lazy(() => import("./Sliders/SliderIbergruas"));
 const SliderProductBannerKatya = React.lazy(() => import("./Sliders/SliderProductBannerKatya"));
 const SliderFirstClass = React.lazy(() => import("./Sliders/SliderFirstClass"));
 const SliderLaPetaca = React.lazy(() => import("./Sliders/SliderLaPetaca"));
+const SliderHostinfinity = React.lazy(() => import("./Sliders/SliderHostinfinity"));
 
 const Slider = ({ which, data, sliders, generals = [] }) => {
     const getSlider = () => {
@@ -61,6 +62,8 @@ const Slider = ({ which, data, sliders, generals = [] }) => {
                 return <SliderFirstClass data={data} sliders={sliders} />;
             case "SliderLaPetaca":
                 return <SliderLaPetaca items={sliders} data={data} generals={generals} />;
+            case "SliderHostinfinity":
+                return <SliderHostinfinity items={sliders} data={data} generals={generals} />;
 
             default:
                 return (

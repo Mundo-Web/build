@@ -209,9 +209,17 @@
     
 </head>
 
-<body class="font-general" style="background-color: var(--bg-page-background);">
+<?php
+    $bodyCustomHtml = $generals->where('correlative', 'body_custom_html')->first()?->description ?? '';
+?>
+<body class="font-paragraph relative" style="background: var(--bg-page-background);">
+    <?php if($bodyCustomHtml): ?>
+        <?php echo $bodyCustomHtml; ?>
+
+    <?php endif; ?>
     <!-- Loading Screen Nativo (aparece ANTES de que React cargue) -->
-    <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(135deg,#ffffff 0%,#f8f9fa 100%);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
+  
+    <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-page-background);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
         <style>
             @keyframes pulse-loader{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.98)}}
             #native-loader img{animation:pulse-loader 2s ease-in-out infinite}

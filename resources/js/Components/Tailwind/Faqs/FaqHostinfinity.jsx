@@ -48,7 +48,7 @@ const FaqHostinfinity = ({ data = {}, faqs = [] }) => {
     return (
         <section 
             id={data?.element_id || null} 
-            className={`relative py-16 lg:py-24 bg-primary overflow-hidden ${data?.class || ''}`}
+            className={`relative py-16 lg:py-24  overflow-hidden ${data?.class || ''}`}
         >
            
 

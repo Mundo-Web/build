@@ -239,6 +239,12 @@ HTML
                 'correlative' => 'hotel_checkout_time',
                 'name' => 'Horario de Check-Out',
                 'description' => '12:00'
+            ],
+            // HTML Personalizado del Body
+            [
+                'correlative' => 'body_custom_html',
+                'name' => 'HTML Personalizado (Body)',
+                'description' => ''
             ]
         ];
 

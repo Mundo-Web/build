@@ -331,21 +331,8 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
     }
 
     return (
-        <section className={`relative bg-primary py-16 lg:py-24 overflow-hidden ${data?.class || ''}`}>
-            {/* Fondo con efectos */}
-            <div className="absolute inset-0">
-                <div 
-                    className="absolute inset-0 opacity-[0.02]"
-                    style={{
-                        backgroundImage: 'radial-gradient(circle, var(--bg-secondary) 1px, transparent 1px)',
-                        backgroundSize: '32px 32px'
-                    }}
-                />
-                {/* Glow decorativo */}
-                <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[150px] pointer-events-none" />
-                <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
-            </div>
-
+        <section className={`relative py-16 lg:py-24 overflow-hidden ${data?.class || ''}`}>
+           
             <div className="relative 2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0">
                 {/* Header con animación */}
                 <motion.div 

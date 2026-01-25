@@ -53,7 +53,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
-    'general': ['address', 'cintillo', 'copyright', 'opening_hours','header_menu_order', 'excel_import_template', 'footer_description', 'footer_company_links'],
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours','header_menu_order', 'excel_import_template', 'footer_description', 'footer_company_links', 'body_custom_html'],
     'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email','job_application_email','admin_job_application_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_openpay_sandbox_mode', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
@@ -415,6 +415,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         ?.description ?? "",
     customBodyScripts:
       generals.find((x) => x.correlative == "custom_body_scripts")
+        ?.description ?? "",
+    bodyCustomHtml:
+      generals.find((x) => x.correlative == "body_custom_html")
         ?.description ?? "",
     atalayaLeadsApiKey:
       generals.find((x) => x.correlative == "atalaya_leads_api_key")
@@ -1304,6 +1307,11 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.customBodyScripts || "",
       },
       {
+        correlative: "body_custom_html",
+        name: "HTML Personalizado (Body)",
+        description: formData.bodyCustomHtml || "",
+      },
+      {
         correlative: "atalaya_leads_api_key",
         name: "Atalaya Leads API Key",
         description: formData.atalayaLeadsApiKey || "",
@@ -1945,6 +1953,27 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   </button>
                   <small className="text-muted d-block mt-2">
                     Estos enlaces aparecerán en la sección del footer
+                  </small>
+                </div>
+              </ConditionalField>
+
+              <ConditionalField correlative="body_custom_html">
+                <div className="mb-2">
+                  <label className="form-label d-block">
+                    <i className="fas fa-code me-2"></i>
+                    HTML Personalizado (Body)
+                  </label>
+                  <textarea
+                    rows="6"
+                    className="form-control font-monospace"
+                    placeholder='<div class="fixed inset-0 bg-gradient-to-br from-secondary-600/10 via-transparent to-secondary-800/10 pointer-events-none z-0"></div>'
+                    value={formData.bodyCustomHtml}
+                    onChange={(e) => handleFieldChange('bodyCustomHtml', e.target.value)}
+                  />
+                  <small className="text-muted d-block mt-1">
+                    HTML que se insertará justo después del &lt;body&gt;. Útil para overlays decorativos, gradientes de fondo, efectos visuales, etc.
+                    <br />
+                    <strong>Tip:</strong> Usa <code>fixed inset-0 pointer-events-none z-0</code> para overlays que no bloqueen la interacción.
                   </small>
                 </div>
               </ConditionalField>
