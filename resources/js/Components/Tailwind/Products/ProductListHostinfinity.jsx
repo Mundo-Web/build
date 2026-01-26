@@ -141,9 +141,11 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                 initial="hidden"
                 animate="visible"
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: isFeatured ? -8 : -4, transition: { duration: 0.3 } }}
                 className={`
                     relative h-full rounded-3xl overflow-hidden
+                    transform-gpu will-change-transform
+                    transition-transform duration-200 ease-out
+                    hover:-translate-y-1
                     ${isFeatured 
                         ? 'z-20' 
                         : 'z-10'
@@ -154,10 +156,10 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                 {/* Card Container */}
                 <div className={`
                     relative h-full rounded-3xl overflow-hidden
-                    transition-all duration-500
+                    transition-all duration-200 ease-out
                     ${isFeatured 
                         ? 'bg-gradient-to-br from-accent via-accent to-primary border-2 border-warning/50' 
-                        : 'bg-gradient-to-br from-accent/90 via-accent to-secondary/90 border border-white/10 hover:border-secondary/50'
+                        : 'bg-primary border border-white/10 hover:border-secondary/30'
                     }
                 `}>
                     {/* Patrón de fondo sutil */}
@@ -299,14 +301,13 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                         </div>
 
                         {/* Botón de acción */}
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                        <button
                             onClick={handleBuyClick}
                             className={`
                                 relative w-full py-4 px-6 rounded-full font-bold text-lg
                                 flex items-center justify-center gap-3
-                                transition-all duration-300 overflow-hidden group
+                                transition-all duration-200 ease-out overflow-hidden group
+                                transform-gpu hover:scale-[1.02] active:scale-[0.98]
                                 ${isFeatured 
                                     ? 'bg-gradient-to-r from-warning via-warning to-warning text-primary shadow-lg shadow-warning/40 hover:shadow-warning/60' 
                                     : 'bg-gradient-to-r from-secondary via-secondary to-secondary text-white shadow-lg shadow-secondary/30 hover:shadow-secondary/50'
@@ -316,10 +317,10 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                             {/* Efecto de brillo en hover */}
                             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                             <span className="relative">Lo quiero</span>
-                            <svg className="w-5 h-5 relative transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5 relative transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </motion.button>
+                        </button>
                     </div>
                 </div>
             </motion.div>
@@ -373,18 +374,17 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                 <motion.button
                                     key={category.id || category.slug}
                                     variants={itemVariants}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
                                     onClick={() => {
                                         setSelectedCategory(category.slug);
                                         setSelectedPackage('all');
                                     }}
                                     className={`
                                         group relative overflow-hidden rounded-full p-8
-                                        transition-all duration-500 text-left
+                                        transition-all duration-200 ease-out text-left
+                                        transform-gpu hover:scale-[1.01]
                                         ${isSelected
                                             ? 'bg-gradient-to-br from-secondary via-secondary to-secondary shadow-2xl shadow-secondary/40'
-                                            : 'bg-accent/80 backdrop-blur-xl border border-white/10 hover:border-secondary/50'
+                                            : 'bg-accent/80 backdrop-blur-xl border border-white/10 hover:border-secondary/30'
                                         }
                                     `}
                                 >

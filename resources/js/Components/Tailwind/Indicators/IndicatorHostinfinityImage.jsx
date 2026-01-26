@@ -158,11 +158,10 @@ const IndicatorHostinfinityImage = ({ data, items = [] }) => {
                                                 relative h-full min-h-[300px] p-8 
                                                 rounded-3xl overflow-hidden
                                                 backdrop-blur-xl
-                                                border border-white/10
-                                                transform-gpu will-change-[transform,box-shadow]
-                                                transition-[transform,border-color] duration-75 ease-out
-                                                [transition:transform_75ms,border-color_75ms,box-shadow_0ms]
-                                                hover:-translate-y-1 hover:border-secondary/40
+                                                border border-transparent
+                                                transform-gpu will-change-transform
+                                                transition-all duration-200 ease-out
+                                                hover:-translate-y-1
                                                 shadow-2xl
                                                 shadow-secondary/10
                                                
@@ -187,9 +186,7 @@ const IndicatorHostinfinityImage = ({ data, items = [] }) => {
                                                         {/* Glow del icono */}
                                                         <div 
                                                             className="absolute inset-0 rounded-full blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-100"
-                                                            style={{
-                                                                backgroundColor: item.bg_color === 'transparent' ? 'var(--bg-secondary)' : (item.bg_color || 'var(--bg-secondary)')
-                                                            }}
+                                                          
                                                         />
                                                         <div 
                                                             className={`
@@ -202,7 +199,7 @@ const IndicatorHostinfinityImage = ({ data, items = [] }) => {
                                                                 ${data?.class_indicators_icon || ''}
                                                             `}
                                                             style={{
-                                                                backgroundColor: item.bg_color === 'transparent' ? 'var(--bg-secondary)' : (item.bg_color || 'var(--bg-secondary)')
+                                                                background: item.bg_color === 'transparent' ? 'linear-gradient(90deg, var(--bg-secondary), var(--bg-accent))' : (item.bg_color || 'linear-gradient(90deg, var(--bg-secondary), var(--bg-accent))' )
                                                             }}
                                                         >
                                                             <img
