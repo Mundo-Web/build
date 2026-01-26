@@ -40,7 +40,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
         }
     };
 
-    // Agrupar items por categoría
+    // Agrupar items por categoría y ordenar por order_index
     const categoriesFromItems = useMemo(() => {
         if (!items || items.length === 0) return [];
         
@@ -54,40 +54,60 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                         name: item.category.name,
                         slug: item.category.slug || catId,
                         description: item.category.description || '',
-                        image: item.category.image || null
+                        image: item.category.image || null,
+                        order_index: item.category.order_index ?? 999
                     };
                 }
             }
         });
-        return Object.values(cats);
+        // Ordenar categorías por order_index
+        return Object.values(cats).sort((a, b) => (a.order_index ?? 999) - (b.order_index ?? 999));
     }, [items]);
 
-    const availableCategories = categories.length > 0 ? categories : categoriesFromItems;
+    // Ordenar categorías por order_index
+    const availableCategories = useMemo(() => {
+        const cats = categories.length > 0 ? categories : categoriesFromItems;
+        return [...cats].sort((a, b) => (a.order_index ?? 999) - (b.order_index ?? 999));
+    }, [categories, categoriesFromItems]);
 
+    // Filtrar y ordenar items por order_index
     const filteredItems = useMemo(() => {
-        if (selectedCategory === 'all') return items;
-        return items.filter(item => {
-            const catSlug = item.category?.slug || item.category_id;
-            return catSlug === selectedCategory;
-        });
+        let result = selectedCategory === 'all' 
+            ? [...items] 
+            : items.filter(item => {
+                const catSlug = item.category?.slug || item.category_id;
+                return catSlug === selectedCategory;
+            });
+        // Ordenar items por order_index
+        return result.sort((a, b) => (a.order_index ?? 999) - (b.order_index ?? 999));
     }, [items, selectedCategory]);
 
+    // Agrupar por subcategoría/brand y ordenar por order_index
     const packageGroups = useMemo(() => {
         const groups = {};
         filteredItems.forEach(item => {
             const groupKey = item.subcategory?.slug || item.brand?.slug || 'default';
             const groupName = item.subcategory?.name || item.brand?.name || 'General';
+            const groupOrderIndex = item.subcategory?.order_index ?? item.brand?.order_index ?? 999;
             
             if (!groups[groupKey]) {
                 groups[groupKey] = {
                     slug: groupKey,
                     name: groupName,
+                    order_index: groupOrderIndex,
                     items: []
                 };
             }
             groups[groupKey].items.push(item);
         });
-        return Object.values(groups);
+        
+        // Ordenar grupos por order_index y los items dentro de cada grupo
+        return Object.values(groups)
+            .sort((a, b) => (a.order_index ?? 999) - (b.order_index ?? 999))
+            .map(group => ({
+                ...group,
+                items: group.items.sort((a, b) => (a.order_index ?? 999) - (b.order_index ?? 999))
+            }));
     }, [filteredItems]);
 
     React.useEffect(() => {
@@ -140,28 +160,29 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                 variants={scaleVariants}
                 initial="hidden"
                 animate="visible"
-                transition={{ delay: index * 0.1 }}
-                className={`
-                    relative h-full rounded-3xl overflow-hidden
-                    transform-gpu will-change-transform
-                    transition-transform duration-200 ease-out
-                    hover:-translate-y-1
-                    ${isFeatured 
-                        ? 'z-20' 
-                        : 'z-10'
-                    }
-                `}
+                transition={{ delay: index * 0.08 }}
+                className="group relative h-full"
             >
-               
                 {/* Card Container */}
                 <div className={`
                     relative h-full rounded-3xl overflow-hidden
-                    transition-all duration-200 ease-out
+                    backdrop-blur-xl
+                    transform-gpu will-change-transform
+                    transition-all duration-100 ease-out
+                    hover:-translate-y-1
+                    shadow-2xl shadow-secondary/10
                     ${isFeatured 
                         ? 'bg-gradient-to-br from-accent via-accent to-primary border-2 border-warning/50' 
-                        : 'bg-primary border border-white/10 hover:border-secondary/30'
+                        : 'bg-primary border border-transparent'
                     }
                 `}>
+                    {/* Efecto de brillo en hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+                        <div className={`absolute inset-0 ${isFeatured ? 'bg-gradient-to-br from-warning/10 via-transparent to-accent/5' : 'bg-gradient-to-br from-secondary/10 via-transparent to-accent/5'}`} />
+                    </div>
+
+                    {/* Línea decorativa superior con gradiente */}
+                    <div className={`absolute top-0 left-8 right-8 h-[2px] bg-gradient-to-r from-transparent ${isFeatured ? 'via-warning/50' : 'via-secondary/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-100`} />
                     {/* Patrón de fondo sutil */}
                     <div 
                         className="absolute inset-0 opacity-5"
@@ -306,18 +327,20 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                             className={`
                                 relative w-full py-4 px-6 rounded-full font-bold text-lg
                                 flex items-center justify-center gap-3
-                                transition-all duration-200 ease-out overflow-hidden group
+                                transition-all duration-100 ease-out overflow-hidden group/btn
                                 transform-gpu hover:scale-[1.02] active:scale-[0.98]
                                 ${isFeatured 
-                                    ? 'bg-gradient-to-r from-warning via-warning to-warning text-primary shadow-lg shadow-warning/40 hover:shadow-warning/60' 
-                                    : 'bg-gradient-to-r from-secondary via-secondary to-secondary text-white shadow-lg shadow-secondary/30 hover:shadow-secondary/50'
+                                    ? 'bg-gradient-to-r from-warning via-warning to-warning text-primary shadow-lg shadow-warning/30' 
+                                    : 'bg-gradient-to-r from-secondary via-secondary to-secondary text-white shadow-lg shadow-secondary/20'
                                 }
                             `}
                         >
+                            {/* Glow del botón en hover */}
+                            <div className={`absolute inset-0 rounded-full blur-lg opacity-0 group-hover/btn:opacity-40 transition-opacity duration-100 ${isFeatured ? 'bg-warning' : 'bg-secondary'}`} />
                             {/* Efecto de brillo en hover */}
-                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500" />
                             <span className="relative">Lo quiero</span>
-                            <svg className="w-5 h-5 relative transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5 relative transition-transform duration-100 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
                         </button>
@@ -380,28 +403,39 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                     }}
                                     className={`
                                         group relative overflow-hidden rounded-full p-8
-                                        transition-all duration-200 ease-out text-left
-                                        transform-gpu hover:scale-[1.01]
+                                        transition-all duration-100 ease-out text-left
+                                        transform-gpu hover:-translate-y-1
+                                        shadow-2xl shadow-secondary/10
                                         ${isSelected
-                                            ? 'bg-gradient-to-br from-secondary via-secondary to-secondary shadow-2xl shadow-secondary/40'
-                                            : 'bg-accent/80 backdrop-blur-xl border border-white/10 hover:border-secondary/30'
+                                            ? 'bg-gradient-to-br from-secondary via-secondary to-secondary'
+                                            : 'bg-accent/80 backdrop-blur-xl border border-transparent'
                                         }
                                     `}
                                 >
+                                    {/* Efecto de brillo en hover */}
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-accent/5" />
+                                    </div>
+
+                                    {/* Línea decorativa superior */}
+                                    <div className="absolute top-0 left-8 right-8 h-[2px] bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
+
                                     {/* Icono de fondo */}
-                                    <div className={`absolute top-4 right-4 w-24 h-24 transition-all duration-500 ${
-                                        isSelected ? 'opacity-30 scale-110' : 'opacity-10 group-hover:opacity-20 group-hover:scale-105'
+                                    <div className={`absolute top-4 right-4 w-24 h-24 transition-all duration-100 ease-out ${
+                                        isSelected ? 'opacity-30 scale-110' : 'opacity-10 group-hover:opacity-20 group-hover:scale-[1.03]'
                                     }`}>
                                         {getCategoryIcon(category.slug)}
                                     </div>
 
                                     {/* Contenido */}
                                     <div className="relative z-10 flex flex-col items-start">
-                                        <div className={`mb-4 w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500 ${
+                                        <div className={`relative mb-4 w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-100 ease-out ${
                                             isSelected
                                                 ? 'bg-white/20 shadow-lg'
-                                                : 'bg-secondary group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-secondary/30'
+                                                : 'bg-secondary group-hover:scale-[1.03] group-hover:shadow-lg group-hover:shadow-secondary/30'
                                         }`}>
+                                            {/* Glow del icono */}
+                                            <div className="absolute inset-0 rounded-xl blur-lg bg-secondary opacity-0 group-hover:opacity-40 transition-opacity duration-100" />
                                             <div className="text-white">
                                                 {getCategoryIcon(category.slug)}
                                             </div>
@@ -456,10 +490,10 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                     key={pkg.slug}
                                     onClick={() => setSelectedPackage(pkg.slug)}
                                     className={`
-                                        relative px-8 py-3 rounded-full font-semibold transition-all duration-300
+                                        relative px-8 py-3 rounded-full font-semibold transition-all duration-100 ease-out
                                         ${selectedPackage === pkg.slug
-                                            ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
-                                            : 'text-white/60 hover:text-white hover:bg-white/5'
+                                            ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
+                                            : 'text-white/60 hover:text-white hover:bg-white/10'
                                         }
                                     `}
                                 >
@@ -516,7 +550,7 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                                 className=" !px-4"
                             >
                                 {currentPackage.items.map((item, index) => (
-                                    <SwiperSlide key={item.id} className="h-auto !flex">
+                                    <SwiperSlide key={item.id} className="h-auto !flex cursor-pointer">
                                         <div className="w-full py-6">
                                             <PlanCard item={item} index={index} />
                                         </div>
@@ -527,12 +561,12 @@ const ProductListHostinfinity = ({ items = [], data = {}, categories = [], onCli
                             {/* Botones de navegación custom */}
                             {currentPackage.items.length > 3 && (
                                 <>
-                                    <button className="swiper-btn-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 lg:-translate-x-6 z-20 w-12 h-12 rounded-full bg-accent/90 backdrop-blur border border-white/10 text-white hover:bg-secondary hover:border-secondary transition-all duration-300 flex items-center justify-center shadow-xl">
+                                    <button className="swiper-btn-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 lg:-translate-x-6 z-20 w-12 h-12 rounded-full bg-accent/90 backdrop-blur border border-transparent text-white hover:bg-secondary hover:scale-[1.03] transition-all duration-100 ease-out flex items-center justify-center shadow-lg">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                         </svg>
                                     </button>
-                                    <button className="swiper-btn-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 lg:translate-x-6 z-20 w-12 h-12 rounded-full bg-accent/90 backdrop-blur border border-white/10 text-white hover:bg-secondary hover:border-secondary transition-all duration-300 flex items-center justify-center shadow-xl">
+                                    <button className="swiper-btn-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 lg:translate-x-6 z-20 w-12 h-12 rounded-full bg-accent/90 backdrop-blur border border-transparent text-white hover:bg-secondary hover:scale-[1.03] transition-all duration-100 ease-out flex items-center justify-center shadow-lg">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                         </svg>

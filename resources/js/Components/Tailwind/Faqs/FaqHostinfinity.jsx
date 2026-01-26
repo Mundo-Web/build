@@ -94,36 +94,51 @@ const FaqHostinfinity = ({ data = {}, faqs = [] }) => {
                             className={`
                                 group relative rounded-2xl overflow-hidden
                                 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent
-                                backdrop-blur-xl border
-                                transition-all duration-200
+                                backdrop-blur-xl border border-transparent
+                                transform-gpu will-change-transform
+                                transition-all duration-100 ease-out
+                                shadow-lg shadow-secondary/5
                                 ${openIndex === index 
-                                    ? 'border-white/10 shadow-xl' 
-                                    : 'border-white/10'
+                                    ? 'shadow-xl shadow-secondary/10' 
+                                    : 'hover:-translate-y-0.5'
                                 }
                             `}
                         >
+                            {/* Efecto de brillo en hover */}
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-100 pointer-events-none">
+                                <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 via-transparent to-accent/5" />
+                            </div>
+
+                            {/* Línea decorativa superior */}
+                            <div className={`absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-secondary/50 to-transparent transition-opacity duration-100 ${openIndex === index ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'}`} />
+
                             <button
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full px-6 py-5 flex items-center justify-between text-left"
+                                className="relative w-full px-6 py-5 flex items-center justify-between text-left"
                             >
                                 <div className="flex items-start space-x-4 flex-1">
-                                    <div
-                                        className={`
-                                            flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
-                                            transition-all duration-200
-                                            ${openIndex === index
-                                                ? 'bg-secondary shadow-lg shadow-secondary/50 scale-110'
-                                                : 'bg-white/10 group-hover:bg-white/20 group-hover:scale-105'
-                                            }
-                                        `}
-                                    >
-                                        <span className="text-white font-bold text-sm">
-                                            {index + 1}
-                                        </span>
+                                    <div className="relative">
+                                        {/* Glow del número */}
+                                        <div className={`absolute inset-0 rounded-xl blur-md bg-secondary transition-opacity duration-100 ${openIndex === index ? 'opacity-40' : 'opacity-0 group-hover:opacity-20'}`} />
+                                        <div
+                                            className={`
+                                                relative flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
+                                                transform-gpu
+                                                transition-all duration-100 ease-out
+                                                ${openIndex === index
+                                                    ? 'bg-secondary shadow-lg shadow-secondary/30 scale-105'
+                                                    : 'bg-white/10 group-hover:bg-white/15 group-hover:scale-[1.03]'
+                                                }
+                                            `}
+                                        >
+                                            <span className="text-white font-bold text-sm">
+                                                {index + 1}
+                                            </span>
+                                        </div>
                                     </div>
                                     <h3
                                         className={`
-                                            text-lg font-semibold transition-colors duration-200 pt-1.5
+                                            text-lg font-semibold transition-colors duration-100 pt-1.5
                                             ${openIndex === index ? 'text-white' : 'text-white/80 group-hover:text-white'}
                                         `}
                                     >
@@ -132,7 +147,7 @@ const FaqHostinfinity = ({ data = {}, faqs = [] }) => {
                                 </div>
                                 <svg 
                                     className={`
-                                        flex-shrink-0 w-5 h-5 ml-4 transition-all duration-200
+                                        flex-shrink-0 w-5 h-5 ml-4 transition-all duration-100 ease-out
                                         ${openIndex === index ? 'rotate-180 text-secondary' : 'text-white/50 group-hover:text-white/70'}
                                     `}
                                     fill="none" 
@@ -143,22 +158,31 @@ const FaqHostinfinity = ({ data = {}, faqs = [] }) => {
                                 </svg>
                             </button>
 
-                            <AnimatePresence>
+                            <AnimatePresence initial={false}>
                                 {openIndex === index && (
                                     <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                                        initial={{ height: 0 }}
+                                        animate={{ height: 'auto' }}
+                                        exit={{ height: 0 }}
+                                        transition={{ 
+                                            duration: 0.15,
+                                            ease: 'easeOut'
+                                        }}
                                         className="overflow-hidden"
                                     >
-                                        <div className="px-6 pb-6 pl-[4.5rem]">
+                                        <motion.div 
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.1 }}
+                                            className="px-6 pb-6 pl-[4.5rem]"
+                                        >
                                             <div className="pt-2 border-t border-secondary/20">
                                                 <p className="text-white/70 leading-relaxed mt-3">
                                                     {faq.answer}
                                                 </p>
                                             </div>
-                                        </div>
+                                        </motion.div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -173,16 +197,16 @@ const FaqHostinfinity = ({ data = {}, faqs = [] }) => {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        <div className="inline-block p-6 rounded-2xl bg-gradient-to-r from-secondary/10 to-warning/10 border border-secondary/30">
+                        <div className="inline-block p-6 rounded-2xl bg-gradient-to-r from-secondary/10 to-warning/10 border border-transparent shadow-lg shadow-secondary/5">
                             <p className="text-white/70 mb-4">¿Tienes más preguntas?</p>
                             <a
                                 href={data.contact_link || '/contacto'}
-                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-secondary to-warning text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-secondary/50 transition-all duration-200 hover:scale-105"
+                                className="group/btn inline-flex items-center px-6 py-3 bg-gradient-to-r from-secondary to-warning text-white font-semibold rounded-xl shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/30 transition-all duration-100 ease-out transform-gpu hover:scale-[1.02]"
                             >
                                 Contacta con nuestro equipo
-                                <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-4 h-4 ml-2 transition-transform duration-100 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </a>

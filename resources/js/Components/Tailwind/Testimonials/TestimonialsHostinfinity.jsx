@@ -101,11 +101,10 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
             id={data?.element_id || null} 
             className={`relative py-16 lg:py-24 overflow-hidden ${data?.class || ''}`}
         >
-                 <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-800/30 to-slate-900/50" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-transparent to-transparent" />
-
-          <div className="absolute top-20 left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
+           
+           {data?.insert_html_content && (
+                <div dangerouslySetInnerHTML={{ __html: data.insert_html_content }} />
+            )}
 
             <div className="relative 2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0">
                 {/* Header */}
@@ -183,25 +182,26 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
                                         whileInView="visible"
                                         viewport={{ once: true, margin: "-80px" }}
                                         variants={cardVariants}
-                                        whileHover={{ 
-                                            y: -6,
-                                            transition: { duration: 0.2, ease: "easeOut" }
-                                        }}
                                     >
                                         <div className={`
                                             relative h-full min-h-[320px] p-6 
                                             rounded-2xl overflow-hidden
                                             backdrop-blur-xl
-                                            border border-white/10
-                                            transition-all duration-200 ease-out
-                                           
-                                            hover:shadow-[0_8px_40px)]
-                                            hover:shadow-secondary
+                                            border border-transparent
+                                            transform-gpu will-change-transform
+                                            transition-all duration-100 ease-out
+                                            hover:-translate-y-1
+                                            shadow-2xl shadow-secondary/10
                                             bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent
                                             flex flex-col
                                         `}>
                                             {/* Efecto de brillo en hover */}
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-warning/50 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+                                                <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-accent/5" />
+                                            </div>
+
+                                            {/* Línea decorativa superior con gradiente */}
+                                            <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
 
                                             {/* Quote icon y rating */}
                                             <div className="flex items-start justify-between mb-4 relative z-10">
@@ -225,7 +225,7 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
                                                         <img
                                                             src={imageUrl}
                                                             alt={testimonial.name}
-                                                            className="w-14 h-14 rounded-full object-cover ring-2 ring-secondary/30 group-hover:ring-secondary/60 transition-all duration-200"
+                                                            className="w-14 h-14 rounded-full object-cover ring-2 ring-secondary/30 group-hover:ring-secondary/60 transition-all duration-100"
                                                            onError={(e) =>
                                     (e.target.src =
                                         "/api/cover/thumbnail/null")
@@ -233,7 +233,7 @@ const TestimonialsHostinfinity = ({ items = [], data = {} }) => {
                                                         />
                                                     ) : null}
                                                     <div 
-                                                        className={`w-14 h-14 rounded-full bg-secondary ring-2 ring-secondary/30 group-hover:ring-secondary/60 transition-all duration-200 items-center justify-center text-white font-bold text-lg ${testimonial.image ? 'hidden' : 'flex'}`}
+                                                        className={`w-14 h-14 rounded-full bg-secondary ring-2 ring-secondary/30 group-hover:ring-secondary/60 transition-all duration-100 items-center justify-center text-white font-bold text-lg ${testimonial.image ? 'hidden' : 'flex'}`}
                                                     >
                                                         {getInitials(testimonial.name)}
                                                     </div>

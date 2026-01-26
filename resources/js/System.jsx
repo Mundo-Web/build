@@ -202,7 +202,7 @@ const System = ({
         if (visible == 0) return <></>;
 
         // Incluir element_id en data para que esté disponible en todos los componentes
-        const dataWithElementId = { ...data, element_id };
+        const dataWithElementId = { ...data, element_id};
         
         // Configuración de animación desde data (configurable desde admin)
         const animationConfig = {
