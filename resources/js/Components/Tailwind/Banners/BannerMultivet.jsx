@@ -86,7 +86,7 @@ const BannerMultivet = ({ data }) => {
                     </motion.h1>
 
                     <motion.p 
-                        className={`font-normal text-sm sm:text-base lg:text-lg xl:text-lg 2xl:text-xl leading-relaxed max-w-lg xl:max-w-xl 2xl:max-w-2xl  text-neutral-dark  text-opacity-70  ${data?.class_description || ''}`}
+                        className={`font-normal text-base lg:text-lg xl:text-lg 2xl:text-xl leading-relaxed max-w-lg xl:max-w-xl 2xl:max-w-2xl  text-neutral-dark  text-opacity-70  ${data?.class_description || ''}`}
                         variants={descriptionVariants}
                     >
                         {data?.description}

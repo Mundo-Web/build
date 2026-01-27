@@ -3,11 +3,16 @@ import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
+import TextWithHighlight from '../../../Utils/TextWithHighlight';
 
 const StrengthSimple = ({ items, data }) => {
     if (!items || items.length === 0) {
         return null;
     }
+
+    // Estado para swiper
+    const [activeIndex, setActiveIndex] = React.useState(0);
+    const [swiperInstance, setSwiperInstance] = React.useState(null);
 
     // Animation variants
     const containerVariants = {
@@ -78,75 +83,151 @@ const StrengthSimple = ({ items, data }) => {
         rows.push(remainingItems.slice(i, i + 3));
     }
 
-    const renderCard = (item, index) => (
-        <motion.div
-            key={item.id || index}
-            className="group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-shadow duration-500 border border-gray-200 overflow-hidden"
-            variants={cardVariants}
-            whileHover={{ 
-                y: -12,
-                scale: 1.02,
-                transition: { duration: 0.3, ease: "easeOut" }
-            }}
-        >
-            <motion.div 
-                className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 opacity-50"
-                whileHover={{ scale: 1.5 }}
-                transition={{ duration: 0.5 }}
-            />
-
-            <div className="relative">
-                {item.image && (
-                    <motion.div 
-                        className="p-5 max-w-max rounded-full flex items-center justify-center mb-6 shadow-lg overflow-hidden"
-                        style={{
-                            backgroundColor: item.bg_color==='transparent' ? 'var(--bg-primary)' : (item.bg_color || 'var(--bg-primary)')
-                        }}
-                        variants={iconVariants}
-                        whileHover={{ 
-                            scale: 1.1, 
-                            rotate: 12,
-                            transition: { duration: 0.3 }
-                        }}
-                    >
-                        <img 
-                            src={`/storage/images/strength/${item.image}`}
-                            alt={item.name}
-                            className="w-12 h-12 object-contain"
-                            onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
-                        />
-                    </motion.div>
-                )}
-
-                <motion.h3 
-                    className="text-5xl font-light text-primary mb-4 group-hover:text-primary/80 transition-colors"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    viewport={{ once: true }}
+    const renderCard = (item, index) => {
+        // Estado global de flip
+        if (!StrengthSimple.flippedState) {
+            StrengthSimple.flippedState = Array(items.length).fill(false);
+        }
+        const [ignored, forceUpdate] = React.useReducer(x => x + 1, 0);
+        const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+        const handleClick = idx => {
+            StrengthSimple.flippedState[idx] = !StrengthSimple.flippedState[idx];
+            forceUpdate();
+        };
+        const flipped = StrengthSimple.flippedState[index];
+        
+        return (
+            <motion.div
+                key={item.id || index}
+                variants={cardVariants}
+            >
+                <div
+                    className="h-full flex items-stretch cursor-pointer"
+                    onClick={isTouchDevice ? () => handleClick(index) : undefined}
+                    onKeyDown={isTouchDevice ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(index); } : undefined}
+                    tabIndex={isTouchDevice ? 0 : -1}
+                    style={{ outline: 'none' }}
                 >
-                    {item.name}
-                </motion.h3>
-
-                <motion.p 
-                    className="text-neutral-light leading-relaxed"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    viewport={{ once: true }}
-                >
-                    {item.description}
-                </motion.p>
-            </div>
-
-            <motion.div 
-                className="absolute bottom-0 left-0 right-0 h-1 bg-primary"
-                initial={{ scaleX: 0, originX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                transition={{ duration: 0.5 }}
-            />
-        </motion.div>
-    );
+                    <div className="group relative h-full min-h-[320px] w-full flex flex-col rounded-2xl" style={{ perspective: 1200 }}>
+                        {isTouchDevice ? (
+                            <motion.div
+                                className="absolute inset-0 w-full h-full"
+                                style={{ transformStyle: 'preserve-3d' }}
+                                animate={{ rotateY: flipped ? 180 : 0 }}
+                                transition={{ 
+                                    type: 'spring', 
+                                    stiffness: 60, 
+                                    damping: 12,
+                                    mass: 1.2
+                                }}
+                            >
+                                {/* Cara frontal */}
+                                <div
+                                    className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
+                                    style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        transform: 'rotateY(0deg)',
+                                        zIndex: 2
+                                    }}
+                                >
+                                    {item.image && (
+                                        <div className="relative flex-shrink-0">
+                                            <div
+                                                className="relative backdrop-blur-sm p-5 rounded-full transition-all duration-700"
+                                                style={{
+                                                    backgroundColor: item.bg_color === 'transparent' ? 'var(--bg-primary)' : (item.bg_color || 'var(--bg-primary)')
+                                                }}
+                                            >
+                                                <img
+                                                    src={`/storage/images/strength/${item.image}`}
+                                                    alt={item.name}
+                                                    className="w-10 h-10 object-contain opacity-100 transition-all duration-700"
+                                                    onError={e => e.target.src = '/api/cover/thumbnail/null'}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
+                                        {item.name}
+                                    </div>
+                                </div>
+                                {/* Cara reverso */}
+                                <div
+                                    className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
+                                    style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        transform: 'rotateY(180deg)',
+                                        zIndex: 3
+                                    }}
+                                >
+                                    <div className="flex flex-col items-center justify-center h-full w-full">
+                                        <div className="text-lg md:text-xl lg:text-2xl font-light text-neutral-dark leading-relaxed whitespace-pre-line">
+                                            {item.description}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <div
+                                className="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:[transform:rotateY(180deg)]"
+                                style={{ transformStyle: 'preserve-3d' }}
+                            >
+                                {/* Cara frontal */}
+                                <div
+                                    className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-xl border border-neutral-200/50 hover:border-primary/30 transition-all duration-300 rounded-2xl"
+                                    style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        transform: 'rotateY(0deg)',
+                                        zIndex: 2
+                                    }}
+                                >
+                                    {item.image && (
+                                        <div className="relative flex-shrink-0">
+                                            <div
+                                                className="relative backdrop-blur-sm p-5 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+                                                style={{
+                                                    backgroundColor: item.bg_color === 'transparent' ? 'var(--bg-primary)' : (item.bg_color || 'var(--bg-primary)')
+                                                }}
+                                            >
+                                                <img
+                                                    src={`/storage/images/strength/${item.image}`}
+                                                    alt={item.name}
+                                                    className="w-10 h-10 object-contain opacity-100 transition-all duration-300"
+                                                    onError={e => e.target.src = '/api/cover/thumbnail/null'}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="text-5xl font-light text-primary group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                                        {item.name}
+                                    </div>
+                                </div>
+                                {/* Cara reverso */}
+                                <div
+                                    className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
+                                    style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        transform: 'rotateY(180deg)',
+                                        zIndex: 3
+                                    }}
+                                >
+                                    <div className="flex flex-col items-center justify-center h-full w-full">
+                                        <div className="text-lg md:text-xl lg:text-2xl font-light text-neutral-dark leading-relaxed whitespace-pre-line">
+                                            {item.description}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </motion.div>
+        );
+    };
 
     return (
         <section id={data?.element_id || null} className="py-20 sm:py-24 bg-sections-color relative overflow-hidden">
@@ -188,7 +269,7 @@ const StrengthSimple = ({ items, data }) => {
                 </motion.div>
 
                 {/* Mobile: Swiper carousel */}
-                <div className="block md:hidden overflow-hidden">
+                <div className="block md:hidden overflow-hidden relative">
                     <Swiper
                         modules={[Autoplay]}
                         spaceBetween={16}
@@ -200,6 +281,8 @@ const StrengthSimple = ({ items, data }) => {
                             pauseOnMouseEnter: true
                         }}
                         loop={items.length > 1}
+                        onSwiper={setSwiperInstance}
+                        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
                         className="!overflow-visible"
                     >
                         {items.map((item, index) => (
@@ -208,6 +291,28 @@ const StrengthSimple = ({ items, data }) => {
                             </SwiperSlide>
                         ))}
                     </Swiper>
+
+                    {/* Indicadores custom */}
+                    {items.length > 1 && (
+                        <div className="flex justify-center mt-6 space-x-3">
+                            {items.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => {
+                                        if (swiperInstance && typeof swiperInstance.slideToLoop === 'function') {
+                                            swiperInstance.slideToLoop(index);
+                                        }
+                                    }}
+                                    aria-label={`Ir al slide ${index + 1}`}
+                                    className={`transition-all duration-300 rounded-full ${
+                                        index === activeIndex
+                                            ? 'w-12 h-3 bg-primary'
+                                            : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Desktop: Grid layout */}

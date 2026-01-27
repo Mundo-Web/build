@@ -290,7 +290,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
             
             <div className="flex items-center justify-center gap-4 mb-6">
           
-              <span className="text-sm font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
+              <span className="text-lg font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
             
             </div>
             )  }
@@ -313,77 +313,42 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
             </p>
           </div>
 
-          {/* Grid de productos - Cards horizontales estilo catálogo maderero */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Contenedor flex - Cards se acomodan según su tamaño natural */}
+          <div className="flex flex-wrap gap-6 justify-center">
             {groupedItems.map((item, index) => {
               const imageUrl = item.image 
                 ? `/storage/images/item/${item.image}`
                 : '/api/cover/thumbnail/null';
+              const excerpt = item.description ? item.description.replace(/<[^>]+>/g, '') : '';
 
               return (
-                <div
+                <motion.div
                   key={item.id || index}
-                  onClick={() => handleProductClick(item)}
-                  className="group cursor-pointer"
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.45, delay: index * 0.04, ease: [0.25,0.46,0.45,0.94] }}
+                  className="cursor-pointer group"
                 >
-                  {/* Card horizontal - Diseño limpio y elegante */}
-                  <div className="relative flex flex-col sm:flex-row bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl border border-neutral-200/60 hover:border-primary/40 transition-all duration-500 h-auto md:h-[280px]">
-                    
-                    {/* Sección de imagen - Izquierda */}
-                    <div className="relative aspect-square h-full w-full md:w-2/5   overflow-hidden ">
-                     
-                      
-                      <img
-                        src={imageUrl}
-                        alt={item.name}
-                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                        onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
-                      />
-                      
-                    
-                   
-                    </div>
-
-                    {/* Sección de contenido - Derecha */}
-                    <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between relative">
-                      
-                      <div className="pt-2 flex-1 flex flex-col">
-                        {/* Título */}
-                        <h3 className="
-                        text-5xl font-light text-primary  transition-transform duration-700 flex-shrink-0
-                        
-                        
-                        ">
-                          {item.name}
-                        </h3>
-
-                        {/* Descripción */}
-                        {item.description && (
-                          <div 
-                            className="text-neutral-light text-sm sm:text-base leading-relaxed line-clamp-4 flex-1"
-                            dangerouslySetInnerHTML={{ __html: item.description }}
-                          />
-                        )}
-                      </div>
-
-                      {/* Botón de acción */}
-                      <div className="pt-5">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProductClick(item);
-                          }}
-                          className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/25 group/btn"
-                        >
-                          <span>Ver detalles</span>
-                          <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  {/* Texto GIGANTE con imagen como fondo (background-clip) */}
+                  <h3 
+                    onClick={() => handleProductClick(item)}
+                    className="font-bold text-[5rem] lg:text-[14rem] leading-none tracking-normal uppercase cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+                    style={{
+                      backgroundImage: `url(${imageUrl})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      color: 'transparent',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))',
+                      wordSpacing: '0.3em'
+                    }}
+                  >
+                    {item.name}
+                  </h3>
+                </motion.div>
               );
             })}
           </div>

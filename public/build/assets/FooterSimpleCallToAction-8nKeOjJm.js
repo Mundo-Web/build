@@ -1,1 +1,0 @@
-import{q as o}from"./vendor-react-CWR92fp6.js";import"./CartKuchara-Dv4IzV1I.js";import{S as t}from"./SubscriptionsRest-CvhHSXpJ.js";import"./vendor-swiper-T7yreVnW.js";import"./BasicRest-B3Vi_F9E.js";import"./GoogleSignInButton-D2m9IONr.js";import"./BooleanLimit-q2Ad9fGY.js";o.setAppElement("#app"),new t;
