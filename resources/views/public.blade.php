@@ -250,19 +250,42 @@
     <!-- Vendor js (diferido para no bloquear) -->
     <script src="/lte/assets/js/vendor.min.js" defer></script>
 
-    <!-- SDKs de pago cargados solo cuando se necesitan -->
-    <script>
-        // Cargar Culqi solo cuando se accede a checkout
-        window.loadCulqi = function() {
-            if (window.Culqi) return Promise.resolve();
-            return new Promise(function(resolve) {
-                var script = document.createElement('script');
-                script.src = 'https://js.culqi.com/checkout-js';
-                script.onload = resolve;
-                document.head.appendChild(script);
+    <!-- Culqi SDK -->
+    @php
+        $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
+        $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+        $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
+        $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
+        $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
+    @endphp
+    @if($culqiEnabled && $culqiPublicKey)
+        <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
+        <script type="text/javascript">
+            // Configurar Culqi globalmente ANTES de que React se monte
+            window.CULQI_PUBLIC_KEY = "{{ $culqiPublicKey }}";
+            window.CULQI_ENABLED = true;
+            @if($culqiRsaId && $culqiRsaPublicKey)
+            window.CULQI_RSA_ID = "{{ $culqiRsaId }}";
+            window.CULQI_RSA_PUBLIC_KEY = `{{ $culqiRsaPublicKey }}`;
+            @endif
+            
+            // Log de configuración (solo desarrollo)
+            console.log("✅ Culqi configurado:", {
+                publicKey: window.CULQI_PUBLIC_KEY ? window.CULQI_PUBLIC_KEY.substring(0, 8) + "..." : "N/A",
+                hasRSA: !!(window.CULQI_RSA_ID && window.CULQI_RSA_PUBLIC_KEY),
+                checkoutReady: typeof CulqiCheckout !== 'undefined'
             });
-        };
-    </script>
+        </script>
+    @else
+        <script type="text/javascript">
+            window.CULQI_ENABLED = false;
+            console.log("⚠️ Culqi no está configurado correctamente:", {
+                enabledRaw: "{{ $culqiEnabledRaw ?? 'undefined' }}",
+                enabled: {{ isset($culqiEnabled) && $culqiEnabled ? 'true' : 'false' }},
+                hasPublicKey: {{ isset($culqiPublicKey) && $culqiPublicKey ? 'true' : 'false' }}
+            });
+        </script>
+    @endif
 
     <!-- OpenPay SDK -->
     @php
@@ -292,7 +315,7 @@
         </script>
     @else
         <script type="text/javascript">
-            console.warn("⚠️ OpenPay no está configurado correctamente:", {
+            console.log("⚠️ OpenPay no está configurado correctamente:", {
                 enabledRaw: "{{ $openpayEnabledRaw }}",
                 enabled: {{ $openpayEnabled ? 'true' : 'false' }},
                 hasMerchantId: {{ $openpayMerchantId ? 'true' : 'false' }},

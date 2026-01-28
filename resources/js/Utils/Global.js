@@ -29,8 +29,51 @@ class Global {
     };
 
     static get = (name) => {
+        // Primero intentar obtener de las propiedades estáticas
+        if (Global[name] !== null && Global[name] !== undefined) {
+            return Global[name];
+        }
+        // Si no está definido, intentar obtener de window (para variables inyectadas desde Blade)
+        if (typeof window !== 'undefined' && window[name] !== undefined) {
+            Global[name] = window[name]; // Cachear para futuras consultas
+            return window[name];
+        }
         return Global[name];
     };
+
+    /**
+     * Inicializa las variables de Culqi desde window si están disponibles
+     */
+    static initFromWindow = () => {
+        if (typeof window !== 'undefined') {
+            // Culqi
+            if (window.CULQI_PUBLIC_KEY !== undefined) {
+                Global.CULQI_PUBLIC_KEY = window.CULQI_PUBLIC_KEY;
+            }
+            if (window.CULQI_ENABLED !== undefined) {
+                Global.CULQI_ENABLED = window.CULQI_ENABLED;
+            }
+            if (window.CULQI_RSA_ID !== undefined) {
+                Global.CULQI_RSA_ID = window.CULQI_RSA_ID;
+            }
+            if (window.CULQI_RSA_PUBLIC_KEY !== undefined) {
+                Global.CULQI_RSA_PUBLIC_KEY = window.CULQI_RSA_PUBLIC_KEY;
+            }
+            // OpenPay
+            if (window.OPENPAY_MERCHANT_ID !== undefined) {
+                Global.OPENPAY_MERCHANT_ID = window.OPENPAY_MERCHANT_ID;
+            }
+            if (window.OPENPAY_PUBLIC_KEY !== undefined) {
+                Global.OPENPAY_PUBLIC_KEY = window.OPENPAY_PUBLIC_KEY;
+            }
+            if (window.OPENPAY_SANDBOX_MODE !== undefined) {
+                Global.OPENPAY_SANDBOX_MODE = window.OPENPAY_SANDBOX_MODE;
+            }
+        }
+    };
 }
+
+// Auto-inicializar desde window cuando se carga el módulo
+Global.initFromWindow();
 
 export default Global;
