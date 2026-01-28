@@ -42,10 +42,20 @@ class Global {
     };
 
     /**
-     * Inicializa las variables de Culqi desde window si están disponibles
+     * Inicializa las variables globales desde window si están disponibles
      */
     static initFromWindow = () => {
         if (typeof window !== 'undefined') {
+            // Configuración de la aplicación
+            if (window.APP_URL !== undefined) {
+                Global.APP_URL = window.APP_URL;
+            }
+            if (window.APP_COLOR_PRIMARY !== undefined) {
+                Global.APP_COLOR_PRIMARY = window.APP_COLOR_PRIMARY;
+            }
+            if (window.APP_NAME !== undefined) {
+                Global.APP_NAME = window.APP_NAME;
+            }
             // Culqi
             if (window.CULQI_PUBLIC_KEY !== undefined) {
                 Global.CULQI_PUBLIC_KEY = window.CULQI_PUBLIC_KEY;

@@ -682,7 +682,7 @@ export const processCulqiPayment = async (request, options = {}) => {
                 hiddenToolBarAmount: false,
                 menuType: 'sidebar',
                 buttonCardPayText: 'Pagar',
-                logo: Global.APP_URL + `/assets/resources/icon.png`,
+                logo: (Global.APP_URL || window.APP_URL || '') + `/assets/resources/logo.png`,
                 defaultStyle: {
                     bannerColor: Global.APP_COLOR_PRIMARY || '#000000',
                     buttonBackground: Global.APP_COLOR_PRIMARY || '#000000',

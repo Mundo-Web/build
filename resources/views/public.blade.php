@@ -250,6 +250,17 @@
     <!-- Vendor js (diferido para no bloquear) -->
     <script src="/lte/assets/js/vendor.min.js" defer></script>
 
+    <!-- Configuración global de la aplicación -->
+    @php
+        $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000';
+    @endphp
+    <script type="text/javascript">
+        // Variables globales de la aplicación
+        window.APP_URL = "{{ url('/') }}";
+        window.APP_COLOR_PRIMARY = "{{ $appColorPrimary }}";
+        window.APP_NAME = "{{ env('APP_NAME', 'Mi Empresa') }}";
+    </script>
+
     <!-- Culqi SDK -->
     @php
         $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
