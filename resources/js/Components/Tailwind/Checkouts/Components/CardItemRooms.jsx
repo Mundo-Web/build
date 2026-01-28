@@ -57,7 +57,7 @@ const CardItemRooms = ({ setCart, ...room }) => {
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 font-paragraph">
             <div className="flex flex-col md:flex-row">
                 {/* Image Section */}
-                <div className="md:w-64 h-48 md:h-auto relative flex-shrink-0">
+                <div className="md:w-64 h-48 md:h-72 relative flex-shrink-0">
                     <img
                         src={`/storage/images/item/${room.image}`}
                         alt={room.name}
