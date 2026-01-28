@@ -671,9 +671,15 @@ export const processCulqiPayment = async (request, options = {}) => {
                 paymentMethodsSort: hasOrder 
                     ? [ 'tarjeta','yape', 'bancaMovil', 'billetera', 'agente'] 
                     : ['tarjeta'],
+               
             };
 
             // Apariencia del checkout
+            // Construir URL absoluta del logo (Culqi requiere URL completa con https://)
+            const baseUrl = Global.APP_URL || window.APP_URL || window.location.origin;
+            const logoUrl = `${baseUrl}/assets/resources/icon.png`;
+            console.log("🖼️ Logo URL para Culqi:", logoUrl);
+            
             const appearance = {
                 theme: 'default',
                 hiddenCulqiLogo: false,
@@ -682,7 +688,8 @@ export const processCulqiPayment = async (request, options = {}) => {
                 hiddenToolBarAmount: false,
                 menuType: 'sidebar',
                 buttonCardPayText: 'Pagar',
-                logo: (Global.APP_URL || window.APP_URL || '') + `/assets/resources/logo.png`,
+                logo: logoUrl,
+            
                 defaultStyle: {
                     bannerColor: Global.APP_COLOR_PRIMARY || '#000000',
                     buttonBackground: Global.APP_COLOR_PRIMARY || '#000000',
@@ -1005,6 +1012,68 @@ export const processCulqiPayment = async (request, options = {}) => {
 
             // ✅ Abrir el checkout de Culqi
             console.log("🚀 Abriendo Culqi Custom Checkout...");
+            
+            // Configurar el handler para cuando se cierre el modal (método oficial de Culqi)
+            culqiInstance.handleClose = function() {
+                console.log("🚪 Modal de Culqi cerrado por el usuario (handleClose)");
+                if (!paymentCompleted) {
+                    console.log("ℹ️ Pago no completado, rechazando promesa con cancelled=true");
+                    reject({ cancelled: true, message: "Pago cancelado por el usuario" });
+                }
+            };
+            
+            // ✅ MutationObserver como fallback para detectar cierre del modal
+            // Culqi crea un iframe/overlay que podemos observar
+            let modalObserver = null;
+            let checkModalInterval = null;
+            
+            const setupModalCloseDetection = () => {
+                // Buscar el contenedor del modal de Culqi (puede ser un iframe o div)
+                const checkForCulqiModal = () => {
+                    const culqiModal = document.querySelector('[id*="culqi"]') || 
+                                       document.querySelector('.culqi-checkout') ||
+                                       document.querySelector('iframe[src*="culqi"]') ||
+                                       document.querySelector('[class*="culqi"]');
+                    return culqiModal;
+                };
+                
+                // Esperar a que el modal aparezca
+                let modalDetected = false;
+                checkModalInterval = setInterval(() => {
+                    const modal = checkForCulqiModal();
+                    if (modal && !modalDetected) {
+                        modalDetected = true;
+                        console.log("✅ Modal de Culqi detectado en el DOM");
+                        
+                        // Observar cuando el modal desaparece
+                        modalObserver = new MutationObserver((mutations) => {
+                            const modalStillExists = checkForCulqiModal();
+                            if (!modalStillExists && modalDetected && !paymentCompleted) {
+                                console.log("🚪 Modal de Culqi cerrado (detectado por MutationObserver)");
+                                modalObserver.disconnect();
+                                clearInterval(checkModalInterval);
+                                reject({ cancelled: true, message: "Pago cancelado por el usuario" });
+                            }
+                        });
+                        
+                        modalObserver.observe(document.body, {
+                            childList: true,
+                            subtree: true
+                        });
+                    }
+                }, 100);
+                
+                // Timeout de seguridad: dejar de buscar después de 10 segundos
+                setTimeout(() => {
+                    if (checkModalInterval) {
+                        clearInterval(checkModalInterval);
+                    }
+                }, 10000);
+            };
+            
+            // Iniciar detección del modal
+            setupModalCloseDetection();
+            
             culqiInstance.open();
 
         } catch (error) {

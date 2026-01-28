@@ -523,12 +523,18 @@ export default function BookingStepRooms({
                         });
                     }
                 } catch (error) {
-                    toast.error('Error en el Pago', {
-                        description: `No se llegó a procesar el pago`,
-                        icon: <CircleX className="h-5 w-5 text-red-500" />,
-                        duration: 3000,
-                        position: 'bottom-center',
-                    });
+                    // Verificar si el usuario canceló el pago (cerró el modal)
+                    if (error?.cancelled) {
+                        console.log("ℹ️ Pago cancelado por el usuario");
+                        // No mostrar error, simplemente volver al estado normal
+                    } else {
+                        toast.error('Error en el Pago', {
+                            description: error?.message || `No se llegó a procesar el pago`,
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: 'bottom-center',
+                        });
+                    }
                 } finally {
                     setPaymentLoading(false);
                 }
