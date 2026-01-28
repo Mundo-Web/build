@@ -131,9 +131,9 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
     return (
         <footer id={data?.element_id || null} className="bg-primary text-white">
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0 py-16">
-                {/* Logo y Redes Sociales - Full width en mobile */}
-                <div className="mb-12">
-                    <div className="w-full md:w-8/12 lg:w-7/12">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
+                    {/* Logo y Redes Sociales */}
+                    <div className="col-span-2 lg:col-span-2 w-full lg:w-8/12">
                         <div className="flex items-center gap-2 mb-4">
                             {data?.logo_footer ? (
                                 <img 
@@ -170,10 +170,8 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                             ))}
                         </div>
                     </div>
-                </div>
+                  
 
-                {/* Grid de columnas - Productos y Empresa en la misma fila en mobile */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-12">
                     {/* Columna Productos */}
                     <div>
                         <h4 className="text-lg font-bold mb-4">{data?.products_title || 'Productos'}</h4>
@@ -245,8 +243,8 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                     
                     </div>
 
-                    {/* Columna Ubicación y Horarios - Full width en mobile */}
-                    <div className="col-span-2 md:col-span-1">
+                    {/* Columna Ubicación y Horarios */}
+                    <div className="col-span-2 lg:col-span-1">
                         <h4 className="text-lg font-bold mb-4">{data?.contact_title || 'Ubicación'}</h4>
                         <ul className="space-y-3 text-gray-300">
                                 {/* Email */}

@@ -1,1 +1,0 @@
-import"./vendor-react-DB2gWWlz.js";import{I as o}from"./ItemsRest-BhJ2ftaN.js";import"./CartKuchara-C7ZIDpxE.js";import"./vendor-swiper-Cr_RrIb_.js";import"./BasicRest-rcCccbSV.js";import"./GoogleSignInButton-Bo5d3xNo.js";import"./BooleanLimit-q2Ad9fGY.js";new o;

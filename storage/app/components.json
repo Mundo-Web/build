@@ -562,7 +562,8 @@
                     ]
                 },
                 "generals": [
-                    "header_menu_order"
+                    "header_menu_order",
+                    "footer_company_links"
                 ]
             },
             {
