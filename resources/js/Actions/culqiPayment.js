@@ -678,7 +678,7 @@ export const processCulqiPayment = async (request, options = {}) => {
             // Construir URL absoluta del logo (Culqi requiere URL completa con https://)
             const baseUrl = Global.APP_URL || window.APP_URL || window.location.origin;
             const logoUrl = `${baseUrl}/assets/resources/icon.png`;
-            console.log("🖼️ Logo URL para Culqi:", logoUrl);
+            console.warn("🖼️ Logo URL para Culqi:", logoUrl);
             
             const appearance = {
                 theme: 'default',
