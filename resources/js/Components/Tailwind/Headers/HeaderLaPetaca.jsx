@@ -180,11 +180,11 @@ const HeaderLaPetaca = ({ data, items, pages, generals = [], cart = [], setCart,
                                         <a
                                             key={`page-${page.id || index}`}
                                             href={page.path}
-                                            className="text-lg font-semibold tracking-wide transition-all duration-300 relative group text-white  hover:customtext-secondary"
+                                            className="text-lg font-semibold tracking-wide transition-all duration-300 relative group text-white  "
                                         >
                                             {page.name}
                                             <span
-                                                className="absolute -bottom-1 left-0 w-full bg-secondary h-0.5 transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"
+                                                className="absolute -bottom-1 left-0 w-full bg-white h-0.5 transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"
                                          
                                             ></span>
                                         </a>
