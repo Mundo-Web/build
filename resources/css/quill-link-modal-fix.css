@@ -1,0 +1,10 @@
+/*
+ * Corrige el modal de enlace de Quill para que siempre aparezca centrado en pantalla.
+ */
+.ql-tooltip.ql-editing {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999 !important;
+}

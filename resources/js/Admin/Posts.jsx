@@ -238,7 +238,7 @@ const Posts = ({ details }) => {
           }
         ]} />
 
-      <Modal modalRef={modalRef} title={isEditing ? 'Editar post' : 'Agregar post'} onSubmit={onModalSubmit} size='lg'>
+      <Modal modalRef={modalRef} title={isEditing ? 'Editar post' : 'Agregar post'} onSubmit={onModalSubmit} size='xl'>
         <input ref={idRef} type='hidden' />
         <div id='posts-container'>
           <ul className="nav nav-pills nav-justified mb-4" role="tablist" style={{backgroundColor:'#f8f9fa',borderRadius:'8px',padding:'4px',border:'1px solid #e9ecef'}}>
@@ -246,6 +246,12 @@ const Posts = ({ details }) => {
               <button className="nav-link active" id="basic-info-tab" data-bs-toggle="pill" data-bs-target="#basic-info" type="button" role="tab" aria-controls="basic-info" aria-selected="true" style={{borderRadius:'6px',fontWeight:'500',transition:'all 0.3s ease'}}>
                 <i className="fas fa-info-circle me-2"></i>
                 Información Básica
+              </button>
+            </li>
+            <li className="nav-item" role="presentation">
+              <button className="nav-link" id="contenido-tab" data-bs-toggle="pill" data-bs-target="#contenido" type="button" role="tab" aria-controls="contenido" aria-selected="false" style={{borderRadius:'6px',fontWeight:'500',transition:'all 0.3s ease'}}>
+                <i className="fas fa-align-left me-2"></i>
+                Contenido
               </button>
             </li>
             <li className="nav-item" role="presentation">
@@ -302,13 +308,32 @@ const Posts = ({ details }) => {
                           </div>
                         )}
                         
+                      
+                       
+                       
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="tab-pane fade" id="contenido" role="tabpanel" aria-labelledby="contenido-tab">
+              <div className="row g-3">
+                <div className="col-12">
+                  <div className="card border-0 shadow-sm">
+                    <div className="card-header bg-light">
+                      <h6 className="mb-0">
+                        <i className="fas fa-align-left me-2 text-primary"></i>
+                        Contenido del Post
+                      </h6>
+                    </div>
+                    <div className="card-body">
+                      <div className="row">
                         {Fillable.has('posts','description') && (
                           <div className="col-12">
-                            <QuillFormGroup eRef={descriptionRef} label='Contenido' required={isRequired('description')} />
+                            <QuillFormGroup eRef={descriptionRef} label='Contenido' required={isRequired('description')} height='1000px' />
                           </div>
                         )}
-                       
-                       
                       </div>
                     </div>
                   </div>

@@ -438,8 +438,8 @@
       "_vendor-react-CZUvQwNQ.js"
     ]
   },
-  "_QuillFormGroup-DwUYKWvB.js": {
-    "file": "assets/QuillFormGroup-DwUYKWvB.js",
+  "_QuillFormGroup-D7VLIsv_.js": {
+    "file": "assets/QuillFormGroup-D7VLIsv_.js",
     "name": "QuillFormGroup",
     "imports": [
       "_vendor-react-CZUvQwNQ.js"
@@ -793,7 +793,7 @@
     ]
   },
   "resources/js/Admin/About.jsx": {
-    "file": "assets/About-BtCI5MMK.js",
+    "file": "assets/About-BjHaOJW3.js",
     "name": "About",
     "src": "resources/js/Admin/About.jsx",
     "isEntry": true,
@@ -814,7 +814,7 @@
       "_CreateReactScript-CQzKJRc_.js",
       "_ReactAppend-Db2K6xCH.js",
       "_ImageFormGroup-DlJufE2S.js",
-      "_QuillFormGroup-DwUYKWvB.js",
+      "_QuillFormGroup-D7VLIsv_.js",
       "_vendor-swiper-Cr_RrIb_.js",
       "resources/js/Components/Adminto/Footer.jsx",
       "resources/js/Components/Adminto/form/TippyButton.jsx",
@@ -1645,7 +1645,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-BAxoSwDW.js",
+    "file": "assets/Generals-CE4P7TaP.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -1655,7 +1655,7 @@
       "_Base-DiYyKRe5.js",
       "_BasicRest-BMJgRso_.js",
       "_CreateReactScript-CQzKJRc_.js",
-      "_QuillFormGroup-DwUYKWvB.js",
+      "_QuillFormGroup-D7VLIsv_.js",
       "resources/js/Components/Adminto/Footer.jsx",
       "_GalleryRest-Y_hgJSdj.js",
       "_RepositoryRest-ClsTcz1z.js",
@@ -1757,7 +1757,7 @@
     ]
   },
   "resources/js/Admin/Items.jsx": {
-    "file": "assets/Items-BDyxXGXu.js",
+    "file": "assets/Items-Co3WaAk-.js",
     "name": "Items",
     "src": "resources/js/Admin/Items.jsx",
     "isEntry": true,
@@ -1775,7 +1775,7 @@
       "_Table-DXr0fbw5.js",
       "_ImageFormGroup-DlJufE2S.js",
       "_InputFormGroup-BuXn3s3l.js",
-      "_QuillFormGroup-DwUYKWvB.js",
+      "_QuillFormGroup-D7VLIsv_.js",
       "_SelectAPIFormGroup-Dmb18ATV.js",
       "_SelectFormGroup-CuRVgWYg.js",
       "_DxButton-C6FT_beP.js",
@@ -1943,7 +1943,7 @@
     ]
   },
   "resources/js/Admin/Posts.jsx": {
-    "file": "assets/Posts-udHZfDsm.js",
+    "file": "assets/Posts-B4gg3S2N.js",
     "name": "Posts",
     "src": "resources/js/Admin/Posts.jsx",
     "isEntry": true,
@@ -1955,7 +1955,7 @@
       "_BasicEditing-BCg7nE-w.js",
       "_ImageFormGroup-DlJufE2S.js",
       "_InputFormGroup-BuXn3s3l.js",
-      "_QuillFormGroup-DwUYKWvB.js",
+      "_QuillFormGroup-D7VLIsv_.js",
       "_SelectAPIFormGroup-Dmb18ATV.js",
       "_Modal-MmI0jF6v.js",
       "_Table-DXr0fbw5.js",
@@ -2056,7 +2056,7 @@
     ]
   },
   "resources/js/Admin/Rooms.jsx": {
-    "file": "assets/Rooms-UnzxH84t.js",
+    "file": "assets/Rooms-C0FGNJf8.js",
     "name": "Rooms",
     "src": "resources/js/Admin/Rooms.jsx",
     "isEntry": true,
@@ -2073,7 +2073,7 @@
       "_TextareaFormGroup-dfKTDx8M.js",
       "_ImageFormGroup-DlJufE2S.js",
       "_SwitchFormGroup-CA4b2Uj0.js",
-      "_QuillFormGroup-DwUYKWvB.js",
+      "_QuillFormGroup-D7VLIsv_.js",
       "_DynamicField-Oyo2nDMB.js",
       "_DxButton-C6FT_beP.js",
       "_CreateReactScript-CQzKJRc_.js",
@@ -2188,7 +2188,7 @@
     ]
   },
   "resources/js/Admin/Services.jsx": {
-    "file": "assets/Services-DQtadCnT.js",
+    "file": "assets/Services-RU5pQIxm.js",
     "name": "Services",
     "src": "resources/js/Admin/Services.jsx",
     "isEntry": true,
@@ -2197,7 +2197,7 @@
       "_Base-DiYyKRe5.js",
       "_SwitchFormGroup-CA4b2Uj0.js",
       "_TextareaFormGroup-dfKTDx8M.js",
-      "_QuillFormGroup-DwUYKWvB.js",
+      "_QuillFormGroup-D7VLIsv_.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "_BasicRest-BMJgRso_.js",
       "_ImageFormGroup-DlJufE2S.js",
