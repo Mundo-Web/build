@@ -1,7 +1,7 @@
 
-@php
+<?php
     $component = Route::currentRouteName();
-@endphp
+?>
 
 
 
@@ -10,12 +10,12 @@
 <html lang="es">
 
 <head>
-    @viteReactRefresh
+    <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    @php
+    <?php
         // SEO dinámico para cualquier modelo con slug
         $isDetailPage = isset($data['using']['slug']) && is_array($data['using']['slug']) && isset($data['using']['slug']['model']);
         $modelName = $isDetailPage ? $data['using']['slug']['model'] : null;
@@ -62,12 +62,12 @@
             $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
             $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
         }
-    @endphp
+    ?>
 
-    <title>{{ $pageTitle }} | {{ env('APP_NAME', 'Base Template') }}</title>
+    <title><?php echo e($pageTitle); ?> | <?php echo e(env('APP_NAME', 'Base Template')); ?></title>
 
     <!-- Favicon -->
-      <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ uniqid() }}" type="image/png">
+      <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e(uniqid()); ?>" type="image/png">
 
     <!-- Preload recursos críticos -->
     <link rel="preload" href="/assets/resources/logo.png" as="image" type="image/png">
@@ -77,52 +77,52 @@
 
 
     <!-- Meta básicas -->
-    <meta name="description" content="{{ $pageDescription }}">
-    @if($pageKeywords)
-        <meta name="keywords" content="{{ $pageKeywords }}">
-    @endif
+    <meta name="description" content="<?php echo e($pageDescription); ?>">
+    <?php if($pageKeywords): ?>
+        <meta name="keywords" content="<?php echo e($pageKeywords); ?>">
+    <?php endif; ?>
     <meta name="author" content="Powered by Mundo Web">
     <!-- Canonical URL -->
-    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <link rel="canonical" href="<?php echo e($canonicalUrl); ?>">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="{{ $isDetailPage ? 'article' : 'website' }}">
-    <meta property="og:url" content="{{ $ogUrl }}">
-    <meta property="og:title" content="{{ $ogTitle }}">
-    <meta property="og:description" content="{{ $ogDescription }}">
-    @if($ogImage)
-        <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:type" content="<?php echo e($isDetailPage ? 'article' : 'website'); ?>">
+    <meta property="og:url" content="<?php echo e($ogUrl); ?>">
+    <meta property="og:title" content="<?php echo e($ogTitle); ?>">
+    <meta property="og:description" content="<?php echo e($ogDescription); ?>">
+    <?php if($ogImage): ?>
+        <meta property="og:image" content="<?php echo e($ogImage); ?>">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
-    @endif
-    <meta property="og:site_name" content="{{ $siteTitle }}">
+    <?php endif; ?>
+    <meta property="og:site_name" content="<?php echo e($siteTitle); ?>">
 
-    @if($isDetailPage && $item)
+    <?php if($isDetailPage && $item): ?>
         <!-- Article specific meta tags -->
-        @if($item->created_at)
-            <meta property="article:published_time" content="{{ $item->created_at }}">
-        @endif
-        @if($item->updated_at)
-            <meta property="article:modified_time" content="{{ $item->updated_at }}">
-        @endif
-        @if($item->category)
-            <meta property="article:section" content="{{ $item->category->name }}">
-        @endif
-        @if($item->tags && count($item->tags) > 0)
-            @foreach($item->tags as $tag)
-                <meta property="article:tag" content="{{ $tag->name }}">
-            @endforeach
-        @endif
-    @endif
+        <?php if($item->created_at): ?>
+            <meta property="article:published_time" content="<?php echo e($item->created_at); ?>">
+        <?php endif; ?>
+        <?php if($item->updated_at): ?>
+            <meta property="article:modified_time" content="<?php echo e($item->updated_at); ?>">
+        <?php endif; ?>
+        <?php if($item->category): ?>
+            <meta property="article:section" content="<?php echo e($item->category->name); ?>">
+        <?php endif; ?>
+        <?php if($item->tags && count($item->tags) > 0): ?>
+            <?php $__currentLoopData = $item->tags; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <meta property="article:tag" content="<?php echo e($tag->name); ?>">
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php endif; ?>
+    <?php endif; ?>
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="{{ $twitterCard }}">
-    <meta property="twitter:url" content="{{ $ogUrl }}">
-    <meta property="twitter:title" content="{{ $twitterTitle }}">
-    <meta property="twitter:description" content="{{ $twitterDescription }}">
-    @if($twitterImage)
-        <meta property="twitter:image" content="{{ $twitterImage }}">
-    @endif
+    <meta property="twitter:card" content="<?php echo e($twitterCard); ?>">
+    <meta property="twitter:url" content="<?php echo e($ogUrl); ?>">
+    <meta property="twitter:title" content="<?php echo e($twitterTitle); ?>">
+    <meta property="twitter:description" content="<?php echo e($twitterDescription); ?>">
+    <?php if($twitterImage): ?>
+        <meta property="twitter:image" content="<?php echo e($twitterImage); ?>">
+    <?php endif; ?>
 
     <!-- Carga diferida de select2 CSS -->
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -150,24 +150,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     
-    @php
+    <?php
         $pixelScripts = App\Helpers\PixelHelper::getPixelScripts();
-    @endphp
+    ?>
     
-    {!! $pixelScripts['head'] !!}
+    <?php echo $pixelScripts['head']; ?>
 
-    @if ($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true')
-        <link rel="stylesheet" href="{{ $data['fonts']['title']['url'] }}">
-    @endif
 
-    @if ($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true')
-        <link rel="stylesheet" href="{{ $data['fonts']['paragraph']['url'] }}">
-    @endif
+    <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true'): ?>
+        <link rel="stylesheet" href="<?php echo e($data['fonts']['title']['url']); ?>">
+    <?php endif; ?>
 
-    @vite(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()])
-    @inertiaHead
+    <?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true'): ?>
+        <link rel="stylesheet" href="<?php echo e($data['fonts']['paragraph']['url']); ?>">
+    <?php endif; ?>
 
-    @if ($component == 'BlogArticle.jsx')
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()]); ?>
+    <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->head; } ?>
+
+    <?php if($component == 'BlogArticle.jsx'): ?>
         <link href="/lte/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />
         <link href="/lte/assets/libs/quill/quill.bubble.css" rel="stylesheet" type="text/css" />
         <style>
@@ -184,7 +185,7 @@
                 border-radius: 8px;
             }
         </style>
-    @endif
+    <?php endif; ?>
     <style>
         body {
             /* background-image: url('/assets/img/maqueta/home-mobile.png');*/
@@ -198,58 +199,58 @@
         }
     </style>
 
-    @if ($data['fonts']['title']['url'] && $data['fonts']['title']['source'] == 'true')
+    <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] == 'true'): ?>
         <style>
             @font-face {
-                font-family: "{{ $data['fonts']['title']['name'] }}";
-                src: url('{{ $data['fonts']['title']['url'] }}') format('woff2');
+                font-family: "<?php echo e($data['fonts']['title']['name']); ?>";
+                src: url('<?php echo e($data['fonts']['title']['url']); ?>') format('woff2');
             }
         </style>
-    @endif
-    @if ($data['fonts']['title']['name'])
+    <?php endif; ?>
+    <?php if($data['fonts']['title']['name']): ?>
         <style>
             .font-title {
-                font-family: "{{ $data['fonts']['title']['name'] }}", sans-serif;
+                font-family: "<?php echo e($data['fonts']['title']['name']); ?>", sans-serif;
             }
         </style>
-    @endif
-    @if ($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] == 'true')
+    <?php endif; ?>
+    <?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] == 'true'): ?>
         <style>
             @font-face {
-                font-family: "{{ $data['fonts']['paragraph']['name'] }}";
-                src: url('{{ $data['fonts']['paragraph']['url'] }}') format('woff2');
+                font-family: "<?php echo e($data['fonts']['paragraph']['name']); ?>";
+                src: url('<?php echo e($data['fonts']['paragraph']['url']); ?>') format('woff2');
             }
         </style>
-    @endif
-    @if ($data['fonts']['paragraph']['name'])
+    <?php endif; ?>
+    <?php if($data['fonts']['paragraph']['name']): ?>
         <style>
             * {
-                font-family: "{{ $data['fonts']['paragraph']['name'] }}", sans-serif;
+                font-family: "<?php echo e($data['fonts']['paragraph']['name']); ?>", sans-serif;
             }
         </style>
-    @endif
-    @foreach ($data['colors'] as $color)
+    <?php endif; ?>
+    <?php $__currentLoopData = $data['colors']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <style>
             /* Variables CSS para Tailwind */
             :root {
-                --bg-{{ $color->name }}: {{ $color->description }};
+                --bg-<?php echo e($color->name); ?>: <?php echo e($color->description); ?>;
             }
             
             /* Clases customtext-* para migración gradual */
-            .customtext-{{ $color->name }} {
-                color: {{ $color->description }};
+            .customtext-<?php echo e($color->name); ?> {
+                color: <?php echo e($color->description); ?>;
             }
-            .hover\:customtext-{{ $color->name }}:hover {
-                color: {{ $color->description }};
+            .hover\:customtext-<?php echo e($color->name); ?>:hover {
+                color: <?php echo e($color->description); ?>;
             }
-            .active\:customtext-{{ $color->name }}:active {
-                color: {{ $color->description }};
+            .active\:customtext-<?php echo e($color->name); ?>:active {
+                color: <?php echo e($color->description); ?>;
             }
-            .placeholder\:customtext-{{ $color->name }}::placeholder {
-                color: {{ $color->description }};
+            .placeholder\:customtext-<?php echo e($color->name); ?>::placeholder {
+                color: <?php echo e($color->description); ?>;
             }
         </style>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     <style>
         .font-emoji {
@@ -264,13 +265,14 @@
     
 </head>
 
-@php
+<?php
     $bodyCustomHtml = $generals->where('correlative', 'body_custom_html')->first()?->description ?? '';
-@endphp
+?>
 <body class="font-paragraph relative" style="background: var(--bg-page-background);">
-    @if($bodyCustomHtml)
-        {!! $bodyCustomHtml !!}
-    @endif
+    <?php if($bodyCustomHtml): ?>
+        <?php echo $bodyCustomHtml; ?>
+
+    <?php endif; ?>
     <!-- Loading Screen Nativo (aparece ANTES de que React cargue) -->
   
     <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-page-background);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
@@ -280,7 +282,7 @@
         </style>
         <div style="position:relative;">
             <div style="position:absolute;inset:0;margin:-2rem;border-radius:50%;opacity:0.05;animation:pulse-loader 2s ease-in-out infinite;"></div>
-            <img src="/assets/resources/loading.png?v={{ uniqid() }}" alt="Cargando..." style="width:300px;max-width:80vw;height:auto;position:relative;" onerror="this.src='/assets/resources/logo.png?v={{ uniqid() }}';this.style.background='white';this.style.padding='0.5rem';this.style.borderRadius='8px';">
+            <img src="/assets/resources/loading.png?v=<?php echo e(uniqid()); ?>" alt="Cargando..." style="width:300px;max-width:80vw;height:auto;position:relative;" onerror="this.src='/assets/resources/logo.png?v=<?php echo e(uniqid()); ?>';this.style.background='white';this.style.padding='0.5rem';this.style.borderRadius='8px';">
         </div>
     </div>
     <script>
@@ -295,46 +297,47 @@
         })();
     </script>
 
-    @php
+    <?php
         $pixelScripts = App\Helpers\PixelHelper::getPixelScripts();
-    @endphp
+    ?>
     
-    {!! $pixelScripts['body'] !!}
+    <?php echo $pixelScripts['body']; ?>
 
-    @inertia
+
+    <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->body; } else { ?><div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div><?php } ?>
 
     <!-- Vendor js (diferido para no bloquear) -->
     <script src="/lte/assets/js/vendor.min.js" defer></script>
 
     <!-- Configuración global de la aplicación -->
-    @php
+    <?php
         $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000';
-    @endphp
+    ?>
     <script type="text/javascript">
         // Variables globales de la aplicación
-        window.APP_URL = "{{ url('/') }}";
-        window.APP_COLOR_PRIMARY = "{{ $appColorPrimary }}";
-        window.APP_NAME = "{{ env('APP_NAME', 'Mi Empresa') }}";
+        window.APP_URL = "<?php echo e(url('/')); ?>";
+        window.APP_COLOR_PRIMARY = "<?php echo e($appColorPrimary); ?>";
+        window.APP_NAME = "<?php echo e(env('APP_NAME', 'Mi Empresa')); ?>";
     </script>
 
     <!-- Culqi SDK -->
-    @php
+    <?php
         $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
         $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
         $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
         $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
         $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
-    @endphp
-    @if($culqiEnabled && $culqiPublicKey)
+    ?>
+    <?php if($culqiEnabled && $culqiPublicKey): ?>
         <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
         <script type="text/javascript">
             // Configurar Culqi globalmente ANTES de que React se monte
-            window.CULQI_PUBLIC_KEY = "{{ $culqiPublicKey }}";
+            window.CULQI_PUBLIC_KEY = "<?php echo e($culqiPublicKey); ?>";
             window.CULQI_ENABLED = true;
-            @if($culqiRsaId && $culqiRsaPublicKey)
-            window.CULQI_RSA_ID = "{{ $culqiRsaId }}";
-            window.CULQI_RSA_PUBLIC_KEY = `{{ $culqiRsaPublicKey }}`;
-            @endif
+            <?php if($culqiRsaId && $culqiRsaPublicKey): ?>
+            window.CULQI_RSA_ID = "<?php echo e($culqiRsaId); ?>";
+            window.CULQI_RSA_PUBLIC_KEY = `<?php echo e($culqiRsaPublicKey); ?>`;
+            <?php endif; ?>
             
             // Log de configuración (solo desarrollo)
             console.log("✅ Culqi configurado:", {
@@ -343,19 +346,20 @@
                 checkoutReady: typeof CulqiCheckout !== 'undefined'
             });
         </script>
-    @else
+    <?php else: ?>
         <script type="text/javascript">
             window.CULQI_ENABLED = false;
             console.log("⚠️ Culqi no está configurado correctamente:", {
-                enabledRaw: "{{ $culqiEnabledRaw ?? 'undefined' }}",
-                enabled: {{ isset($culqiEnabled) && $culqiEnabled ? 'true' : 'false' }},
-                hasPublicKey: {{ isset($culqiPublicKey) && $culqiPublicKey ? 'true' : 'false' }}
+                enabledRaw: "<?php echo e($culqiEnabledRaw ?? 'undefined'); ?>",
+                enabled: <?php echo e(isset($culqiEnabled) && $culqiEnabled ? 'true' : 'false'); ?>,
+                hasPublicKey: <?php echo e(isset($culqiPublicKey) && $culqiPublicKey ? 'true' : 'false'); ?>
+
             });
         </script>
-    @endif
+    <?php endif; ?>
 
     <!-- OpenPay SDK -->
-    @php
+    <?php
         $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
         // Verificar múltiples formatos: 'true', '1', 'on', 'yes', etc.
         $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
@@ -363,15 +367,15 @@
         $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
         $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
         $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
-    @endphp
-    @if($openpayEnabled && $openpayMerchantId && $openpayPublicKey)
+    ?>
+    <?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
         <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
         <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
         <script type="text/javascript">
             // Configurar OpenPay globalmente ANTES de que React se monte
-            window.OPENPAY_MERCHANT_ID = "{{ $openpayMerchantId }}";
-            window.OPENPAY_PUBLIC_KEY = "{{ $openpayPublicKey }}";
-            window.OPENPAY_SANDBOX_MODE = {{ $openpayIsSandbox ? 'true' : 'false' }};
+            window.OPENPAY_MERCHANT_ID = "<?php echo e($openpayMerchantId); ?>";
+            window.OPENPAY_PUBLIC_KEY = "<?php echo e($openpayPublicKey); ?>";
+            window.OPENPAY_SANDBOX_MODE = <?php echo e($openpayIsSandbox ? 'true' : 'false'); ?>;
             
             // Log de configuración (solo desarrollo)
             console.log("✅ OpenPay configurado:", {
@@ -380,18 +384,18 @@
                 sandbox: window.OPENPAY_SANDBOX_MODE
             });
         </script>
-    @else
+    <?php else: ?>
         <script type="text/javascript">
             console.log("⚠️ OpenPay no está configurado correctamente:", {
-                enabledRaw: "{{ $openpayEnabledRaw }}",
-                enabled: {{ $openpayEnabled ? 'true' : 'false' }},
-                hasMerchantId: {{ $openpayMerchantId ? 'true' : 'false' }},
-                hasPublicKey: {{ $openpayPublicKey ? 'true' : 'false' }},
-                merchantId: "{{ $openpayMerchantId ? substr($openpayMerchantId, 0, 5) . '...' : 'VACÍO' }}",
-                publicKey: "{{ $openpayPublicKey ? substr($openpayPublicKey, 0, 5) . '...' : 'VACÍO' }}"
+                enabledRaw: "<?php echo e($openpayEnabledRaw); ?>",
+                enabled: <?php echo e($openpayEnabled ? 'true' : 'false'); ?>,
+                hasMerchantId: <?php echo e($openpayMerchantId ? 'true' : 'false'); ?>,
+                hasPublicKey: <?php echo e($openpayPublicKey ? 'true' : 'false'); ?>,
+                merchantId: "<?php echo e($openpayMerchantId ? substr($openpayMerchantId, 0, 5) . '...' : 'VACÍO'); ?>",
+                publicKey: "<?php echo e($openpayPublicKey ? substr($openpayPublicKey, 0, 5) . '...' : 'VACÍO'); ?>"
             });
         </script>
-    @endif
+    <?php endif; ?>
 
     <script src="/lte/assets/libs/select2/js/select2.full.min.js" defer></script>    <!-- App js -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
@@ -445,3 +449,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\xampp\htdocs\projects\panelpro\resources\views/public.blade.php ENDPATH**/ ?>

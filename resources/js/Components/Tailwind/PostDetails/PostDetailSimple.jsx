@@ -53,10 +53,22 @@ export default function PostDetailSimple({ item,data }) {
                     <time>{formatDate(item?.created_at)}</time>
                 </div>
 
-                {/* Title */}
-                <h1 className={`font-title text-3xl md:text-4xl lg:text-5xl font-bold mb-8 max-w-5xl mx-auto text-center 2xl:max-w-6xl ${data?.class_title || 'customtext-neutral-dark'}`}>
-                    {item?.name}
-                </h1>
+
+                                {/* Title */}
+                                <h1 className={`font-title text-3xl md:text-4xl lg:text-5xl font-bold mb-4 max-w-5xl mx-auto text-center 2xl:max-w-6xl ${data?.class_title || 'customtext-neutral-dark'}`}>
+                                        {item?.name}
+                                </h1>
+
+                                {/* Tags (badges) */}
+                                {Array.isArray(item?.tags) && item.tags.length > 0 && (
+                                    <div className="flex flex-wrap justify-center gap-2 mb-6">
+                                        {item.tags.map((tag, idx) => (
+                                            <span key={idx} className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">
+                                                #{tag.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
 
                 {/* Featured Image */}
                 <div className="relative mb-8 max-w-4xl 2xl:max-w-5xl h-auto mx-auto">

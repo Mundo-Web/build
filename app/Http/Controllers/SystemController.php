@@ -17,6 +17,7 @@ use SoDe\Extend\Crypto;
 use SoDe\Extend\File;
 use SoDe\Extend\JSON;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 use SoDe\Extend\Array2;
 
 class SystemController extends BasicController
@@ -227,8 +228,15 @@ class SystemController extends BasicController
         foreach ($page['using'] as $key => $using) {
             $model = $using['model'] ?? null;
             $field = $using['field'] ?? null;
-            $value = $request->$key ?? null;
+            $value = $request->route($key) ?? $request->$key ?? null;
             $relations = $using['relations'] ?? [];
+
+            Log::info('SEO DEBUG', [
+                'key' => $key,
+                'value' => $value,
+                'model' => $model,
+                'field' => $field
+            ]);
 
             if ($model && $field && $value) {
                 // Cargar un registro específico
@@ -236,28 +244,29 @@ class SystemController extends BasicController
                 $result = $class::with($relations)
                     ->where($field, $value)
                     ->first();
+                Log::info('SEO POST RESULT', [
+                    'result' => $result
+                ]);
                 $props['filteredData'][$model] = $result;
+                // Pasar el modelo cargado solo como $props[$model] y en reactData igual (sin duplicar)
+                $props[$model] = $result;
+                $this->reactData[$model] = $result;
             } elseif ($model) {
                 // Cargar todos los registros
                 $class = 'App\\Models\\' . $model;
                 $query = $class::select($using['fields'] ?? ['*']);
-                
                 $table = (new $class)->getTable();
-                
                 if (Schema::hasColumn($table, 'visible')) {
                     $query->where('visible', true);
                 }
-
                 if (Schema::hasColumn($table, 'status')) {
                     $query->where('status', true);
                 }
-                
                 if (isset($using['relations'])) {
                     $query->with($using['relations']);
                 }
-                $props['filteredData'][$key] = $query->get();
+                $props['filteredData'][$model] = $query->get();
             } elseif (isset($using['static'])) {
-                // Datos estáticos
                 $props['filteredData'][$key] = $using['static'];
             }
         }

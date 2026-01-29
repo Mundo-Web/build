@@ -701,28 +701,31 @@ class BasicController extends Controller
 
       $table = (new $this->model)->getTable();
       if (Schema::hasColumn($table, 'slug')) {
-        // Generar el slug base usando el nombre del producto
-        $slugBase = $jpa->name;
-        // Si existe el campo 'color' y tiene valor, añadirlo al slug
-        if (Schema::hasColumn($table, 'color') && !empty($jpa->color)) {
-          $slugBase .= '-' . $jpa->color;
-        }
+        // Solo generar slug automático si no se proporcionó uno manualmente
+        if (empty($jpa->slug) || (!$request->has('slug') || empty($request->slug))) {
+          // Generar el slug base usando el nombre del producto
+          $slugBase = $jpa->name;
+          // Si existe el campo 'color' y tiene valor, añadirlo al slug
+          if (Schema::hasColumn($table, 'color') && !empty($jpa->color)) {
+            $slugBase .= '-' . $jpa->color;
+          }
 
-        if (Schema::hasColumn($table, 'size') && !empty($jpa->size)) {
-          $slugBase .= '-' . $jpa->size;
-        }
+          if (Schema::hasColumn($table, 'size') && !empty($jpa->size)) {
+            $slugBase .= '-' . $jpa->size;
+          }
 
-        $slug = Str::slug($slugBase);
-        // Verificar si el slug ya existe para otro registro
-        $slugExists = $this->model::where('slug', $slug)
-          ->where('id', '<>', $jpa->id)
-          ->exists();
-        // Si existe, añadir un identificador único corto
-        if ($slugExists) {
-          $slug = $slug . '-' . Crypto::short();
+          $slug = Str::slug($slugBase);
+          // Verificar si el slug ya existe para otro registro
+          $slugExists = $this->model::where('slug', $slug)
+            ->where('id', '<>', $jpa->id)
+            ->exists();
+          // Si existe, añadir un identificador único corto
+          if ($slugExists) {
+            $slug = $slug . '-' . Crypto::short();
+          }
+          // Actualizar el slug
+          $jpa->update(['slug' => $slug]);
         }
-        // Actualizar el slug
-        $jpa->update(['slug' => $slug]);
       }
 
       $data = $this->afterSave($request, $jpa, $isNew);

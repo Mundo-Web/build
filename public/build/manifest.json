@@ -764,7 +764,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-BJczv22K.js",
+    "file": "assets/About-TVrakFv0.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -1943,7 +1943,7 @@
     ]
   },
   "resources/js/Admin/Posts.jsx": {
-    "file": "assets/Posts-BMeh30Q9.js",
+    "file": "assets/Posts-udHZfDsm.js",
     "name": "Posts",
     "src": "resources/js/Admin/Posts.jsx",
     "isEntry": true,
@@ -1964,8 +1964,9 @@
       "_html2string-Xrf4P-xU.js",
       "_ReactAppend-Db2K6xCH.js",
       "_SetSelectValue-DCHQOIKz.js",
-      "_vendor-swiper-Cr_RrIb_.js",
+      "_TextareaFormGroup-dfKTDx8M.js",
       "resources/js/Components/Adminto/Footer.jsx",
+      "_vendor-swiper-Cr_RrIb_.js",
       "resources/js/Components/Adminto/form/TippyButton.jsx",
       "_Logout-D6byb_Ua.js",
       "_MenuItemContainer-BaCqn8PU.js",
@@ -2597,7 +2598,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-CD8ZTJxH.js",
+    "file": "assets/Blog-CoSTP2w3.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -2630,7 +2631,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-D2db83Dd.js",
+    "file": "assets/BlogArticle-BISahJmV.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -4122,7 +4123,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-cnOZsERl.js",
+    "file": "assets/Base-BN1nVQ2_.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -6868,7 +6869,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Header.jsx": {
-    "file": "assets/Header-BxaC1TZT.js",
+    "file": "assets/Header-DI9DZUhe.js",
     "name": "Header",
     "src": "resources/js/Components/Tailwind/Header.jsx",
     "isEntry": true,
@@ -7812,7 +7813,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetail.jsx": {
-    "file": "assets/PostDetail-C0t6ExBz.js",
+    "file": "assets/PostDetail-m6Hv_k04.js",
     "name": "PostDetail",
     "src": "resources/js/Components/Tailwind/PostDetail.jsx",
     "isDynamicEntry": true,
@@ -9966,7 +9967,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-1vtQYQJ9.js",
+    "file": "assets/Contact-CLcto6pB.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -9992,7 +9993,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-hHUZJ0aB.js",
+    "file": "assets/CourseDetails-CgnA797K.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -10017,7 +10018,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-D9T0hIQm.js",
+    "file": "assets/Courses-BaL-OWqZ.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -10084,7 +10085,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-CwArZ95k.js",
+    "file": "assets/Home-D_DL8R1y.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -10176,16 +10177,15 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-D1nbHzBj.js",
+    "file": "assets/BusinessIWorkCard-C459MbaA.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
     "imports": [
       "_vendor-react-CZUvQwNQ.js",
-      "_BasicRest-BMJgRso_.js",
-      "_vendor-swiper-Cr_RrIb_.js",
       "resources/js/Components/Tailwind/Checkouts/Components/OpenPayCardModal.jsx",
-      "_BooleanLimit-q2Ad9fGY.js"
+      "_BooleanLimit-q2Ad9fGY.js",
+      "_vendor-swiper-Cr_RrIb_.js"
     ]
   },
   "resources/js/Reutilizables/Pagination/FilterPagination.jsx": {
@@ -10228,7 +10228,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-COL4A_MX.js",
+    "file": "assets/System-BnOT9cgJ.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

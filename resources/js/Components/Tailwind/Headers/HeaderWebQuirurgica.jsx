@@ -126,7 +126,7 @@ const HeaderWebQuirurgica = ({ data, items, pages, generals = [], isUser }) => {
                         </a>
 
                         {/* Company Links - Solo visible cuando está scrolled */}
-                        {isScrolled && companyLinks.length > 0 && (
+                        {isHomePage && isScrolled && companyLinks.length > 0 && (
                             <nav className="hidden lg:flex items-center gap-8 flex-1 justify-end">
                                 {companyLinks.map((link, index) => (
                                     <a

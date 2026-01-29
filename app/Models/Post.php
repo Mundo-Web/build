@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\HasDynamic;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
+ 
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -22,10 +24,17 @@ class Post extends Model
         'post_date',
         'status',
         'slug',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'canonical_url',
+        // Campo booleano para control dinámico de tags en Fillable
+        'is_tags',
     ];
     protected $casts = [
      
         'status' => 'boolean',
+        'is_tags' => 'boolean',
     ];
 
     public function category()

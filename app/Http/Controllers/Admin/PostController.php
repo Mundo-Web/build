@@ -25,8 +25,12 @@ class PostController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $details = WebDetail::where('page', 'blog')->get();
+        $fillable = [
+            'posts' => method_exists(Post::class, 'columns') ? Post::columns() : null
+        ];
         return [
-            'details' => $details
+            'details' => $details,
+            'fillable' => $fillable
         ];
     }
 
@@ -35,27 +39,62 @@ class PostController extends BasicController
         return $model::with(['category', 'tags']);
     }
 
+    public function beforeSave(Request $request)
+    {
+        $data = $request->all();
+        // Generar slug único si no existe o está vacío
+        if (empty($data['slug'])) {
+            $baseSlug = \Illuminate\Support\Str::slug($data['name']);
+            $slug = $baseSlug;
+            $counter = 1;
+            while (\App\Models\Post::where('slug', $slug)->where('id', '!=', $data['id'] ?? null)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            $data['slug'] = $slug;
+        }
+        // Auto-completar meta_title si está vacío
+        if (empty($data['meta_title']) && !empty($data['name'])) {
+            $data['meta_title'] = \Illuminate\Support\Str::limit($data['name'], 60, '');
+        }
+        // Auto-completar meta_description si está vacío
+        if (empty($data['meta_description']) && !empty($data['summary'])) {
+            $cleanSummary = strip_tags($data['summary']);
+            $data['meta_description'] = \Illuminate\Support\Str::limit($cleanSummary, 160, '');
+        }
+        // Auto-completar canonical_url si está vacío
+        if (empty($data['canonical_url']) && !empty($data['slug'])) {
+            $data['canonical_url'] = env('APP_URL') . '/post/' . $data['slug'];
+        }
+        return $data;
+    }
+
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
     {
-        $tags = \explode(',', $request->tags ?? '');
+        // Filtrar tags vacíos
+        $tags = array_filter(
+            array_map('trim', explode(',', $request->tags ?? '')),
+            function($tag) {
+                return !empty($tag);
+            }
+        );
 
         DB::transaction(function () use ($jpa, $tags) {
             // Eliminar tags que ya no están asociados
             PostTag::where('post_id', $jpa->id)->whereNotIn('tag_id', $tags)->delete();
 
             foreach ($tags as $tag) {
+                $tag = trim($tag);
+                if (empty($tag)) continue;
                 if (Uuid::isValid($tag)) {
-                    // Es un UUID existente
                     $tagId = $tag;
                 } else {
-                    // Es un nuevo tag
                     $tagJpa = Tag::firstOrCreate(
                         ['name' => $tag, 'tag_type' => 'post'],
                         ['tag_type' => 'post']
                     );
                     $tagId = $tagJpa->id;
                 }
-
                 PostTag::updateOrCreate([
                     'post_id' => $jpa->id,
                     'tag_id' => $tagId
@@ -64,12 +103,8 @@ class PostController extends BasicController
         });
 
         // Notificar a los suscriptores si es nuevo blog (usando colas)
-        //Crear un jobs
         if ($isNew) {
-           SendPostEmailsJob::dispatchAfterResponse(
-                $jpa
-            );
-
+           SendPostEmailsJob::dispatchAfterResponse($jpa);
         }
     }
 }
