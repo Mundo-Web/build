@@ -135,6 +135,16 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
                                         Libro de reclamaciones
                                     </span>
+                                    <img
+                                        src={`/assets/resources/libro-reclamaciones.png?v=${crypto.randomUUID()}`}
+                                        alt={Global.APP_NAME}
+                                        className={`w-9/12 lg:w-7/12 object-contain object-center ${data?.class_logo || ""}`}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = "/assets/img/logo-bk.svg";
+                                            e.style.display = "none";
+                                        }}
+                                    />
 
                                 </a>
                             </li>

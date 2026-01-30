@@ -96,6 +96,16 @@
         "description": "Imagen del formulario de desusbrirse de la web",
         "src": "unsubscribe.png",
         "fit": "cover",
-        "aspect": "3\/4"
+        "aspect": "3\/4",
+        "is_visible": true
+    },
+    {
+        "name": "Imagen de Libro de Reclamaciones",
+        "title": "Imagen de Libro de Reclamaciones",
+        "filename": "libro-reclamaciones",
+        "description": "Imagen del formulario de libro de reclamaciones",
+        "src": "libro-reclamaciones.png",
+        "fit": "cover",
+        "aspect": "3\/2"
     }
 ]
