@@ -1009,7 +1009,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-T8w4cdk6.js",
+    "file": "assets/Banners-BV1t8WzU.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -1018,6 +1018,7 @@
       "_vendor-react-CZUvQwNQ.js",
       "_Base-DiYyKRe5.js",
       "_TextareaFormGroup-dfKTDx8M.js",
+      "_CreateReactScript-CQzKJRc_.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "_BasicRest-BMJgRso_.js",
       "_SystemRest-CsoGJtTd.js",
@@ -1028,7 +1029,6 @@
       "_Table-DXr0fbw5.js",
       "_DxButton-C6FT_beP.js",
       "_InputFormGroup-BuXn3s3l.js",
-      "_CreateReactScript-CQzKJRc_.js",
       "_ReactAppend-Db2K6xCH.js",
       "_SortByAfterField-DzAI86wF.js",
       "_bannerUtils-FB4i6ekV.js",
@@ -1038,10 +1038,10 @@
       "_Logout-D6byb_Ua.js",
       "_MenuItemContainer-BaCqn8PU.js",
       "resources/js/Components/Adminto/Menu.jsx",
-      "resources/js/Components/Tailwind/Checkouts/Components/OpenPayCardModal.jsx",
-      "_BooleanLimit-q2Ad9fGY.js",
       "_General-ClVW7qxN.js",
-      "_LaravelSession-ByQnaUD3.js"
+      "_LaravelSession-ByQnaUD3.js",
+      "_BooleanLimit-q2Ad9fGY.js",
+      "resources/js/Components/Tailwind/Checkouts/Components/OpenPayCardModal.jsx"
     ],
     "dynamicImports": [
       "resources/js/Components/Tailwind/Banner.jsx"

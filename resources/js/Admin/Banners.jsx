@@ -1,5 +1,6 @@
 import BaseAdminto from "@Adminto/Base";
 import TextareaFormGroup from "@Adminto/form/TextareaFormGroup";
+import Fillable from "../Utils/Fillable";
 import React, {
     Suspense,
     lazy,
@@ -99,10 +100,13 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const [previewScale, setPreviewScale] = useState(1);
     const [previewHeight, setPreviewHeight] = useState(PREVIEW_MIN_HEIGHT);
     const [isIframeReady, setIsIframeReady] = useState(false);
+
+    // Derived state for preview
     const previewType = previewData.type || "BannerSimple";
 
     const [isMultiDescription, setIsMultiDescription] = useState(false);
-    const [descriptionList, setDescriptionList] = useState(['']);
+    const [isAbsolute, setIsAbsolute] = useState(false);
+    const [descriptionList, setDescriptionList] = useState([]);
 
     const handleMultiDescriptionChange = (index, value) => {
         const newList = [...descriptionList];
@@ -427,15 +431,17 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             const normalized = Array.isArray(rawValue) ? rawValue[0] : rawValue;
             const finalValue = normalized || "BannerSimple";
 
-            // Actualizar el estado de preview data inmediatamente
+            // Actualizar el estado de previsualización PRIMERO
             handlePreviewFieldChange("type", finalValue);
         },
         [handlePreviewFieldChange]
     );
 
     const handleAbsoluteChange = useCallback(
-        (event) => {
-            handlePreviewFieldChange("contenedor", event.target.checked ? "absoluto" : "relativo");
+        (e) => { // Accept event or boolean
+            const checked = e && e.target ? e.target.checked : e;
+            setIsAbsolute(checked);
+            handlePreviewFieldChange("contenedor", checked ? 'absoluto' : 'relativo');
         },
         [handlePreviewFieldChange]
     );
@@ -664,6 +670,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
         if (absoluteRef.current) {
             absoluteRef.current.checked = previewSnapshot.contenedor === 'absoluto';
+            setIsAbsolute(previewSnapshot.contenedor === 'absoluto');
         }
 
         // Nuevos campos
@@ -1165,176 +1172,216 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                         </div>
                     </div>
                     <div className="col-12 col-lg-7 order-2 order-lg-1">
-                        <div className="row">
-                            <div className="col-md-6">
+
+                        <ul className="nav nav-pills nav-justified mb-3" id="bannerTabs" role="tablist">
+                            <li className="nav-item" role="presentation">
+                                <button className="nav-link active" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
+                                    <i className="fa fa-cog me-1"></i> General
+                                </button>
+                            </li>
+                            <li className="nav-item" role="presentation">
+                                <button className="nav-link" id="content-tab" data-bs-toggle="pill" data-bs-target="#content" type="button" role="tab" aria-controls="content" aria-selected="false">
+                                    <i className="fa fa-align-left me-1"></i> Contenido
+                                </button>
+                            </li>
+                            <li className="nav-item" role="presentation">
+                                <button className="nav-link" id="images-tab" data-bs-toggle="pill" data-bs-target="#images" type="button" role="tab" aria-controls="images" aria-selected="false">
+                                    <i className="fa fa-image me-1"></i> Imágenes
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div className="tab-content" id="bannerTabsContent">
+                            {/* General Tab */}
+                            <div className="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <SelectFormGroup
+                                            eRef={bannerTypeRef}
+                                            label="Tipo de Banner"
+                                            dropdownParent={"#banner-container"}
+                                            onChange={onBannerTypeChange}
+                                        >
+                                            {bannerTypes.map(type => (
+                                                <option key={type.id} value={type.id}>
+                                                    {type.name}
+                                                </option>
+                                            ))}
+                                        </SelectFormGroup>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <SelectFormGroup
+                                            eRef={pageIdRef}
+                                            label="Página"
+                                            onChange={onPageChange}
+                                            dropdownParent={"#banner-container"}
+                                        >
+                                            <option value="">Base Template</option>
+                                            {pages.map(page => (
+                                                <option key={page.id} value={page.id}>
+                                                    {page.name}
+                                                </option>
+                                            ))}
+                                        </SelectFormGroup>
+                                    </div>
+                                </div>
+
                                 <SelectFormGroup
-                                    eRef={bannerTypeRef}
-                                    label="Tipo de Banner"
-                                    dropdownParent={"#banner-container"}
-                                    onChange={onBannerTypeChange}
+                                    eRef={afterComponentRef}
+                                    label="Posición (después de)"
+                                    dropdownParent="#banner-container"
+                                    changeWith={[selectedPageId]}
                                 >
-                                    {bannerTypes.map(type => (
-                                        <option key={type.id} value={type.id}>
-                                            {type.name}
+                                    <option value="">Al inicio</option>
+                                    {availableComponents.map(component => (
+                                        <option key={component.id} value={component.id}>
+                                            {component.name}
                                         </option>
                                     ))}
                                 </SelectFormGroup>
-                            </div>
-                            <div className="col-md-6">
-                                <SelectFormGroup
-                                    eRef={pageIdRef}
-                                    label="Página"
-                                    onChange={onPageChange}
-                                    dropdownParent={"#banner-container"}
-                                >
-                                    <option value="">Base Template</option>
-                                    {pages.map(page => (
-                                        <option key={page.id} value={page.id}>
-                                            {page.name}
-                                        </option>
-                                    ))}
-                                </SelectFormGroup>
-                            </div>
-                        </div>
 
-                        <SelectFormGroup
-                            eRef={afterComponentRef}
-                            label="Posición (después de)"
-                            dropdownParent="#banner-container"
-                            changeWith={[selectedPageId]}
-                        >
-                            <option value="">Al inicio</option>
-                            {availableComponents.map(component => (
-                                <option key={component.id} value={component.id}>
-                                    {component.name}
-                                </option>
-                            ))}
-                        </SelectFormGroup>
-
-                        <ImageFormGroup
-                            eRef={backgroundRef}
-                            name="background"
-                            label="Fondo"
-                            onChange={handleImageChange("background")}
-                        />
-
-                        <div className="row">
-                            <div className="col-sm-6">
-                                <ImageFormGroup
-                                    eRef={imageRef}
-                                    name="image"
-                                    label="Imagen"
-                                    aspect={1}
-                                    onChange={handleImageChange("image")}
-                                />
+                                {Fillable.has('banners', 'contenedor') && (
+                                    <div className="form-group mt-3">
+                                        <SwitchFormGroup
+                                            eRef={absoluteRef}
+                                            label="Posición Absoluta (Overlay)"
+                                            checked={isAbsolute}
+                                            onChange={handleAbsoluteChange}
+                                        />
+                                        <small className="text-muted d-block mt-1">
+                                            Marca esta opción para posicionamiento absoluto de la imagen
+                                        </small>
+                                    </div>
+                                )}
                             </div>
-                            <div className="col-sm-6">
+
+                            {/* Content Tab */}
+                            <div className="tab-pane fade" id="content" role="tabpanel" aria-labelledby="content-tab">
                                 <TextareaFormGroup
                                     eRef={nameRef}
-                                    label="Titulo"
+                                    label="Titulo Principal"
                                     rows={2}
                                     onChange={(event) => handlePreviewFieldChange("name", event.target.value)}
                                 />
-                                {isMultiDescription ? (
-                                    <div className="form-group">
-                                        <label>Descripción (Múltiple)</label>
-                                        {descriptionList.map((desc, index) => (
-                                            <div key={index} className="d-flex mb-2">
-                                                <textarea
-                                                    className="form-control"
-                                                    value={desc}
-                                                    onChange={(e) => handleMultiDescriptionChange(index, e.target.value)}
-                                                    rows={2}
-                                                />
+
+                                {Fillable.has('banners', 'description') && (
+                                    <div className="form-group mb-3 border rounded p-3 bg-light">
+
+                                        <div className="d-flex justify-content-between align-items-center mb-2">
+
+                                            <label className="mb-0 fw-bold">Descripción / Contenido</label>
+                                            {Fillable.has('banners', 'multi_description') && (
+                                                <div className="d-flex align-items-center">
+                                                    <span className="me-3 fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Modo Lista</span>
+                                                    <SwitchFormGroup
+                                                        id="multiDescSwitch"
+                                                        label={null}
+                                                        col="mb-0"
+                                                        checked={isMultiDescription}
+                                                        onChange={(checked) => {
+                                                            setIsMultiDescription(checked);
+                                                            handlePreviewFieldChange("multi_description", checked);
+                                                            if (checked) {
+                                                                const currentVal = descriptionRef.current?.value || '';
+                                                                const newList = [currentVal];
+                                                                setDescriptionList(newList);
+                                                                handlePreviewFieldChange("description", newList);
+                                                            } else {
+                                                                const combined = descriptionList.join('\n');
+                                                                if (descriptionRef.current) descriptionRef.current.value = combined;
+                                                                handlePreviewFieldChange("description", combined);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {isMultiDescription ? (
+                                            <div className="multi-description-container">
+                                                {descriptionList.map((item, index) => (
+                                                    <div key={index} className="d-flex mb-2 align-items-center">
+                                                        <div className="flex-grow-1 me-2">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                value={item}
+                                                                onChange={(e) => handleMultiDescriptionChange(index, e.target.value)}
+                                                                placeholder={`Párrafo/Item ${index + 1}`}
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-danger btn-sm"
+                                                            onClick={() => removeDescription(index)}
+                                                            disabled={descriptionList.length === 1}
+                                                            title="Eliminar línea"
+                                                        >
+                                                            <i className="fa fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                ))}
                                                 <button
                                                     type="button"
-                                                    className="btn btn-outline-danger ms-2"
-                                                    onClick={() => removeDescription(index)}
+                                                    className="btn btn-primary btn-sm mt-1"
+                                                    onClick={addDescription}
                                                 >
-                                                    <i className="fa fa-trash"></i>
+                                                    <i className="fa fa-plus me-1"></i> Agregar línea
                                                 </button>
                                             </div>
-                                        ))}
-                                        <button
-                                            type="button"
-                                            className="btn btn-sm btn-outline-primary mt-1"
-                                            onClick={addDescription}
-                                        >
-                                            <i className="fa fa-plus me-1"></i> Agregar párrafo
-                                        </button>
+                                        ) : (
+                                            <TextareaFormGroup
+                                                eRef={descriptionRef}
+                                                label="Descripción"
+                                                rows={2}
+                                                onChange={(e) => handlePreviewFieldChange("description", e.target.value)}
+                                            />
+                                        )}
                                     </div>
-                                ) : (
-                                    <TextareaFormGroup
-                                        eRef={descriptionRef}
-                                        label="Descripción"
-                                        rows={2}
-                                        onChange={(event) => handlePreviewFieldChange("description", event.target.value)}
-                                    />
                                 )}
 
-                                <div className="form-group mb-3">
-                                    <div className="custom-control custom-switch">
-                                        <input
-                                            type="checkbox"
-                                            className="custom-control-input"
-                                            id="multiDescSwitch"
-                                            checked={isMultiDescription}
-                                            onChange={(e) => {
-                                                const newVal = e.target.checked;
-                                                setIsMultiDescription(newVal);
-                                                handlePreviewFieldChange("multi_description", newVal);
-                                                if (newVal) {
-                                                    // Switching to multi: use current text as first item
-                                                    const currentVal = descriptionRef.current?.value || '';
-                                                    const newList = [currentVal];
-                                                    setDescriptionList(newList);
-                                                    handlePreviewFieldChange("description", newList);
-                                                } else {
-                                                    // Switching to single: join items? or take first?
-                                                    // Let's join with newline
-                                                    const combined = descriptionList.join('\n');
-                                                    if (descriptionRef.current) descriptionRef.current.value = combined;
-                                                    handlePreviewFieldChange("description", combined);
-                                                }
-                                            }}
+                                {Fillable.has('banners', 'button_text') && (
+                                    <div className="row">
+                                        <InputFormGroup
+                                            col="col-md-6"
+                                            eRef={buttonTextRef}
+                                            label="Texto del botón"
+                                            onChange={(e) => handlePreviewFieldChange("button_text", e.target.value)}
                                         />
-                                        <label className="custom-control-label" htmlFor="multiDescSwitch">
-                                            Usar múltiples párrafos
-                                        </label>
+                                        {Fillable.has('banners', 'button_link') && (
+                                            <InputFormGroup
+                                                col="col-md-6"
+                                                eRef={buttonLinkRef}
+                                                label="Enlace del botón"
+                                                onChange={(e) => handlePreviewFieldChange("button_link", e.target.value)}
+                                            />
+                                        )}
                                     </div>
-                                </div>
-                                <InputFormGroup
-                                    eRef={buttonTextRef}
-                                    label="Texto botón"
-                                    onChange={(event) => handlePreviewFieldChange("button_text", event.target.value)}
-                                />
+                                )}
                             </div>
-                        </div>
 
-                        <InputFormGroup
-                            eRef={buttonLinkRef}
-                            label="URL botón"
-                            onChange={(event) => handlePreviewFieldChange("button_link", event.target.value)}
-                        />
-
-                        <div className="form-group row">
-                            <label className="col-sm-3 col-form-label">Posición</label>
-                            <div className="col-sm-9">
-                                <div className="custom-control custom-switch">
-                                    <input
-                                        type="checkbox"
-                                        className="custom-control-input"
-                                        id="absoluteSwitch"
-                                        ref={absoluteRef}
-                                        onChange={handleAbsoluteChange}
+                            {/* Images Tab */}
+                            <div className="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                {Fillable.has('banners', 'image') && (
+                                    <ImageFormGroup
+                                        eRef={imageRef}
+                                        label="Imagen (Frontal / Principal)"
+                                        col="col-12"
+                                        aspectRatio={4 / 3} // Aspect ratio aproximado, ajustable
+                                        onChange={handleImageChange('image')}
+                                        deleteable
                                     />
-                                    <label className="custom-control-label" htmlFor="absoluteSwitch">
-                                        Imagen absoluta
-                                    </label>
-                                </div>
-                                <small className="form-text text-muted">
-                                    Marca esta opción para posicionamiento absoluto de la imagen
-                                </small>
+                                )}
+                                {Fillable.has('banners', 'background') && (
+                                    <ImageFormGroup
+                                        eRef={backgroundRef}
+                                        label="Fondo (Background)"
+                                        col="col-12"
+                                        aspectRatio={16 / 9}
+                                        onChange={handleImageChange('background')}
+                                        deleteable
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>

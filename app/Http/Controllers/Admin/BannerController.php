@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\BasicController;
 use App\Http\Controllers\Controller;
 use App\Models\System;
+use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use SoDe\Extend\File;
@@ -18,7 +19,7 @@ use SoDe\Extend\Text;
 
 class BannerController extends BasicController
 {
-    public $model = System::class;
+    public $model = Banner::class;
     public $reactView = 'Admin/Banners';
     public $imageFields = ['background', 'image'];
     public $softDeletion = false;
@@ -29,7 +30,10 @@ class BannerController extends BasicController
         $systems = System::all(); // Agregar los sistemas para el posicionamiento
         return [
             'pages' => $pages,
-            'systems' => $systems
+            'systems' => $systems,
+            'fillable' => [
+                'banners' => \App\Models\Banner::columns()
+            ]
         ];
     }
 
