@@ -141,9 +141,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         className={`w-9/12 lg:w-7/12 object-contain object-center ${data?.class_logo || ""}`}
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = "";
-                                            e.style.display = "none";
-
+                                            e.target.style.display = "none";
                                         }}
                                     />
 
