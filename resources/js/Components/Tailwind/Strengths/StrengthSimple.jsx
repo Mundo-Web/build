@@ -251,7 +251,7 @@ const StrengthSimple = ({ items, data }) => {
                     className="text-center mb-16"
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: true, margin: "-100px" }}
+                    viewport={{ once: true, amount: 0.3 }}
                     variants={containerVariants}
                 >
                     <motion.h2
@@ -261,7 +261,7 @@ const StrengthSimple = ({ items, data }) => {
                         {data?.title || '¿Por Qué Elegirnos?'}
                     </motion.h2>
                     <motion.p
-                        className="text-lg sm:text-xl text-neutral-dark max-w-3xl mx-auto"
+                        className="text-lg md:text-xl lg:text-2xl  text-neutral-dark max-w-3xl mx-auto"
                         variants={titleVariants}
                     >
                         {data?.subtitle || 'No solo vendemos material, entregamos soluciones completas para el éxito de tus proyectos'}
@@ -269,7 +269,13 @@ const StrengthSimple = ({ items, data }) => {
                 </motion.div>
 
                 {/* Mobile: Swiper carousel */}
-                <div className="block md:hidden overflow-hidden relative">
+                <motion.div
+                    className="block md:hidden overflow-hidden relative"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={containerVariants}
+                >
                     <Swiper
                         modules={[Autoplay]}
                         spaceBetween={16}
@@ -305,22 +311,22 @@ const StrengthSimple = ({ items, data }) => {
                                     }}
                                     aria-label={`Ir al slide ${index + 1}`}
                                     className={`transition-all duration-300 rounded-full ${index === activeIndex
-                                            ? 'w-12 h-3 bg-primary'
-                                            : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
+                                        ? 'w-12 h-3 bg-primary'
+                                        : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
                                         }`}
                                 />
                             ))}
                         </div>
                     )}
-                </div>
+                </motion.div>
 
                 {/* Desktop: Grid layout */}
                 <div className="hidden md:block">
                     {/* Primera fila */}
                     <motion.div
                         className={`grid gap-8 mb-8 ${firstRow.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' :
-                                firstRow.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
-                                    'md:grid-cols-2 lg:grid-cols-3'
+                            firstRow.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
+                                'md:grid-cols-2 lg:grid-cols-3'
                             }`}
                         initial="hidden"
                         whileInView="visible"
@@ -335,8 +341,8 @@ const StrengthSimple = ({ items, data }) => {
                         <motion.div
                             key={rowIndex}
                             className={`grid gap-8 mb-8 ${row.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' :
-                                    row.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
-                                        'md:grid-cols-2 lg:grid-cols-3'
+                                row.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
+                                    'md:grid-cols-2 lg:grid-cols-3'
                                 }`}
                             initial="hidden"
                             whileInView="visible"
@@ -349,8 +355,17 @@ const StrengthSimple = ({ items, data }) => {
                 </div>
                 {/* Footer opcional */}
                 {data?.footer_text && (
-                    <div className="mt-16 text-center">
-                        <div className="relative inline-block rounded-2xl overflow-hidden shadow-2xl">
+                    <motion.div
+                        className="mt-16 text-center"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={containerVariants}
+                    >
+                        <motion.div
+                            className="relative inline-block rounded-2xl overflow-hidden shadow-2xl"
+                            variants={cardVariants}
+                        >
                             {data?.footer_image && (
                                 <div className="absolute inset-0">
                                     <img
@@ -372,8 +387,8 @@ const StrengthSimple = ({ items, data }) => {
                                     </p>
                                 )}
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </div>
         </section>

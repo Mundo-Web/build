@@ -104,22 +104,22 @@ const buttonHover = {
 };
 
 const inputFocus = {
-    rest: { 
+    rest: {
         borderColor: "#cbd5e1",
         boxShadow: "none",
         scale: 1,
     },
     focus: {
-        borderColor: "#3b82f6",
-        boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)",
+        borderColor: "0",
+
         scale: 1.01,
         transition: { duration: 0.2 },
     },
 };
 
 const cardHover = {
-    rest: { 
-        y: 0, 
+    rest: {
+        y: 0,
         boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
         scale: 1,
     },
@@ -131,240 +131,267 @@ const cardHover = {
     },
 };
 
-const ContactKatya= ({  data,generals=[] }) => {
- 
- 
- 
-const messagesRest = new MessagesRest();
-
-// Opción 1: Deshabilitar notificaciones automáticas para usar notificaciones personalizadas
-messagesRest.enableNotifications = false;
-
-// Opción 2: Usando method chaining (alternativa más elegante)
-// const messagesRest = new MessagesRest().withoutNotifications();
-
-// Opción 3: Usando el método setNotifications
-// const messagesRest = new MessagesRest().setNotifications(false);
+const ContactKatya = ({ data, generals = [] }) => {
 
 
-const nameRef = useRef()
-  const phoneRef = useRef()
-  const emailRef = useRef()
-  const descriptionRef = useRef()
+
+    const messagesRest = new MessagesRest();
+
+    // Opción 1: Deshabilitar notificaciones automáticas para usar notificaciones personalizadas
+    messagesRest.enableNotifications = false;
+
+    // Opción 2: Usando method chaining (alternativa más elegante)
+    // const messagesRest = new MessagesRest().withoutNotifications();
+
+    // Opción 3: Usando el método setNotifications
+    // const messagesRest = new MessagesRest().setNotifications(false);
+
+
+    const nameRef = useRef()
+    const phoneRef = useRef()
+    const emailRef = useRef()
+    const descriptionRef = useRef()
     const lastnameRef = useRef()
 
-  const [sending, setSending] = useState(false)
+    const [sending, setSending] = useState(false)
 
-  // Función para limpiar el formulario
-  const clearForm = () => {
-    const fields = [nameRef, lastnameRef, phoneRef, emailRef, descriptionRef];
-    
-    fields.forEach((ref, index) => {
-      if (ref.current) {
-        // Pequeño delay para crear efecto de limpieza secuencial
-        setTimeout(() => {
-          ref.current.value = "";
-          // Opcional: agregar una pequeña animación visual
-          ref.current.style.transform = 'scale(0.98)';
-          setTimeout(() => {
-            ref.current.style.transform = 'scale(1)';
-          }, 100);
-        }, index * 50);
-      }
-    });
-  }
+    // Función para limpiar el formulario
+    const clearForm = () => {
+        const fields = [nameRef, lastnameRef, phoneRef, emailRef, descriptionRef];
 
-  const onSubmit = async (e) => {
-    e.preventDefault()
-    if (sending) return
-    setSending(true)
-
-    const request = {
-      name: nameRef.current.value + ' ' + lastnameRef.current.value,
-      phone: phoneRef.current.value,
-      email: emailRef.current.value,
-      message: descriptionRef.current.value,
-     
+        fields.forEach((ref, index) => {
+            if (ref.current) {
+                // Pequeño delay para crear efecto de limpieza secuencial
+                setTimeout(() => {
+                    ref.current.value = "";
+                    // Opcional: agregar una pequeña animación visual
+                    ref.current.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        ref.current.style.transform = 'scale(1)';
+                    }, 100);
+                }, index * 50);
+            }
+        });
     }
 
-    console.log('ContactKatya - Enviando datos:', request);
+    const onSubmit = async (e) => {
+        e.preventDefault()
+        if (sending) return
+        setSending(true)
 
-    try {
-      const result = await messagesRest.save(request);
-      setSending(false)
+        const request = {
+            name: nameRef.current.value + ' ' + lastnameRef.current.value,
+            phone: phoneRef.current.value,
+            email: emailRef.current.value,
+            message: descriptionRef.current.value,
 
-      if (!result) {
-        // Mostrar error personalizado ya que las notificaciones automáticas están deshabilitadas
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
-          confirmButtonText: 'Entendido'
-        })
-        return
-      }
-
-      // Mostrar éxito personalizado
-      Swal.fire({
-        icon: 'success',
-        title: 'Mensaje enviado',
-        text: 'Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto contigo pronto!',
-        showConfirmButton: false,
-        timer: 3000
-      })
-
-      // Enviar lead a Atalaya CRM si existe API Key configurado
-      const atalayaApiKey = generalsData.find(item => item.correlative === "atalaya_leads_api_key")?.description;
-      if (atalayaApiKey && atalayaApiKey.trim() !== '') {
-        try {
-          console.log('ContactKatya - Enviando lead a Atalaya CRM...');
-          const atalayaResponse = await fetch('https://crm.atalaya.pe/free/leads', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${atalayaApiKey}`
-            },
-            body: JSON.stringify({
-              contact_name: nameRef.current.value + ' ' + lastnameRef.current.value,
-              contact_phone: phoneRef.current.value,
-              contact_email: emailRef.current.value,
-              message: descriptionRef.current.value,
-              origin: `Página Web ${Global.APP_NAME}`,
-              triggered_by: 'Formulario de Contacto'
-            })
-          });
-
-          const atalayaResult = await atalayaResponse.json();
-          if (atalayaResult.status === 200) {
-            console.log('ContactKatya - Lead enviado correctamente a Atalaya:', atalayaResult.message);
-          } else {
-            console.warn('ContactKatya - Error al enviar lead a Atalaya:', atalayaResult);
-          }
-        } catch (atalayaError) {
-          // No mostrar error al usuario, solo log interno
-          console.error('ContactKatya - Error al enviar a Atalaya CRM:', atalayaError);
         }
-      }
 
-      // Verificar si hay redirección en data (como ContactGrid)
-      if (data?.redirect) {
-        setTimeout(() => {
-          window.location.href = data.redirect;
-        }, 3000);
-      }
-      // También verificar si viene en result
-      else if (result.redirect) {
-        setTimeout(() => {
-          window.location.href = result.redirect;
-        }, 3000);
-      }
+        console.log('ContactKatya - Enviando datos:', request);
 
-      // Limpiar los campos del formulario
-      clearForm()
-    } catch (error) {
-      console.error('ContactKatya - Error al enviar:', error);
-      setSending(false);
-      
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
-        confirmButtonText: 'Entendido'
-      });
+        try {
+            const result = await messagesRest.save(request);
+            setSending(false)
+
+            if (!result) {
+                // Mostrar error personalizado ya que las notificaciones automáticas están deshabilitadas
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
+                    confirmButtonText: 'Entendido'
+                })
+                return
+            }
+
+            // Mostrar éxito personalizado
+            Swal.fire({
+                icon: 'success',
+                title: 'Mensaje enviado',
+                text: 'Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto contigo pronto!',
+                showConfirmButton: false,
+                timer: 3000
+            })
+
+            // Enviar lead a Atalaya CRM si existe API Key configurado
+            const atalayaApiKey = generalsData.find(item => item.correlative === "atalaya_leads_api_key")?.description;
+            if (atalayaApiKey && atalayaApiKey.trim() !== '') {
+                try {
+                    console.log('ContactKatya - Enviando lead a Atalaya CRM...');
+                    const atalayaResponse = await fetch('https://crm.atalaya.pe/free/leads', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${atalayaApiKey}`
+                        },
+                        body: JSON.stringify({
+                            contact_name: nameRef.current.value + ' ' + lastnameRef.current.value,
+                            contact_phone: phoneRef.current.value,
+                            contact_email: emailRef.current.value,
+                            message: descriptionRef.current.value,
+                            origin: `Página Web ${Global.APP_NAME}`,
+                            triggered_by: 'Formulario de Contacto'
+                        })
+                    });
+
+                    const atalayaResult = await atalayaResponse.json();
+                    if (atalayaResult.status === 200) {
+                        console.log('ContactKatya - Lead enviado correctamente a Atalaya:', atalayaResult.message);
+                    } else {
+                        console.warn('ContactKatya - Error al enviar lead a Atalaya:', atalayaResult);
+                    }
+                } catch (atalayaError) {
+                    // No mostrar error al usuario, solo log interno
+                    console.error('ContactKatya - Error al enviar a Atalaya CRM:', atalayaError);
+                }
+            }
+
+            // Verificar si hay redirección en data (como ContactGrid)
+            if (data?.redirect) {
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 3000);
+            }
+            // También verificar si viene en result
+            else if (result.redirect) {
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 3000);
+            }
+
+            // Limpiar los campos del formulario
+            clearForm()
+        } catch (error) {
+            console.error('ContactKatya - Error al enviar:', error);
+            setSending(false);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
+                confirmButtonText: 'Entendido'
+            });
+        }
     }
-  }
 
 
 
 
 
-  
-   
- 
-const generalsData = generals || [];
 
-  //location = -12.08572604235328,-76.99121088594794
 
-  const location = generalsData.find(item => item.correlative === "location")?.description || "-12.08572604235328,-76.99121088594794";
-  const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&q=${location}`;
-  const mapSrcWithZoom = `${mapSrc}&zoom=50`;
-  const mapSrcWithOutput = `${mapSrc}&output=embed`;
-  const mapSrcWithEmbed = `${mapSrc}&embed=true`;
-  const mapSrcWithLocation = `https://www.google.com/maps?q=${location}&z=16&output=embed`;
-  const mapSrcWithLocationAndZoom = `https://www.google.com/maps?q=${location}&z=16&output=embed`;
-  const mapSrcWithLocationAndEmbed = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
-  const mapSrcWithLocationAndOutput = `https://www.google.com/maps?q=${location}&z=16&output=embed`;
-  const mapSrcWithLocationAndEmbedAndZoom = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
-  const mapSrcWithLocationAndEmbedAndOutput = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
-  const mapSrcWithLocationAndEmbedAndOutputAndZoom = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
-  const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKey = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p`;
-  const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutput = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed`;
-  const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutputAndEmbed = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed&embed=true`;
-  const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutputAndEmbedAndZoom = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed&embed=true&zoom=12`;
- console.log("data katya",data);
+
+    const generalsData = generals || [];
+
+    //location = -12.08572604235328,-76.99121088594794
+
+    const location = generalsData.find(item => item.correlative === "location")?.description || "-12.08572604235328,-76.99121088594794";
+    const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&q=${location}`;
+    const mapSrcWithZoom = `${mapSrc}&zoom=50`;
+    const mapSrcWithOutput = `${mapSrc}&output=embed`;
+    const mapSrcWithEmbed = `${mapSrc}&embed=true`;
+    const mapSrcWithLocation = `https://www.google.com/maps?q=${location}&z=16&output=embed`;
+    const mapSrcWithLocationAndZoom = `https://www.google.com/maps?q=${location}&z=16&output=embed`;
+    const mapSrcWithLocationAndEmbed = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
+    const mapSrcWithLocationAndOutput = `https://www.google.com/maps?q=${location}&z=16&output=embed`;
+    const mapSrcWithLocationAndEmbedAndZoom = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
+    const mapSrcWithLocationAndEmbedAndOutput = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
+    const mapSrcWithLocationAndEmbedAndOutputAndZoom = `https://www.google.com/maps?q=${location}&z=16&output=embed&embed=true`;
+    const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKey = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p`;
+    const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutput = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed`;
+    const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutputAndEmbed = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed&embed=true`;
+    const mapSrcWithLocationAndEmbedAndOutputAndZoomAndKeyAndOutputAndEmbedAndZoom = `https://www.google.com/maps?q=${location}&z=12&output=embed&embed=true&key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&output=embed&embed=true&zoom=12`;
+    console.log("data katya", data);
     return (
-        <motion.div 
+        <motion.div
             id={data?.element_id || 'contact-katya'}
             className={`font-paragraph text-neutral-dark-dark min-h-screen ${data?.class_section || ''}`}
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
-         
-            <motion.main 
+
+            <motion.main
                 className="flex flex-col items-center justify-center min-h-[80vh] py-16"
                 variants={itemVariants}
             >
-                <motion.div 
+                <motion.div
                     className="w-full px-[5%] 2xl:max-w-7xl 2xl:px-0 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 xl:gap-20 bg-transparent"
                     variants={containerVariants}
                 >
                     {/* Left: Contact Form */}
-                    <motion.div 
+                    <motion.div
                         className={`bg-sections-color rounded-2xl p-8 flex flex-col justify-between shadow-md min-h-[500px] ${data?.class_form_container || ''}`}
                         variants={slideInLeft}
                         whileHover={{ y: -5, transition: { duration: 0.3 } }}
                     >
                         <div>
-                           
-                       
 
-                        {/* Título principal */}
-                        <motion.h2 
-                            className={`text-4xl lg:text-5xl font-medium mb-6 leading-tight ${data?.class_title || ''}`}
-                            variants={itemVariants}
-                        >
 
-                            {data?.title || "Necesita ayuda, contáctenos ahora"}
-                       
-                        </motion.h2>
-                          
-                        <motion.p 
-                            className={`mt-4 text-base text-neutral-dark max-w-3xl mx-auto ${data?.class_description || ''}`}
-                            variants={itemVariants}
-                        >
-                          {data?.description || ""}
-                        </motion.p>
+
+                            {/* Título principal */}
+                            <motion.h2
+                                className={`text-4xl lg:text-5xl font-medium mb-6 leading-tight ${data?.class_title || ''}`}
+                                variants={itemVariants}
+                            >
+
+                                {data?.title || "Necesita ayuda, contáctenos ahora"}
+
+                            </motion.h2>
+
+                            <motion.p
+                                className={`mt-4 text-base text-neutral-dark max-w-3xl mx-auto ${data?.class_description || ''}`}
+                                variants={itemVariants}
+                            >
+                                {data?.description || ""}
+                            </motion.p>
                         </div>
 
 
-                        
+
                         {/* Contact Form */}
-                        <motion.form 
-                            onSubmit={onSubmit} 
+                        <motion.form
+                            onSubmit={onSubmit}
                             className={`w-full flex flex-col gap-4 mt-2`}
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
                         >
-                            <motion.div 
+                            <motion.div
                                 className="flex flex-col xl:flex-row gap-3"
                                 variants={itemVariants}
                             >
-                                <motion.input 
-                                    ref={nameRef} 
-                                    type="text" 
-                                    placeholder="Nombre" 
+                                <motion.input
+                                    ref={nameRef}
+                                    type="text"
+                                    placeholder="Nombre"
+                                    className="flex-1  rounded-md px-4 py-3 text-base focus:outline-none focus:ring-0 transition-all duration-200"
+                                    variants={inputFocus}
+                                    initial="rest"
+                                    whileFocus="focus"
+                                    whileHover={{ scale: 1.01 }}
+                                    style={{ transition: 'transform 0.2s ease-in-out' }}
+                                />
+                                <motion.input
+                                    ref={lastnameRef}
+                                    type="text"
+                                    placeholder="Apellido"
+                                    className="flex-1  rounded-md px-4 py-3 text-base focus:outline-none focus:ring-0 transition-all duration-200"
+                                    variants={inputFocus}
+                                    initial="rest"
+                                    whileFocus="focus"
+                                    whileHover={{ scale: 1.01 }}
+                                    style={{ transition: 'transform 0.2s ease-in-out' }}
+                                />
+                            </motion.div>
+                            <motion.div
+                                className="flex flex-col xl:flex-row gap-3"
+                                variants={itemVariants}
+                            >
+                                <motion.input
+                                    ref={phoneRef}
+                                    type="text"
+                                    placeholder="Teléfono"
                                     className="flex-1  rounded-md px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                                     variants={inputFocus}
                                     initial="rest"
@@ -372,10 +399,10 @@ const generalsData = generals || [];
                                     whileHover={{ scale: 1.01 }}
                                     style={{ transition: 'transform 0.2s ease-in-out' }}
                                 />
-                                <motion.input 
-                                    ref={lastnameRef} 
-                                    type="text" 
-                                    placeholder="Apellido" 
+                                <motion.input
+                                    ref={emailRef}
+                                    type="email"
+                                    placeholder="Correo electrónico"
                                     className="flex-1  rounded-md px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                                     variants={inputFocus}
                                     initial="rest"
@@ -384,45 +411,18 @@ const generalsData = generals || [];
                                     style={{ transition: 'transform 0.2s ease-in-out' }}
                                 />
                             </motion.div>
-                            <motion.div 
-                                className="flex flex-col xl:flex-row gap-3"
-                                variants={itemVariants}
-                            >
-                                <motion.input 
-                                    ref={phoneRef} 
-                                    type="text" 
-                                    placeholder="Teléfono" 
-                                    className="flex-1  rounded-md px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                                    variants={inputFocus}
-                                    initial="rest"
-                                    whileFocus="focus"
-                                    whileHover={{ scale: 1.01 }}
-                                    style={{ transition: 'transform 0.2s ease-in-out' }}
-                                />
-                                <motion.input 
-                                    ref={emailRef} 
-                                    type="email" 
-                                    placeholder="Correo electrónico" 
-                                    className="flex-1  rounded-md px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                                    variants={inputFocus}
-                                    initial="rest"
-                                    whileFocus="focus"
-                                    whileHover={{ scale: 1.01 }}
-                                    style={{ transition: 'transform 0.2s ease-in-out' }}
-                                />
-                            </motion.div>
-                            <motion.textarea 
-                                ref={descriptionRef} 
-                                placeholder="Escribir mensaje" 
-                                rows={4} 
-                                className=" rounded-md px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 resize-none transition-all duration-200"
+                            <motion.textarea
+                                ref={descriptionRef}
+                                placeholder="Escribir mensaje"
+                                rows={4}
+                                className=" rounded-md px-4 py-3 text-base focus:outline-none focus:ring-0 resize-none transition-all duration-200"
                                 variants={itemVariants}
                                 whileFocus={{ scale: 1.01 }}
                                 whileHover={{ scale: 1.01 }}
                                 style={{ transition: 'transform 0.2s ease-in-out' }}
                             />
-                            <motion.button 
-                                type="submit" 
+                            <motion.button
+                                type="submit"
                                 className={`mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300 ${data?.class_button_form || ''}`}
                                 variants={buttonHover}
                                 initial="rest"
@@ -455,7 +455,7 @@ const generalsData = generals || [];
                                             className="flex items-center gap-2 uppercase"
                                         >
                                             Enviar mensaje
-                                          
+
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -463,12 +463,12 @@ const generalsData = generals || [];
                         </motion.form>
                     </motion.div>
                     {/* Right: Map and Info Cards */}
-                    <motion.div 
+                    <motion.div
                         className="flex flex-col gap-6"
                         variants={slideInRight}
                     >
                         {/* Map */}
-                        <motion.div 
+                        <motion.div
                             className="rounded-2xl overflow-hidden shadow-md w-full h-72 md:h-full min-h-[300px]"
                             variants={fadeInScale}
                             whileHover={{ scale: 1.02 }}
@@ -485,24 +485,24 @@ const generalsData = generals || [];
                                 referrerPolicy="no-referrer-when-downgrade"
                             ></iframe>
                         </motion.div>
-                        
+
                         {/* Info Cards */}
-                        <motion.div 
+                        <motion.div
                             className="flex flex-col gap-3"
                             variants={containerVariants}
                         >
-                            <motion.div 
+                            <motion.div
                                 className="grid grid-cols-1 md:grid-cols-2 gap-3"
                                 variants={itemVariants}
                             >
                                 {/* Email */}
-                                <motion.div 
+                                <motion.div
                                     className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6] overflow-hidden"
                                     variants={cardHover}
                                     initial="rest"
                                     whileHover="hover"
                                 >
-                                    <motion.span 
+                                    <motion.span
                                         className="bg-secondary text-white rounded-full p-2 flex-shrink-0"
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
@@ -512,7 +512,7 @@ const generalsData = generals || [];
                                         </svg>
                                     </motion.span>
                                     <div className="min-w-0 flex-1">
-                                        <motion.div 
+                                        <motion.div
                                             className="font-semibold customtext-neutral-dark"
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
@@ -520,49 +520,49 @@ const generalsData = generals || [];
                                         >
                                             Correo electrónico
                                         </motion.div>
-                                        <motion.div 
+                                        <motion.div
                                             className="customtext-neutral-dark text-sm break-words overflow-hidden"
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.3 }}
                                         >
-                                           {(() => {
-                                               const emailData = generalsData.find(item => item.correlative === "email_contact")?.description || "";
-                                               if (emailData.includes(',')) {
-                                                   return emailData.split(',').map((email, index) => (
-                                                       <div key={index} className="block break-words">
-                                                           <a href={`mailto:${email.trim()}`} className="hover:text-secondary transition-colors">
-                                                               {email.trim()}
-                                                           </a>
-                                                       </div>
-                                                   ));
-                                               }
-                                               return (
-                                                   <a href={`mailto:${emailData}`} className="hover:text-secondary transition-colors">
-                                                       {emailData}
-                                                   </a>
-                                               );
-                                           })()}
+                                            {(() => {
+                                                const emailData = generalsData.find(item => item.correlative === "email_contact")?.description || "";
+                                                if (emailData.includes(',')) {
+                                                    return emailData.split(',').map((email, index) => (
+                                                        <div key={index} className="block break-words">
+                                                            <a href={`mailto:${email.trim()}`} className="hover:text-secondary transition-colors">
+                                                                {email.trim()}
+                                                            </a>
+                                                        </div>
+                                                    ));
+                                                }
+                                                return (
+                                                    <a href={`mailto:${emailData}`} className="hover:text-secondary transition-colors">
+                                                        {emailData}
+                                                    </a>
+                                                );
+                                            })()}
                                         </motion.div>
                                     </div>
                                 </motion.div>
-                                
+
                                 {/* Phone */}
-                                <motion.div 
+                                <motion.div
                                     className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6] overflow-hidden"
                                     variants={cardHover}
                                     initial="rest"
                                     whileHover="hover"
                                 >
-                                    <motion.span 
+                                    <motion.span
                                         className="bg-secondary text-white rounded-full p-2 flex-shrink-0"
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
                                     >
-                                      <Phone/>
+                                        <Phone />
                                     </motion.span>
                                     <div className="min-w-0 flex-1">
-                                        <motion.div 
+                                        <motion.div
                                             className="font-semibold customtext-neutral-dark"
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
@@ -570,7 +570,7 @@ const generalsData = generals || [];
                                         >
                                             Contacto
                                         </motion.div>
-                                        <motion.div 
+                                        <motion.div
                                             className="customtext-neutral-dark text-sm break-words overflow-hidden"
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
@@ -597,15 +597,15 @@ const generalsData = generals || [];
                                     </div>
                                 </motion.div>
                             </motion.div>
-                            
+
                             {/* Location */}
-                            <motion.div 
+                            <motion.div
                                 className="flex items-center gap-3 bg-white rounded-xl p-4 shadow border border-[#f3f4f6] overflow-hidden"
                                 variants={cardHover}
                                 initial="rest"
                                 whileHover="hover"
                             >
-                                <motion.span 
+                                <motion.span
                                     className="bg-secondary text-white rounded-full p-2 flex-shrink-0"
                                     whileHover={{ rotate: 360, scale: 1.1 }}
                                     transition={{ duration: 0.5 }}
@@ -616,7 +616,7 @@ const generalsData = generals || [];
                                     </svg>
                                 </motion.span>
                                 <div className="min-w-0 flex-1">
-                                    <motion.div 
+                                    <motion.div
                                         className="font-semibold customtext-neutral-dark"
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -624,7 +624,7 @@ const generalsData = generals || [];
                                     >
                                         Ubicación
                                     </motion.div>
-                                    <motion.div 
+                                    <motion.div
                                         className="customtext-neutral-dark text-sm break-words overflow-hidden"
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}

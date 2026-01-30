@@ -93,7 +93,7 @@ const BenefitSimple = ({ data, items }) => {
                         {data?.title || 'Beneficios que Marcan la Diferencia'}
                     </motion.h2>
                     <motion.p
-                        className="text-lg sm:text-xl text-neutral-dark max-w-3xl mx-auto"
+                        className="text-lg md:text-xl lg:text-2xl  text-neutral-dark max-w-3xl mx-auto"
                         variants={titleVariants}
                     >
                         {data?.subtitle || 'En Panel Pro, combinamos décadas de experiencia en el sector maderero con un servicio ágil y personalizado. Nos especializamos en brindar soluciones eficientes para que carpinteros y fabricantes logren resultados de alta gama con la mejor relación costo-beneficio'}
@@ -298,8 +298,8 @@ const BenefitSimple = ({ data, items }) => {
                                     }}
                                     aria-label={`Ir al slide ${index + 1}`}
                                     className={`transition-all duration-300 rounded-full ${index === activeIndex
-                                            ? 'w-12 h-3 bg-primary'
-                                            : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
+                                        ? 'w-12 h-3 bg-primary'
+                                        : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
                                         }`}
                                 />
                             ))}
@@ -308,8 +308,17 @@ const BenefitSimple = ({ data, items }) => {
                 </motion.div>
 
                 {data?.footer_text && (
-                    <div className="mt-16 text-center">
-                        <div className="relative inline-block rounded-2xl overflow-hidden shadow-2xl">
+                    <motion.div
+                        className="mt-16 text-center"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={containerVariants}
+                    >
+                        <motion.div
+                            className="relative inline-block rounded-2xl overflow-hidden shadow-2xl"
+                            variants={cardVariants}
+                        >
                             {data?.footer_image && (
                                 <div className="absolute inset-0">
                                     <img
@@ -331,8 +340,8 @@ const BenefitSimple = ({ data, items }) => {
                                     </p>
                                 )}
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </div>
         </section>

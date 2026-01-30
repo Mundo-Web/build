@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import ReactModal from "react-modal";
 import Tippy from "@tippyjs/react";
+import { motion } from "framer-motion";
 import { CircleCheckBig, X, Phone, Mail, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
@@ -131,9 +132,29 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
     return (
         <footer id={data?.element_id || null} className="bg-primary text-white">
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0 py-16">
-                <div className="grid grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10 mb-12">
+                <motion.div
+                    className="grid grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10 mb-12"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                            opacity: 1,
+                            transition: {
+                                staggerChildren: 0.15
+                            }
+                        }
+                    }}
+                >
                     {/* Logo y Redes Sociales */}
-                    <div className="col-span-2 lg:col-span-2 w-full lg:w-8/12">
+                    <motion.div
+                        className="col-span-2 lg:col-span-2 w-full lg:w-8/12"
+                        variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                        }}
+                    >
                         <div className="flex items-center gap-2 mb-4">
                             {data?.logo_footer ? (
                                 <img
@@ -169,11 +190,16 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                 </Tippy>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
 
 
                     {/* Columna Productos */}
-                    <div>
+                    <motion.div
+                        variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                        }}
+                    >
                         <h4 className="text-lg font-bold mb-4">{data?.products_title || 'Productos'}</h4>
                         {loadingProducts ? (
                             <div className="space-y-2">
@@ -198,10 +224,15 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                         ) : (
                             <p className="text-white text-sm">No hay productos disponibles</p>
                         )}
-                    </div>
+                    </motion.div>
 
                     {/* Columna Empresa con Contactos */}
-                    <div>
+                    <motion.div
+                        variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                        }}
+                    >
                         <h4 className="text-lg font-bold mb-4">{data?.company_title || 'Empresa'}</h4>
 
                         {/* Enlaces de Empresa */}
@@ -241,10 +272,16 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                         )}
 
 
-                    </div>
+                    </motion.div>
 
                     {/* Columna Ubicación y Horarios */}
-                    <div className="col-span-2 lg:col-span-2">
+                    <motion.div
+                        className="col-span-2 lg:col-span-2"
+                        variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                        }}
+                    >
                         <h4 className="text-lg font-bold mb-4">{data?.contact_title || 'Ubicación'}</h4>
                         <ul className="space-y-3 text-gray-300">
                             {/* Email */}
@@ -341,8 +378,8 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                 </form>
                             </div>
                         )}
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
 
                 {/* Footer Bottom */}
                 <div className="border-t border-white/10 pt-8">
@@ -376,54 +413,56 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
             </div>
 
             {/* Modales de Políticas */}
-            {Object.keys(policyItems).map((key, index) => {
-                const title = policyItems[key];
-                const content = generals.find((x) => x.correlative === key)?.description ?? "";
+            {
+                Object.keys(policyItems).map((key, index) => {
+                    const title = policyItems[key];
+                    const content = generals.find((x) => x.correlative === key)?.description ?? "";
 
-                return (
-                    <ReactModal
-                        key={index}
-                        isOpen={modalOpen === index}
-                        onRequestClose={closeModal}
-                        contentLabel={title}
-                        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
-                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[99999]"
-                        ariaHideApp={false}
-                    >
-                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-                            {/* Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                                <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
-                                <button
-                                    onClick={closeModal}
-                                    className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
-                                    aria-label="Cerrar modal"
-                                >
-                                    <X size={24} strokeWidth={2} />
-                                </button>
-                            </div>
+                    return (
+                        <ReactModal
+                            key={index}
+                            isOpen={modalOpen === index}
+                            onRequestClose={closeModal}
+                            contentLabel={title}
+                            className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center p-4 z-50"
+                            overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[99999]"
+                            ariaHideApp={false}
+                        >
+                            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                                {/* Header */}
+                                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                                    <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
+                                    <button
+                                        onClick={closeModal}
+                                        className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                        aria-label="Cerrar modal"
+                                    >
+                                        <X size={24} strokeWidth={2} />
+                                    </button>
+                                </div>
 
-                            {/* Content */}
-                            <div className="flex-1 overflow-y-auto p-6">
-                                <div className="prose prose-gray max-w-none">
-                                    <HtmlContent html={content} />
+                                {/* Content */}
+                                <div className="flex-1 overflow-y-auto p-6">
+                                    <div className="prose prose-gray max-w-none">
+                                        <HtmlContent html={content} />
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex justify-end p-6 border-t border-gray-200">
+                                    <button
+                                        onClick={closeModal}
+                                        className="px-6 py-2 bg-primary text-white rounded-lg transition-colors duration-200 font-medium"
+                                    >
+                                        Cerrar
+                                    </button>
                                 </div>
                             </div>
-
-                            {/* Footer */}
-                            <div className="flex justify-end p-6 border-t border-gray-200">
-                                <button
-                                    onClick={closeModal}
-                                    className="px-6 py-2 bg-primary text-white rounded-lg transition-colors duration-200 font-medium"
-                                >
-                                    Cerrar
-                                </button>
-                            </div>
-                        </div>
-                    </ReactModal>
-                );
-            })}
-        </footer>
+                        </ReactModal>
+                    );
+                })
+            }
+        </footer >
     );
 };
 

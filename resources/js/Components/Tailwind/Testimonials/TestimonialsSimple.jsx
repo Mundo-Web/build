@@ -79,21 +79,21 @@ const TestimonialsSimple = ({ items, data }) => {
     <section id={data?.element_id || 'testimonialsSimple'} className={`py-20 sm:py-24 bg-sections-color ${data?.class_section || ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
         >
-          <motion.h2 
+          <motion.h2
             className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-4"
             variants={titleVariants}
           >
             {data?.title || 'Lo Que Dicen Nuestros Clientes'}
           </motion.h2>
-          <motion.p 
-            className="text-lg sm:text-xl text-neutral-light max-w-3xl mx-auto"
+          <motion.p
+            className="text-lg md:text-xl lg:text-2xl  text-neutral-light max-w-3xl mx-auto"
             variants={titleVariants}
           >
             {data?.subtitle || 'La confianza de profesionales que exigen lo mejor'}
@@ -112,7 +112,7 @@ const TestimonialsSimple = ({ items, data }) => {
                 key={index}
                 className="group bg-white rounded-2xl p-8 shadow-md border border-gray-100 relative overflow-hidden h-full"
                 variants={cardVariants}
-                whileHover={{ 
+                whileHover={{
                   y: -8,
                   scale: 1.02,
                   boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
@@ -120,7 +120,7 @@ const TestimonialsSimple = ({ items, data }) => {
                 }}
               >
                 {/* Decorative circle */}
-                <motion.div 
+                <motion.div
                   className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full -mr-16 -mt-16 opacity-50"
                   whileHover={{ scale: 1.5 }}
                   transition={{ duration: 0.5 }}
@@ -128,9 +128,9 @@ const TestimonialsSimple = ({ items, data }) => {
 
                 <div className="relative">
                   {/* Quote Icon */}
-                  <motion.svg 
-                    className="w-12 h-12 text-primary mb-4" 
-                    fill="currentColor" 
+                  <motion.svg
+                    className="w-12 h-12 text-primary mb-4"
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                     variants={quoteVariants}
                   >
@@ -156,7 +156,7 @@ const TestimonialsSimple = ({ items, data }) => {
                   </div>
 
                   {/* Testimonial Text */}
-                  <motion.p 
+                  <motion.p
                     className="text-neutral-dark leading-relaxed mb-6 text-lg"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -167,7 +167,7 @@ const TestimonialsSimple = ({ items, data }) => {
                   </motion.p>
 
                   {/* Author Info */}
-                  <motion.div 
+                  <motion.div
                     className="flex items-center gap-4"
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -190,7 +190,7 @@ const TestimonialsSimple = ({ items, data }) => {
                         }}
                       />
                     ) : (
-                      <motion.div 
+                      <motion.div
                         className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg"
                         whileHover={{ scale: 1.1, rotate: 10 }}
                         transition={{ duration: 0.3 }}
@@ -220,7 +220,13 @@ const TestimonialsSimple = ({ items, data }) => {
           return (
             <>
               {/* Mobile: Swiper carousel */}
-              <div className="block md:hidden overflow-hidden mb-16">
+              <motion.div
+                className="block md:hidden overflow-hidden mb-16"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={containerVariants}
+              >
                 <Swiper
                   modules={[Autoplay]}
                   spaceBetween={16}
@@ -240,10 +246,10 @@ const TestimonialsSimple = ({ items, data }) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-              </div>
+              </motion.div>
 
               {/* Desktop: Grid layout */}
-              <motion.div 
+              <motion.div
                 className="hidden md:grid md:grid-cols-2 gap-8 mb-16"
                 initial="hidden"
                 whileInView="visible"
@@ -256,7 +262,7 @@ const TestimonialsSimple = ({ items, data }) => {
           );
         })()}
 
-       
+
       </div>
     </section>
   );

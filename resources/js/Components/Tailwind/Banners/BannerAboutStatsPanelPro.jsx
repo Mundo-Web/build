@@ -18,8 +18,29 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
             <div className="2xl:max-w-7xl mx-auto">
                 <div className=" gap-16 items-center">
                     {/* Contenido de texto y estadísticas */}
-                    <div className="space-y-8 min-w-0 max-w-4xl mx-auto">
-                        <div className="space-y-4">
+                    {/* Contenido de texto y estadísticas */}
+                    <motion.div
+                        className="space-y-8 min-w-0 max-w-4xl mx-auto"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={{
+                            hidden: { opacity: 0 },
+                            visible: {
+                                opacity: 1,
+                                transition: {
+                                    staggerChildren: 0.2
+                                }
+                            }
+                        }}
+                    >
+                        <motion.div
+                            className="space-y-4"
+                            variants={{
+                                hidden: { opacity: 0, y: 30 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                            }}
+                        >
                             <h2 className={`text-5xl text-center  md:text-6xl lg:text-7xl font-extralight text-primary leading-tight whitespace-pre-line`}>
                                 <TextWithHighlight
                                     text={data?.name}
@@ -28,20 +49,32 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                 />
                             </h2>
 
-                        </div>
+                        </motion.div>
 
-                        <p className="text-lg sm:text-xl  text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line">
+                        <motion.p
+                            className="text-lg md:text-xl lg:text-2xl   text-neutral-dark text-center leading-relaxed font-light whitespace-pre-line"
+                            variants={{
+                                hidden: { opacity: 0, y: 30 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                            }}
+                        >
                             <TextWithHighlight
                                 text={data?.description}
                                 color="bg-primary"
                             />
-                        </p>
+                        </motion.p>
 
-                    </div>
+                    </motion.div>
 
                     {/* Estadísticas dinámicas desde items (Indicators) */}
                     {items.length > 0 && (
-                        <div className="py-8 overflow-hidden w-full relative">
+                        <motion.div
+                            className="py-8 overflow-hidden w-full relative"
+                            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.2 }}
+                            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                        >
                             <Swiper
                                 modules={[Autoplay]}
                                 spaceBetween={20}
@@ -266,7 +299,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                     ))}
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
                     )}
 
                 </div>

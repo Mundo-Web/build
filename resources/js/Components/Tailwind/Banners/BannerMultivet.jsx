@@ -89,7 +89,7 @@ const BannerMultivet = ({ data }) => {
                         {
                             (Array.isArray(data?.description) || data?.multi_description) ? (
                                 <motion.div
-                                    className={`flex flex-col gap-3 font-normal text-base lg:text-lg xl:text-lg 2xl:text-xl leading-relaxed max-w-lg xl:max-w-xl 2xl:max-w-2xl text-neutral-dark text-opacity-70 ${data?.class_description || ''}`}
+                                    className={`flex flex-col gap-3 font-normal text-lg md:text-xl lg:text-2xl  leading-relaxed max-w-lg xl:max-w-xl 2xl:max-w-2xl text-neutral-dark text-opacity-70 ${data?.class_description || ''}`}
                                     variants={{
                                         visible: {
                                             transition: {

@@ -284,34 +284,57 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
 
         <div className="2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0 relative">
           {/* Header - Estilo maderero elegante */}
-          <div className="text-center mb-16 sm:mb-20">
+          {/* Header - Estilo maderero elegante */}
+          <motion.div
+            className="text-center mb-16 sm:mb-20"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2
+                }
+              }
+            }}
+          >
             {/* Subtítulo decorativo */}
             {data?.subtitle && (
-
-              <div className="flex items-center justify-center gap-4 mb-6">
-
+              <motion.div
+                className="flex items-center justify-center gap-4 mb-6"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+                }}
+              >
                 <span className="text-lg font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
-
-              </div>
+              </motion.div>
             )}
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-neutral-dark font-title mb-6">
-              {data?.title || 'Nuestros Productos'}
-            </h2>
 
-            {/* Línea decorativa 
-            
-                    <div className="flex items-center justify-center gap-2 mb-6">
-              <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-              <div className="w-3 h-3 bg-primary rounded-full"></div>
-              <div className="w-16 h-1 bg-gradient-to-l from-primary to-secondary rounded-full"></div>
-            </div>
-            */}
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, scale: 0.9, y: 30 },
+                visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+              }}
+            >
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-neutral-dark font-title mb-6">
+                {data?.title || 'Nuestros Productos'}
+              </h2>
+            </motion.div>
 
 
-            <p className="text-lg sm:text-xl text-neutral-light max-w-2xl mx-auto leading-relaxed">
+            <motion.p
+              className="text-lg md:text-xl lg:text-2xl  text-neutral-light max-w-2xl mx-auto leading-relaxed"
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+              }}
+            >
               {data?.description || 'Tableros de madera de la más alta calidad para sus proyectos'}
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
           {/* Contenedor flex - Cards se acomodan según su tamaño natural */}
           <div className="flex flex-wrap gap-6 justify-center">
@@ -324,10 +347,16 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
               return (
                 <motion.div
                   key={item.id || index}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.45, delay: index * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 70,
+                    damping: 15
+                  }}
                   className="cursor-pointer group"
                 >
                   {/* Texto GIGANTE con imagen como fondo (background-clip) */}
