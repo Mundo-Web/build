@@ -4,7 +4,7 @@ const Component = ({ className, system, component, onComponentClicked, onDeleteC
   const options = component?.options ?? [];
   const selected = options.find(x => x.id == system.value);
   return <div className={`dropdown ${className}`} data-id={system.id}>
-    <div className="btn btn-light dropdown-toggle text-truncate w-100 text-start" type="button" id={`dd-${system.id}`} data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <div className="btn btn-light dropdown-toggle text-truncate w-100 text-start" type="button" id={`dd-${system.id}`} data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bs-boundary="viewport">
       <i className="mdi mdi-chevron-down ms-1 float-end"></i>
       <span className='handle-sortable' style={{ cursor: "move" }}>
         <i className="fa fa-ellipsis-v"></i>

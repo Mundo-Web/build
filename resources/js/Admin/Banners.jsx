@@ -101,6 +101,28 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const [isIframeReady, setIsIframeReady] = useState(false);
     const previewType = previewData.type || "BannerSimple";
 
+    const [isMultiDescription, setIsMultiDescription] = useState(false);
+    const [descriptionList, setDescriptionList] = useState(['']);
+
+    const handleMultiDescriptionChange = (index, value) => {
+        const newList = [...descriptionList];
+        newList[index] = value;
+        setDescriptionList(newList);
+        handlePreviewFieldChange("description", newList);
+    };
+
+    const addDescription = () => {
+        const newList = [...descriptionList, ''];
+        setDescriptionList(newList);
+        handlePreviewFieldChange("description", newList);
+    };
+
+    const removeDescription = (index) => {
+        const newList = descriptionList.filter((_, i) => i !== index);
+        setDescriptionList(newList);
+        handlePreviewFieldChange("description", newList);
+    };
+
     const updatePreviewScale = useCallback(() => {
         const stage = previewStageRef.current;
         const iframe = previewIframeRef.current;
@@ -504,7 +526,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         { id: 'BannerMobileApp', name: 'Banner Mobile App - FirstClass', icon: 'mdi mdi-cellphone-link' },
         { id: 'BannerAboutStats', name: 'About con Estadísticas - WebQuirurgica', icon: 'mdi mdi-chart-box' },
         { id: 'BannerAboutStatsPanelPro', name: 'About con Estadísticas - PanelPro', icon: 'mdi mdi-chart-box' },
-   
+
     ];
 
     const normalizePageId = (value) => value === undefined || value === null || value === '' ? null : value;
@@ -606,7 +628,21 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
         idRef.current.value = banner?.id ?? "";
         nameRef.current.value = previewSnapshot.name;
-        descriptionRef.current.value = previewSnapshot.description;
+        idRef.current.value = banner?.id ?? "";
+        nameRef.current.value = previewSnapshot.name;
+
+        const isMulti = !!(previewSnapshot.multi_description || Array.isArray(previewSnapshot.description));
+        setIsMultiDescription(isMulti);
+
+        if (isMulti) {
+            const list = Array.isArray(previewSnapshot.description) ? previewSnapshot.description : [previewSnapshot.description || ''];
+            setDescriptionList(list);
+            if (descriptionRef.current) descriptionRef.current.value = '';
+        } else {
+            setDescriptionList(['']);
+            if (descriptionRef.current) descriptionRef.current.value = previewSnapshot.description || '';
+        }
+        handlePreviewFieldChange("multi_description", isMulti);
         buttonTextRef.current.value = previewSnapshot.button_text;
         buttonLinkRef.current.value = previewSnapshot.button_link;
 
@@ -685,7 +721,9 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                 ...(editingSnapshot?.id ? systems.find(s => s.id === editingSnapshot.id)?.data || {} : {}),
                 // Sobrescribir solo los campos que están en el formulario
                 name: nameRef.current.value,
-                description: descriptionRef.current.value,
+                name: nameRef.current.value,
+                description: isMultiDescription ? descriptionList.filter(x => x && x.trim()) : descriptionRef.current.value,
+                multi_description: isMultiDescription,
                 button_text: buttonTextRef.current.value,
                 button_link: buttonLinkRef.current.value,
                 contenedor: absoluteRef.current?.checked ? 'absoluto' : 'relativo',
@@ -694,7 +732,16 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
             const formData = new FormData();
             formData.append('id', systemResult.id);
-            Object.entries(bannerData).forEach(([key, value]) => formData.append(key, value));
+            formData.append('id', systemResult.id);
+            Object.entries(bannerData).forEach(([key, value]) => {
+                if (key === 'description' && Array.isArray(value)) {
+                    value.forEach(v => formData.append('description[]', v));
+                } else if (key === 'multi_description') {
+                    formData.append(key, value ? 1 : 0);
+                } else {
+                    formData.append(key, value);
+                }
+            });
 
             const background = backgroundRef.current.files[0];
             if (background) {
@@ -731,39 +778,77 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             const previousPageId = normalizePageId(editingSnapshot?.page_id);
             const currentPageId = normalizePageId(finalSystem.page_id);
 
+            // Check if position actually changed
+            const hasMoved = editingSnapshot?.id && (
+                previousPageId !== currentPageId ||
+                editingSnapshot.after_component !== (afterComponent ?? null)
+            );
+
             const updatesPayload = {};
 
-            if (editingSnapshot?.id && previousPageId !== currentPageId) {
-                const oldPageSystems = systems
-                    .filter(s => normalizePageId(s.page_id) === previousPageId && s.id !== finalSystem.id)
+            // Solo recalcular orden si REALMENTE se movió o es nuevo
+            if (!editingSnapshot?.id || hasMoved) {
+
+                if (editingSnapshot?.id && previousPageId !== currentPageId) {
+                    // 1. Handle OLD page (remove gap)
+                    const oldPageSystems = systems
+                        .filter(s => normalizePageId(s.page_id) === previousPageId && s.id !== finalSystem.id)
+                        .map(s => ({ ...s }));
+
+                    // CRÍTICO: Reparar la cadena en la página anterior
+                    // Buscar el elemento que apuntaba al que estamos moviendo
+                    const orphan = oldPageSystems.find(s => s.after_component === finalSystem.id);
+                    if (orphan) {
+                        orphan.after_component = editingSnapshot.after_component;
+                    }
+
+                    const { updates: oldUpdates } = computeOrderUpdates({
+                        pageId: previousPageId,
+                        baseSystems: oldPageSystems
+                    });
+
+                    Object.assign(updatesPayload, oldUpdates);
+                }
+
+                // 2. Handle NEW/CURRENT page
+                const targetPageForInsert = hasMoved ? currentPageId : previousPageId; // Should be currentPageId usually
+
+                const newPageSystems = systems
+                    .filter(s => normalizePageId(s.page_id) === targetPageForInsert && s.id !== finalSystem.id)
                     .map(s => ({ ...s }));
 
-                const { updates: oldUpdates } = computeOrderUpdates({
-                    pageId: previousPageId,
-                    baseSystems: oldPageSystems
+                // Si estamos en la misma página y moviendo, también necesitamos reparar la cadena original
+                if (editingSnapshot?.id && previousPageId === currentPageId) {
+                    const orphan = newPageSystems.find(s => s.after_component === finalSystem.id);
+                    if (orphan) {
+                        orphan.after_component = editingSnapshot.after_component;
+                    }
+                }
+
+                const { ordered: newOrder, updates: newUpdates } = computeOrderUpdates({
+                    pageId: targetPageForInsert,
+                    baseSystems: newPageSystems,
+                    insertedSystem: finalSystem
                 });
 
-                Object.assign(updatesPayload, oldUpdates);
+                Object.assign(updatesPayload, newUpdates);
+
+                const updatedFinalSystem = newOrder.find(item => item.id === finalSystem.id);
+                if (updatedFinalSystem) {
+                    finalSystem = {
+                        ...finalSystem,
+                        after_component: updatedFinalSystem.after_component ?? null
+                    };
+                }
+            } else {
+                // Si NO se movió, asegurar que finalSystem mantenga su after_component original
+                // para que el estado local sea consistente
+                finalSystem.after_component = editingSnapshot.after_component;
             }
 
-            const newPageSystems = systems
-                .filter(s => normalizePageId(s.page_id) === currentPageId && s.id !== finalSystem.id)
-                .map(s => ({ ...s }));
-
-            const { ordered: newOrder, updates: newUpdates } = computeOrderUpdates({
-                pageId: currentPageId,
-                baseSystems: newPageSystems,
-                insertedSystem: finalSystem
-            });
-
-            Object.assign(updatesPayload, newUpdates);
-
-            const updatedFinalSystem = newOrder.find(item => item.id === finalSystem.id);
-            if (updatedFinalSystem) {
-                finalSystem = {
-                    ...finalSystem,
-                    after_component: updatedFinalSystem.after_component ?? null
-                };
+            if (Object.keys(updatesPayload).length > 0) {
+                const orderResult = await systemRest.updateOrder(updatesPayload);
+                if (!orderResult) return;
             }
 
             if (Object.keys(updatesPayload).length > 0) {
@@ -1150,12 +1235,74 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     rows={2}
                                     onChange={(event) => handlePreviewFieldChange("name", event.target.value)}
                                 />
-                                <TextareaFormGroup
-                                    eRef={descriptionRef}
-                                    label="Descripción"
-                                    rows={2}
-                                    onChange={(event) => handlePreviewFieldChange("description", event.target.value)}
-                                />
+                                {isMultiDescription ? (
+                                    <div className="form-group">
+                                        <label>Descripción (Múltiple)</label>
+                                        {descriptionList.map((desc, index) => (
+                                            <div key={index} className="d-flex mb-2">
+                                                <textarea
+                                                    className="form-control"
+                                                    value={desc}
+                                                    onChange={(e) => handleMultiDescriptionChange(index, e.target.value)}
+                                                    rows={2}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-danger ms-2"
+                                                    onClick={() => removeDescription(index)}
+                                                >
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-primary mt-1"
+                                            onClick={addDescription}
+                                        >
+                                            <i className="fa fa-plus me-1"></i> Agregar párrafo
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <TextareaFormGroup
+                                        eRef={descriptionRef}
+                                        label="Descripción"
+                                        rows={2}
+                                        onChange={(event) => handlePreviewFieldChange("description", event.target.value)}
+                                    />
+                                )}
+
+                                <div className="form-group mb-3">
+                                    <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input"
+                                            id="multiDescSwitch"
+                                            checked={isMultiDescription}
+                                            onChange={(e) => {
+                                                const newVal = e.target.checked;
+                                                setIsMultiDescription(newVal);
+                                                handlePreviewFieldChange("multi_description", newVal);
+                                                if (newVal) {
+                                                    // Switching to multi: use current text as first item
+                                                    const currentVal = descriptionRef.current?.value || '';
+                                                    const newList = [currentVal];
+                                                    setDescriptionList(newList);
+                                                    handlePreviewFieldChange("description", newList);
+                                                } else {
+                                                    // Switching to single: join items? or take first?
+                                                    // Let's join with newline
+                                                    const combined = descriptionList.join('\n');
+                                                    if (descriptionRef.current) descriptionRef.current.value = combined;
+                                                    handlePreviewFieldChange("description", combined);
+                                                }
+                                            }}
+                                        />
+                                        <label className="custom-control-label" htmlFor="multiDescSwitch">
+                                            Usar múltiples párrafos
+                                        </label>
+                                    </div>
+                                </div>
                                 <InputFormGroup
                                     eRef={buttonTextRef}
                                     label="Texto botón"

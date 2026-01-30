@@ -14,6 +14,7 @@ import ParamsModal from '../Components/Adminto/System/ParamsModal';
 import RouteParams from '../Utils/RouteParams';
 import RigthBar from '../Components/Adminto/System/RightBar';
 import Modal from '../Components/Adminto/Modal';
+import Swal from 'sweetalert2';
 
 const systemRest = new SystemRest()
 
@@ -74,9 +75,40 @@ const System = ({
   }
 
   const onDeleteClicked = async (system) => {
+    const { isConfirmed } = await Swal.fire({
+      title: "Eliminar componente",
+      text: "¿Estás seguro de eliminar este componente?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    });
+    if (!isConfirmed) return;
+
+    // CRITICO: Encontrar el 'huérfano' (el componente que apuntaba al que vamos a borrar)
+    const follower = systems.find(x => x.after_component === system.id);
+
+    // Si hay un seguidor, reconectarlo ANTES de borrar para no romper la cadena
+    if (follower) {
+      await systemRest.updateOrder({
+        [follower.id]: system.after_component ?? null
+      });
+    }
+
     const result = await systemRest.delete(system.id);
     if (!result) return;
-    setSystems(old => old.filter(x => x.id != system.id));
+
+    setSystems(old => {
+      const filtered = old.filter(x => x.id != system.id);
+      if (follower) {
+        // Actualizar también en local para que se refleje inmediatamente
+        return filtered.map(x => x.id === follower.id
+          ? { ...x, after_component: system.after_component ?? null }
+          : x
+        );
+      }
+      return filtered;
+    });
   }
 
   const fetchRemoteChanges = async () => {
@@ -202,7 +234,7 @@ const System = ({
             });
           }
         }
-      }).disableSelection();
+      });
     });
   }, [pages, systems]);
 
@@ -281,7 +313,7 @@ const System = ({
                                     } else {
                                       const component = components.find(x => x.id == system.component);
                                       return <Component
-                                        key={system.id}
+                                        key={`${system.id}-${system.after_component || 'root'}`}
                                         className=''
                                         system={system}
                                         component={component}
@@ -315,7 +347,7 @@ const System = ({
                                       SortByAfterField(systems).filter(x => x.page_id == page.id).map(system => {
                                         const component = components.find(x => x.id == system.component);
                                         return <Component
-                                          key={system.id}
+                                          key={`${system.id}-${system.after_component || 'root'}`}
                                           className=''
                                           system={system}
                                           component={component}
