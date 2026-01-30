@@ -15,11 +15,11 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
   const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [mainSwiper, setMainSwiper] = useState(null);
-  
+
   // Estado para variantes y selección de atributos
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedAttributes, setSelectedAttributes] = useState({});
-  
+
   // Estado para mostrar más detalles
   const [showDetails, setShowDetails] = useState(false);
 
@@ -29,7 +29,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
   // Agrupar productos por nombre para evitar repeticiones
   const groupedItems = useMemo(() => {
     if (!items || items.length === 0) return [];
-    
+
     const groups = {};
     items.forEach(item => {
       const groupKey = item.name?.trim().toLowerCase() || item.id;
@@ -43,7 +43,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
       } else {
         groups[groupKey].variants.push(item);
       }
-      
+
       // Recopilar todos los atributos del grupo
       if (item.attributes && item.attributes.length > 0) {
         item.attributes.forEach(attr => {
@@ -64,7 +64,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
           }
         });
       }
-      
+
       // Recopilar todas las aplicaciones del grupo
       if (item.applications && item.applications.length > 0) {
         item.applications.forEach(app => {
@@ -74,20 +74,20 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         });
       }
     });
-    
+
     return Object.values(groups).map(group => group.main);
   }, [items]);
 
   // Obtener datos del grupo del producto seleccionado
   const getProductGroup = (item) => {
     if (!items || !item) return null;
-    
+
     const groupKey = item.name?.trim().toLowerCase() || item.id;
     const variants = items.filter(i => (i.name?.trim().toLowerCase() || i.id) === groupKey);
-    
+
     const allAttributes = {};
     const allApplications = [];
-    
+
     variants.forEach(variant => {
       // Recopilar atributos
       if (variant.attributes && variant.attributes.length > 0) {
@@ -109,7 +109,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
           }
         });
       }
-      
+
       // Recopilar aplicaciones
       if (variant.applications && variant.applications.length > 0) {
         variant.applications.forEach(app => {
@@ -119,7 +119,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         });
       }
     });
-    
+
     return { variants, allAttributes, allApplications };
   };
 
@@ -131,7 +131,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
       // Resetear selecciones al abrir modal
       setSelectedVariant(selectedImage);
       setShowDetails(false); // Reset details
-      
+
       // Preseleccionar los atributos del producto actual
       const initialAttributes = {};
       if (selectedImage.attributes && selectedImage.attributes.length > 0) {
@@ -156,7 +156,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
       setSelectedVariant(null);
       setSelectedAttributes({});
     }
-    
+
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -199,11 +199,11 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
   const handleWhatsAppQuote = (advisor, item) => {
     const productToQuote = selectedVariant || item;
     const group = getProductGroup(item);
-    
+
     // Construir mensaje personalizado con información del producto
     let customMessage = `🌟 ¡Hola! Me interesa solicitar información sobre:\n\n`;
     customMessage += `📦 *Producto:* ${productToQuote.name}\n`;
-    
+
     // Agregar atributos seleccionados
     if (Object.keys(selectedAttributes).length > 0) {
       customMessage += `\n📐 *Especificaciones seleccionadas:*\n`;
@@ -221,7 +221,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         customMessage += `  • ${attr.name}: ${value}${unit}\n`;
       });
     }
-    
+
     // Agregar características si existen
     if (productToQuote.features && productToQuote.features.length > 0) {
       customMessage += `\n✅ *Características:*\n`;
@@ -232,7 +232,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         customMessage += `  • Y ${productToQuote.features.length - 3} características más...\n`;
       }
     }
-    
+
     // Agregar aplicaciones si existen
     const apps = productToQuote.applications || [];
     if (apps.length > 0) {
@@ -241,9 +241,9 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         customMessage += `  • ${app.name}\n`;
       });
     }
-    
+
     customMessage += `\n💬 Me gustaría recibir más información y cotización.\n¡Gracias!`;
-    
+
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(customMessage)}`;
     window.open(whatsappUrl, '_blank');
     setIsAdvisorDropdownOpen(false);
@@ -255,7 +255,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
     const gallery = [
       { url: productToShow?.image, type: 'main', alt: 'Imagen principal' }
     ];
-    
+
     if (productToShow?.images && productToShow.images.length > 0) {
       productToShow.images.forEach((img, index) => {
         gallery.push({
@@ -266,38 +266,38 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         });
       });
     }
-    
+
     return gallery;
   };
 
- 
- 
-  
+
+
+
   return (
     <>
-      <section  id={data?.element_id || "productListPanelPro"} className="py-20 sm:py-28 bg-sections-color relative overflow-hidden">
-        
+      <section id={data?.element_id || "productListPanelPro"} className="py-20 sm:py-28 bg-sections-color relative overflow-hidden">
+
         {/* Patrón decorativo de fondo sutil */}
         <div className="absolute inset-0 opacity-[0.02]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`
         }}></div>
-       
+
         <div className="2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0 relative">
           {/* Header - Estilo maderero elegante */}
           <div className="text-center mb-16 sm:mb-20">
             {/* Subtítulo decorativo */}
             {data?.subtitle && (
-            
-            <div className="flex items-center justify-center gap-4 mb-6">
-          
-              <span className="text-lg font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
-            
-            </div>
-            )  }
+
+              <div className="flex items-center justify-center gap-4 mb-6">
+
+                <span className="text-lg font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
+
+              </div>
+            )}
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-neutral-dark font-title mb-6">
               {data?.title || 'Nuestros Productos'}
             </h2>
-            
+
             {/* Línea decorativa 
             
                     <div className="flex items-center justify-center gap-2 mb-6">
@@ -306,8 +306,8 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
               <div className="w-16 h-1 bg-gradient-to-l from-primary to-secondary rounded-full"></div>
             </div>
             */}
-    
-            
+
+
             <p className="text-lg sm:text-xl text-neutral-light max-w-2xl mx-auto leading-relaxed">
               {data?.description || 'Tableros de madera de la más alta calidad para sus proyectos'}
             </p>
@@ -316,7 +316,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
           {/* Contenedor flex - Cards se acomodan según su tamaño natural */}
           <div className="flex flex-wrap gap-6 justify-center">
             {groupedItems.map((item, index) => {
-              const imageUrl = item.image 
+              const imageUrl = item.image
                 ? `/storage/images/item/${item.image}`
                 : '/api/cover/thumbnail/null';
               const excerpt = item.description ? item.description.replace(/<[^>]+>/g, '') : '';
@@ -327,13 +327,13 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                   initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.45, delay: index * 0.04, ease: [0.25,0.46,0.45,0.94] }}
+                  transition={{ duration: 0.45, delay: index * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="cursor-pointer group"
                 >
                   {/* Texto GIGANTE con imagen como fondo (background-clip) */}
-                  <h3 
+                  <h3
                     onClick={() => handleProductClick(item)}
-                    className="font-bold text-[5rem] lg:text-[14rem] leading-none tracking-normal uppercase cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+                    className="font-bold text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase cursor-pointer transition-all duration-300 hover:scale-[1.02]"
                     style={{
                       backgroundImage: `url(${imageUrl})`,
                       backgroundSize: 'cover',
@@ -353,7 +353,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
             })}
           </div>
 
-       
+
         </div>
       </section>
 
@@ -394,7 +394,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
               <div className="flex flex-col lg:flex-row h-full">
                 {/* Galería de imágenes - Lado izquierdo */}
                 <div className="lg:w-1/2 h-[35vh] lg:h-full  flex flex-col overflow-hidden relative">
-                  
+
                   {/* Imagen principal */}
                   <div className="flex-1 min-h-full relative flex items-center justify-center w-full ">
                     <Swiper
@@ -409,8 +409,8 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                       slidesPerView={1}
                       onSwiper={setMainSwiper}
                       onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-                       className='!h-full !w-full !m-0 !p-0'
-                    
+                      className='!h-full !w-full !m-0 !p-0'
+
                     >
                       {getItemGallery(selectedImage).map((img, index) => (
                         <SwiperSlide key={index} className="w-full">
@@ -425,7 +425,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                         </SwiperSlide>
                       ))}
                     </Swiper>
-                    
+
                     {/* Botones de navegación - Solo si hay más de una imagen */}
                     {getItemGallery(selectedImage).length > 1 && (
                       <>
@@ -434,7 +434,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                           </svg>
                         </button>
-                        
+
                         <button className="custom-main-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 border border-neutral-200">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -451,9 +451,8 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                         <button
                           key={index}
                           onClick={() => mainSwiper?.slideTo(index)}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                            activeIndex === index ? 'bg-primary w-6' : 'bg-neutral-300 hover:bg-neutral-light'
-                          }`}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === index ? 'bg-primary w-6' : 'bg-neutral-300 hover:bg-neutral-light'
+                            }`}
                         />
                       ))}
                     </div>
@@ -464,7 +463,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                 <div className="lg:w-1/2 flex flex-col h-[65vh] lg:h-full bg-white">
                   {/* Contenido scrolleable */}
                   <div className="flex-1 overflow-y-auto p-6 lg:p-10">
-                    
+
                     {/* Título con estilo premium */}
                     <h3 className="
                     
@@ -475,11 +474,11 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                       {currentProduct?.name || selectedImage.name}
                     </h3>
 
-                
-                    
+
+
                     {/* Descripción */}
                     {(currentProduct?.description || selectedImage.description) && (
-                      <div 
+                      <div
                         className="text-neutral-dark text-lg lg:text-xl leading-relaxed mb-8 prose prose-neutral max-w-none"
                         dangerouslySetInnerHTML={{ __html: currentProduct?.description || selectedImage.description }}
                       />
@@ -489,9 +488,9 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                     {(() => {
                       const group = getProductGroup(selectedImage);
                       const hasGroupAttributes = group && Object.keys(group.allAttributes).length > 0;
-                      
+
                       if (!hasGroupAttributes) return null;
-                      
+
                       // Función para verificar si un valor de atributo está disponible
                       // basándose en las selecciones actuales de otros atributos
                       const isValueAvailable = (attrName, valueToCheck) => {
@@ -503,30 +502,30 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                             const value = attr.pivot?.value || attr.value;
                             return name === attrName && value === valueToCheck;
                           });
-                          
+
                           if (!hasThisValue) return false;
-                          
+
                           // Verificar que la variante también tiene todos los otros atributos seleccionados
                           for (const [selectedAttrName, selectedValueData] of Object.entries(selectedAttributes)) {
                             if (selectedAttrName === attrName) continue; // Skip el atributo actual
-                            
+
                             const hasSelectedAttr = variant.attributes?.some(attr => {
                               const name = attr.name || attr.slug;
                               const value = attr.pivot?.value || attr.value;
                               return name === selectedAttrName && value === selectedValueData.value;
                             });
-                            
+
                             if (!hasSelectedAttr) return false;
                           }
-                          
+
                           return true;
                         });
                       };
-                      
+
                       // Función para encontrar la variante que coincide con un conjunto de atributos
                       const findMatchingVariant = (attrName, valueData) => {
                         const newSelections = { ...selectedAttributes, [attrName]: valueData };
-                        
+
                         return group.variants.find(variant => {
                           // La variante debe tener TODOS los atributos seleccionados
                           for (const [selAttrName, selValueData] of Object.entries(newSelections)) {
@@ -540,14 +539,14 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                           return true;
                         });
                       };
-                      
+
                       return (
                         <div className="mb-10">
                           {Object.entries(group.allAttributes).map(([attrName, attrData]) => {
                             const attr = attrData.attribute;
                             const values = attrData.values;
                             const selectedValue = selectedAttributes[attrName];
-                            
+
                             return (
                               <div key={attrName} className="mb-6 last:mb-0">
                                 <h4 className="text-base font-semibold text-neutral-dark mb-4 flex items-center gap-2">
@@ -558,7 +557,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                   {values.map((valueData, idx) => {
                                     const isSelected = selectedValue?.value === valueData.value;
                                     const isAvailable = isValueAvailable(attrName, valueData.value);
-                                    
+
                                     return (
                                       <button
                                         key={idx}
@@ -587,13 +586,12 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                           }
                                         }}
                                         disabled={!isAvailable}
-                                        className={`min-w-[70px] px-5 py-3 text-lg font-medium transition-all duration-200 rounded-xl border-2 ${
-                                          isSelected
-                                            ? 'border-primary text-primary shadow-sm'
-                                            : isAvailable
-                                              ? 'border-neutral-200 text-neutral-dark hover:border-neutral-300 hover:bg-neutral-50'
-                                              : 'border-neutral-100 text-neutral-300 bg-neutral-50 cursor-not-allowed line-through'
-                                        }`}
+                                        className={`min-w-[70px] px-5 py-3 text-lg font-medium transition-all duration-200 rounded-xl border-2 ${isSelected
+                                          ? 'border-primary text-primary shadow-sm'
+                                          : isAvailable
+                                            ? 'border-neutral-200 text-neutral-dark hover:border-neutral-300 hover:bg-neutral-50'
+                                            : 'border-neutral-100 text-neutral-300 bg-neutral-50 cursor-not-allowed line-through'
+                                          }`}
                                         title={!isAvailable ? 'No disponible con la selección actual' : ''}
                                       >
                                         {valueData.value}
@@ -610,14 +608,14 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
 
                     {/* ============ CARACTERÍSTICAS Y APLICACIONES EN GRID ============ */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                      
+
                       {/* Características */}
                       {(currentProduct?.features || selectedImage.features)?.length > 0 && (
                         <div>
                           <h4 className="text-base font-semibold text-neutral-dark mb-5">Características</h4>
                           <ul className="space-y-3">
                             {(currentProduct?.features || selectedImage.features).map((feat, index) => (
-                              <li 
+                              <li
                                 key={feat.id || index}
                                 className="flex items-start gap-3 text-base text-neutral-dark "
                               >
@@ -635,9 +633,9 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                       {(() => {
                         const group = getProductGroup(selectedImage);
                         const applications = currentProduct?.applications || group?.allApplications || [];
-                        
+
                         if (applications.length === 0) return null;
-                        
+
                         return (
                           <div>
                             <h4 className="text-base font-semibold text-neutral-dark mb-5">Ideal para</h4>
@@ -660,7 +658,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
 
                   {/* Botón WhatsApp fijo abajo */}
                   <div className="p-5 lg:p-6 border-t border-neutral-100 bg-white">
-                  
+
                     {/* Botón de cotización WhatsApp */}
                     <div className="relative flex w-full items-end justify-end">
                       {whatsappAdvisors.length <= 1 ? (
@@ -672,7 +670,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                           className="w-full lg:max-w-max bg-success  text-white font-semibold py-4 px-8 rounded-full transition-all duration-200 flex items-center justify-center gap-3"
                         >
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                           </svg>
                           <span>Solicitar Cotización</span>
                         </button>
@@ -683,7 +681,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                             className="w-full lg:max-w-max bg-success hover:bg-success  text-white font-semibold py-4 px-8 rounded-full transition-all duration-200 flex items-center justify-center gap-3"
                           >
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                             </svg>
                             <span>Solicitar Cotización</span>
                             <svg className={`w-4 h-4 ml-1 transition-transform duration-200 ${isAdvisorDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -733,7 +731,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                       </div>
                                       <div className="w-8 h-8 rounded-full bg-success flex items-center justify-center">
                                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                                         </svg>
                                       </div>
                                     </button>

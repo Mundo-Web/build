@@ -95,7 +95,7 @@ const StrengthSimple = ({ items, data }) => {
             forceUpdate();
         };
         const flipped = StrengthSimple.flippedState[index];
-        
+
         return (
             <motion.div
                 key={item.id || index}
@@ -114,9 +114,9 @@ const StrengthSimple = ({ items, data }) => {
                                 className="absolute inset-0 w-full h-full"
                                 style={{ transformStyle: 'preserve-3d' }}
                                 animate={{ rotateY: flipped ? 180 : 0 }}
-                                transition={{ 
-                                    type: 'spring', 
-                                    stiffness: 60, 
+                                transition={{
+                                    type: 'spring',
+                                    stiffness: 60,
                                     damping: 12,
                                     mass: 1.2
                                 }}
@@ -148,7 +148,7 @@ const StrengthSimple = ({ items, data }) => {
                                             </div>
                                         </div>
                                     )}
-                                    <div className="text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
+                                    <div className="text-4xl md:text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
                                         {item.name}
                                     </div>
                                 </div>
@@ -231,14 +231,14 @@ const StrengthSimple = ({ items, data }) => {
 
     return (
         <section id={data?.element_id || null} className="py-20 sm:py-24 bg-sections-color relative overflow-hidden">
-            <motion.div 
+            <motion.div
                 className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -ml-48"
                 initial={{ scale: 0, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 0.2 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 viewport={{ once: true }}
             />
-            <motion.div 
+            <motion.div
                 className="absolute top-1/2 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -mr-48"
                 initial={{ scale: 0, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 0.2 }}
@@ -247,20 +247,20 @@ const StrengthSimple = ({ items, data }) => {
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-                <motion.div 
+                <motion.div
                     className="text-center mb-16"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
                     variants={containerVariants}
                 >
-                    <motion.h2 
+                    <motion.h2
                         className="text-5xl  md:text-6xl lg:text-7xl font-bold text-primary font-title mb-4"
                         variants={titleVariants}
                     >
                         {data?.title || '¿Por Qué Elegirnos?'}
                     </motion.h2>
-                    <motion.p 
+                    <motion.p
                         className="text-lg sm:text-xl text-neutral-dark max-w-3xl mx-auto"
                         variants={titleVariants}
                     >
@@ -304,11 +304,10 @@ const StrengthSimple = ({ items, data }) => {
                                         }
                                     }}
                                     aria-label={`Ir al slide ${index + 1}`}
-                                    className={`transition-all duration-300 rounded-full ${
-                                        index === activeIndex
+                                    className={`transition-all duration-300 rounded-full ${index === activeIndex
                                             ? 'w-12 h-3 bg-primary'
                                             : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
-                                    }`}
+                                        }`}
                                 />
                             ))}
                         </div>
@@ -318,12 +317,11 @@ const StrengthSimple = ({ items, data }) => {
                 {/* Desktop: Grid layout */}
                 <div className="hidden md:block">
                     {/* Primera fila */}
-                    <motion.div 
-                        className={`grid gap-8 mb-8 ${
-                            firstRow.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' : 
-                            firstRow.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' : 
-                            'md:grid-cols-2 lg:grid-cols-3'
-                        }`}
+                    <motion.div
+                        className={`grid gap-8 mb-8 ${firstRow.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' :
+                                firstRow.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
+                                    'md:grid-cols-2 lg:grid-cols-3'
+                            }`}
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-50px" }}
@@ -334,13 +332,12 @@ const StrengthSimple = ({ items, data }) => {
 
                     {/* Filas restantes */}
                     {rows.map((row, rowIndex) => (
-                        <motion.div 
+                        <motion.div
                             key={rowIndex}
-                            className={`grid gap-8 mb-8 ${
-                                row.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' : 
-                                row.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' : 
-                                'md:grid-cols-2 lg:grid-cols-3'
-                            }`}
+                            className={`grid gap-8 mb-8 ${row.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' :
+                                    row.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
+                                        'md:grid-cols-2 lg:grid-cols-3'
+                                }`}
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true, margin: "-50px" }}

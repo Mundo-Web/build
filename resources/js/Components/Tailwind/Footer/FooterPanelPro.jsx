@@ -91,12 +91,12 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
             if (startTime === null) startTime = currentTime;
             const timeElapsed = currentTime - startTime;
             const progress = Math.min(timeElapsed / duration, 1);
-            
+
             // Función de easing para suavizar la animación (ease-in-out)
             const easing = progress < 0.5
                 ? 4 * progress * progress * progress
                 : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-            
+
             window.scrollTo(0, startPosition + distance * easing);
 
             if (timeElapsed < duration) {
@@ -109,7 +109,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
 
     // Obtener información de generals
     const footerDescription = generals.find(g => g.correlative === 'footer_description')?.description || '';
-    
+
     // Obtener enlaces de empresa desde generals (array) - solo visibles
     const companyLinks = (() => {
         try {
@@ -131,19 +131,19 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
     return (
         <footer id={data?.element_id || null} className="bg-primary text-white">
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0 py-16">
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
+                <div className="grid grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10 mb-12">
                     {/* Logo y Redes Sociales */}
                     <div className="col-span-2 lg:col-span-2 w-full lg:w-8/12">
                         <div className="flex items-center gap-2 mb-4">
                             {data?.logo_footer ? (
-                                <img 
-                                    src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`} 
-                                    alt={Global.APP_NAME} 
-                                    className="h-12 object-contain" 
+                                <img
+                                    src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`}
+                                    alt={Global.APP_NAME}
+                                    className="h-12 object-contain"
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.src = '/assets/img/logo-bk.svg';
-                                    }} 
+                                    }}
                                 />
                             ) : (
                                 <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                             ))}
                         </div>
                     </div>
-                  
+
 
                     {/* Columna Productos */}
                     <div>
@@ -185,8 +185,8 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                             <ul className="space-y-2 text-gray-300">
                                 {products.map((product) => (
                                     <li key={product.id}>
-                                        <a 
-                                           href={`#`}
+                                        <a
+                                            href={`#`}
                                             className="hover:text-wood-300 transition-colors line-clamp-1"
                                             title={product.name}
                                         >
@@ -203,14 +203,14 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                     {/* Columna Empresa con Contactos */}
                     <div>
                         <h4 className="text-lg font-bold mb-4">{data?.company_title || 'Empresa'}</h4>
-                        
+
                         {/* Enlaces de Empresa */}
                         {companyLinks.length > 0 && (
                             <ul className="space-y-2 text-gray-300 mb-6">
                                 {companyLinks.map((link, index) => (
                                     <li key={index}>
-                                        <a 
-                                            href={link.href || '#'} 
+                                        <a
+                                            href={link.href || '#'}
                                             className="hover:text-wood-300 transition-colors"
                                             onClick={(e) => {
                                                 const href = link.href || '#';
@@ -220,11 +220,11 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                                     const hashIndex = href.indexOf('#');
                                                     const targetId = href.substring(hashIndex + 1);
                                                     const targetElement = document.getElementById(targetId);
-                                                    
+
                                                     if (targetElement) {
                                                         // Usar scroll personalizado más suave y lento
                                                         smoothScrollTo(targetElement, 1200);
-                                                        
+
                                                         // Actualizar URL después de un pequeño delay
                                                         setTimeout(() => {
                                                             window.history.pushState(null, '', href);
@@ -240,65 +240,65 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                             </ul>
                         )}
 
-                    
+
                     </div>
 
                     {/* Columna Ubicación y Horarios */}
-                    <div className="col-span-2 lg:col-span-1">
+                    <div className="col-span-2 lg:col-span-2">
                         <h4 className="text-lg font-bold mb-4">{data?.contact_title || 'Ubicación'}</h4>
                         <ul className="space-y-3 text-gray-300">
-                                {/* Email */}
-                        {email && (
-                            <div className="mb-4">
-                                <div className="flex items-start gap-2 mb-2">
-                                    <Mail className="w-4 h-4 text-wood-300 flex-shrink-0 mt-1" />
-                                    <div className="text-sm min-w-0 flex-1">
-                                
-                                        <div className="text-gray-300 break-all">
-                                            {(() => {
-                                                if (email.includes(',')) {
-                                                    return email.split(',').map((em, index) => (
-                                                        <div key={index} className="block break-all">
-                                                            {em.trim()}
-                                                        </div>
-                                                    ));
-                                                }
-                                                return email;
-                                            })()}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                            {/* Email */}
+                            {email && (
+                                <div className="mb-4">
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <Mail className="w-4 h-4 text-wood-300 flex-shrink-0 mt-1" />
+                                        <div className="text-sm min-w-0 flex-1">
 
-                        {/* Teléfono */}
-                        {phone && (
-                            <div className="mb-4">
-                                <div className="flex items-start gap-2">
-                                    <Phone className="w-4 h-4 text-wood-300 flex-shrink-0 mt-1" />
-                                    <div className="text-sm">
-                                       
-                                        <div className="text-gray-300">
-                                            {(() => {
-                                                if (phone.includes(',')) {
-                                                    return phone.split(',').map((ph, index) => (
-                                                        <div key={index} className="block">
-                                                            {ph.trim()}
-                                                        </div>
-                                                    ));
-                                                }
-                                                return phone;
-                                            })()}
+                                            <div className="text-gray-300 break-all">
+                                                {(() => {
+                                                    if (email.includes(',')) {
+                                                        return email.split(',').map((em, index) => (
+                                                            <div key={index} className="block break-all">
+                                                                {em.trim()}
+                                                            </div>
+                                                        ));
+                                                    }
+                                                    return email;
+                                                })()}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+
+                            {/* Teléfono */}
+                            {phone && (
+                                <div className="mb-4">
+                                    <div className="flex items-start gap-2">
+                                        <Phone className="w-4 h-4 text-wood-300 flex-shrink-0 mt-1" />
+                                        <div className="text-sm">
+
+                                            <div className="text-gray-300">
+                                                {(() => {
+                                                    if (phone.includes(',')) {
+                                                        return phone.split(',').map((ph, index) => (
+                                                            <div key={index} className="block">
+                                                                {ph.trim()}
+                                                            </div>
+                                                        ));
+                                                    }
+                                                    return phone;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             {address && (
                                 <li className="flex items-start gap-3">
                                     <MapPin className="w-5 h-5 text-wood-300 flex-shrink-0 mt-0.5" />
                                     <div>
-                                      
+
                                         <div className="text-sm whitespace-pre-line">{address}</div>
                                     </div>
                                 </li>
@@ -309,7 +309,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <div>
-                                      
+
                                         <div className="text-sm whitespace-pre-line">{openingHours}</div>
                                     </div>
                                 </li>
@@ -349,16 +349,16 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-white text-md">
                             {General.get('copyright') || `© ${currentYear} ${Global.APP_NAME}. Todos los derechos reservados.`}
-                             <span className="italic">  Powered by  <a href="https://www.mundoweb.pe" target="_blank" rel="noopener noreferrer">MundoWeb</a></span>
+                            <span className="italic">  Powered by  <a href="https://www.mundoweb.pe" target="_blank" rel="noopener noreferrer">MundoWeb</a></span>
                         </p>
                         <div className="flex flex-wrap gap-4 md:gap-6 text-md text-white justify-center">
-                            <a 
+                            <a
                                 onClick={() => openModal(0)}
                                 className="hover:text-wood-300 transition-colors cursor-pointer"
                             >
                                 {data?.privacy_text || 'Política de Privacidad'}
                             </a>
-                            <a 
+                            <a
                                 onClick={() => openModal(1)}
                                 className="hover:text-wood-300 transition-colors cursor-pointer"
                             >

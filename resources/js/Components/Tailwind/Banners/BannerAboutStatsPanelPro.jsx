@@ -39,7 +39,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
 
                     </div>
 
-                        {/* Estadísticas dinámicas desde items (Indicators) */}
+                    {/* Estadísticas dinámicas desde items (Indicators) */}
                     {items.length > 0 && (
                         <div className="py-8 overflow-hidden w-full relative">
                             <Swiper
@@ -57,7 +57,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                         spaceBetween: 20,
                                     },
                                     768: {
-                                        slidesPerView: 3,
+                                        slidesPerView: 2.5,
                                         spaceBetween: 14,
                                         loop: items.length > 3,
                                     },
@@ -115,9 +115,9 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                             className="absolute inset-0 w-full h-full"
                                                             style={{ transformStyle: 'preserve-3d' }}
                                                             animate={{ rotateY: flipped ? 180 : 0 }}
-                                                            transition={{ 
-                                                                type: 'spring', 
-                                                                stiffness: 60, 
+                                                            transition={{
+                                                                type: 'spring',
+                                                                stiffness: 60,
                                                                 damping: 12,
                                                                 mass: 1.2
                                                             }}
@@ -149,7 +149,7 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                                     </div>
                                                                 </div>
                                                                 {/* Nombre */}
-                                                                <div className="text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
+                                                                <div className="text-4xl md:text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
                                                                     <TextWithHighlight
                                                                         text={item.name}
                                                                         counter={true}
@@ -258,18 +258,17 @@ const BannerAboutStatsPanelPro = ({ data, items = [] }) => {
                                                 }
                                             }}
                                             aria-label={`Ir al slide ${index + 1}`}
-                                            className={`transition-all duration-300 rounded-full ${
-                                                index === activeIndex
-                                                    ? 'w-12 h-3 bg-primary'
-                                                    : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
-                                            }`}
+                                            className={`transition-all duration-300 rounded-full ${index === activeIndex
+                                                ? 'w-12 h-3 bg-primary'
+                                                : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
+                                                }`}
                                         />
                                     ))}
                                 </div>
                             )}
                         </div>
                     )}
-                 
+
                 </div>
             </div>
         </section>
