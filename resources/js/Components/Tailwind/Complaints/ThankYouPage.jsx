@@ -11,13 +11,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
         });
     };
 
-    const generateComplaintNumber = () => {
-        const timestamp = Date.now();
-        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        return `REC-${timestamp.toString().slice(-6)}${random}`;
-    };
-
-    const complaintNumber = generateComplaintNumber();
+    // Codigo viene del backend en complaintData.code
 
     const handlePrint = () => {
         window.print();
@@ -66,7 +60,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                     }
                 }
             `}</style>
-            
+
             <div className="max-w-5xl mx-auto">
                 {/* Header de agradecimiento */}
                 <div className="text-center mb-10 no-print">
@@ -104,7 +98,10 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                                         <p className="text-blue-100">Información detallada de su solicitud</p>
                                     </div>
                                 </div>
-                               
+                                <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm border border-white/20">
+                                    <p className="text-xs text-blue-100 uppercase tracking-wider font-semibold mb-1">N° de Reclamo</p>
+                                    <p className="text-2xl font-mono font-bold tracking-tight">{complaintData.code}</p>
+                                </div>
                             </div>
                         </div>
 
@@ -117,7 +114,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                                     </div>
                                     <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Datos del Consumidor</h3>
                                 </div>
-                                
+
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -150,7 +147,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                                     </div>
                                     <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Información de Ubicación</h3>
                                 </div>
-                                
+
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -181,7 +178,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                                     </div>
                                     <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Producto/Servicio</h3>
                                 </div>
-                                
+
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -208,7 +205,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                                     </div>
                                     <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Detalles del Reclamo</h3>
                                 </div>
-                                
+
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -241,9 +238,9 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                                     </div>
                                     <h3 className={`text-xl font-bold ${data?.class_title || 'customtext-neutral-dark'}`}>Información del Registro</h3>
                                 </div>
-                                
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                   
+
                                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                         <label className="text-sm font-medium customtext-neutral-light block mb-1">Fecha de Registro</label>
                                         <p className="text-lg font-semibold customtext-neutral-dark">{formatDate(new Date())}</p>
@@ -269,7 +266,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
 
                     {/* Botones de acción */}
                     <div className="mt-8 flex flex-col sm:flex-row gap-4 no-print">
-                       
+
                         <button
                             onClick={onBackToForm}
                             className="flex-1 bg-primary max-w-max hover:brightness-110 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow-lg"
@@ -279,7 +276,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                         </button>
                     </div>
 
-                   
+
                 </div>
             </div>
         </div>

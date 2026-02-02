@@ -69,9 +69,10 @@ class ClaimNotification extends Notification implements ShouldQueue
                 'numero_pedido' => $this->complaint->numero_pedido,
                 'detalle_reclamo' => $this->complaint->detalle_reclamo,
                 'year' => date('Y'),
+                'code' => $this->complaint->code,
                 'fecha_reclamo' => date('d \d\e F \d\e\l Y', strtotime($this->complaint->created_at)),
             ])
             : 'Plantilla no encontrada';
-        return (new RawHtmlMail($body, 'Hemos recibido tu reclamo',$this->complaint->correo_electronico));
+        return (new RawHtmlMail($body, 'Hemos recibido tu reclamo - ' . $this->complaint->code, $this->complaint->correo_electronico));
     }
 }

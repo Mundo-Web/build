@@ -10,22 +10,22 @@ import HtmlContent from "../../../Utils/HtmlContent";
 import { Send, X, FileText, User, MapPin, Package, AlertTriangle, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
-export default function ComplaintSimple({ generals = [],data }) {
+export default function ComplaintSimple({ generals = [], data }) {
     const [messageCaptcha, setMessageCaptcha] = useState("");
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
     const [showThankYou, setShowThankYou] = useState(false);
     const [submittedData, setSubmittedData] = useState(null);
     const [formLoadedAt, setFormLoadedAt] = useState(null);
-    
+
     // Referencia para el captcha
     const captchaRef = useRef();
-    
+
     // Registrar tiempo de carga del formulario
     useEffect(() => {
         setFormLoadedAt(Math.floor(Date.now() / 1000));
     }, []);
-    
+
     const [formData, setFormData] = useState({
         nombre: "",
         tipo_documento: "RUC",
@@ -49,7 +49,7 @@ export default function ComplaintSimple({ generals = [],data }) {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
+
         // Validar campos de fecha para limitar el año a 4 dígitos
         if (type === "date" && value) {
             const [year] = value.split("-");
@@ -57,7 +57,7 @@ export default function ComplaintSimple({ generals = [],data }) {
                 return; // No permitir más de 4 dígitos en el año
             }
         }
-        
+
         setFormData({
             ...formData,
             [name]: type === "checkbox" ? checked : value,
@@ -91,7 +91,7 @@ export default function ComplaintSimple({ generals = [],data }) {
         setIsCaptchaVerified(false);
         setCaptchaToken(null);
         setMessageCaptcha("");
-        
+
         // Resetear el captcha usando la referencia
         if (captchaRef.current) {
             captchaRef.current.reset();
@@ -116,7 +116,7 @@ export default function ComplaintSimple({ generals = [],data }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        
+
         if (!isCaptchaVerified || !captchaToken) {
             setMessageCaptcha("Por favor, completa la verificación de seguridad.");
             setLoading(false);
@@ -140,10 +140,10 @@ export default function ComplaintSimple({ generals = [],data }) {
         })
             .then((response) => response.json())
             .then((data) => {
-            
+
                 if (data.type === "success") {
                     // Guardar los datos enviados para mostrar en la página de agradecimiento
-                    setSubmittedData(formData);
+                    setSubmittedData(data.data);
                     setShowThankYou(true);
                     resetForm(); // Resetear el formulario
                     setLoading(false);
@@ -261,18 +261,18 @@ export default function ComplaintSimple({ generals = [],data }) {
 
     const openModal = (index) => setModalOpen(index);
     const closeModal = () => setModalOpen(null);
-    
+
     // Si estamos mostrando la página de agradecimiento
     if (showThankYou && submittedData) {
         return (
-            <ThankYouPage 
+            <ThankYouPage
                 complaintData={submittedData}
                 onBackToForm={handleBackToForm}
                 data={data}
             />
         );
     }
-    
+
     return (
         <div id={data?.element_id || null} className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full px-4 py-8 font-paragraph">
             <div className="max-w-5xl mx-auto">
@@ -307,7 +307,7 @@ export default function ComplaintSimple({ generals = [],data }) {
                             }}
                             aria-hidden="true"
                         />
-                        
+
                         {/* Identificación del Consumidor */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
@@ -621,7 +621,7 @@ export default function ComplaintSimple({ generals = [],data }) {
 
                             {/* Custom Captcha */}
                             <div className="bg-gray-50 rounded-xl p-6">
-                                <CustomCaptcha 
+                                <CustomCaptcha
                                     ref={captchaRef}
                                     onVerify={handleCaptchaVerify}
                                     error={messageCaptcha}
@@ -660,7 +660,7 @@ export default function ComplaintSimple({ generals = [],data }) {
                                     )}
                                 </button>
                             </div>
-                            
+
                             <p className="text-xs text-gray-500 mt-4 text-center">
                                 Al enviar este formulario, tu reclamo será registrado y procesado según la normativa vigente.
                                 Recibirás una confirmación en tu correo electrónico.
@@ -672,23 +672,23 @@ export default function ComplaintSimple({ generals = [],data }) {
                 {/* Información adicional */}
                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
-                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
                             <FileText className="w-6 h-6 " />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Respuesta garantizada</h3>
                         <p className="text-sm customtext-neutral-light">Te responderemos en un máximo de 30 días calendario</p>
                     </div>
-                    
+
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
-                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
                             <Shield className="w-6 h-6" />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Información segura</h3>
                         <p className="text-sm customtext-neutral-light">Tus datos están protegidos y son confidenciales</p>
                     </div>
-                    
+
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
-                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary' }`}>
+                        <div className={`w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 ${data?.class_icon || ' shadow-lg customtext-primary'}`}>
                             <User className="w-6 h-6 " />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Atención personalizada</h3>
@@ -696,15 +696,15 @@ export default function ComplaintSimple({ generals = [],data }) {
                     </div>
                 </div>
             </div>
-            
+
             {/* Modals para términos y condiciones */}
             {Object.keys(policyItems).map((key, index) => {
                 const title = policyItems[key];
-                const content = Array.isArray(generals) 
+                const content = Array.isArray(generals)
                     ? generals.find((x) => x.correlative == key)?.description ?? ""
                     : "";
                 return (
-                  <ReactModal
+                    <ReactModal
                         key={index}
                         isOpen={modalOpen === index}
                         onRequestClose={closeModal}
@@ -725,14 +725,14 @@ export default function ComplaintSimple({ generals = [],data }) {
                                     <X size={24} strokeWidth={2} />
                                 </button>
                             </div>
-                            
+
                             {/* Content */}
                             <div className="flex-1 overflow-y-auto p-6">
                                 <div className="prose prose-gray max-w-none">
                                     <HtmlContent html={content} />
                                 </div>
                             </div>
-                            
+
                             {/* Footer */}
                             <div className="flex justify-end p-6 border-t border-gray-200">
                                 <button

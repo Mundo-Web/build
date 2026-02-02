@@ -76,6 +76,11 @@ const Complaints = () => {
                     visible: false
                 },
                 {
+                    dataField: 'code',
+                    caption: 'Código',
+                    width: 150
+                },
+                {
                     dataField: 'nombre',
                     caption: 'Nombre',
                     cellTemplate: (container, { data }) => {
@@ -121,14 +126,14 @@ const Complaints = () => {
                         container.html(
                             renderToString(
                                 <>
-                                  
-                                        <small
-                                            className="d-block "
-                                           
-                                        >
-                                            {CurrencySymbol()} {Number2Currency(data?.monto_reclamado)}
-                                        </small>
-                              
+
+                                    <small
+                                        className="d-block "
+
+                                    >
+                                        {CurrencySymbol()} {Number2Currency(data?.monto_reclamado)}
+                                    </small>
+
 
                                 </>
                             )
@@ -197,6 +202,10 @@ const Complaints = () => {
                 </div>
                 <div className="col-md-6">
                     <h6 className="mb-3">Datos del Reclamo</h6>
+                    <p>
+                        <b>Código</b>:
+                        <span className='ms-1 badge bg-dark'>{dataLoaded?.code || <i>Sin código</i>}</span>
+                    </p>
                     <p>
                         <b>Tipo</b>:
                         <span className='ms-1'>{getTypeComplaint(dataLoaded?.tipo_reclamo)}</span>

@@ -23,6 +23,7 @@ class Complaint extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
+        'code',
         'nombre',
         'tipo_documento',
         'numero_identidad',

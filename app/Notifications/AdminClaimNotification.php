@@ -118,12 +118,13 @@ class AdminClaimNotification extends Notification implements ShouldQueue
                 'numero_pedido'        => $this->complaint->numero_pedido ?? 'No especificado',
                 'detalle_reclamo'      => $this->complaint->detalle_reclamo,
                 'fecha_reclamo'        => $this->complaint->created_at ? date('d \d\e F \d\e\l Y', strtotime($this->complaint->created_at)) : date('d \d\e F \d\e\l Y'),
+                'code'                 => $this->complaint->code,
             ])
             : 'Nuevo reclamo recibido de: ' . $this->complaint->nombre . ' (' . $this->complaint->correo_electronico . ')';
 
         return (new RawHtmlMail(
             $body,
-            '[NUEVO RECLAMO] Reclamo de: ' . $this->complaint->nombre,
+            '[NUEVO RECLAMO] ' . $this->complaint->code . ' - Reclamo de: ' . $this->complaint->nombre,
             $this->coorporative_email->description
         ));
     }

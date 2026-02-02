@@ -120,8 +120,15 @@ class ComplaintController extends BasicController
             // Invalidar el token después de usarlo (one-time use)
             Cache::forget("captcha:{$token}");
 
+            // Generar código de reclamo único
+            $year = date('Y');
+            $count = Complaint::whereYear('created_at', $year)->count() + 1;
+            $appname = strtoupper(substr(env('APP_NAME'), 0, 3));
+            $code = "{$appname}-{$year}-" . str_pad($count, 6, '0', STR_PAD_LEFT);
+
             // Guardar en la base de datos
             $complaint = Complaint::create([
+                'code' => $code,
                 'nombre' => $request->nombre,
                 'tipo_documento' => $request->tipo_documento,
                 'numero_identidad' => $request->numero_identidad,
