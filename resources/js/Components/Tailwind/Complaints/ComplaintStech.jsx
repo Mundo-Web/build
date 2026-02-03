@@ -676,7 +676,7 @@ export default function ComplaintSimple({ generals = [], data }) {
                             <FileText className="w-6 h-6 " />
                         </div>
                         <h3 className="font-semibold customtext-neutral-dark mb-2">Respuesta garantizada</h3>
-                        <p className="text-sm customtext-neutral-light">Te responderemos en un máximo de 30 días calendario</p>
+                        <p className="text-sm customtext-neutral-light">Te responderemos en un máximo de 15 días calendario</p>
                     </div>
 
                     <div className="bg-gray-100 rounded-xl p-6 text-center">
