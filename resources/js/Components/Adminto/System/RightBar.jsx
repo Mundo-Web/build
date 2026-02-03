@@ -49,7 +49,7 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
       id,
       [field]: value
     })
-    if (!result) return
+    if (!result?.data) return
     setColors(old => {
       return old.map(x => x.id == id ? result.data : x);
     })
@@ -186,6 +186,7 @@ const RigthBar = ({ colors, setColors, settings, setSettings }) => {
         <div className='d-flex flex-column gap-1'>
           {
             colors.map((color, index) => {
+              if (!color) return null;
               const isGradient = color.description?.startsWith('linear-gradient') || color.description?.startsWith('radial-gradient');
               const isMenuAdmin = color.name == 'menu-admin';
               const primaryColor = colors.find(c => c.name == 'primary')?.description || '#6658dd';
