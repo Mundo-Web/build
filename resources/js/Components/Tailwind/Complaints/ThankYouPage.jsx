@@ -71,7 +71,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                         ¡Reclamo Registrado Exitosamente!
                     </h1>
                     <p className="text-lg customtext-neutral-light max-w-2xl mx-auto leading-relaxed">
-                        Su reclamo ha sido registrado correctamente. Recibirá una respuesta dentro de los próximos 30 días hábiles.
+                        Su reclamo ha sido registrado correctamente. Recibirá una respuesta dentro de los próximos 15 días hábiles.
                     </p>
                 </div>
 
@@ -259,7 +259,7 @@ export default function ThankYouPage({ complaintData, onBackToForm, data }) {
                         <h4 className={`text-lg font-bold mb-3 ${data?.class_title || 'customtext-primary'}`}>Próximos Pasos</h4>
                         <div className={`space-y-2 ${data?.class_base || 'customtext-primary'}`}>
                             <p>✓ Conserve este comprobante como respaldo de su reclamo</p>
-                            <p>✓ Recibirá una respuesta dentro de los próximos 30 días hábiles</p>
+                            <p>✓ Recibirá una respuesta dentro de los próximos 15 días hábiles</p>
                             <p>✓ Si requiere información adicional, contáctenos a través de nuestros canales oficiales</p>
                         </div>
                     </div>

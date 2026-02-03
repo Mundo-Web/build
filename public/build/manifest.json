@@ -603,8 +603,8 @@
       "_vendor-react-CZUvQwNQ.js"
     ]
   },
-  "_ThankYouPage-3qbfFjjO.js": {
-    "file": "assets/ThankYouPage-3qbfFjjO.js",
+  "_ThankYouPage-Cx5LIHKA.js": {
+    "file": "assets/ThankYouPage-Cx5LIHKA.js",
     "name": "ThankYouPage",
     "imports": [
       "_vendor-react-CZUvQwNQ.js",
@@ -5533,7 +5533,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Complaint.jsx": {
-    "file": "assets/Complaint-TXGa8Ons.js",
+    "file": "assets/Complaint-jUel5zDh.js",
     "name": "Complaint",
     "src": "resources/js/Components/Tailwind/Complaint.jsx",
     "isDynamicEntry": true,
@@ -6350,7 +6350,7 @@
     ]
   },
   "resources/js/Components/Tailwind/FirstClass.jsx": {
-    "file": "assets/FirstClass-BrJ7DWg3.js",
+    "file": "assets/FirstClass-CiNYAuAL.js",
     "name": "FirstClass",
     "src": "resources/js/Components/Tailwind/FirstClass.jsx",
     "isDynamicEntry": true,
@@ -7839,7 +7839,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-CpVy9OBt.js",
+    "file": "assets/Product-BhDTVEs4.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isEntry": true,
@@ -7877,7 +7877,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-BxAfZzx1.js",
+    "file": "assets/ProductDetail-Gk6yL694.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -8018,7 +8018,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-3btQ_DUU.js",
+    "file": "assets/ProductDetailHuaillys-NcTn5orf.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isEntry": true,
@@ -10231,7 +10231,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Cy2JK4hT.js",
+    "file": "assets/System-CuxEx5JL.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

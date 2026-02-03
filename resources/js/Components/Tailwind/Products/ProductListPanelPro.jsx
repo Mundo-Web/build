@@ -309,7 +309,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
                 }}
               >
-                <span className="text-lg font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
+                <span className="text-2xl font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
               </motion.div>
             )}
 
