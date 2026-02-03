@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, FreeMode } from 'swiper/modules';
 import General from '../../../Utils/General';
@@ -7,7 +7,106 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, MousePointerClick } from 'lucide-react';
+
+
+
+
+const ProductCardItem = ({ item, index, onClick }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Smooth spring physics for the cursor
+  const mouseX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 });
+  const mouseY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  function handleMouseMove({ currentTarget, clientX, clientY }) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    x.set(clientX - left);
+    y.set(clientY - top);
+  }
+
+  const imageUrl = item.image
+    ? `/storage/images/item/${item.image}`
+    : '/api/cover/thumbnail/null';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 50 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        type: "spring",
+        stiffness: 70,
+        damping: 15
+      }}
+      className="cursor-pointer md:cursor-none group relative flex justify-center items-center p-2"
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Mobile Indicator - Icon Only Bottom Right */}
+      <div className="md:hidden absolute z-20 bottom-2 right-0 pointer-events-none">
+        <motion.div
+
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          animate={{
+            y: [0, -2, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className=" p-1 rounded-full "
+        >
+          <MousePointerClick className="w-4 h-4 text-primary drop-shadow-md" />
+        </motion.div>
+      </div>
+
+      {/* Desktop Floating Cursor (Icon Only) */}
+      <motion.div
+        style={{
+          left: mouseX,
+          top: mouseY,
+        }}
+        variants={{
+          hidden: { opacity: 0, scale: 0 },
+          visible: { opacity: 1, scale: 1 }
+        }}
+        animate={isHovered ? "visible" : "hidden"}
+        className="hidden md:flex absolute z-50 pointer-events-none items-center justify-center transform -translate-x-1/2 -translate-y-1/2"
+      >
+        <div className="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center shadow-2xl border-2 border-white/20 backdrop-blur-md">
+          <MousePointerClick className="w-6 h-6 text-white" />
+        </div>
+      </motion.div>
+
+      {/* Main Text */}
+      <h3
+        className="font-bold text-[4.5rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase transition-all duration-500 group-hover:scale-[1.05] relative z-10"
+        style={{
+          backgroundImage: `url(${imageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          color: 'transparent',
+          WebkitTextFillColor: 'transparent',
+          filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))',
+        }}
+      >
+        {item.name}
+      </h3>
+    </motion.div>
+  );
+};
 
 const ProductListPanelPro = ({ items, data, onClickTracking }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -309,7 +408,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
                 }}
               >
-                <span className="text-2xl font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
+                <span className="text-2xl  lg:text-3xl font-bold text-primary uppercase tracking-[0.3em]">{data?.subtitle}</span>
               </motion.div>
             )}
 
@@ -337,49 +436,15 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
           </motion.div>
 
           {/* Contenedor flex - Cards se acomodan según su tamaño natural */}
-          <div className="flex flex-wrap gap-6 justify-center">
-            {groupedItems.map((item, index) => {
-              const imageUrl = item.image
-                ? `/storage/images/item/${item.image}`
-                : '/api/cover/thumbnail/null';
-              const excerpt = item.description ? item.description.replace(/<[^>]+>/g, '') : '';
-
-              return (
-                <motion.div
-                  key={item.id || index}
-                  initial={{ opacity: 0, scale: 0.9, y: 50 }}
-                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: index * 0.1,
-                    type: "spring",
-                    stiffness: 70,
-                    damping: 15
-                  }}
-                  className="cursor-pointer group"
-                >
-                  {/* Texto GIGANTE con imagen como fondo (background-clip) */}
-                  <h3
-                    onClick={() => handleProductClick(item)}
-                    className="font-bold text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase cursor-pointer transition-all duration-300 hover:scale-[1.02]"
-                    style={{
-                      backgroundImage: `url(${imageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      color: 'transparent',
-                      WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))',
-                      wordSpacing: '0.3em'
-                    }}
-                  >
-                    {item.name}
-                  </h3>
-                </motion.div>
-              );
-            })}
+          <div className="flex flex-wrap gap-0 justify-center">
+            {groupedItems.map((item, index) => (
+              <ProductCardItem
+                key={item.id || index}
+                item={item}
+                index={index}
+                onClick={() => handleProductClick(item)}
+              />
+            ))}
           </div>
 
 
