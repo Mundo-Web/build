@@ -1645,7 +1645,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-CE4P7TaP.js",
+    "file": "assets/Generals-HKIjjVsm.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -1657,6 +1657,7 @@
       "_CreateReactScript-CQzKJRc_.js",
       "_QuillFormGroup-D7VLIsv_.js",
       "resources/js/Components/Adminto/Footer.jsx",
+      "_SelectFormGroup-CuRVgWYg.js",
       "_GalleryRest-Y_hgJSdj.js",
       "_RepositoryRest-ClsTcz1z.js",
       "_TextareaFormGroup-dfKTDx8M.js",

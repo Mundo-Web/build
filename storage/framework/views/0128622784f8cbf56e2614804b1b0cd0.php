@@ -157,6 +157,12 @@
 
 <body class="loading"
     data-layout='{"mode": "horizontal", "width": "fluid", "menuPosition": "fixed", "sidebar": { "color": "light", "size": "default", "showuser": true}, "topbar": {"color": "light"}, "showRightSidebarOnPageLoad": false}'>
+    <?php
+        $tinyApiKey = $generals->where('correlative', 'tiny_api_key')->first()?->description ?? null;
+    ?>
+    <script>
+        window.API_KEY_TINYMCE = "<?php echo e($tinyApiKey); ?>";
+    </script>
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->body; } else { ?><div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div><?php } ?>
 
     <div class="rightbar-overlay"></div>

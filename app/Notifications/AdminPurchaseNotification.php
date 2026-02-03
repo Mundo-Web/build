@@ -87,7 +87,9 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
     public function via($notifiable)
     {
         return ['mail'];
-    }    public function toMail($notifiable)
+    }
+
+    public function toMail($notifiable)
     {
         // Buscar plantilla específica para administrador, si no existe usar la del cliente
         $template = \App\Models\General::where('correlative', 'admin_purchase_email')->first();

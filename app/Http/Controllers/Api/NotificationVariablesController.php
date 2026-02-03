@@ -9,89 +9,54 @@ class NotificationVariablesController extends Controller
 {
     public function getVariables($type)
     {
+        \Illuminate\Support\Facades\Log::info("NotificationVariablesController: Fetching variables for type: {$type}");
         $variables = [];
+        $notificationClass = null;
 
-        switch ($type) {
-            case 'purchase_summary':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'order_id' => 'ID del pedido',
-                    'order_total' => 'Total del pedido',
-                    'order_date' => 'Fecha del pedido',
-                    'order_items' => 'Lista de productos',
-                    'shipping_address' => 'Dirección de envío',
-                    'payment_method' => 'Método de pago',
-                ];
-                break;
+        $mapping = [
+            'purchase_summary' => \App\Notifications\PurchaseSummaryNotification::class,
+            'order_status_changed' => \App\Notifications\OrderStatusChangedNotification::class,
+            'blog_published' => \App\Notifications\BlogPublishedNotification::class,
+            'claim' => \App\Notifications\ClaimNotification::class,
+            'whistleblowing' => \App\Notifications\WhistleblowingNotification::class,
+            'password_changed' => \App\Notifications\PasswordChangedNotification::class,
+            'password_reset' => \App\Notifications\PasswordResetLinkNotification::class,
+            'subscription' => \App\Notifications\SubscriptionNotification::class,
+            'verify_account' => \App\Notifications\VerifyAccountNotification::class,
+            'message_contact' => \App\Notifications\MessageContactNotification::class,
+            'admin_purchase' => \App\Notifications\AdminPurchaseNotification::class,
+            'admin_contact' => \App\Notifications\AdminContactNotification::class,
+            'admin_claim' => \App\Notifications\AdminClaimNotification::class,
+            'admin_whistleblowing' => \App\Notifications\AdminWhistleblowingNotification::class,
+            'job_application' => \App\Notifications\JobApplicationNotification::class,
+            'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
+        ];
 
-            case 'order_status_changed':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'order_id' => 'ID del pedido',
-                    'old_status' => 'Estado anterior',
-                    'new_status' => 'Nuevo estado',
-                    'order_date' => 'Fecha del pedido',
-                    'tracking_number' => 'Número de seguimiento',
-                ];
-                break;
+        if (array_key_exists($type, $mapping)) {
+            $notificationClass = $mapping[$type];
+        }
 
-            case 'blog_published':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'blog_title' => 'Título del blog',
-                    'blog_excerpt' => 'Extracto del blog',
-                    'blog_url' => 'URL del blog',
-                    'publish_date' => 'Fecha de publicación',
-                ];
-                break;
-
-            case 'claim':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'claim_id' => 'ID del reclamo',
-                    'claim_subject' => 'Asunto del reclamo',
-                    'claim_status' => 'Estado del reclamo',
-                    'claim_date' => 'Fecha del reclamo',
-                    'order_id' => 'ID del pedido relacionado',
-                ];
-                break;
-
-            case 'password_changed':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'user_email' => 'Email del usuario',
-                    'change_date' => 'Fecha del cambio',
-                    'ip_address' => 'Dirección IP',
-                ];
-                break;
-
-            case 'password_reset':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'reset_url' => 'URL para restablecer contraseña',
-                    'expiry_time' => 'Tiempo de expiración',
-                ];
-                break;
-
-            case 'subscription':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'user_email' => 'Email del usuario',
-                    'subscription_date' => 'Fecha de suscripción',
-                    'unsubscribe_url' => 'URL para cancelar suscripción',
-                ];
-                break;
-
-            case 'verify_account':
-                $variables = [
-                    'user_name' => 'Nombre del usuario',
-                    'verification_url' => 'URL de verificación',
-                    'expiry_time' => 'Tiempo de expiración',
-                ];
-                break;
-
-            default:
-                $variables = [];
+        if ($notificationClass && class_exists($notificationClass)) {
+            if (method_exists($notificationClass, 'availableVariables')) {
+                 $variables = $notificationClass::availableVariables();
+                 \Illuminate\Support\Facades\Log::info("NotificationVariablesController: Found ".count($variables)." variables for class {$notificationClass}");
+            } else {
+                 \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Method availableVariables not found in class {$notificationClass}");
+            }
+        } else {
+            \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Class not found or not mapped for type {$type} (Class: ".($notificationClass ?? 'null').")");
+            // Fallback for types not mapped or classes without the method (backward compatibility)
+            switch ($type) {
+                case 'purchase_summary':
+                    $variables = [
+                        'user_name' => 'Nombre del usuario',
+                        'order_id' => 'ID del pedido',
+                        'order_total' => 'Total del pedido',
+                        // ... legacy fallback if needed
+                    ];
+                    break;
+                // ... add other fallbacks if strictly necessary, but preferably rely on the classes
+            }
         }
 
         return response()->json([

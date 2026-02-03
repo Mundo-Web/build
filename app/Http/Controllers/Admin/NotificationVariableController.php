@@ -21,10 +21,18 @@ class NotificationVariableController extends Controller
             'order_status_changed'  => \App\Notifications\OrderStatusChangedNotification::class,
             'blog_published'        => \App\Notifications\BlogPublishedNotification::class,
             'claim'                 => \App\Notifications\ClaimNotification::class,
+            'whistleblowing'        => \App\Notifications\WhistleblowingNotification::class,
             'password_changed'      => \App\Notifications\PasswordChangedNotification::class,
             'password_reset'        => \App\Notifications\PasswordResetLinkNotification::class,
             'subscription'          => \App\Notifications\SubscriptionNotification::class,
             'verify_account'        => \App\Notifications\VerifyAccountNotification::class,
+            'message_contact'       => \App\Notifications\MessageContactNotification::class,
+            'admin_purchase'        => \App\Notifications\AdminPurchaseNotification::class,
+            'admin_contact'         => \App\Notifications\AdminContactNotification::class,
+            'admin_claim'           => \App\Notifications\AdminClaimNotification::class,
+            'admin_whistleblowing'  => \App\Notifications\AdminWhistleblowingNotification::class,
+            'job_application'       => \App\Notifications\JobApplicationNotification::class,
+            'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
         ];
         if (!isset($map[$type])) {
             return response()->json(['error' => 'Tipo de notificación no válido'], 404);

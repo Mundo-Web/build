@@ -157,6 +157,12 @@
 
 <body class="loading"
     data-layout='{"mode": "horizontal", "width": "fluid", "menuPosition": "fixed", "sidebar": { "color": "light", "size": "default", "showuser": true}, "topbar": {"color": "light"}, "showRightSidebarOnPageLoad": false}'>
+    @php
+        $tinyApiKey = $generals->where('correlative', 'tiny_api_key')->first()?->description ?? null;
+    @endphp
+    <script>
+        window.API_KEY_TINYMCE = "{{ $tinyApiKey }}";
+    </script>
     @inertia
 
     <div class="rightbar-overlay"></div>

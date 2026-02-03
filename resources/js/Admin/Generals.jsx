@@ -12,6 +12,7 @@ import CreateReactScript from "../Utils/CreateReactScript";
 import { createRoot } from "react-dom/client";
 import QuillFormGroup from "../Components/Adminto/form/QuillFormGroup";
 import TinyMCEFormGroup from "../Components/Adminto/form/TinyMCEFormGroup";
+import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import Global from "../Utils/Global";
 import GalleryRest from "../Actions/Admin/GalleryRest";
 import RepositoryRest from "../Actions/Admin/RepositoryRest";
@@ -53,8 +54,8 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
   const tabCorrelatives = {
-    'general': ['address', 'cintillo', 'copyright', 'opening_hours','header_menu_order', 'excel_import_template', 'footer_description', 'footer_company_links', 'body_custom_html'],
-    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email','message_contact_email','admin_purchase_email','admin_contact_email','admin_claim_email','admin_whistleblowing_email','job_application_email','admin_job_application_email'],
+    'general': ['address', 'cintillo', 'copyright', 'opening_hours', 'header_menu_order', 'excel_import_template', 'footer_description', 'footer_company_links', 'body_custom_html'],
+    'email': ['purchase_summary_email', 'order_status_changed_email', 'blog_published_email', 'claim_email', 'whistleblowing_email', 'password_changed_email', 'reset_password_email', 'subscription_email', 'verify_account_email', 'message_contact_email', 'admin_purchase_email', 'admin_contact_email', 'admin_claim_email', 'admin_whistleblowing_email', 'job_application_email', 'admin_job_application_email'],
     'contact': ['phone_contact', 'email_contact', 'support_phone', 'support_email', 'coorporative_email', 'whatsapp_advisors'],
     'checkout': ['checkout_culqi', 'checkout_culqi_name', 'checkout_culqi_public_key', 'checkout_culqi_private_key', 'checkout_culqi_rsa_id', 'checkout_culqi_rsa_public_key', 'checkout_culqi_supports_usd', 'checkout_culqi_commission', 'checkout_mercadopago', 'checkout_mercadopago_name', 'checkout_mercadopago_public_key', 'checkout_mercadopago_private_key', 'checkout_mercadopago_commission', 'checkout_openpay', 'checkout_openpay_name', 'checkout_openpay_merchant_id', 'checkout_openpay_public_key', 'checkout_openpay_private_key', 'checkout_openpay_commission', 'checkout_openpay_sandbox_mode', 'checkout_dwallet', 'checkout_dwallet_qr', 'checkout_dwallet_name', 'checkout_dwallet_description', 'checkout_dwallet_commission', 'checkout_transfer', 'transfer_accounts', 'checkout_transfer_cci', 'checkout_transfer_name', 'checkout_transfer_description', 'checkout_transfer_commission'],
     'importation': ['importation_flete', 'importation_seguro', 'importation_derecho_arancelario', 'importation_derecho_arancelario_descripcion'],
@@ -63,8 +64,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     'shippingfree': ['shipping_free', 'igv_checkout', 'currency', 'exchange_rate_usd_pen', 'additional_shipping_costs'],
     'seo': ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url', 'robots_additional_rules'],
     'hotel': ['hotel_checkin_time', 'hotel_checkout_time'],
-    'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts', 'atalaya_leads_api_key'],
-    'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled']
+    'pixels': ['google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id', 'google_ads_conversion_id', 'google_ads_conversion_label', 'tiktok_pixel_id', 'hotjar_id', 'clarity_id', 'linkedin_insight_tag', 'twitter_pixel_id', 'pinterest_tag_id', 'snapchat_pixel_id', 'custom_head_scripts', 'custom_body_scripts'],
+    'oauth': ['google_client_id', 'google_client_secret', 'google_oauth_enabled'],
+    'apis': ['tiny_api_key', 'atalaya_leads_api_key']
   };
 
   // Función memoizada para verificar si un tab debe mostrarse
@@ -112,9 +114,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
   // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
   const emailTemplates = useMemo(() => {
-    return generals.filter(g => g.correlative.endsWith('_email') && g.correlative !== 'support_email' && g.correlative !== 'coorporative_email');
+    return generals.filter(g => g.correlative.endsWith('_email') && !g.correlative.startsWith('visibility_') && g.correlative !== 'support_email' && g.correlative !== 'coorporative_email');
   }, [generals]);
-  
+
   const [showPreview, setShowPreview] = useState(false);
   const [selectedEmailCorrelative, setSelectedEmailCorrelative] = useState("");
   const [templateVariables, setTemplateVariables] = useState({});
@@ -151,6 +153,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       reset_password_email: "password_reset",
       subscription_email: "subscription",
       verify_account_email: "verify_account",
+      whistleblowing_email: "whistleblowing",
+      message_contact_email: "message_contact",
+      admin_purchase_email: "admin_purchase",
+      admin_contact_email: "admin_contact",
+      admin_claim_email: "admin_claim",
+      admin_whistleblowing_email: "admin_whistleblowing",
+      job_application_email: "job_application",
+      admin_job_application_email: "admin_job_application",
     };
     const type = correlativeToType[selectedEmailCorrelative];
     if (!type) {
@@ -175,7 +185,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   useEffect(() => {
     if (hasRootRole()) {
       const visibility = {};
-      
+
       // Inicializar desde allGenerals existentes
       if (allGenerals && allGenerals.length > 0) {
         allGenerals.forEach(general => {
@@ -184,7 +194,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
           }
         });
       }
-      
+
       // Agregar campos SEO que siempre deben estar disponibles (por defecto habilitados)
       const seoFields = ['site_title', 'site_description', 'site_keywords', 'og_title', 'og_description', 'og_image', 'og_url', 'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card', 'favicon', 'canonical_url'];
       seoFields.forEach(field => {
@@ -193,7 +203,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
           visibility[field] = true;
         }
       });
-      
+
       setFieldVisibility(visibility);
     }
   }, [allGenerals, hasRootRole]);
@@ -202,7 +212,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const shouldShowSeoField = useCallback((correlative) => {
     // Para usuarios Root, siempre mostrar todos los campos
     if (hasRootRole()) return true;
-    
+
     // Para usuarios Admin, verificar el estado de visibilidad
     // Si el campo no existe en fieldVisibility, asumir que está habilitado (campos nuevos)
     return fieldVisibility[correlative] !== false;
@@ -223,6 +233,18 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         return [correlative, existing?.description ?? ""];
       })
     ),
+    variable_visibility: Object.fromEntries(
+      allEmailTemplateCorrelatives.map(correlative => {
+        const existing = generals.find(g => g.correlative === `visibility_${correlative}`);
+        try {
+          // Si existe y tiene descripción, parsear JSON. Si es null, asumir TODO visible (null)
+          return [correlative, existing?.description ? JSON.parse(existing.description) : null];
+        } catch (e) {
+          // Si hay error de parseo, asumir todo visible
+          return [correlative, null];
+        }
+      })
+    ),
     phones: generals
       .find((x) => x.correlative == "phone_contact")
       ?.description?.split(",")
@@ -234,7 +256,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     cintillos: (() => {
       const cintilloGeneral = generals.find((x) => x.correlative == "cintillo");
       if (!cintilloGeneral?.description) return [];
-      
+
       try {
         // Intentar parsear como JSON primero (nuevo formato)
         const parsed = JSON.parse(cintilloGeneral.description);
@@ -432,7 +454,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     googleOauthEnabled:
       generals.find((x) => x.correlative == "google_oauth_enabled")
         ?.description ?? "false",
-    
+
     // Campos SEO
     siteTitle:
       generals.find((x) => x.correlative == "site_title")
@@ -475,6 +497,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         ?.description ?? "",
     robotsAdditionalRules:
       generals.find((x) => x.correlative == "robots_additional_rules")
+        ?.description ?? "",
+    tinyApiKey:
+      generals.find((x) => x.correlative == "tiny_api_key")
         ?.description ?? "",
     footerDescription:
       generals.find((x) => x.correlative == "footer_description")
@@ -605,6 +630,10 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const handleCheckoutTransferChange = useCallback((e) => {
     handleCheckboxChange('checkout_transfer', e.target.checked);
   }, [handleCheckboxChange]);
+
+  const handleTinyApiKeyChange = useCallback((e) => {
+    handleFieldChange('tinyApiKey', e.target.value);
+  }, [handleFieldChange]);
 
   // Handlers para campos específicos de pago
   const handleCulqiNameChange = useCallback((e) => {
@@ -804,7 +833,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
     }
 
     const newCintillos = [...formData.cintillos];
-    
+
     if (editingCintillo !== null) {
       // Editando cintillo existente
       newCintillos[editingCintillo] = modalCintillo;
@@ -824,34 +853,34 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const getActiveStatus = (cintillo) => {
     const text = typeof cintillo === 'string' ? cintillo : cintillo.text;
     const enabled = typeof cintillo === 'string' ? true : cintillo.enabled !== false;
-    
+
     if (!enabled || !text?.trim()) return { status: 'Inactivo', class: 'badge bg-secondary' };
-    
+
     if (typeof cintillo === 'string') return { status: 'Activo', class: 'badge bg-success' };
-    
+
     if (!cintillo.schedule) return { status: 'Activo', class: 'badge bg-success' };
-    
+
     const now = new Date();
     const currentDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()];
     const daySchedule = cintillo.schedule[currentDay];
-    
+
     if (!daySchedule || !daySchedule.enabled) return { status: 'Programado (Día no habilitado)', class: 'badge bg-warning' };
-    
+
     const currentTime = now.toTimeString().slice(0, 5);
     const start = daySchedule.start || '00:00';
     const end = daySchedule.end || '23:59';
-    
+
     const currentMinutes = parseInt(currentTime.split(':')[0]) * 60 + parseInt(currentTime.split(':')[1]);
     const startMinutes = parseInt(start.split(':')[0]) * 60 + parseInt(start.split(':')[1]);
     const endMinutes = parseInt(end.split(':')[0]) * 60 + parseInt(end.split(':')[1]);
-    
+
     let isActiveNow;
     if (endMinutes < startMinutes) {
       isActiveNow = currentMinutes >= startMinutes || currentMinutes <= endMinutes;
     } else {
       isActiveNow = currentMinutes >= startMinutes && currentMinutes <= endMinutes;
     }
-    
+
     if (isActiveNow) {
       return { status: 'Activo Ahora', class: 'badge bg-success' };
     } else {
@@ -862,7 +891,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const getScheduleSummary = (cintillo) => {
     if (typeof cintillo === 'string') return 'Todos los días, todo el día';
     if (!cintillo.schedule) return 'Todos los días, todo el día';
-    
+
     const dayNames = {
       monday: 'Lun',
       tuesday: 'Mar',
@@ -872,14 +901,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
       saturday: 'Sáb',
       sunday: 'Dom'
     };
-    
+
     const enabledDays = Object.entries(cintillo.schedule)
       .filter(([day, schedule]) => schedule.enabled)
       .map(([day]) => dayNames[day]);
-    
+
     if (enabledDays.length === 0) return 'Ningún día';
     if (enabledDays.length === 7) return 'Todos los días';
-    
+
     return enabledDays.join(', ');
   };
 
@@ -902,18 +931,18 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
   const onPlaceChanged = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
-      
+
       if (place.geometry && place.geometry.location) {
         const newLocation = {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
-        
+
         setFormData((prevState) => ({
           ...prevState,
           location: newLocation,
         }));
-        
+
         // Actualizar el valor del input de búsqueda
         setSearchValue(place.formatted_address || place.name || "");
       }
@@ -1399,6 +1428,16 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
         description: formData.twitterDescription || "",
       },
       {
+        correlative: "tiny_api_key",
+        name: "TinyMCE API Key",
+        description: formData.tinyApiKey || "",
+      },
+      ...allEmailTemplateCorrelatives.map(correlative => ({
+        correlative: `visibility_${correlative}`,
+        name: `Visibilidad Variables ${correlative}`,
+        description: formData.variable_visibility[correlative] ? JSON.stringify(formData.variable_visibility[correlative]) : ""
+      })),
+      {
         correlative: "twitter_image",
         name: "Imagen Twitter",
         description: formData.twitterImage || "",
@@ -1536,21 +1575,21 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 </button>
               </li>
             )}
-            
-              <ConditionalField correlative="cintillo">
-                  <li className="nav-item" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "cintillos" ? "active" : ""
-                  }`}
-                onClick={() => setActiveTab("cintillos")}
-                type="button"
-                role="tab"
-              >
-                Gestionar Cintillos
-              </button>
-            </li>
-              </ConditionalField>
-          
+
+            <ConditionalField correlative="cintillo">
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "cintillos" ? "active" : ""
+                    }`}
+                  onClick={() => setActiveTab("cintillos")}
+                  type="button"
+                  role="tab"
+                >
+                  Gestionar Cintillos
+                </button>
+              </li>
+            </ConditionalField>
+
 
             <li className="nav-item" role="presentation">
               <button
@@ -1563,19 +1602,19 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 Ubicación
               </button>
             </li>
-  {shouldShowTab('email') && (
-            <li className="nav-item" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "email" ? "active" : ""}`}
-                onClick={() => setActiveTab("email")}
-                type="button"
-                role="tab"
-              >
-                Email
-              </button>
-            </li>
-         )}
-            
+            {shouldShowTab('email') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "email" ? "active" : ""}`}
+                  onClick={() => setActiveTab("email")}
+                  type="button"
+                  role="tab"
+                >
+                  Email
+                </button>
+              </li>
+            )}
+
             {shouldShowTab('shippingfree') && (
               <li className="nav-item" role="presentation">
                 <button
@@ -1624,6 +1663,20 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 </button>
               </li>
             )}
+
+            {shouldShowTab('apis') && (
+              <li className="nav-item" role="presentation">
+                <button
+                  className={`nav-link ${activeTab === "apis" ? "active" : ""}`}
+                  onClick={() => setActiveTab("apis")}
+                  type="button"
+                  role="tab"
+                >
+                  <i className="fas fa-plug me-1"></i>
+                  APIs & Integraciones
+                </button>
+              </li>
+            )}
             {shouldShowTab('hotel') && (
               <li className="nav-item" role="presentation">
                 <button
@@ -1647,47 +1700,124 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               role="tabpanel"
             >
               <div className="mb-2">
-                <label htmlFor="email_correlative" className="form-label">
-                  Tipo de Email
-                </label>
-                <select
-                  id="email_correlative"
-                  className="form-select mb-3"
+                <SelectFormGroup
+                  label='Tipo de Email'
                   value={selectedEmailCorrelative}
                   onChange={e => setSelectedEmailCorrelative(e.target.value)}
                 >
-                  {emailTemplates.map(t => (
-                    <option key={t.correlative} value={t.correlative}>{t.name || t.correlative}</option>
-                  ))}
-                </select>
+                  {emailTemplates.map(t => {
+                    const friendlyNames = {
+                      'purchase_summary_email': 'Resumen de Compra',
+                      'order_status_changed_email': 'Cambio de Estado de Pedido',
+                      'blog_published_email': 'Blog Publicado',
+                      'claim_email': 'Reclamo Recibido (Cliente)',
+                      'whistleblowing_email': 'Denuncia Recibida (Cliente)',
+                      'password_changed_email': 'Contraseña Cambiada',
+                      'reset_password_email': 'Restablecer Contraseña',
+                      'subscription_email': 'Suscripción',
+                      'verify_account_email': 'Verificar Cuenta',
+                      'message_contact_email': 'Mensaje Contacto',
+                      'admin_purchase_email': 'Nueva Venta (Admin)',
+                      'admin_contact_email': 'Nuevo Contacto (Admin)',
+                      'admin_claim_email': 'Nuevo Reclamo (Admin)',
+                      'admin_whistleblowing_email': 'Nueva Denuncia (Admin)',
+                      'job_application_email': 'Aplicación Laboral (Cliente)',
+                      'admin_job_application_email': 'Aplicación Laboral (Admin)'
+                    };
+                    return <option key={t.correlative} value={t.correlative}>{friendlyNames[t.correlative] || t.name || t.correlative}</option>
+                  })}
+                </SelectFormGroup>
                 <TinyMCEFormGroup
                   height={600}
                   label={
                     <>
                       Plantilla de Email (HTML seguro, variables: <code>{`{{variable}}`}</code>)
-                      <small className="d-block text-muted">
-                        No se permite código PHP ni Blade. Solo variables seguras.<br />
-                        {loadingVars && <span>Cargando variables...</span>}
-                        {varsError && <span className="text-danger">{varsError}</span>}
-                        {!loadingVars && !varsError && (
-                          <>
-                            <b>Variables disponibles:</b>{" "}
-                            {Object.keys(templateVariables).length === 0
-                              ? <span>No hay variables para esta notificación.</span>
-                              : Object.entries(templateVariables).map(([key, desc]) => (
-                                <span key={key} style={{ display: 'inline-block', marginRight: 8 }}>
-                                  <code>{`{{${key}}}`}</code> <span className="text-muted">({desc})</span>{" "}
-                                </span>
-                              ))
-                            }
-                          </>
-                        )}
-                      </small>
                     </>
                   }
                   value={formData.email_templates[selectedEmailCorrelative] || ""}
                   onChange={handleEmailTemplateChange}
                 />
+
+                <div className="card bg-light border-0 mt-2">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <h6 className="card-title text-muted mb-0">Variables disponibles</h6>
+                      {hasRootRole() && (
+                        <span className="badge bg-danger">Modo Root: Gestionar Visibilidad</span>
+                      )}
+                    </div>
+                    {loadingVars && <span>Cargando variables...</span>}
+                    {varsError && <span className="text-danger">{varsError}</span>}
+                    {!loadingVars && !varsError && (
+                      <div className="d-flex flex-wrap gap-2">
+                        {Object.keys(templateVariables).length === 0
+                          ? <span className="text-muted">No hay variables para esta notificación.</span>
+                          : Object.entries(templateVariables).map(([key, desc]) => {
+                            // Lógica de visibilidad
+                            // Si es NULL (no configurado), todo es visible. Si es Array, solo lo que está en el array.
+                            const configuredVisibility = formData.variable_visibility[selectedEmailCorrelative];
+                            const isVisible = configuredVisibility === null || (Array.isArray(configuredVisibility) && configuredVisibility.includes(key));
+
+                            if (!hasRootRole() && !isVisible) return null;
+
+                            return (
+                              <Tippy content={hasRootRole() ? (!isVisible ? "Variable Oculta para Admins" : "Variable Visible") : `Haz clic para copiar: {{${key}}}`} key={key}>
+                                <div
+                                  className={`d-flex align-items-center border rounded p-1 ${!isVisible ? 'bg-secondary text-white opacity-75' : 'bg-white text-dark hover-shadow'}`}
+                                  style={{ transition: 'all 0.2s', opacity: !isVisible ? 0.8 : 1 }}
+                                >
+                                  {hasRootRole() && (
+                                    <div className="form-check form-switch me-2 mb-0 min-h-0">
+                                      <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        checked={isVisible}
+                                        onChange={(e) => {
+                                          e.stopPropagation();
+                                          const currentVisibility = formData.variable_visibility[selectedEmailCorrelative]
+                                            ? [...formData.variable_visibility[selectedEmailCorrelative]]
+                                            : Object.keys(templateVariables); // Si es null (todo visible), init con todo para empezar a ocultar
+
+                                          let newVisibility;
+                                          if (isVisible) {
+                                            // Ocultar (remover del array)
+                                            newVisibility = currentVisibility.filter(k => k !== key);
+                                          } else {
+                                            // Mostrar (agregar al array)
+                                            if (!currentVisibility.includes(key)) currentVisibility.push(key);
+                                            newVisibility = currentVisibility;
+                                          }
+
+                                          setFormData(prev => ({
+                                            ...prev,
+                                            variable_visibility: {
+                                              ...prev.variable_visibility,
+                                              [selectedEmailCorrelative]: newVisibility
+                                            }
+                                          }));
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  <span
+                                    className="cursor-pointer px-1"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(`{{${key}}}`);
+                                      toast.success(`Variable {{${key}}} copiada!`);
+                                    }}
+                                  >
+                                    <code className={!isVisible ? 'text-white fw-bold' : 'text-primary fw-bold'}>{`{{${key}}}`}</code>
+                                    <span style={{ fontSize: '0.75rem' }} className={`ms-1 border-start ps-1 ${!isVisible ? 'text-white-50' : 'text-muted'} small`}>{desc}</span>
+                                  </span>
+                                </div>
+                              </Tippy>
+                            );
+                          })
+                        }
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             <div
@@ -1695,28 +1825,28 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               role="tabpanel"
             >
               <div className="row">
-                   <ConditionalField correlative="cintillo">
-                     <div className="col-md-6 mb-2">
-                  <div className="alert alert-info">
-                    <h6>
-                      <i className="fas fa-info-circle me-2"></i>
-                      Gestión de Cintillos
-                    </h6>
-                    <p className="mb-2">
-                      Los cintillos se han movido a una pestaña dedicada para una mejor organización.
-                    </p>
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={() => setActiveTab("cintillos")}
-                    >
-                      <i className="fas fa-cog me-1"></i>
-                      Ir a Gestionar Cintillos
-                    </button>
+                <ConditionalField correlative="cintillo">
+                  <div className="col-md-6 mb-2">
+                    <div className="alert alert-info">
+                      <h6>
+                        <i className="fas fa-info-circle me-2"></i>
+                        Gestión de Cintillos
+                      </h6>
+                      <p className="mb-2">
+                        Los cintillos se han movido a una pestaña dedicada para una mejor organización.
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setActiveTab("cintillos")}
+                      >
+                        <i className="fas fa-cog me-1"></i>
+                        Ir a Gestionar Cintillos
+                      </button>
+                    </div>
                   </div>
-                </div>
-                   </ConditionalField>
-               
+                </ConditionalField>
+
                 <ConditionalField correlative="copyright">
                   <div className={`mb-2 ${shouldShowField("cintillo") ? "col-md-6 " : "col-md-12 "}`}>
                     <label htmlFor="copyright" className="form-label">
@@ -1806,14 +1936,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       onChange={async (e) => {
                         const file = e.target.files[0];
                         if (!file) return;
-                        
+
                         // Validar que sea Excel
                         if (!file.name.match(/\.(xlsx|xls)$/i)) {
                           alert('Por favor, selecciona solo archivos Excel (.xlsx o .xls)');
                           e.target.value = null;
                           return;
                         }
-                        
+
                         e.target.value = null;
 
                         const request = new FormData();
@@ -1908,22 +2038,20 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           <div className="col-md-1 d-flex gap-1">
                             <button
                               type="button"
-                              className={`btn btn-sm flex-fill ${
-                                link.visible !== false ? 'btn-success' : 'btn-secondary'
-                              }`}
+                              className={`btn btn-sm flex-fill ${link.visible !== false ? 'btn-success' : 'btn-secondary'
+                                }`}
                               onClick={() => {
                                 const newLinks = [...formData.footerCompanyLinks];
-                                newLinks[index] = { 
-                                  ...newLinks[index], 
-                                  visible: !(link.visible !== false) 
+                                newLinks[index] = {
+                                  ...newLinks[index],
+                                  visible: !(link.visible !== false)
                                 };
                                 handleFieldChange('footerCompanyLinks', newLinks);
                               }}
                               title={link.visible !== false ? 'Visible' : 'Oculto'}
                             >
-                              <i className={`fa ${
-                                link.visible !== false ? 'fa-eye' : 'fa-eye-slash'
-                              }`}></i>
+                              <i className={`fa ${link.visible !== false ? 'fa-eye' : 'fa-eye-slash'
+                                }`}></i>
                             </button>
                             <button
                               type="button"
@@ -2162,7 +2290,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 <p className="text-muted small mb-3">
                   Agrega múltiples asesores. Si hay más de uno, se mostrará un modal para que el cliente elija.
                 </p>
-                
+
                 {formData.whatsappAdvisors?.map((advisor, index) => (
                   <div key={index} className="card mb-3" style={{ padding: "12px", backgroundColor: "#fff" }}>
                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -2178,7 +2306,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                         <i className="mdi mdi-delete"></i>
                       </button>
                     </div>
-                    
+
                     <div className="row">
                       <div className="col-md-6 mb-2">
                         <label className="form-label small">Nombre del Asesor</label>
@@ -2194,7 +2322,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           }}
                         />
                       </div>
-                      
+
                       <div className="col-md-6 mb-2">
                         <label className="form-label small">Puesto/Cargo</label>
                         <input
@@ -2209,7 +2337,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           }}
                         />
                       </div>
-                      
+
                       <div className="col-md-6 mb-2">
                         <label className="form-label small">Número de WhatsApp</label>
                         <input
@@ -2224,7 +2352,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           }}
                         />
                       </div>
-                      
+
                       <div className="col-md-6 mb-2">
                         <label className="form-label small">Mensaje Inicial</label>
                         <input
@@ -2239,15 +2367,15 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                           }}
                         />
                       </div>
-                      
+
                       <div className="col-12 mb-2">
                         <label className="form-label small">Foto del Asesor</label>
                         {advisor.photo ? (
                           <div className="position-relative ">
                             <Tippy content="Eliminar foto">
-                              <button 
+                              <button
                                 type="button"
-                                className="position-absolute btn btn-xs btn-danger" 
+                                className="position-absolute btn btn-xs btn-danger"
                                 style={{ top: '5px', left: '5px', zIndex: 10 }}
                                 onClick={() => {
                                   const newAdvisors = [...formData.whatsappAdvisors];
@@ -2258,8 +2386,8 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                 <i className="mdi mdi-delete"></i>
                               </button>
                             </Tippy>
-                            <img 
-                              src={`/assets/resources/${advisor.photo}`} 
+                            <img
+                              src={`/assets/resources/${advisor.photo}`}
                               alt={advisor.name}
                               className="img-thumbnail"
                               style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '50%' }}
@@ -2295,7 +2423,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     </div>
                   </div>
                 ))}
-                
+
                 <button
                   type="button"
                   className="btn btn-outline-primary btn-sm"
@@ -2954,7 +3082,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       >
                         Agregar Otra Cuenta
                       </button>
-                      
+
                       <div className="mt-4 mb-2">
                         <h6 className="text-muted">Comisión del Método de Pago</h6>
                       </div>
@@ -2996,20 +3124,20 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                 />
               </div>
 
-            
 
-                <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "terms_conditions")}>
-                  <QuillFormGroup
-                    label="Términos y condiciones"
-                    value={formData.termsConditions}
-                    onChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        termsConditions: value,
-                      })
-                    }
-                  />
-                </div>
+
+              <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "terms_conditions")}>
+                <QuillFormGroup
+                  label="Términos y condiciones"
+                  value={formData.termsConditions}
+                  onChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      termsConditions: value,
+                    })
+                  }
+                />
+              </div>
 
               <div className="mb-2" hidden={!some(generals, (general) => general.correlative === "delivery_policy")} >
                 <QuillFormGroup
@@ -3081,14 +3209,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     onChange={async (e) => {
                       const file = e.target.files[0];
                       if (!file) return;
-                      
+
                       // Validar que sea PDF
                       if (file.type !== 'application/pdf') {
                         alert('Por favor, selecciona solo archivos PDF');
                         e.target.value = null;
                         return;
                       }
-                      
+
                       e.target.value = null;
 
                       const request = new FormData();
@@ -3153,14 +3281,14 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     onChange={async (e) => {
                       const file = e.target.files[0];
                       if (!file) return;
-                      
+
                       // Validar que sea PDF
                       if (file.type !== 'application/pdf') {
                         alert('Por favor, selecciona solo archivos PDF');
                         e.target.value = null;
                         return;
                       }
-                      
+
                       e.target.value = null;
 
                       const request = new FormData();
@@ -3229,7 +3357,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                 const enabled = typeof cintillo === 'string' ? true : cintillo.enabled !== false;
                                 const status = getActiveStatus(cintillo);
                                 const scheduleSummary = getScheduleSummary(cintillo);
-                                
+
                                 return (
                                   <tr key={`cintillo-${index}`}>
                                     <td className="fw-bold text-muted">{index + 1}</td>
@@ -3320,7 +3448,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               className={`tab-pane fade ${activeTab === "location" ? "show active" : ""}`}
               role="tabpanel"
             >
-              <LoadScript 
+              <LoadScript
                 googleMapsApiKey={Global.GMAPS_API_KEY}
                 libraries={libraries}
               >
@@ -3424,7 +3552,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   </select>
                 </div>
               </ConditionalField>
-              
+
               {/* Campo de tipo de cambio - Solo visible cuando la moneda es USD */}
               {formData.currency === 'usd' && (
                 <div className="mb-2">
@@ -3435,7 +3563,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     <i className="mdi mdi-currency-usd me-1"></i>
                     Tipo de Cambio (USD → PEN)
                     <small className="d-block text-muted" style={{ fontWeight: 'lighter' }}>
-                      <strong>⚠️ Importante:</strong> Culqi solo procesa pagos en Soles (PEN). 
+                      <strong>⚠️ Importante:</strong> Culqi solo procesa pagos en Soles (PEN).
                       Este tipo de cambio se usará para convertir el monto de dólares a soles al procesar pagos con tarjeta.
                     </small>
                   </label>
@@ -3460,12 +3588,12 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   </div>
                   <small className="text-info">
                     <i className="mdi mdi-information-outline me-1"></i>
-                    Ejemplo: Si un producto cuesta $100 USD y el tipo de cambio es 3.75, 
+                    Ejemplo: Si un producto cuesta $100 USD y el tipo de cambio es 3.75,
                     Culqi cobrará S/ 375.00 PEN.
                   </small>
                 </div>
               )}
-              
+
               <ConditionalField correlative="shipping_free">
                 <div className="mb-2">
                   <label className="form-label">Envio gratis a partir de:</label>
@@ -3481,7 +3609,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   />
                 </div>
               </ConditionalField>
-              
+
               <ConditionalField correlative="additional_shipping_costs">
                 <div className="mb-4 mt-4">
                   <div className="d-flex justify-content-between align-items-center mb-3">
@@ -3596,7 +3724,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                   </select>
                                   <small className="text-muted">Seleccione a qué método de envío aplica</small>
                                 </div>
-                                
+
                                 <div className="col-md-6 mb-3">
                                   <label className="form-label">Descripción</label>
                                   <input
@@ -3850,7 +3978,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                   <h6 className="mb-3">
                     <i className="fas fa-globe me-2"></i>Meta Tags Básicos
                   </h6>
-                  
+
                   <ConditionalSeoField correlative="site_title">
                     <div className="mb-3">
                       <label className="form-label">Título del Sitio</label>
@@ -3919,7 +4047,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     </div>
                   </ConditionalSeoField>
 
-                
+
                 </div>
 
                 <div className="col-md-6">
@@ -4083,7 +4211,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     Aquí puedes agregar reglas personalizadas adicionales.
                   </p>
                 </div>
-                
+
                 <div className="col-md-8">
                   <ConditionalSeoField correlative="robots_additional_rules">
                     <div className="mb-3">
@@ -4431,23 +4559,6 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     <small className="text-muted">Scripts personalizados para el final del &lt;body&gt;</small>
                   </div>
 
-                  <div className="mb-3">
-                    <label className="form-label">Atalaya Leads API Key</label>
-                    <input
-                      type="text"
-                      placeholder="API Key de Atalaya CRM (ejemplo: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)"
-                      className="form-control"
-                      value={formData.atalayaLeadsApiKey}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        atalayaLeadsApiKey: e.target.value
-                      })}
-                    />
-                    <small className="text-muted">
-                      API Key para enviar leads del formulario de contacto a Atalaya CRM. 
-                      <a href="https://atalaya.pe" target="_blank" rel="noopener noreferrer" className="text-primary">Obtén tu API Key aquí</a>
-                    </small>
-                  </div>
                 </div>
               </div>
             </div>
@@ -4563,6 +4674,76 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
               </div>
             </div>
 
+
+
+            {/* APIs & Integraciones Tab */}
+            <div
+              className={`tab-pane fade ${activeTab === "apis" ? "show active" : ""}`}
+              role="tabpanel"
+            >
+              <div className="row">
+                <div className="col-12">
+                  <h5 className="mb-4">🔌 APIs e Integraciones</h5>
+
+                  <ConditionalField correlative="tiny_api_key">
+                    <div className="card mb-4 border-light shadow-sm">
+                      <div className="card-header bg-transparent">
+                        <h6 className="mb-0 text-primary"><i className="fas fa-pen-fancy me-2"></i>Editor de Texto (TinyMCE)</h6>
+                      </div>
+                      <div className="card-body">
+                        <label className="form-label" htmlFor="tiny_api_key">
+                          TinyMCE API Key <small className="text-muted">(Dejar en blanco para usar la key por defecto del sistema)</small>
+                        </label>
+                        <div className="input-group">
+                          <span className="input-group-text"><i className="fas fa-key"></i></span>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="tiny_api_key"
+                            value={formData.tinyApiKey}
+                            onChange={handleTinyApiKeyChange}
+                            placeholder="Ingrese su API Key de TinyMCE"
+                          />
+                        </div>
+                        <small className="text-muted mt-2 d-block">
+                          Esta key se utiliza para cargar el editor de texto enriquecido en todo el panel administrativo.
+                        </small>
+                      </div>
+                    </div>
+                  </ConditionalField>
+
+                  <ConditionalField correlative="atalaya_leads_api_key">
+                    <div className="card mb-4 border-light shadow-sm">
+                      <div className="card-header bg-transparent">
+                        <h6 className="mb-0 text-primary"><i className="fas fa-bullhorn me-2"></i>CRM & Leads (Atalaya)</h6>
+                      </div>
+                      <div className="card-body">
+                        <label className="form-label">Atalaya Leads API Key</label>
+                        <div className="input-group">
+                          <span className="input-group-text"><i className="fas fa-key"></i></span>
+                          <input
+                            type="text"
+                            placeholder="API Key de Atalaya CRM (ejemplo: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)"
+                            className="form-control"
+                            value={formData.atalayaLeadsApiKey}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              atalayaLeadsApiKey: e.target.value
+                            })}
+                          />
+                        </div>
+                        <small className="text-muted mt-2 d-block">
+                          API Key para enviar leads del formulario de contacto a Atalaya CRM.
+                          <a href="https://atalaya.pe" target="_blank" rel="noopener noreferrer" className="text-primary ms-1">Obtén tu API Key aquí</a>
+                        </small>
+                      </div>
+                    </div>
+                  </ConditionalField>
+
+                </div>
+              </div>
+            </div>
+
             {/* Tab de Configuración de Hotel */}
             <div
               className={`tab-pane fade ${activeTab === "hotel" ? "show active" : ""}`}
@@ -4574,10 +4755,10 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                     <i className="fas fa-hotel me-2"></i>
                     Configuración de Horarios del Hotel
                   </h5>
-                  
+
                   <div className="alert alert-info mb-4">
                     <i className="fas fa-info-circle me-2"></i>
-                    <strong>Horarios de Check-In y Check-Out:</strong> Estos horarios definen cuándo los huéspedes pueden ingresar y deben retirarse de las habitaciones. 
+                    <strong>Horarios de Check-In y Check-Out:</strong> Estos horarios definen cuándo los huéspedes pueden ingresar y deben retirarse de las habitaciones.
                     El día de check-out, la habitación estará disponible para nuevas reservas a partir del horario configurado.
                   </div>
 
@@ -4810,9 +4991,9 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
             )}
           </button>
           <Toaster />
-        </form>
+        </form >
 
-      </div>
+      </div >
       {/* Modal para gestión de visibilidad de campos */}
       {
         showVisibilityModal && (
@@ -4862,7 +5043,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       <div key={tabKey} className="mb-4">
                         <div className="d-flex align-items-center mb-3">
                           <h4 className="text-primary mb-0 me-2 ">{tabName}</h4>
-                         
+
                         </div>
                         <div className="row">
                           {tabFields.map((general) => (
@@ -4877,7 +5058,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                 />
                                 <label className="form-check-label" htmlFor={`field-${general.correlative}`}>
                                   <strong>{general.name}</strong>
-                                 
+
                                 </label>
                               </div>
                             </div>
@@ -4941,7 +5122,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                       <div className="mb-4">
                         <div className="d-flex align-items-center mb-3">
                           <h4 className="text-secondary mb-0 me-2">Otros Campos</h4>
-                     
+
                         </div>
                         <div className="row">
                           {uncategorizedFields.map((general) => (
@@ -4956,7 +5137,7 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
                                 />
                                 <label className="form-check-label" htmlFor={`field-${general.correlative}`}>
                                   <strong>{general.name}</strong>
-                                
+
                                 </label>
                               </div>
                             </div>
@@ -4996,266 +5177,271 @@ const Generals = ({ generals, allGenerals, session, hasRootRole: backendRootRole
 
 
           </div>
-        )}
+        )
+      }
       {/* Backdrop del modal */}
-      {showVisibilityModal && (
-        <div className="modal-backdrop fade show"></div>
-      )}
+      {
+        showVisibilityModal && (
+          <div className="modal-backdrop fade show"></div>
+        )
+      }
 
       {/* Modal para Agregar/Editar Cintillo */}
-      {showCintilloModal && (
-        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="fas fa-bullhorn me-2"></i>
-                  {editingCintillo !== null ? 'Editar Cintillo' : 'Nuevo Cintillo'}
-                </h5>
-                <button type="button" className="btn-close" onClick={closeCintilloModal}></button>
-              </div>
-              <div className="modal-body">
-                {/* Texto del Cintillo */}
-                <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-edit me-2"></i>Texto del Cintillo
-                  </label>
-                  <textarea
-                    className="form-control"
-                    value={modalCintillo.text}
-                    onChange={(e) => setModalCintillo({ ...modalCintillo, text: e.target.value })}
-                    rows="3"
-                    placeholder="Ingresa el texto del cintillo"
-                  />
-                  <small className="text-muted">
-                    <i className="fas fa-info-circle me-1"></i>
-                    Evita usar comas en el texto para mejor compatibilidad
-                  </small>
+      {
+        showCintilloModal && (
+          <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">
+                    <i className="fas fa-bullhorn me-2"></i>
+                    {editingCintillo !== null ? 'Editar Cintillo' : 'Nuevo Cintillo'}
+                  </h5>
+                  <button type="button" className="btn-close" onClick={closeCintilloModal}></button>
                 </div>
-
-                {/* Estado Activo */}
-                <div className="mb-4">
-                  <div className="form-check form-switch">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="modalCintilloEnabled"
-                      checked={modalCintillo.enabled}
-                      onChange={(e) => setModalCintillo({ ...modalCintillo, enabled: e.target.checked })}
-                    />
-                    <label className="form-check-label fw-bold" htmlFor="modalCintilloEnabled">
-                      Cintillo Activo
+                <div className="modal-body">
+                  {/* Texto del Cintillo */}
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">
+                      <i className="fas fa-edit me-2"></i>Texto del Cintillo
                     </label>
+                    <textarea
+                      className="form-control"
+                      value={modalCintillo.text}
+                      onChange={(e) => setModalCintillo({ ...modalCintillo, text: e.target.value })}
+                      rows="3"
+                      placeholder="Ingresa el texto del cintillo"
+                    />
+                    <small className="text-muted">
+                      <i className="fas fa-info-circle me-1"></i>
+                      Evita usar comas en el texto para mejor compatibilidad
+                    </small>
                   </div>
-                </div>
 
-                {/* Configuraciones Rápidas */}
-                <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-magic me-2"></i>Configuraciones Rápidas
-                  </label>
-                  <div className="btn-group w-100" role="group">
-                    <button
-                      type="button"
-                      className="btn btn-outline-success"
-                      onClick={() => {
-                        setModalCintillo({
-                          ...modalCintillo,
-                          schedule: {
-                            monday: { enabled: true, start: '00:00', end: '23:59' },
-                            tuesday: { enabled: true, start: '00:00', end: '23:59' },
-                            wednesday: { enabled: true, start: '00:00', end: '23:59' },
-                            thursday: { enabled: true, start: '00:00', end: '23:59' },
-                            friday: { enabled: true, start: '00:00', end: '23:59' },
-                            saturday: { enabled: false, start: '00:00', end: '23:59' },
-                            sunday: { enabled: false, start: '00:00', end: '23:59' }
-                          }
-                        });
-                      }}
-                    >
-                      <i className="fas fa-briefcase me-1"></i>Días Laborales
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-info"
-                      onClick={() => {
-                        setModalCintillo({
-                          ...modalCintillo,
-                          schedule: {
-                            monday: { enabled: false, start: '00:00', end: '23:59' },
-                            tuesday: { enabled: false, start: '00:00', end: '23:59' },
-                            wednesday: { enabled: false, start: '00:00', end: '23:59' },
-                            thursday: { enabled: false, start: '00:00', end: '23:59' },
-                            friday: { enabled: false, start: '00:00', end: '23:59' },
-                            saturday: { enabled: true, start: '00:00', end: '23:59' },
-                            sunday: { enabled: true, start: '00:00', end: '23:59' }
-                          }
-                        });
-                      }}
-                    >
-                      <i className="fas fa-calendar-weekend me-1"></i>Fines de Semana
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-primary"
-                      onClick={() => {
-                        setModalCintillo({
-                          ...modalCintillo,
-                          schedule: {
-                            monday: { enabled: true, start: '00:00', end: '23:59' },
-                            tuesday: { enabled: true, start: '00:00', end: '23:59' },
-                            wednesday: { enabled: true, start: '00:00', end: '23:59' },
-                            thursday: { enabled: true, start: '00:00', end: '23:59' },
-                            friday: { enabled: true, start: '00:00', end: '23:59' },
-                            saturday: { enabled: true, start: '00:00', end: '23:59' },
-                            sunday: { enabled: true, start: '00:00', end: '23:59' }
-                          }
-                        });
-                      }}
-                    >
-                      <i className="fas fa-globe me-1"></i>Todos los Días
-                    </button>
+                  {/* Estado Activo */}
+                  <div className="mb-4">
+                    <div className="form-check form-switch">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="modalCintilloEnabled"
+                        checked={modalCintillo.enabled}
+                        onChange={(e) => setModalCintillo({ ...modalCintillo, enabled: e.target.checked })}
+                      />
+                      <label className="form-check-label fw-bold" htmlFor="modalCintilloEnabled">
+                        Cintillo Activo
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                {/* Programación Detallada */}
-                <div className="mb-3">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-calendar-alt me-2"></i>Programación Detallada
-                  </label>
-                  <div className="border rounded p-3" style={{ backgroundColor: '#f8f9fa' }}>
-                    {[
-                      { key: 'monday', label: 'Lunes', icon: 'fas fa-moon' },
-                      { key: 'tuesday', label: 'Martes', icon: 'fas fa-sun' },
-                      { key: 'wednesday', label: 'Miércoles', icon: 'fas fa-cloud' },
-                      { key: 'thursday', label: 'Jueves', icon: 'fas fa-star' },
-                      { key: 'friday', label: 'Viernes', icon: 'fas fa-heart' },
-                      { key: 'saturday', label: 'Sábado', icon: 'fas fa-home' },
-                      { key: 'sunday', label: 'Domingo', icon: 'fas fa-church' }
-                    ].map((day) => {
-                      const daySchedule = modalCintillo.schedule[day.key] || { enabled: true, start: '00:00', end: '23:59' };
-                      
-                      return (
-                        <div key={day.key} className="row mb-3 align-items-center p-2 rounded" style={{ backgroundColor: daySchedule.enabled ? '#DCFCE7' : '#f8f8f8' }}>
-                          <div className="col-md-3">
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id={`modal-${day.key}`}
-                                checked={daySchedule.enabled}
-                                onChange={(e) => {
-                                  setModalCintillo({
-                                    ...modalCintillo,
-                                    schedule: {
-                                      ...modalCintillo.schedule,
-                                      [day.key]: {
-                                        ...daySchedule,
-                                        enabled: e.target.checked
-                                      }
-                                    }
-                                  });
-                                }}
-                              />
-                              <label className="form-check-label fw-bold d-flex align-items-center" htmlFor={`modal-${day.key}`}>
-                                {day.label}
-                              </label>
-                            </div>
-                          </div>
-                          {daySchedule.enabled && (
-                            <>
-                              <div className="col-md-4">
-                                <div className="input-group">
-                                  <span className="input-group-text">
-                                    <i className="fas fa-clock text-success"></i>
-                                  </span>
-                                  <input
-                                    type="time"
-                                    className="form-control"
-                                    value={daySchedule.start || '00:00'}
-                                    onChange={(e) => {
-                                      setModalCintillo({
-                                        ...modalCintillo,
-                                        schedule: {
-                                          ...modalCintillo.schedule,
-                                          [day.key]: {
-                                            ...daySchedule,
-                                            start: e.target.value
-                                          }
-                                        }
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-md-4">
-                                <div className="input-group">
-                                  <span className="input-group-text">
-                                    <i className="fas fa-clock text-danger"></i>
-                                  </span>
-                                  <input
-                                    type="time"
-                                    className="form-control"
-                                    value={daySchedule.end || '23:59'}
-                                    onChange={(e) => {
-                                      setModalCintillo({
-                                        ...modalCintillo,
-                                        schedule: {
-                                          ...modalCintillo.schedule,
-                                          [day.key]: {
-                                            ...daySchedule,
-                                            end: e.target.value
-                                          }
-                                        }
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-md-1">
-                                <button
-                                  type="button"
-                                  className="btn btn-outline-primary btn-sm"
-                                  onClick={() => {
+                  {/* Configuraciones Rápidas */}
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">
+                      <i className="fas fa-magic me-2"></i>Configuraciones Rápidas
+                    </label>
+                    <div className="btn-group w-100" role="group">
+                      <button
+                        type="button"
+                        className="btn btn-outline-success"
+                        onClick={() => {
+                          setModalCintillo({
+                            ...modalCintillo,
+                            schedule: {
+                              monday: { enabled: true, start: '00:00', end: '23:59' },
+                              tuesday: { enabled: true, start: '00:00', end: '23:59' },
+                              wednesday: { enabled: true, start: '00:00', end: '23:59' },
+                              thursday: { enabled: true, start: '00:00', end: '23:59' },
+                              friday: { enabled: true, start: '00:00', end: '23:59' },
+                              saturday: { enabled: false, start: '00:00', end: '23:59' },
+                              sunday: { enabled: false, start: '00:00', end: '23:59' }
+                            }
+                          });
+                        }}
+                      >
+                        <i className="fas fa-briefcase me-1"></i>Días Laborales
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-info"
+                        onClick={() => {
+                          setModalCintillo({
+                            ...modalCintillo,
+                            schedule: {
+                              monday: { enabled: false, start: '00:00', end: '23:59' },
+                              tuesday: { enabled: false, start: '00:00', end: '23:59' },
+                              wednesday: { enabled: false, start: '00:00', end: '23:59' },
+                              thursday: { enabled: false, start: '00:00', end: '23:59' },
+                              friday: { enabled: false, start: '00:00', end: '23:59' },
+                              saturday: { enabled: true, start: '00:00', end: '23:59' },
+                              sunday: { enabled: true, start: '00:00', end: '23:59' }
+                            }
+                          });
+                        }}
+                      >
+                        <i className="fas fa-calendar-weekend me-1"></i>Fines de Semana
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary"
+                        onClick={() => {
+                          setModalCintillo({
+                            ...modalCintillo,
+                            schedule: {
+                              monday: { enabled: true, start: '00:00', end: '23:59' },
+                              tuesday: { enabled: true, start: '00:00', end: '23:59' },
+                              wednesday: { enabled: true, start: '00:00', end: '23:59' },
+                              thursday: { enabled: true, start: '00:00', end: '23:59' },
+                              friday: { enabled: true, start: '00:00', end: '23:59' },
+                              saturday: { enabled: true, start: '00:00', end: '23:59' },
+                              sunday: { enabled: true, start: '00:00', end: '23:59' }
+                            }
+                          });
+                        }}
+                      >
+                        <i className="fas fa-globe me-1"></i>Todos los Días
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Programación Detallada */}
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">
+                      <i className="fas fa-calendar-alt me-2"></i>Programación Detallada
+                    </label>
+                    <div className="border rounded p-3" style={{ backgroundColor: '#f8f9fa' }}>
+                      {[
+                        { key: 'monday', label: 'Lunes', icon: 'fas fa-moon' },
+                        { key: 'tuesday', label: 'Martes', icon: 'fas fa-sun' },
+                        { key: 'wednesday', label: 'Miércoles', icon: 'fas fa-cloud' },
+                        { key: 'thursday', label: 'Jueves', icon: 'fas fa-star' },
+                        { key: 'friday', label: 'Viernes', icon: 'fas fa-heart' },
+                        { key: 'saturday', label: 'Sábado', icon: 'fas fa-home' },
+                        { key: 'sunday', label: 'Domingo', icon: 'fas fa-church' }
+                      ].map((day) => {
+                        const daySchedule = modalCintillo.schedule[day.key] || { enabled: true, start: '00:00', end: '23:59' };
+
+                        return (
+                          <div key={day.key} className="row mb-3 align-items-center p-2 rounded" style={{ backgroundColor: daySchedule.enabled ? '#DCFCE7' : '#f8f8f8' }}>
+                            <div className="col-md-3">
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`modal-${day.key}`}
+                                  checked={daySchedule.enabled}
+                                  onChange={(e) => {
                                     setModalCintillo({
                                       ...modalCintillo,
                                       schedule: {
                                         ...modalCintillo.schedule,
                                         [day.key]: {
-                                          enabled: true,
-                                          start: '00:00',
-                                          end: '23:59'
+                                          ...daySchedule,
+                                          enabled: e.target.checked
                                         }
                                       }
                                     });
                                   }}
-                                  title="Todo el día"
-                                >
-                                  24h
-                                </button>
+                                />
+                                <label className="form-check-label fw-bold d-flex align-items-center" htmlFor={`modal-${day.key}`}>
+                                  {day.label}
+                                </label>
                               </div>
-                            </>
-                          )}
-                        </div>
-                      );
-                    })}
+                            </div>
+                            {daySchedule.enabled && (
+                              <>
+                                <div className="col-md-4">
+                                  <div className="input-group">
+                                    <span className="input-group-text">
+                                      <i className="fas fa-clock text-success"></i>
+                                    </span>
+                                    <input
+                                      type="time"
+                                      className="form-control"
+                                      value={daySchedule.start || '00:00'}
+                                      onChange={(e) => {
+                                        setModalCintillo({
+                                          ...modalCintillo,
+                                          schedule: {
+                                            ...modalCintillo.schedule,
+                                            [day.key]: {
+                                              ...daySchedule,
+                                              start: e.target.value
+                                            }
+                                          }
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-md-4">
+                                  <div className="input-group">
+                                    <span className="input-group-text">
+                                      <i className="fas fa-clock text-danger"></i>
+                                    </span>
+                                    <input
+                                      type="time"
+                                      className="form-control"
+                                      value={daySchedule.end || '23:59'}
+                                      onChange={(e) => {
+                                        setModalCintillo({
+                                          ...modalCintillo,
+                                          schedule: {
+                                            ...modalCintillo.schedule,
+                                            [day.key]: {
+                                              ...daySchedule,
+                                              end: e.target.value
+                                            }
+                                          }
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-md-1">
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-primary btn-sm"
+                                    onClick={() => {
+                                      setModalCintillo({
+                                        ...modalCintillo,
+                                        schedule: {
+                                          ...modalCintillo.schedule,
+                                          [day.key]: {
+                                            enabled: true,
+                                            start: '00:00',
+                                            end: '23:59'
+                                          }
+                                        }
+                                      });
+                                    }}
+                                    title="Todo el día"
+                                  >
+                                    24h
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={closeCintilloModal}>
-                  <i className="fas fa-times me-1"></i>Cancelar
-                </button>
-                <button type="button" className="btn btn-primary" onClick={saveCintillo}>
-                  <i className="fas fa-save me-1"></i>
-                  {editingCintillo !== null ? 'Actualizar' : 'Guardar'} Cintillo
-                </button>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={closeCintilloModal}>
+                    <i className="fas fa-times me-1"></i>Cancelar
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={saveCintillo}>
+                    <i className="fas fa-save me-1"></i>
+                    {editingCintillo !== null ? 'Actualizar' : 'Guardar'} Cintillo
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   )
 };
 
