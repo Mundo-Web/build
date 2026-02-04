@@ -66,7 +66,7 @@ class PaymentController extends Controller
                     "email" => $request->email,
                     "source_id" => $request->token
                 ];
-                
+
                 // Agregar antifraud_details si hay device fingerprint (necesario para 3DS)
                 if ($request->deviceFingerPrint) {
                     $chargeData["antifraud_details"] = [
@@ -101,13 +101,13 @@ class PaymentController extends Controller
             // - REVIEW: Requiere autenticación 3DS (el checkout debería manejarlo)
             $outcomeType = $charge->outcome->type ?? '';
             $actionCode = $charge->action_code ?? $charge->outcome->action_code ?? '';
-            
+
             Log::info('PaymentController - Validando resultado de cargo:', [
                 'outcome_type' => $outcomeType,
                 'action_code' => $actionCode,
                 'has_id' => isset($charge->id)
             ]);
-            
+
             // Si requiere autenticación 3DS, informar al frontend
             if ($actionCode === 'REVIEW' || $outcomeType === 'review') {
                 Log::warning('PaymentController - Pago requiere autenticación 3DS');
@@ -118,7 +118,7 @@ class PaymentController extends Controller
                     'error' => $charge->outcome->user_message ?? 'Autenticación requerida'
                 ], 400);
             }
-            
+
             if (!isset($charge->id) || $outcomeType !== 'venta_exitosa') {
                 return response()->json([
                     'message' => 'Pago fallido',
@@ -148,6 +148,7 @@ class PaymentController extends Controller
             $sale = Sale::create([
                 'code' => $request->orderNumber,
                 'user_id' => $request->user_id,
+                'referrer_id' => \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->value('id'),
                 'name' => $request->name,
                 'lastname' => $request->lastname,
                 'fullname' => $request->fullname,
@@ -198,16 +199,16 @@ class PaymentController extends Controller
                 $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
                 $itemImage = is_array($item) ? $item['image'] ?? null : $item->image ?? null;
                 $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
-                
+
                 if ($itemType === 'combo') {
                     // Es un combo
                     $comboJpa = \App\Models\Combo::with('items')->find($itemId);
                     if ($comboJpa) {
                         // Usar el precio final del combo (con descuento si aplica) o el precio base
-                        $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0 
-                            ? $comboJpa->final_price 
+                        $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0
+                            ? $comboJpa->final_price
                             : $comboJpa->price;
-                            
+
                         SaleDetail::create([
                             'sale_id' => $sale->id,
                             'item_id' => null, // NULL para combos
@@ -218,7 +219,7 @@ class PaymentController extends Controller
                             'quantity' => $itemQuantity,
                             'image' => $comboJpa->image,
                             'combo_data' => [
-                                'items' => $comboJpa->items->map(function($comboItem) {
+                                'items' => $comboJpa->items->map(function ($comboItem) {
                                     return [
                                         'id' => $comboItem->id,
                                         'name' => $comboItem->name,
@@ -229,7 +230,7 @@ class PaymentController extends Controller
                                 })->toArray()
                             ]
                         ]);
-                        
+
                         // Actualizar stock de los items del combo
                         foreach ($comboJpa->items as $comboItem) {
                             $stockReduction = $comboItem->pivot->quantity * $itemQuantity;
@@ -402,6 +403,7 @@ class PaymentController extends Controller
             $sale = Sale::create([
                 'code' => $request->orderNumber,
                 'user_id' => $request->user_id,
+                'referrer_id' => \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->value('id'),
                 'name' => $request->name,
                 'lastname' => $request->lastname,
                 'fullname' => $request->fullname,
@@ -445,7 +447,7 @@ class PaymentController extends Controller
             // Registrar detalles de la venta y actualizar stock
             foreach ($request->cart as $item) {
                 $itemData = is_array($item) ? $item : (array) $item;
-                
+
                 SaleDetail::create([
                     'sale_id' => $sale->id,
                     'item_id' => $itemData['id'],
@@ -516,7 +518,6 @@ class PaymentController extends Controller
                 'conversion_scripts' => $conversionScripts,
                 'sale_id' => $sale->id
             ]);
-
         } catch (\Exception $e) {
             Log::error('PaymentController::chargeCompleted - Error:', [
                 'message' => $e->getMessage(),
@@ -608,7 +609,7 @@ class PaymentController extends Controller
 
             // Validar resultado
             $outcomeType = $charge->outcome->type ?? '';
-            
+
             if (!isset($charge->id) || $outcomeType !== 'venta_exitosa') {
                 return response()->json([
                     'message' => 'Pago fallido después de 3DS',
@@ -627,6 +628,7 @@ class PaymentController extends Controller
             $sale = Sale::create([
                 'code' => $request->orderNumber,
                 'user_id' => $request->user_id,
+                'referrer_id' => \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->value('id'),
                 'name' => $request->name,
                 'lastname' => $request->lastname,
                 'fullname' => $request->fullname,
@@ -737,7 +739,6 @@ class PaymentController extends Controller
                 'conversion_scripts' => $conversionScripts,
                 'sale_id' => $sale->id
             ]);
-
         } catch (\Exception $e) {
             Log::error('PaymentController::charge3DS - Error:', [
                 'message' => $e->getMessage(),

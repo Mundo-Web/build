@@ -484,11 +484,17 @@ const HeaderSearchB = ({
             </motion.div>
         );
     };
-    // Determinar si el usuario es cliente (no admin ni superadmin, usando roles array)
+    // Determinar si el usuario es cliente (no admin ni superadmin, ni proveedor, usando roles array)
     let isCustomer = false;
+    let dashboardUrl = '/admin/home';
+    
     if (isUser && Array.isArray(isUser.roles)) {
         const roleNames = isUser.roles.map(r => r.name?.toLowerCase());
-        isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
+        isCustomer = !roleNames.includes('admin') && !roleNames.includes('root') && !roleNames.includes('provider');
+        
+        if (roleNames.includes('provider')) {
+            dashboardUrl = '/provider/home';
+        }
     }
     return (
         <header id={data?.element_id || null} className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed shadow-lg" : "relative "} ${data.backgroundColor || 'bg-white'}`}>
@@ -603,7 +609,7 @@ const HeaderSearchB = ({
                                                                 <>
                                                                     <li>
                                                                         <a
-                                                                            href="/admin/home"
+                                                                            href={dashboardUrl}
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 setIsMenuOpen(false);
@@ -837,7 +843,7 @@ const HeaderSearchB = ({
                                                         <>
                                                             <li>
                                                                 <a
-                                                                    href="/admin/home"
+                                                                    href={dashboardUrl}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         setIsMenuOpen(false);

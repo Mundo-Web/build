@@ -1517,6 +1517,17 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                                 <td>{saleLoaded?.culqi_charge_id}</td>
                                             </tr>
                                         )}
+                                        {saleLoaded?.referrer && (
+                                            <tr>
+                                                <th>Referido por:</th>
+                                                <td>
+                                                    <span className="badge bg-purple-soft text-purple">
+                                                        <i className="mdi mdi-account-group me-1"></i>
+                                                        {saleLoaded.referrer.fullname || `${saleLoaded.referrer.name} ${saleLoaded.referrer.lastname || ''}`}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )}
                                         <tr>
                                             <th>Nombres:</th>
                                             <td>{saleLoaded?.fullname}</td>

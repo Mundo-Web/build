@@ -382,7 +382,7 @@ const System = ({
         //     hasRole
         // }}>
         <main className="font-paragraph">
-            {systemsSorted.map((system) => getSystem(system))}
+            {systemsSorted.map((system) => <React.Fragment key={system.id}>{getSystem(system)}</React.Fragment>)}
             <Toaster />
         </main>
         // </SystemContext.Provider>

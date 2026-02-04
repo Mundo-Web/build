@@ -105,7 +105,8 @@
         "icon": "mdi mdi-account-multiple",
         "children": [
           { "label": "Sistema", "href": "/admin/users", "icon": "mdi mdi-account-box-multiple" },
-          { "label": "Clientes", "href": "/admin/clients", "icon": "mdi mdi-account-group" }
+          { "label": "Clientes", "href": "/admin/clients", "icon": "mdi mdi-account-group" },
+          { "label": "Proveedores", "href": "/admin/providers", "icon": "mdi mdi-account-tie" }
         ]
       },
       { "label": "Menus", "href": "/admin/menus", "icon": "mdi mdi-menu", "role": "Root"},

@@ -142,7 +142,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
     const [code, setCode] = useState([]);
     const [delivery, setDelivery] = useState([]);
 
- 
+    const [conversionScripts, setConversionScripts] = useState([]);
 
     // Efecto para detectar el código en la URL
     
@@ -274,6 +274,8 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         selectedDeliveryMethod={selectedDeliveryMethod}
                         setSelectedDeliveryMethod={setSelectedDeliveryMethod}
                         calculateAdditionalShippingCost={calculateAdditionalShippingCost}
+                        conversionScripts={conversionScripts}
+                        setConversionScripts={setConversionScripts}
                     />
                 )}
 
@@ -298,6 +300,7 @@ export default function CheckoutStepsSF({ cart, setCart, user, prefixes, ubigeos
                         totalWithoutDiscounts={totalWithoutDiscounts}
                         additionalShippingCost={additionalShippingCost}
                         additionalShippingDescription={additionalShippingDescription}
+                        conversionScripts={conversionScripts}
                     />
                 )}
             </div>

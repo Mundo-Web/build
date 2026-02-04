@@ -42,32 +42,32 @@ class SaleController extends BasicController
         if (!env('MULTI_DB_ENABLED', false)) {
             return Auth::check() ? Auth::user()->id : null;
         }
-        
+
         if (!Auth::check()) {
             return null;
         }
-        
+
         $userId = Auth::user()->id;
-        
+
         // Obtener usuario de la DB compartida
         $sharedUser = DB::connection('mysql_shared_users')
             ->table('users')
             ->where('id', $userId)
             ->first();
-        
+
         if (!$sharedUser) {
             return $userId;
         }
-        
+
         // Obtener las columnas que existen en la tabla users de la DB principal
         $mainConnection = config('database.default');
         $dbName = config("database.connections.{$mainConnection}.database");
         $columns = DB::connection($mainConnection)
             ->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS 
                       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'", [$dbName]);
-        
+
         $availableColumns = array_map(fn($col) => $col->COLUMN_NAME, $columns);
-        
+
         // Mapeo de todos los campos posibles
         $allFields = [
             'name' => $sharedUser->name,
@@ -85,14 +85,14 @@ class SaleController extends BasicController
             'document_type' => $sharedUser->document_type ?? null,
             'is_new' => $sharedUser->is_new ?? 1,
         ];
-        
+
         // Filtrar solo los campos que existen en la tabla
         $fieldsToSync = array_filter(
             $allFields,
             fn($key) => in_array($key, $availableColumns),
             ARRAY_FILTER_USE_KEY
         );
-        
+
         // Sincronizar a la DB principal solo con campos existentes
         DB::connection($mainConnection)
             ->table('users')
@@ -100,7 +100,7 @@ class SaleController extends BasicController
                 ['id' => $sharedUser->id],
                 $fieldsToSync
             );
-        
+
         return $userId;
     }
 
@@ -120,29 +120,31 @@ class SaleController extends BasicController
     /**
      * Limpiar número de teléfono removiendo el prefijo si está presente
      */
-    private static function cleanPhoneNumber($phoneNumber, $prefix = '51') {
+    private static function cleanPhoneNumber($phoneNumber, $prefix = '51')
+    {
         if (empty($phoneNumber)) {
             return $phoneNumber;
         }
-        
+
         // Convertir a string y remover espacios
         $phone = trim((string)$phoneNumber);
         $cleanPrefix = trim((string)$prefix);
-        
+
         // Si el número empieza con el prefijo, removerlo
         if (strpos($phone, $cleanPrefix) === 0) {
             $phone = substr($phone, strlen($cleanPrefix));
         }
-        
+
         return $phone;
     }
 
-    public function track(Request $request, string $code) {
+    public function track(Request $request, string $code)
+    {
         $response = Response::simpleTryCatch(function () use ($code) {
             $sale = Sale::select(['id', 'code', 'status_id', 'updated_at'])
-            ->with(['status', 'tracking'])
-            ->where('code', $code)
-            ->first();
+                ->with(['status', 'tracking'])
+                ->where('code', $code)
+                ->first();
             if (!$sale) throw new Exception('El código de seguimiento no es válido');
             return $sale->toArray();
         });
@@ -191,12 +193,12 @@ class SaleController extends BasicController
                 $comboJpa = clone $combosJpa->firstWhere('id', $detail['id']);
                 $comboJpa->quantity = $detail['quantity'];
                 $comboJpa->user_formula_id = $detail['formula_id'] ?? null;
-                
+
                 // Asegurar que usa el precio correcto del combo
-                $comboJpa->price_to_use = $comboJpa->final_price && $comboJpa->final_price > 0 
-                    ? $comboJpa->final_price 
+                $comboJpa->price_to_use = $comboJpa->final_price && $comboJpa->final_price > 0
+                    ? $comboJpa->final_price
                     : $comboJpa->price;
-                    
+
                 $combosJpa2Process[] = $comboJpa;
             }
 
@@ -205,10 +207,11 @@ class SaleController extends BasicController
             // Sale info - Campos básicos
             $saleJpa->code = Trace::getId();
             $saleJpa->user_formula_id = $sale['user_formula_id'];
-            
+
             // Sincronizar usuario de DB compartida a DB principal si MULTI_DB está habilitado
             $saleJpa->user_id = self::syncAuthUserToMainDb();
-            
+            $saleJpa->referrer_id = \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->value('id');
+
             $saleJpa->name = $sale['name'];
             $saleJpa->lastname = $sale['lastname'];
             $saleJpa->fullname = $sale['fullname'] ?? (($sale['name'] ?? '') . ' ' . ($sale['lastname'] ?? ''));
@@ -229,13 +232,13 @@ class SaleController extends BasicController
             $saleJpa->number = $sale['number'];
             $saleJpa->reference = $sale['reference'];
             $saleJpa->comment = $sale['comment'];
-            
+
             // Document info - Compatible con PaymentController
             $saleJpa->documentType = $sale['document_type'] ?? $sale['documentType'] ?? null;
             $saleJpa->document = $sale['document'] ?? null;
             $saleJpa->invoiceType = $sale['invoiceType'] ?? null;
             $saleJpa->businessName = $sale['businessName'] ?? null;
-            
+
             // Campos adicionales de PaymentController
             $saleJpa->delivery_type = $sale['delivery_type'] ?? null;
             $saleJpa->store_id = $sale['store_id'] ?? null;
@@ -277,7 +280,7 @@ class SaleController extends BasicController
             $totalPrice = $itemsTotal + $combosTotal;
 
             $totalItems = array_sum(array_map(fn($item) => $item['quantity'], $itemsJpa2Proccess)) +
-                         array_sum(array_map(fn($combo) => $combo['quantity'], $combosJpa2Process));
+                array_sum(array_map(fn($combo) => $combo['quantity'], $combosJpa2Process));
 
             $bundleJpa = Bundle::where('status', true)
                 ->whereRaw("
@@ -322,7 +325,7 @@ class SaleController extends BasicController
                 } else {
                     $saleJpa->coupon_discount = $couponJpa->value;
                 }
-                
+
                 // Incrementar el contador de uso del cupón
                 $couponJpa->incrementUsage();
             }
@@ -333,7 +336,7 @@ class SaleController extends BasicController
                     ? $sale['applied_promotions']
                     : json_encode($sale['applied_promotions']);
             }
-            
+
             if (isset($sale['promotion_discount']) && $sale['promotion_discount'] > 0) {
                 $saleJpa->promotion_discount = $sale['promotion_discount'];
             }
@@ -344,7 +347,7 @@ class SaleController extends BasicController
                     ? $sale['automatic_discounts']
                     : json_encode($sale['automatic_discounts']);
             }
-            
+
             if (isset($sale['automatic_discount_total']) && $sale['automatic_discount_total'] > 0) {
                 $saleJpa->promotion_discount = $sale['automatic_discount_total'];
             }
@@ -359,7 +362,7 @@ class SaleController extends BasicController
             $saleJpa->save();
 
             $detailsJpa = array();
-            
+
             // Crear detalles para items individuales
             foreach ($itemsJpa2Proccess as $itemJpa) {
                 $detailJpa = new SaleDetail();
@@ -391,10 +394,10 @@ class SaleController extends BasicController
                 $detailJpa->quantity = $comboJpa->quantity;
                 $detailJpa->user_formula_id = $comboJpa->user_formula_id;
                 $detailJpa->image = $comboJpa->image ?? null;
-                
+
                 // Guardar datos del combo para referencia
                 $detailJpa->combo_data = [
-                    'items' => $comboJpa->items->map(function($item) {
+                    'items' => $comboJpa->items->map(function ($item) {
                         return [
                             'id' => $item->id,
                             'name' => $item->name,
@@ -404,7 +407,7 @@ class SaleController extends BasicController
                         ];
                     })->toArray()
                 ];
-                
+
                 $detailJpa->save();
 
                 // Actualizar stock de items del combo
@@ -486,7 +489,16 @@ class SaleController extends BasicController
         // $body['status_id'] = 'e13a417d-a2f0-4f5f-93d8-462d57f13d3c';
         $body['status_id'] = 'bd60fc99-c0c0-463d-b738-1c72d7b085f5';
         $body['user_id'] = Auth::id();
-        
+
+        // Detectar si hay un referido
+        $referralUuid = \Illuminate\Support\Facades\Cookie::get('referral_code');
+        if ($referralUuid) {
+            $referrer = \App\Models\User::where('uuid', $referralUuid)->first();
+            if ($referrer) {
+                $body['referrer_id'] = $referrer->id;
+            }
+        }
+
         // Campos adicionales que maneja PaymentController con valores por defecto
         $body['fullname'] = $request->fullname ?? (($request->name ?? '') . ' ' . ($request->lastname ?? ''));
         $body['delivery_type'] = $request->delivery_type ?? 'domicilio'; // Valor por defecto
@@ -494,7 +506,7 @@ class SaleController extends BasicController
         $body['payment_status'] = $request->payment_status ?? 'pendiente';
         $body['invoiceType'] = $request->invoiceType ?? 'boleta'; // Valor por defecto
         $body['businessName'] = $request->businessName ?? null;
-        
+
         // Document info (compatible con PaymentController)
         $body['documentType'] = $request->document_type ?? $request->documentType ?? null;
         $body['document'] = $request->document ?? null;
@@ -506,7 +518,7 @@ class SaleController extends BasicController
                 $body['coupon_id'] = $couponJpa->id;
                 $body['coupon_code'] = $couponJpa->code;
                 $body['coupon_discount'] = $couponJpa->calculateDiscount($tempTotal);
-                
+
                 // Incrementar el contador de uso del cupón
                 $couponJpa->incrementUsage();
             }
@@ -518,18 +530,18 @@ class SaleController extends BasicController
                 ? $body['applied_promotions']
                 : json_encode($body['applied_promotions']);
         }
-        
+
         if (isset($body['promotion_discount'])) {
             $body['promotion_discount'] = $body['promotion_discount'] ?? 0;
         }
 
         // Compatibilidad con nombres alternativos para descuentos automáticos
         if (isset($body['automatic_discounts']) && $body['automatic_discounts']) {
-            $body['applied_promotions'] = is_string($body['automatic_discounts']) 
-                ? $body['automatic_discounts'] 
+            $body['applied_promotions'] = is_string($body['automatic_discounts'])
+                ? $body['automatic_discounts']
                 : json_encode($body['automatic_discounts']);
         }
-        
+
         if (isset($body['automatic_discount_total'])) {
             $body['promotion_discount'] = $body['automatic_discount_total'] ?? 0;
         }
@@ -562,17 +574,17 @@ class SaleController extends BasicController
     {
         $totalPrice = 0;
         $details = JSON::parse($request->details);
-        
+
         foreach ($details as $item) {
             if (($item['type'] ?? 'item') === 'combo') {
                 // Es un combo
                 $comboJpa = Combo::find($item['id']);
                 if ($comboJpa) {
                     // Usar el precio final del combo (con descuento si aplica) o el precio base
-                    $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0 
-                        ? $comboJpa->final_price 
+                    $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0
+                        ? $comboJpa->final_price
                         : $comboJpa->price;
-                        
+
                     // Crear detalle de venta para el combo
                     $saleDetail = SaleDetail::create([
                         'sale_id' => $jpa->id,
@@ -584,7 +596,7 @@ class SaleController extends BasicController
                         'quantity' => $item['quantity'],
                         'image' => $comboJpa->image,
                         'combo_data' => [
-                            'items' => $comboJpa->items->map(function($comboItem) {
+                            'items' => $comboJpa->items->map(function ($comboItem) {
                                 return [
                                     'id' => $comboItem->id,
                                     'name' => $comboItem->name,
@@ -595,9 +607,9 @@ class SaleController extends BasicController
                             })->toArray()
                         ]
                     ]);
-                    
+
                     $totalPrice += $comboPriceToUse * $item['quantity'];
-                    
+
                     // Actualizar stock de los items del combo
                     foreach ($comboJpa->items as $comboItem) {
                         $stockReduction = $comboItem->pivot->quantity * $item['quantity'];
@@ -619,9 +631,9 @@ class SaleController extends BasicController
                         'colors' => $itemJpa->color,
                         'image' => $itemJpa->image,
                     ]);
-                    
+
                     $totalPrice += $itemJpa->final_price * $item['quantity'];
-                    
+
                     // Actualizar stock como lo hace PaymentController
                     Item::where('id', $itemJpa->id)->decrement('stock', $item['quantity']);
                 }
@@ -632,17 +644,17 @@ class SaleController extends BasicController
         if ($request->coupon_id != 'null' && $request->coupon_discount > 0) {
             $totalPrice -= $request->coupon_discount ?? 0;
         }
-        
+
         // Aplicar descuentos automáticos/promociones
         if ($request->has('promotion_discount') && $request->promotion_discount > 0) {
             $totalPrice -= $request->promotion_discount;
         }
-        
+
         // Compatibilidad con nombres alternativos
         if ($request->has('automatic_discount_total') && $request->automatic_discount_total > 0) {
             $totalPrice -= $request->automatic_discount_total;
         }
-        
+
         $jpa->amount = $totalPrice;
         $jpa->save();
 
@@ -658,7 +670,7 @@ class SaleController extends BasicController
         try {
             $saleJpa = Sale::with('details')->find($jpa->id);
             $details = $saleJpa->details ?? SaleDetail::where('sale_id', $saleJpa->id)->get();
-            
+
             // Usar el helper para enviar tanto al cliente como al administrador
             NotificationHelper::sendToClientAndAdmin($saleJpa, new PurchaseSummaryNotification($saleJpa, $details));
         } catch (\Exception $emailException) {

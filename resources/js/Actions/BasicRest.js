@@ -322,6 +322,45 @@ class BasicRest {
             return false;
         }
     };
+    /**
+     * Realiza una petición POST genérica
+     * @param {string} url - URL relativa (sin /api/ si se pasa completa o ruta parcial)
+     * @param {object} data - Datos JSON a enviar
+     */
+    post = async (url, data = {}) => {
+        try {
+            // Asegurar que la URL sea relativa a /api/ o absoluta
+            const fullUrl = url.startsWith('http') ? url : (url.startsWith('/api') ? url : `/api/${url}`);
+            
+            const fetchRes = await Fetch(fullUrl, {
+                method: "POST",
+                body: JSON.stringify(data),
+            });
+
+            if (!fetchRes.status) {
+                throw new Error(fetchRes.result?.message || "Ocurrió un error inesperado");
+            }
+
+            if (this.is_use_notify) {
+                toast.success("¡Excelente!", {
+                    description: fetchRes.result.message || 'Operación realizada con éxito',
+                    duration: 3000,
+                    position: "bottom-center",
+                    richColors: true
+                });
+            }
+
+            return fetchRes.result;
+        } catch (error) {
+            toast.error("¡Error!", {
+                description: error.message,
+                duration: 3000,
+                position: "bottom-center",
+                richColors: true
+            });
+            return null;
+        }
+    };
 }
 
 export default BasicRest;

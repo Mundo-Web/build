@@ -18,15 +18,15 @@ class SaleController extends BasicController
 {
     public $model = Sale::class;
     public $reactView = 'Admin/Sales';
-    public $with4get = ['status', 'details', 'store'];
+    public $with4get = ['status', 'details', 'store', 'referrer'];
 
     public function setReactViewProperties(Request $request)
     {
         $user = $request->user();
-        
+
         // Verificar si el usuario tiene rol Root
         $hasRootRole = $user && $user->roles && $user->roles->contains('name', 'Root');
-        
+
         return [
             'statuses' => SaleStatus::where('status', true)->get(),
             'hasRootRole' => $hasRootRole,
@@ -35,7 +35,7 @@ class SaleController extends BasicController
 
     public function setPaginationInstance(Request $request, string $model)
     {
-        return $model::with(['status', 'store']);
+        return $model::with(['status', 'store', 'referrer']);
     }
 
     public function afterSave(Request $request, object $jpa, ?bool $isNew)
@@ -65,13 +65,13 @@ class SaleController extends BasicController
             // Verificar que el usuario tenga rol Root
             $user = $request->user();
             $hasRootRole = $user && $user->roles && $user->roles->contains('name', 'Root');
-            
+
             if (!$hasRootRole) {
                 throw new \Exception('No tienes permisos para realizar esta acción');
             }
 
             $config = $request->input('config', []);
-            
+
             // Guardar o actualizar la configuración en la tabla generals
             General::updateOrCreate(
                 ['correlative' => 'sales_config'],
@@ -86,7 +86,7 @@ class SaleController extends BasicController
                 'message' => 'Configuración de exportación guardada exitosamente'
             ];
         });
-        
+
         return response($response->toArray(), $response->status);
     }
 
@@ -97,7 +97,7 @@ class SaleController extends BasicController
     {
         $response = Response::simpleTryCatch(function () use ($request) {
             $config = General::where('correlative', 'sales_config')->first();
-            
+
             $exportConfig = [];
             if ($config && $config->description) {
                 $exportConfig = json_decode($config->description, true) ?? [];
@@ -108,7 +108,7 @@ class SaleController extends BasicController
                 'config' => $exportConfig
             ];
         });
-        
+
         return response($response->toArray(), $response->status);
     }
 }

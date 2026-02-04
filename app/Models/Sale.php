@@ -68,6 +68,7 @@ class Sale extends Model
         'bundle_discount',
         'renewal_discount',
         'zip_code',
+        'referrer_id',
     ];
 
     protected $casts = [
@@ -97,12 +98,12 @@ class Sale extends Model
     public function tracking()
     {
         $usersTable = 'users';
-        
+
         // Si MULTI_DB está habilitado, usar la tabla de usuarios de la DB compartida
         if (env('MULTI_DB_ENABLED', false)) {
             $usersTable = env('DB_DATABASE_SHARED', 'katya_users_shared') . '.users';
         }
-        
+
         return $this->hasManyThrough(SaleStatus::class, SaleStatusTrace::class, 'sale_id', 'id', 'id', 'status_id')
             ->select([
                 'sale_statuses.id',
@@ -120,12 +121,12 @@ class Sale extends Model
     public function user()
     {
         $relation = $this->belongsTo(User::class);
-        
+
         // Si MULTI_DB está habilitado, buscar en la DB compartida
         if (env('MULTI_DB_ENABLED', false)) {
             $relation->getRelated()->setConnection('mysql_shared_users');
         }
-        
+
         return $relation;
     }
 
@@ -137,6 +138,11 @@ class Sale extends Model
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referrer_id');
     }
 
     /**

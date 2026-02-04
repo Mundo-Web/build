@@ -103,7 +103,7 @@ class SystemController extends BasicController
             'whatsapp_advisors',
             'additional_shipping_costs',
             'site_title',
-            'site_description', 
+            'site_description',
             'site_keywords',
             'og_title',
             'og_description',
@@ -120,7 +120,7 @@ class SystemController extends BasicController
             'importation_seguro',
             'importation_derecho_arancelario'
         ];
-        
+
         $jsons = [];
         foreach ($systems as $key => $system) {
             if ($system->component == 'content') continue;
@@ -173,7 +173,7 @@ class SystemController extends BasicController
 
                 // MODIFICACIÓN PARA MANEJAR VARIANTES DE COLOR:
                 // Si es el modelo Item, agrupar por nombre y tomar solo un representante
-                
+
                 // if ($component['using']['model'] === 'Item') {
                 //     $query->selectRaw('items.*')
                 //         ->join(
@@ -270,11 +270,26 @@ class SystemController extends BasicController
                 $props['filteredData'][$key] = $using['static'];
             }
         }
-      
+
         $props['headerPosts'] = Post::with('category')->where('status', true)->latest()->take(3)->get();
         $props['postsLatest'] = Post::with('category')->where('status', true)->latest()->take(6)->get();
         $props['textstatic'] = Aboutus::where('visible', true)->where('status', true)->get();
 
         return $props;
+    }
+    public function handleReferralRoot(\Illuminate\Http\Request $request, $referral_code)
+    {
+        // 1. Check if referral_code is a valid user (uuid)
+        $user = \App\Models\User::where('uuid', $referral_code)->first();
+
+        // 2. If user exists, queue cookie and redirect to Home
+        if ($user) {
+            // 43200 minutes = 30 days
+            \Illuminate\Support\Facades\Cookie::queue('referral_code', $user->uuid, 43200);
+            return redirect('/');
+        }
+
+        // 3. Fallback: If not a user code, show 404 (or handle as normal 404)
+        abort(404);
     }
 }

@@ -283,6 +283,30 @@ const Clients = ({ }) => {
               icon: 'fa fa-eye',
               onClick: () => onViewDetails(data)
             }))
+            
+            container.append(DxButton({
+              className: 'btn btn-xs btn-soft-warning',
+              title: 'Convertir en Proveedor',
+              icon: 'fa fa-user-tie',
+              onClick: async () => {
+                const { isConfirmed } = await Swal.fire({
+                  title: '¿Convertir en Proveedor?',
+                  text: `"${data.name}" perderá su rol de Cliente y se convertirá en Proveedor. Tendrá su propio código de referido UUID.`,
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Sí, convertir',
+                  cancelButtonText: 'Cancelar'
+                })
+                
+                if (!isConfirmed) return
+                
+                const result = await clientsRest.promote(data.id)
+                if (!result) return
+                
+                $(gridRef.current).dxDataGrid('instance').refresh()
+                Swal.fire('¡Éxito!', 'El usuario ahora es un Proveedor', 'success')
+              }
+            }))
           },
           allowFiltering: false,
           allowExporting: false

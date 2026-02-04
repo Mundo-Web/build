@@ -795,14 +795,22 @@ export default function ShippingStepSF({
                 setCode(data.code);
                 
                 // Ejecutar scripts de conversión si existen
-                if (conversionScripts && Array.isArray(conversionScripts)) {
-                    conversionScripts.forEach(script => {
-                        try {
-                            eval(script);
-                        } catch (error) {
-                            console.error('Error executing conversion script:', error);
-                        }
-                    });
+                if (data.conversion_scripts) {
+                    // Guardar en el estado si se proporcionó la función
+                    if (setConversionScripts) {
+                        setConversionScripts(data.conversion_scripts);
+                    }
+                    
+                    // Ejecutar directamente
+                    if (Array.isArray(data.conversion_scripts)) {
+                        data.conversion_scripts.forEach(script => {
+                            try {
+                                eval(script);
+                            } catch (error) {
+                                console.error('Error executing conversion script:', error);
+                            }
+                        });
+                    }
                 }
 
                 // Llamar callback de compra completada
@@ -1494,14 +1502,22 @@ export default function ShippingStepSF({
                 localStorage.removeItem('cart');
                 
                 // Ejecutar scripts de conversión si existen
-                if (conversionScripts && Array.isArray(conversionScripts)) {
-                    conversionScripts.forEach(script => {
-                        try {
-                            eval(script);
-                        } catch (error) {
-                            console.error('Error executing conversion script:', error);
-                        }
-                    });
+                if (response.conversion_scripts) {
+                     // Guardar en el estado si se proporcionó la función
+                    if (setConversionScripts) {
+                        setConversionScripts(response.conversion_scripts);
+                    }
+
+                    // Ejecutar directamente
+                    if (Array.isArray(response.conversion_scripts)) {
+                        response.conversion_scripts.forEach(script => {
+                            try {
+                                eval(script);
+                            } catch (error) {
+                                console.error('Error executing conversion script:', error);
+                            }
+                        });
+                    }
                 }
 
                 // Llamar callback de compra completada

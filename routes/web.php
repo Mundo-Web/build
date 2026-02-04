@@ -56,6 +56,7 @@ use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\ProviderController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
 // Public 
@@ -115,7 +116,7 @@ Route::middleware('auth')->group(function () {
 
 // Admin routes
 Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
-    
+
     Route::get('/', fn() => redirect()->route('Admin/Home.jsx'));
     Route::get('/home', [AdminHomeController::class, 'reactView'])->name('Admin/Home.jsx');
     Route::get('/sales', [AdminSaleController::class, 'reactView'])->name('Admin/Sales.jsx');
@@ -172,6 +173,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/faqs', [AdminFaqController::class, 'reactView'])->name('Admin/Faqs.jsx');
     Route::get('/users', [AdminUserController::class, 'reactView'])->name('Admin/Users.jsx');
     Route::get('/clients', [AdminClientController::class, 'reactView'])->name('Admin/Clients.jsx');
+    Route::get('/providers', [ProviderController::class, 'reactView'])->name('Admin/Providers.jsx');
 
 
     Route::get('/gallery', [AdminGalleryController::class, 'reactView'])->name('Admin/Gallery.jsx');
@@ -186,6 +188,10 @@ Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function 
     Route::get('/orders', [CustomerSaleController::class, 'reactView'])->name('Customer/Sales.jsx');
 });
 
+Route::middleware(['can:Provider', 'auth'])->prefix('provider')->group(function () {
+    Route::get('/home', [ProviderController::class, 'dashboard'])->name('Provider/Home.jsx');
+});
+
 
 if (env('APP_ENV') === 'local') {
     Route::get('/cloud/{uuid}', [RepositoryController::class, 'media']);
@@ -195,20 +201,20 @@ if (env('APP_ENV') === 'local') {
 Route::get('/deploy/migrate/{token}', function ($token) {
     // Token secreto para proteger la ruta
     $secretToken = env('DEPLOY_TOKEN', 'mundoweb-admin-2025-fsdreweaaqwsrdatypoe4532013848752ddsd2cxcafgveras');
-    
+
     if ($token !== $secretToken) {
         return response()->json(['error' => 'Unauthorized'], 401);
     }
-    
+
     try {
         // 1. Ejecutar migraciones
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
-        
+
         // 2. Limpiar todas las cachés
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         $optimizeOutput = \Illuminate\Support\Facades\Artisan::output();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Deploy ejecutado correctamente',
@@ -223,3 +229,8 @@ Route::get('/deploy/migrate/{token}', function ($token) {
         ], 500);
     }
 });
+
+// Catch-all for Referral Codes (Smart Links)
+// This must be the LAST route to avoid conflicts with existing pages or assets
+Route::get('/{referral_code}', [\App\Http\Controllers\SystemController::class, 'handleReferralRoot'])
+    ->where('referral_code', '[A-Za-z0-9\-]+');

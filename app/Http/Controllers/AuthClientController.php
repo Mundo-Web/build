@@ -58,10 +58,15 @@ class AuthClientController extends BasicController
             $request->session()->regenerate();
 
             // ✅ Agregar usuario autenticado a la respuesta
+            /** @var \App\Models\User */
+            $user = Auth::user();
+            $user->load('roles'); // Cargar roles para que el frontend sepa si es Cliente o Proveedor
+
             $response->status = 200;
             $response->message = 'Operación Correcta. Has iniciado sesión';
             $response->data = [
-                'user' => Auth::user(),
+                'user' => $user,
+                'role' => $user->roles->first()?->name // Helper para fácil acceso
             ];
         });
 
@@ -116,7 +121,7 @@ class AuthClientController extends BasicController
             // Asignar rol
             $role = Role::firstOrCreate(['name' => 'Customer']);
             $user->assignRole($role);
-            
+
 
 
 
@@ -178,7 +183,7 @@ class AuthClientController extends BasicController
 
             // Buscar al usuario por correo electrónico
             $user = User::where('email', $email)->first();
-            
+
             if (!$user) {
                 // En lugar de devolver error, devolvemos éxito pero con información específica
                 $response->status = 200;
@@ -200,7 +205,7 @@ class AuthClientController extends BasicController
             // Enviar notificación con el link de restablecimiento de contraseña
             $notificationService = new EmailNotificationService();
             $notificationService->sendToUser($user, new \App\Notifications\PasswordResetLinkNotification($resetUrl));
-            
+
             // Respuesta exitosa
             $response->status = 200;
             $response->message = 'Se ha enviado un enlace para restablecer tu contraseña.';

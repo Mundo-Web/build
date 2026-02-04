@@ -40,6 +40,9 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             // Compartir generals globalmente para SEO y configuraciones
             'generals' => General::where('status', true)->get()->keyBy('correlative'),
+            'referrer' => \Illuminate\Support\Facades\Cookie::get('referral_code')
+                ? \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->first()
+                : null,
         ]);
     }
 
@@ -55,7 +58,7 @@ class HandleInertiaRequests extends Middleware
         if ($request->is('admin/*') || $request->is('admin')) {
             return 'app';
         }
-        
+
         return 'public';
     }
 }

@@ -70,6 +70,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\ProviderController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\FillableController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
@@ -137,9 +138,9 @@ Route::post('/unified-import/preview', [UnifiedImportController::class, 'preview
 Route::get('/unified-import/field-mappings', [UnifiedImportController::class, 'getFieldMappings']);
 
 Route::post('/complaints', [ComplaintController::class, 'saveComplaint'])
-    ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
+  ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
 Route::post('/whistleblowings', [WhistleblowingController::class, 'saveWhistleblowing'])
-    ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
+  ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
 Route::get('/notification-variables/{type}', [NotificationVariablesController::class, 'getVariables']);
 
 // CAPTCHA routes (seguridad mejorada)
@@ -249,29 +250,29 @@ Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, '
 // Hotel Public APIs
 // ====================================
 Route::prefix('hotels')->group(function () {
-    // Buscar habitaciones disponibles
-    Route::post('/rooms/search', [BookingController::class, 'search']);
-    
-    // Verificar disponibilidad de una habitación específica
-    Route::post('/rooms/{id}/availability', [RoomAvailabilityController::class, 'check']);
-    
-    // Obtener calendario de disponibilidad
-    Route::get('/rooms/{id}/calendar', [RoomAvailabilityController::class, 'calendar']);
-    
-    // Obtener fechas bloqueadas/no disponibles (para deshabilitar en DatePicker)
-    Route::get('/rooms/{id}/blocked-dates', [AdminRoomAvailabilityController::class, 'getBlockedDates']);
-    
-    // Crear reserva (pre-venta)
-    Route::post('/bookings', [BookingController::class, 'create']);
-    
-    // Checkout de reservas con pago (Yape, Transferencia, etc.)
-    Route::post('/bookings/checkout', [BookingController::class, 'checkout']);
-    
-    // Obtener detalles de reserva por código (para página de confirmación)
-    Route::post('/bookings/order', [BookingController::class, 'getBookingOrder']);
-    
-    // Rastrear reserva por código
-    Route::get('/bookings/{code}/track', [BookingController::class, 'track']);
+  // Buscar habitaciones disponibles
+  Route::post('/rooms/search', [BookingController::class, 'search']);
+
+  // Verificar disponibilidad de una habitación específica
+  Route::post('/rooms/{id}/availability', [RoomAvailabilityController::class, 'check']);
+
+  // Obtener calendario de disponibilidad
+  Route::get('/rooms/{id}/calendar', [RoomAvailabilityController::class, 'calendar']);
+
+  // Obtener fechas bloqueadas/no disponibles (para deshabilitar en DatePicker)
+  Route::get('/rooms/{id}/blocked-dates', [AdminRoomAvailabilityController::class, 'getBlockedDates']);
+
+  // Crear reserva (pre-venta)
+  Route::post('/bookings', [BookingController::class, 'create']);
+
+  // Checkout de reservas con pago (Yape, Transferencia, etc.)
+  Route::post('/bookings/checkout', [BookingController::class, 'checkout']);
+
+  // Obtener detalles de reserva por código (para página de confirmación)
+  Route::post('/bookings/order', [BookingController::class, 'getBookingOrder']);
+
+  // Rastrear reserva por código
+  Route::get('/bookings/{code}/track', [BookingController::class, 'track']);
 });
 
 // Combos API para carrito
@@ -318,7 +319,7 @@ Route::get('/person/{dni}', [PersonController::class, 'find']);
 // Ruta pública para aplicar reglas de descuento al carrito
 Route::post('/discount-rules/apply-to-cart', [AdminDiscountRulesController::class, 'applyToCart']);
 
-    Route::post('/blog-categories/paginate', [BlogCategoryController::class, 'paginate']);
+Route::post('/blog-categories/paginate', [BlogCategoryController::class, 'paginate']);
 
 Route::middleware('auth')->group(function () {
   Route::get('/notification-variables/{type}', [NotificationVariableController::class, 'variables']);
@@ -590,14 +591,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/strengths/status', [AdminStrengthController::class, 'status']);
     Route::patch('/strengths/{field}', [AdminStrengthController::class, 'boolean']);
     Route::delete('/strengths/{id}', [AdminStrengthController::class, 'delete']);
-       Route::put('/strengths/{id}/reorder', [AdminStrengthController::class, 'reorder']);
+    Route::put('/strengths/{id}/reorder', [AdminStrengthController::class, 'reorder']);
 
     Route::post('/benefits', [AdminBenefitController::class, 'save']);
     Route::post('/benefits/paginate', [AdminBenefitController::class, 'paginate']);
     Route::patch('/benefits/status', [AdminBenefitController::class, 'status']);
     Route::patch('/benefits/{field}', [AdminBenefitController::class, 'boolean']);
     Route::delete('/benefits/{id}', [AdminBenefitController::class, 'delete']);
-      Route::put('/benefits/{id}/reorder', [AdminBenefitController::class, 'reorder']);
+    Route::put('/benefits/{id}/reorder', [AdminBenefitController::class, 'reorder']);
 
     Route::post('/applications', [AdminApplicationController::class, 'save']);
     Route::post('/applications/paginate', [AdminApplicationController::class, 'paginate']);
@@ -672,7 +673,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/job-applications/{field}', [AdminJobApplicationController::class, 'boolean']);
     Route::delete('/job-applications/{id}', [AdminJobApplicationController::class, 'delete']);
 
-   Route::post('/statuses', [AdminSaleStatusController::class, 'save']);
+    Route::post('/statuses', [AdminSaleStatusController::class, 'save']);
     Route::post('/statuses/paginate', [AdminSaleStatusController::class, 'paginate']);
     Route::patch('/statuses/status', [AdminSaleStatusController::class, 'status']);
     Route::patch('/statuses/{field}', [AdminSaleStatusController::class, 'boolean']);
@@ -687,6 +688,13 @@ Route::middleware('auth')->group(function () {
     // Clients management
     Route::post('/clients/paginate', [AdminClientController::class, 'paginate']);
     Route::patch('/clients/{field}', [AdminClientController::class, 'boolean']);
+    Route::post('/clients/{id}/promote', [AdminClientController::class, 'promoteToProvider']);
+
+    // Providers management
+    Route::post('/providers', [ProviderController::class, 'save']);
+    Route::post('/providers/paginate', [ProviderController::class, 'paginate']);
+    Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
+    Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
 
 
     // System routes - accessible by Admin and Root
@@ -708,7 +716,7 @@ Route::middleware('auth')->group(function () {
 
       Route::post('/role-has-menus', [RoleHasMenuController::class, 'save']);
 
-  Route::post('/boolean-limits', [AdminGeneralController::class, 'saveBooleanLimits']);
+      Route::post('/boolean-limits', [AdminGeneralController::class, 'saveBooleanLimits']);
 
       Route::get('/system/fetch-remote-changes', [AdminSystemController::class, 'fetchRemoteChanges']);
       Route::get('/system/has-remote-changes', [AdminSystemController::class, 'hasRemoteChanges']);
@@ -751,11 +759,11 @@ Route::middleware('auth')->group(function () {
 
 // TEST: Verificar claves RSA de Culqi (ELIMINAR EN PRODUCCIÓN)
 Route::get('/test-culqi-keys', function () {
-    return response()->json([
-        'public_key' => \App\Helpers\CulqiConfig::getPublicKey(),
-        'rsa_id' => \App\Helpers\CulqiConfig::getRsaId(),
-        'rsa_public_key' => \App\Helpers\CulqiConfig::getRsaPublicKey(),
-        'rsa_public_key_length' => strlen(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? ''),
-        'has_newlines' => strpos(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? '', "\n") !== false,
-    ]);
+  return response()->json([
+    'public_key' => \App\Helpers\CulqiConfig::getPublicKey(),
+    'rsa_id' => \App\Helpers\CulqiConfig::getRsaId(),
+    'rsa_public_key' => \App\Helpers\CulqiConfig::getRsaPublicKey(),
+    'rsa_public_key_length' => strlen(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? ''),
+    'has_newlines' => strpos(\App\Helpers\CulqiConfig::getRsaPublicKey() ?? '', "\n") !== false,
+  ]);
 });

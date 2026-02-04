@@ -15,11 +15,31 @@ export default function ConfirmationStepSF({
     automaticDiscounts = [],
     automaticDiscountTotal = 0,
     couponDiscount = 0,
-    couponCode = null
+    couponCode = null,
+    conversionScripts = []
 }) {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Ejecutar scripts de conversión cuando el componente se monta
+    useEffect(() => {
+        if (conversionScripts && Array.isArray(conversionScripts) && conversionScripts.length > 0) {
+            console.log("🚀 Ejecutando scripts de conversión:", conversionScripts);
+            conversionScripts.forEach(script => {
+                try {
+                    // Ejecutar el script
+                    // Nota: eval es peligroso, pero es como está implementado en otras partes del sistema
+                    // Una alternativa mejor sería inyectar nodos script
+                    const trackingScript = document.createElement('script');
+                    trackingScript.text = script;
+                    document.body.appendChild(trackingScript);
+                } catch (err) {
+                    console.error("Error ejecutando script de conversión:", err);
+                }
+            });
+        }
+    }, [conversionScripts]);
 
     useEffect(() => {
         const fetchOrderDetails = async () => {

@@ -471,7 +471,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             }}
                             className="h-full"
                         >
-                            {[item?.image, ...item?.images]
+                            {[item?.image, ...(item?.images || [])]
                                 .filter((image, index, self) =>
                                     index === self.findIndex((img) => img?.url === image?.url)
                                 )
