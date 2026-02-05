@@ -264,6 +264,9 @@ export default {
     safelist: generateSafelist(),
     theme: {
         extend: {
+            fontFamily: {
+                'arial': ['"Arial"', 'Gadget', 'sans-serif'],
+            },
             colors: {
                 // Colores dinámicos desde la DB usando variables CSS con escala completa
                 'page-background': generateColorScale('--bg-page-background'),
