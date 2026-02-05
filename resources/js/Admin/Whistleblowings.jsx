@@ -75,6 +75,16 @@ const Whistleblowings = () => {
                     visible: false
                 },
                 {
+                    dataField: 'codigo',
+                    caption: 'Código',
+                    width: 120,
+                    cellTemplate: (container, { data }) => {
+                        ReactAppend(container, <span className="badge bg-dark rounded-pill">
+                            {data.codigo || 'N/A'}
+                        </span>)
+                    }
+                },
+                {
                     dataField: 'nombre',
                     caption: 'Nombre',
                     cellTemplate: (container, { data }) => {
@@ -151,6 +161,18 @@ const Whistleblowings = () => {
                     }
                 },
                 {
+                    dataField: 'file',
+                    caption: 'Adjunto',
+                    width: 80,
+                    cellTemplate: (container, { data }) => {
+                        if (data.file) {
+                            ReactAppend(container, <a href={`/storage/images/whistleblowing/${data.file}`} target="_blank" className="btn btn-sm btn-link" title="Ver archivo">
+                                <i className="fa fa-paperclip"></i>
+                            </a>)
+                        }
+                    }
+                },
+                {
                     dataField: 'created_at',
                     caption: 'Fecha',
                     dataType: 'datetime',
@@ -188,6 +210,9 @@ const Whistleblowings = () => {
                     </h6>
                     <div className="bg-light p-3 rounded mb-3">
                         <p className="mb-2">
+                             <strong>Código:</strong> <span className="badge bg-dark">{dataLoaded?.codigo || 'N/A'}</span>
+                        </p>
+                        <p className="mb-2">
                             <strong>Departamento:</strong> {dataLoaded?.departamento}
                         </p>
                         <p className="mb-2">
@@ -203,10 +228,10 @@ const Whistleblowings = () => {
                     </h6>
                     <div className="bg-light p-3 rounded">
                         <p className="mb-2">
-                            <strong>Nombre:</strong> {dataLoaded?.nombre}
+                            <strong>Nombre:</strong> {dataLoaded?.nombre || <i className="text-muted">Anónimo</i>}
                         </p>
                         <p className="mb-2">
-                            <strong>Email:</strong> {dataLoaded?.email}
+                            <strong>Email:</strong> {dataLoaded?.email || <i className="text-muted">No proporcionado</i>}
                         </p>
                         <p className="mb-0">
                             <strong>Teléfono:</strong> {dataLoaded?.telefono || <i className="text-muted">No proporcionado</i>}
@@ -281,6 +306,23 @@ const Whistleblowings = () => {
                     </h6>
                     <div className="border rounded p-3 bg-light">
                         {dataLoaded?.dialogo_superior || <i className="text-muted">No especificado</i>}
+                    </div>
+                </div>
+            </div>
+
+            <div className="row mt-3">
+                 <div className="col-12">
+                    <h6 className="mb-3 text-primary">
+                        <i className="mdi mdi-attachment me-2"></i>Evidencia Adjunta
+                    </h6>
+                    <div className="border rounded p-3 bg-light">
+                        {dataLoaded?.file ? (
+                            <a href={`/storage/images/whistleblowing/${dataLoaded.file}`} target="_blank" className="btn btn-outline-primary btn-sm">
+                                <i className="fa fa-download me-2"></i> Descargar Evidencia ({dataLoaded.file})
+                            </a>
+                        ) : (
+                            <i className="text-muted">No se adjuntaron archivos</i>
+                        )}
                     </div>
                 </div>
             </div>

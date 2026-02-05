@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+
 import InputForm from "../Checkouts/Components/InputForm";
 import ubigeoData from "../../../../../storage/app/utils/ubigeo.json";
 import SelectForm from "../Checkouts/Components/SelectForm";
@@ -8,6 +9,7 @@ import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { Send, X, FileText, MapPin, AlertTriangle, Shield, Building2 } from "lucide-react";
 import { toast } from "sonner";
+import WhistleblowingRest from "../../../Actions/WhistleblowingRest";
 
 export default function WhistleblowingStech({ generals = [], data }) {
     const [messageCaptcha, setMessageCaptcha] = useState("");
@@ -104,7 +106,17 @@ export default function WhistleblowingStech({ generals = [], data }) {
         setSubmittedData(null);
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleFileChange = useCallback((e) => {
+        const file = e.target.files[0];
+        setFormData(prev => ({
+            ...prev,
+            file: file,
+        }));
+    }, []);
+
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         
@@ -116,70 +128,37 @@ export default function WhistleblowingStech({ generals = [], data }) {
 
         setMessageCaptcha("");
 
-        const updatedFormData = {
-            ...formData,
-            captcha_verified: true,
-            recaptcha_token: captchaToken,
-            _form_loaded_at: formLoadedAt,
-            _hp: '',
-        };
+        const formDataToSend = new FormData();
         
-        fetch("/api/whistleblowings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedFormData),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    // Si la respuesta no es exitosa (400, 422, 500, etc.)
-                    throw res;
-                }
-                return res.json();
-            })
-            .then((data) => {
-                console.log('Respuesta del servidor:', data);
-                console.log('Data completa:', data.data);
-                console.log('Código recibido:', data.data?.codigo);
-                
-                if (data.type === "success") {
-                    toast.success(data.message);
-                    setSubmittedData(data.data);
-                    setShowThankYou(true);
-                    resetForm();
-                } else {
-                    toast.error(data.message || "Error al enviar la denuncia");
-                    if (data.message && data.message.includes('CAPTCHA')) {
-                        setMessageCaptcha(data.message);
-                        if (captchaRef.current) {
-                            captchaRef.current.reset();
-                        }
-                    }
-                }
-            })
-            .catch(async (error) => {
-                console.error("Error:", error);
-                
-                // Si el error es una respuesta HTTP, intentar parsear el JSON
-                if (error instanceof Response) {
-                    try {
-                        const errorData = await error.json();
-                        toast.error(errorData.message || "Error al enviar la denuncia");
-                        
-                        // Si es error de CAPTCHA, resetear
-                        if (errorData.message && errorData.message.includes('CAPTCHA')) {
-                            setMessageCaptcha(errorData.message);
-                            if (captchaRef.current) {
-                                captchaRef.current.reset();
-                            }
-                        }
-                    } catch {
-                        toast.error("Error al enviar la denuncia. Por favor, intenta nuevamente.");
-                    }
-                } else {
-                    toast.error("Hubo un error al enviar la denuncia. Por favor, intenta nuevamente.");
-                }
-            })
-            .finally(() => setLoading(false));
+        // Agregar todos los campos al FormData
+        Object.keys(formData).forEach(key => {
+            if (key === 'file' && formData[key]) {
+                 formDataToSend.append('file', formData[key]);
+            } else if (formData[key] !== null && formData[key] !== undefined && formData[key] !== "") {
+                 formDataToSend.append(key, formData[key]);
+            }
+        });
+
+        formDataToSend.append('captcha_verified', 'true');
+        formDataToSend.append('recaptcha_token', captchaToken);
+        formDataToSend.append('_form_loaded_at', formLoadedAt);
+        formDataToSend.append('_hp', '');
+        
+        const rest = new WhistleblowingRest();
+        rest.hasFiles = true;
+
+        const result = await rest.save(formDataToSend);
+
+        if (result) {
+            setSubmittedData(result);
+            setShowThankYou(true);
+            resetForm();
+        } else {
+             if (captchaRef.current) {
+                captchaRef.current.reset();
+             }
+        }
+        setLoading(false);
     };
 
     // Manejo de departamentos - Memoizado para evitar recalcular
@@ -364,6 +343,26 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                 />
                             </div>
 
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium customtext-neutral-dark">
+                                    Adjuntar evidencia (Opcional)
+                                </label>
+                                <input
+                                    type="file"
+                                    name="file"
+                                    onChange={handleFileChange}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-0 block text-sm text-slate-500
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-full file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-primary-50 file:text-primary
+                                        hover:file:bg-primary-100"
+                                />
+                                <p className="text-xs text-neutral-light">
+                                    Formatos permitidos: JPG, PNG, PDF, Word. Máx 10MB.
+                                </p>
+                            </div>
+
                             <InputForm
                                 type="text"
                                 label="¿Quién está implicado?"
@@ -411,7 +410,7 @@ export default function WhistleblowingStech({ generals = [], data }) {
                                         Información de Contacto
                                     </h2>
                                     <p className="customtext-neutral-light">
-                                        Tus datos serán tratados confidencialmente
+                                        Tus datos serán tratados confidencialmente (Opcional)
                                     </p>
                                 </div>
                             </div>
@@ -419,16 +418,16 @@ export default function WhistleblowingStech({ generals = [], data }) {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <InputForm
                                     type="text"
-                                    label="Nombre"
+                                    label="Nombre (Opcional)"
                                     name="nombre"
                                     value={formData.nombre}
                                     onChange={handleChange}
                                     placeholder="Tu nombre completo"
-                                    required
+                                    
                                 />
                                 <InputForm
                                     type="tel"
-                                    label="Teléfono"
+                                    label="Teléfono (Opcional)"
                                     name="telefono"
                                     value={formData.telefono}
                                     onChange={handleChange}
@@ -438,12 +437,12 @@ export default function WhistleblowingStech({ generals = [], data }) {
 
                             <InputForm
                                 type="email"
-                                label="Email"
+                                label="Email (Opcional)"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="tu@email.com"
-                                required
+                                
                             />
                         </div>
 

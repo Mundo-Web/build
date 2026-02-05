@@ -69,7 +69,7 @@ const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
 const LoadingFallback = () => {
     return (
         <div 
-            className="fixed inset-0 flex flex-col justify-center items-center z-50 "
+            className="fixed inset-0 flex flex-col justify-center items-center z-[999999999] "
             style={{ background: "var(--bg-page-background)" }}
         >
             <style>{`

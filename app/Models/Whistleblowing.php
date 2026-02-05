@@ -26,11 +26,14 @@ class Whistleblowing extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        // Identificadores
+        'codigo',
+
         // Ubicación
         'departamento',
         'ciudad',
         'direccion_exacta',
-        
+
         // Información del incidente
         'ambito',
         'relacion_compania',
@@ -39,17 +42,18 @@ class Whistleblowing extends Model
         'quien_implicado',
         'cuando_ocurrio',
         'dialogo_superior',
-        
+
         // Contacto
         'nombre',
         'telefono',
         'email',
-        
+        'file',
+
         // Metadata
         'acepta_politica',
         'ip_address',
         'user_agent',
-        
+
         // Estado
         'estado',
         'notas_admin',

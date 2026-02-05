@@ -15,4 +15,22 @@ class WhistleblowingController extends BasicController
     {
         return $model::select();
     }
+
+    public function downloadFile($id)
+    {
+        $wb = Whistleblowing::findOrFail($id);
+
+        if (!$wb->file) {
+            abort(404, 'Archivo no encontrado');
+        }
+
+        // El archivo se guarda en storage/app/images/whistleblowing
+        $path = "images/whistleblowing/{$wb->file}";
+
+        if (!\Illuminate\Support\Facades\Storage::exists($path)) {
+            abort(404, 'El archivo físico no existe');
+        }
+
+        return \Illuminate\Support\Facades\Storage::download($path, $wb->file);
+    }
 }

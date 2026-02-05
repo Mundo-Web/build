@@ -145,6 +145,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/messages', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Messages.jsx');
     Route::get('/complaints', [AdminComplaintController::class, 'reactView'])->name('Admin/Complaints.jsx');
     Route::get('/whistleblowings', [AdminWhistleblowingController::class, 'reactView'])->name('Admin/Whistleblowings.jsx');
+    Route::get('/whistleblowings/{id}/file', [AdminWhistleblowingController::class, 'downloadFile'])->name('admin.whistleblowings.file');
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Subscriptions.jsx');
 
     Route::get('/posts', [AdminPostController::class, 'reactView'])->name('Admin/Posts.jsx');

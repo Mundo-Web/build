@@ -22,7 +22,11 @@ class SystemColorSeeder extends Seeder
                 'name' => 'primary',
                 'description' => '#007BFF',
             ],
-           
+            [
+                'name' => 'bg_primary_gradient',
+                'description' => '',
+            ],
+
             [
                 'name' => 'secondary',
                 'description' => '#28A745',
@@ -43,7 +47,7 @@ class SystemColorSeeder extends Seeder
                 'name' => 'sections-color',
                 'description' => '#313A40',
             ],
-              [
+            [
                 'name' => 'warning',
                 'description' => '#313A40',
             ],
@@ -67,7 +71,7 @@ class SystemColorSeeder extends Seeder
 
         ];
 
-     
+
         foreach ($colors as $color) {
             SystemColor::firstOrCreate(['name' => $color['name']], $color);
         }
