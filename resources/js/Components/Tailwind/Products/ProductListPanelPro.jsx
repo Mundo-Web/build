@@ -38,7 +38,7 @@ const ProductCardItem = ({ item, index, onClick }) => {
             <div className="relative z-10 transition-transform duration-[2000ms] ease-out group-hover:scale-[1.05]">
                 {/* Layer 1: Image Text (Always visible mainly, background) */}
                 <h3
-                    className="font-arial font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase"
+                    className="font-sans font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase"
                     style={{
                         backgroundImage: `url(${imageUrl})`,
                         backgroundSize: "cover",
@@ -55,7 +55,7 @@ const ProductCardItem = ({ item, index, onClick }) => {
 
                 {/* Layer 2: Primary Color Text (Fades in on hover) */}
                 <h3
-                    className="absolute inset-0 font-arial font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase text-primary transition-opacity duration-[2000ms] ease-in-out pointer-events-none"
+                    className="absolute inset-0 font-sans font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase text-primary transition-opacity duration-[2000ms] ease-in-out pointer-events-none"
                     style={{
                         opacity: isHovered ? 1 : 0,
                     }}
