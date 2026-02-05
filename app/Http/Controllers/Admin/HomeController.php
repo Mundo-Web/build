@@ -29,7 +29,7 @@ class HomeController extends BasicController
 
     public function setReactViewProperties(Request $request)
     {
-        
+
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
         $startOfYear = Carbon::now()->startOfYear();
@@ -68,7 +68,7 @@ class HomeController extends BasicController
             ->orderByDesc('total_quantity')
             ->limit(5)
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 $item = Item::find($row->item_id);
                 return [
                     'name' => $item ? $item->name : 'Desconocido',
@@ -81,14 +81,14 @@ class HomeController extends BasicController
         $newFeatured = Item::where('visible', true)
             ->where(function ($q) {
                 $q->where('is_new', true)
-                  ->orWhere('featured', true);
+                    ->orWhere('featured', true);
             })
             ->limit(5)
             ->get(['id', 'name', 'image', 'price']);
 
         // Ventas por dispositivo (simulación / ejemplo)
         // Asumimos que tienes columna 'device' en tabla sales con valores: desktop, mobile, tablet, other
-      /*  $salesByDevice = Sale::select('device', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total'))
+        /*  $salesByDevice = Sale::select('device', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total'))
             ->groupBy('device')
             ->get();*/
 
@@ -98,7 +98,7 @@ class HomeController extends BasicController
             ->orderByDesc('count')
             ->limit(10)
             ->get();
-            $latestTransactions = Sale::latest()->take(5)->get();
+        $latestTransactions = Sale::latest()->take(5)->get();
         // Cupones más usados (top 5)
         $topCoupons = \App\Models\Coupon::orderByDesc('used_count')->limit(5)->get(['code', 'name', 'used_count', 'value', 'type']);
 
@@ -109,7 +109,7 @@ class HomeController extends BasicController
             ->orderByDesc('times_used')
             ->limit(5)
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 $rule = \App\Models\DiscountRule::find($row->discount_rule_id);
                 return [
                     'name' => $rule ? $rule->name : 'Desconocido',
@@ -152,7 +152,7 @@ class HomeController extends BasicController
         $messagesToday = Message::whereDate('created_at', $today)->count();
         $messagesMonth = Message::whereBetween('created_at', [$startOfMonth, Carbon::now()])->count();
         $messagesYear = Message::whereBetween('created_at', [$startOfYear, Carbon::now()])->count();
-        
+
         // Mensajes no leídos
         $messagesUnread = Message::where('seen', false)->count();
 
@@ -160,7 +160,7 @@ class HomeController extends BasicController
         $customerSatisfaction = 94.3;
 
         // === NUEVAS FUNCIONALIDADES ANALÍTICAS ===
-        
+
         // Productos más vistos usando analytics_events
         $mostViewedProducts = DB::table('analytics_events')
             ->select('item_id', DB::raw('COUNT(*) as view_count'))
@@ -170,7 +170,7 @@ class HomeController extends BasicController
             ->orderByDesc('view_count')
             ->limit(10)
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 $item = Item::find($row->item_id);
                 return [
                     'id' => $row->item_id,
@@ -200,17 +200,17 @@ class HomeController extends BasicController
         // Categorías y cantidad de productos por categoría (para gráfico circular)
         $categoriesWithProducts = DB::table('categories')
             ->select('categories.name', 'categories.id', DB::raw('COUNT(items.id) as product_count'))
-            ->leftJoin('items', function($join) {
+            ->leftJoin('items', function ($join) {
                 $join->on('categories.id', '=', 'items.category_id')
-                     ->where('items.status', 1)
-                     ->where('items.visible', true);
+                    ->where('items.status', 1)
+                    ->where('items.visible', true);
             })
             ->where('categories.status', 1)
             ->where('categories.visible', true)
             ->groupBy('categories.id', 'categories.name')
             ->orderByDesc('product_count')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'name' => $row->name,
                     'value' => $row->product_count,
@@ -221,17 +221,17 @@ class HomeController extends BasicController
         // Marcas y cantidad de productos por marca (para gráfico circular)
         $brandsWithProducts = DB::table('brands')
             ->select('brands.name', 'brands.id', DB::raw('COUNT(items.id) as product_count'))
-            ->leftJoin('items', function($join) {
+            ->leftJoin('items', function ($join) {
                 $join->on('brands.id', '=', 'items.brand_id')
-                     ->where('items.status', 1)
-                     ->where('items.visible', true);
+                    ->where('items.status', 1)
+                    ->where('items.visible', true);
             })
             ->where('brands.status', 1)
             ->where('brands.visible', true)
             ->groupBy('brands.id', 'brands.name')
             ->orderByDesc('product_count')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'name' => $row->name,
                     'value' => $row->product_count,
@@ -245,19 +245,19 @@ class HomeController extends BasicController
         $totalActiveProducts = Item::where('status', 1)->where('visible', true)->count();
 
         // === ANALYTICS DE SERVICIOS ===
-        
+
         // Total de servicios activos
         $totalServices = Service::where('status', 1)->where('visible', true)->count();
-        
+
         // Total de categorías de servicios activas
         $totalServiceCategories = \App\Models\ServiceCategory::where('status', 1)->where('visible', true)->count();
-        
+
         // Servicios destacados
         $featuredServices = Service::where('status', 1)
             ->where('visible', true)
             ->where('featured', true)
             ->count();
-        
+
         // Servicios más vistos (top 10)
         $mostViewedServices = DB::table('analytics_events')
             ->select('service_id', DB::raw('COUNT(*) as view_count'))
@@ -267,30 +267,33 @@ class HomeController extends BasicController
             ->orderByDesc('view_count')
             ->limit(10)
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 $service = Service::find($row->service_id);
                 return [
                     'id' => $row->service_id,
                     'name' => $service ? $service->name : 'Servicio Desconocido',
                     'view_count' => $row->view_count,
                     'image' => $service ? $service->image : null,
+                    'background_image' => $service ? $service->background_image : null,
                     'category' => $service && $service->category ? $service->category->name : null,
                 ];
             });
 
         // Servicios más clickeados (top 10) - NUEVO
-        $mostClickedServices = Service::select('id', 'name', 'image', 'clicks')
+        $mostClickedServices = Service::select('id', 'name', 'image', 'background_image', 'clicks', 'service_category_id')
+            ->with('category')
             ->where('status', 1)
             ->where('visible', true)
             ->orderByDesc('clicks')
             ->limit(10)
             ->get()
-            ->map(function($service) {
+            ->map(function ($service) {
                 return [
                     'id' => $service->id,
                     'name' => $service->name,
                     'clicks' => $service->clicks,
                     'image' => $service->image,
+                    'background_image' => $service->background_image,
                     'category' => $service->category ? $service->category->name : null,
                 ];
             });
@@ -299,11 +302,11 @@ class HomeController extends BasicController
         $serviceClicksToday = DB::table('service_clicks')
             ->whereDate('created_at', $today)
             ->count();
-        
+
         $serviceClicksMonth = DB::table('service_clicks')
             ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
             ->count();
-        
+
         $serviceClicksYear = DB::table('service_clicks')
             ->whereBetween('created_at', [$startOfYear, Carbon::now()])
             ->count();
@@ -318,9 +321,9 @@ class HomeController extends BasicController
         $serviceViewsMonth = AnalyticsEvent::whereBetween('created_at', [$startOfMonth, Carbon::now()])
             ->where('event_type', 'service_view')
             ->count();
-        
-        $serviceCTR = $serviceViewsMonth > 0 
-            ? round(($serviceClicksMonth / $serviceViewsMonth) * 100, 2) 
+
+        $serviceCTR = $serviceViewsMonth > 0
+            ? round(($serviceClicksMonth / $serviceViewsMonth) * 100, 2)
             : 0;
 
         // Vistas de servicios por día del mes actual
@@ -344,7 +347,7 @@ class HomeController extends BasicController
             ->whereNotNull('service_id')
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -355,22 +358,22 @@ class HomeController extends BasicController
         $serviceViewsLast30Days = [];
         for ($i = 29; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
-            
+
             $views = AnalyticsEvent::whereDate('created_at', $date)
                 ->where('event_type', 'service_view')
                 ->count();
-            
+
             $clicks = DB::table('service_clicks')
                 ->whereDate('created_at', $date)
                 ->count();
-            
+
             $uniqueUsers = AnalyticsEvent::whereDate('created_at', $date)
                 ->where('event_type', 'service_view')
                 ->distinct('session_id')
                 ->count('session_id');
-            
+
             $dailyCTR = $views > 0 ? round(($clicks / $views) * 100, 2) : 0;
-            
+
             $serviceViewsLast30Days[] = [
                 'date' => $date->format('Y-m-d'),
                 'views' => $views,
@@ -401,7 +404,7 @@ class HomeController extends BasicController
             ->whereNotNull('device_type')
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -415,7 +418,7 @@ class HomeController extends BasicController
             ->whereNotNull('device_type')
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -429,7 +432,7 @@ class HomeController extends BasicController
             ->whereDate('created_at', $today)
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -437,9 +440,10 @@ class HomeController extends BasicController
             });
 
         // ==================== ANALÍTICAS DE CLICKS DE PRODUCTOS ====================
-        
+
         // Productos más clickeados
-        $mostClickedProducts = Item::select('id', 'name', 'image', 'clicks')
+        $mostClickedProducts = Item::select('id', 'name', 'image', 'clicks', 'sku', 'color', 'size')
+            ->with('attributes')
             ->where('status', 1)
             ->where('visible', true)
             ->orderByDesc('clicks')
@@ -480,8 +484,8 @@ class HomeController extends BasicController
             ])
             ->count();
 
-        $productCTR = $productViewsMonth > 0 
-            ? round(($productClicksMonth / $productViewsMonth) * 100, 2) 
+        $productCTR = $productViewsMonth > 0
+            ? round(($productClicksMonth / $productViewsMonth) * 100, 2)
             : 0;
 
         // Clicks de productos por día del mes actual
@@ -504,7 +508,7 @@ class HomeController extends BasicController
             ->whereNotNull('device_type')
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -518,7 +522,7 @@ class HomeController extends BasicController
             ->whereNotNull('device_type')
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -531,7 +535,7 @@ class HomeController extends BasicController
             ->whereNotNull('item_id')
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -545,7 +549,7 @@ class HomeController extends BasicController
             ->whereDate('created_at', $today)
             ->groupBy('device_type')
             ->get()
-            ->map(function($row) {
+            ->map(function ($row) {
                 return [
                     'device' => $row->device_type ?: 'unknown',
                     'count' => $row->count,
@@ -630,11 +634,11 @@ class HomeController extends BasicController
     private function getDashboardVisibility()
     {
         $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
-        
+
         if (!$visibilityRecord) {
             // Verificar si el proyecto usa servicios
             $hasServices = Service::count() > 0;
-            
+
             // Configuración por defecto si no existe el registro
             $defaultVisibility = [
                 'total_orders' => true,
@@ -661,7 +665,7 @@ class HomeController extends BasicController
                 'brands_chart' => true,
                 'analytics_kpis' => true,
             ];
-            
+
             // Agregar analíticas de servicios solo si el proyecto las usa
             if ($hasServices) {
                 $defaultVisibility['total_services_kpi'] = false; // Desactivado por defecto
@@ -677,10 +681,10 @@ class HomeController extends BasicController
                 $defaultVisibility['service_views_trend'] = false;
                 $defaultVisibility['service_clicks_vs_views'] = false;
             }
-            
+
             return $defaultVisibility;
         }
-        
+
         return json_decode($visibilityRecord->description, true) ?? [];
     }
 
@@ -693,7 +697,7 @@ class HomeController extends BasicController
         if (!$user) {
             return false;
         }
-        
+
         return $user->roles()->where('name', 'Root')->exists();
     }
 
@@ -712,33 +716,32 @@ class HomeController extends BasicController
             }
 
             $visibilityConfig = $request->input('visibility', []);
-            
+
             // Buscar o crear el registro de visibilidad
             $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
-            
+
             if (!$visibilityRecord) {
                 $visibilityRecord = new General();
                 $visibilityRecord->correlative = 'VisibilityDashboard';
                 $visibilityRecord->name = 'Configuración de Visibilidad del Dashboard';
                 $visibilityRecord->status = 1;
             }
-            
+
             $visibilityRecord->description = json_encode($visibilityConfig);
             $visibilityRecord->save();
-            
+
             Log::info('Dashboard visibility updated', [
                 'user_id' => Auth::id(),
                 'config' => $visibilityConfig
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Configuración de visibilidad actualizada correctamente'
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error updating dashboard visibility: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al actualizar la configuración: ' . $e->getMessage()

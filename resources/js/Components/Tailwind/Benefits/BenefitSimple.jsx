@@ -1,14 +1,26 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import TextWithHighlight from '../../../Utils/TextWithHighlight';
+import React from "react";
+import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const BenefitSimple = ({ data, items }) => {
     // Estado para swiper
     const [activeIndex, setActiveIndex] = React.useState(0);
     const [swiperInstance, setSwiperInstance] = React.useState(null);
+    const [paginationEl, setPaginationEl] = React.useState(null);
+
+    React.useEffect(() => {
+        if (swiperInstance && paginationEl) {
+            swiperInstance.params.pagination.el = paginationEl;
+            swiperInstance.pagination.destroy();
+            swiperInstance.pagination.init();
+            swiperInstance.pagination.render();
+            swiperInstance.pagination.update();
+        }
+    }, [swiperInstance, paginationEl]);
 
     // Animation variants
     const containerVariants = {
@@ -17,9 +29,9 @@ const BenefitSimple = ({ data, items }) => {
             opacity: 1,
             transition: {
                 staggerChildren: 0.15,
-                delayChildren: 0.2
-            }
-        }
+                delayChildren: 0.2,
+            },
+        },
     };
 
     const titleVariants = {
@@ -29,9 +41,9 @@ const BenefitSimple = ({ data, items }) => {
             y: 0,
             transition: {
                 duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
-            }
-        }
+                ease: [0.25, 0.46, 0.45, 0.94],
+            },
+        },
     };
 
     const cardVariants = {
@@ -42,9 +54,9 @@ const BenefitSimple = ({ data, items }) => {
             scale: 1,
             transition: {
                 duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94]
-            }
-        }
+                ease: [0.25, 0.46, 0.45, 0.94],
+            },
+        },
     };
 
     const iconVariants = {
@@ -56,13 +68,16 @@ const BenefitSimple = ({ data, items }) => {
                 type: "spring",
                 stiffness: 200,
                 damping: 15,
-                delay: 0.2
-            }
-        }
+                delay: 0.2,
+            },
+        },
     };
 
     return (
-        <section id={data?.element_id || null} className="py-20 sm:py-24 bg-white relative overflow-hidden">
+        <section
+            id={data?.element_id || null}
+            className="py-20 sm:py-24 bg-white relative overflow-hidden"
+        >
             <motion.div
                 className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -ml-48"
                 initial={{ scale: 0, opacity: 0 }}
@@ -90,13 +105,14 @@ const BenefitSimple = ({ data, items }) => {
                         className="text-5xl  md:text-6xl lg:text-7xl font-bold text-primary font-title mb-4"
                         variants={titleVariants}
                     >
-                        {data?.title || 'Beneficios que Marcan la Diferencia'}
+                        {data?.title || "Beneficios que Marcan la Diferencia"}
                     </motion.h2>
                     <motion.p
                         className="text-lg md:text-xl lg:text-2xl  text-neutral-dark max-w-3xl mx-auto"
                         variants={titleVariants}
                     >
-                        {data?.subtitle || 'En Panel Pro, combinamos décadas de experiencia en el sector maderero con un servicio ágil y personalizado. Nos especializamos en brindar soluciones eficientes para que carpinteros y fabricantes logren resultados de alta gama con la mejor relación costo-beneficio'}
+                        {data?.subtitle ||
+                            "En Panel Pro, combinamos décadas de experiencia en el sector maderero con un servicio ágil y personalizado. Nos especializamos en brindar soluciones eficientes para que carpinteros y fabricantes logren resultados de alta gama con la mejor relación costo-beneficio"}
                     </motion.p>
                 </motion.div>
 
@@ -108,82 +124,135 @@ const BenefitSimple = ({ data, items }) => {
                     variants={containerVariants}
                 >
                     <Swiper
-                        modules={[Autoplay]}
+                        modules={[Autoplay, Pagination]}
                         spaceBetween={20}
                         slidesPerView={1.2}
+                        slidesPerGroup={1}
                         autoplay={{
                             delay: 4000,
                             disableOnInteraction: false,
                         }}
                         loop={items?.length > 1}
+                        pagination={{
+                            el: paginationEl,
+                            clickable: true,
+                            renderBullet: function (index, className) {
+                                return `<span class="${className} !rounded-full !opacity-100 !w-3 !h-3 !bg-neutral-300 hover:!bg-neutral-400 [&.swiper-pagination-bullet-active]:!w-12 [&.swiper-pagination-bullet-active]:!bg-primary transition-all duration-300 cursor-pointer block"></span>`;
+                            },
+                        }}
                         breakpoints={{
                             640: {
                                 slidesPerView: 2,
+                                slidesPerGroup: 2,
                                 spaceBetween: 20,
                             },
                             768: {
                                 slidesPerView: 2,
+                                slidesPerGroup: 2,
                                 spaceBetween: 24,
                                 loop: items?.length > 2,
                             },
                             1024: {
                                 slidesPerView: 2.5,
+                                slidesPerGroup: 2,
                                 spaceBetween: 32,
                                 loop: items?.length > 2,
                             },
                             1280: {
                                 slidesPerView: 3,
+                                slidesPerGroup: 3,
                                 spaceBetween: 40,
-                                loop: items?.length > 4,
+                                loop: items?.length > 3,
                             },
                         }}
                         onSwiper={setSwiperInstance}
-                        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                        onSlideChange={(swiper) =>
+                            setActiveIndex(swiper.realIndex)
+                        }
                         className="!overflow-visible !pb-4"
                     >
                         {items?.map((benefit, index) => {
                             // Estado global de flip
                             if (!BenefitSimple.flippedState) {
-                                BenefitSimple.flippedState = Array(items.length).fill(false);
+                                BenefitSimple.flippedState = Array(
+                                    items.length,
+                                ).fill(false);
                             }
-                            const [ignored, forceUpdate] = React.useReducer(x => x + 1, 0);
-                            const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-                            const handleClick = idx => {
-                                BenefitSimple.flippedState[idx] = !BenefitSimple.flippedState[idx];
+                            const [ignored, forceUpdate] = React.useReducer(
+                                (x) => x + 1,
+                                0,
+                            );
+                            const isTouchDevice =
+                                typeof window !== "undefined" &&
+                                ("ontouchstart" in window ||
+                                    navigator.maxTouchPoints > 0);
+                            const handleClick = (idx) => {
+                                BenefitSimple.flippedState[idx] =
+                                    !BenefitSimple.flippedState[idx];
                                 forceUpdate();
                             };
                             const flipped = BenefitSimple.flippedState[index];
 
                             return (
-                                <SwiperSlide key={benefit.id || index} className="h-auto">
+                                <SwiperSlide
+                                    key={benefit.id || index}
+                                    className="h-auto"
+                                >
                                     <div
                                         className="h-full flex items-stretch cursor-pointer"
-                                        onClick={isTouchDevice ? () => handleClick(index) : undefined}
-                                        onKeyDown={isTouchDevice ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(index); } : undefined}
+                                        onClick={
+                                            isTouchDevice
+                                                ? () => handleClick(index)
+                                                : undefined
+                                        }
+                                        onKeyDown={
+                                            isTouchDevice
+                                                ? (e) => {
+                                                      if (
+                                                          e.key === "Enter" ||
+                                                          e.key === " "
+                                                      )
+                                                          handleClick(index);
+                                                  }
+                                                : undefined
+                                        }
                                         tabIndex={isTouchDevice ? 0 : -1}
-                                        style={{ outline: 'none' }}
+                                        style={{ outline: "none" }}
                                     >
-                                        <div className="group relative h-full min-h-[320px] w-full flex flex-col rounded-2xl" style={{ perspective: 1200 }}>
+                                        <div
+                                            className="group relative h-full min-h-[320px] w-full flex flex-col rounded-2xl"
+                                            style={{ perspective: 1200 }}
+                                        >
                                             {isTouchDevice ? (
                                                 <motion.div
                                                     className="absolute inset-0 w-full h-full"
-                                                    style={{ transformStyle: 'preserve-3d' }}
-                                                    animate={{ rotateY: flipped ? 180 : 0 }}
+                                                    style={{
+                                                        transformStyle:
+                                                            "preserve-3d",
+                                                    }}
+                                                    animate={{
+                                                        rotateY: flipped
+                                                            ? 180
+                                                            : 0,
+                                                    }}
                                                     transition={{
-                                                        type: 'spring',
+                                                        type: "spring",
                                                         stiffness: 60,
                                                         damping: 12,
-                                                        mass: 1.2
+                                                        mass: 1.2,
                                                     }}
                                                 >
                                                     {/* Cara frontal */}
                                                     <div
                                                         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
                                                         style={{
-                                                            backfaceVisibility: 'hidden',
-                                                            WebkitBackfaceVisibility: 'hidden',
-                                                            transform: 'rotateY(0deg)',
-                                                            zIndex: 2
+                                                            backfaceVisibility:
+                                                                "hidden",
+                                                            WebkitBackfaceVisibility:
+                                                                "hidden",
+                                                            transform:
+                                                                "rotateY(0deg)",
+                                                            zIndex: 2,
                                                         }}
                                                     >
                                                         {benefit.image && (
@@ -191,14 +260,26 @@ const BenefitSimple = ({ data, items }) => {
                                                                 <div
                                                                     className="relative backdrop-blur-sm p-5 rounded-full transition-all duration-700"
                                                                     style={{
-                                                                        backgroundColor: benefit.bg_color === 'transparent' ? 'var(--bg-primary)' : (benefit.bg_color || 'var(--bg-primary)')
+                                                                        backgroundColor:
+                                                                            benefit.bg_color ===
+                                                                            "transparent"
+                                                                                ? "var(--bg-primary)"
+                                                                                : benefit.bg_color ||
+                                                                                  "var(--bg-primary)",
                                                                     }}
                                                                 >
                                                                     <img
                                                                         src={`/storage/images/benefit/${benefit.image}`}
-                                                                        alt={benefit.name}
+                                                                        alt={
+                                                                            benefit.name
+                                                                        }
                                                                         className="w-10 h-10 object-contain opacity-100 transition-all duration-700"
-                                                                        onError={e => e.target.src = '/api/cover/thumbnail/null'}
+                                                                        onError={(
+                                                                            e,
+                                                                        ) =>
+                                                                            (e.target.src =
+                                                                                "/api/cover/thumbnail/null")
+                                                                        }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -211,15 +292,20 @@ const BenefitSimple = ({ data, items }) => {
                                                     <div
                                                         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
                                                         style={{
-                                                            backfaceVisibility: 'hidden',
-                                                            WebkitBackfaceVisibility: 'hidden',
-                                                            transform: 'rotateY(180deg)',
-                                                            zIndex: 3
+                                                            backfaceVisibility:
+                                                                "hidden",
+                                                            WebkitBackfaceVisibility:
+                                                                "hidden",
+                                                            transform:
+                                                                "rotateY(180deg)",
+                                                            zIndex: 3,
                                                         }}
                                                     >
                                                         <div className="flex flex-col items-center justify-center h-full w-full">
                                                             <div className="text-lg md:text-xl lg:text-2xl font-light text-neutral-dark leading-relaxed whitespace-pre-line">
-                                                                {benefit.description}
+                                                                {
+                                                                    benefit.description
+                                                                }
                                                             </div>
                                                         </div>
                                                     </div>
@@ -227,16 +313,22 @@ const BenefitSimple = ({ data, items }) => {
                                             ) : (
                                                 <div
                                                     className="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:[transform:rotateY(180deg)]"
-                                                    style={{ transformStyle: 'preserve-3d' }}
+                                                    style={{
+                                                        transformStyle:
+                                                            "preserve-3d",
+                                                    }}
                                                 >
                                                     {/* Cara frontal */}
                                                     <div
                                                         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-xl border border-neutral-200/50 hover:border-primary/30 transition-all duration-300 rounded-2xl"
                                                         style={{
-                                                            backfaceVisibility: 'hidden',
-                                                            WebkitBackfaceVisibility: 'hidden',
-                                                            transform: 'rotateY(0deg)',
-                                                            zIndex: 2
+                                                            backfaceVisibility:
+                                                                "hidden",
+                                                            WebkitBackfaceVisibility:
+                                                                "hidden",
+                                                            transform:
+                                                                "rotateY(0deg)",
+                                                            zIndex: 2,
                                                         }}
                                                     >
                                                         {benefit.image && (
@@ -244,14 +336,26 @@ const BenefitSimple = ({ data, items }) => {
                                                                 <div
                                                                     className="relative backdrop-blur-sm p-5 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
                                                                     style={{
-                                                                        backgroundColor: benefit.bg_color === 'transparent' ? 'var(--bg-primary)' : (benefit.bg_color || 'var(--bg-primary)')
+                                                                        backgroundColor:
+                                                                            benefit.bg_color ===
+                                                                            "transparent"
+                                                                                ? "var(--bg-primary)"
+                                                                                : benefit.bg_color ||
+                                                                                  "var(--bg-primary)",
                                                                     }}
                                                                 >
                                                                     <img
                                                                         src={`/storage/images/benefit/${benefit.image}`}
-                                                                        alt={benefit.name}
+                                                                        alt={
+                                                                            benefit.name
+                                                                        }
                                                                         className="w-10 h-10 object-contain opacity-100 transition-all duration-300"
-                                                                        onError={e => e.target.src = '/api/cover/thumbnail/null'}
+                                                                        onError={(
+                                                                            e,
+                                                                        ) =>
+                                                                            (e.target.src =
+                                                                                "/api/cover/thumbnail/null")
+                                                                        }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -264,15 +368,20 @@ const BenefitSimple = ({ data, items }) => {
                                                     <div
                                                         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
                                                         style={{
-                                                            backfaceVisibility: 'hidden',
-                                                            WebkitBackfaceVisibility: 'hidden',
-                                                            transform: 'rotateY(180deg)',
-                                                            zIndex: 3
+                                                            backfaceVisibility:
+                                                                "hidden",
+                                                            WebkitBackfaceVisibility:
+                                                                "hidden",
+                                                            transform:
+                                                                "rotateY(180deg)",
+                                                            zIndex: 3,
                                                         }}
                                                     >
                                                         <div className="flex flex-col items-center justify-center h-full w-full">
                                                             <div className="text-lg md:text-xl lg:text-2xl font-light text-neutral-dark leading-relaxed whitespace-pre-line">
-                                                                {benefit.description}
+                                                                {
+                                                                    benefit.description
+                                                                }
                                                             </div>
                                                         </div>
                                                     </div>
@@ -281,30 +390,15 @@ const BenefitSimple = ({ data, items }) => {
                                         </div>
                                     </div>
                                 </SwiperSlide>
-                            )
+                            );
                         })}
                     </Swiper>
 
-                    {/* Indicadores custom - Solo mobile */}
-                    {items?.length > 1 && (
-                        <div className="flex md:hidden justify-center mt-6 space-x-3">
-                            {items.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => {
-                                        if (swiperInstance && typeof swiperInstance.slideToLoop === 'function') {
-                                            swiperInstance.slideToLoop(index);
-                                        }
-                                    }}
-                                    aria-label={`Ir al slide ${index + 1}`}
-                                    className={`transition-all duration-300 rounded-full ${index === activeIndex
-                                        ? 'w-12 h-3 bg-primary'
-                                        : 'w-3 h-3 bg-neutral-300 hover:bg-neutral-400'
-                                        }`}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    {/* Indicadores custom */}
+                    <div
+                        ref={setPaginationEl}
+                        className="flex justify-center mt-6 space-x-3"
+                    />
                 </motion.div>
 
                 {data?.footer_text && (
@@ -325,7 +419,10 @@ const BenefitSimple = ({ data, items }) => {
                                         src={`/storage/images/system/${data.footer_image}`}
                                         alt="Professional work"
                                         className="w-full h-full object-cover"
-                                        onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
+                                        onError={(e) =>
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
+                                        }
                                     />
                                     <div className="absolute inset-0 bg-primary/95"></div>
                                 </div>

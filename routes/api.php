@@ -604,6 +604,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/applications/paginate', [AdminApplicationController::class, 'paginate']);
     Route::patch('/applications/status', [AdminApplicationController::class, 'status']);
     Route::patch('/applications/{field}', [AdminApplicationController::class, 'boolean']);
+    Route::put('/applications/{id}/reorder', [AdminApplicationController::class, 'reorder']);
     Route::delete('/applications/{id}', [AdminApplicationController::class, 'delete']);
 
     Route::post('/attributes', [AdminAttributeController::class, 'save']);

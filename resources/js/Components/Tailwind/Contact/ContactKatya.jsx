@@ -2,12 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, ChevronDown, ArrowRight, Phone } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 
-
-
-
-
-
-
 import Swal from "sweetalert2";
 
 import MessagesRest from "../../../Actions/MessagesRest";
@@ -132,9 +126,6 @@ const cardHover = {
 };
 
 const ContactKatya = ({ data, generals = [] }) => {
-
-
-
     const messagesRest = new MessagesRest();
 
     // Opción 1: Deshabilitar notificaciones automáticas para usar notificaciones personalizadas
@@ -146,18 +137,23 @@ const ContactKatya = ({ data, generals = [] }) => {
     // Opción 3: Usando el método setNotifications
     // const messagesRest = new MessagesRest().setNotifications(false);
 
+    const nameRef = useRef();
+    const phoneRef = useRef();
+    const emailRef = useRef();
+    const descriptionRef = useRef();
+    const lastnameRef = useRef();
 
-    const nameRef = useRef()
-    const phoneRef = useRef()
-    const emailRef = useRef()
-    const descriptionRef = useRef()
-    const lastnameRef = useRef()
-
-    const [sending, setSending] = useState(false)
+    const [sending, setSending] = useState(false);
 
     // Función para limpiar el formulario
     const clearForm = () => {
-        const fields = [nameRef, lastnameRef, phoneRef, emailRef, descriptionRef];
+        const fields = [
+            nameRef,
+            lastnameRef,
+            phoneRef,
+            emailRef,
+            descriptionRef,
+        ];
 
         fields.forEach((ref, index) => {
             if (ref.current) {
@@ -165,84 +161,102 @@ const ContactKatya = ({ data, generals = [] }) => {
                 setTimeout(() => {
                     ref.current.value = "";
                     // Opcional: agregar una pequeña animación visual
-                    ref.current.style.transform = 'scale(0.98)';
+                    ref.current.style.transform = "scale(0.98)";
                     setTimeout(() => {
-                        ref.current.style.transform = 'scale(1)';
+                        ref.current.style.transform = "scale(1)";
                     }, 100);
                 }, index * 50);
             }
         });
-    }
+    };
 
     const onSubmit = async (e) => {
-        e.preventDefault()
-        if (sending) return
-        setSending(true)
+        e.preventDefault();
+        if (sending) return;
+        setSending(true);
 
         const request = {
-            name: nameRef.current.value + ' ' + lastnameRef.current.value,
+            name: nameRef.current.value + " " + lastnameRef.current.value,
             phone: phoneRef.current.value,
             email: emailRef.current.value,
             message: descriptionRef.current.value,
+        };
 
-        }
-
-        console.log('ContactKatya - Enviando datos:', request);
+        console.log("ContactKatya - Enviando datos:", request);
 
         try {
             const result = await messagesRest.save(request);
-            setSending(false)
+            setSending(false);
 
             if (!result) {
                 // Mostrar error personalizado ya que las notificaciones automáticas están deshabilitadas
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
-                    confirmButtonText: 'Entendido'
-                })
-                return
+                    icon: "error",
+                    title: "Error",
+                    text: "Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.",
+                    confirmButtonText: "Entendido",
+                });
+                return;
             }
 
             // Mostrar éxito personalizado
             Swal.fire({
-                icon: 'success',
-                title: 'Mensaje enviado',
-                text: 'Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto contigo pronto!',
+                icon: "success",
+                title: "Mensaje enviado",
+                text: "Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto contigo pronto!",
                 showConfirmButton: false,
-                timer: 3000
-            })
+                timer: 3000,
+            });
 
             // Enviar lead a Atalaya CRM si existe API Key configurado
-            const atalayaApiKey = generalsData.find(item => item.correlative === "atalaya_leads_api_key")?.description;
-            if (atalayaApiKey && atalayaApiKey.trim() !== '') {
+            const atalayaApiKey = generalsData.find(
+                (item) => item.correlative === "atalaya_leads_api_key",
+            )?.description;
+            if (atalayaApiKey && atalayaApiKey.trim() !== "") {
                 try {
-                    console.log('ContactKatya - Enviando lead a Atalaya CRM...');
-                    const atalayaResponse = await fetch('https://crm.atalaya.pe/free/leads', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${atalayaApiKey}`
+                    console.log(
+                        "ContactKatya - Enviando lead a Atalaya CRM...",
+                    );
+                    const atalayaResponse = await fetch(
+                        "https://crm.atalaya.pe/free/leads",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${atalayaApiKey}`,
+                            },
+                            body: JSON.stringify({
+                                contact_name:
+                                    nameRef.current.value +
+                                    " " +
+                                    lastnameRef.current.value,
+                                contact_phone: phoneRef.current.value,
+                                contact_email: emailRef.current.value,
+                                message: descriptionRef.current.value,
+                                origin: `Página Web ${Global.APP_NAME}`,
+                                triggered_by: "Formulario de Contacto",
+                            }),
                         },
-                        body: JSON.stringify({
-                            contact_name: nameRef.current.value + ' ' + lastnameRef.current.value,
-                            contact_phone: phoneRef.current.value,
-                            contact_email: emailRef.current.value,
-                            message: descriptionRef.current.value,
-                            origin: `Página Web ${Global.APP_NAME}`,
-                            triggered_by: 'Formulario de Contacto'
-                        })
-                    });
+                    );
 
                     const atalayaResult = await atalayaResponse.json();
                     if (atalayaResult.status === 200) {
-                        console.log('ContactKatya - Lead enviado correctamente a Atalaya:', atalayaResult.message);
+                        console.log(
+                            "ContactKatya - Lead enviado correctamente a Atalaya:",
+                            atalayaResult.message,
+                        );
                     } else {
-                        console.warn('ContactKatya - Error al enviar lead a Atalaya:', atalayaResult);
+                        console.warn(
+                            "ContactKatya - Error al enviar lead a Atalaya:",
+                            atalayaResult,
+                        );
                     }
                 } catch (atalayaError) {
                     // No mostrar error al usuario, solo log interno
-                    console.error('ContactKatya - Error al enviar a Atalaya CRM:', atalayaError);
+                    console.error(
+                        "ContactKatya - Error al enviar a Atalaya CRM:",
+                        atalayaError,
+                    );
                 }
             }
 
@@ -260,32 +274,27 @@ const ContactKatya = ({ data, generals = [] }) => {
             }
 
             // Limpiar los campos del formulario
-            clearForm()
+            clearForm();
         } catch (error) {
-            console.error('ContactKatya - Error al enviar:', error);
+            console.error("ContactKatya - Error al enviar:", error);
             setSending(false);
 
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.',
-                confirmButtonText: 'Entendido'
+                icon: "error",
+                title: "Error",
+                text: "Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.",
+                confirmButtonText: "Entendido",
             });
         }
-    }
-
-
-
-
-
-
-
+    };
 
     const generalsData = generals || [];
 
     //location = -12.08572604235328,-76.99121088594794
 
-    const location = generalsData.find(item => item.correlative === "location")?.description || "-12.08572604235328,-76.99121088594794";
+    const location =
+        generalsData.find((item) => item.correlative === "location")
+            ?.description || "-12.08572604235328,-76.99121088594794";
     const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD8b2d3f4e5f6g7h8i9j0k1l2m3n4o5p&q=${location}`;
     const mapSrcWithZoom = `${mapSrc}&zoom=50`;
     const mapSrcWithOutput = `${mapSrc}&output=embed`;
@@ -304,13 +313,12 @@ const ContactKatya = ({ data, generals = [] }) => {
     console.log("data katya", data);
     return (
         <motion.div
-            id={data?.element_id || 'contact-katya'}
-            className={`font-paragraph text-neutral-dark-dark min-h-screen ${data?.class_section || ''}`}
+            id={data?.element_id || "contact-katya"}
+            className={`font-paragraph text-neutral-dark-dark min-h-screen ${data?.class_section || ""}`}
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
-
             <motion.main
                 className="flex flex-col items-center justify-center min-h-[80vh] py-16"
                 variants={itemVariants}
@@ -321,33 +329,27 @@ const ContactKatya = ({ data, generals = [] }) => {
                 >
                     {/* Left: Contact Form */}
                     <motion.div
-                        className={`bg-sections-color rounded-2xl p-8 flex flex-col justify-between shadow-md min-h-[500px] ${data?.class_form_container || ''}`}
+                        className={`bg-sections-color rounded-2xl p-8 flex flex-col justify-between shadow-md min-h-[500px] ${data?.class_form_container || ""}`}
                         variants={slideInLeft}
                         whileHover={{ y: -5, transition: { duration: 0.3 } }}
                     >
                         <div>
-
-
-
                             {/* Título principal */}
                             <motion.h2
-                                className={`text-4xl lg:text-5xl font-medium mb-6 leading-tight ${data?.class_title || ''}`}
+                                className={`text-4xl lg:text-5xl font-medium mb-6 leading-tight ${data?.class_title || ""}`}
                                 variants={itemVariants}
                             >
-
-                                {data?.title || "Necesita ayuda, contáctenos ahora"}
-
+                                {data?.title ||
+                                    "Necesita ayuda, contáctenos ahora"}
                             </motion.h2>
 
                             <motion.p
-                                className={`mt-4 text-base text-neutral-dark max-w-3xl mx-auto ${data?.class_description || ''}`}
+                                className={`mt-4 text-base text-neutral-dark max-w-3xl mx-auto ${data?.class_description || ""}`}
                                 variants={itemVariants}
                             >
                                 {data?.description || ""}
                             </motion.p>
                         </div>
-
-
 
                         {/* Contact Form */}
                         <motion.form
@@ -370,7 +372,10 @@ const ContactKatya = ({ data, generals = [] }) => {
                                     initial="rest"
                                     whileFocus="focus"
                                     whileHover={{ scale: 1.01 }}
-                                    style={{ transition: 'transform 0.2s ease-in-out' }}
+                                    style={{
+                                        transition:
+                                            "transform 0.2s ease-in-out",
+                                    }}
                                 />
                                 <motion.input
                                     ref={lastnameRef}
@@ -381,7 +386,10 @@ const ContactKatya = ({ data, generals = [] }) => {
                                     initial="rest"
                                     whileFocus="focus"
                                     whileHover={{ scale: 1.01 }}
-                                    style={{ transition: 'transform 0.2s ease-in-out' }}
+                                    style={{
+                                        transition:
+                                            "transform 0.2s ease-in-out",
+                                    }}
                                 />
                             </motion.div>
                             <motion.div
@@ -397,7 +405,10 @@ const ContactKatya = ({ data, generals = [] }) => {
                                     initial="rest"
                                     whileFocus="focus"
                                     whileHover={{ scale: 1.01 }}
-                                    style={{ transition: 'transform 0.2s ease-in-out' }}
+                                    style={{
+                                        transition:
+                                            "transform 0.2s ease-in-out",
+                                    }}
                                 />
                                 <motion.input
                                     ref={emailRef}
@@ -408,7 +419,10 @@ const ContactKatya = ({ data, generals = [] }) => {
                                     initial="rest"
                                     whileFocus="focus"
                                     whileHover={{ scale: 1.01 }}
-                                    style={{ transition: 'transform 0.2s ease-in-out' }}
+                                    style={{
+                                        transition:
+                                            "transform 0.2s ease-in-out",
+                                    }}
                                 />
                             </motion.div>
                             <motion.textarea
@@ -419,11 +433,13 @@ const ContactKatya = ({ data, generals = [] }) => {
                                 variants={itemVariants}
                                 whileFocus={{ scale: 1.01 }}
                                 whileHover={{ scale: 1.01 }}
-                                style={{ transition: 'transform 0.2s ease-in-out' }}
+                                style={{
+                                    transition: "transform 0.2s ease-in-out",
+                                }}
                             />
                             <motion.button
                                 type="submit"
-                                className={`mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300 ${data?.class_button_form || ''}`}
+                                className={`mt-2 bg-secondary w-full text-white font-semibold rounded-full px-6 py-3 flex items-center justify-center gap-2 transition-all duration-300 ${data?.class_button_form || ""}`}
                                 variants={buttonHover}
                                 initial="rest"
                                 whileHover="hover"
@@ -442,7 +458,11 @@ const ContactKatya = ({ data, generals = [] }) => {
                                             <motion.div
                                                 className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
                                                 animate={{ rotate: 360 }}
-                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                transition={{
+                                                    duration: 1,
+                                                    repeat: Infinity,
+                                                    ease: "linear",
+                                                }}
                                             />
                                             Enviando...
                                         </motion.div>
@@ -455,7 +475,6 @@ const ContactKatya = ({ data, generals = [] }) => {
                                             className="flex items-center gap-2 uppercase"
                                         >
                                             Enviar mensaje
-
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -507,8 +526,19 @@ const ContactKatya = ({ data, generals = [] }) => {
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-.659 1.591l-7.5 7.5a2.25 2.25 0 01-3.182 0l-7.5-7.5A2.25 2.25 0 012.25 6.993V6.75" />
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={1.5}
+                                            stroke="currentColor"
+                                            className="w-6 h-6"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-.659 1.591l-7.5 7.5a2.25 2.25 0 01-3.182 0l-7.5-7.5A2.25 2.25 0 012.25 6.993V6.75"
+                                            />
                                         </svg>
                                     </motion.span>
                                     <div className="min-w-0 flex-1">
@@ -527,18 +557,34 @@ const ContactKatya = ({ data, generals = [] }) => {
                                             transition={{ delay: 0.3 }}
                                         >
                                             {(() => {
-                                                const emailData = generalsData.find(item => item.correlative === "email_contact")?.description || "";
-                                                if (emailData.includes(',')) {
-                                                    return emailData.split(',').map((email, index) => (
-                                                        <div key={index} className="block break-words">
-                                                            <a href={`mailto:${email.trim()}`} className="hover:text-secondary transition-colors">
-                                                                {email.trim()}
-                                                            </a>
-                                                        </div>
-                                                    ));
+                                                const emailData =
+                                                    generalsData.find(
+                                                        (item) =>
+                                                            item.correlative ===
+                                                            "email_contact",
+                                                    )?.description || "";
+                                                if (emailData.includes(",")) {
+                                                    return emailData
+                                                        .split(",")
+                                                        .map((email, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="block break-words"
+                                                            >
+                                                                <a
+                                                                    href={`mailto:${email.trim()}`}
+                                                                    className="hover:text-secondary transition-colors"
+                                                                >
+                                                                    {email.trim()}
+                                                                </a>
+                                                            </div>
+                                                        ));
                                                 }
                                                 return (
-                                                    <a href={`mailto:${emailData}`} className="hover:text-secondary transition-colors">
+                                                    <a
+                                                        href={`mailto:${emailData}`}
+                                                        className="hover:text-secondary transition-colors"
+                                                    >
                                                         {emailData}
                                                     </a>
                                                 );
@@ -577,18 +623,34 @@ const ContactKatya = ({ data, generals = [] }) => {
                                             transition={{ delay: 0.3 }}
                                         >
                                             {(() => {
-                                                const phoneData = generalsData.find(item => item.correlative === "phone_contact")?.description || "";
-                                                if (phoneData.includes(',')) {
-                                                    return phoneData.split(',').map((phone, index) => (
-                                                        <div key={index} className="block break-words">
-                                                            <a href={`tel:${phone.trim()}`} className="hover:text-secondary transition-colors">
-                                                                {phone.trim()}
-                                                            </a>
-                                                        </div>
-                                                    ));
+                                                const phoneData =
+                                                    generalsData.find(
+                                                        (item) =>
+                                                            item.correlative ===
+                                                            "phone_contact",
+                                                    )?.description || "";
+                                                if (phoneData.includes(",")) {
+                                                    return phoneData
+                                                        .split(",")
+                                                        .map((phone, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="block break-words"
+                                                            >
+                                                                <a
+                                                                    href={`tel:${phone.trim()}`}
+                                                                    className="hover:text-secondary transition-colors"
+                                                                >
+                                                                    {phone.trim()}
+                                                                </a>
+                                                            </div>
+                                                        ));
                                                 }
                                                 return (
-                                                    <a href={`tel:${phoneData}`} className="hover:text-secondary transition-colors">
+                                                    <a
+                                                        href={`tel:${phoneData}`}
+                                                        className="hover:text-secondary transition-colors"
+                                                    >
                                                         {phoneData}
                                                     </a>
                                                 );
@@ -610,9 +672,24 @@ const ContactKatya = ({ data, generals = [] }) => {
                                     whileHover={{ rotate: 360, scale: 1.1 }}
                                     transition={{ duration: 0.5 }}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                                        />
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                                        />
                                     </svg>
                                 </motion.span>
                                 <div className="min-w-0 flex-1">
@@ -625,12 +702,15 @@ const ContactKatya = ({ data, generals = [] }) => {
                                         Ubicación
                                     </motion.div>
                                     <motion.div
-                                        className="customtext-neutral-dark text-sm break-words overflow-hidden"
+                                        className="customtext-neutral-dark text-sm break-words overflow-hidden whitespace-pre-line"
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.3 }}
                                     >
-                                        {generalsData.find(item => item.correlative === "address")?.description || "Lima, Perú"}
+                                        {generalsData.find(
+                                            (item) =>
+                                                item.correlative === "address",
+                                        )?.description || "Lima, Perú"}
                                     </motion.div>
                                 </div>
                             </motion.div>
@@ -638,7 +718,6 @@ const ContactKatya = ({ data, generals = [] }) => {
                     </motion.div>
                 </motion.div>
             </motion.main>
-
         </motion.div>
     );
 };

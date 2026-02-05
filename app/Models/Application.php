@@ -21,6 +21,7 @@ class Application extends Model
         'background_image',
         'visible',
         'status',
+        'order_index',
     ];
 
     protected $casts = [

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Slider extends Model
 {
-    use HasFactory, HasUuids,HasDynamic;
+    use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -20,7 +20,7 @@ class Slider extends Model
         'bg_type',
         'bg_image',
         'bg_image_mobile',
-        'bg_video',	
+        'bg_video',
         'image',
         'button_text',
         'button_link',
@@ -37,10 +37,11 @@ class Slider extends Model
         'visible',
         'status',
         'order_index',
+        'duration',
     ];
 
     protected $casts = [
-       
+
         'visible' => 'boolean',
         'status' => 'boolean',
         'show_overlay' => 'boolean',
