@@ -30,6 +30,24 @@ use App\Models\ItemImage;
 class ItemController extends BasicController
 {
     public $model = Item::class;
+
+    public function getVariants(string $agrupador)
+    {
+        return Item::where('agrupador', $agrupador)
+            ->where('is_master', false)
+            ->with(['attributes'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    public function deleteVariant(string $id)
+    {
+        $item = Item::findOrFail($id);
+        if ($item->is_master) {
+            throw new Exception("No se puede eliminar el item maestro desde aquí.");
+        }
+        return $item->delete();
+    }
     public $reactView = 'Admin/Items';
     public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
@@ -44,7 +62,7 @@ class ItemController extends BasicController
         DB::beginTransaction();
         try {
             $originalItem = Item::with(['tags', 'amenities', 'applications', 'attributes', 'features', 'specifications', 'images'])->findOrFail($id);
-            
+
             // Crear una copia del item
             $newItem = $originalItem->replicate();
             $newItem->id = Str::uuid()->toString();
@@ -55,28 +73,28 @@ class ItemController extends BasicController
             $newItem->created_at = now();
             $newItem->updated_at = now();
             $newItem->save();
-            
+
             // Clonar tags
-            if ($originalItem->tags && $originalItem->tags->count() > 0) {
+            if (isset($originalItem->tags) && $originalItem->tags instanceof \Illuminate\Database\Eloquent\Collection) {
                 foreach ($originalItem->tags as $tag) {
                     $newItem->tags()->attach($tag->id);
                 }
             }
-            
+
             // Clonar amenities
             if ($originalItem->amenities && $originalItem->amenities->count() > 0) {
                 foreach ($originalItem->amenities as $amenity) {
                     $newItem->amenities()->attach($amenity->id);
                 }
             }
-            
+
             // Clonar applications
             if ($originalItem->applications && $originalItem->applications->count() > 0) {
                 foreach ($originalItem->applications as $application) {
                     $newItem->applications()->attach($application->id);
                 }
             }
-            
+
             // Clonar attributes con sus valores pivot
             if ($originalItem->attributes && $originalItem->attributes->count() > 0) {
                 foreach ($originalItem->attributes as $attribute) {
@@ -86,7 +104,7 @@ class ItemController extends BasicController
                     ]);
                 }
             }
-            
+
             // Clonar features
             if ($originalItem->features && $originalItem->features->count() > 0) {
                 foreach ($originalItem->features as $feature) {
@@ -96,7 +114,7 @@ class ItemController extends BasicController
                     ]);
                 }
             }
-            
+
             // Clonar specifications
             if ($originalItem->specifications && $originalItem->specifications->count() > 0) {
                 foreach ($originalItem->specifications as $spec) {
@@ -107,22 +125,21 @@ class ItemController extends BasicController
                     ]);
                 }
             }
-            
+
             DB::commit();
-            
+
             return response([
                 'status' => true,
                 'message' => 'Item clonado exitosamente',
                 'data' => $newItem
             ], 200);
-            
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error cloning item: ' . $e->getMessage(), [
                 'exception' => $e,
                 'item_id' => $id
             ]);
-            
+
             return response([
                 'status' => false,
                 'message' => 'Error al clonar el item: ' . $e->getMessage()
@@ -138,7 +155,7 @@ class ItemController extends BasicController
         // Agregar amenities y applications a las relaciones si no están ya incluidos
         $with = $request->has('with') ? $request->with : '';
         $relations = array_filter(explode(',', $with));
-        
+
         if (!in_array('amenities', $relations)) {
             $relations[] = 'amenities';
         }
@@ -151,9 +168,15 @@ class ItemController extends BasicController
         if (!in_array('attributes', $relations)) {
             $relations[] = 'attributes';
         }
-        
+
         $request->merge(['with' => implode(',', $relations)]);
-        
+
+        // Si no se especifica explícitamente, filtrar solo por productos maestros
+        // Esto evita que las variantes individuales aparezcan en el listado principal
+        if (!$request->has('is_master')) {
+            $request->merge(['is_master' => 1]);
+        }
+
         return parent::paginate($request);
     }
 
@@ -197,12 +220,12 @@ class ItemController extends BasicController
                 'tags' => 'nullable|array',
                 'description' => 'nullable|string',
                 'weight' => 'nullable|numeric',
-               
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-                'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-           
+
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+                'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+
                 'gallery' => 'nullable|array',
-                'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
                 'gallery_ids' => 'nullable|array',
                 'gallery_ids.*' => 'nullable|string',
                 'deleted_images' => 'nullable|array',
@@ -214,20 +237,25 @@ class ItemController extends BasicController
             if ($storeId === '' || $storeId === 'null' || $storeId === null) {
                 $storeId = null;
             }
-            
+
             $collectionId = $request->input('collection_id');
             if ($collectionId === '' || $collectionId === 'null' || $collectionId === null) {
                 $collectionId = null;
             }
-            
+
             $subcategoryId = $request->input('subcategory_id');
             if ($subcategoryId === '' || $subcategoryId === 'null' || $subcategoryId === null) {
                 $subcategoryId = null;
             }
-            
+
             $brandId = $request->input('brand_id');
             if ($brandId === '' || $brandId === 'null' || $brandId === null) {
                 $brandId = null;
+            }
+
+            $agrupador = $request->input('agrupador');
+            if ($request->boolean('is_master') && empty($agrupador)) {
+                $agrupador = (string) Str::uuid();
             }
 
             // Crear o actualizar el elemento
@@ -248,36 +276,41 @@ class ItemController extends BasicController
                     'discount' => $request->input('discount'),
                     'description' => $request->input('description'),
                     'weight' => $request->input('weight'),
-                    'stock' => $request->input('stock', 0), // Default 0 para habitaciones
-                    // Campos específicos para habitaciones (hotel)
+                    'stock' => $request->input('stock', 0),
                     'type' => $request->input('type', 'product'),
                     'room_type' => $request->input('room_type'),
                     'max_occupancy' => $request->input('max_occupancy'),
                     'beds_count' => $request->input('beds_count'),
                     'size_m2' => $request->input('size_m2'),
                     'total_rooms' => $request->input('total_rooms'),
+                    'is_master' => $request->boolean('is_master'),
+                    'agrupador' => $agrupador,
+                    'final_price' => $request->input('discount') > 0 ? $request->input('discount') : $request->input('price', 0),
+                    'discount_percent' => ($request->input('price') > 0 && $request->input('discount') > 0)
+                        ? round((1 - ($request->input('discount') / $request->input('price'))) * 100)
+                        : 0,
                 ]
             );
 
             // Procesar PDFs (múltiples archivos con ordenamiento)
             $pdfData = [];
-            
+
             // Cargar PDFs existentes si hay
             if ($item->pdf && is_array($item->pdf)) {
                 $pdfData = $item->pdf;
             }
-            
+
             // Agregar nuevos PDFs
             if ($request->hasFile('pdf')) {
                 $pdfFiles = is_array($request->file('pdf')) ? $request->file('pdf') : [$request->file('pdf')];
-                
+
                 $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                 foreach ($pdfFiles as $index => $file) {
                     $uuid = Crypto::randomUUID();
                     $ext = $file->getClientOriginalExtension();
                     $path = "images/{$snake_case}/{$uuid}.{$ext}";
                     Storage::put($path, file_get_contents($file));
-                    
+
                     $pdfData[] = [
                         'url' => "{$uuid}.{$ext}",
                         'name' => $file->getClientOriginalName(),
@@ -285,29 +318,29 @@ class ItemController extends BasicController
                     ];
                 }
             }
-            
+
             // Eliminar PDFs marcados para eliminación
             if ($request->has('deleted_pdfs')) {
                 $deletedPdfs = json_decode($request->input('deleted_pdfs'), true);
                 if (is_array($deletedPdfs)) {
-                    $pdfData = array_values(array_filter($pdfData, function($pdf, $index) use ($deletedPdfs) {
+                    $pdfData = array_values(array_filter($pdfData, function ($pdf, $index) use ($deletedPdfs) {
                         return !in_array($index, $deletedPdfs);
                     }, ARRAY_FILTER_USE_BOTH));
                 }
             }
-            
+
             // Reordenar PDFs
             if (!empty($pdfData)) {
                 foreach ($pdfData as $index => $pdf) {
                     $pdfData[$index]['order'] = $index + 1;
                 }
             }
-            
+
             $item->pdf = !empty($pdfData) ? $pdfData : null;
-            
+
             // Procesar Videos (múltiples links con ordenamiento)
             $videoData = [];
-            
+
             if ($request->has('linkvideo')) {
                 $videos = json_decode($request->input('linkvideo'), true);
                 if (is_array($videos)) {
@@ -321,24 +354,24 @@ class ItemController extends BasicController
                     }
                 }
             }
-            
+
             // Eliminar videos marcados para eliminación
             if ($request->has('deleted_videos')) {
                 $deletedVideos = json_decode($request->input('deleted_videos'), true);
                 if (is_array($deletedVideos)) {
-                    $videoData = array_values(array_filter($videoData, function($video, $index) use ($deletedVideos) {
+                    $videoData = array_values(array_filter($videoData, function ($video, $index) use ($deletedVideos) {
                         return !in_array($index, $deletedVideos);
                     }, ARRAY_FILTER_USE_BOTH));
                 }
             }
-            
+
             // Reordenar videos
             if (!empty($videoData)) {
                 foreach ($videoData as $index => $video) {
                     $videoData[$index]['order'] = $index + 1;
                 }
             }
-            
+
             $item->linkvideo = !empty($videoData) ? $videoData : null;
             $item->save();
 
@@ -382,7 +415,7 @@ class ItemController extends BasicController
             $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
             $cloneFromId = $request->input('clone_from_id');
             $requestId = $request->input('id');
-            
+
             // Log para debug
             Log::info('Clone check', [
                 'clone_from_id' => $cloneFromId,
@@ -392,21 +425,21 @@ class ItemController extends BasicController
                 'clone_banner' => $request->input('clone_banner'),
                 'clone_texture' => $request->input('clone_texture'),
             ]);
-            
+
             // Verificar si es un clon: tiene clone_from_id y NO tiene id (o id es vacío/undefined)
-            $isClone = $cloneFromId && 
-                       $cloneFromId !== 'null' && 
-                       ($requestId === null || $requestId === '' || $requestId === 'undefined');
-            
+            $isClone = $cloneFromId &&
+                $cloneFromId !== 'null' &&
+                ($requestId === null || $requestId === '' || $requestId === 'undefined');
+
             if ($isClone) {
                 // Es un item clonado (nuevo registro basado en otro)
                 Log::info('Processing clone from item: ' . $cloneFromId);
-                
+
                 // Copiar imagen principal
                 if (!$request->hasFile('image') && $request->input('clone_image')) {
                     $originalImage = $request->input('clone_image');
                     $originalPath = "images/{$snake_case}/{$originalImage}";
-                    
+
                     if (Storage::exists($originalPath)) {
                         $ext = pathinfo($originalImage, PATHINFO_EXTENSION);
                         $uuid = Crypto::randomUUID();
@@ -416,12 +449,12 @@ class ItemController extends BasicController
                         $item->save();
                     }
                 }
-                
+
                 // Copiar banner
                 if (!$request->hasFile('banner') && $request->input('clone_banner')) {
                     $originalBanner = $request->input('clone_banner');
                     $originalPath = "images/{$snake_case}/{$originalBanner}";
-                    
+
                     if (Storage::exists($originalPath)) {
                         $ext = pathinfo($originalBanner, PATHINFO_EXTENSION);
                         $uuid = Crypto::randomUUID();
@@ -431,12 +464,12 @@ class ItemController extends BasicController
                         $item->save();
                     }
                 }
-                
+
                 // Copiar textura
                 if (!$request->hasFile('texture') && $request->input('clone_texture')) {
                     $originalTexture = $request->input('clone_texture');
                     $originalPath = "images/{$snake_case}/{$originalTexture}";
-                    
+
                     if (Storage::exists($originalPath)) {
                         $ext = pathinfo($originalTexture, PATHINFO_EXTENSION);
                         $uuid = Crypto::randomUUID();
@@ -446,19 +479,19 @@ class ItemController extends BasicController
                         $item->save();
                     }
                 }
-                
+
                 // Copiar galería de imágenes del item original
                 $originalItem = Item::with('images')->find($cloneFromId);
                 if ($originalItem && $originalItem->images->count() > 0) {
                     foreach ($originalItem->images as $originalGalleryImage) {
                         $originalPath = "images/{$snake_case}/{$originalGalleryImage->url}";
-                        
+
                         if (Storage::exists($originalPath)) {
                             $ext = pathinfo($originalGalleryImage->url, PATHINFO_EXTENSION);
                             $uuid = Crypto::randomUUID();
                             $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
                             Storage::copy($originalPath, $newPath);
-                            
+
                             $item->images()->create([
                                 'url' => "{$uuid}.{$ext}",
                                 'order' => $originalGalleryImage->order
@@ -484,18 +517,20 @@ class ItemController extends BasicController
 
             // Guardar las imágenes nuevas de la galería
             $newImagesCount = 0;
-            if ($request->hasFile('gallery')) {
+            $galleryFiles = $request->file('gallery');
+            if ($galleryFiles) {
                 // Obtener el último orden de las imágenes existentes
                 $lastOrder = $item->images()->max('order') ?? 0;
-                
-                foreach ($request->file('gallery') as $index => $file) {
+
+                if (!is_array($galleryFiles)) $galleryFiles = [$galleryFiles];
+                foreach ($galleryFiles as $index => $file) {
                     $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                     $full = $file;
                     $uuid = Crypto::randomUUID();
                     $ext = $full->getClientOriginalExtension();
                     $path = "images/{$snake_case}/{$uuid}.{$ext}";
                     Storage::put($path, file_get_contents($full));
-                    
+
                     // Crear imagen con orden secuencial
                     $item->images()->create([
                         'url' => "{$uuid}.{$ext}",
@@ -509,7 +544,7 @@ class ItemController extends BasicController
             if ($request->has('gallery_order')) {
                 $galleryOrder = json_decode($request->input('gallery_order'), true);
                 Log::info('Gallery order received:', ['gallery_order' => $galleryOrder]);
-                
+
                 foreach ($galleryOrder as $index => $imageData) {
                     if (isset($imageData['id']) && $imageData['type'] === 'existing') {
                         $item->images()->where('id', $imageData['id'])->update([
@@ -519,13 +554,14 @@ class ItemController extends BasicController
                     }
                 }
             } else if ($request->has('gallery_ids')) {
-                // Fallback para compatibilidad (sin reordenamiento)
                 $existingImageIds = $request->input('gallery_ids');
-                foreach ($existingImageIds as $index => $id) {
-                    $item->images()->where('id', $id)->update([
-                        'item_id' => $item->id,
-                        'order' => $index + 1
-                    ]);
+                if (is_array($existingImageIds)) {
+                    foreach ($existingImageIds as $index => $id) {
+                        $item->images()->where('id', $id)->update([
+                            'item_id' => $item->id,
+                            'order' => $index + 1
+                        ]);
+                    }
                 }
             }
 
@@ -533,7 +569,7 @@ class ItemController extends BasicController
             if ($request->has('deleted_images')) {
                 $deletedImageIds = $request->input('deleted_images');
                 $item->images()->whereIn('id', $deletedImageIds)->delete();
-                
+
                 // Reordenar las imágenes restantes después de eliminar
                 $remainingImages = $item->images()->orderBy('order')->get();
                 foreach ($remainingImages as $index => $image) {
@@ -548,11 +584,98 @@ class ItemController extends BasicController
             $isNew = !$request->has('id') || empty($request->input('id'));
             $this->afterSave($request, $item, $isNew);
 
+            // --- CLONADO DE IMÁGENES (COPIA FÍSICA) ---
+            $cloneImagesFromId = $request->input('clone_images_from');
+            if ($cloneImagesFromId) {
+                // Instanciar modelo dinámicamente para buscar el source
+                $modelClass = $this->model;
+                $sourceItem = $modelClass::find($cloneImagesFromId);
+                $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
+
+                if ($sourceItem) {
+                    // 1. Copiar imagen principal
+                    if (!$item->image && $sourceItem->image && !$request->hasFile('image') && !$request->boolean('skip_clone_image')) {
+                        $originalPath = "images/{$snake_case}/{$sourceItem->image}";
+                        if (Storage::exists($originalPath)) {
+                            $ext = pathinfo($sourceItem->image, PATHINFO_EXTENSION);
+                            $uuid = Crypto::randomUUID();
+                            $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                            Storage::copy($originalPath, $newPath);
+                            $item->image = "{$uuid}.{$ext}";
+                            $item->save();
+                        }
+                    }
+
+                    // 2. Copiar banner
+                    if (!$item->banner && $sourceItem->banner && !$request->hasFile('banner') && !$request->boolean('skip_clone_banner')) {
+                        $originalPath = "images/{$snake_case}/{$sourceItem->banner}";
+                        if (Storage::exists($originalPath)) {
+                            $ext = pathinfo($sourceItem->banner, PATHINFO_EXTENSION);
+                            $uuid = Crypto::randomUUID();
+                            $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                            Storage::copy($originalPath, $newPath);
+                            $item->banner = "{$uuid}.{$ext}";
+                            $item->save();
+                        }
+                    }
+
+                    // 3. Copiar Galería
+                    $imagesToClone = collect([]);
+                    $cloneGalleryIds = $request->input('clone_gallery_ids');
+
+                    if ($cloneGalleryIds && is_array($cloneGalleryIds)) {
+                        // Clonar solo los IDs seleccionados
+                        $imagesToClone = $sourceItem->images->whereIn('id', $cloneGalleryIds);
+                    } elseif (!$request->file('gallery')) {
+                        // Clonar TODO si no hay nuevos ni selección explícita
+                        $imagesToClone = $sourceItem->images;
+                    }
+
+                    foreach ($imagesToClone as $img) {
+                        $originalPath = "images/{$snake_case}/{$img->url}";
+                        if (Storage::exists($originalPath)) {
+                            $ext = pathinfo($img->url, PATHINFO_EXTENSION);
+                            $uuid = Crypto::randomUUID();
+                            $newPath = "images/{$snake_case}/{$uuid}.{$ext}";
+                            Storage::copy($originalPath, $newPath);
+
+                            $item->images()->create([
+                                'url' => "{$uuid}.{$ext}",
+                                'order' => $img->order,
+                                'alt_text' => $img->alt_text
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // --- GENERACIÓN DE VARIANTES ---
+            if ($request->boolean('is_master')) {
+                $variantsListRaw = $request->input('variants_list');
+                if ($variantsListRaw) {
+                    // Si viene como array (por repetición en el payload), tomar el último
+                    if (is_array($variantsListRaw)) {
+                        $variantsListRaw = end($variantsListRaw);
+                    }
+
+                    $variantsList = json_decode($variantsListRaw, true);
+                    if (is_array($variantsList)) {
+                        $item->load(['tags', 'amenities', 'applications', 'attributes', 'images', 'features', 'specifications']);
+                        $this->genVariants($item, $variantsList);
+                    }
+                }
+            }
+
             DB::commit();
             return response(['message' => 'Elemento guardado correctamente'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response(['message' => 'Error al guardar el elemento: ' . $e->getMessage()], 500);
+            Log::error('Error al guardar item: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return response(['message' => 'Error al guardar el elemento: ' . $e->getMessage() . ' en ' . $e->getFile() . ' L:' . $e->getLine()], 500);
         }
     }
     /*public function beforeSave(Request $request)
@@ -599,7 +722,7 @@ class ItemController extends BasicController
     public function setPaginationInstance(Request $request, string $model)
     {
         return $model::select(['items.*'])
-            ->with(['category','tags' ,'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features', 'attributes'])
+            ->with(['category', 'tags', 'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features', 'attributes'])
             ->leftJoin('categories AS category', 'category.id', 'items.category_id')
             ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
             ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
@@ -646,14 +769,14 @@ class ItemController extends BasicController
             $tags = explode(',', $tags);
         }
         // Filtrar valores vacíos
-        $tags = array_filter($tags, function($tag) {
+        $tags = array_filter($tags, function ($tag) {
             return !empty(trim($tag));
         });
 
         // Manejo de Tags (ya estamos dentro de una transacción del método save)
         ItemTag::where('item_id', $jpa->id)->whereNotIn('tag_id', $tags)->delete();
 
-        foreach ($tags as $tag) {
+        foreach ((array)$tags as $tag) {
             if (Uuid::isValid($tag)) {
                 $tagId = $tag;
             } else {
@@ -672,7 +795,7 @@ class ItemController extends BasicController
             $amenities = $request->input('amenities', []);
             // Log para debug
             Log::info('Amenities recibidos:', ['amenities' => $amenities, 'type' => $request->input('type'), 'item_id' => $jpa->id]);
-            
+
             if (is_array($amenities) && count($amenities) > 0) {
                 $jpa->amenities()->sync($amenities);
                 Log::info('Amenities sincronizados correctamente', ['count' => count($amenities)]);
@@ -683,7 +806,7 @@ class ItemController extends BasicController
         if ($request->has('applications')) {
             $applications = $request->input('applications', []);
             Log::info('Applications recibidos:', ['applications' => $applications, 'item_id' => $jpa->id]);
-            
+
             if (is_array($applications) && count($applications) > 0) {
                 $jpa->applications()->sync($applications);
                 Log::info('Applications sincronizados correctamente', ['count' => count($applications)]);
@@ -694,12 +817,12 @@ class ItemController extends BasicController
         if ($request->has('attributes')) {
             $attributesData = $request->input('attributes', []);
             Log::info('Attributes recibidos:', ['attributes' => $attributesData, 'item_id' => $jpa->id]);
-            
+
             // Si viene como JSON string, decodificar
             if (is_string($attributesData)) {
                 $attributesData = json_decode($attributesData, true) ?? [];
             }
-            
+
             if (is_array($attributesData) && count($attributesData) > 0) {
                 // Preparar datos para sync con pivot
                 $syncData = [];
@@ -707,7 +830,7 @@ class ItemController extends BasicController
                     $attrId = is_array($attr) ? ($attr['id'] ?? $attr['attribute_id'] ?? null) : $attr;
                     $value = is_array($attr) ? ($attr['value'] ?? $attr['pivot']['value'] ?? null) : null;
                     $orderIndex = is_array($attr) ? ($attr['order_index'] ?? $attr['pivot']['order_index'] ?? $index) : $index;
-                    
+
                     if ($attrId) {
                         $syncData[$attrId] = [
                             'value' => $value,
@@ -715,7 +838,7 @@ class ItemController extends BasicController
                         ];
                     }
                 }
-                
+
                 $jpa->attributes()->sync($syncData);
                 Log::info('Attributes sincronizados correctamente', ['count' => count($syncData)]);
             } else {
@@ -723,14 +846,18 @@ class ItemController extends BasicController
                 $jpa->attributes()->detach();
             }
         }
-        
+
         // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
 
         // Decodificar features y specifications
-        $features = json_decode($request->input('features'), true);
-     
-        $specifications = json_decode($request->input('specifications'), true);
-        
+        $featuresRaw = $request->input('features');
+        if (is_array($featuresRaw)) $featuresRaw = end($featuresRaw);
+        $features = is_string($featuresRaw) ? json_decode($featuresRaw, true) : (is_array($featuresRaw) ? $featuresRaw : null);
+
+        $specificationsRaw = $request->input('specifications');
+        if (is_array($specificationsRaw)) $specificationsRaw = end($specificationsRaw);
+        $specifications = is_string($specificationsRaw) ? json_decode($specificationsRaw, true) : (is_array($specificationsRaw) ? $specificationsRaw : null);
+
         // Procesar features
         if (is_array($features)) {
             (new ItemFeatureController())->saveFeatures($jpa, $features);
@@ -740,8 +867,55 @@ class ItemController extends BasicController
         if (is_array($specifications)) {
             (new ItemSpecificationController())->saveSpecifications($jpa, $specifications);
         }
+    }
 
-    
+    private function genVariants(Item $masterItem, array $variantsList)
+    {
+        foreach ($variantsList as $idx => $variantData) {
+            if (!is_array($variantData)) continue;
+
+            $child = $masterItem->replicate();
+            $child->id = (string) Str::uuid();
+            $child->is_master = false;
+            $child->name = $variantData['name'] ?? ($masterItem->name . ' - ' . ($idx + 1));
+            $child->price = $variantData['price'] ?? $masterItem->price;
+            $child->stock = $variantData['stock'] ?? $masterItem->stock;
+            $child->sku = $variantData['sku'] ?? ($masterItem->sku . '-' . ($idx + 1));
+            $child->slug = Str::slug($child->name) . '-' . Str::random(5);
+            $child->save();
+
+            // Relaciones muchos a muchos
+            $child->tags()->sync($masterItem->tags()->pluck('tags.id'));
+            $child->amenities()->sync($masterItem->amenities()->pluck('amenities.id'));
+            $child->applications()->sync($masterItem->applications()->pluck('applications.id'));
+
+            // Atributos específicos
+            if (!empty($variantData['attributes']) && is_array($variantData['attributes'])) {
+                $syncData = [];
+                foreach ($variantData['attributes'] as $attr) {
+                    $attrId = $attr['attribute_id'] ?? $attr['id'] ?? null;
+                    if ($attrId) {
+                        $syncData[$attrId] = ['value' => $attr['value'] ?? ''];
+                    }
+                }
+                $child->attributes()->sync($syncData);
+            }
+
+            // Relaciones uno a muchos
+            foreach ($masterItem->images()->get() as $img) {
+                $child->images()->create(['url' => $img->url, 'order' => $img->order]);
+            }
+            foreach ($masterItem->features()->get() as $feat) {
+                $child->features()->create(['feature' => $feat->feature]);
+            }
+            foreach ($masterItem->specifications()->get() as $spec) {
+                $child->specifications()->create([
+                    'type' => $spec->type,
+                    'title' => $spec->title,
+                    'description' => $spec->description
+                ]);
+            }
+        }
     }
 
     /**
@@ -751,11 +925,11 @@ class ItemController extends BasicController
     {
         try {
             Log::info('Iniciando exportación de items');
-            
+
             $fileName = 'items_export_' . date('Y-m-d_His') . '.xlsx';
-            
+
             Log::info('Creando archivo Excel', ['fileName' => $fileName]);
-            
+
             return Excel::download(new UnifiedItemExport, $fileName);
         } catch (\Exception $e) {
             Log::error('Error al exportar items: ' . $e->getMessage(), [
@@ -763,7 +937,7 @@ class ItemController extends BasicController
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al exportar items: ' . $e->getMessage(),
@@ -782,12 +956,12 @@ class ItemController extends BasicController
         // Cambiar temporalmente el reactView a Rooms
         $originalView = $this->reactView;
         $this->reactView = 'Admin/Rooms';
-        
+
         $response = $this->reactView($request);
-        
+
         // Restaurar el reactView original
         $this->reactView = $originalView;
-        
+
         return $response;
     }
 
@@ -797,15 +971,15 @@ class ItemController extends BasicController
     private function getDeviceType(Request $request)
     {
         $userAgent = $request->userAgent();
-        
+
         if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', $userAgent)) {
             return 'tablet';
         }
-        
+
         if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', $userAgent)) {
             return 'mobile';
         }
-        
+
         return 'desktop';
     }
 
@@ -816,12 +990,12 @@ class ItemController extends BasicController
     {
         try {
             $item = Item::findOrFail($request->id);
-            
+
             // Obtener información del dispositivo y sesión
             $deviceType = $this->getDeviceType($request);
             $sessionId = $request->session()->getId();
             $userId = auth()->check() ? auth()->id() : null;
-            
+
             // Verificar si ya existe un evento reciente (últimos 5 minutos) para evitar duplicados
             $recentEvent = DB::table('analytics_events')
                 ->where('session_id', $sessionId)
@@ -829,12 +1003,12 @@ class ItemController extends BasicController
                 ->where('event_type', 'product_view')
                 ->where('created_at', '>', now()->subMinutes(5))
                 ->first();
-            
+
             // Solo incrementar si no hay evento reciente (anti-bot básico)
             if (!$recentEvent) {
                 // Incrementar contador de vistas
                 $item->increment('views');
-                
+
                 // Registrar evento en analytics
                 DB::table('analytics_events')->insert([
                     'user_id' => $userId,
@@ -869,12 +1043,11 @@ class ItemController extends BasicController
                     'session_id' => substr($sessionId, 0, 8) . '...'
                 ]);
             }
-            
+
             return response()->json([
                 'success' => true,
                 'views' => $item->views
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error updating product views: ' . $e->getMessage());
             return response()->json([
@@ -893,7 +1066,7 @@ class ItemController extends BasicController
             $itemId = $request->input('id');
             $ip = $request->ip();
             $userAgent = $request->input('user_agent') ?? $request->header('User-Agent');
-            
+
             if (!$itemId) {
                 return response([
                     'status' => 400,
@@ -909,20 +1082,20 @@ class ItemController extends BasicController
                     'message' => 'Producto no encontrado'
                 ], 404);
             }
-            
+
             // Crear un hash único para este usuario (IP + user agent)
             $userHash = md5($ip . $userAgent);
-            
+
             // Detectar tipo de dispositivo
             $deviceType = $this->getDeviceType($request);
-            
+
             // Verificar si ya existe un click de este usuario en las últimas 24 horas
             $existingClick = DB::table('item_clicks')
                 ->where('item_id', $itemId)
                 ->where('user_hash', $userHash)
                 ->where('created_at', '>=', now()->subHours(24))
                 ->first();
-            
+
             if (!$existingClick) {
                 // Registrar el click en la tabla de clicks
                 DB::table('item_clicks')->insert([
@@ -936,7 +1109,7 @@ class ItemController extends BasicController
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
-                
+
                 // Incrementar contador en la tabla items
                 DB::table('items')
                     ->where('id', $itemId)
@@ -955,7 +1128,7 @@ class ItemController extends BasicController
                     'last_click' => $existingClick->created_at
                 ]);
             }
-            
+
             return response([
                 'status' => 200,
                 'message' => 'Click registrado exitosamente',
@@ -969,7 +1142,7 @@ class ItemController extends BasicController
                 'exception' => $e,
                 'item_id' => $request->input('id')
             ]);
-            
+
             return response([
                 'status' => 500,
                 'message' => 'Error al registrar el click',

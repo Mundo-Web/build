@@ -78,6 +78,10 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
     // Estado para variantes y selección de atributos
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [selectedAttributes, setSelectedAttributes] = useState({});
+    const [variantsForSelectedGroup, setVariantsForSelectedGroup] = useState(
+        [],
+    );
+    const [isLoadingVariants, setIsLoadingVariants] = useState(false);
 
     // Estado para mostrar más detalles
     const [showDetails, setShowDetails] = useState(false);
@@ -148,12 +152,18 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
 
     // Obtener datos del grupo del producto seleccionado
     const getProductGroup = (item) => {
-        if (!items || !item) return null;
+        if (!item) return null;
 
-        const groupKey = item.name?.trim().toLowerCase() || item.id;
-        const variants = items.filter(
-            (i) => (i.name?.trim().toLowerCase() || i.id) === groupKey,
-        );
+        // Si tenemos variantes cargadas dinámicamente, las usamos
+        const variants =
+            variantsForSelectedGroup.length > 0
+                ? variantsForSelectedGroup
+                : items?.filter(
+                      (i) =>
+                          i.agrupador === item.agrupador ||
+                          (i.name?.trim().toLowerCase() || i.id) ===
+                              (item.name?.trim().toLowerCase() || item.id),
+                  ) || [];
 
         const allAttributes = {};
         const allApplications = [];
@@ -195,7 +205,44 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
             }
         });
 
-        return { variants, allAttributes, allApplications };
+        // Convertir allAttributes a un array de objetos para poder ordenarlos
+        const sortedAttributes = Object.entries(allAttributes)
+            .map(([name, data]) => ({
+                name,
+                ...data,
+            }))
+            .sort((a, b) => {
+                const orderA = a.attribute?.order_index ?? 999;
+                const orderB = b.attribute?.order_index ?? 999;
+                return orderA - orderB;
+            });
+
+        // Ordenar los valores de cada atributo
+        sortedAttributes.forEach((attrGroup) => {
+            const isNumber = attrGroup.attribute?.type === "number";
+
+            attrGroup.values.sort((a, b) => {
+                if (isNumber) {
+                    // Ordenar de menor a mayor para números (ej. medidas de espesor)
+                    const valA = parseFloat(a.value);
+                    const valB = parseFloat(b.value);
+                    if (!isNaN(valA) && !isNaN(valB)) {
+                        return valA - valB;
+                    }
+                }
+                // Por defecto orden alfabético para textos
+                return String(a.value).localeCompare(
+                    String(b.value),
+                    undefined,
+                    {
+                        numeric: true,
+                        sensitivity: "base",
+                    },
+                );
+            });
+        });
+
+        return { variants, allAttributes: sortedAttributes, allApplications };
     };
 
     // Bloquear scroll del body cuando el modal está abierto
@@ -253,13 +300,37 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         return null;
     }
 
-    const handleProductClick = (item) => {
+    const handleProductClick = async (item) => {
         // Trackear el click antes de abrir el modal
         if (onClickTracking) {
             onClickTracking(item);
         }
         setSelectedImage(item);
         setSelectedVariant(item);
+
+        if (item.agrupador) {
+            setIsLoadingVariants(true);
+            try {
+                // Usamos la ruta de la API que acabamos de verificar
+                const response = await fetch(
+                    `/api/admin/items/variants/${item.agrupador}`,
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    // Fusionamos el maestro con sus variantes
+                    setVariantsForSelectedGroup([item, ...data]);
+                } else {
+                    setVariantsForSelectedGroup([item]);
+                }
+            } catch (error) {
+                console.error("Error fetching variants:", error);
+                setVariantsForSelectedGroup([item]);
+            } finally {
+                setIsLoadingVariants(false);
+            }
+        } else {
+            setVariantsForSelectedGroup([item]);
+        }
     };
 
     // Manejar selección de atributo
@@ -287,7 +358,10 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
             customMessage += `\n📐 *Especificaciones seleccionadas:*\n`;
             Object.entries(selectedAttributes).forEach(
                 ([attrName, valueData]) => {
-                    const attr = group?.allAttributes[attrName]?.attribute;
+                    const attrNode = group?.allAttributes?.find(
+                        (a) => a.name === attrName,
+                    );
+                    const attr = attrNode?.attribute;
                     const unit = attr?.unit || "";
                     customMessage += `  • ${attrName}: ${valueData.value}${unit}\n`;
                 },
@@ -513,7 +587,6 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                     {/* Imagen principal */}
                                     <div className="flex-1 min-h-full relative flex items-center justify-center w-full ">
                                         <Swiper
-                                            key={`main-swiper-${currentProduct?.id || selectedImage.id}`}
                                             modules={[Navigation]}
                                             navigation={{
                                                 prevEl: ".custom-main-prev",
@@ -539,20 +612,45 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                                         key={index}
                                                         className="w-full"
                                                     >
-                                                        <div className="w-full h-full flex items-center justify-center">
-                                                            <img
-                                                                src={
-                                                                    img.url
-                                                                        ? `/storage/images/item/${img.url}`
-                                                                        : "/api/cover/thumbnail/null"
-                                                                }
-                                                                alt={img.alt}
-                                                                className="w-full h-full object-cover drop-shadow-lg"
-                                                                onError={(e) =>
-                                                                    (e.target.src =
-                                                                        "/api/cover/thumbnail/null")
-                                                                }
-                                                            />
+                                                        <div className="w-full h-full flex items-center justify-center bg-white relative overflow-hidden">
+                                                            <AnimatePresence
+                                                                initial={false}
+                                                            >
+                                                                <motion.img
+                                                                    key={
+                                                                        img.url ||
+                                                                        index
+                                                                    }
+                                                                    src={
+                                                                        img.url
+                                                                            ? `/storage/images/item/${img.url}`
+                                                                            : "/api/cover/thumbnail/null"
+                                                                    }
+                                                                    alt={
+                                                                        img.alt
+                                                                    }
+                                                                    initial={{
+                                                                        opacity: 0,
+                                                                    }}
+                                                                    animate={{
+                                                                        opacity: 1,
+                                                                    }}
+                                                                    exit={{
+                                                                        opacity: 0,
+                                                                    }}
+                                                                    transition={{
+                                                                        duration: 0.4,
+                                                                        ease: "easeInOut",
+                                                                    }}
+                                                                    className="absolute inset-0 w-full h-full object-cover"
+                                                                    onError={(
+                                                                        e,
+                                                                    ) =>
+                                                                        (e.target.src =
+                                                                            "/api/cover/thumbnail/null")
+                                                                    }
+                                                                />
+                                                            </AnimatePresence>
                                                         </div>
                                                     </SwiperSlide>
                                                 ),
@@ -698,287 +796,399 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                                             </div>
                                         )}
                                         {/* ============ SELECTOR DE MEDIDAS ============ */}
-                                        {(() => {
-                                            const group =
-                                                getProductGroup(selectedImage);
-                                            const hasGroupAttributes =
-                                                group &&
-                                                Object.keys(group.allAttributes)
-                                                    .length > 0;
+                                        {isLoadingVariants ? (
+                                            <div className="flex flex-col items-center justify-center py-12 gap-4">
+                                                <div className="flex gap-2">
+                                                    <div
+                                                        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+                                                        style={{
+                                                            animationDelay:
+                                                                "0s",
+                                                        }}
+                                                    ></div>
+                                                    <div
+                                                        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+                                                        style={{
+                                                            animationDelay:
+                                                                "0.1s",
+                                                        }}
+                                                    ></div>
+                                                    <div
+                                                        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+                                                        style={{
+                                                            animationDelay:
+                                                                "0.2s",
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                                <span className="text-sm font-medium text-neutral-light tracking-wide uppercase">
+                                                    Cargando opciones
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            (() => {
+                                                const group =
+                                                    getProductGroup(
+                                                        selectedImage,
+                                                    );
+                                                const hasGroupAttributes =
+                                                    group &&
+                                                    Object.keys(
+                                                        group.allAttributes,
+                                                    ).length > 0;
 
-                                            if (!hasGroupAttributes)
-                                                return null;
+                                                if (!hasGroupAttributes)
+                                                    return null;
 
-                                            // Función para verificar si un valor de atributo está disponible
-                                            // basándose en las selecciones actuales de otros atributos
-                                            const isValueAvailable = (
-                                                attrName,
-                                                valueToCheck,
-                                            ) => {
-                                                // Buscar variantes que tengan este valor Y todos los demás atributos seleccionados
-                                                return group.variants.some(
-                                                    (variant) => {
-                                                        // Verificar que esta variante tiene el valor que estamos evaluando
-                                                        const hasThisValue =
-                                                            variant.attributes?.some(
-                                                                (attr) => {
-                                                                    const name =
-                                                                        attr.name ||
-                                                                        attr.slug;
-                                                                    const value =
-                                                                        attr
-                                                                            .pivot
-                                                                            ?.value ||
-                                                                        attr.value;
-                                                                    return (
-                                                                        name ===
-                                                                            attrName &&
-                                                                        value ===
-                                                                            valueToCheck
+                                                // Función para verificar si un valor de atributo está disponible
+                                                // basándose en las selecciones actuales de otros atributos
+                                                const isValueAvailable = (
+                                                    attrName,
+                                                    valueToCheck,
+                                                ) => {
+                                                    // Buscar variantes que tengan este valor Y todos los demás atributos seleccionados
+                                                    return group.variants.some(
+                                                        (variant) => {
+                                                            // Verificar que esta variante tiene el valor que estamos evaluando
+                                                            const hasThisValue =
+                                                                variant.attributes?.some(
+                                                                    (attr) => {
+                                                                        const name =
+                                                                            attr.name ||
+                                                                            attr.slug;
+                                                                        const value =
+                                                                            attr
+                                                                                .pivot
+                                                                                ?.value ||
+                                                                            attr.value;
+                                                                        return (
+                                                                            name ===
+                                                                                attrName &&
+                                                                            value ===
+                                                                                valueToCheck
+                                                                        );
+                                                                    },
+                                                                );
+
+                                                            if (!hasThisValue)
+                                                                return false;
+
+                                                            // Verificar que la variante también tiene todos los otros atributos seleccionados
+                                                            for (const [
+                                                                selectedAttrName,
+                                                                selectedValueData,
+                                                            ] of Object.entries(
+                                                                selectedAttributes,
+                                                            )) {
+                                                                if (
+                                                                    selectedAttrName ===
+                                                                    attrName
+                                                                )
+                                                                    continue; // Skip el atributo actual
+
+                                                                const hasSelectedAttr =
+                                                                    variant.attributes?.some(
+                                                                        (
+                                                                            attr,
+                                                                        ) => {
+                                                                            const name =
+                                                                                attr.name ||
+                                                                                attr.slug;
+                                                                            const value =
+                                                                                attr
+                                                                                    .pivot
+                                                                                    ?.value ||
+                                                                                attr.value;
+                                                                            return (
+                                                                                name ===
+                                                                                    selectedAttrName &&
+                                                                                value ===
+                                                                                    selectedValueData.value
+                                                                            );
+                                                                        },
                                                                     );
+
+                                                                if (
+                                                                    !hasSelectedAttr
+                                                                )
+                                                                    return false;
+                                                            }
+
+                                                            return true;
+                                                        },
+                                                    );
+                                                };
+
+                                                // Función inteligente para encontrar la mejor variante posible
+                                                const findBestMatchingVariant =
+                                                    (attrName, valueData) => {
+                                                        // 1. Filtrar variantes que tengan el atributo clickeado con el valor correcto
+                                                        const candidates =
+                                                            group.variants.filter(
+                                                                (v) =>
+                                                                    v.attributes?.some(
+                                                                        (a) =>
+                                                                            (a.name ||
+                                                                                a.slug) ===
+                                                                                attrName &&
+                                                                            (a
+                                                                                .pivot
+                                                                                ?.value ||
+                                                                                a.value) ===
+                                                                                valueData.value,
+                                                                    ),
+                                                            );
+
+                                                        if (
+                                                            candidates.length ===
+                                                            0
+                                                        )
+                                                            return null;
+
+                                                        // 2. Calcular puntuación de coincidencia (cuántos otros atributos coinciden)
+                                                        const scoredCandidates =
+                                                            candidates.map(
+                                                                (v) => {
+                                                                    let score = 0;
+                                                                    Object.entries(
+                                                                        selectedAttributes,
+                                                                    ).forEach(
+                                                                        ([
+                                                                            selName,
+                                                                            selData,
+                                                                        ]) => {
+                                                                            if (
+                                                                                selName ===
+                                                                                attrName
+                                                                            )
+                                                                                return; // Ya sabemos que el clickeado coincide
+
+                                                                            const matches =
+                                                                                v.attributes?.some(
+                                                                                    (
+                                                                                        a,
+                                                                                    ) =>
+                                                                                        (a.name ||
+                                                                                            a.slug) ===
+                                                                                            selName &&
+                                                                                        (a
+                                                                                            .pivot
+                                                                                            ?.value ||
+                                                                                            a.value) ===
+                                                                                            selData.value,
+                                                                                );
+                                                                            if (
+                                                                                matches
+                                                                            )
+                                                                                score++;
+                                                                        },
+                                                                    );
+                                                                    return {
+                                                                        variant:
+                                                                            v,
+                                                                        score,
+                                                                    };
                                                                 },
                                                             );
 
-                                                        if (!hasThisValue)
-                                                            return false;
+                                                        // 3. Ordenar por puntuación (descendente) y devolver el superior
+                                                        scoredCandidates.sort(
+                                                            (a, b) =>
+                                                                b.score -
+                                                                a.score,
+                                                        );
+                                                        return scoredCandidates[0]
+                                                            .variant;
+                                                    };
 
-                                                        // Verificar que la variante también tiene todos los otros atributos seleccionados
-                                                        for (const [
-                                                            selectedAttrName,
-                                                            selectedValueData,
-                                                        ] of Object.entries(
-                                                            selectedAttributes,
-                                                        )) {
-                                                            if (
-                                                                selectedAttrName ===
-                                                                attrName
-                                                            )
-                                                                continue; // Skip el atributo actual
-
-                                                            const hasSelectedAttr =
-                                                                variant.attributes?.some(
-                                                                    (attr) => {
-                                                                        const name =
-                                                                            attr.name ||
-                                                                            attr.slug;
-                                                                        const value =
-                                                                            attr
-                                                                                .pivot
-                                                                                ?.value ||
-                                                                            attr.value;
-                                                                        return (
-                                                                            name ===
-                                                                                selectedAttrName &&
-                                                                            value ===
-                                                                                selectedValueData.value
-                                                                        );
-                                                                    },
-                                                                );
-
-                                                            if (
-                                                                !hasSelectedAttr
-                                                            )
-                                                                return false;
-                                                        }
-
-                                                        return true;
-                                                    },
-                                                );
-                                            };
-
-                                            // Función para encontrar la variante que coincide con un conjunto de atributos
-                                            const findMatchingVariant = (
-                                                attrName,
-                                                valueData,
-                                            ) => {
-                                                const newSelections = {
-                                                    ...selectedAttributes,
-                                                    [attrName]: valueData,
-                                                };
-
-                                                return group.variants.find(
-                                                    (variant) => {
-                                                        // La variante debe tener TODOS los atributos seleccionados
-                                                        for (const [
-                                                            selAttrName,
-                                                            selValueData,
-                                                        ] of Object.entries(
-                                                            newSelections,
-                                                        )) {
-                                                            const hasAttr =
-                                                                variant.attributes?.some(
-                                                                    (attr) => {
-                                                                        const name =
-                                                                            attr.name ||
-                                                                            attr.slug;
-                                                                        const value =
-                                                                            attr
-                                                                                .pivot
-                                                                                ?.value ||
-                                                                            attr.value;
-                                                                        return (
-                                                                            name ===
-                                                                                selAttrName &&
-                                                                            value ===
-                                                                                selValueData.value
-                                                                        );
-                                                                    },
-                                                                );
-                                                            if (!hasAttr)
-                                                                return false;
-                                                        }
-                                                        return true;
-                                                    },
-                                                );
-                                            };
-
-                                            return (
-                                                <div className="mb-10">
-                                                    {Object.entries(
-                                                        group.allAttributes,
-                                                    ).map(
-                                                        ([
-                                                            attrName,
-                                                            attrData,
-                                                        ]) => {
-                                                            const attr =
-                                                                attrData.attribute;
-                                                            const values =
-                                                                attrData.values;
-                                                            const selectedValue =
-                                                                selectedAttributes[
-                                                                    attrName
-                                                                ];
-
-                                                            return (
-                                                                <div
-                                                                    key={
+                                                return (
+                                                    <div className="mb-10">
+                                                        {group.allAttributes.map(
+                                                            (attrData) => {
+                                                                const attrName =
+                                                                    attrData.name;
+                                                                const attr =
+                                                                    attrData.attribute;
+                                                                const values =
+                                                                    attrData.values;
+                                                                const selectedValue =
+                                                                    selectedAttributes[
                                                                         attrName
-                                                                    }
-                                                                    className="mb-6 last:mb-0"
-                                                                >
-                                                                    <h4 className="text-base font-semibold text-neutral-dark mb-4 flex items-center gap-2">
-                                                                        {
+                                                                    ];
+
+                                                                return (
+                                                                    <div
+                                                                        key={
                                                                             attrName
                                                                         }
-                                                                        {attr.unit && (
-                                                                            <span className="text-neutral-light font-normal">
-                                                                                (
+                                                                        className="mb-6 last:mb-0"
+                                                                    >
+                                                                        <div className="flex items-center justify-between mb-4">
+                                                                            <h4 className="text-lg font-bold text-neutral-dark flex items-center gap-2 m-0">
                                                                                 {
-                                                                                    attr.unit
+                                                                                    attrName
                                                                                 }
-
-                                                                                )
-                                                                            </span>
-                                                                        )}
-                                                                    </h4>
-                                                                    <div className="flex flex-wrap gap-3">
-                                                                        {values.map(
-                                                                            (
-                                                                                valueData,
-                                                                                idx,
-                                                                            ) => {
-                                                                                const isSelected =
-                                                                                    selectedValue?.value ===
-                                                                                    valueData.value;
-                                                                                const isAvailable =
-                                                                                    isValueAvailable(
-                                                                                        attrName,
-                                                                                        valueData.value,
-                                                                                    );
-
-                                                                                return (
-                                                                                    <button
-                                                                                        key={
-                                                                                            idx
-                                                                                        }
-                                                                                        onClick={() => {
-                                                                                            if (
-                                                                                                !isAvailable
-                                                                                            )
-                                                                                                return;
-                                                                                            // Buscar la variante que coincide con la nueva selección
-                                                                                            const matchingVariant =
-                                                                                                findMatchingVariant(
-                                                                                                    attrName,
-                                                                                                    valueData,
-                                                                                                );
-                                                                                            if (
-                                                                                                matchingVariant
-                                                                                            ) {
-                                                                                                setSelectedVariant(
-                                                                                                    matchingVariant,
-                                                                                                );
-                                                                                                // Actualizar selectedAttributes con los valores de la variante encontrada
-                                                                                                const newAttributes =
-                                                                                                    {};
-                                                                                                matchingVariant.attributes?.forEach(
-                                                                                                    (
-                                                                                                        attr,
-                                                                                                    ) => {
-                                                                                                        const name =
-                                                                                                            attr.name ||
-                                                                                                            attr.slug;
-                                                                                                        const value =
-                                                                                                            attr
-                                                                                                                .pivot
-                                                                                                                ?.value ||
-                                                                                                            attr.value;
-                                                                                                        if (
-                                                                                                            value
-                                                                                                        ) {
-                                                                                                            newAttributes[
-                                                                                                                name
-                                                                                                            ] =
-                                                                                                                {
-                                                                                                                    value,
-                                                                                                                    itemId: matchingVariant.id,
-                                                                                                                    item: matchingVariant,
-                                                                                                                };
-                                                                                                        }
-                                                                                                    },
-                                                                                                );
-                                                                                                setSelectedAttributes(
-                                                                                                    newAttributes,
-                                                                                                );
-                                                                                            } else {
-                                                                                                handleAttributeSelect(
-                                                                                                    attrName,
-                                                                                                    valueData,
-                                                                                                );
-                                                                                            }
-                                                                                        }}
-                                                                                        disabled={
-                                                                                            !isAvailable
-                                                                                        }
-                                                                                        className={`min-w-[70px] px-5 py-3 text-lg font-medium transition-all duration-200 rounded-xl border-2 ${
-                                                                                            isSelected
-                                                                                                ? "border-primary text-primary shadow-sm"
-                                                                                                : isAvailable
-                                                                                                  ? "border-neutral-200 text-neutral-dark hover:border-neutral-300 hover:bg-neutral-50"
-                                                                                                  : "border-neutral-100 text-neutral-300 bg-neutral-50 cursor-not-allowed line-through"
-                                                                                        }`}
-                                                                                        title={
-                                                                                            !isAvailable
-                                                                                                ? "No disponible con la selección actual"
-                                                                                                : ""
-                                                                                        }
-                                                                                    >
+                                                                                {attr.unit && (
+                                                                                    <span className="text-neutral-light font-normal text-sm">
+                                                                                        (
                                                                                         {
-                                                                                            valueData.value
+                                                                                            attr.unit
                                                                                         }
-                                                                                    </button>
-                                                                                );
-                                                                            },
-                                                                        )}
+
+                                                                                        )
+                                                                                    </span>
+                                                                                )}
+                                                                                {attr.is_parent && (
+                                                                                    <span className="hidden px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[10px] uppercase font-bold tracking-wider border border-purple-200">
+                                                                                        Principal
+                                                                                    </span>
+                                                                                )}
+                                                                            </h4>
+                                                                            {selectedValue && (
+                                                                                <span className="hidden text-sm font-medium text-primary">
+                                                                                    {
+                                                                                        selectedValue.value
+                                                                                    }
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex flex-wrap gap-3">
+                                                                            {values.map(
+                                                                                (
+                                                                                    valueData,
+                                                                                    idx,
+                                                                                ) => {
+                                                                                    const isSelected =
+                                                                                        selectedValue?.value ===
+                                                                                        valueData.value;
+                                                                                    // Los atributos padres siempre están disponibles para selección para evitar bloqueos
+                                                                                    const isAvailable =
+                                                                                        attr.is_parent ||
+                                                                                        isValueAvailable(
+                                                                                            attrName,
+                                                                                            valueData.value,
+                                                                                        );
+
+                                                                                    return (
+                                                                                        <button
+                                                                                            key={
+                                                                                                idx
+                                                                                            }
+                                                                                            onClick={() => {
+                                                                                                if (
+                                                                                                    !isAvailable
+                                                                                                )
+                                                                                                    return;
+
+                                                                                                // Intentar encontrar la variante exacta
+                                                                                                let matchingVariant =
+                                                                                                    findBestMatchingVariant(
+                                                                                                        attrName,
+                                                                                                        valueData,
+                                                                                                    );
+
+                                                                                                if (
+                                                                                                    !matchingVariant &&
+                                                                                                    attr.is_parent
+                                                                                                ) {
+                                                                                                    matchingVariant =
+                                                                                                        group.variants.find(
+                                                                                                            (
+                                                                                                                v,
+                                                                                                            ) =>
+                                                                                                                v.attributes?.some(
+                                                                                                                    (
+                                                                                                                        a,
+                                                                                                                    ) =>
+                                                                                                                        (a.name ||
+                                                                                                                            a.slug) ===
+                                                                                                                            attrName &&
+                                                                                                                        (a
+                                                                                                                            .pivot
+                                                                                                                            ?.value ||
+                                                                                                                            a.value) ===
+                                                                                                                            valueData.value,
+                                                                                                                ),
+                                                                                                        );
+                                                                                                }
+
+                                                                                                if (
+                                                                                                    matchingVariant
+                                                                                                ) {
+                                                                                                    setSelectedVariant(
+                                                                                                        matchingVariant,
+                                                                                                    );
+                                                                                                    // Actualizar selectedAttributes con los valores de la variante encontrada
+                                                                                                    const newAttributes =
+                                                                                                        {};
+                                                                                                    matchingVariant.attributes?.forEach(
+                                                                                                        (
+                                                                                                            attr,
+                                                                                                        ) => {
+                                                                                                            const name =
+                                                                                                                attr.name ||
+                                                                                                                attr.slug;
+                                                                                                            const value =
+                                                                                                                attr
+                                                                                                                    .pivot
+                                                                                                                    ?.value ||
+                                                                                                                attr.value;
+                                                                                                            if (
+                                                                                                                value
+                                                                                                            ) {
+                                                                                                                newAttributes[
+                                                                                                                    name
+                                                                                                                ] =
+                                                                                                                    {
+                                                                                                                        value,
+                                                                                                                        itemId: matchingVariant.id,
+                                                                                                                        item: matchingVariant,
+                                                                                                                    };
+                                                                                                            }
+                                                                                                        },
+                                                                                                    );
+                                                                                                    setSelectedAttributes(
+                                                                                                        newAttributes,
+                                                                                                    );
+                                                                                                } else {
+                                                                                                    handleAttributeSelect(
+                                                                                                        attrName,
+                                                                                                        valueData,
+                                                                                                    );
+                                                                                                }
+                                                                                            }}
+                                                                                            disabled={
+                                                                                                !isAvailable
+                                                                                            }
+                                                                                            className={`min-w-[70px] px-5 py-3 text-lg font-medium transition-all duration-200 rounded-xl border-2 ${
+                                                                                                isSelected
+                                                                                                    ? "border-primary text-primary shadow-sm"
+                                                                                                    : isAvailable
+                                                                                                      ? "border-neutral-200 text-neutral-dark hover:border-neutral-300 hover:bg-neutral-50"
+                                                                                                      : "border-neutral-100 text-neutral-300 bg-neutral-50 cursor-not-allowed line-through"
+                                                                                            }`}
+                                                                                            title={
+                                                                                                !isAvailable
+                                                                                                    ? "No disponible con la selección actual"
+                                                                                                    : ""
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                valueData.value
+                                                                                            }
+                                                                                        </button>
+                                                                                    );
+                                                                                },
+                                                                            )}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            );
-                                                        },
-                                                    )}
-                                                </div>
-                                            );
-                                        })()}
+                                                                );
+                                                            },
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()
+                                        )}
 
                                         {/* ============ CARACTERÍSTICAS Y APLICACIONES EN GRID ============ */}
                                         <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mb-8">

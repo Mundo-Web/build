@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -11,6 +11,15 @@ const BenefitSimple = ({ data, items }) => {
     const [activeIndex, setActiveIndex] = React.useState(0);
     const [swiperInstance, setSwiperInstance] = React.useState(null);
     const [paginationEl, setPaginationEl] = React.useState(null);
+
+    const sectionRef = React.useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start end", "end start"],
+    });
+
+    const blob1Y = useTransform(scrollYProgress, [0, 1], [0, 150]);
+    const blob2Y = useTransform(scrollYProgress, [0, 1], [0, -150]);
 
     React.useEffect(() => {
         if (swiperInstance && paginationEl) {
@@ -28,96 +37,102 @@ const BenefitSimple = ({ data, items }) => {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.2,
+                staggerChildren: 0.1,
+                delayChildren: 0.1,
             },
         },
     };
 
     const titleVariants = {
-        hidden: { opacity: 0, y: 30 },
+        hidden: { opacity: 0, y: 50, filter: "blur(10px)" },
         visible: {
             opacity: 1,
             y: 0,
+            filter: "blur(0px)",
             transition: {
-                duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94],
+                duration: 1,
+                ease: [0.22, 1, 0.36, 1],
             },
         },
     };
 
     const cardVariants = {
-        hidden: { opacity: 0, y: 50, scale: 0.95 },
+        hidden: { opacity: 0, scale: 0.9, y: 40 },
         visible: {
             opacity: 1,
-            y: 0,
             scale: 1,
+            y: 0,
             transition: {
-                duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94],
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
             },
         },
     };
 
-    const iconVariants = {
-        hidden: { scale: 0, rotate: -180 },
-        visible: {
-            scale: 1,
-            rotate: 0,
+    const floatingVariant = {
+        animate: {
+            y: [0, -20, 0],
+            x: [0, 10, 0],
             transition: {
-                type: "spring",
-                stiffness: 200,
-                damping: 15,
-                delay: 0.2,
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
             },
         },
     };
 
     return (
         <section
+            ref={sectionRef}
             id={data?.element_id || null}
-            className="py-20 sm:py-24 bg-white relative overflow-hidden"
+            className="py-24 sm:py-32 bg-white relative overflow-hidden"
         >
+            {/* Background blobs con animación mejorada */}
             <motion.div
-                className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -ml-48"
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.2 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                viewport={{ once: true }}
+                className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]"
+                style={{ y: blob1Y }}
             />
             <motion.div
-                className="absolute top-1/2 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 -translate-y-1/2 -mr-48"
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.2 }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                viewport={{ once: true }}
+                className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"
+                style={{ y: blob2Y }}
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <motion.div
-                    className="text-center mb-16"
+                    className="text-center mb-20"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
                     variants={containerVariants}
                 >
-                    <motion.h2
-                        className="text-5xl  md:text-6xl lg:text-7xl font-bold text-primary font-title mb-4"
+                    <motion.div
+                        className="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-semibold tracking-wider uppercase"
                         variants={titleVariants}
                     >
-                        {data?.title || "Beneficios que Marcan la Diferencia"}
+                        {data?.tagline || "Nuestros Diferenciales"}
+                    </motion.div>
+                    <motion.h2
+                        className="text-5xl md:text-6xl lg:text-7xl font-bold text-neutral-900 font-title mb-8 leading-[1.1] tracking-tight"
+                        variants={titleVariants}
+                    >
+                        <TextWithHighlight
+                            text={
+                                data?.title ||
+                                "Beneficios que Marcan la Diferencia"
+                            }
+                        />
                     </motion.h2>
                     <motion.p
-                        className="text-lg md:text-xl lg:text-2xl  text-neutral-dark max-w-3xl mx-auto"
+                        className="text-lg md:text-xl lg:text-2xl text-neutral-600 max-w-3xl mx-auto leading-relaxed"
                         variants={titleVariants}
                     >
                         {data?.subtitle ||
-                            "En Panel Pro, combinamos décadas de experiencia en el sector maderero con un servicio ágil y personalizado. Nos especializamos en brindar soluciones eficientes para que carpinteros y fabricantes logren resultados de alta gama con la mejor relación costo-beneficio"}
+                            "En Panel Pro, combinamos décadas de experiencia en el sector maderero con un servicio ágil y personalizado."}
                     </motion.p>
                 </motion.div>
 
                 <motion.div
-                    className="overflow-hidden relative"
+                    className="relative"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
@@ -125,11 +140,10 @@ const BenefitSimple = ({ data, items }) => {
                 >
                     <Swiper
                         modules={[Autoplay, Pagination]}
-                        spaceBetween={20}
+                        spaceBetween={30}
                         slidesPerView={1.2}
-                        slidesPerGroup={1}
                         autoplay={{
-                            delay: 4000,
+                            delay: 5000,
                             disableOnInteraction: false,
                         }}
                         loop={items?.length > 1}
@@ -137,307 +151,122 @@ const BenefitSimple = ({ data, items }) => {
                             el: paginationEl,
                             clickable: true,
                             renderBullet: function (index, className) {
-                                return `<span class="${className} !rounded-full !opacity-100 !w-3 !h-3 !bg-neutral-300 hover:!bg-neutral-400 [&.swiper-pagination-bullet-active]:!w-12 [&.swiper-pagination-bullet-active]:!bg-primary transition-all duration-300 cursor-pointer block"></span>`;
+                                return `<span class="${className} !rounded-full !opacity-40 !w-2 !h-2 !bg-primary transition-all duration-500 cursor-pointer block [&.swiper-pagination-bullet-active]:!w-10 [&.swiper-pagination-bullet-active]:!opacity-100"></span>`;
                             },
                         }}
                         breakpoints={{
-                            640: {
-                                slidesPerView: 2,
-                                slidesPerGroup: 2,
-                                spaceBetween: 20,
-                            },
-                            768: {
-                                slidesPerView: 2,
-                                slidesPerGroup: 2,
-                                spaceBetween: 24,
-                                loop: items?.length > 2,
-                            },
-                            1024: {
-                                slidesPerView: 2.5,
-                                slidesPerGroup: 2,
-                                spaceBetween: 32,
-                                loop: items?.length > 2,
-                            },
-                            1280: {
-                                slidesPerView: 3,
-                                slidesPerGroup: 3,
-                                spaceBetween: 40,
-                                loop: items?.length > 3,
-                            },
+                            640: { slidesPerView: 2 },
+                            1024: { slidesPerView: 2.5 },
+                            1280: { slidesPerView: 3 },
                         }}
                         onSwiper={setSwiperInstance}
                         onSlideChange={(swiper) =>
                             setActiveIndex(swiper.realIndex)
                         }
-                        className="!overflow-visible !pb-4"
+                        className="!pb-12"
                     >
-                        {items?.map((benefit, index) => {
-                            // Estado global de flip
-                            if (!BenefitSimple.flippedState) {
-                                BenefitSimple.flippedState = Array(
-                                    items.length,
-                                ).fill(false);
-                            }
-                            const [ignored, forceUpdate] = React.useReducer(
-                                (x) => x + 1,
-                                0,
-                            );
-                            const isTouchDevice =
-                                typeof window !== "undefined" &&
-                                ("ontouchstart" in window ||
-                                    navigator.maxTouchPoints > 0);
-                            const handleClick = (idx) => {
-                                BenefitSimple.flippedState[idx] =
-                                    !BenefitSimple.flippedState[idx];
-                                forceUpdate();
-                            };
-                            const flipped = BenefitSimple.flippedState[index];
-
-                            return (
-                                <SwiperSlide
-                                    key={benefit.id || index}
-                                    className="h-auto"
+                        {items?.map((benefit, index) => (
+                            <SwiperSlide
+                                key={benefit.id || index}
+                                className="h-auto "
+                            >
+                                <motion.div
+                                    variants={cardVariants}
+                                    className="h-full group pt-8"
                                 >
-                                    <div
-                                        className="h-full flex items-stretch cursor-pointer"
-                                        onClick={
-                                            isTouchDevice
-                                                ? () => handleClick(index)
-                                                : undefined
-                                        }
-                                        onKeyDown={
-                                            isTouchDevice
-                                                ? (e) => {
-                                                      if (
-                                                          e.key === "Enter" ||
-                                                          e.key === " "
-                                                      )
-                                                          handleClick(index);
-                                                  }
-                                                : undefined
-                                        }
-                                        tabIndex={isTouchDevice ? 0 : -1}
-                                        style={{ outline: "none" }}
-                                    >
+                                    <div className="relative h-full min-h-[400px] p-10 bg-white rounded-[2.5rem] !overflow-hidden border border-neutral-100 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_-30px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-4">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 transition-transform duration-500 group-hover:scale-150" />
+
                                         <div
-                                            className="group relative h-full min-h-[320px] w-full flex flex-col rounded-2xl"
-                                            style={{ perspective: 1200 }}
+                                            className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8 shadow-inner transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
+                                            style={{
+                                                backgroundColor:
+                                                    benefit.bg_color ===
+                                                    "transparent"
+                                                        ? "rgba(var(--primary-rgb), 0.1)"
+                                                        : benefit.bg_color ||
+                                                          "rgba(var(--primary-rgb), 0.1)",
+                                            }}
                                         >
-                                            {isTouchDevice ? (
-                                                <motion.div
-                                                    className="absolute inset-0 w-full h-full"
-                                                    style={{
-                                                        transformStyle:
-                                                            "preserve-3d",
-                                                    }}
-                                                    animate={{
-                                                        rotateY: flipped
-                                                            ? 180
-                                                            : 0,
-                                                    }}
-                                                    transition={{
-                                                        type: "spring",
-                                                        stiffness: 60,
-                                                        damping: 12,
-                                                        mass: 1.2,
-                                                    }}
-                                                >
-                                                    {/* Cara frontal */}
-                                                    <div
-                                                        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
-                                                        style={{
-                                                            backfaceVisibility:
-                                                                "hidden",
-                                                            WebkitBackfaceVisibility:
-                                                                "hidden",
-                                                            transform:
-                                                                "rotateY(0deg)",
-                                                            zIndex: 2,
-                                                        }}
-                                                    >
-                                                        {benefit.image && (
-                                                            <div className="relative flex-shrink-0">
-                                                                <div
-                                                                    className="relative backdrop-blur-sm p-5 rounded-full transition-all duration-700"
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            benefit.bg_color ===
-                                                                            "transparent"
-                                                                                ? "var(--bg-primary)"
-                                                                                : benefit.bg_color ||
-                                                                                  "var(--bg-primary)",
-                                                                    }}
-                                                                >
-                                                                    <img
-                                                                        src={`/storage/images/benefit/${benefit.image}`}
-                                                                        alt={
-                                                                            benefit.name
-                                                                        }
-                                                                        className="w-10 h-10 object-contain opacity-100 transition-all duration-700"
-                                                                        onError={(
-                                                                            e,
-                                                                        ) =>
-                                                                            (e.target.src =
-                                                                                "/api/cover/thumbnail/null")
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                        <div className="text-4xl md:text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
-                                                            {benefit.name}
-                                                        </div>
-                                                    </div>
-                                                    {/* Cara reverso */}
-                                                    <div
-                                                        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
-                                                        style={{
-                                                            backfaceVisibility:
-                                                                "hidden",
-                                                            WebkitBackfaceVisibility:
-                                                                "hidden",
-                                                            transform:
-                                                                "rotateY(180deg)",
-                                                            zIndex: 3,
-                                                        }}
-                                                    >
-                                                        <div className="flex flex-col items-center justify-center h-full w-full">
-                                                            <div className="text-lg md:text-xl lg:text-2xl font-light text-neutral-dark leading-relaxed whitespace-pre-line">
-                                                                {
-                                                                    benefit.description
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            ) : (
-                                                <div
-                                                    className="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:[transform:rotateY(180deg)]"
-                                                    style={{
-                                                        transformStyle:
-                                                            "preserve-3d",
-                                                    }}
-                                                >
-                                                    {/* Cara frontal */}
-                                                    <div
-                                                        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg hover:shadow-xl border border-neutral-200/50 hover:border-primary/30 transition-all duration-300 rounded-2xl"
-                                                        style={{
-                                                            backfaceVisibility:
-                                                                "hidden",
-                                                            WebkitBackfaceVisibility:
-                                                                "hidden",
-                                                            transform:
-                                                                "rotateY(0deg)",
-                                                            zIndex: 2,
-                                                        }}
-                                                    >
-                                                        {benefit.image && (
-                                                            <div className="relative flex-shrink-0">
-                                                                <div
-                                                                    className="relative backdrop-blur-sm p-5 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            benefit.bg_color ===
-                                                                            "transparent"
-                                                                                ? "var(--bg-primary)"
-                                                                                : benefit.bg_color ||
-                                                                                  "var(--bg-primary)",
-                                                                    }}
-                                                                >
-                                                                    <img
-                                                                        src={`/storage/images/benefit/${benefit.image}`}
-                                                                        alt={
-                                                                            benefit.name
-                                                                        }
-                                                                        className="w-10 h-10 object-contain opacity-100 transition-all duration-300"
-                                                                        onError={(
-                                                                            e,
-                                                                        ) =>
-                                                                            (e.target.src =
-                                                                                "/api/cover/thumbnail/null")
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                        <div className="text-5xl font-light text-primary group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                                                            {benefit.name}
-                                                        </div>
-                                                    </div>
-                                                    {/* Cara reverso */}
-                                                    <div
-                                                        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-white via-neutral-50/50 to-white p-8 shadow-lg border border-neutral-200/50 rounded-2xl"
-                                                        style={{
-                                                            backfaceVisibility:
-                                                                "hidden",
-                                                            WebkitBackfaceVisibility:
-                                                                "hidden",
-                                                            transform:
-                                                                "rotateY(180deg)",
-                                                            zIndex: 3,
-                                                        }}
-                                                    >
-                                                        <div className="flex flex-col items-center justify-center h-full w-full">
-                                                            <div className="text-lg md:text-xl lg:text-2xl font-light text-neutral-dark leading-relaxed whitespace-pre-line">
-                                                                {
-                                                                    benefit.description
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                            <img
+                                                src={`/storage/images/benefit/${benefit.image}`}
+                                                alt={benefit.name}
+                                                className="w-12 h-12 object-contain"
+                                                onError={(e) =>
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
+                                                }
+                                            />
+                                        </div>
+
+                                        <h3 className="text-3xl font-bold text-neutral-900 mb-6 group-hover:text-primary transition-colors duration-300">
+                                            {benefit.name}
+                                        </h3>
+
+                                        <p className="text-lg text-neutral-500 leading-relaxed line-clamp-6">
+                                            {benefit.description}
+                                        </p>
+
+                                        <div className="mt-8 flex items-center text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <span>Saber más</span>
+                                            <svg
+                                                className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform duration-300"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                                />
+                                            </svg>
                                         </div>
                                     </div>
-                                </SwiperSlide>
-                            );
-                        })}
+                                </motion.div>
+                            </SwiperSlide>
+                        ))}
                     </Swiper>
 
-                    {/* Indicadores custom */}
                     <div
                         ref={setPaginationEl}
-                        className="flex justify-center mt-6 space-x-3"
+                        className="flex justify-center mt-8 space-x-2 h-2"
                     />
                 </motion.div>
 
                 {data?.footer_text && (
                     <motion.div
-                        className="mt-16 text-center"
+                        className="mt-24"
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true, amount: 0.3 }}
-                        variants={containerVariants}
+                        viewport={{ once: true }}
+                        variants={cardVariants}
                     >
-                        <motion.div
-                            className="relative inline-block rounded-2xl overflow-hidden shadow-2xl"
-                            variants={cardVariants}
-                        >
+                        <div className="relative rounded-[3rem] overflow-hidden bg-neutral-900 p-12 lg:p-20 text-center group">
                             {data?.footer_image && (
-                                <div className="absolute inset-0">
+                                <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
                                     <img
                                         src={`/storage/images/system/${data.footer_image}`}
-                                        alt="Professional work"
-                                        className="w-full h-full object-cover"
-                                        onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
-                                        }
+                                        alt="Background"
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[20s]"
                                     />
-                                    <div className="absolute inset-0 bg-primary/95"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40" />
                                 </div>
                             )}
-                            <div className="relative p-8 sm:p-12 text-white">
-                                <p className="text-2xl sm:text-3xl font-bold mb-2">
+
+                            <div className="relative z-10 max-w-4xl mx-auto">
+                                <h4 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
                                     {data.footer_text}
-                                </p>
+                                </h4>
                                 {data?.footer_subtitle && (
-                                    <p className="text-lg sm:text-xl opacity-90">
+                                    <p className="text-xl sm:text-2xl text-white/70 font-light max-w-2xl mx-auto">
                                         {data.footer_subtitle}
                                     </p>
                                 )}
+                                <div className="mt-12 h-1 w-24 bg-primary mx-auto rounded-full" />
                             </div>
-                        </motion.div>
+                        </div>
                     </motion.div>
                 )}
             </div>

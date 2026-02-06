@@ -51,17 +51,18 @@ class Item extends Model
         'pdf',
         'linkvideo',
         'size',
-        'grouper',
+        'agrupador',
+        'is_master',
         'weight',
         'store_id',
-        
+
         // Campos para habitaciones
         'max_occupancy',
         'beds_count',
         'size_m2',
         'room_type',
         'total_rooms',
-        
+
         // Campos de control de visibilidad
         'is_amenities',
         'is_features',
@@ -69,15 +70,19 @@ class Item extends Model
         'is_tags',
         'is_applications',
         'is_attributes',
+
+        // Campos virtuales para importación y manejo dinámico
+        'atributo',
+        'valor',
     ];
 
     protected $casts = [
         'is_new' => 'boolean',
-        'offering'=>'boolean',
-        'recommended'=>'boolean',
-        'featured'=>'boolean',
-        'most_view'=>'boolean',
-        'is_detail'=>'boolean',
+        'offering' => 'boolean',
+        'recommended' => 'boolean',
+        'featured' => 'boolean',
+        'most_view' => 'boolean',
+        'is_detail' => 'boolean',
         'sold_out' => 'boolean',
         'visible' => 'boolean',
         'status' => 'boolean',
@@ -90,6 +95,7 @@ class Item extends Model
         'is_tags' => 'boolean',
         'is_applications' => 'boolean',
         'is_attributes' => 'boolean',
+        'is_master' => 'boolean',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)
@@ -148,19 +154,19 @@ class Item extends Model
 
     public function store()
     {
-        return $this->hasOne(Store::class,'id', 'store_id');
+        return $this->hasOne(Store::class, 'id', 'store_id');
     }
 
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'item_tags', 'item_id', 'tag_id')
-                    ->where('status', true)
-                    ->where(function($query) {
-                        $query->where('tag_type', 'item')
-                              ->orWhereNull('tag_type');
-                    })
-                    ->whereNotNull('name')
-                    ->where('name', '!=', '');
+            ->where('status', true)
+            ->where(function ($query) {
+                $query->where('tag_type', 'item')
+                    ->orWhereNull('tag_type');
+            })
+            ->whereNotNull('name')
+            ->where('name', '!=', '');
     }
 
     public function combos()
@@ -206,9 +212,9 @@ class Item extends Model
     public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'item_attribute')
-                    ->withPivot('value', 'order_index')
-                    ->withTimestamps()
-                    ->orderBy('item_attribute.order_index');
+            ->withPivot('value', 'order_index')
+            ->withTimestamps()
+            ->orderBy('item_attribute.order_index');
     }
 
     /**
@@ -251,10 +257,10 @@ class Item extends Model
     public function scopeAvailableRooms($query, $checkIn, $checkOut)
     {
         return $query->rooms()
-            ->whereHas('availability', function($q) use ($checkIn, $checkOut) {
+            ->whereHas('availability', function ($q) use ($checkIn, $checkOut) {
                 $q->whereBetween('date', [$checkIn, $checkOut])
-                  ->where('available_rooms', '>', 0)
-                  ->where('is_blocked', false);
+                    ->where('available_rooms', '>', 0)
+                    ->where('is_blocked', false);
             });
     }
 
@@ -264,7 +270,7 @@ class Item extends Model
             if (empty($item->sku)) {
                 $item->sku = 'PROD-' . strtoupper(substr($item->categoria_id, 0, 3)) . '-' . strtoupper(substr($item->name, 0, 3)) . '-' . uniqid();
             }
-            
+
             // Auto marcar como agotado si stock es 0 (solo para productos)
             if ($item->type === 'product' && isset($item->stock) && $item->stock <= 0) {
                 $item->sold_out = true;

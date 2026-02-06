@@ -26,15 +26,19 @@ import DynamicField from "../Components/Adminto/form/DynamicField";
 import ModalImportItem from "./Components/ModalImportItem";
 import Fillable from "../Utils/Fillable";
 
-
 const itemsRest = new ItemsRest();
 const amenitiesRest = new AmenitiesRest();
 const applicationsRest = new ApplicationsRest();
 const attributesRest = new AttributesRest();
 
-
-
-const Items = ({ categories, brands, collections, stores, generals, attributes: initialAttributes }) => {
+const Items = ({
+    categories,
+    brands,
+    collections,
+    stores,
+    generals,
+    attributes: initialAttributes,
+}) => {
     //!FALTA EDIT AND DELETEDE GALERIA
 
     const [itemData, setItemData] = useState([]);
@@ -61,7 +65,8 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     const textureRef = useRef();
     const descriptionRef = useRef();
     const skuRef = useRef();
-    
+    const agrupadorRef = useRef();
+
     // Nuevos campos
     const stockRef = useRef();
     const storeRef = useRef();
@@ -76,11 +81,11 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [selectedStore, setSelectedStore] = useState(null);
-    
+
     /*ADD NEW LINES GALLERY */
     const [gallery, setGallery] = useState([]);
     const galleryRef = useRef();
-    
+
     /* PDFs y Videos como arrays con ordenamiento */
     const [pdfs, setPdfs] = useState([]);
     const pdfRef = useRef();
@@ -88,10 +93,81 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     const videoUrlRef = useRef();
     const [selectedApplications, setSelectedApplications] = useState([]);
     const [applications, setApplications] = useState([]);
-    
+
     // Estados para atributos dinámicos
-    const [availableAttributes, setAvailableAttributes] = useState(initialAttributes || []);
+    const [availableAttributes, setAvailableAttributes] = useState(
+        initialAttributes || [],
+    );
     const [itemAttributes, setItemAttributes] = useState([]); // {attribute_id, value, attribute}
+
+    // VARIANTES: Refs y Estados
+    const modalVariantsRef = useRef();
+    // Variant Generation States (Integrated)
+    const [isMaster, setIsMaster] = useState(false);
+    const [variantAttributes, setVariantAttributes] = useState([]);
+    const [generatedVariants, setGeneratedVariants] = useState([]);
+
+    // Gestión Avanzada de Variantes
+    const modalManageVariantsRef = useRef();
+    const [currentVariants, setCurrentVariants] = useState([]); // Variantes existentes en la BD
+    const [masterItemForVariants, setMasterItemForVariants] = useState(null);
+
+    // Refs para información base de variantes
+    const variantBaseRefs = {
+        name: useRef(),
+        category: useRef(),
+        subcategory: useRef(),
+        brand: useRef(),
+        price: useRef(),
+        stock: useRef(),
+        sku: useRef(),
+        description: useRef(),
+        image: useRef(),
+        gallery: useRef(),
+    };
+
+    const [variantImagePreview, setVariantImagePreview] = useState(null);
+    const [variantGalleryFiles, setVariantGalleryFiles] = useState([]);
+    const [variantGalleryPreview, setVariantGalleryPreview] = useState([]);
+
+    const [keepMasterImage, setKeepMasterImage] = useState(true);
+    const [keepMasterGalleryIds, setKeepMasterGalleryIds] = useState([]);
+
+    const handleVariantImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setVariantImagePreview(URL.createObjectURL(file));
+            setKeepMasterImage(false); // Si subo nueva, ya no mantengo la del master (implícito)
+        } else {
+            setVariantImagePreview(null);
+        }
+    };
+
+    const handleVariantGalleryChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setVariantGalleryFiles((prev) => [...prev, ...files]);
+            setVariantGalleryPreview((prev) => [
+                ...prev,
+                ...files.map((f) => URL.createObjectURL(f)),
+            ]);
+        }
+    };
+    const handleRemoveMasterImage = () => setKeepMasterImage(false);
+    const handleRemoveNewImage = () => {
+        setVariantImagePreview(null);
+        if (variantBaseRefs.image.current)
+            variantBaseRefs.image.current.value = "";
+    };
+
+    const handleRemoveMasterGalleryItem = (id) => {
+        setKeepMasterGalleryIds((prev) => prev.filter((pid) => pid !== id));
+    };
+
+    const handleRemoveNewGalleryItem = (index) => {
+        setVariantGalleryFiles((prev) => prev.filter((_, i) => i !== index));
+        setVariantGalleryPreview((prev) => prev.filter((_, i) => i !== index));
+    };
 
     const handleGalleryChange = (e) => {
         const files = Array.from(e.target.files);
@@ -118,14 +194,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     }, []);
 
     const getApplications = async () => {
-        const result = await applicationsRest.paginate({ page: 1, pageSize: 1000 });
+        const result = await applicationsRest.paginate({
+            page: 1,
+            pageSize: 1000,
+        });
         if (result?.data) {
             setApplications(result.data);
         }
     };
-    
+
     const getAttributes = async () => {
-        const result = await attributesRest.paginate({ page: 1, pageSize: 1000 });
+        const result = await attributesRest.paginate({
+            page: 1,
+            pageSize: 1000,
+        });
         if (result?.data) {
             setAvailableAttributes(result.data);
         }
@@ -142,8 +224,8 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
             // Si la imagen tiene ID, significa que está guardada en la base de datos.
             setGallery((prev) =>
                 prev.map((img, i) =>
-                    i === index ? { ...img, toDelete: true } : img
-                )
+                    i === index ? { ...img, toDelete: true } : img,
+                ),
             );
         } else {
             // Si es una imagen nueva, simplemente la eliminamos.
@@ -153,33 +235,33 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
 
     // Funciones para drag & drop de reordenamiento
     const [draggedIndex, setDraggedIndex] = useState(null);
-    
+
     const handleDragStart = (e, index) => {
         setDraggedIndex(index);
-        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.effectAllowed = "move";
     };
-    
+
     const handleDragEnd = () => {
         setDraggedIndex(null);
     };
-    
+
     const handleDragOverReorder = (e) => {
         e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
+        e.dataTransfer.dropEffect = "move";
     };
-    
+
     const handleDropReorder = (e, dropIndex) => {
         e.preventDefault();
         if (draggedIndex === null || draggedIndex === dropIndex) return;
-        
+
         const newGallery = [...gallery];
         const draggedItem = newGallery[draggedIndex];
-        
+
         // Remover el elemento arrastrado
         newGallery.splice(draggedIndex, 1);
         // Insertar en la nueva posición
         newGallery.splice(dropIndex, 0, draggedItem);
-        
+
         setGallery(newGallery);
         setDraggedIndex(null);
     };
@@ -204,8 +286,8 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
             // PDF existente - marcar para eliminar
             setPdfs((prev) =>
                 prev.map((p, i) =>
-                    i === index ? { ...p, toDelete: true } : p
-                )
+                    i === index ? { ...p, toDelete: true } : p,
+                ),
             );
         } else {
             // PDF nuevo - eliminar directamente
@@ -214,31 +296,31 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     };
 
     const [draggedPdfIndex, setDraggedPdfIndex] = useState(null);
-    
+
     const handlePdfDragStart = (e, index) => {
         setDraggedPdfIndex(index);
-        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.effectAllowed = "move";
     };
-    
+
     const handlePdfDragEnd = () => {
         setDraggedPdfIndex(null);
     };
-    
+
     const handlePdfDragOver = (e) => {
         e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
+        e.dataTransfer.dropEffect = "move";
     };
-    
+
     const handlePdfDropReorder = (e, dropIndex) => {
         e.preventDefault();
         if (draggedPdfIndex === null || draggedPdfIndex === dropIndex) return;
-        
+
         const newPdfs = [...pdfs];
         const draggedItem = newPdfs[draggedPdfIndex];
-        
+
         newPdfs.splice(draggedPdfIndex, 1);
         newPdfs.splice(dropIndex, 0, draggedItem);
-        
+
         setPdfs(newPdfs);
         setDraggedPdfIndex(null);
     };
@@ -251,7 +333,7 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         const url = videoUrlRef.current.value.trim();
         if (url) {
             setVideos((prev) => [...prev, { url, order: prev.length + 1 }]);
-            videoUrlRef.current.value = '';
+            videoUrlRef.current.value = "";
         }
     };
 
@@ -262,8 +344,8 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
             // Video existente - marcar para eliminar
             setVideos((prev) =>
                 prev.map((v, i) =>
-                    i === index ? { ...v, toDelete: true } : v
-                )
+                    i === index ? { ...v, toDelete: true } : v,
+                ),
             );
         } else {
             // Video nuevo - eliminar directamente
@@ -272,47 +354,50 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     };
 
     const [draggedVideoIndex, setDraggedVideoIndex] = useState(null);
-    
+
     const handleVideoDragStart = (e, index) => {
         setDraggedVideoIndex(index);
-        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.effectAllowed = "move";
     };
-    
+
     const handleVideoDragEnd = () => {
         setDraggedVideoIndex(null);
     };
-    
+
     const handleVideoDragOver = (e) => {
         e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
+        e.dataTransfer.dropEffect = "move";
     };
-    
+
     const handleVideoDropReorder = (e, dropIndex) => {
         e.preventDefault();
-        if (draggedVideoIndex === null || draggedVideoIndex === dropIndex) return;
-        
+        if (draggedVideoIndex === null || draggedVideoIndex === dropIndex)
+            return;
+
         const newVideos = [...videos];
         const draggedItem = newVideos[draggedVideoIndex];
-        
         newVideos.splice(draggedVideoIndex, 1);
         newVideos.splice(dropIndex, 0, draggedItem);
-        
+
         setVideos(newVideos);
         setDraggedVideoIndex(null);
     };
 
+    /*************************/
+    /* MODAL OPEN LOGIC */
     /*************************/
 
     // Eliminado useEffect duplicado que causaba la duplicación de imágenes
     // La carga de imágenes se maneja directamente en onModalOpen
 
     const onModalOpen = (data) => {
-
         setItemData(data || null); // Guardamos los datos en el estado
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
-        
-        idRef.current.value = data?.id || "";
+
+        if (idRef.current) idRef.current.value = data?.id || "";
+        if (agrupadorRef.current)
+            agrupadorRef.current.value = data?.agrupador || "";
         $(categoryRef.current)
             .val(data?.category_id || null)
             .trigger("change");
@@ -322,43 +407,54 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         SetSelectValue(
             subcategoryRef.current,
             data?.subcategory?.id,
-            data?.subcategory?.name
+            data?.subcategory?.name,
         );
         $(brandRef.current)
             .val(data?.brand_id || null)
             .trigger("change");
 
-      
         $(storeRef.current)
             .val(data?.store_id && data.store_id !== "" ? data.store_id : "")
             .trigger("change");
 
-        nameRef.current.value = data?.name || "";
-        skuRef.current.value = data?.sku || "";
-        colorRef.current.value = data?.color || "";
-        sizeRef.current.value = data?.size || "";
-        summaryRef.current.value = data?.summary || "";
-        priceRef.current.value = data?.price || 0;
-        discountRef.current.value = data?.discount || 0;
-        weightRef.current.value = data?.weight || 0;
-
+        if (nameRef.current) nameRef.current.value = data?.name || "";
+        if (skuRef.current) skuRef.current.value = data?.sku || "";
+        if (agrupadorRef.current)
+            agrupadorRef.current.value = data?.agrupador || "";
+        if (colorRef.current) colorRef.current.value = data?.color || "";
+        if (sizeRef.current) sizeRef.current.value = data?.size || "";
+        if (summaryRef.current) summaryRef.current.value = data?.summary || "";
+        if (priceRef.current) priceRef.current.value = data?.price || 0;
+        if (discountRef.current)
+            discountRef.current.value = data?.discount || 0;
+        if (weightRef.current) weightRef.current.value = data?.weight || 0;
 
         SetSelectValue(tagsRef.current, data?.tags ?? [], "id", "name");
 
-        bannerRef.current.value = null;
-        imageRef.current.value = null;
+        if (bannerRef.current) bannerRef.current.value = null;
+        if (imageRef.current) imageRef.current.value = null;
 
-        bannerRef.image.src = data?.banner ? `/storage/images/item/${data.banner}` : '';
-        imageRef.image.src = data?.image ? `/storage/images/item/${data.image}` : '';
-        textureRef.image.src = data?.texture ? `/storage/images/item/${data.texture}` : '';
+        if (bannerRef.image)
+            bannerRef.image.src = data?.banner
+                ? `/storage/images/item/${data.banner}`
+                : "";
+        if (imageRef.image)
+            imageRef.image.src = data?.image
+                ? `/storage/images/item/${data.image}`
+                : "";
+        if (textureRef.image)
+            textureRef.image.src = data?.texture
+                ? `/storage/images/item/${data.texture}`
+                : "";
 
-        descriptionRef.editor.root.innerHTML = data?.description ?? "";
+        if (descriptionRef.editor)
+            descriptionRef.editor.root.innerHTML = data?.description ?? "";
 
         // Cargar PDFs existentes
         if (data?.pdf && Array.isArray(data.pdf)) {
             const existingPdfs = data.pdf.map((pdf) => ({
                 url: pdf.url ? `/storage/images/item/${pdf.url}` : pdf,
-                name: pdf.name || 'Documento.pdf',
+                name: pdf.name || "Documento.pdf",
                 order: pdf.order || 0,
             }));
             setPdfs(existingPdfs);
@@ -368,10 +464,12 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
 
         // Cargar videos existentes
         if (data?.linkvideo && Array.isArray(data.linkvideo)) {
-            setVideos(data.linkvideo.map((video) => ({
-                url: video.url || video,
-                order: video.order || 0,
-            })));
+            setVideos(
+                data.linkvideo.map((video) => ({
+                    url: video.url || video,
+                    order: video.order || 0,
+                })),
+            );
         } else {
             setVideos([]);
         }
@@ -388,43 +486,58 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         }
 
         if (data?.specifications) {
-            setSpecifications(data.specifications.map(spec => ({
-                type: spec.type,
-                title: spec.title,
-                description: spec.description,
-                image: spec.image || "",
-            })));
+            setSpecifications(
+                data.specifications.map((spec) => ({
+                    type: spec.type,
+                    title: spec.title,
+                    description: spec.description,
+                    image: spec.image || "",
+                })),
+            );
         } else {
             setSpecifications([]);
         }
 
+        setIsMaster(Boolean(data?.is_master));
+
         // Nuevos campos
-        setFeatures(data?.features?.map(f => typeof f === 'object' ? f : { feature: f }) || []);
-        stockRef.current.value = data?.stock;
+        setFeatures(
+            data?.features?.map((f) =>
+                typeof f === "object" ? f : { feature: f },
+            ) || [],
+        );
+        if (stockRef.current) stockRef.current.value = data?.stock ?? 0;
 
         // Cargar amenidades seleccionadas
-        SetSelectValue(amenitiesRef.current, data?.amenities ?? [], 'id', 'name');
+        SetSelectValue(
+            amenitiesRef.current,
+            data?.amenities ?? [],
+            "id",
+            "name",
+        );
 
         // Cargar aplicaciones seleccionadas
         if (data?.applications && Array.isArray(data.applications)) {
-            const applicationsIds = data.applications.map(a => a.id || a);
+            const applicationsIds = data.applications.map((a) => a.id || a);
             setSelectedApplications(applicationsIds);
             setTimeout(() => {
-                $(applicationsRef.current).val(applicationsIds).trigger('change');
+                $(applicationsRef.current)
+                    .val(applicationsIds)
+                    .trigger("change");
             }, 100);
         } else {
             setSelectedApplications([]);
             setTimeout(() => {
-                $(applicationsRef.current).val([]).trigger('change');
+                $(applicationsRef.current).val([]).trigger("change");
             }, 100);
         }
-        
+
         // Cargar atributos del item con sus valores
         if (data?.attributes && Array.isArray(data.attributes)) {
-            const attrs = data.attributes.map(attr => ({
+            const attrs = data.attributes.map((attr) => ({
                 attribute_id: attr.id,
-                value: attr.pivot?.value || '',
-                attribute: attr
+                value: attr.pivot?.value || "",
+                attribute: attr,
             }));
             setItemAttributes(attrs);
         } else {
@@ -432,9 +545,13 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         }
 
         // Reset delete flags using direct references - only when opening modal
-        if (bannerRef.deleteRef) bannerRef.deleteRef.value = '';
-        if (imageRef.deleteRef) imageRef.deleteRef.value = '';
-        if (textureRef.deleteRef) textureRef.deleteRef.value = '';
+        if (bannerRef.deleteRef) bannerRef.deleteRef.value = "";
+        if (imageRef.deleteRef) imageRef.deleteRef.value = "";
+        if (textureRef.deleteRef) textureRef.deleteRef.value = "";
+
+        // Reset variant generation states (but not isMaster, which is set above based on data)
+        setVariantAttributes([]);
+        setGeneratedVariants([]);
 
         $(modalRef.current).modal("show");
     };
@@ -443,44 +560,57 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         e.preventDefault();
 
         // Limpia características vacías
-        const cleanFeatures = features.filter(f => {
-            if (typeof f === 'string') return f.trim() !== '';
-            if (typeof f === 'object') return f.feature?.trim() !== '';
+        const cleanFeatures = features.filter((f) => {
+            if (typeof f === "string") return f.trim() !== "";
+            if (typeof f === "object") return f.feature?.trim() !== "";
             return false;
         });
 
         // Limpia especificaciones vacías
-        const cleanSpecs = specifications.filter(s =>
-            (s.title && s.title.trim() !== '') ||
-            (s.description && s.description.trim() !== '')
+        const cleanSpecs = specifications.filter(
+            (s) =>
+                (s.title && s.title.trim() !== "") ||
+                (s.description && s.description.trim() !== ""),
         );
 
         const request = {
-            id: idRef.current.value || undefined,
-            category_id: categoryRef.current.value,
-            collection_id: collectionRef.current.value || null,
-            subcategory_id: subcategoryRef.current.value,
-            brand_id: brandRef.current.value,
-            name: nameRef.current.value,
-            sku: skuRef.current.value,
-            color: colorRef.current.value,
-            size: sizeRef.current.value,
-            summary: summaryRef.current.value,
-            price: priceRef.current.value,
-            discount: discountRef.current.value,
+            id: idRef.current?.value || undefined,
+            category_id: categoryRef.current?.value,
+            collection_id: collectionRef.current?.value || null,
+            subcategory_id: subcategoryRef.current?.value,
+            brand_id: brandRef.current?.value,
+            name: nameRef.current?.value,
+            sku: skuRef.current?.value,
+            color: colorRef.current?.value,
+            size: sizeRef.current?.value,
+            summary: summaryRef.current?.value,
+            price: priceRef.current?.value || 0,
+            discount: discountRef.current?.value || 0,
             tags: $(tagsRef.current).val(),
-            description: descriptionRef.current.value,
-            stock: stockRef.current.value || 0,
+            description:
+                descriptionRef.current?.value ||
+                descriptionRef.editor?.root?.innerHTML ||
+                "",
+            stock: stockRef.current?.value || 0,
+            agrupador: agrupadorRef.current?.value || null,
             features: cleanFeatures,
             specifications: cleanSpecs,
-            weight: weightRef.current.value || 0,
-            store_id: storeRef.current.value && storeRef.current.value !== "" ? storeRef.current.value : null,
+            weight: weightRef.current?.value || 0,
+            store_id:
+                storeRef.current?.value && storeRef.current?.value !== ""
+                    ? storeRef.current?.value
+                    : null,
             amenities: $(amenitiesRef.current).val() || [],
             applications: $(applicationsRef.current).val() || [],
-            attributes: itemAttributes.filter(a => a.attribute_id && a.value).map(a => ({
-                id: a.attribute_id,
-                value: a.value
-            })),
+            attributes: itemAttributes
+                .filter((a) => a.attribute_id && a.value)
+                .map((a) => ({
+                    id: a.attribute_id,
+                    value: a.value,
+                })),
+            is_master: isMaster,
+            variants_list:
+                generatedVariants.length > 0 ? generatedVariants : null,
             // Campos para clonación de imágenes
             clone_from_id: itemData?.clone_from_id || null,
             clone_image: itemData?.clone_image || null,
@@ -488,14 +618,12 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
             clone_texture: itemData?.clone_texture || null,
         };
 
-
-
         const formData = new FormData();
 
         for (const key in request) {
-            if (key === 'features' || key === 'specifications') {
+            if (key === "features" || key === "specifications") {
                 formData.append(key, JSON.stringify(request[key]));
-            } else if (key === 'tags') {
+            } else if (key === "tags") {
                 // Asegurar que tags sea un array
                 const tagsValue = request[key];
                 if (Array.isArray(tagsValue)) {
@@ -504,38 +632,72 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                     });
                 } else if (tagsValue) {
                     // Si no es array pero tiene valor, convertir a array
-                    formData.append('tags[0]', tagsValue);
+                    formData.append("tags[0]", tagsValue);
                 }
-            } else if (key === 'amenities') {
+            } else if (key === "amenities") {
                 // Enviar amenities como array de items individuales (como en Rooms.jsx)
                 const amenitiesValue = request[key];
-                if (Array.isArray(amenitiesValue) && amenitiesValue.length > 0) {
+                if (
+                    Array.isArray(amenitiesValue) &&
+                    amenitiesValue.length > 0
+                ) {
                     amenitiesValue.forEach((amenityId, index) => {
                         formData.append(`amenities[${index}]`, amenityId);
                     });
                 }
-            } else if (key === 'applications') {
+            } else if (key === "applications") {
                 // Enviar applications como array de items individuales
                 const applicationsValue = request[key];
-                if (Array.isArray(applicationsValue) && applicationsValue.length > 0) {
+                if (
+                    Array.isArray(applicationsValue) &&
+                    applicationsValue.length > 0
+                ) {
                     applicationsValue.forEach((applicationId, index) => {
-                        formData.append(`applications[${index}]`, applicationId);
+                        formData.append(
+                            `applications[${index}]`,
+                            applicationId,
+                        );
                     });
                 }
-            } else if (key === 'attributes') {
+            } else if (key === "attributes") {
                 // Enviar atributos como JSON con id y valor
                 const attributesValue = request[key];
-                if (Array.isArray(attributesValue) && attributesValue.length > 0) {
-                    formData.append('attributes', JSON.stringify(attributesValue));
+                if (
+                    Array.isArray(attributesValue) &&
+                    attributesValue.length > 0
+                ) {
+                    formData.append(
+                        "attributes",
+                        JSON.stringify(attributesValue),
+                    );
                 }
-            } else if (key === 'clone_from_id' || key === 'clone_image' || key === 'clone_banner' || key === 'clone_texture') {
+            } else if (key === "variants_list") {
+                if (request[key]) {
+                    formData.append(key, JSON.stringify(request[key]));
+                }
+            } else if (key === "is_master") {
+                formData.append(key, request[key] ? 1 : 0);
+            } else if (
+                key === "clone_from_id" ||
+                key === "clone_image" ||
+                key === "clone_banner" ||
+                key === "clone_texture"
+            ) {
                 // Solo enviar campos de clonación si tienen valor real
-                if (request[key] && request[key] !== null && request[key] !== 'null') {
+                if (
+                    request[key] &&
+                    request[key] !== null &&
+                    request[key] !== "null"
+                ) {
                     formData.append(key, request[key]);
                 }
-            } else if (key === 'id') {
+            } else if (key === "id") {
                 // Solo enviar id si tiene valor real (no undefined, null, o string vacío)
-                if (request[key] && request[key] !== '' && request[key] !== 'undefined') {
+                if (
+                    request[key] &&
+                    request[key] !== "" &&
+                    request[key] !== "undefined"
+                ) {
                     formData.append(key, request[key]);
                 }
             } else {
@@ -557,7 +719,7 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         }
 
         // Procesar PDFs (múltiples archivos)
-        const pdfFiles = pdfs.filter(pdf => !pdf.toDelete);
+        const pdfFiles = pdfs.filter((pdf) => !pdf.toDelete);
         let pdfIndex = 0;
         pdfFiles.forEach((pdf) => {
             if (pdf.file) {
@@ -566,57 +728,53 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                 pdfIndex++;
             }
         });
-        
+
         // Enviar el orden de los PDFs
         const pdfOrder = pdfFiles.map((pdf, index) => ({
             index,
             order: index + 1,
-            name: pdf.name || 'Documento.pdf'
+            name: pdf.name || "Documento.pdf",
         }));
         if (pdfOrder.length > 0) {
-            formData.append('pdf_order', JSON.stringify(pdfOrder));
+            formData.append("pdf_order", JSON.stringify(pdfOrder));
         }
-        
+
         // PDFs marcados para eliminar
         const deletedPdfs = pdfs
-            .map((pdf, index) => pdf.toDelete ? index : null)
-            .filter(index => index !== null);
+            .map((pdf, index) => (pdf.toDelete ? index : null))
+            .filter((index) => index !== null);
         if (deletedPdfs.length > 0) {
-            formData.append('deleted_pdfs', JSON.stringify(deletedPdfs));
+            formData.append("deleted_pdfs", JSON.stringify(deletedPdfs));
         }
 
         // Procesar Videos (links)
-        const videoLinks = videos.filter(video => !video.toDelete);
+        const videoLinks = videos.filter((video) => !video.toDelete);
         const videoData = videoLinks.map((video, index) => ({
             url: video.url,
-            order: index + 1
+            order: index + 1,
         }));
         if (videoData.length > 0) {
-            formData.append('linkvideo', JSON.stringify(videoData));
-        }
-        
-        // Videos marcados para eliminar
-        const deletedVideos = videos
-            .map((video, index) => video.toDelete ? index : null)
-            .filter(index => index !== null);
-        if (deletedVideos.length > 0) {
-            formData.append('deleted_videos', JSON.stringify(deletedVideos));
+            formData.append("linkvideo", JSON.stringify(videoData));
         }
 
-     
+        // Videos marcados para eliminar
+        const deletedVideos = videos
+            .map((video, index) => (video.toDelete ? index : null))
+            .filter((index) => index !== null);
+        if (deletedVideos.length > 0) {
+            formData.append("deleted_videos", JSON.stringify(deletedVideos));
+        }
+
         if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
-            formData.append('banner_delete', 'DELETE');
-          
+            formData.append("banner_delete", "DELETE");
         }
 
         if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-            formData.append('image_delete', 'DELETE');
-        
+            formData.append("image_delete", "DELETE");
         }
 
         if (textureRef.getDeleteFlag && textureRef.getDeleteFlag()) {
-            formData.append('texture_delete', 'DELETE');
-          
+            formData.append("texture_delete", "DELETE");
         }
 
         //TODO: Preparar los datos de la galería
@@ -624,27 +782,31 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         // Galería - Separar imágenes nuevas y existentes
         let galleryIndex = 0;
         let galleryIdsIndex = 0;
-        
+
         // Crear array con el orden de las imágenes (solo las no marcadas para eliminar)
         const galleryOrder = [];
-        
+
         gallery.forEach((img, index) => {
             if (!img.toDelete) {
                 if (img.file) {
                     formData.append(`gallery[${galleryIndex}]`, img.file); // Imágenes nuevas
-                    galleryOrder.push({ type: 'new', index: galleryIndex });
+                    galleryOrder.push({ type: "new", index: galleryIndex });
                     galleryIndex++;
                 } else {
                     formData.append(`gallery_ids[${galleryIdsIndex}]`, img.id); // IDs de imágenes existentes
-                    galleryOrder.push({ type: 'existing', id: img.id, index: galleryIdsIndex });
+                    galleryOrder.push({
+                        type: "existing",
+                        id: img.id,
+                        index: galleryIdsIndex,
+                    });
                     galleryIdsIndex++;
                 }
             }
         });
-        
+
         // Enviar el orden de la galería al backend
         if (galleryOrder.length > 0) {
-            formData.append('gallery_order', JSON.stringify(galleryOrder));
+            formData.append("gallery_order", JSON.stringify(galleryOrder));
         }
 
         const deletedImages = gallery
@@ -657,9 +819,19 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         }
 
         // Debug: Log all FormData entries
-    
         for (let [key, value] of formData.entries()) {
-            // let in debug alll -(`${key}: ${value}`);
+            // console.log(`${key}: ${value}`);
+        }
+
+        // --- Agregar datos de Variantes ---
+        if (isMaster) {
+            formData.append("is_master", 1);
+            if (generatedVariants.length > 0) {
+                formData.append(
+                    "variants_list",
+                    JSON.stringify(generatedVariants),
+                );
+            }
         }
 
         const result = await itemsRest.save(formData);
@@ -710,15 +882,15 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         const clonedData = {
             ...data,
             id: null, // Sin ID para que se cree como nuevo
-            name: data.name + ' (Copia)',
-            sku: data.sku ? data.sku + '-COPY' : '',
+            name: data.name + " (Copia)",
+            sku: data.sku ? data.sku + "-COPY" : "",
             // Guardar referencia al item original para copiar imágenes
             clone_from_id: data.id,
             clone_image: data.image,
             clone_banner: data.banner,
             clone_texture: data.texture,
         };
-        
+
         // Abrir el modal con los datos clonados
         onModalOpen(clonedData);
     };
@@ -727,12 +899,15 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
     const onReorder = async (e) => {
         const newOrderIndex = e.toIndex;
         try {
-            const result = await itemsRest.reorder(e.itemData.id, newOrderIndex);
+            const result = await itemsRest.reorder(
+                e.itemData.id,
+                newOrderIndex,
+            );
             if (result) {
                 $(gridRef.current).dxDataGrid("instance").refresh();
             }
         } catch (error) {
-            console.error('Error reordering item:', error);
+            console.error("Error reordering item:", error);
         }
     };
 
@@ -751,30 +926,372 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
         try {
             // Mostrar loader
             Swal.fire({
-                title: 'Exportando items...',
-                text: 'Por favor espere',
+                title: "Exportando items...",
+                text: "Por favor espere",
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
-                }
+                },
             });
 
             // Usar el método exportData de ItemsRest
             await itemsRest.exportData();
 
             Swal.fire({
-                icon: 'success',
-                title: 'Exportación exitosa',
-                text: 'El archivo se ha descargado correctamente',
-                timer: 2000
+                icon: "success",
+                title: "Exportación exitosa",
+                text: "El archivo se ha descargado correctamente",
+                timer: 2000,
             });
         } catch (error) {
-            console.error('Error al exportar:', error);
+            console.error("Error al exportar:", error);
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message || 'No se pudo exportar los items. Por favor intente nuevamente.'
+                icon: "error",
+                title: "Error",
+                text:
+                    error.message ||
+                    "No se pudo exportar los items. Por favor intente nuevamente.",
             });
+        }
+    };
+
+    // --- LÓGICA PARA GENERADOR DE VARIANTES ---
+
+    const onVariantsOpen = () => {
+        setVariantAttributes([]);
+        setGeneratedVariants([]);
+
+        // Reset base refs if needed
+        if (variantBaseRefs.name.current)
+            variantBaseRefs.name.current.value = "";
+        if (variantBaseRefs.price.current)
+            variantBaseRefs.price.current.value = "";
+        if (variantBaseRefs.stock.current)
+            variantBaseRefs.stock.current.value = "";
+        // Reset selects
+        $(variantBaseRefs.category.current).val(null).trigger("change");
+        $(variantBaseRefs.brand.current).val(null).trigger("change");
+
+        $(modalVariantsRef.current).modal("show");
+    };
+
+    const handleVariantAttributeSelect = (e, attributeId) => {
+        const attribute = availableAttributes.find((a) => a.id == attributeId);
+        if (!attribute) return;
+
+        setVariantAttributes((prev) => {
+            if (prev.find((p) => p.attribute_id == attributeId)) return prev;
+            return [
+                ...prev,
+                { attribute_id: attributeId, attribute, values: [] },
+            ];
+        });
+    };
+
+    const removeVariantAttribute = (index) => {
+        setVariantAttributes((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const updateVariantAttributeValues = (index, newValues) => {
+        setVariantAttributes((prev) => {
+            const updated = [...prev];
+            updated[index].values = newValues; // newValues debe ser array de strings/numeros
+            return updated;
+        });
+    };
+
+    const generateCombinations = () => {
+        // Validar que hay atributos y valores seleccionados
+        const activeAttributes = variantAttributes.filter(
+            (va) => va.values && va.values.length > 0,
+        );
+
+        if (activeAttributes.length === 0) {
+            Swal.fire(
+                "Atención",
+                "Selecciona al menos un atributo y sus valores",
+                "warning",
+            );
+            return;
+        }
+
+        // Algoritmo cartesiano
+        const carte = (a, b) =>
+            [].concat(...a.map((d) => b.map((e) => [].concat(d, e))));
+        const cartesian = (a, b, ...c) =>
+            b ? cartesian(carte(a, b), ...c) : a;
+
+        const valuesArrays = activeAttributes.map((va) =>
+            va.values.map((v) => ({
+                attribute_id: va.attribute_id,
+                attribute_name: va.attribute.name,
+                value: v,
+            })),
+        );
+
+        const combinations =
+            valuesArrays.length === 1
+                ? valuesArrays[0].map((x) => [x])
+                : cartesian(...valuesArrays);
+
+        // Generar items preliminares
+        let baseName, basePrice, baseStock, baseSku;
+
+        // Si el modal de variantes masivas está abierto, usa sus propios campos base
+        if ($(modalVariantsRef.current).hasClass("show")) {
+            baseName =
+                variantBaseRefs.name.current?.value ||
+                masterItemForVariants?.name ||
+                "Producto Nuevo";
+            basePrice =
+                variantBaseRefs.price.current?.value ||
+                masterItemForVariants?.price ||
+                0;
+            baseStock = masterItemForVariants?.stock || 0;
+            // Usar input de SKU, o del master, o generar
+            baseSku =
+                variantBaseRefs.sku.current?.value ||
+                masterItemForVariants?.sku ||
+                baseName.substr(0, 3).toUpperCase();
+        } else {
+            baseName = masterItemForVariants?.name || "Producto Nuevo";
+            basePrice = masterItemForVariants?.price || 0;
+            baseStock = masterItemForVariants?.stock || 0;
+            baseSku =
+                masterItemForVariants?.sku ||
+                baseName.substr(0, 3).toUpperCase();
+        }
+
+        // Calcular índice inicial para SKUs secuenciales
+        let startIndex = 1;
+        if (currentVariants && currentVariants.length > 0) {
+            // Buscar el sufijo numérico más alto en los SKUs existentes que coincidan con el patrón
+            const maxIndex = currentVariants.reduce((max, v) => {
+                if (v.sku && v.sku.startsWith(baseSku + "-")) {
+                    const part = v.sku.replace(baseSku + "-", "");
+                    const num = parseInt(part);
+                    if (!isNaN(num) && num > max) return num;
+                }
+                return max;
+            }, 0);
+            startIndex = maxIndex + 1;
+        }
+
+        const variants = combinations.map((combo, idx) => {
+            // Construir nombre extendido: "Producto Base - Rojo - XL"
+            const nameSuffix = combo.map((c) => c.value).join(" - ");
+            const currentSequence = startIndex + idx;
+            return {
+                _temp_id: idx,
+                name: `${baseName} - ${nameSuffix}`,
+                price: basePrice,
+                stock: baseStock,
+                sku: `${baseSku}-${currentSequence}`,
+                attributes: combo, // [{attribute_id, value, ...}]
+            };
+        });
+
+        setGeneratedVariants(variants);
+    };
+
+    const onManageVariants = async (item) => {
+        setMasterItemForVariants(item);
+        setGeneratedVariants([]);
+        setVariantAttributes([]);
+
+        // Cargar variantes actuales
+        await loadVariants(item.agrupador);
+
+        $(modalManageVariantsRef.current).modal("show");
+    };
+
+    const loadVariants = async (agrupador) => {
+        if (!agrupador) return;
+        try {
+            const response = await fetch(
+                `/api/admin/items/variants/${agrupador}`,
+            );
+            const data = await response.json();
+            setCurrentVariants(data);
+        } catch (error) {
+            console.error("Error cargando variantes:", error);
+        }
+    };
+
+    const deleteVariant = async (id, name) => {
+        const result = await Swal.fire({
+            title: "¿Eliminar variante?",
+            text: `Se eliminará "${name}". Esta acción no se puede deshacer.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/api/admin/items/variant/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                            "content",
+                        ),
+                    },
+                });
+                if (response.ok) {
+                    Swal.fire(
+                        "Eliminado",
+                        "La variante ha sido eliminada.",
+                        "success",
+                    );
+                    loadVariants(masterItemForVariants.agrupador);
+                    $(gridRef.current).dxDataGrid("instance").refresh();
+                } else {
+                    throw new Error("Error al eliminar");
+                }
+            } catch (error) {
+                Swal.fire("Error", "No se pudo eliminar la variante.", "error");
+            }
+        }
+    };
+
+    const updateVariantInline = async (variant, field, value) => {
+        try {
+            const formData = new FormData();
+            formData.append(field, value);
+            formData.append("id", variant.id);
+
+            const response = await fetch(`/api/admin/items`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content",
+                    ),
+                },
+            });
+
+            if (response.ok) {
+                // Actualizar estado local para no recargar todo si es posible
+                setCurrentVariants((prev) =>
+                    prev.map((v) =>
+                        v.id === variant.id ? { ...v, [field]: value } : v,
+                    ),
+                );
+                $(gridRef.current).dxDataGrid("instance").refresh();
+            }
+        } catch (error) {
+            console.error("Error actualizando variante:", error);
+        }
+    };
+
+    const onVariantsSubmit = async () => {
+        if (generatedVariants.length === 0) return;
+
+        try {
+            Swal.fire({
+                title: "Generando variantes",
+                text: `Creando ${generatedVariants.length} items...`,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
+            const agrupadorId =
+                masterItemForVariants?.agrupador || crypto.randomUUID();
+            const baseData = {
+                category_id: masterItemForVariants?.category_id,
+                subcategory_id: masterItemForVariants?.subcategory_id,
+                brand_id: masterItemForVariants?.brand_id,
+                description: masterItemForVariants?.description || "",
+                agrupador: agrupadorId,
+                // Otros datos base heredados del master
+            };
+
+            // Loop secuencial para crear items
+            for (const variant of generatedVariants) {
+                const formData = new FormData();
+                formData.append("agrupador", agrupadorId);
+                formData.append("name", variant.name);
+                formData.append("price", variant.price);
+                formData.append("stock", variant.stock);
+                formData.append("sku", variant.sku);
+
+                // Base data
+                if (baseData.category_id)
+                    formData.append("category_id", baseData.category_id);
+                if (baseData.subcategory_id)
+                    formData.append("subcategory_id", baseData.subcategory_id);
+                if (baseData.brand_id)
+                    formData.append("brand_id", baseData.brand_id);
+                if (baseData.description)
+                    formData.append("description", baseData.description);
+
+                // Imagen Principal Override
+                if (variantBaseRefs.image.current?.files?.length > 0) {
+                    formData.append(
+                        "image",
+                        variantBaseRefs.image.current.files[0],
+                    );
+                } else if (!keepMasterImage) {
+                    formData.append("skip_clone_image", "1");
+                }
+
+                // Galería - Nuevas imágenes
+                if (variantGalleryFiles.length > 0) {
+                    variantGalleryFiles.forEach((file) => {
+                        formData.append("gallery[]", file);
+                    });
+                }
+
+                // Clone images from master
+                if (masterItemForVariants && masterItemForVariants.id) {
+                    formData.append(
+                        "clone_images_from",
+                        masterItemForVariants.id,
+                    );
+
+                    // Galería - Clonado Selectivo
+                    if (keepMasterGalleryIds.length > 0) {
+                        keepMasterGalleryIds.forEach((id) => {
+                            formData.append("clone_gallery_ids[]", id);
+                        });
+                    } else if (masterItemForVariants.images?.length > 0) {
+                        // Si el usuario vació la galería existente
+                        formData.append("clone_gallery_ids[]", "");
+                    }
+                }
+
+                // Attributes
+                const attrsToSend = variant.attributes.map((a) => ({
+                    id: a.attribute_id,
+                    value: a.value,
+                }));
+                formData.append("attributes", JSON.stringify(attrsToSend));
+
+                await itemsRest.save(formData);
+            }
+
+            Swal.fire(
+                "Éxito",
+                `${generatedVariants.length} variantes creadas correctamente`,
+                "success",
+            );
+            $(modalVariantsRef.current).modal("hide");
+            $(modalManageVariantsRef.current).modal("hide");
+            $(gridRef.current).dxDataGrid("instance").refresh();
+            if (masterItemForVariants) {
+                loadVariants(masterItemForVariants.agrupador);
+            }
+            setGeneratedVariants([]);
+        } catch (error) {
+            console.error(error);
+            Swal.fire(
+                "Error",
+                "Hubo un problema al crear las variantes",
+                "error",
+            );
         }
     };
 
@@ -833,10 +1350,10 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                 rowDragging={{
                     allowReordering: true,
                     onReorder: onReorder,
-                    dropFeedbackMode: 'push'
+                    dropFeedbackMode: "push",
                 }}
                 sorting={{
-                    mode: 'single'
+                    mode: "single",
                 }}
                 columns={[
                     {
@@ -845,13 +1362,13 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                         visible: false,
                     },
                     {
-                        dataField: 'order_index',
-                        caption: 'Orden',
+                        dataField: "order_index",
+                        caption: "Orden",
                         visible: false,
-                        sortOrder: 'asc',
-                        sortIndex: 0
+                        sortOrder: "asc",
+                        sortIndex: 0,
                     },
-                    Fillable.has('items', 'category_id') && {
+                    Fillable.has("items", "category_id") && {
                         dataField: "category.name",
                         caption: "Categoría",
                         width: "120px",
@@ -868,17 +1385,17 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                         <small className="text-muted">
                                             {data.subcategory?.name}
                                         </small>
-                                    </>
-                                )
+                                    </>,
+                                ),
                             );
                         },
                     },
-                    Fillable.has('items', 'subcategory_id') && {
+                    Fillable.has("items", "subcategory_id") && {
                         dataField: "subcategory.name",
                         caption: "Subcategoría",
                         visible: false,
                     },
-                    Fillable.has('items', 'brand_id') && {
+                    Fillable.has("items", "brand_id") && {
                         dataField: "brand.name",
                         caption: "Marca",
                         width: "120px",
@@ -888,37 +1405,40 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                         caption: "Nombre",
                         minWidth: "300px",
                         cellTemplate: (container, { data }) => {
-
                             const truncateWords = (text, maxWords) => {
-                                if (!text) return '';
-                                const words = text.split(' ');
+                                if (!text) return "";
+                                const words = text.split(" ");
                                 if (words.length > maxWords) {
-                                    return words.slice(0, maxWords).join(' ') + '...';
+                                    return (
+                                        words.slice(0, maxWords).join(" ") +
+                                        "..."
+                                    );
                                 }
                                 return text;
                             };
 
-                            const truncatedSummary = truncateWords(data.summary, 12);
+                            const truncatedSummary = truncateWords(
+                                data.summary,
+                                12,
+                            );
 
                             container.html(
                                 renderToString(
                                     <>
                                         <b>{data.name}</b>
                                         <br />
-                                        <span>
-                                            {truncatedSummary}
-                                        </span>
-                                    </>
-                                )
+                                        <span>{truncatedSummary}</span>
+                                    </>,
+                                ),
                             );
                         },
                     },
-                    Fillable.has('items', 'sku') && {
+                    Fillable.has("items", "sku") && {
                         dataField: "sku",
                         caption: "SKU",
                         width: "120px",
                     },
-                    {
+                    Fillable.has("items", "final_price") && {
                         dataField: "final_price",
                         caption: "Precio",
                         dataType: "number",
@@ -935,22 +1455,25 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                         "line-through",
                                                 }}
                                             >
-                                                {CurrencySymbol()} {Number2Currency(data.price)}
+                                                {CurrencySymbol()}{" "}
+                                                {Number2Currency(data.price)}
                                             </small>
                                         )}
                                         <span>
-                                            {CurrencySymbol()} {Number2Currency(
+                                            {CurrencySymbol()}{" "}
+                                            {Number2Currency(
                                                 data.discount > 0
                                                     ? data.discount
-                                                    : data.price
+                                                    : data.price,
                                             )}
                                         </span>
-                                    </>
-                                )
+                                    </>,
+                                ),
                             );
                         },
                     },
-                    Fillable.has('items', 'weight') && {
+
+                    Fillable.has("items", "weight") && {
                         dataField: "weight",
                         caption: "Peso",
                         dataType: "number",
@@ -974,14 +1497,14 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                    (e.target.src =
-                                        "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'banner') && {
+                    Fillable.has("items", "banner") && {
                         dataField: "banner",
                         caption: "Imagen Banner",
                         width: "90px",
@@ -999,20 +1522,23 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                    (e.target.src =
-                                        "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'is_new') && {
+                    Fillable.has("items", "is_new") && {
                         dataField: "is_new",
                         caption: "Nuevo",
                         dataType: "boolean",
                         width: "80px",
                         cellTemplate: (container, { data }) => {
-                            const is_newValue = data.is_new === 1 || data.is_new === '1' || data.is_new === true;
+                            const is_newValue =
+                                data.is_new === 1 ||
+                                data.is_new === "1" ||
+                                data.is_new === true;
                             ReactAppend(
                                 container,
                                 <SwitchFormGroup
@@ -1024,17 +1550,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'offering') && {
+                    Fillable.has("items", "offering") && {
                         dataField: "offering",
                         caption: "En oferta",
                         dataType: "boolean",
                         width: "80px",
                         cellTemplate: (container, { data }) => {
-                            const offeringValue = data.offering === 1 || data.offering === '1' || data.offering === true;
+                            const offeringValue =
+                                data.offering === 1 ||
+                                data.offering === "1" ||
+                                data.offering === true;
                             ReactAppend(
                                 container,
                                 <SwitchFormGroup
@@ -1046,17 +1575,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'recommended') && {
+                    Fillable.has("items", "recommended") && {
                         dataField: "recommended",
                         caption: "Recomendado",
                         dataType: "boolean",
                         width: "80px",
                         cellTemplate: (container, { data }) => {
-                            const recommendedValue = data.recommended === 1 || data.recommended === '1' || data.recommended === true;
+                            const recommendedValue =
+                                data.recommended === 1 ||
+                                data.recommended === "1" ||
+                                data.recommended === true;
                             ReactAppend(
                                 container,
                                 <SwitchFormGroup
@@ -1068,17 +1600,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'featured') && {
+                    Fillable.has("items", "featured") && {
                         dataField: "featured",
                         caption: "Destacado",
                         dataType: "boolean",
                         width: "80px",
                         cellTemplate: (container, { data }) => {
-                            const featuredValue = data.featured === 1 || data.featured === '1' || data.featured === true;
+                            const featuredValue =
+                                data.featured === 1 ||
+                                data.featured === "1" ||
+                                data.featured === true;
 
                             ReactAppend(
                                 container,
@@ -1091,11 +1626,11 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'views') && { 
+                    Fillable.has("items", "views") && {
                         dataField: "views",
                         caption: "Vistas",
                         dataType: "number",
@@ -1106,20 +1641,25 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                 renderToString(
                                     <div className="text-center">
                                         <i className="fas fa-eye text-primary me-1"></i>
-                                        <span className="fw-bold">{viewCount.toLocaleString()}</span>
-                                    </div>
-                                )
+                                        <span className="fw-bold">
+                                            {viewCount.toLocaleString()}
+                                        </span>
+                                    </div>,
+                                ),
                             );
                         },
                     },
 
-                    Fillable.has('items', 'most_view') && {
+                    Fillable.has("items", "most_view") && {
                         dataField: "most_view",
                         caption: "Más visto",
                         dataType: "boolean",
                         width: "80px",
                         cellTemplate: (container, { data }) => {
-                            const mostViewValue = data.most_view === 1 || data.most_view === '1' || data.most_view === true;
+                            const mostViewValue =
+                                data.most_view === 1 ||
+                                data.most_view === "1" ||
+                                data.most_view === true;
 
                             ReactAppend(
                                 container,
@@ -1132,17 +1672,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'is_detail') && {
+                    Fillable.has("items", "is_detail") && {
                         dataField: "is_detail",
                         caption: "Con Detalle",
                         dataType: "boolean",
                         width: "90px",
                         cellTemplate: (container, { data }) => {
-                            const isDetailValue = data.is_detail === 1 || data.is_detail === '1' || data.is_detail === true;
+                            const isDetailValue =
+                                data.is_detail === 1 ||
+                                data.is_detail === "1" ||
+                                data.is_detail === true;
 
                             ReactAppend(
                                 container,
@@ -1155,17 +1698,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'sold_out') && {
+                    Fillable.has("items", "sold_out") && {
                         dataField: "sold_out",
                         caption: "Agotado",
                         dataType: "boolean",
                         width: "85px",
                         cellTemplate: (container, { data }) => {
-                            const soldOutValue = data.sold_out === 1 || data.sold_out === '1' || data.sold_out === true;
+                            const soldOutValue =
+                                data.sold_out === 1 ||
+                                data.sold_out === "1" ||
+                                data.sold_out === true;
 
                             ReactAppend(
                                 container,
@@ -1178,11 +1724,11 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked ? 1 : 0,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('items', 'visible') && {
+                    Fillable.has("items", "visible") && {
                         dataField: "visible",
                         caption: "Visible",
                         dataType: "boolean",
@@ -1198,9 +1744,35 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             value: e.target.checked,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
+                    },
+                    Fillable.has("items", "is_master") && {
+                        dataField: "is_master",
+                        caption: "Master",
+                        dataType: "boolean",
+                        width: "80px",
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.is_master}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "is_master",
+                                            value: e.target.checked ? 1 : 0,
+                                        })
+                                    }
+                                />,
+                            );
+                        },
+                    },
+                    Fillable.has("items", "agrupador") && {
+                        dataField: "agrupador",
+                        caption: "Agrupador",
+                        width: "150px",
                     },
                     {
                         caption: "Acciones",
@@ -1213,15 +1785,29 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                     title: "Editar",
                                     icon: "fa fa-pen",
                                     onClick: () => onModalOpen(data),
-                                })
+                                }),
                             );
+                            if (
+                                data.is_master &&
+                                Fillable.has("items", "is_master")
+                            ) {
+                                container.append(
+                                    DxButton({
+                                        className:
+                                            "btn btn-xs btn-soft-warning",
+                                        title: "Gestionar Variantes",
+                                        icon: "fa fa-layer-group",
+                                        onClick: () => onManageVariants(data),
+                                    }),
+                                );
+                            }
                             container.append(
                                 DxButton({
                                     className: "btn btn-xs btn-soft-info",
                                     title: "Clonar",
                                     icon: "fa fa-clone",
                                     onClick: () => onCloneClicked(data),
-                                })
+                                }),
                             );
                             container.append(
                                 DxButton({
@@ -1229,7 +1815,7 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                     title: "Eliminar",
                                     icon: "fa fa-trash",
                                     onClick: () => onDeleteClicked(data.id),
-                                })
+                                }),
                             );
                         },
                         allowFiltering: false,
@@ -1245,68 +1831,78 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
             >
                 <div id="principal-container">
                     <input ref={idRef} type="hidden" />
-                    
+
                     {/* Sistema de Pestañas */}
-                    <ul className="nav nav-pills nav-justified mb-4" role="tablist" style={{
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        padding: '4px',
-                        border: '1px solid #e9ecef'
-                    }}>
+                    <ul
+                        className="nav nav-pills nav-justified mb-4"
+                        role="tablist"
+                        style={{
+                            backgroundColor: "#f8f9fa",
+                            borderRadius: "8px",
+                            padding: "4px",
+                            border: "1px solid #e9ecef",
+                        }}
+                    >
                         <li className="nav-item" role="presentation">
-                            <button 
-                                className="nav-link active" 
-                                id="basic-info-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#basic-info" 
-                                type="button" 
-                                role="tab" 
-                                aria-controls="basic-info" 
+                            <button
+                                className="nav-link active"
+                                id="basic-info-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#basic-info"
+                                type="button"
+                                role="tab"
+                                aria-controls="basic-info"
                                 aria-selected="true"
                                 style={{
-                                    borderRadius: '6px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.3s ease'
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
                                 }}
                             >
                                 <i className="fas fa-info-circle me-2"></i>
                                 Información Básica
                             </button>
                         </li>
+                        {
+                            /* Condicional para mostrar tab de Precios solo si es necesario */
+                            (Fillable.has("items", "price") ||
+                                Fillable.has("items", "stock")) && (
+                                <li className="nav-item" role="presentation">
+                                    <button
+                                        className="nav-link"
+                                        id="pricing-tab"
+                                        data-bs-toggle="pill"
+                                        data-bs-target="#pricing"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="pricing"
+                                        aria-selected="false"
+                                        style={{
+                                            borderRadius: "6px",
+                                            fontWeight: "500",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
+                                        <i className="fas fa-dollar-sign me-2"></i>
+                                        Precios y Stock
+                                    </button>
+                                </li>
+                            )
+                        }{" "}
                         <li className="nav-item" role="presentation">
-                            <button 
-                                className="nav-link" 
-                                id="pricing-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#pricing" 
-                                type="button" 
-                                role="tab" 
-                                aria-controls="pricing" 
+                            <button
+                                className="nav-link"
+                                id="multimedia-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#multimedia"
+                                type="button"
+                                role="tab"
+                                aria-controls="multimedia"
                                 aria-selected="false"
                                 style={{
-                                    borderRadius: '6px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.3s ease'
-                                }}
-                            >
-                                <i className="fas fa-dollar-sign me-2"></i>
-                                Precios y Stock
-                            </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                            <button 
-                                className="nav-link" 
-                                id="multimedia-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#multimedia" 
-                                type="button" 
-                                role="tab" 
-                                aria-controls="multimedia" 
-                                aria-selected="false"
-                                style={{
-                                    borderRadius: '6px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.3s ease'
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
                                 }}
                             >
                                 <i className="fas fa-images me-2"></i>
@@ -1314,19 +1910,19 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                             </button>
                         </li>
                         <li className="nav-item" role="presentation">
-                            <button 
-                                className="nav-link" 
-                                id="features-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#features" 
-                                type="button" 
-                                role="tab" 
-                                aria-controls="features" 
+                            <button
+                                className="nav-link"
+                                id="features-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#features"
+                                type="button"
+                                role="tab"
+                                aria-controls="features"
                                 aria-selected="false"
                                 style={{
-                                    borderRadius: '6px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.3s ease'
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
                                 }}
                             >
                                 <i className="fas fa-list-ul me-2"></i>
@@ -1338,25 +1934,77 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                     {/* Contenido de las Pestañas */}
                     <div className="tab-content">
                         {/* Pestaña: Información Básica */}
-                        <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                        <div
+                            className="tab-pane fade show active"
+                            id="basic-info"
+                            role="tabpanel"
+                            aria-labelledby="basic-info-tab"
+                        >
                             <div className="row g-3">
                                 <div className="col-md-6">
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-tag me-2"></i>Identificación</h6>
+                                            <h6 className="mb-0">
+                                                <i className="fas fa-tag me-2"></i>
+                                                Identificación
+                                            </h6>
                                         </div>
                                         <div className="card-body">
+                                            {Fillable.has(
+                                                "items",
+                                                "is_master",
+                                            ) && (
+                                                <div className="mb-3">
+                                                    <SwitchFormGroup
+                                                        label="Tiene Variantes"
+                                                        checked={isMaster}
+                                                        onChange={(e) =>
+                                                            setIsMaster(
+                                                                e.target
+                                                                    .checked,
+                                                            )
+                                                        }
+                                                    />
+                                                    <small className="text-muted d-block mt-1">
+                                                        Activa esta opción para
+                                                        generar múltiples
+                                                        variantes (talla, color,
+                                                        etc.) de este producto.
+                                                    </small>
+                                                </div>
+                                            )}
                                             <InputFormGroup
                                                 eRef={skuRef}
                                                 label="SKU"
                                                 required
-                                                hidden={!Fillable.has('items', 'sku')}
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "sku",
+                                                    )
+                                                }
+                                            />
+                                            <InputFormGroup
+                                                eRef={agrupadorRef}
+                                                label="Código Agrupador"
+                                                placeholder="UUID para agrupar variantes"
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "agrupador",
+                                                    )
+                                                }
                                             />
                                             <InputFormGroup
                                                 eRef={nameRef}
                                                 label="Nombre del Producto"
                                                 required
-                                                hidden={!Fillable.has('items', 'name')}
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "name",
+                                                    )
+                                                }
                                             />
                                             <div className="row">
                                                 <div className="col-md-6">
@@ -1364,7 +2012,12 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                         eRef={colorRef}
                                                         label="Color"
                                                         required
-                                                        hidden={!Fillable.has('items', 'color')}
+                                                        hidden={
+                                                            !Fillable.has(
+                                                                "items",
+                                                                "color",
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                                 <div className="col-md-6">
@@ -1372,26 +2025,38 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                         eRef={sizeRef}
                                                         label="Talla"
                                                         required
-                                                        hidden={!Fillable.has('items', 'size')}
+                                                        hidden={
+                                                            !Fillable.has(
+                                                                "items",
+                                                                "size",
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                                 <div className="col-md-6">
                                                     <InputFormGroup
                                                         eRef={weightRef}
                                                         label="Peso"
-                                                        
-                                                        hidden={!Fillable.has('items', 'weight')}
+                                                        hidden={
+                                                            !Fillable.has(
+                                                                "items",
+                                                                "weight",
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="col-md-6">
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-sitemap me-2"></i>Categorización</h6>
+                                            <h6 className="mb-0">
+                                                <i className="fas fa-sitemap me-2"></i>
+                                                Categorización
+                                            </h6>
                                         </div>
                                         <div className="card-body">
                                             <SelectFormGroup
@@ -1399,48 +2064,93 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                 label="Categoría"
                                                 required
                                                 dropdownParent="#principal-container"
-                                                onChange={(e) => setSelectedCategory(e.target.value)}
-                                                hidden={!Fillable.has('items', 'category_id')}
+                                                onChange={(e) =>
+                                                    setSelectedCategory(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "category_id",
+                                                    )
+                                                }
                                             >
-                                                {categories.map((item, index) => (
-                                                    <option key={index} value={item.id}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
+                                                {categories.map(
+                                                    (item, index) => (
+                                                        <option
+                                                            key={index}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </option>
+                                                    ),
+                                                )}
                                             </SelectFormGroup>
-                                            
+
                                             <SelectFormGroup
                                                 eRef={collectionRef}
                                                 label="Colección"
                                                 dropdownParent="#principal-container"
-                                                onChange={(e) => setSelectedCollection(e.target.value)}
-                                                hidden={!Fillable.has('items', 'collection_id')}
+                                                onChange={(e) =>
+                                                    setSelectedCollection(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "collection_id",
+                                                    )
+                                                }
                                             >
-                                                {collections.map((item, index) => (
-                                                    <option key={index} value={item.id}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
+                                                {collections.map(
+                                                    (item, index) => (
+                                                        <option
+                                                            key={index}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </option>
+                                                    ),
+                                                )}
                                             </SelectFormGroup>
-                                            
+
                                             <SelectAPIFormGroup
                                                 eRef={subcategoryRef}
                                                 label="Subcategoría"
                                                 searchAPI="/api/admin/subcategories/paginate"
                                                 searchBy="name"
-                                                filter={["category_id", "=", selectedCategory]}
+                                                filter={[
+                                                    "category_id",
+                                                    "=",
+                                                    selectedCategory,
+                                                ]}
                                                 dropdownParent="#principal-container"
-                                                hidden={!Fillable.has('items', 'subcategory_id')}
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "subcategory_id",
+                                                    )
+                                                }
                                             />
-                                            
+
                                             <SelectFormGroup
                                                 eRef={brandRef}
                                                 label="Marca"
                                                 dropdownParent="#principal-container"
-                                                hidden={!Fillable.has('items', 'brand_id')}
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "brand_id",
+                                                    )
+                                                }
                                             >
                                                 {brands.map((item, index) => (
-                                                    <option key={index} value={item.id}>
+                                                    <option
+                                                        key={index}
+                                                        value={item.id}
+                                                    >
                                                         {item.name}
                                                     </option>
                                                 ))}
@@ -1448,115 +2158,171 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="col-12">
                                     <div className="card border-0 shadow-sm">
                                         <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-align-left me-2"></i>Descripción</h6>
+                                            <h6 className="mb-0">
+                                                <i className="fas fa-align-left me-2"></i>
+                                                Descripción
+                                            </h6>
                                         </div>
                                         <div className="card-body">
                                             <TextareaFormGroup
                                                 eRef={summaryRef}
                                                 label="Resumen"
                                                 rows={3}
-                                                hidden={!Fillable.has('items', 'summary')}
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "summary",
+                                                    )
+                                                }
                                             />
-                                            
+
                                             <SelectFormGroup
                                                 eRef={storeRef}
                                                 label="Tienda"
                                                 dropdownParent="#principal-container"
-                                                onChange={(e) => setSelectedStore(e.target.value)}
-                                                hidden={!Fillable.has('items', 'store_id')}
+                                                onChange={(e) =>
+                                                    setSelectedStore(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "store_id",
+                                                    )
+                                                }
                                             >
-                                                <option value="">Seleccionar tienda (opcional)</option>
+                                                <option value="">
+                                                    Seleccionar tienda
+                                                    (opcional)
+                                                </option>
                                                 {stores.map((item, index) => (
-                                                    <option key={index} value={item.id}>
+                                                    <option
+                                                        key={index}
+                                                        value={item.id}
+                                                    >
                                                         {item.name}
                                                     </option>
                                                 ))}
                                             </SelectFormGroup>
-                                            
+
                                             <SelectAPIFormGroup
                                                 id="tags"
                                                 eRef={tagsRef}
-                                                searchAPI={"/api/admin/tags/paginate"}
+                                                searchAPI={
+                                                    "/api/admin/tags/paginate"
+                                                }
                                                 searchBy="name"
                                                 label="Tags"
-                                                 hidden={!Fillable.has('items', 'is_tags')}
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "is_tags",
+                                                    )
+                                                }
                                                 dropdownParent="#principal-container"
                                                 tags
                                                 multiple
                                             />
                                         </div>
                                     </div>
-                                      <div className="col-12">
-                                    <div className="card border-0 shadow-sm">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-edit me-2"></i>Descripción Detallada</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <QuillFormGroup eRef={descriptionRef} label="Descripción Completa" />
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm">
+                                            <div className="card-header">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-edit me-2"></i>
+                                                    Descripción Detallada
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <QuillFormGroup
+                                                    eRef={descriptionRef}
+                                                    label="Descripción Completa"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Pestaña: Precios y Stock */}
-                        <div className="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
+                        <div
+                            className="tab-pane fade"
+                            id="pricing"
+                            role="tabpanel"
+                            aria-labelledby="pricing-tab"
+                        >
                             <div className="row g-3">
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-dollar-sign me-2"></i>Precios</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <InputFormGroup
-                                                eRef={priceRef}
-                                                label="Precio Regular"
-                                                type="number"
-                                                step="0.01"
-                                                required
-                                                hidden={!Fillable.has('items', 'price')}
-                                            />
-                                            <InputFormGroup
-                                                eRef={discountRef}
-                                                label="Precio con Descuento"
-                                                type="number"
-                                                step="0.01"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="col-md-6">
-                                    <div className="card border-0 shadow-sm h-100">
-                                        <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-boxes me-2"></i>Inventario</h6>
-                                        </div>
-                                        <div className="card-body">
-                                            <InputFormGroup
-                                                label="Stock Disponible"
-                                                eRef={stockRef}
-                                                type="number"
-                                                required
-                                                hidden={!Fillable.has('items', 'stock')}
-                                            />
+                                {Fillable.has("items", "price") && (
+                                    <div className="col-md-6">
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-dollar-sign me-2"></i>
+                                                    Precios
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <InputFormGroup
+                                                    eRef={priceRef}
+                                                    label="Precio Regular"
+                                                    type="number"
+                                                    step="0.01"
+                                                    required
+                                                />
+                                                <InputFormGroup
+                                                    eRef={discountRef}
+                                                    label="Precio con Descuento"
+                                                    type="number"
+                                                    step="0.01"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+                                {Fillable.has("items", "stock") && (
+                                    <div className="col-md-6">
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header">
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-boxes me-2"></i>
+                                                    Inventario
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <InputFormGroup
+                                                    label="Stock Disponible"
+                                                    eRef={stockRef}
+                                                    type="number"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}{" "}
                             </div>
                         </div>
 
                         {/* Pestaña: Multimedia */}
-                        <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
+                        <div
+                            className="tab-pane fade"
+                            id="multimedia"
+                            role="tabpanel"
+                            aria-labelledby="multimedia-tab"
+                        >
                             <div className="row g-3">
                                 <div className="col-md-6">
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-image me-2"></i>Imágenes Principales</h6>
+                                            <h6 className="mb-0">
+                                                <i className="fas fa-image me-2"></i>
+                                                Imágenes Principales
+                                            </h6>
                                         </div>
                                         <div className="card-body">
                                             <div className="row">
@@ -1566,7 +2332,12 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                     label="Banner"
                                                     aspect={2 / 1}
                                                     col="col-12"
-                                                    hidden={!Fillable.has('items', 'banner')}
+                                                    hidden={
+                                                        !Fillable.has(
+                                                            "items",
+                                                            "banner",
+                                                        )
+                                                    }
                                                 />
                                                 <ImageFormGroup
                                                     eRef={imageRef}
@@ -1574,7 +2345,12 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                     label="Imagen Principal"
                                                     aspect={1}
                                                     col="col-md-6"
-                                                    hidden={!Fillable.has('items', 'image')}
+                                                    hidden={
+                                                        !Fillable.has(
+                                                            "items",
+                                                            "image",
+                                                        )
+                                                    }
                                                 />
                                                 <ImageFormGroup
                                                     eRef={textureRef}
@@ -1582,17 +2358,25 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                     label="Textura"
                                                     aspect={1}
                                                     col="col-md-6"
-                                                    hidden={!Fillable.has('items', 'texture')}
+                                                    hidden={
+                                                        !Fillable.has(
+                                                            "items",
+                                                            "texture",
+                                                        )
+                                                    }
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="col-md-6">
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="card-header">
-                                            <h6 className="mb-0"><i className="fas fa-photo-video me-2"></i>Galería y Multimedia</h6>
+                                            <h6 className="mb-0">
+                                                <i className="fas fa-photo-video me-2"></i>
+                                                Galería y Multimedia
+                                            </h6>
                                         </div>
                                         <div className="card-body">
                                             {/* Galería de Imágenes */}
@@ -1600,13 +2384,20 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                 <label className="form-label fw-semibold text-dark mb-3">
                                                     <i className="fas fa-images me-2 text-primary"></i>
                                                     Galería de Imágenes
-                                                    {gallery.filter(img => !img.toDelete).length > 0 && (
+                                                    {gallery.filter(
+                                                        (img) => !img.toDelete,
+                                                    ).length > 0 && (
                                                         <span className="badge bg-primary ms-2">
-                                                            {gallery.filter(img => !img.toDelete).length}
+                                                            {
+                                                                gallery.filter(
+                                                                    (img) =>
+                                                                        !img.toDelete,
+                                                                ).length
+                                                            }
                                                         </span>
                                                     )}
                                                 </label>
-                                                
+
                                                 <input
                                                     id="input-item-gallery"
                                                     ref={galleryRef}
@@ -1614,182 +2405,345 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                     multiple
                                                     accept="image/*"
                                                     hidden
-                                                    onChange={handleGalleryChange}
+                                                    onChange={
+                                                        handleGalleryChange
+                                                    }
                                                 />
-                                                
+
                                                 {/* Contenedor de la galería con grid responsive */}
-                                                <div className="gallery-container" style={{
-                                                    display: 'grid',
-                                                    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-                                                    gap: '16px',
-                                                    padding: '16px',
-                                                    backgroundColor: '#f8f9fa',
-                                                    borderRadius: '12px',
-                                                    border: '2px dashed #dee2e6',
-                                                    minHeight: '160px'
-                                                }}>
+                                                <div
+                                                    className="gallery-container"
+                                                    style={{
+                                                        display: "grid",
+                                                        gridTemplateColumns:
+                                                            "repeat(auto-fill, minmax(120px, 1fr))",
+                                                        gap: "16px",
+                                                        padding: "16px",
+                                                        backgroundColor:
+                                                            "#f8f9fa",
+                                                        borderRadius: "12px",
+                                                        border: "2px dashed #dee2e6",
+                                                        minHeight: "160px",
+                                                    }}
+                                                >
                                                     {/* Imágenes existentes con drag & drop */}
-                                                    {gallery.filter(image => !image.toDelete).map((image, index) => {
-                                                        const originalIndex = gallery.findIndex(img => img === image);
-                                                        const displayIndex = index + 1;
-                                                        return (
-                                                            <div
-                                                                key={originalIndex}
-                                                                className="gallery-item position-relative"
-                                                                draggable
-                                                                onDragStart={(e) => handleDragStart(e, originalIndex)}
-                                                                onDragEnd={handleDragEnd}
-                                                                onDragOver={handleDragOverReorder}
-                                                                onDrop={(e) => handleDropReorder(e, originalIndex)}
-                                                                style={{
-                                                                    aspectRatio: '1',
-                                                                    borderRadius: '12px',
-                                                                    overflow: 'hidden',
-                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                                                    transition: 'all 0.3s ease',
-                                                                    cursor: 'grab',
-                                                                    transform: draggedIndex === originalIndex ? 'scale(1.05)' : 'scale(1)',
-                                                                    opacity: draggedIndex === originalIndex ? 0.8 : 1,
-                                                                    border: '3px solid transparent',
-                                                                    background: 'white'
-                                                                }}
-                                                                onMouseEnter={(e) => {
-                                                                    if (draggedIndex === null) {
-                                                                        e.currentTarget.style.transform = 'scale(1.02)';
-                                                                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
+                                                    {gallery
+                                                        .filter(
+                                                            (image) =>
+                                                                !image.toDelete,
+                                                        )
+                                                        .map((image, index) => {
+                                                            const originalIndex =
+                                                                gallery.findIndex(
+                                                                    (img) =>
+                                                                        img ===
+                                                                        image,
+                                                                );
+                                                            const displayIndex =
+                                                                index + 1;
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        originalIndex
                                                                     }
-                                                                }}
-                                                                onMouseLeave={(e) => {
-                                                                    if (draggedIndex === null) {
-                                                                        e.currentTarget.style.transform = 'scale(1)';
-                                                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                                                    className="gallery-item position-relative"
+                                                                    draggable
+                                                                    onDragStart={(
+                                                                        e,
+                                                                    ) =>
+                                                                        handleDragStart(
+                                                                            e,
+                                                                            originalIndex,
+                                                                        )
                                                                     }
-                                                                }}
-                                                            >
-                                                                {/* Indicador de posición */}
-                                                                <div className="position-absolute top-0 start-0 m-2">
-                                                                    <span className="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style={{
-                                                                        width: '24px',
-                                                                        height: '24px',
-                                                                        fontSize: '11px',
-                                                                        fontWeight: 'bold'
-                                                                    }}>
-                                                                        {displayIndex}
-                                                                    </span>
-                                                                </div>
-                                                                
-                                                                {/* Imagen */}
-                                                                <img
-                                                                    src={image.url}
-                                                                    alt={`Imagen ${displayIndex}`}
-                                                                    className="w-100 h-100"
+                                                                    onDragEnd={
+                                                                        handleDragEnd
+                                                                    }
+                                                                    onDragOver={
+                                                                        handleDragOverReorder
+                                                                    }
+                                                                    onDrop={(
+                                                                        e,
+                                                                    ) =>
+                                                                        handleDropReorder(
+                                                                            e,
+                                                                            originalIndex,
+                                                                        )
+                                                                    }
                                                                     style={{
-                                                                        objectFit: 'cover',
-                                                                        pointerEvents: 'none'
+                                                                        aspectRatio:
+                                                                            "1",
+                                                                        borderRadius:
+                                                                            "12px",
+                                                                        overflow:
+                                                                            "hidden",
+                                                                        boxShadow:
+                                                                            "0 4px 12px rgba(0,0,0,0.1)",
+                                                                        transition:
+                                                                            "all 0.3s ease",
+                                                                        cursor: "grab",
+                                                                        transform:
+                                                                            draggedIndex ===
+                                                                            originalIndex
+                                                                                ? "scale(1.05)"
+                                                                                : "scale(1)",
+                                                                        opacity:
+                                                                            draggedIndex ===
+                                                                            originalIndex
+                                                                                ? 0.8
+                                                                                : 1,
+                                                                        border: "3px solid transparent",
+                                                                        background:
+                                                                            "white",
                                                                     }}
-                                                                />
-                                                                
-                                                                {/* Overlay con controles */}
-                                                                <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{
-                                                                    background: 'rgba(0,0,0,0.7)',
-                                                                    opacity: 0,
-                                                                    transition: 'opacity 0.3s ease'
-                                                                }} onMouseEnter={(e) => e.currentTarget.style.opacity = 1} onMouseLeave={(e) => e.currentTarget.style.opacity = 0}>
-                                                                    <div className="d-flex gap-2">
-                                                                        <button
-                                                                            type="button"
-                                                                            className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                                                            style={{ width: '32px', height: '32px' }}
-                                                                            title="Mover imagen"
+                                                                    onMouseEnter={(
+                                                                        e,
+                                                                    ) => {
+                                                                        if (
+                                                                            draggedIndex ===
+                                                                            null
+                                                                        ) {
+                                                                            e.currentTarget.style.transform =
+                                                                                "scale(1.02)";
+                                                                            e.currentTarget.style.boxShadow =
+                                                                                "0 6px 20px rgba(0,0,0,0.15)";
+                                                                        }
+                                                                    }}
+                                                                    onMouseLeave={(
+                                                                        e,
+                                                                    ) => {
+                                                                        if (
+                                                                            draggedIndex ===
+                                                                            null
+                                                                        ) {
+                                                                            e.currentTarget.style.transform =
+                                                                                "scale(1)";
+                                                                            e.currentTarget.style.boxShadow =
+                                                                                "0 4px 12px rgba(0,0,0,0.1)";
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {/* Indicador de posición */}
+                                                                    <div className="position-absolute top-0 start-0 m-2">
+                                                                        <span
+                                                                            className="badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                                            style={{
+                                                                                width: "24px",
+                                                                                height: "24px",
+                                                                                fontSize:
+                                                                                    "11px",
+                                                                                fontWeight:
+                                                                                    "bold",
+                                                                            }}
                                                                         >
-                                                                            <i className="fas fa-arrows-alt text-dark"></i>
-                                                                        </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            className="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                                                            style={{ width: '32px', height: '32px' }}
-                                                                            onClick={(e) => removeGalleryImage(e, originalIndex)}
-                                                                            title="Eliminar imagen"
-                                                                        >
-                                                                            <i className="fas fa-trash text-white"></i>
-                                                                        </button>
+                                                                            {
+                                                                                displayIndex
+                                                                            }
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {/* Imagen */}
+                                                                    <img
+                                                                        src={
+                                                                            image.url
+                                                                        }
+                                                                        alt={`Imagen ${displayIndex}`}
+                                                                        className="w-100 h-100"
+                                                                        style={{
+                                                                            objectFit:
+                                                                                "cover",
+                                                                            pointerEvents:
+                                                                                "none",
+                                                                        }}
+                                                                    />
+
+                                                                    {/* Overlay con controles */}
+                                                                    <div
+                                                                        className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                                                                        style={{
+                                                                            background:
+                                                                                "rgba(0,0,0,0.7)",
+                                                                            opacity: 0,
+                                                                            transition:
+                                                                                "opacity 0.3s ease",
+                                                                        }}
+                                                                        onMouseEnter={(
+                                                                            e,
+                                                                        ) =>
+                                                                            (e.currentTarget.style.opacity = 1)
+                                                                        }
+                                                                        onMouseLeave={(
+                                                                            e,
+                                                                        ) =>
+                                                                            (e.currentTarget.style.opacity = 0)
+                                                                        }
+                                                                    >
+                                                                        <div className="d-flex gap-2">
+                                                                            <button
+                                                                                type="button"
+                                                                                className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                                style={{
+                                                                                    width: "32px",
+                                                                                    height: "32px",
+                                                                                }}
+                                                                                title="Mover imagen"
+                                                                            >
+                                                                                <i className="fas fa-arrows-alt text-dark"></i>
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                                style={{
+                                                                                    width: "32px",
+                                                                                    height: "32px",
+                                                                                }}
+                                                                                onClick={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    removeGalleryImage(
+                                                                                        e,
+                                                                                        originalIndex,
+                                                                                    )
+                                                                                }
+                                                                                title="Eliminar imagen"
+                                                                            >
+                                                                                <i className="fas fa-trash text-white"></i>
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                    
+                                                            );
+                                                        })}
+
                                                     {/* Botón de agregar imagen mejorado */}
                                                     <div
                                                         className="gallery-add-button d-flex flex-column align-items-center justify-content-center"
                                                         style={{
-                                                            aspectRatio: '1',
-                                                            border: '3px dashed #71b6f9',
-                                                            borderRadius: '12px',
-                                                            backgroundColor: 'rgba(13, 110, 253, 0.05)',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.3s ease',
-                                                            minHeight: '120px'
+                                                            aspectRatio: "1",
+                                                            border: "3px dashed #71b6f9",
+                                                            borderRadius:
+                                                                "12px",
+                                                            backgroundColor:
+                                                                "rgba(13, 110, 253, 0.05)",
+                                                            cursor: "pointer",
+                                                            transition:
+                                                                "all 0.3s ease",
+                                                            minHeight: "120px",
                                                         }}
-                                                        onClick={() => galleryRef.current.click()}
+                                                        onClick={() =>
+                                                            galleryRef.current.click()
+                                                        }
                                                         onDrop={handleDrop}
-                                                        onDragOver={handleDragOver}
+                                                        onDragOver={
+                                                            handleDragOver
+                                                        }
                                                         onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
-                                                            e.currentTarget.style.borderColor = '#0056b3';
-                                                            e.currentTarget.style.transform = 'scale(1.02)';
+                                                            e.currentTarget.style.backgroundColor =
+                                                                "rgba(13, 110, 253, 0.1)";
+                                                            e.currentTarget.style.borderColor =
+                                                                "#0056b3";
+                                                            e.currentTarget.style.transform =
+                                                                "scale(1.02)";
                                                         }}
                                                         onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.05)';
-                                                            e.currentTarget.style.borderColor = '#0d6efd';
-                                                            e.currentTarget.style.transform = 'scale(1)';
+                                                            e.currentTarget.style.backgroundColor =
+                                                                "rgba(13, 110, 253, 0.05)";
+                                                            e.currentTarget.style.borderColor =
+                                                                "#0d6efd";
+                                                            e.currentTarget.style.transform =
+                                                                "scale(1)";
                                                         }}
                                                     >
                                                         <div className="text-center">
-                                                            <div className="mb-2 bg-primary" style={{
-                                                                width: '48px',
-                                                                height: '48px',
-                                                               
-                                                                borderRadius: '50%',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                margin: '0 auto'
-                                                            }}>
+                                                            <div
+                                                                className="mb-2 bg-primary"
+                                                                style={{
+                                                                    width: "48px",
+                                                                    height: "48px",
+
+                                                                    borderRadius:
+                                                                        "50%",
+                                                                    display:
+                                                                        "flex",
+                                                                    alignItems:
+                                                                        "center",
+                                                                    justifyContent:
+                                                                        "center",
+                                                                    margin: "0 auto",
+                                                                }}
+                                                            >
                                                                 <i className="fas fa-plus text-white fa-lg"></i>
                                                             </div>
-                                                            <p className="mb-0 text-primary fw-semibold" style={{ fontSize: '12px' }}>
+                                                            <p
+                                                                className="mb-0 text-primary fw-semibold"
+                                                                style={{
+                                                                    fontSize:
+                                                                        "12px",
+                                                                }}
+                                                            >
                                                                 Agregar Imagen
                                                             </p>
-                                                            <small className="text-muted" style={{ fontSize: '10px' }}>
-                                                                Arrastra o haz clic
+                                                            <small
+                                                                className="text-muted"
+                                                                style={{
+                                                                    fontSize:
+                                                                        "10px",
+                                                                }}
+                                                            >
+                                                                Arrastra o haz
+                                                                clic (Máx 10MB)
                                                             </small>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 {/* Mensaje cuando no hay imágenes */}
-                                                {gallery.filter(img => !img.toDelete).length === 0 && (
+                                                {gallery.filter(
+                                                    (img) => !img.toDelete,
+                                                ).length === 0 && (
                                                     <div className="text-center py-4 text-muted">
                                                         <i className="fas fa-images fa-3x mb-3 opacity-50"></i>
-                                                        <p className="mb-1">No hay imágenes en la galería</p>
-                                                        <small>Arrastra archivos aquí o haz clic en "Agregar Imagen"</small>
+                                                        <p className="mb-1">
+                                                            No hay imágenes en
+                                                            la galería
+                                                        </p>
+                                                        <small>
+                                                            Arrastra archivos
+                                                            aquí o haz clic en
+                                                            "Agregar Imagen"
+                                                        </small>
                                                     </div>
                                                 )}
                                             </div>
-                                            
+
                                             {/* PDFs múltiples con ordenamiento */}
-                                            <div className="mb-4" hidden={!Fillable.has('items', 'pdf')}>
+                                            <div
+                                                className="mb-4"
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "pdf",
+                                                    )
+                                                }
+                                            >
                                                 <label className="form-label fw-semibold text-dark mb-3">
                                                     <i className="fas fa-file-pdf me-2 text-danger"></i>
-                                                    Archivos PDF (Manuales / Catálogos)
-                                                    {pdfs.filter(pdf => !pdf.toDelete).length > 0 && (
+                                                    Archivos PDF (Manuales /
+                                                    Catálogos)
+                                                    {pdfs.filter(
+                                                        (pdf) => !pdf.toDelete,
+                                                    ).length > 0 && (
                                                         <span className="badge bg-danger ms-2">
-                                                            {pdfs.filter(pdf => !pdf.toDelete).length}
+                                                            {
+                                                                pdfs.filter(
+                                                                    (pdf) =>
+                                                                        !pdf.toDelete,
+                                                                ).length
+                                                            }
                                                         </span>
                                                     )}
                                                 </label>
-                                                
+
                                                 <input
                                                     ref={pdfRef}
                                                     type="file"
@@ -1798,142 +2752,300 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                     hidden
                                                     onChange={handlePdfChange}
                                                 />
-                                                
+
                                                 {/* Lista de PDFs con drag & drop */}
                                                 <div className="list-group mb-3">
-                                                    {pdfs.filter(pdf => !pdf.toDelete).map((pdf, index) => {
-                                                        const originalIndex = pdfs.findIndex(p => p === pdf);
-                                                        return (
-                                                            <div
-                                                                key={originalIndex}
-                                                                draggable
-                                                                onDragStart={(e) => handlePdfDragStart(e, originalIndex)}
-                                                                onDragEnd={handlePdfDragEnd}
-                                                                onDragOver={handlePdfDragOver}
-                                                                onDrop={(e) => handlePdfDropReorder(e, originalIndex)}
-                                                                className="list-group-item d-flex align-items-center justify-content-between"
-                                                                style={{
-                                                                    cursor: 'grab',
-                                                                    opacity: draggedPdfIndex === originalIndex ? 0.5 : 1,
-                                                                    backgroundColor: draggedPdfIndex === originalIndex ? '#f8f9fa' : 'white',
-                                                                    transition: 'all 0.2s ease'
-                                                                }}
-                                                            >
-                                                                <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: 0 }}>
-                                                                    <span className="badge bg-danger me-3" style={{ minWidth: '28px' }}>
-                                                                        {index + 1}
-                                                                    </span>
-                                                                    <i className="fas fa-grip-vertical text-muted me-3"></i>
-                                                                    <i className="fas fa-file-pdf text-danger me-2"></i>
-                                                                    <span className="text-truncate" style={{ maxWidth: '250px' }}>{pdf.name}</span>
-                                                                </div>
-                                                                <div className="d-flex gap-2 flex-shrink-0">
-                                                                    {!pdf.file && (
-                                                                        <a
-                                                                            href={pdf.url}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="btn btn-sm btn-outline-primary"
-                                                                        >
-                                                                            <i className="fas fa-eye"></i>
-                                                                        </a>
-                                                                    )}
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-sm btn-outline-danger"
-                                                                        onClick={(e) => removePdf(e, originalIndex)}
+                                                    {pdfs
+                                                        .filter(
+                                                            (pdf) =>
+                                                                !pdf.toDelete,
+                                                        )
+                                                        .map((pdf, index) => {
+                                                            const originalIndex =
+                                                                pdfs.findIndex(
+                                                                    (p) =>
+                                                                        p ===
+                                                                        pdf,
+                                                                );
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        originalIndex
+                                                                    }
+                                                                    draggable
+                                                                    onDragStart={(
+                                                                        e,
+                                                                    ) =>
+                                                                        handlePdfDragStart(
+                                                                            e,
+                                                                            originalIndex,
+                                                                        )
+                                                                    }
+                                                                    onDragEnd={
+                                                                        handlePdfDragEnd
+                                                                    }
+                                                                    onDragOver={
+                                                                        handlePdfDragOver
+                                                                    }
+                                                                    onDrop={(
+                                                                        e,
+                                                                    ) =>
+                                                                        handlePdfDropReorder(
+                                                                            e,
+                                                                            originalIndex,
+                                                                        )
+                                                                    }
+                                                                    className="list-group-item d-flex align-items-center justify-content-between"
+                                                                    style={{
+                                                                        cursor: "grab",
+                                                                        opacity:
+                                                                            draggedPdfIndex ===
+                                                                            originalIndex
+                                                                                ? 0.5
+                                                                                : 1,
+                                                                        backgroundColor:
+                                                                            draggedPdfIndex ===
+                                                                            originalIndex
+                                                                                ? "#f8f9fa"
+                                                                                : "white",
+                                                                        transition:
+                                                                            "all 0.2s ease",
+                                                                    }}
+                                                                >
+                                                                    <div
+                                                                        className="d-flex align-items-center flex-grow-1"
+                                                                        style={{
+                                                                            minWidth: 0,
+                                                                        }}
                                                                     >
-                                                                        <i className="fas fa-trash"></i>
-                                                                    </button>
+                                                                        <span
+                                                                            className="badge bg-danger me-3"
+                                                                            style={{
+                                                                                minWidth:
+                                                                                    "28px",
+                                                                            }}
+                                                                        >
+                                                                            {index +
+                                                                                1}
+                                                                        </span>
+                                                                        <i className="fas fa-grip-vertical text-muted me-3"></i>
+                                                                        <i className="fas fa-file-pdf text-danger me-2"></i>
+                                                                        <span
+                                                                            className="text-truncate"
+                                                                            style={{
+                                                                                maxWidth:
+                                                                                    "250px",
+                                                                            }}
+                                                                        >
+                                                                            {
+                                                                                pdf.name
+                                                                            }
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="d-flex gap-2 flex-shrink-0">
+                                                                        {!pdf.file && (
+                                                                            <a
+                                                                                href={
+                                                                                    pdf.url
+                                                                                }
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="btn btn-sm btn-outline-primary"
+                                                                            >
+                                                                                <i className="fas fa-eye"></i>
+                                                                            </a>
+                                                                        )}
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-danger"
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) =>
+                                                                                removePdf(
+                                                                                    e,
+                                                                                    originalIndex,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <i className="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                            );
+                                                        })}
                                                 </div>
-                                                
+
                                                 <button
                                                     type="button"
                                                     className="btn btn-outline-danger w-100"
-                                                    onClick={() => pdfRef.current.click()}
+                                                    onClick={() =>
+                                                        pdfRef.current.click()
+                                                    }
                                                 >
                                                     <i className="fas fa-plus me-2"></i>
                                                     Agregar PDFs
                                                 </button>
                                             </div>
-                                            
+
                                             {/* Videos múltiples con ordenamiento */}
-                                            <div className="mb-3" hidden={!Fillable.has('items', 'linkvideo')}>
+                                            <div
+                                                className="mb-3"
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "linkvideo",
+                                                    )
+                                                }
+                                            >
                                                 <label className="form-label fw-semibold text-dark mb-3">
                                                     <i className="fas fa-video me-2 text-success"></i>
                                                     Links de Videos
-                                                    {videos.filter(video => !video.toDelete).length > 0 && (
+                                                    {videos.filter(
+                                                        (video) =>
+                                                            !video.toDelete,
+                                                    ).length > 0 && (
                                                         <span className="badge bg-success ms-2">
-                                                            {videos.filter(video => !video.toDelete).length}
+                                                            {
+                                                                videos.filter(
+                                                                    (video) =>
+                                                                        !video.toDelete,
+                                                                ).length
+                                                            }
                                                         </span>
                                                     )}
                                                 </label>
-                                                
+
                                                 {/* Lista de videos con drag & drop */}
                                                 <div className="list-group mb-3">
-                                                    {videos.filter(video => !video.toDelete).map((video, index) => {
-                                                        const originalIndex = videos.findIndex(v => v === video);
-                                                        return (
-                                                            <div
-                                                                key={originalIndex}
-                                                                draggable
-                                                                onDragStart={(e) => handleVideoDragStart(e, originalIndex)}
-                                                                onDragEnd={handleVideoDragEnd}
-                                                                onDragOver={handleVideoDragOver}
-                                                                onDrop={(e) => handleVideoDropReorder(e, originalIndex)}
-                                                                className="list-group-item d-flex align-items-center justify-content-between"
-                                                                style={{
-                                                                    cursor: 'grab',
-                                                                    opacity: draggedVideoIndex === originalIndex ? 0.5 : 1,
-                                                                    backgroundColor: draggedVideoIndex === originalIndex ? '#f8f9fa' : 'white',
-                                                                    transition: 'all 0.2s ease'
-                                                                }}
-                                                            >
-                                                                <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: 0, overflow: 'hidden' }}>
-                                                                    <span className="badge bg-success me-3 flex-shrink-0" style={{ minWidth: '28px' }}>
-                                                                        {index + 1}
-                                                                    </span>
-                                                                    <i className="fas fa-grip-vertical text-muted me-3 flex-shrink-0"></i>
-                                                                    <i className="fas fa-video text-success me-2 flex-shrink-0"></i>
-                                                                    <span 
-                                                                        className="small" 
-                                                                        style={{ 
-                                                                            overflow: 'hidden',
-                                                                            textOverflow: 'ellipsis',
-                                                                            whiteSpace: 'nowrap',
-                                                                            maxWidth: '100%'
+                                                    {videos
+                                                        .filter(
+                                                            (video) =>
+                                                                !video.toDelete,
+                                                        )
+                                                        .map((video, index) => {
+                                                            const originalIndex =
+                                                                videos.findIndex(
+                                                                    (v) =>
+                                                                        v ===
+                                                                        video,
+                                                                );
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        originalIndex
+                                                                    }
+                                                                    draggable
+                                                                    onDragStart={(
+                                                                        e,
+                                                                    ) =>
+                                                                        handleVideoDragStart(
+                                                                            e,
+                                                                            originalIndex,
+                                                                        )
+                                                                    }
+                                                                    onDragEnd={
+                                                                        handleVideoDragEnd
+                                                                    }
+                                                                    onDragOver={
+                                                                        handleVideoDragOver
+                                                                    }
+                                                                    onDrop={(
+                                                                        e,
+                                                                    ) =>
+                                                                        handleVideoDropReorder(
+                                                                            e,
+                                                                            originalIndex,
+                                                                        )
+                                                                    }
+                                                                    className="list-group-item d-flex align-items-center justify-content-between"
+                                                                    style={{
+                                                                        cursor: "grab",
+                                                                        opacity:
+                                                                            draggedVideoIndex ===
+                                                                            originalIndex
+                                                                                ? 0.5
+                                                                                : 1,
+                                                                        backgroundColor:
+                                                                            draggedVideoIndex ===
+                                                                            originalIndex
+                                                                                ? "#f8f9fa"
+                                                                                : "white",
+                                                                        transition:
+                                                                            "all 0.2s ease",
+                                                                    }}
+                                                                >
+                                                                    <div
+                                                                        className="d-flex align-items-center flex-grow-1"
+                                                                        style={{
+                                                                            minWidth: 0,
+                                                                            overflow:
+                                                                                "hidden",
                                                                         }}
-                                                                        title={video.url}
                                                                     >
-                                                                        {video.url}
-                                                                    </span>
+                                                                        <span
+                                                                            className="badge bg-success me-3 flex-shrink-0"
+                                                                            style={{
+                                                                                minWidth:
+                                                                                    "28px",
+                                                                            }}
+                                                                        >
+                                                                            {index +
+                                                                                1}
+                                                                        </span>
+                                                                        <i className="fas fa-grip-vertical text-muted me-3 flex-shrink-0"></i>
+                                                                        <i className="fas fa-video text-success me-2 flex-shrink-0"></i>
+                                                                        <span
+                                                                            className="small"
+                                                                            style={{
+                                                                                overflow:
+                                                                                    "hidden",
+                                                                                textOverflow:
+                                                                                    "ellipsis",
+                                                                                whiteSpace:
+                                                                                    "nowrap",
+                                                                                maxWidth:
+                                                                                    "100%",
+                                                                            }}
+                                                                            title={
+                                                                                video.url
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                video.url
+                                                                            }
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="d-flex gap-2 flex-shrink-0 ms-2">
+                                                                        <a
+                                                                            href={
+                                                                                video.url
+                                                                            }
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="btn btn-sm btn-outline-primary"
+                                                                        >
+                                                                            <i className="fas fa-external-link-alt"></i>
+                                                                        </a>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-danger"
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) =>
+                                                                                removeVideo(
+                                                                                    e,
+                                                                                    originalIndex,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <i className="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="d-flex gap-2 flex-shrink-0 ms-2">
-                                                                    <a
-                                                                        href={video.url}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="btn btn-sm btn-outline-primary"
-                                                                    >
-                                                                        <i className="fas fa-external-link-alt"></i>
-                                                                    </a>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-sm btn-outline-danger"
-                                                                        onClick={(e) => removeVideo(e, originalIndex)}
-                                                                    >
-                                                                        <i className="fas fa-trash"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                            );
+                                                        })}
                                                 </div>
-                                                
+
                                                 {/* Formulario para agregar nuevo video */}
                                                 <div className="input-group">
                                                     <input
@@ -1959,13 +3071,23 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                         </div>
 
                         {/* Pestaña: Características */}
-                        <div className="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
+                        <div
+                            className="tab-pane fade"
+                            id="features"
+                            role="tabpanel"
+                            aria-labelledby="features-tab"
+                        >
                             <div className="row g-3">
-                                {Fillable.has('items', 'is_features') && (
-                                    <div className={`${Fillable.has('items', 'is_specifications') ? 'col-md-6' : 'col-12'}`}>
+                                {Fillable.has("items", "is_features") && (
+                                    <div
+                                        className={`${Fillable.has("items", "is_specifications") ? "col-md-6" : "col-12"}`}
+                                    >
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
-                                                <h6 className="mb-0"><i className="fas fa-list-ul me-2"></i>Características</h6>
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-list-ul me-2"></i>
+                                                    Características
+                                                </h6>
                                             </div>
                                             <div className="card-body">
                                                 <DynamicField
@@ -1979,18 +3101,27 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                         </div>
                                     </div>
                                 )}
-                                
-                                {Fillable.has('items', 'is_specifications') && (
-                                    <div className={`${Fillable.has('items', 'is_features') ? 'col-md-6' : 'col-12'}`}>
+
+                                {Fillable.has("items", "is_specifications") && (
+                                    <div
+                                        className={`${Fillable.has("items", "is_features") ? "col-md-6" : "col-12"}`}
+                                    >
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
-                                                <h6 className="mb-0"><i className="fas fa-cogs me-2"></i>Especificaciones</h6>
+                                                <h6 className="mb-0">
+                                                    <i className="fas fa-cogs me-2"></i>
+                                                    Especificaciones
+                                                </h6>
                                             </div>
                                             <div className="card-body">
                                                 <DynamicField
                                                     ref={specificationsRef}
                                                     label="Especificaciones Técnicas"
-                                                    structure={{ type: "", title: "", description: "" }}
+                                                    structure={{
+                                                        type: "",
+                                                        title: "",
+                                                        description: "",
+                                                    }}
                                                     value={specifications}
                                                     onChange={setSpecifications}
                                                     typeOptions={typeOptions}
@@ -1999,8 +3130,8 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                         </div>
                                     </div>
                                 )}
-                                
-                                {Fillable.has('items', 'is_amenities') && (
+
+                                {Fillable.has("items", "is_amenities") && (
                                     <div className="col-12">
                                         <div className="card border-0 shadow-sm">
                                             <div className="card-header bg-light">
@@ -2012,24 +3143,25 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                             <div className="card-body">
                                                 <SelectAPIFormGroup
                                                     eRef={amenitiesRef}
-                                                    searchAPI='/api/admin/amenities/paginate'
-                                                    searchBy='name'
+                                                    searchAPI="/api/admin/amenities/paginate"
+                                                    searchBy="name"
                                                     label="Seleccionar Cualidades"
                                                     dropdownParent="#principal-container"
                                                     multiple
-                                                  
                                                 />
                                                 <small className="text-muted">
                                                     <i className="fas fa-info-circle me-1"></i>
-                                                    Selecciona las cualidades o atributos que destacan este producto
+                                                    Selecciona las cualidades o
+                                                    atributos que destacan este
+                                                    producto
                                                 </small>
                                             </div>
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 {/* Selector de Aplicaciones */}
-                                {Fillable.has('items', 'is_applications') && (
+                                {Fillable.has("items", "is_applications") && (
                                     <div className="col-12">
                                         <div className="card border-0 shadow-sm">
                                             <div className="card-header">
@@ -2044,321 +3176,1501 @@ const Items = ({ categories, brands, collections, stores, generals, attributes: 
                                                     label="Seleccionar Aplicaciones"
                                                     dropdownParent="#principal-container"
                                                     multiple
-                                                  
                                                 >
-                                                    {applications.map((application) => (
-                                                        <option 
-                                                            key={application.id} 
-                                                            value={application.id}
-                                                            data-image={application.image}
-                                                            data-icon={application.icon}
-                                                        >
-                                                            {application.name}
-                                                        </option>
-                                                    ))}
+                                                    {applications.map(
+                                                        (application) => (
+                                                            <option
+                                                                key={
+                                                                    application.id
+                                                                }
+                                                                value={
+                                                                    application.id
+                                                                }
+                                                                data-image={
+                                                                    application.image
+                                                                }
+                                                                data-icon={
+                                                                    application.icon
+                                                                }
+                                                            >
+                                                                {
+                                                                    application.name
+                                                                }
+                                                            </option>
+                                                        ),
+                                                    )}
                                                 </SelectFormGroup>
                                                 <small className="text-muted">
                                                     <i className="fas fa-info-circle me-1"></i>
-                                                    Selecciona las industrias o usos donde se aplica este producto
+                                                    Selecciona las industrias o
+                                                    usos donde se aplica este
+                                                    producto
                                                 </small>
                                             </div>
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 {/* Sección de Atributos Dinámicos */}
-                                {Fillable.has('items', 'is_attributes') && availableAttributes.length > 0 && (
-                                    <div className="col-12">
-                                        <div className="card border-0 shadow-sm overflow-hidden">
-                                            <div className="card-header bg-gradient" >
-                                                <div className="d-flex justify-content-between align-items-center">
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <i className="fas fa-sliders-h text-primarye"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h6 className="mb-0  fw-bold">Atributos Técnicos</h6>
-                                                            <small className="">Especificaciones del producto</small>
-                                                        </div>
-                                                    </div>
-                                                    <div className="d-flex align-items-center gap-2">
-                                                        {itemAttributes.length > 0 && (
-                                                            <span className="badge bg-white text-primary fw-bold px-3 py-2" style={{ fontSize: '0.85rem' }}>
-                                                                {itemAttributes.length} {itemAttributes.length === 1 ? 'atributo' : 'atributos'}
-                                                            </span>
-                                                        )}
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2"
-                                                            onClick={() => {
-                                                                setItemAttributes([...itemAttributes, { attribute_id: '', value: '', attribute: null }]);
-                                                            }}
-                                                            style={{ borderRadius: '20px', padding: '8px 16px' }}
-                                                        >
-                                                            <i className="fas fa-plus"></i>
-                                                            <span>Agregar</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="card-body p-4" style={{ backgroundColor: '#f8f9ff' }}>
-                                                {itemAttributes.length === 0 ? (
-                                                    <div className="text-center py-5">
-                                                        <div className="mb-4">
-                                                            <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center" style={{
-                                                                width: '80px',
-                                                                height: '80px',
-                                                                background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
-                                                                border: '2px dashed #667eea50'
-                                                            }}>
-                                                                <i className="fas fa-layer-group fa-2x" style={{ color: '#667eea' }}></i>
+                                {Fillable.has("items", "is_attributes") &&
+                                    availableAttributes.length > 0 && (
+                                        <div className="col-12">
+                                            <div className="card border-0 shadow-sm overflow-hidden">
+                                                <div className="card-header bg-gradient">
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <div className="d-flex align-items-center">
+                                                            <div
+                                                                className=""
+                                                                style={{
+                                                                    width: "40px",
+                                                                    height: "40px",
+                                                                    display:
+                                                                        "flex",
+                                                                    alignItems:
+                                                                        "center",
+                                                                    justifyContent:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                <i className="fas fa-sliders-h text-primarye"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 className="mb-0  fw-bold">
+                                                                    Atributos
+                                                                    Técnicos
+                                                                </h6>
+                                                                <small className="">
+                                                                    Especificaciones
+                                                                    del producto
+                                                                </small>
                                                             </div>
                                                         </div>
-                                                        <h6 className="text-muted mb-2">Sin atributos configurados</h6>
-                                                        <p className="text-muted small mb-4" style={{ maxWidth: '300px', margin: '0 auto' }}>
-                                                            Agrega atributos técnicos como dimensiones, peso, material y más para detallar tu producto.
-                                                        </p>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-outline-primary btn-sm px-4"
-                                                            onClick={() => {
-                                                                setItemAttributes([...itemAttributes, { attribute_id: '', value: '', attribute: null }]);
-                                                            }}
-                                                            style={{ borderRadius: '20px' }}
-                                                        >
-                                                            <i className="fas fa-plus me-2"></i>
-                                                            Agregar primer atributo
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="attributes-list">
-                                                        {itemAttributes.map((attr, index) => {
-                                                            const selectedAttr = availableAttributes.find(a => a.id === attr.attribute_id);
-                                                            const typeIcons = {
-                                                                'text': 'fa-font',
-                                                                'number': 'fa-hashtag',
-                                                                'select': 'fa-list-ul',
-                                                                'color': 'fa-palette'
-                                                            };
-                                                            const typeColors = {
-                                                                'text': '#3b82f6',
-                                                                'number': '#10b981',
-                                                                'select': '#f59e0b',
-                                                                'color': '#ec4899'
-                                                            };
-                                                            return (
-                                                                <div 
-                                                                    key={index} 
-                                                                    className="attribute-item mb-3 p-3 bg-white rounded-3 border"
+                                                        <div className="d-flex align-items-center gap-2">
+                                                            {itemAttributes.length >
+                                                                0 && (
+                                                                <span
+                                                                    className="badge bg-white text-primary fw-bold px-3 py-2"
                                                                     style={{
-                                                                        borderColor: selectedAttr ? typeColors[selectedAttr.type] + '40' : '#e5e7eb',
-                                                                        borderLeftWidth: '4px',
-                                                                        borderLeftColor: selectedAttr ? typeColors[selectedAttr.type] : '#e5e7eb',
-                                                                        transition: 'all 0.2s ease',
-                                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                                        fontSize:
+                                                                            "0.85rem",
                                                                     }}
                                                                 >
-                                                                    <div className="row g-3 align-items-center">
-                                                                        {/* Número de orden */}
-                                                                        <div className="col-auto">
-                                                                            <div 
-                                                                                className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                                                                                style={{
-                                                                                    width: '32px',
-                                                                                    height: '32px',
-                                                                                    backgroundColor: selectedAttr ? typeColors[selectedAttr.type] + '15' : '#f3f4f6',
-                                                                                    color: selectedAttr ? typeColors[selectedAttr.type] : '#9ca3af',
-                                                                                    fontSize: '0.85rem'
-                                                                                }}
-                                                                            >
-                                                                                {index + 1}
-                                                                            </div>
-                                                                        </div>
-                                                                        
-                                                                        {/* Selector de atributo */}
-                                                                        <div className="col-md-4">
-                                                                            <label className="form-label small text-muted mb-1 d-flex align-items-center gap-2">
-                                                                                <i className="fas fa-tag" style={{ fontSize: '0.7rem' }}></i>
-                                                                                Atributo
-                                                                            </label>
-                                                                            <select
-                                                                                className="form-select"
-                                                                                value={attr.attribute_id}
-                                                                                onChange={(e) => {
-                                                                                    const newAttrs = [...itemAttributes];
-                                                                                    const foundAttr = availableAttributes.find(a => a.id === e.target.value);
-                                                                                    newAttrs[index] = {
-                                                                                        ...newAttrs[index],
-                                                                                        attribute_id: e.target.value,
-                                                                                        attribute: foundAttr,
-                                                                                        value: ''
-                                                                                    };
-                                                                                    setItemAttributes(newAttrs);
-                                                                                }}
-                                                                                style={{ borderRadius: '8px' }}
-                                                                            >
-                                                                                <option value="">Seleccionar...</option>
-                                                                                {availableAttributes
-                                                                                    .filter(a => !itemAttributes.some((ia, i) => i !== index && ia.attribute_id === a.id))
-                                                                                    .map(a => (
-                                                                                        <option key={a.id} value={a.id}>{a.name}</option>
-                                                                                    ))}
-                                                                            </select>
-                                                                        </div>
-                                                                        
-                                                                        {/* Input de valor */}
-                                                                        <div className="col">
-                                                                            <label className="form-label small text-muted mb-1 d-flex align-items-center gap-2">
-                                                                                {selectedAttr && (
-                                                                                    <i className={`fas ${typeIcons[selectedAttr.type]}`} style={{ fontSize: '0.7rem', color: typeColors[selectedAttr.type] }}></i>
-                                                                                )}
-                                                                                Valor
-                                                                                {selectedAttr?.unit && (
-                                                                                    <span 
-                                                                                        className="badge ms-1"
-                                                                                        style={{ 
-                                                                                            backgroundColor: typeColors[selectedAttr.type] + '20',
-                                                                                            color: typeColors[selectedAttr.type],
-                                                                                            fontSize: '0.7rem',
-                                                                                            fontWeight: '600'
-                                                                                        }}
-                                                                                    >
-                                                                                        {selectedAttr.unit}
-                                                                                    </span>
-                                                                                )}
-                                                                            </label>
-                                                                            {selectedAttr?.type === 'select' && selectedAttr?.options ? (
-                                                                                <select
-                                                                                    className="form-select"
-                                                                                    value={attr.value}
-                                                                                    onChange={(e) => {
-                                                                                        const newAttrs = [...itemAttributes];
-                                                                                        newAttrs[index].value = e.target.value;
-                                                                                        setItemAttributes(newAttrs);
-                                                                                    }}
-                                                                                    style={{ borderRadius: '8px' }}
-                                                                                >
-                                                                                    <option value="">Seleccionar opción...</option>
-                                                                                    {selectedAttr.options.map((opt, optIdx) => (
-                                                                                        <option key={optIdx} value={opt}>{opt}</option>
-                                                                                    ))}
-                                                                                </select>
-                                                                            ) : selectedAttr?.type === 'color' ? (
-                                                                                <div className="d-flex gap-2 align-items-center">
-                                                                                    <input
-                                                                                        type="color"
-                                                                                        className="form-control form-control-color p-1"
-                                                                                        value={attr.value || '#6366f1'}
-                                                                                        onChange={(e) => {
-                                                                                            const newAttrs = [...itemAttributes];
-                                                                                            newAttrs[index].value = e.target.value;
-                                                                                            setItemAttributes(newAttrs);
-                                                                                        }}
-                                                                                        style={{ 
-                                                                                            width: '50px', 
-                                                                                            height: '38px', 
-                                                                                            borderRadius: '8px',
-                                                                                            cursor: 'pointer'
-                                                                                        }}
-                                                                                    />
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        className="form-control"
-                                                                                        value={attr.value || '#6366f1'}
-                                                                                        onChange={(e) => {
-                                                                                            const newAttrs = [...itemAttributes];
-                                                                                            newAttrs[index].value = e.target.value;
-                                                                                            setItemAttributes(newAttrs);
-                                                                                        }}
-                                                                                        placeholder="#000000"
-                                                                                        style={{ borderRadius: '8px', fontFamily: 'monospace' }}
-                                                                                    />
-                                                                                </div>
-                                                                            ) : (
-                                                                                <input
-                                                                                    type={selectedAttr?.type === 'number' ? 'number' : 'text'}
-                                                                                    className="form-control"
-                                                                                    placeholder={selectedAttr ? `Ingresa ${selectedAttr.name.toLowerCase()}${selectedAttr?.unit ? ` en ${selectedAttr.unit}` : ''}` : 'Selecciona un atributo primero'}
-                                                                                    value={attr.value}
-                                                                                    disabled={!selectedAttr}
-                                                                                    onChange={(e) => {
-                                                                                        const newAttrs = [...itemAttributes];
-                                                                                        newAttrs[index].value = e.target.value;
-                                                                                        setItemAttributes(newAttrs);
-                                                                                    }}
-                                                                                    style={{ borderRadius: '8px' }}
-                                                                                />
-                                                                            )}
-                                                                        </div>
-                                                                        
-                                                                        {/* Botón eliminar */}
-                                                                        <div className="col-auto">
-                                                                            <button
-                                                                                type="button"
-                                                                                className="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center"
-                                                                                onClick={() => {
-                                                                                    setItemAttributes(itemAttributes.filter((_, i) => i !== index));
-                                                                                }}
-                                                                                title="Eliminar atributo"
-                                                                                style={{ 
-                                                                                    width: '38px', 
-                                                                                    height: '38px', 
-                                                                                    borderRadius: '8px',
-                                                                                    marginTop: '24px'
-                                                                                }}
-                                                                            >
-                                                                                <i className="fas fa-trash-alt"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                        
-                                                        {/* Botón agregar más al final */}
-                                                        <div 
-                                                            className="add-more-btn text-center py-3 rounded-3 mt-2"
-                                                            style={{
-                                                                border: '2px dashed #667eea50',
-                                                                backgroundColor: '#667eea08',
-                                                                cursor: 'pointer',
-                                                                transition: 'all 0.2s ease'
-                                                            }}
-                                                            onClick={() => {
-                                                                setItemAttributes([...itemAttributes, { attribute_id: '', value: '', attribute: null }]);
-                                                            }}
-                                                            onMouseEnter={(e) => {
-                                                                e.currentTarget.style.backgroundColor = '#667eea15';
-                                                                e.currentTarget.style.borderColor = '#667eea';
-                                                            }}
-                                                            onMouseLeave={(e) => {
-                                                                e.currentTarget.style.backgroundColor = '#667eea08';
-                                                                e.currentTarget.style.borderColor = '#667eea50';
-                                                            }}
-                                                        >
-                                                            <i className="fas fa-plus me-2" style={{ color: '#667eea' }}></i>
-                                                            <span style={{ color: '#667eea', fontWeight: '500' }}>Agregar otro atributo</span>
+                                                                    {
+                                                                        itemAttributes.length
+                                                                    }{" "}
+                                                                    {itemAttributes.length ===
+                                                                    1
+                                                                        ? "atributo"
+                                                                        : "atributos"}
+                                                                </span>
+                                                            )}
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2"
+                                                                onClick={() => {
+                                                                    setItemAttributes(
+                                                                        [
+                                                                            ...itemAttributes,
+                                                                            {
+                                                                                attribute_id:
+                                                                                    "",
+                                                                                value: "",
+                                                                                attribute:
+                                                                                    null,
+                                                                            },
+                                                                        ],
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    borderRadius:
+                                                                        "20px",
+                                                                    padding:
+                                                                        "8px 16px",
+                                                                }}
+                                                            >
+                                                                <i className="fas fa-plus"></i>
+                                                                <span>
+                                                                    Agregar
+                                                                </span>
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                )}
+                                                </div>
+                                                <div
+                                                    className="card-body p-4"
+                                                    style={{
+                                                        backgroundColor:
+                                                            "#f8f9ff",
+                                                    }}
+                                                >
+                                                    {itemAttributes.length ===
+                                                    0 ? (
+                                                        <div className="text-center py-5">
+                                                            <div className="mb-4">
+                                                                <div
+                                                                    className="rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                                                    style={{
+                                                                        width: "80px",
+                                                                        height: "80px",
+                                                                        background:
+                                                                            "linear-gradient(135deg, #667eea20 0%, #764ba220 100%)",
+                                                                        border: "2px dashed #667eea50",
+                                                                    }}
+                                                                >
+                                                                    <i
+                                                                        className="fas fa-layer-group fa-2x"
+                                                                        style={{
+                                                                            color: "#667eea",
+                                                                        }}
+                                                                    ></i>
+                                                                </div>
+                                                            </div>
+                                                            <h6 className="text-muted mb-2">
+                                                                Sin atributos
+                                                                configurados
+                                                            </h6>
+                                                            <p
+                                                                className="text-muted small mb-4"
+                                                                style={{
+                                                                    maxWidth:
+                                                                        "300px",
+                                                                    margin: "0 auto",
+                                                                }}
+                                                            >
+                                                                Agrega atributos
+                                                                técnicos como
+                                                                dimensiones,
+                                                                peso, material y
+                                                                más para
+                                                                detallar tu
+                                                                producto.
+                                                            </p>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-outline-primary btn-sm px-4"
+                                                                onClick={() => {
+                                                                    setItemAttributes(
+                                                                        [
+                                                                            ...itemAttributes,
+                                                                            {
+                                                                                attribute_id:
+                                                                                    "",
+                                                                                value: "",
+                                                                                attribute:
+                                                                                    null,
+                                                                            },
+                                                                        ],
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    borderRadius:
+                                                                        "20px",
+                                                                }}
+                                                            >
+                                                                <i className="fas fa-plus me-2"></i>
+                                                                Agregar primer
+                                                                atributo
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="attributes-list">
+                                                            {itemAttributes.map(
+                                                                (
+                                                                    attr,
+                                                                    index,
+                                                                ) => {
+                                                                    const selectedAttr =
+                                                                        availableAttributes.find(
+                                                                            (
+                                                                                a,
+                                                                            ) =>
+                                                                                a.id ===
+                                                                                attr.attribute_id,
+                                                                        );
+                                                                    const typeIcons =
+                                                                        {
+                                                                            text: "fa-font",
+                                                                            number: "fa-hashtag",
+                                                                            select: "fa-list-ul",
+                                                                            color: "fa-palette",
+                                                                        };
+                                                                    const typeColors =
+                                                                        {
+                                                                            text: "#3b82f6",
+                                                                            number: "#10b981",
+                                                                            select: "#f59e0b",
+                                                                            color: "#ec4899",
+                                                                        };
+                                                                    return (
+                                                                        <div
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            className="attribute-item mb-3 p-3 bg-white rounded-3 border"
+                                                                            style={{
+                                                                                borderColor:
+                                                                                    selectedAttr
+                                                                                        ? typeColors[
+                                                                                              selectedAttr
+                                                                                                  .type
+                                                                                          ] +
+                                                                                          "40"
+                                                                                        : "#e5e7eb",
+                                                                                borderLeftWidth:
+                                                                                    "4px",
+                                                                                borderLeftColor:
+                                                                                    selectedAttr
+                                                                                        ? typeColors[
+                                                                                              selectedAttr
+                                                                                                  .type
+                                                                                          ]
+                                                                                        : "#e5e7eb",
+                                                                                transition:
+                                                                                    "all 0.2s ease",
+                                                                                boxShadow:
+                                                                                    "0 1px 3px rgba(0,0,0,0.05)",
+                                                                            }}
+                                                                        >
+                                                                            <div className="row g-3 align-items-center">
+                                                                                {/* Número de orden */}
+                                                                                <div className="col-auto">
+                                                                                    <div
+                                                                                        className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                                                                        style={{
+                                                                                            width: "32px",
+                                                                                            height: "32px",
+                                                                                            backgroundColor:
+                                                                                                selectedAttr
+                                                                                                    ? typeColors[
+                                                                                                          selectedAttr
+                                                                                                              .type
+                                                                                                      ] +
+                                                                                                      "15"
+                                                                                                    : "#f3f4f6",
+                                                                                            color: selectedAttr
+                                                                                                ? typeColors[
+                                                                                                      selectedAttr
+                                                                                                          .type
+                                                                                                  ]
+                                                                                                : "#9ca3af",
+                                                                                            fontSize:
+                                                                                                "0.85rem",
+                                                                                        }}
+                                                                                    >
+                                                                                        {index +
+                                                                                            1}
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                {/* Selector de atributo */}
+                                                                                <div className="col-md-4">
+                                                                                    <label className="form-label small text-muted mb-1 d-flex align-items-center gap-2">
+                                                                                        <i
+                                                                                            className="fas fa-tag"
+                                                                                            style={{
+                                                                                                fontSize:
+                                                                                                    "0.7rem",
+                                                                                            }}
+                                                                                        ></i>
+                                                                                        Atributo
+                                                                                    </label>
+                                                                                    <select
+                                                                                        className="form-select"
+                                                                                        value={
+                                                                                            attr.attribute_id
+                                                                                        }
+                                                                                        onChange={(
+                                                                                            e,
+                                                                                        ) => {
+                                                                                            const newAttrs =
+                                                                                                [
+                                                                                                    ...itemAttributes,
+                                                                                                ];
+                                                                                            const foundAttr =
+                                                                                                availableAttributes.find(
+                                                                                                    (
+                                                                                                        a,
+                                                                                                    ) =>
+                                                                                                        a.id ===
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value,
+                                                                                                );
+                                                                                            newAttrs[
+                                                                                                index
+                                                                                            ] =
+                                                                                                {
+                                                                                                    ...newAttrs[
+                                                                                                        index
+                                                                                                    ],
+                                                                                                    attribute_id:
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value,
+                                                                                                    attribute:
+                                                                                                        foundAttr,
+                                                                                                    value: "",
+                                                                                                };
+                                                                                            setItemAttributes(
+                                                                                                newAttrs,
+                                                                                            );
+                                                                                        }}
+                                                                                        style={{
+                                                                                            borderRadius:
+                                                                                                "8px",
+                                                                                        }}
+                                                                                    >
+                                                                                        <option value="">
+                                                                                            Seleccionar...
+                                                                                        </option>
+                                                                                        {availableAttributes
+                                                                                            .filter(
+                                                                                                (
+                                                                                                    a,
+                                                                                                ) =>
+                                                                                                    !itemAttributes.some(
+                                                                                                        (
+                                                                                                            ia,
+                                                                                                            i,
+                                                                                                        ) =>
+                                                                                                            i !==
+                                                                                                                index &&
+                                                                                                            ia.attribute_id ===
+                                                                                                                a.id,
+                                                                                                    ),
+                                                                                            )
+                                                                                            .map(
+                                                                                                (
+                                                                                                    a,
+                                                                                                ) => (
+                                                                                                    <option
+                                                                                                        key={
+                                                                                                            a.id
+                                                                                                        }
+                                                                                                        value={
+                                                                                                            a.id
+                                                                                                        }
+                                                                                                    >
+                                                                                                        {
+                                                                                                            a.name
+                                                                                                        }
+                                                                                                    </option>
+                                                                                                ),
+                                                                                            )}
+                                                                                    </select>
+                                                                                </div>
+
+                                                                                {/* Input de valor */}
+                                                                                <div className="col">
+                                                                                    <label className="form-label small text-muted mb-1 d-flex align-items-center gap-2">
+                                                                                        {selectedAttr && (
+                                                                                            <i
+                                                                                                className={`fas ${typeIcons[selectedAttr.type]}`}
+                                                                                                style={{
+                                                                                                    fontSize:
+                                                                                                        "0.7rem",
+                                                                                                    color: typeColors[
+                                                                                                        selectedAttr
+                                                                                                            .type
+                                                                                                    ],
+                                                                                                }}
+                                                                                            ></i>
+                                                                                        )}
+                                                                                        Valor
+                                                                                        {selectedAttr?.unit && (
+                                                                                            <span
+                                                                                                className="badge ms-1"
+                                                                                                style={{
+                                                                                                    backgroundColor:
+                                                                                                        typeColors[
+                                                                                                            selectedAttr
+                                                                                                                .type
+                                                                                                        ] +
+                                                                                                        "20",
+                                                                                                    color: typeColors[
+                                                                                                        selectedAttr
+                                                                                                            .type
+                                                                                                    ],
+                                                                                                    fontSize:
+                                                                                                        "0.7rem",
+                                                                                                    fontWeight:
+                                                                                                        "600",
+                                                                                                }}
+                                                                                            >
+                                                                                                {
+                                                                                                    selectedAttr.unit
+                                                                                                }
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </label>
+                                                                                    {selectedAttr?.type ===
+                                                                                        "select" &&
+                                                                                    selectedAttr?.options ? (
+                                                                                        <select
+                                                                                            className="form-select"
+                                                                                            value={
+                                                                                                attr.value
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                e,
+                                                                                            ) => {
+                                                                                                const newAttrs =
+                                                                                                    [
+                                                                                                        ...itemAttributes,
+                                                                                                    ];
+                                                                                                newAttrs[
+                                                                                                    index
+                                                                                                ].value =
+                                                                                                    e.target.value;
+                                                                                                setItemAttributes(
+                                                                                                    newAttrs,
+                                                                                                );
+                                                                                            }}
+                                                                                            style={{
+                                                                                                borderRadius:
+                                                                                                    "8px",
+                                                                                            }}
+                                                                                        >
+                                                                                            <option value="">
+                                                                                                Seleccionar
+                                                                                                opción...
+                                                                                            </option>
+                                                                                            {selectedAttr.options.map(
+                                                                                                (
+                                                                                                    opt,
+                                                                                                    optIdx,
+                                                                                                ) => (
+                                                                                                    <option
+                                                                                                        key={
+                                                                                                            optIdx
+                                                                                                        }
+                                                                                                        value={
+                                                                                                            opt
+                                                                                                        }
+                                                                                                    >
+                                                                                                        {
+                                                                                                            opt
+                                                                                                        }
+                                                                                                    </option>
+                                                                                                ),
+                                                                                            )}
+                                                                                        </select>
+                                                                                    ) : selectedAttr?.type ===
+                                                                                      "color" ? (
+                                                                                        <div className="d-flex gap-2 align-items-center">
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                className="form-control form-control-color p-1"
+                                                                                                value={
+                                                                                                    attr.value ||
+                                                                                                    "#6366f1"
+                                                                                                }
+                                                                                                onChange={(
+                                                                                                    e,
+                                                                                                ) => {
+                                                                                                    const newAttrs =
+                                                                                                        [
+                                                                                                            ...itemAttributes,
+                                                                                                        ];
+                                                                                                    newAttrs[
+                                                                                                        index
+                                                                                                    ].value =
+                                                                                                        e.target.value;
+                                                                                                    setItemAttributes(
+                                                                                                        newAttrs,
+                                                                                                    );
+                                                                                                }}
+                                                                                                style={{
+                                                                                                    width: "50px",
+                                                                                                    height: "38px",
+                                                                                                    borderRadius:
+                                                                                                        "8px",
+                                                                                                    cursor: "pointer",
+                                                                                                }}
+                                                                                            />
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control"
+                                                                                                value={
+                                                                                                    attr.value ||
+                                                                                                    "#6366f1"
+                                                                                                }
+                                                                                                onChange={(
+                                                                                                    e,
+                                                                                                ) => {
+                                                                                                    const newAttrs =
+                                                                                                        [
+                                                                                                            ...itemAttributes,
+                                                                                                        ];
+                                                                                                    newAttrs[
+                                                                                                        index
+                                                                                                    ].value =
+                                                                                                        e.target.value;
+                                                                                                    setItemAttributes(
+                                                                                                        newAttrs,
+                                                                                                    );
+                                                                                                }}
+                                                                                                placeholder="#000000"
+                                                                                                style={{
+                                                                                                    borderRadius:
+                                                                                                        "8px",
+                                                                                                    fontFamily:
+                                                                                                        "monospace",
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    ) : (
+                                                                                        <input
+                                                                                            type={
+                                                                                                selectedAttr?.type ===
+                                                                                                "number"
+                                                                                                    ? "number"
+                                                                                                    : "text"
+                                                                                            }
+                                                                                            className="form-control"
+                                                                                            placeholder={
+                                                                                                selectedAttr
+                                                                                                    ? `Ingresa ${selectedAttr.name.toLowerCase()}${selectedAttr?.unit ? ` en ${selectedAttr.unit}` : ""}`
+                                                                                                    : "Selecciona un atributo primero"
+                                                                                            }
+                                                                                            value={
+                                                                                                attr.value
+                                                                                            }
+                                                                                            disabled={
+                                                                                                !selectedAttr
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                e,
+                                                                                            ) => {
+                                                                                                const newAttrs =
+                                                                                                    [
+                                                                                                        ...itemAttributes,
+                                                                                                    ];
+                                                                                                newAttrs[
+                                                                                                    index
+                                                                                                ].value =
+                                                                                                    e.target.value;
+                                                                                                setItemAttributes(
+                                                                                                    newAttrs,
+                                                                                                );
+                                                                                            }}
+                                                                                            style={{
+                                                                                                borderRadius:
+                                                                                                    "8px",
+                                                                                            }}
+                                                                                        />
+                                                                                    )}
+                                                                                </div>
+
+                                                                                {/* Botón eliminar */}
+                                                                                <div className="col-auto">
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center"
+                                                                                        onClick={() => {
+                                                                                            setItemAttributes(
+                                                                                                itemAttributes.filter(
+                                                                                                    (
+                                                                                                        _,
+                                                                                                        i,
+                                                                                                    ) =>
+                                                                                                        i !==
+                                                                                                        index,
+                                                                                                ),
+                                                                                            );
+                                                                                        }}
+                                                                                        title="Eliminar atributo"
+                                                                                        style={{
+                                                                                            width: "38px",
+                                                                                            height: "38px",
+                                                                                            borderRadius:
+                                                                                                "8px",
+                                                                                            marginTop:
+                                                                                                "24px",
+                                                                                        }}
+                                                                                    >
+                                                                                        <i className="fas fa-trash-alt"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                },
+                                                            )}
+
+                                                            {/* Botón agregar más al final */}
+                                                            <div
+                                                                className="add-more-btn text-center py-3 rounded-3 mt-2"
+                                                                style={{
+                                                                    border: "2px dashed #667eea50",
+                                                                    backgroundColor:
+                                                                        "#667eea08",
+                                                                    cursor: "pointer",
+                                                                    transition:
+                                                                        "all 0.2s ease",
+                                                                }}
+                                                                onClick={() => {
+                                                                    setItemAttributes(
+                                                                        [
+                                                                            ...itemAttributes,
+                                                                            {
+                                                                                attribute_id:
+                                                                                    "",
+                                                                                value: "",
+                                                                                attribute:
+                                                                                    null,
+                                                                            },
+                                                                        ],
+                                                                    );
+                                                                }}
+                                                                onMouseEnter={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.currentTarget.style.backgroundColor =
+                                                                        "#667eea15";
+                                                                    e.currentTarget.style.borderColor =
+                                                                        "#667eea";
+                                                                }}
+                                                                onMouseLeave={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.currentTarget.style.backgroundColor =
+                                                                        "#667eea08";
+                                                                    e.currentTarget.style.borderColor =
+                                                                        "#667eea50";
+                                                                }}
+                                                            >
+                                                                <i
+                                                                    className="fas fa-plus me-2"
+                                                                    style={{
+                                                                        color: "#667eea",
+                                                                    }}
+                                                                ></i>
+                                                                <span
+                                                                    style={{
+                                                                        color: "#667eea",
+                                                                        fontWeight:
+                                                                            "500",
+                                                                    }}
+                                                                >
+                                                                    Agregar otro
+                                                                    atributo
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                          
                                         </div>
-                                    </div>
-                                )}
-                                
-                              
+                                    )}
                             </div>
                         </div>
                     </div>
                 </div>
             </Modal>
             <Modal modalRef={modalImportRef} title={"Importar Datos"} size="lg">
-                <ModalImportItem 
-                    gridRef={gridRef} 
+                <ModalImportItem
+                    gridRef={gridRef}
                     modalRef={modalImportRef}
-                    excelTemplate={Array.isArray(generals) ? generals.find(g => g.correlative === 'excel_import_template')?.description : null}
+                    excelTemplate={
+                        Array.isArray(generals)
+                            ? generals.find(
+                                  (g) =>
+                                      g.correlative === "excel_import_template",
+                              )?.description
+                            : null
+                    }
                 />
+            </Modal>
+
+            {/* Modal Generador de Variantes */}
+            <Modal
+                modalRef={modalVariantsRef}
+                title="Generador de Variantes Masivas"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    onVariantsSubmit();
+                }}
+                size="xl"
+            >
+                <div className="row">
+                    {/* Columna Izquierda: Configuración */}
+                    <div className="col-md-5 border-end">
+                        <h6 className="mb-3 text-primary">
+                            <i className="fas fa-info-circle me-2"></i>1. Datos
+                            Base del Producto
+                        </h6>
+                        <div className="row g-2">
+                            <div className="col-12">
+                                <InputFormGroup
+                                    eRef={variantBaseRefs.name}
+                                    label="Nombre Base"
+                                    placeholder="Ej: Tablero Melamina"
+                                    required
+                                />
+                            </div>
+
+                            {Fillable.has("items", "price") && (
+                                <div className="col-6">
+                                    <InputFormGroup
+                                        eRef={variantBaseRefs.price}
+                                        label="Precio Base"
+                                        type="number"
+                                        step="0.01"
+                                    />
+                                </div>
+                            )}
+                            {Fillable.has("items", "sku") && (
+                                <div className="col-6">
+                                    <InputFormGroup
+                                        eRef={variantBaseRefs.sku}
+                                        label="SKU Base"
+                                        placeholder="Automático si vacío"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Sección de Imágenes y Galería */}
+                        <div className="col-12 mt-3">
+                            <label className="form-label fw-bold small text-uppercase text-muted">
+                                Imagen y Galería Base
+                            </label>
+                            <div className="row g-2">
+                                {/* Imagen Principal */}
+                                <div className="col-md-4">
+                                    <div className="card text-center h-100">
+                                        <div className="card-header py-1 small fw-bold">
+                                            Principal
+                                        </div>
+                                        <div className="card-body p-2 d-flex flex-column align-items-center justify-content-center position-relative">
+                                            {variantImagePreview ? (
+                                                <div className="position-relative w-100">
+                                                    <img
+                                                        src={
+                                                            variantImagePreview
+                                                        }
+                                                        className="img-fluid mb-2"
+                                                        style={{
+                                                            maxHeight: "100px",
+                                                        }}
+                                                    />
+                                                    <button
+                                                        className="btn btn-danger btn-sm position-absolute top-0 end-0 p-1"
+                                                        style={{
+                                                            fontSize: "10px",
+                                                        }}
+                                                        onClick={
+                                                            handleRemoveNewImage
+                                                        }
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ) : keepMasterImage &&
+                                              masterItemForVariants?.image ? (
+                                                <div className="position-relative w-100">
+                                                    <img
+                                                        src={`/storage/images/item/${masterItemForVariants.image}`}
+                                                        className="img-fluid mb-2"
+                                                        style={{
+                                                            maxHeight: "100px",
+                                                            opacity: 0.7,
+                                                        }}
+                                                    />
+                                                    <button
+                                                        className="btn btn-danger btn-sm position-absolute top-0 end-0 p-1"
+                                                        style={{
+                                                            fontSize: "10px",
+                                                        }}
+                                                        onClick={
+                                                            handleRemoveMasterImage
+                                                        }
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="text-muted small my-3">
+                                                    <i className="fas fa-image fa-2x"></i>
+                                                </div>
+                                            )}
+
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="form-control form-control-sm"
+                                                onChange={
+                                                    handleVariantImageChange
+                                                }
+                                                ref={variantBaseRefs.image}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Galería */}
+                                <div className="col-md-8">
+                                    <div className="card h-100">
+                                        <div className="card-header py-1 small fw-bold">
+                                            Galería
+                                        </div>
+                                        <div className="card-body p-2">
+                                            <div
+                                                className="d-flex flex-wrap gap-2 mb-2"
+                                                style={{
+                                                    minHeight: "60px",
+                                                }}
+                                            >
+                                                {/* Master Images */}
+                                                {masterItemForVariants?.images?.map(
+                                                    (img) =>
+                                                        keepMasterGalleryIds.includes(
+                                                            img.id,
+                                                        ) && (
+                                                            <div
+                                                                key={`master-${img.id}`}
+                                                                className="position-relative"
+                                                            >
+                                                                <img
+                                                                    src={`/storage/images/item/${img.url}`}
+                                                                    style={{
+                                                                        width: "50px",
+                                                                        height: "50px",
+                                                                        objectFit:
+                                                                            "cover",
+                                                                        opacity: 0.7,
+                                                                    }}
+                                                                    className="border rounded"
+                                                                />
+                                                                <button
+                                                                    className="btn btn-danger btn-sm position-absolute top-0 end-0 p-0"
+                                                                    style={{
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                        fontSize:
+                                                                            "8px",
+                                                                        lineHeight: 1,
+                                                                    }}
+                                                                    onClick={() =>
+                                                                        handleRemoveMasterGalleryItem(
+                                                                            img.id,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    x
+                                                                </button>
+                                                            </div>
+                                                        ),
+                                                )}
+
+                                                {/* Preview New Images */}
+                                                {variantGalleryPreview.map(
+                                                    (url, i) => (
+                                                        <div
+                                                            key={`new-${i}`}
+                                                            className="position-relative"
+                                                        >
+                                                            <img
+                                                                src={url}
+                                                                style={{
+                                                                    width: "50px",
+                                                                    height: "50px",
+                                                                    objectFit:
+                                                                        "cover",
+                                                                }}
+                                                                className="border rounded"
+                                                            />
+                                                            <button
+                                                                className="btn btn-danger btn-sm position-absolute top-0 end-0 p-0"
+                                                                style={{
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                    fontSize:
+                                                                        "8px",
+                                                                    lineHeight: 1,
+                                                                }}
+                                                                onClick={() =>
+                                                                    handleRemoveNewGalleryItem(
+                                                                        i,
+                                                                    )
+                                                                }
+                                                            >
+                                                                x
+                                                            </button>
+                                                        </div>
+                                                    ),
+                                                )}
+
+                                                {keepMasterGalleryIds.length ===
+                                                    0 &&
+                                                    variantGalleryPreview.length ===
+                                                        0 && (
+                                                        <span className="text-muted small align-self-center">
+                                                            Sin galería
+                                                        </span>
+                                                    )}
+                                            </div>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                className="form-control form-control-sm"
+                                                onChange={
+                                                    handleVariantGalleryChange
+                                                }
+                                                ref={variantBaseRefs.gallery}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr className="my-4" />
+
+                        <h6 className="mb-3 text-success">
+                            <i className="fas fa-sliders-h me-2"></i>2.
+                            Configurar Atributos
+                        </h6>
+
+                        <div className="mb-3">
+                            <label className="form-label small text-muted">
+                                Agregar atributo para variar:
+                            </label>
+                            <select
+                                className="form-select"
+                                onChange={(e) => {
+                                    handleVariantAttributeSelect(
+                                        e,
+                                        e.target.value,
+                                    );
+                                    e.target.value = "";
+                                }}
+                            >
+                                <option value="">
+                                    + Seleccionar atributo...
+                                </option>
+                                {availableAttributes
+                                    .filter(
+                                        (a) =>
+                                            !variantAttributes.find(
+                                                (va) => va.attribute_id == a.id,
+                                            ),
+                                    )
+                                    .map((a) => (
+                                        <option key={a.id} value={a.id}>
+                                            {a.name}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+
+                        <div
+                            className="attributes-config-list"
+                            style={{ maxHeight: "300px", overflowY: "auto" }}
+                        >
+                            {variantAttributes.map((va, idx) => (
+                                <div
+                                    key={idx}
+                                    className="card mb-2 bg-light border-0"
+                                >
+                                    <div className="card-body p-2">
+                                        <div className="d-flex justify-content-between align-items-center mb-2">
+                                            <span className="fw-bold small">
+                                                {va.attribute.name}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="btn btn-xs text-danger"
+                                                onClick={() =>
+                                                    removeVariantAttribute(idx)
+                                                }
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+
+                                        {/* Input de valores dinámico */}
+                                        {va.attribute.type === "select" ||
+                                        va.attribute.type === "color" ? (
+                                            <SelectFormGroup
+                                                multiple
+                                                tags={true}
+                                                dropdownParent={
+                                                    modalVariantsRef.current
+                                                }
+                                                onChange={(e) => {
+                                                    const val = $(
+                                                        e.target,
+                                                    ).val();
+                                                    updateVariantAttributeValues(
+                                                        idx,
+                                                        val || [],
+                                                    );
+                                                }}
+                                            >
+                                                {va.attribute.options &&
+                                                    va.attribute.options.map(
+                                                        (opt, i) => (
+                                                            <option
+                                                                key={i}
+                                                                value={opt}
+                                                            >
+                                                                {opt}
+                                                            </option>
+                                                        ),
+                                                    )}
+                                            </SelectFormGroup>
+                                        ) : (
+                                            <SelectFormGroup
+                                                multiple
+                                                tags={true}
+                                                dropdownParent={
+                                                    modalVariantsRef.current
+                                                }
+                                                onChange={(e) => {
+                                                    const val = $(
+                                                        e.target,
+                                                    ).val();
+                                                    updateVariantAttributeValues(
+                                                        idx,
+                                                        val || [],
+                                                    );
+                                                }}
+                                            >
+                                                {/* Select2 con tags permite escribir valores libres */}
+                                            </SelectFormGroup>
+                                        )}
+                                        <small
+                                            className="text-muted"
+                                            style={{ fontSize: "10px" }}
+                                        >
+                                            {va.attribute.type === "select"
+                                                ? "Selecciona las opciones"
+                                                : "Escribe y presiona Enter"}
+                                        </small>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="d-grid mt-3">
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={generateCombinations}
+                                disabled={variantAttributes.length === 0}
+                            >
+                                <i className="fas fa-sync-alt me-2"></i> Generar
+                                Combinaciones
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Columna Derecha: Previsualización */}
+                    <div className="col-md-7">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h6 className="mb-0 text-dark">
+                                <i className="fas fa-list me-2"></i>
+                                Previsualización de Variantes
+                            </h6>
+                            <span className="badge bg-primary rounded-pill">
+                                {generatedVariants.length} items
+                            </span>
+                        </div>
+
+                        <div
+                            className="table-responsive"
+                            style={{
+                                maxHeight: "600px",
+                                overflow: "auto",
+                                border: "1px solid #dee2e6",
+                                borderRadius: "4px",
+                            }}
+                        >
+                            <table
+                                className="table table-sm table-hover mb-0"
+                                style={{ fontSize: "0.9rem" }}
+                            >
+                                <thead className="table-light sticky-top">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nombre Generado</th>
+                                        <th>Atributos</th>
+                                        {Fillable.has("items", "price") && (
+                                            <th style={{ width: "100px" }}>
+                                                Precio
+                                            </th>
+                                        )}
+                                        {Fillable.has("items", "stock") && (
+                                            <th style={{ width: "80px" }}>
+                                                Stock
+                                            </th>
+                                        )}
+                                        {Fillable.has("items", "sku") && (
+                                            <th style={{ width: "100px" }}>
+                                                SKU
+                                            </th>
+                                        )}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {generatedVariants.length === 0 ? (
+                                        <tr>
+                                            <td
+                                                colSpan={
+                                                    3 +
+                                                    (Fillable.has(
+                                                        "items",
+                                                        "price",
+                                                    )
+                                                        ? 1
+                                                        : 0) +
+                                                    (Fillable.has(
+                                                        "items",
+                                                        "stock",
+                                                    )
+                                                        ? 1
+                                                        : 0) +
+                                                    (Fillable.has(
+                                                        "items",
+                                                        "sku",
+                                                    )
+                                                        ? 1
+                                                        : 0)
+                                                }
+                                                className="text-center py-5 text-muted"
+                                            >
+                                                <i className="fas fa-arrow-left me-2"></i>
+                                                Configura los atributos y genera
+                                                las combinaciones
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        generatedVariants.map((item, idx) => (
+                                            <tr key={idx}>
+                                                <td>{idx + 1}</td>
+                                                <td className="fw-bold">
+                                                    {item.name}
+                                                </td>
+                                                <td>
+                                                    {item.attributes.map(
+                                                        (a, i) => (
+                                                            <span
+                                                                key={i}
+                                                                className="badge bg-secondary me-1"
+                                                            >
+                                                                {
+                                                                    a.attribute_name
+                                                                }
+                                                                : {a.value}
+                                                            </span>
+                                                        ),
+                                                    )}
+                                                </td>
+                                                {Fillable.has(
+                                                    "items",
+                                                    "price",
+                                                ) && (
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control form-control-sm"
+                                                            value={item.price}
+                                                            onChange={(e) => {
+                                                                const newVars =
+                                                                    [
+                                                                        ...generatedVariants,
+                                                                    ];
+                                                                newVars[
+                                                                    idx
+                                                                ].price =
+                                                                    e.target.value;
+                                                                setGeneratedVariants(
+                                                                    newVars,
+                                                                );
+                                                            }}
+                                                        />
+                                                    </td>
+                                                )}
+                                                {Fillable.has(
+                                                    "items",
+                                                    "stock",
+                                                ) && (
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control form-control-sm"
+                                                            value={item.stock}
+                                                            onChange={(e) => {
+                                                                const newVars =
+                                                                    [
+                                                                        ...generatedVariants,
+                                                                    ];
+                                                                newVars[
+                                                                    idx
+                                                                ].stock =
+                                                                    e.target.value;
+                                                                setGeneratedVariants(
+                                                                    newVars,
+                                                                );
+                                                            }}
+                                                        />
+                                                    </td>
+                                                )}
+                                                {Fillable.has(
+                                                    "items",
+                                                    "sku",
+                                                ) && (
+                                                    <td>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control form-control-sm"
+                                                            value={item.sku}
+                                                            onChange={(e) => {
+                                                                const newVars =
+                                                                    [
+                                                                        ...generatedVariants,
+                                                                    ];
+                                                                newVars[
+                                                                    idx
+                                                                ].sku =
+                                                                    e.target.value;
+                                                                setGeneratedVariants(
+                                                                    newVars,
+                                                                );
+                                                            }}
+                                                        />
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {generatedVariants.length > 0 && (
+                            <div className="alert alert-info mt-3 small">
+                                <i className="fas fa-info-circle me-1"></i>
+                                Se asignará un{" "}
+                                <strong>Código de Agrupador</strong> único a
+                                estos {generatedVariants.length} items para que
+                                funcionen como variantes conectadas.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Modal para Gestionar Variantes de un Master */}
+            <Modal
+                modalRef={modalManageVariantsRef}
+                title={`Gestionar Variantes: ${masterItemForVariants?.name || ""}`}
+                size="xl"
+                hideFooter
+            >
+                <div className="row">
+                    <div className="col-12 mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h5 className="mb-0">
+                                <i className="fas fa-boxes me-2"></i>Variantes
+                                Existentes
+                            </h5>
+                            <button
+                                className="btn btn-primary btn-sm"
+                                onClick={() => {
+                                    // Abrir el generador pero pre-configurado con el master
+                                    if (variantBaseRefs.name.current)
+                                        variantBaseRefs.name.current.value =
+                                            masterItemForVariants.name;
+                                    if (variantBaseRefs.price.current)
+                                        variantBaseRefs.price.current.value =
+                                            masterItemForVariants.price;
+                                    if (variantBaseRefs.stock.current)
+                                        variantBaseRefs.stock.current.value =
+                                            masterItemForVariants.stock;
+                                    if (variantBaseRefs.sku.current)
+                                        variantBaseRefs.sku.current.value =
+                                            masterItemForVariants.sku;
+
+                                    // Reset image states
+                                    setVariantImagePreview(null);
+                                    setVariantGalleryFiles([]);
+                                    setVariantGalleryPreview([]);
+                                    setKeepMasterImage(
+                                        !!masterItemForVariants?.image,
+                                    );
+                                    setKeepMasterGalleryIds(
+                                        masterItemForVariants?.images?.map(
+                                            (i) => i.id,
+                                        ) || [],
+                                    );
+
+                                    $(modalVariantsRef.current).modal("show");
+                                }}
+                            >
+                                <i className="fas fa-plus me-1"></i> Añadir más
+                                Variantes
+                            </button>
+                        </div>
+
+                        <div
+                            className="table-responsive"
+                            style={{ maxHeight: "400px" }}
+                        >
+                            <table className="table table-hover table-sm align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Atributos</th>
+                                        {Fillable.has("items", "price") && (
+                                            <th>Precio</th>
+                                        )}
+                                        {Fillable.has("items", "stock") && (
+                                            <th>Stock</th>
+                                        )}
+                                        {Fillable.has("items", "sku") && (
+                                            <th>SKU</th>
+                                        )}
+                                        <th className="text-center">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentVariants.length === 0 ? (
+                                        <tr>
+                                            <td
+                                                colSpan={
+                                                    3 +
+                                                    (Fillable.has(
+                                                        "items",
+                                                        "price",
+                                                    )
+                                                        ? 1
+                                                        : 0) +
+                                                    (Fillable.has(
+                                                        "items",
+                                                        "stock",
+                                                    )
+                                                        ? 1
+                                                        : 0) +
+                                                    (Fillable.has(
+                                                        "items",
+                                                        "sku",
+                                                    )
+                                                        ? 1
+                                                        : 0)
+                                                }
+                                                className="text-center py-4 text-muted"
+                                            >
+                                                No hay variantes secundarias
+                                                creadas para este agrupador.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        currentVariants.map((v, i) => (
+                                            <tr key={v.id}>
+                                                <td className="fw-medium">
+                                                    {v.name}
+                                                </td>
+                                                <td>
+                                                    {v.attributes?.map((a) => (
+                                                        <span
+                                                            key={a.id}
+                                                            className="badge bg-soft-info text-info me-1"
+                                                        >
+                                                            {a.name}:{" "}
+                                                            {a.pivot?.value}
+                                                        </span>
+                                                    ))}
+                                                </td>
+                                                {Fillable.has(
+                                                    "items",
+                                                    "price",
+                                                ) && (
+                                                    <td
+                                                        style={{
+                                                            width: "120px",
+                                                        }}
+                                                    >
+                                                        <div className="input-group input-group-sm">
+                                                            <span className="input-group-text">
+                                                                {CurrencySymbol()}
+                                                            </span>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control"
+                                                                defaultValue={
+                                                                    v.price
+                                                                }
+                                                                onBlur={(e) =>
+                                                                    updateVariantInline(
+                                                                        v,
+                                                                        "price",
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                )}
+                                                {Fillable.has(
+                                                    "items",
+                                                    "stock",
+                                                ) && (
+                                                    <td
+                                                        style={{
+                                                            width: "100px",
+                                                        }}
+                                                    >
+                                                        <input
+                                                            type="number"
+                                                            className="form-control form-control-sm"
+                                                            defaultValue={
+                                                                v.stock
+                                                            }
+                                                            onBlur={(e) =>
+                                                                updateVariantInline(
+                                                                    v,
+                                                                    "stock",
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                    </td>
+                                                )}
+                                                {Fillable.has(
+                                                    "items",
+                                                    "sku",
+                                                ) && (
+                                                    <td className="text-muted small">
+                                                        {v.sku}
+                                                    </td>
+                                                )}
+                                                <td className="text-center">
+                                                    <button
+                                                        className="btn btn-xs btn-outline-danger"
+                                                        onClick={() =>
+                                                            deleteVariant(
+                                                                v.id,
+                                                                v.name,
+                                                            )
+                                                        }
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </Modal>
         </>
     );
@@ -2368,6 +4680,6 @@ CreateReactScript((el, properties) => {
     createRoot(el).render(
         <BaseAdminto {...properties} title="Items">
             <Items {...properties} />
-        </BaseAdminto>
+        </BaseAdminto>,
     );
 });

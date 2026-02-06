@@ -361,6 +361,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/items/export', [AdminItemController::class, 'export']);
     Route::put('/items/{id}/reorder', [AdminItemController::class, 'reorder']);
     Route::post('/items/{id}/clone', [AdminItemController::class, 'clone']);
+    Route::get('/items/variants/{agrupador}', [AdminItemController::class, 'getVariants']);
+    Route::delete('/items/variant/{id}', [AdminItemController::class, 'deleteVariant']);
 
     // Cupones
     Route::post('/coupons', [AdminCouponController::class, 'save']);

@@ -29,7 +29,7 @@ use SoDe\Extend\File;
 class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailure
 {
     use \Maatwebsite\Excel\Concerns\Importable;
-    
+
     private $errors = [];
     private $fieldMappings = [];
     private $truncateMode = true;
@@ -48,7 +48,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $this->importMode = $options['mode'] ?? 'reset';
         $this->truncateMode = ($this->importMode === 'reset') ? true : false;
         $this->fieldMappings = $options['fieldMappings'] ?? $this->getDefaultFieldMappings();
-        
+
         if ($this->truncateMode) {
             $this->truncateTables();
         }
@@ -62,21 +62,21 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     {
         return [
             'collection' => ['collection', 'colleccion', 'coleccion'],
-            'categoria' => ['categoria', 'category','Categoria'],
+            'categoria' => ['categoria', 'category', 'Categoria'],
             'summary' => ['summary', 'resumen', 'descripcion_corta'],
             'subcategoria' => ['subcategoria', 'subcategory', 'sub_categoria'],
             'marca' => ['marca', 'brand'],
-            'sku' => ['sku', 'codigo', 'code','SKU'],
-            'nombre_producto' => ['nombre_de_producto', 'nombre_producto', 'nombre_del_producto', 'name', 'producto','Nombre del producto'],
-            'descripcion' => ['descripcion', 'description','Descripcion'],
-            'precio' => ['precio', 'price','Precio'],
+            'sku' => ['sku', 'codigo', 'code', 'SKU'],
+            'nombre_producto' => ['nombre_de_producto', 'nombre_producto', 'nombre_del_producto', 'name', 'producto', 'Nombre del producto'],
+            'descripcion' => ['descripcion', 'description', 'Descripcion'],
+            'precio' => ['precio', 'price', 'Precio'],
             'descuento' => ['descuento', 'discount', 'precio_descuento'],
-            'stock' => ['stock', 'cantidad', 'inventory','Stock'],
+            'stock' => ['stock', 'cantidad', 'inventory', 'Stock'],
             'color' => ['color', 'colour'],
             'talla' => ['size', 'talla', 'size_talla'],
             'agrupador' => ['agrupador'],
             'tienda' => ['tienda', 'store', 'store_id', 'Tienda'],
-            'peso' => ['peso', 'weight','Peso'],
+            'peso' => ['peso', 'weight', 'Peso'],
             // Nuevos campos para estado del producto
             'es_nuevo' => ['es_nuevo', 'is_new', 'nuevo', 'new', 'Es nuevo'],
             'en_oferta' => ['en_oferta', 'offering', 'oferta', 'offer', 'En oferta'],
@@ -110,7 +110,9 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'especificaciones_iconos_separado_por_comas',
                 'especificaciones_iconos',
                 'specs_iconos'
-            ]
+            ],
+            'atributos' => ['atributos', 'attribute', 'atrib', 'Atributos', 'atributo'],
+            'valores' => ['valores', 'values', 'valor', 'Valores', 'valores_atributos']
         ];
     }
 
@@ -120,13 +122,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function truncateTables(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        
+
         // Solo limpiar tablas de items y sus dependencias directas
         // Las tablas de categorías, marcas, etc. se mantienen para reutilizar
         ItemImage::truncate();
         ItemSpecification::truncate();
         Item::truncate();
-        
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
@@ -136,13 +138,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function getFieldValue(array $row, string $fieldKey, $default = null)
     {
         $possibleKeys = $this->fieldMappings[$fieldKey] ?? [$fieldKey];
-        
+
         foreach ($possibleKeys as $key) {
             if (array_key_exists($key, $row) && !is_null($row[$key]) && trim(strval($row[$key])) !== '') {
                 return trim(strval($row[$key]));
             }
         }
-        
+
         return $default;
     }
 
@@ -152,13 +154,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function hasField(array $row, string $fieldKey): bool
     {
         $possibleKeys = $this->fieldMappings[$fieldKey] ?? [$fieldKey];
-        
+
         foreach ($possibleKeys as $key) {
             if (array_key_exists($key, $row) && !is_null($row[$key]) && trim(strval($row[$key])) !== '') {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -173,11 +175,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             // Obtener datos básicos del producto
             $sku = $this->getFieldValue($row, 'sku');
             $nombreProducto = $this->getFieldValue($row, 'nombre_producto');
-            
+
             // Debug temporal - agregar logging
             $pesoValue = $this->getFieldValue($row, 'peso');
             $pesoNumeric = $this->getNumericValue($row, 'peso', 0);
-            
+
             Log::info("Procesando fila:", [
                 'sku_encontrado' => $sku,
                 'nombre_encontrado' => $nombreProducto,
@@ -187,7 +189,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'mapeo_peso' => $this->fieldMappings['peso'] ?? 'no definido',
                 'mapeo_nombre' => $this->fieldMappings['nombre_producto'] ?? 'no definido'
             ]);
-            
+
             if (!$sku || !$nombreProducto) {
                 throw new Exception("SKU y nombre del producto son requeridos");
             }
@@ -204,7 +206,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     'status' => true
                 ]
             );
-            
+
             // Si el slug o status han cambiado, actualizarlos
             $category->status = true;
             $category->save();
@@ -219,7 +221,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     if ($slugExists) {
                         $subCategorySlug = $subCategorySlug . '-' . Crypto::short();
                     }
-                    
+
                     $subCategory = SubCategory::firstOrCreate(
                         ['name' => $subcategoria, 'category_id' => $category->id],
                         [
@@ -241,7 +243,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                         ['name' => $collectionName],
                         [
                             'slug' => Str::slug($collectionName),
-                            'status' => true    
+                            'status' => true
                         ]
                     );
                     $collection->status = true;
@@ -281,14 +283,14 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if ($this->hasField($row, 'tienda')) {
                 $store = $this->getFieldValue($row, 'tienda');
                 if ($store) {
-                     $store = Store::firstOrCreate(
+                    $store = Store::firstOrCreate(
                         ['name' => $store],
                         [
                             'slug' => Str::slug($store),
                             'status' => true
                         ]
                     );
-                    
+
                     $store->status = true;
                     $store->save();
                 }
@@ -296,7 +298,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
             $itemData = [
                 'sku' => $sku,
-                'grouper' => $this->getFieldValue($row, 'agrupador', ''),
+                'agrupador' => $this->getFieldValue($row, 'agrupador', ''),
                 'name' => $nombreProducto,
                 'description' => $this->getFieldValue($row, 'descripcion', ''),
                 'summary' => $this->getFieldValue($row, 'summary', ''),
@@ -321,8 +323,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'featured' => $this->getBooleanValue($row, 'destacado', false),
                 'visible' => $this->getBooleanValue($row, 'visible', true),
                 'status' => $this->getBooleanValue($row, 'estado', true),
+                'is_attributes' => $this->hasField($row, 'atributos'),
+                'is_specifications' => $this->hasField($row, 'especificaciones_principales') || $this->hasField($row, 'especificaciones_generales') || $this->hasField($row, 'especificaciones_tecnicas'),
+                'is_tags' => $this->hasField($row, 'promociones'),
             ];
-            
+
             // Debug: verificar datos antes de crear el item
             Log::info("Datos del item antes de crear:", [
                 'sku' => $sku,
@@ -354,23 +359,25 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if ($item) {
                 // 8️⃣ Guardar especificaciones si existen
                 $this->saveSpecificationsIfExists($item, $row);
-                
+
                 // 9️⃣ Guardar imágenes de galería (solo si hay nuevas imágenes o es un item nuevo)
                 if ($shouldProcessImages) {
                     $this->saveGalleryImages($item, $row, 'sku');
                 }
-                
+
                 // 🔟 Asociar regla de descuento si existe
                 $this->associateDiscountRule($item, $row);
-                
+
                 // 1️⃣1️⃣ Asociar promociones/tags si existen
                 $this->associatePromotions($item, $row);
+
+                // 12️⃣ Asociar atributos dinámicos si existen
+                $this->associateAttributes($item, $row);
             } else {
                 throw new Exception("No se pudo crear el producto con SKU: {$sku}");
             }
 
             return $item;
-
         } catch (\Exception $e) {
             $errorMessage = sprintf(
                 "Error al procesar fila con SKU '%s': %s (Línea: %s, Archivo: %s)",
@@ -379,15 +386,15 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 $e->getLine(),
                 basename($e->getFile())
             );
-            
+
             $this->addError($errorMessage);
-            
+
             // Log detallado para debugging
             Log::error($errorMessage, [
                 'row_data' => $row,
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return null;
         }
     }
@@ -398,14 +405,14 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function getNumericValue(array $row, string $fieldKey, $default = null)
     {
         $value = $this->getFieldValue($row, $fieldKey);
-        
+
         if (is_null($value) || $value === '') {
             return $default;
         }
-        
+
         // Limpiar el valor (remover espacios, comas, etc.)
         $cleanValue = preg_replace('/[^\d.-]/', '', $value);
-        
+
         return is_numeric($cleanValue) ? (float)$cleanValue : $default;
     }
 
@@ -415,26 +422,26 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function getBooleanValue(array $row, string $fieldKey, $default = false): bool
     {
         $value = $this->getFieldValue($row, $fieldKey);
-        
+
         if (is_null($value) || $value === '') {
             return $default;
         }
-        
+
         $value = strtolower(trim($value));
-        
+
         // Valores que se consideran true
         $trueValues = ['1', 'true', 'verdadero', 'si', 'sí', 'yes', 'y', 'activo', 'active'];
         // Valores que se consideran false
         $falseValues = ['0', 'false', 'falso', 'no', 'n', 'inactivo', 'inactive'];
-        
+
         if (in_array($value, $trueValues)) {
             return true;
         }
-        
+
         if (in_array($value, $falseValues)) {
             return false;
         }
-        
+
         return $default;
     }
 
@@ -446,7 +453,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         if ($descuento && $descuento > 0 && $descuento < $precio) {
             return $descuento;
         }
-        
+
         return $precio ?? 0;
     }
 
@@ -458,7 +465,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         if ($descuento && $descuento > 0 && $precio && $precio > 0 && $descuento < $precio) {
             return round((100 - ($descuento / $precio) * 100));
         }
-        
+
         return 0;
     }
 
@@ -469,13 +476,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     {
         $baseSlug = Str::slug($nombre . ($color ? '-' . $color : '') . '-' . ($talla ? '-' . $talla : ''));
         $slug = $baseSlug;
-        
+
         $counter = 1;
         while (Item::where('slug', $slug)->exists()) {
             $slug = $baseSlug . '-' . ($counter > 1 ? $counter : Crypto::short());
             $counter++;
         }
-        
+
         return $slug;
     }
 
@@ -524,7 +531,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if (empty($spec)) {
                 continue;
             }
-            
+
             if ($type === 'principal') {
                 ItemSpecification::create([
                     'item_id' => $item->id,
@@ -556,7 +563,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         if (empty($specs)) {
             return;
         }
-        
+
         // Formato: "titulo1,descripcion1/titulo2,descripcion2"
         $rows = explode('/', $specs);
         foreach ($rows as $row) {
@@ -574,7 +581,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     continue;
                 }
             }
-            
+
             if (!empty($title) && !empty($description)) {
                 ItemSpecification::create([
                     'item_id' => $item->id,
@@ -599,7 +606,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if (empty($spec)) {
                 continue;
             }
-            
+
             if ($type === 'icono') {
                 ItemSpecification::create([
                     'item_id' => $item->id,
@@ -637,7 +644,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             $sku = $this->getFieldValue($row, 'sku');
             $images = $this->getSkuBasedImages($sku);
         }
-        
+
         return $images[0] ?? null;
     }
 
@@ -664,7 +671,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     //     return null;
     // }
 
-    
+
 
     /**
      * Guardar imágenes de galería
@@ -674,12 +681,12 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         if ($format === 'agrupador') {
             $codigoagrupador = $this->getFieldValue($row, 'agrupador');
             $color = $this->getFieldValue($row, 'color');
-            
+
             if (!$codigoagrupador || !$color) {
                 $item->update(['visible' => false]);
                 return;
             }
-            
+
             $this->saveColorNumberImages($item, $codigoagrupador, $color);
         } else {
             $sku = $this->getFieldValue($row, 'sku');
@@ -691,7 +698,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function saveColorNumberImages(Item $item, string $codigoagrupador, string $color): void
     {
         $images = $this->getColorNumberImages($codigoagrupador, $color);
-        
+
         if (empty($images)) {
             $item->update(['visible' => false]);
             return;
@@ -709,11 +716,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         }
     }
 
-    
+
     private function saveSkuBasedImages(Item $item, string $sku): void
     {
         $images = $this->getSkuBasedImages($sku);
-        
+
         if (empty($images)) {
             $item->update(['visible' => false]);
             return;
@@ -739,7 +746,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $images = [];
         $basePath = "images/item/";
         $extensions = ['jpg', 'jpeg', 'png', 'webp'];
-        
+
         // Imagen principal: codigoagrupador_color.ext
         $mainImageName = "{$codigoagrupador}_{$color}";
         foreach ($extensions as $ext) {
@@ -754,7 +761,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         while (true) {
             $found = false;
             $galleryImageName = "{$codigoagrupador}_{$color}_{$i}";
-            
+
             foreach ($extensions as $ext) {
                 if (Storage::exists("{$basePath}{$galleryImageName}.{$ext}")) {
                     $images[] = "{$galleryImageName}.{$ext}";
@@ -762,7 +769,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     break;
                 }
             }
-            
+
             if (!$found) break;
             $i++;
         }
@@ -778,7 +785,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $images = [];
         $basePath = "images/item/";
         $extensions = ['jpg', 'jpeg', 'png', 'webp'];
-        
+
         // Imagen principal: sku.ext
         foreach ($extensions as $ext) {
             if (Storage::exists("{$basePath}{$sku}.{$ext}")) {
@@ -797,7 +804,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         while (true) {
             $found = false;
             $galleryImageName = "{$sku}_{$i}";
-            
+
             foreach ($extensions as $ext) {
                 if (Storage::exists("{$basePath}{$galleryImageName}.{$ext}")) {
                     $images[] = "{$galleryImageName}.{$ext}";
@@ -805,7 +812,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     break;
                 }
             }
-            
+
             if (!$found) break;
             $i++;
         }
@@ -916,7 +923,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
             // Solo eliminar especificaciones (siempre se reemplazan del Excel)
             ItemSpecification::where('item_id', $existingItem->id)->delete();
-            
+
             // Solo eliminar imágenes de galería si hay nuevas imágenes para reemplazar
             if ($hasNewImages) {
                 ItemImage::where('item_id', $existingItem->id)->delete();
@@ -934,13 +941,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     'imagen_preservada' => $existingItem->image
                 ]);
             }
-            
+
             // Desasociar tags antiguos
             $existingItem->tags()->detach();
 
             // Actualizar los datos del item
             $existingItem->update($itemData);
-            
+
             return [
                 'item' => $existingItem,
                 'shouldProcessNewImages' => $hasNewImages
@@ -950,9 +957,9 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             Log::info("Creando nuevo producto", [
                 'sku' => $sku
             ]);
-            
+
             $newItem = Item::create($itemData);
-            
+
             return [
                 'item' => $newItem,
                 'shouldProcessNewImages' => true
@@ -1033,11 +1040,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private function getPdfFile(string $sku): ?string
     {
         $path = "images/item/{$sku}.pdf";
-        
+
         if (Storage::exists($path)) {
             return "{$sku}.pdf";
         }
-        
+
         return null;
     }
 
@@ -1057,11 +1064,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
         // Buscar la regla de descuento por nombre exacto primero, luego con LIKE
         $discountRule = DiscountRule::where('name', $discountRuleName)->first();
-        
+
         if (!$discountRule) {
             $discountRule = DiscountRule::where('name', 'like', "%{$discountRuleName}%")
-                                       ->orWhere('description', 'like', "%{$discountRuleName}%")
-                                       ->first();
+                ->orWhere('description', 'like', "%{$discountRuleName}%")
+                ->first();
         }
 
         if (!$discountRule) {
@@ -1069,7 +1076,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             // Usar un tipo por defecto más seguro
             $ruleType = 'quantity_discount'; // Tipo por defecto más común para productos
             $defaultConfig = $this->getDefaultRuleConfig($ruleType, $item);
-            
+
             $discountRule = DiscountRule::create([
                 'name' => $discountRuleName,
                 'description' => "Regla creada automáticamente desde Excel: {$discountRuleName}",
@@ -1081,7 +1088,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'conditions' => $defaultConfig['conditions'],
                 'actions' => $defaultConfig['actions']
             ]);
-            
+
             Log::info("Nueva regla de descuento creada", [
                 'rule_name' => $discountRuleName,
                 'rule_type' => $ruleType,
@@ -1197,7 +1204,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     {
         try {
             $conditions = $discountRule->conditions ?? [];
-            
+
             // Agregar el producto a las condiciones según el tipo de regla
             switch ($discountRule->rule_type) {
                 case 'quantity_discount':
@@ -1208,7 +1215,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                         $conditions['product_ids'] = $productIds;
                     }
                     break;
-                    
+
                 case 'bundle_discount':
                     $requiredProducts = $conditions['required_products'] ?? [];
                     if (!in_array($item->id, $requiredProducts)) {
@@ -1217,13 +1224,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     }
                     break;
             }
-            
+
             // Actualizar las condiciones de la regla
             $discountRule->update(['conditions' => $conditions]);
-            
+
             // Crear tag informativo para el producto
             $this->createInformationalTag($discountRule, $item);
-            
+
             Log::info("Producto asociado a regla de descuento", [
                 'item_id' => $item->id,
                 'item_sku' => $item->sku,
@@ -1231,7 +1238,6 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'rule_type' => $discountRule->rule_type,
                 'updated_conditions' => $conditions
             ]);
-            
         } catch (Exception $e) {
             Log::error("Error al asociar producto a regla de descuento: " . $e->getMessage(), [
                 'item_id' => $item->id,
@@ -1263,7 +1269,6 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if (!$item->tags()->where('tag_id', $ruleTag->id)->exists()) {
                 $item->tags()->attach($ruleTag->id);
             }
-            
         } catch (Exception $e) {
             Log::error("Error al crear tag informativo: " . $e->getMessage(), [
                 'item_id' => $item->id,
@@ -1288,7 +1293,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
         // Separar múltiples promociones por coma
         $promotionsList = explode(',', $promotions);
-        
+
         foreach ($promotionsList as $promotionName) {
             $promotionName = trim($promotionName);
             if (empty($promotionName)) {
@@ -1318,6 +1323,54 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     'tag_name' => $promotionName
                 ]);
             }
+        }
+    }
+
+    /**
+     * Asociar atributos dinámicos
+     */
+    private function associateAttributes(Item $item, array $row): void
+    {
+        $atributosStr = $this->getFieldValue($row, 'atributos');
+        $valoresStr = $this->getFieldValue($row, 'valores');
+
+        if (!$atributosStr || !$valoresStr) {
+            return;
+        }
+
+        $atributos = explode(',', $atributosStr);
+        $valores = explode(',', $valoresStr);
+
+        // Limpiar espacios en blanco
+        $atributos = array_map('trim', $atributos);
+        $valores = array_map('trim', $valores);
+
+        $syncData = [];
+        foreach ($atributos as $index => $attrName) {
+            if (empty($attrName)) continue;
+
+            // El valor correspondiente está en el mismo índice
+            $value = $valores[$index] ?? null;
+            if (is_null($value) || $value === '') continue;
+
+            $attribute = \App\Models\Attribute::firstOrCreate(
+                ['name' => $attrName],
+                [
+                    'slug' => \Illuminate\Support\Str::slug($attrName),
+                    'type' => 'text',
+                    'status' => true,
+                    'visible' => true
+                ]
+            );
+
+            $syncData[$attribute->id] = [
+                'value' => $value,
+                'order_index' => $index
+            ];
+        }
+
+        if (!empty($syncData)) {
+            $item->attributes()->sync($syncData);
         }
     }
 }

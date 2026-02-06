@@ -2764,7 +2764,8 @@
                         "featured",
                         "recommended",
                         "offering",
-                        "is_new"
+                        "is_new",
+                        "is_master"
                     ],
                     "with": [
                         "category",

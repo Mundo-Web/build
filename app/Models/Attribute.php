@@ -17,6 +17,7 @@ class Attribute extends Model
         'name',
         'slug',
         'type',        // text, number, select, color
+        'is_parent',    // Si es un atributo principal que marca la pauta de las variantes
         'unit',        // Unidad de medida (mm, kg, m², etc.)
         'options',     // Para tipo select: opciones disponibles
         'description',
@@ -29,6 +30,7 @@ class Attribute extends Model
         'options' => 'array',
         'visible' => 'boolean',
         'status' => 'boolean',
+        'is_parent' => 'boolean',
         'order_index' => 'integer',
     ];
 
@@ -38,8 +40,8 @@ class Attribute extends Model
     public function items()
     {
         return $this->belongsToMany(Item::class, 'item_attribute')
-                    ->withPivot('value', 'order_index')
-                    ->withTimestamps();
+            ->withPivot('value', 'order_index')
+            ->withTimestamps();
     }
 
     /**
@@ -74,7 +76,7 @@ class Attribute extends Model
         static::creating(function ($attribute) {
             if (empty($attribute->slug)) {
                 $attribute->slug = \Illuminate\Support\Str::slug($attribute->name);
-                
+
                 // Asegurar unicidad
                 $originalSlug = $attribute->slug;
                 $count = 1;
