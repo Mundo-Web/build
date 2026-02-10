@@ -206,4 +206,4 @@
 </body>
 
 </html>
-<?php /**PATH C:\xampp\htdocs\projects\panelpro\resources\views/admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\projects\katya_mayorista\katya\resources\views/admin.blade.php ENDPATH**/ ?>

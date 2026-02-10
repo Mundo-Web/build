@@ -12,6 +12,7 @@ class SaleDetail extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
+    protected $with = ['item', 'combo'];
     protected $fillable = [
         'sale_id',
         'item_id',
@@ -49,6 +50,20 @@ class SaleDetail extends Model
     public function setComboDataAttribute($value)
     {
         $this->attributes['combo_data'] = $value ? json_encode($value) : null;
+    }
+
+    public function getImageAttribute($value)
+    {
+        if ($value) {
+            return $value;
+        }
+        if ($this->item) {
+            return $this->item->image;
+        }
+        if ($this->combo) {
+            return $this->combo->image;
+        }
+        return null;
     }
 
     // Método para verificar si es un combo
