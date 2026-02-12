@@ -56,9 +56,9 @@ class CategoryController extends BasicController
                     'size' => $request->file('banner_image_0')->getSize()
                 ] : 'no file'
             ]);
-            
+
             $body = $this->beforeSave($request);
-            
+
             Log::info('CategoryController - Body después de beforeSave:', [
                 'has_banners' => isset($body['banners']),
                 'banners' => $body['banners'] ?? null
@@ -69,7 +69,7 @@ class CategoryController extends BasicController
             // Process standard image fields (banner, image)
             foreach ($this->imageFields as $field) {
                 $deleteFlag = $request->input($field . '_delete');
-                
+
                 if ($deleteFlag === 'DELETE') {
                     if (isset($body['id'])) {
                         $existingRecord = $this->model::find($body['id']);
@@ -87,7 +87,7 @@ class CategoryController extends BasicController
                 }
 
                 if (!$request->hasFile($field)) continue;
-                
+
                 if (isset($body['id'])) {
                     $existingRecord = $this->model::find($body['id']);
                     if ($existingRecord && $existingRecord->{$field}) {
@@ -99,7 +99,7 @@ class CategoryController extends BasicController
                         Storage::delete($oldPath);
                     }
                 }
-                
+
                 $full = $request->file($field);
                 $uuid = \SoDe\Extend\Crypto::randomUUID();
                 $ext = $full->getClientOriginalExtension();
@@ -112,21 +112,21 @@ class CategoryController extends BasicController
             if (isset($body['banners']) && is_array($body['banners'])) {
                 foreach ($body['banners'] as $index => $banner) {
                     $fieldName = "banner_image_{$index}";
-                    
+
                     if ($request->hasFile($fieldName)) {
                         $file = $request->file($fieldName);
                         $uuid = \SoDe\Extend\Crypto::randomUUID();
                         $ext = $file->getClientOriginalExtension();
                         $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                        
+
                         Storage::put($path, file_get_contents($file));
-                        
+
                         Log::info('CategoryController - Imagen de banner guardada:', [
                             'index' => $index,
                             'path' => $path,
                             'filename' => "{$uuid}.{$ext}"
                         ]);
-                        
+
                         $body['banners'][$index]['image'] = "{$uuid}.{$ext}";
                     }
                 }
@@ -160,6 +160,7 @@ class CategoryController extends BasicController
 
             $response->status = 200;
             $response->message = 'Operacion correcta';
+            $this->clearCache();
         } catch (\Throwable $th) {
             Log::error('CategoryController - Error:', [
                 'message' => $th->getMessage(),

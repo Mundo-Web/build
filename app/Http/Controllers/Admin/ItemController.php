@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Exports\UnifiedItemExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ItemImage;
+use Illuminate\Support\Facades\Cache;
 
 class ItemController extends BasicController
 {
@@ -127,6 +128,7 @@ class ItemController extends BasicController
             }
 
             DB::commit();
+            Cache::flush();
 
             return response([
                 'status' => true,
@@ -667,6 +669,7 @@ class ItemController extends BasicController
             }
 
             DB::commit();
+            Cache::flush();
             return response(['message' => 'Elemento guardado correctamente'], 200);
         } catch (\Exception $e) {
             DB::rollBack();

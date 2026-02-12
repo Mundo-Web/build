@@ -11,6 +11,8 @@ use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use SoDe\Extend\Response;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
 
 class GeneralController extends BasicController
 {
@@ -20,18 +22,18 @@ class GeneralController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $user = $request->user();
-        
+
         // Verificar si el usuario tiene rol Root
         $hasRootRole = $user && $user->roles && $user->roles->contains('name', 'Root');
-        
-     
-            // Admin solo puede ver campos con status = 1
-            $generals = General::where('status', 1)->get();
-        
-        
+
+
+        // Admin solo puede ver campos con status = 1
+        $generals = General::where('status', 1)->get();
+
+
         // Para Root, también enviamos todos los campos para el modal de gestión
         $allGenerals = $hasRootRole ? General::all() : null;
-        
+
         return [
             'generals' => $generals,
             'allGenerals' => $allGenerals,
@@ -43,16 +45,16 @@ class GeneralController extends BasicController
     {
         $response = Response::simpleTryCatch(function () use ($request) {
             $body = $request->all();
-            
+
             // Debug logging para ver qué datos llegan
             Log::info('GeneralController save - Request data:', $body);
-            
+
             $processedCount = 0;
-            
+
             // Si el cuerpo no es un array de arrays, entonces es un array directo de objetos
             // Verificamos si es un array directo de configuraciones generales
             $isDirectArray = !empty($body) && is_array($body) && isset($body[0]);
-            
+
             if ($isDirectArray) {
                 // Es un array directo de objetos de configuración
                 foreach ($body as $record) {
@@ -80,14 +82,15 @@ class GeneralController extends BasicController
                     }
                 }
             }
-            
+
             Log::info("GeneralController save - Processed {$processedCount} records successfully");
-            
+
             return [
                 'message' => "Configuración general actualizada exitosamente ({$processedCount} elementos procesados)",
                 'processed_count' => $processedCount
             ];
         });
+        Cache::flush();
         return response($response->toArray(), $response->status);
     }
 
@@ -119,6 +122,7 @@ class GeneralController extends BasicController
                 'updated_count' => $updatedCount
             ];
         });
+        Cache::flush();
         return response($response->toArray(), $response->status);
     }
 
@@ -203,6 +207,8 @@ class GeneralController extends BasicController
             ];
         });
 
+        Cache::flush();
+
         return response($response->toArray(), $response->status);
     }
 
@@ -211,11 +217,11 @@ class GeneralController extends BasicController
         $response = Response::simpleTryCatch(function () use ($request) {
             // Ejecutar el comando de generación de robots.txt
             \Artisan::call('robots:generate');
-            
+
             $output = \Artisan::output();
-            
+
             Log::info('GeneralController generateRobotsTxt - Robots.txt generado exitosamente');
-            
+
             return [
                 'success' => true,
                 'message' => 'robots.txt generado exitosamente',
@@ -232,11 +238,11 @@ class GeneralController extends BasicController
         $response = Response::simpleTryCatch(function () use ($request) {
             // Ejecutar el comando de generación de sitemap
             \Artisan::call('sitemap:generate');
-            
+
             $output = \Artisan::output();
-            
+
             Log::info('GeneralController generateSitemap - Sitemap generado exitosamente');
-            
+
             return [
                 'success' => true,
                 'message' => 'sitemap.xml generado exitosamente',

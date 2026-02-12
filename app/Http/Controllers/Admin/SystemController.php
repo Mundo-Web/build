@@ -22,6 +22,7 @@ use ReflectionClass;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Illuminate\Support\Facades\Cache;
 
 class SystemController extends BasicController
 {
@@ -100,11 +101,11 @@ class SystemController extends BasicController
             $component = strtolower($jpa->component ?? 'section');
             $value = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $jpa->value ?? ''));
             $shortId = Crypto::short();
-            
+
             $jpa->element_id = "{$component}-{$value}-{$shortId}";
             $jpa->save();
         }
-        
+
         return $jpa;
     }
 
@@ -117,6 +118,7 @@ class SystemController extends BasicController
                 $system->after_component = $after_component;
                 $system->save();
             }
+            Cache::flush();
         });
         return response($response->toArray(), $response->status);
     }
@@ -149,7 +151,7 @@ class SystemController extends BasicController
             }
 
             File::save(storage_path('app/pages.json'), JSON::stringify($newPages, true));
-
+            Cache::flush();
             return $newPages;
         });
 
@@ -166,6 +168,7 @@ class SystemController extends BasicController
             });
             File::save(storage_path('app/pages.json'), JSON::stringify(array_values($newPages), true));
             System::where('page_id', $pageId)->delete();
+            Cache::flush();
             return true;
         });
 
@@ -260,6 +263,7 @@ class SystemController extends BasicController
                     FacadesFile::put($logoFooterPath, base64_decode($data['logo_footer']));
                 }
             });
+            Cache::flush();
         });
 
         return response($response->toArray(), $response->status);

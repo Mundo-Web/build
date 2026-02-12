@@ -29,6 +29,7 @@ use SoDe\Extend\Response;
 use SoDe\Extend\Text;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 
 class BasicController extends Controller
@@ -231,7 +232,7 @@ class BasicController extends Controller
       $message = "Solo se permiten {$max} {$label}.";
     }
 
-  $this->ensureBooleanLimitGeneralRecord($generalKey, $max, $label, $config);
+    $this->ensureBooleanLimitGeneralRecord($generalKey, $max, $label, $config);
 
     $filters = [];
     if (!empty($config['filters']) && is_array($config['filters'])) {
@@ -465,9 +466,9 @@ class BasicController extends Controller
         'CULQI_RSA_ID' => CulqiConfig::getRsaId(),
         'CULQI_RSA_PUBLIC_KEY' => CulqiConfig::getRsaPublicKey(),
         'CULQI_SUPPORTS_USD' => General::where('correlative', 'checkout_culqi_supports_usd')->first()?->description === 'true',
-        'EXCHANGE_RATE' => General::where('correlative', 'exchange_rate_usd_pen')->first()?->description ?? 
-                          (ExchangeRate::where('currency', 'USD')->orderBy('date', 'desc')->first()?->rate ?? 3.75),
-        'API_KEY_TINYMCE' => env('API_KEY_TINYMCE',"xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
+        'EXCHANGE_RATE' => General::where('correlative', 'exchange_rate_usd_pen')->first()?->description ??
+          (ExchangeRate::where('currency', 'USD')->orderBy('date', 'desc')->first()?->rate ?? 3.75),
+        'API_KEY_TINYMCE' => env('API_KEY_TINYMCE', "xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
       ],
       'can_access' => $menus,
       'fillable' => $fillable,
@@ -602,20 +603,25 @@ class BasicController extends Controller
     return $request->all();
   }
 
+  public function clearCache()
+  {
+    Cache::flush();
+  }
+
   public function save(Request $request): HttpResponse|ResponseFactory
   {
     $response = new Response();
     try {
 
       $body = $this->beforeSave($request);
-      
+
       Log::info('BasicController - Después de beforeSave:', [
         'controller' => get_class($this),
         'has_banners' => isset($body['banners']),
         'banners_in_body' => $body['banners'] ?? 'not_set'
       ]);
 
-    
+
       $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
       if ($snake_case === "item_image") {
         $snake_case = 'item';
@@ -624,7 +630,7 @@ class BasicController extends Controller
       foreach ($this->imageFields as $field) {
         // Check if image should be deleted (when hidden field contains 'DELETE')
         $deleteFlag = $request->input($field . '_delete');
-        
+
         if ($deleteFlag === 'DELETE') {
           // Find existing record to delete old image file
           if (isset($body['id'])) {
@@ -645,7 +651,7 @@ class BasicController extends Controller
 
         // Handle new image upload
         if (!$request->hasFile($field)) continue;
-        
+
         // Delete old image if exists and we're updating
         if (isset($body['id'])) {
           $existingRecord = $this->model::find($body['id']);
@@ -658,7 +664,7 @@ class BasicController extends Controller
             Storage::delete($oldPath);
           }
         }
-        
+
         $full = $request->file($field);
         $uuid = Crypto::randomUUID();
         $ext = $full->getClientOriginalExtension();
@@ -669,17 +675,17 @@ class BasicController extends Controller
 
       $jpa = $this->model::find(isset($body['id']) ? $body['id'] : null);
 
-    
+
       if (!$jpa) {
         $body['slug'] = Crypto::randomUUID();
-        
+
         // Auto-asignar order_index si el modelo lo tiene y no se envió desde el frontend
         $table = (new $this->model)->getTable();
         if (Schema::hasColumn($table, 'order_index') && !isset($body['order_index'])) {
           $maxOrderIndex = $this->model::max('order_index');
           $body['order_index'] = ($maxOrderIndex !== null) ? $maxOrderIndex + 1 : 0;
         }
-        
+
         $jpa = $this->model::create($body);
         $isNew = true;
       } else {
@@ -689,13 +695,13 @@ class BasicController extends Controller
           'has_banners_in_body' => isset($body['banners']),
           'banners_value' => $body['banners'] ?? 'not_set'
         ]);
-        
+
         $jpa->update($body);
-        
+
         Log::info('BasicController - Después de update:', [
           'banners_in_model' => $jpa->banners
         ]);
-        
+
         $isNew = false;
       }
 
@@ -735,6 +741,7 @@ class BasicController extends Controller
 
       $response->status = 200;
       $response->message = 'Operacion correcta';
+      $this->clearCache();
     } catch (\Throwable $th) {
       $response->status = 400;
       $response->message = $th->getMessage();
@@ -762,6 +769,7 @@ class BasicController extends Controller
 
       $response->status = 200;
       $response->message = 'Operacion correcta';
+      $this->clearCache();
     } catch (\Throwable $th) {
       $response->status = 400;
       $response->message = $th->getMessage();
@@ -830,6 +838,7 @@ class BasicController extends Controller
 
       $response->status = 200;
       $response->message = 'Operacion correcta';
+      $this->clearCache();
 
       if ($limitConfig) {
         $active = $this->countBooleanLimitActive($field, $limitConfig);
@@ -887,22 +896,22 @@ class BasicController extends Controller
 
       // Obtener todos los registros ordenados por order_index
       $allModels = $this->model::orderBy('order_index', 'asc')->get();
-      
+
       // Crear array con los order_index actuales (sin el elemento que se mueve)
-      $otherModels = $allModels->filter(function($model) use ($id) {
+      $otherModels = $allModels->filter(function ($model) use ($id) {
         return $model->id != $id;
       })->values(); // Reindexar la colección
 
       // Insertar el modelo objetivo en la nueva posición
       $reorderedModels = collect();
       $targetInserted = false;
-      
+
       // Si la nueva posición es 0 (al inicio)
       if ($newOrderIndex == 0) {
         $reorderedModels->push($targetModel);
         $targetInserted = true;
       }
-      
+
       foreach ($otherModels as $index => $model) {
         // Si no hemos insertado el target y llegamos a la posición deseada
         if (!$targetInserted && $index == $newOrderIndex) {
@@ -911,7 +920,7 @@ class BasicController extends Controller
         }
         $reorderedModels->push($model);
       }
-      
+
       // Si no se insertó (nueva posición al final)
       if (!$targetInserted) {
         $reorderedModels->push($targetModel);
@@ -922,6 +931,8 @@ class BasicController extends Controller
         $model->order_index = $index;
         $model->save();
       }
+
+      $this->clearCache();
 
       return response()->json([
         'success' => true,
@@ -973,6 +984,7 @@ class BasicController extends Controller
 
       $response->status = 200;
       $response->message = 'Operacion correcta';
+      $this->clearCache();
     } catch (\Throwable $th) {
       $response->status = 400;
       $response->message = $th->getMessage();

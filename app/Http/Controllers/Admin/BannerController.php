@@ -113,6 +113,7 @@ class BannerController extends BasicController
 
             $response->status = 200;
             $response->message = 'Operacion correcta';
+            $this->clearCache();
         } catch (\Throwable $th) {
             $response->status = 400;
             $response->message = $th->getMessage();
