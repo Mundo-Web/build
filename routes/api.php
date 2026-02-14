@@ -353,6 +353,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/gallery/config', [AdminGalleryController::class, 'saveConfig']);
     Route::post('/gallery/visibility', [AdminGalleryController::class, 'updateVisibility']);
 
+    Route::post('/items/media-update', [AdminItemController::class, 'updateMedia']);
     Route::post('/items', [AdminItemController::class, 'save']);
     Route::post('/items/paginate', [AdminItemController::class, 'paginate'])->withoutMiddleware('throttle');
     Route::patch('/items/status', [AdminItemController::class, 'status']);

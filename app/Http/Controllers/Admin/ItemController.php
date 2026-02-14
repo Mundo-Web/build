@@ -36,7 +36,7 @@ class ItemController extends BasicController
     {
         return Item::where('agrupador', $agrupador)
             ->where('is_master', false)
-            ->with(['attributes'])
+            ->with(['attributes', 'images'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -53,7 +53,69 @@ class ItemController extends BasicController
     public $imageFields = ['image', 'banner', 'texture'];
     public $prefix4filter = 'items';
     public $manageFillable = [Item::class, Brand::class];
-    public $with4get = ['tags', 'amenities', 'applications', 'attributes'];
+    public $with4get = ['tags', 'amenities', 'applications', 'attributes', 'features', 'specifications', 'images'];
+
+    public function updateMedia(Request $request)
+    {
+        try {
+            $request->validate(['id' => 'required|exists:items,id']);
+            $item = Item::findOrFail($request->id);
+            $snake_case = 'item';
+
+            // 1. Update Main Image
+            if ($request->hasFile('image')) {
+                // Delete old image
+                if ($item->image) {
+                    $oldPath = "images/{$snake_case}/{$item->image}";
+                    if (Storage::exists($oldPath)) Storage::delete($oldPath);
+                }
+
+                $full = $request->file("image");
+                $uuid = Crypto::randomUUID();
+                $ext = $full->getClientOriginalExtension();
+                $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                Storage::put($path, file_get_contents($full));
+                $item->image = "{$uuid}.{$ext}";
+                $item->save();
+            }
+
+            // 2. Add Gallery Images
+            $galleryFiles = $request->file('gallery');
+            if ($galleryFiles) {
+                if (!is_array($galleryFiles)) $galleryFiles = [$galleryFiles];
+                $lastOrder = $item->images()->max('order') ?? 0;
+
+                foreach ($galleryFiles as $index => $file) {
+                    $uuid = Crypto::randomUUID();
+                    $ext = $file->getClientOriginalExtension();
+                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
+                    Storage::put($path, file_get_contents($file));
+
+                    $item->images()->create([
+                        'url' => "{$uuid}.{$ext}",
+                        'order' => $lastOrder + $index + 1
+                    ]);
+                }
+            }
+
+            // 3. Clear/Delete Gallery Images
+            if ($request->has('deleted_images')) {
+                $deletedImageIds = $request->input('deleted_images');
+                if (is_array($deletedImageIds)) {
+                    $imagesToDelete = $item->images()->whereIn('id', $deletedImageIds)->get();
+                    foreach ($imagesToDelete as $img) {
+                        $imgPath = "images/{$snake_case}/{$img->url}";
+                        if (Storage::exists($imgPath)) Storage::delete($imgPath);
+                        $img->delete();
+                    }
+                }
+            }
+
+            return response()->json(['status' => true, 'message' => 'Media updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Clone an item with all its relations
@@ -83,22 +145,23 @@ class ItemController extends BasicController
             }
 
             // Clonar amenities
-            if ($originalItem->amenities && $originalItem->amenities->count() > 0) {
+            if (isset($originalItem->amenities) && $originalItem->amenities instanceof \Illuminate\Database\Eloquent\Collection) {
                 foreach ($originalItem->amenities as $amenity) {
                     $newItem->amenities()->attach($amenity->id);
                 }
             }
 
             // Clonar applications
-            if ($originalItem->applications && $originalItem->applications->count() > 0) {
+            if (isset($originalItem->applications) && $originalItem->applications instanceof \Illuminate\Database\Eloquent\Collection) {
                 foreach ($originalItem->applications as $application) {
                     $newItem->applications()->attach($application->id);
                 }
             }
 
             // Clonar attributes con sus valores pivot
-            if ($originalItem->attributes && $originalItem->attributes->count() > 0) {
+            if (isset($originalItem->attributes) && $originalItem->attributes instanceof \Illuminate\Database\Eloquent\Collection) {
                 foreach ($originalItem->attributes as $attribute) {
+                    // Fix: Ensure we are not passing an array where mapped properties are expected if attach expects id
                     $newItem->attributes()->attach($attribute->id, [
                         'value' => $attribute->pivot->value ?? null,
                         'order_index' => $attribute->pivot->order_index ?? 0
@@ -107,7 +170,7 @@ class ItemController extends BasicController
             }
 
             // Clonar features
-            if ($originalItem->features && $originalItem->features->count() > 0) {
+            if (isset($originalItem->features) && $originalItem->features instanceof \Illuminate\Database\Eloquent\Collection) {
                 foreach ($originalItem->features as $feature) {
                     $newItem->features()->create([
                         'feature' => $feature->feature,
@@ -117,7 +180,7 @@ class ItemController extends BasicController
             }
 
             // Clonar specifications
-            if ($originalItem->specifications && $originalItem->specifications->count() > 0) {
+            if (isset($originalItem->specifications) && $originalItem->specifications instanceof \Illuminate\Database\Eloquent\Collection) {
                 foreach ($originalItem->specifications as $spec) {
                     $newItem->specifications()->create([
                         'key' => $spec->key,
