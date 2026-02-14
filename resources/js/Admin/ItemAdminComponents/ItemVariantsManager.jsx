@@ -22,6 +22,7 @@ const ItemVariantsManager = ({
     const [loading, setLoading] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const [groupBySku, setGroupBySku] = useState(false);
+    const [expandedGroups, setExpandedGroups] = useState([]);
 
     // Modales
     const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
@@ -276,21 +277,33 @@ const ItemVariantsManager = ({
         Object.keys(groups)
             .sort()
             .forEach((groupName) => {
+                const isExpanded = expandedGroups.includes(groupName);
                 sortedItems.push({
                     id: `header-${groupName}`,
                     name: groupName,
                     rowType: "header",
                     count: groups[groupName].length,
+                    isExpanded,
                     allSelected: groups[groupName].every((v) =>
                         selectedIds.includes(v.id),
                     ),
                 });
-                groups[groupName].forEach((v) =>
-                    sortedItems.push({ ...v, rowType: "variant" }),
-                );
+                if (isExpanded) {
+                    groups[groupName].forEach((v) =>
+                        sortedItems.push({ ...v, rowType: "variant" }),
+                    );
+                }
             });
         return sortedItems;
-    }, [variants, groupBySku, selectedIds]);
+    }, [variants, groupBySku, selectedIds, expandedGroups]);
+
+    const toggleGroupCollapse = (groupName) => {
+        setExpandedGroups((prev) =>
+            prev.includes(groupName)
+                ? prev.filter((g) => g !== groupName)
+                : [...prev, groupName],
+        );
+    };
 
     const toggleGroupSelection = (groupName, select) => {
         const groupItems = variants.filter((v) => {
@@ -745,9 +758,21 @@ const ItemVariantsManager = ({
                                                         return (
                                                             <tr
                                                                 key={v.id}
-                                                                className="bg-soft-primary"
+                                                                className={`${v.isExpanded ? "bg-soft-primary" : ""} cursor-pointer align-middle`}
+                                                                onClick={() =>
+                                                                    toggleGroupCollapse(
+                                                                        v.name,
+                                                                    )
+                                                                }
                                                             >
-                                                                <td className="ps-4">
+                                                                <td
+                                                                    className="ps-4"
+                                                                    onClick={(
+                                                                        e,
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
                                                                     <input
                                                                         type="checkbox"
                                                                         className="form-check-input"
@@ -784,10 +809,26 @@ const ItemVariantsManager = ({
                                                                     }
                                                                     className="fw-bold text-primary small"
                                                                 >
-                                                                    <i className="fas fa-folder me-2"></i>{" "}
-                                                                    GRUPO SKU:{" "}
-                                                                    {v.name} (
-                                                                    {v.count})
+                                                                    <div className="d-flex align-items-center justify-content-between">
+                                                                        <span>
+                                                                            <i
+                                                                                className={`fas ${v.isExpanded ? "fa-folder-open" : "fa-folder"} me-2`}
+                                                                            ></i>
+                                                                            GRUPO
+                                                                            SKU:{" "}
+                                                                            {
+                                                                                v.name
+                                                                            }{" "}
+                                                                            (
+                                                                            {
+                                                                                v.count
+                                                                            }
+                                                                            )
+                                                                        </span>
+                                                                        <i
+                                                                            className={`fas ${v.isExpanded ? "fa-chevron-up" : "fa-chevron-down"} x-small text-black opacity-50`}
+                                                                        ></i>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         );
