@@ -115,6 +115,18 @@
                     "class_address",
                     "class_button"
                 ]
+            },
+            {
+                "id": "TopBarMarquee",
+                "name": "Marquee - Sticky (Premium)",
+                "image": "top-bar-marquee.png",
+                "generals": [
+                    "cintillo"
+                ],
+                "data": [
+                    "class_content",
+                    "element_id"
+                ]
             }
         ]
     },
@@ -585,6 +597,22 @@
                 },
                 "generals": [
                     "header_menu_order"
+                ]
+            },
+            {
+                "id": "HeaderSticky",
+                "name": "Header Sticky Rainstarstore",
+                "image": "header-sticky.png",
+                "data": [
+                    "class",
+                    "element_id"
+                ],
+                "generals": [
+                    "whatsapp_advisors",
+                    "email_contact",
+                    "phone_contact",
+                    "opening_hours"
+                    
                 ]
             }
         ]
@@ -1090,6 +1118,19 @@
                     "model": "Slider"
                 },
                 "generals": []
+            },
+            {
+                "id": "SliderPremium",
+                "name": "Slider Premium Rainstarstore",
+                "image": "slider-premium.png",
+                "data": [
+                    "class",
+                    "element_id",
+                    "autoplayDelay"
+                ],
+                "using": {
+                    "model": "Slider"
+                }
             }
         ]
     },
@@ -2083,6 +2124,19 @@
                         "featured"
                     ]
                 }
+            },
+            {
+                "id": "CategoryMosaic",
+                "name": "Mosaico Editorial Rainstarstore (3 slots)",
+                "image": "category-mosaic.png",
+                "data": [
+                    "class",
+                    "element_id"
+                ],
+                "using": {
+                    "model": "Category",
+                    "limit": 3
+                }
             }
         ]
     },
@@ -2116,6 +2170,18 @@
         "id": "indicator",
         "name": "Indicadores",
         "options": [
+            {
+                "id": "IndicatorRainstar",
+                "name": "Editorial Premium Indicators",
+                "image": "indicator-rainstar.png",
+                "data": [
+                    "class",
+                    "element_id"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
             {
                 "id": "IndicatorSimple",
                 "name": "Simple",
@@ -2245,6 +2311,31 @@
         "icon": "mdi mdi-bookshelf",
         "name": "Productos",
         "options": [
+            {
+                "id": "ProductGridRainstar",
+                "name": "Grid Editorial Premium Rainstar",
+                "image": "products-grid-rainstar.png",
+                "data": [
+                    "title",
+                    "button_text",
+                    "button_link",
+                    "class",
+                    "element_id"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "offering",
+                        "is_new",
+                        "most_view"
+                    ],
+                    "with": [
+                        "category"
+                    ],
+                    "limit": 8
+                }
+            },
             {
                 "id": "Carousel",
                 "name": "Carousel",
@@ -3055,6 +3146,25 @@
                 "using": {
                     "model": "Indicator"
                 }
+            },
+            {
+                "id": "BannerPremiumCampaign",
+                "name": "Banner Premium Campaña (Llamada a la Acción)",
+                "image": "banner-premium-campaign.png",
+                "data": [
+                    "class",
+                    "element_id"
+                ]
+            },
+            {
+                "id": "BannerPremiumAtelier",
+                "name": "Banner Premium Atelier (Acción Secundaria)",
+                "image": "banner-premium-atelier.png",
+                "data": [
+                    "class",
+                    "element_id",
+                    "multi_description"
+                ]
             }
         ]
     },
@@ -4321,7 +4431,7 @@
                 "data": [
                     "class_footer",
                     "logo_footer_content",
-                    "logo_footer",
+              
                     "class_menu",
                     "class_menu_list",
                     "class_menu_item",

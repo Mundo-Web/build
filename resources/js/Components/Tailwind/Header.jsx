@@ -1,33 +1,43 @@
 import React from "react";
 
-
 const HeaderContact = React.lazy(() => import("./Headers/HeaderContact"));
-const HeaderSearchContact = React.lazy(() =>
-    import("./Headers/HeaderSearchContact")
+const HeaderSearchContact = React.lazy(
+    () => import("./Headers/HeaderSearchContact"),
 );
 const HeaderSearch = React.lazy(() => import("./Headers/HeaderSearch"));
 const HeaderSimple = React.lazy(() => import("./Headers/HeaderSimple"));
 const HeaderSearchB = React.lazy(() => import("./Headers/HeaderSearchB"));
 const HeaderIbergruas = React.lazy(() => import("./Headers/HeaderIbergruas"));
-const HeaderSearchDental = React.lazy(() => import("./Headers/HeaderSearchDental"));
+const HeaderSearchDental = React.lazy(
+    () => import("./Headers/HeaderSearchDental"),
+);
+const HeaderSticky = React.lazy(() => import("./Headers/HeaderSticky"));
 
-const HeaderSearchPaani = React.lazy(() => import("./Headers/HeaderSearchPaani"));
+const HeaderSearchPaani = React.lazy(
+    () => import("./Headers/HeaderSearchPaani"),
+);
 const HeaderBananaLab = React.lazy(() => import("./Headers/HeaderBananaLab"));
 const HeaderSearchMenu = React.lazy(() => import("./Headers/HeaderSearchMenu"));
-const HeaderSearchMenuSF = React.lazy(() =>
-    import("./Headers/HeaderSearchMenuSF")
+const HeaderSearchMenuSF = React.lazy(
+    () => import("./Headers/HeaderSearchMenuSF"),
 );
-const HeaderScraping = React.lazy(() =>
-    import("./Scraping/Components/HeaderScraping")
+const HeaderScraping = React.lazy(
+    () => import("./Scraping/Components/HeaderScraping"),
 );
 const HeaderMakita = React.lazy(() => import("./Headers/HeaderMakita"));
 const HeaderPidelo = React.lazy(() => import("./Headers/HeaderPidelo"));
-const HeaderSearchKatya = React.lazy(() => import("./Headers/HeaderSearchKatya"));
+const HeaderSearchKatya = React.lazy(
+    () => import("./Headers/HeaderSearchKatya"),
+);
 const HeaderHuaillys = React.lazy(() => import("./Headers/HeaderHuaillys"));
 const HeaderFirstClass = React.lazy(() => import("./Headers/HeaderFirstClass"));
 const HeaderLaPetaca = React.lazy(() => import("./Headers/HeaderLaPetaca"));
-const HeaderWebQuirurgica = React.lazy(() => import("./Headers/HeaderWebQuirurgica"));
-const HeaderWebQuirurgica2 = React.lazy(() => import("./Headers/HeaderWebQuirurgica2"));
+const HeaderWebQuirurgica = React.lazy(
+    () => import("./Headers/HeaderWebQuirurgica"),
+);
+const HeaderWebQuirurgica2 = React.lazy(
+    () => import("./Headers/HeaderWebQuirurgica2"),
+);
 
 const Header = ({
     data,
@@ -267,6 +277,18 @@ const Header = ({
                         pages={pages}
                         generals={generals}
                         isUser={isUser}
+                    />
+                );
+            case "HeaderSticky":
+                return (
+                    <HeaderSticky
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
                     />
                 );
             default:

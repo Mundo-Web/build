@@ -66,7 +66,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             'summary' => ['summary', 'resumen', 'descripcion_corta'],
             'subcategoria' => ['subcategoria', 'subcategory', 'sub_categoria'],
             'marca' => ['marca', 'brand'],
-            'sku' => ['sku', 'codigo', 'code', 'SKU'],
+            'sku' => ['sku', 'codigo', 'code', 'SKU', 'código'],
             'nombre_producto' => ['nombre_de_producto', 'nombre_producto', 'nombre_del_producto', 'name', 'producto', 'Nombre del producto'],
             'descripcion' => ['descripcion', 'description', 'Descripcion'],
             'precio' => ['precio', 'price', 'Precio'],

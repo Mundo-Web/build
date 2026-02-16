@@ -7,23 +7,52 @@ const ProductCarousel = React.lazy(() => import("./Products/ProductCarousel"));
 const ProductList = React.lazy(() => import("./Products/ProductList"));
 const ProductSlider = React.lazy(() => import("./Products/ProductSlider"));
 const ProductInfinite = React.lazy(() => import("./Products/ProductInfinite"));
-const ProductIbergruas = React.lazy(() => import("./Products/ProductIbergruas"));
-const ProductNavigation = React.lazy(() => import("./Products/ProductNavigation"));
-const ProductNavigationSwiper = React.lazy(() => import("./Products/ProductNavigationSwiper"));
-const ProductNavigationSwiperSimple = React.lazy(() => import("./Products/ProductNavigationSwiperSimple"));
-const ProductNavigationSwiperPaani = React.lazy(() => import("./Products/ProductNavigationSwiperPaani"));
-const ProductFeaturedSwiper = React.lazy(() => import("./Products/ProductFeaturedSwiper"));
-const ProductFeaturedVerticalSlider = React.lazy(() => import("./Products/ProductFeaturedVerticalSlider"));
-const ProductBananaLab = React.lazy(() => import("./Products/ProductBananaLab"));
+const ProductIbergruas = React.lazy(
+    () => import("./Products/ProductIbergruas"),
+);
+const ProductNavigation = React.lazy(
+    () => import("./Products/ProductNavigation"),
+);
+const ProductNavigationSwiper = React.lazy(
+    () => import("./Products/ProductNavigationSwiper"),
+);
+const ProductNavigationSwiperSimple = React.lazy(
+    () => import("./Products/ProductNavigationSwiperSimple"),
+);
+const ProductNavigationSwiperPaani = React.lazy(
+    () => import("./Products/ProductNavigationSwiperPaani"),
+);
+const ProductFeaturedSwiper = React.lazy(
+    () => import("./Products/ProductFeaturedSwiper"),
+);
+const ProductFeaturedVerticalSlider = React.lazy(
+    () => import("./Products/ProductFeaturedVerticalSlider"),
+);
+const ProductBananaLab = React.lazy(
+    () => import("./Products/ProductBananaLab"),
+);
 const ScrapingSimple = React.lazy(() => import("./Scraping/ScrapingSimple"));
 const ProductMakita = React.lazy(() => import("./Products/ProductMakita"));
 const ProductMultivet = React.lazy(() => import("./Products/ProductMultivet"));
-const ProductInfiniteSlider = React.lazy(() => import("./Products/ProductInfiniteSlider"));
-const ProductIbergruasSwiper = React.lazy(() => import("./Products/ProductIbergruasSwiper"));
+const ProductInfiniteSlider = React.lazy(
+    () => import("./Products/ProductInfiniteSlider"),
+);
+const ProductIbergruasSwiper = React.lazy(
+    () => import("./Products/ProductIbergruasSwiper"),
+);
 const ProductLaPetaca = React.lazy(() => import("./Products/ProductLaPetaca"));
-const ProductListPanelPro = React.lazy(() => import("./Products/ProductListPanelPro"));
-const ProductListHostinfinity = React.lazy(() => import("./Products/ProductListHostinfinity"));
-const ProductListHostinfinityFilter = React.lazy(() => import("./Products/ProductListHostinfinityFilter"));
+const ProductListPanelPro = React.lazy(
+    () => import("./Products/ProductListPanelPro"),
+);
+const ProductListHostinfinity = React.lazy(
+    () => import("./Products/ProductListHostinfinity"),
+);
+const ProductListHostinfinityFilter = React.lazy(
+    () => import("./Products/ProductListHostinfinityFilter"),
+);
+const ProductGridRainstar = React.lazy(
+    () => import("./Products/ProductGridRainstar"),
+);
 
 const Product = ({
     which,
@@ -45,13 +74,22 @@ const Product = ({
             page_url: window.location.href,
             referrer: document.referrer || null,
             user_agent: navigator.userAgent,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
         await itemsRest.updateClicks(request);
     };
 
     const getProduct = () => {
         switch (which) {
+            case "ProductGridRainstar":
+                return (
+                    <ProductGridRainstar
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
             case "Carousel":
                 return (
                     <ProductCarousel
@@ -190,7 +228,7 @@ const Product = ({
                         items={items}
                         favorites={favorites}
                         setFavorites={setFavorites}
-                         onClickTracking={handleClickTracking}
+                        onClickTracking={handleClickTracking}
                     />
                 );
             case "ProductInfiniteSlider":

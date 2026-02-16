@@ -6,8 +6,12 @@ const BannerFullWidth = lazy(() => import("./Banners/BannerFullWidth"));
 const BannerFlex = lazy(() => import("./Banners/BannerFlex"));
 const BannerIbergruas = lazy(() => import("./Banners/BannerIbergruas"));
 const BannerPublicitario = lazy(() => import("./Banners/BannerPublicitario"));
-const BannerPublicitarioPaani = lazy(() => import("./Banners/BannerPublicitarioPaani"));
-const BannerPostSuscriptionPaani = lazy(() => import("./Banners/BannerPostSuscriptionPaani"));
+const BannerPublicitarioPaani = lazy(
+    () => import("./Banners/BannerPublicitarioPaani"),
+);
+const BannerPostSuscriptionPaani = lazy(
+    () => import("./Banners/BannerPostSuscriptionPaani"),
+);
 const BannerStatic = lazy(() => import("./Banners/BannerStatic"));
 const BannerStaticSecond = lazy(() => import("./Banners/BannerStaticSecond"));
 const BannerSimpleSF = lazy(() => import("./Banners/BannerSimpleSF"));
@@ -17,15 +21,31 @@ const BannerCTAMakita = lazy(() => import("./Banners/BannerCTAMakita"));
 const BannerContactMakita = lazy(() => import("./Banners/BannerContactMakita"));
 const BannerPidelo = lazy(() => import("./Banners/BannerPidelo"));
 const BannerMultivet = lazy(() => import("./Banners/BannerMultivet"));
-const BannerPublicitarioKatya = lazy(() => import("./Banners/BannerPublicitarioKatya"));
-const BannerBlogSectionKatya = lazy(() => import("./Banners/BannerBlogSectionKatya"));
+const BannerPublicitarioKatya = lazy(
+    () => import("./Banners/BannerPublicitarioKatya"),
+);
+const BannerBlogSectionKatya = lazy(
+    () => import("./Banners/BannerBlogSectionKatya"),
+);
 const BannerMobileApp = lazy(() => import("./Banners/BannerMobileApp"));
 const BannerAboutStats = lazy(() => import("./Banners/BannerAboutStats"));
-const BannerAboutStatsPanelPro = lazy(() => import("./Banners/BannerAboutStatsPanelPro"));
+const BannerAboutStatsPanelPro = lazy(
+    () => import("./Banners/BannerAboutStatsPanelPro"),
+);
+const BannerPremiumCampaign = lazy(
+    () => import("./Banners/BannerPremiumCampaign"),
+);
+const BannerPremiumAtelier = lazy(
+    () => import("./Banners/BannerPremiumAtelier"),
+);
 
 const Banner = ({ which, data, items, generals }) => {
     const getBanner = () => {
         switch (which) {
+            case "BannerPremiumCampaign":
+                return <BannerPremiumCampaign data={data} />;
+            case "BannerPremiumAtelier":
+                return <BannerPremiumAtelier data={data} />;
             case "BannerSimple":
                 return <BannerSimple data={data} />;
             case "BannerAd":
@@ -65,7 +85,13 @@ const Banner = ({ which, data, items, generals }) => {
             case "BannerBlogSectionKatya":
                 return <BannerBlogSectionKatya data={data} items={items} />;
             case "BannerMobileApp":
-                return <BannerMobileApp data={data} generals={generals} items={items} />;
+                return (
+                    <BannerMobileApp
+                        data={data}
+                        generals={generals}
+                        items={items}
+                    />
+                );
             case "BannerAboutStats":
                 return <BannerAboutStats data={data} items={items} />;
             case "BannerAboutStatsPanelPro":

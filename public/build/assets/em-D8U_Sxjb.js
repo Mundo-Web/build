@@ -1,1 +1,0 @@
-import{j as t}from"./vendor-react-CZUvQwNQ.js";import{H as o}from"./HtmlContent-DI-wF5u8.js";const r=(r="")=>t.jsx(o,{html:String(r).replace(/\*(.*?)\*/g,'<span style="color: #ec4899">$1</span>')});export{r as e};

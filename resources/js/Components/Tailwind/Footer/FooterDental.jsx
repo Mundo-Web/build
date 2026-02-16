@@ -58,49 +58,49 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
         emailRef.current.value = null;
     };
     return (
-        <footer id={data?.element_id || null} className={` py-12  text-sm font-paragraph ${data?.class_footer || 'bg-accent text-white'
-
-            }`}>
+        <footer
+            id={data?.element_id || null}
+            className={` py-12  text-sm font-paragraph ${
+                data?.class_footer || "bg-accent text-white"
+            }`}
+        >
             <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-6  md:gap-12">
                 {/* Menu Columns */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:col-span-4 justify-between md:mr-6">
                     {/* Logo Column */}
                     <div>
-                        <div className={` -ml-8 md:ml-0 h-14 ${data?.logo_footer_content || 'aspect-[13/4] '}`}>
-                            {data?.logo_footer ?
-
-                                <img src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className="h-20 lg:h-36 object-contain" onError={(e) => {
+                        <div
+                            className={` -ml-8 md:ml-0 h-14 ${data?.logo_footer_content || "aspect-[13/4] "}`}
+                        >
+                            <img
+                                src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`}
+                                alt={Global.APP_NAME}
+                                className="h-20 lg:h-36 object-contain"
+                                onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = '/assets/img/logo-bk.svg';
-                                }} /> :
-                                <div
-                                    className="h-full w-full bg-primary"
-                                    style={{
-                                        maskImage: `url(/assets/resources/logo.png)`,
-                                        maskSize: "contain",
-                                        maskPosition: "center",
-                                        maskRepeat: "no-repeat",
-                                    }}
-                                />
-                            }
+                                    e.target.src = "/assets/img/logo-bk.svg";
+                                }}
+                            />
                         </div>
                     </div>
 
                     {/* Menu Column */}
-                    <div>
-
-                    </div>
+                    <div></div>
 
                     {/* Policies Column */}
-                    <div >
-                        <h3 className={`customtext-primary font-bold mb-6 text-base ${data?.class_menu || ''}`}>
+                    <div>
+                        <h3
+                            className={`customtext-primary font-bold mb-6 text-base ${data?.class_menu || ""}`}
+                        >
                             Políticas
                         </h3>
-                        <ul className={`space-y-3 text-white ${data?.class_menu_list || ''}`}>
+                        <ul
+                            className={`space-y-3 text-white ${data?.class_menu_list || ""}`}
+                        >
                             <li>
                                 <a
                                     onClick={() => openModal(0)}
-                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Políticas de privacidad
                                 </a>
@@ -110,7 +110,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(1)}
-                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Términos y Condiciones
                                 </a>
@@ -120,19 +120,19 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(2)}
-                                    className={` cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                    className={` cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Políticas de cambio
                                 </a>
                             </li>
                             <li>
                                 <a
-
-
                                     href="/libro-reclamaciones"
                                     className="cursor-pointer flex flex-col gap-2 items-start  "
                                 >
-                                    <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
+                                    <span
+                                        className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    >
                                         Libro de reclamaciones
                                     </span>
                                     <img
@@ -144,46 +144,52 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                             e.target.style.display = "none";
                                         }}
                                     />
-
                                 </a>
                             </li>
                             {data?.link_denuncias && (
                                 <li>
                                     <a
-
-
                                         href="/canal-denuncias"
                                         className="cursor-pointer flex flex-col gap-2 items-start  "
                                     >
-                                        <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>
+                                        <span
+                                            className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                        >
                                             Denuncias
                                         </span>
-
                                     </a>
                                 </li>
                             )}
 
                             {/* Nuevos enlaces para PDFs - Solo se muestran si tienen contenido */}
-                            {generals.find((item) => item.correlative === "politica_sistema_gestion")?.description && (
+                            {generals.find(
+                                (item) =>
+                                    item.correlative ===
+                                    "politica_sistema_gestion",
+                            )?.description && (
                                 <li>
                                     <a
                                         href={`/cloud/${generals.find((item) => item.correlative === "politica_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                     >
                                         Política del sistema de Gestión
                                     </a>
                                 </li>
                             )}
 
-                            {generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description && (
+                            {generals.find(
+                                (item) =>
+                                    item.correlative ===
+                                    "alcance_sistema_gestion",
+                            )?.description && (
                                 <li>
                                     <a
                                         href={`/cloud/${generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
+                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                     >
                                         Alcance del sistema de Gestión
                                     </a>
@@ -191,21 +197,34 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                             )}
                         </ul>
 
-                        <h3 className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ''}`}>
+                        <h3
+                            className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ""}`}
+                        >
                             Horarios de atención
                         </h3>
 
-                        <p className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>  {generals.find((contact) => contact.correlative === "opening_hours")
-                            ?.description || ""}</p>
+                        <p
+                            className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                        >
+                            {" "}
+                            {generals.find(
+                                (contact) =>
+                                    contact.correlative === "opening_hours",
+                            )?.description || ""}
+                        </p>
                     </div>
                 </div>
 
                 {/* Newsletter Column */}
                 <div className="mt-4 lg:mt-0 col-span-1 md:col-span-2">
-                    <h3 className={`customtext-primary font-bold mb-4 text-base ${data?.class_menu || ''}`}>
+                    <h3
+                        className={`customtext-primary font-bold mb-4 text-base ${data?.class_menu || ""}`}
+                    >
                         Únete a nuestro blog
                     </h3>
-                    <p className={`mb-6  text-sm ${data?.class_menu_item || 'text-white'}`}>
+                    <p
+                        className={`mb-6  text-sm ${data?.class_menu_item || "text-white"}`}
+                    >
                         Suscríbete y recibe todas nuestras novedades
                     </p>
                     <form onSubmit={onEmailSubmit}>
@@ -219,12 +238,15 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                             />
                             <button
                                 disabled={saving}
-                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 py-3 font-bold shadow-xl px-4 bg-primary  rounded-xl flex items-center justify-center min-w-[120px] ${data?.class_button || 'text-white'}`}
+                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 py-3 font-bold shadow-xl px-4 bg-primary  rounded-xl flex items-center justify-center min-w-[120px] ${data?.class_button || "text-white"}`}
                                 aria-label="Suscribite"
                             >
                                 {saving ? (
                                     <span className="flex items-center gap-2">
-                                        <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                        <svg
+                                            className="animate-spin h-5 w-5 text-white"
+                                            viewBox="0 0 24 24"
+                                        >
                                             <circle
                                                 className="opacity-25"
                                                 cx="12"
@@ -249,11 +271,23 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         </div>
                     </form>
                     <div>
-                        <h3 className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ''}`}>Nuestras redes</h3>
-                        <div className="flex gap-4" >
+                        <h3
+                            className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ""}`}
+                        >
+                            Nuestras redes
+                        </h3>
+                        <div className="flex gap-4">
                             {socials.map((social, index) => (
-                                <Tippy key={index} content={`Ver ${social.name} en ${social.description}`}>
-                                    <a href={social.link} target="_blank" rel="noopener noreferrer" className="text-base flex bg-white customtext-primary w-8 h-8 pt-0.5 items-center justify-center rounded-full">
+                                <Tippy
+                                    key={index}
+                                    content={`Ver ${social.name} en ${social.description}`}
+                                >
+                                    <a
+                                        href={social.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-base flex bg-white customtext-primary w-8 h-8 pt-0.5 items-center justify-center rounded-full"
+                                    >
                                         <i className={social.icon}></i>
                                     </a>
                                 </Tippy>
@@ -290,7 +324,9 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
                             {/* Header */}
                             <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                                <h2 className="text-2xl font-bold text-gray-900 pr-4">{title}</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 pr-4">
+                                    {title}
+                                </h2>
                                 <button
                                     onClick={closeModal}
                                     className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"

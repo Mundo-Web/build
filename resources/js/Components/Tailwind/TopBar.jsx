@@ -5,19 +5,35 @@ const TopBarSocials = React.lazy(() => import("./TopBars/TopBarSocials"));
 const TopBarCart = React.lazy(() => import("./TopBars/TopBarCart"));
 const TopBarCopyright = React.lazy(() => import("./TopBars/TopBarCopyright"));
 const TopBarPanni = React.lazy(() => import("./TopBars/TopBarPanni"));
-const TopBarCopyrightSocials = React.lazy(() =>
-    import("./TopBars/TopBarCopyrightSocials")
+const TopBarCopyrightSocials = React.lazy(
+    () => import("./TopBars/TopBarCopyrightSocials"),
 );
 const TopBarPages = React.lazy(() => import("./TopBars/TopBarPages"));
 const TopBarAddress = React.lazy(() => import("./TopBars/TopBarAddress"));
+const TopBarMarquee = React.lazy(() => import("./TopBars/TopBarMarquee"));
 
-const TopBar = ({ data, which, items,generals, setCart, cart, isUser,pages }) => {
+const TopBar = ({
+    data,
+    which,
+    items,
+    generals,
+    setCart,
+    cart,
+    isUser,
+    pages,
+}) => {
     const getTopBar = () => {
         switch (which) {
             case "TopBarSimple":
-                return <TopBarSimple key="TopBarSimple" data={data}/>;
+                return <TopBarSimple key="TopBarSimple" data={data} />;
             case "TopBarSocials":
-                return <TopBarSocials key="TopBarSocials" items={items} data={data}/>;
+                return (
+                    <TopBarSocials
+                        key="TopBarSocials"
+                        items={items}
+                        data={data}
+                    />
+                );
             case "TopBarCart":
                 return (
                     <TopBarCart
@@ -59,15 +75,11 @@ const TopBar = ({ data, which, items,generals, setCart, cart, isUser,pages }) =>
                     />
                 );
             case "TopBarPages":
-                return (
-                    <TopBarPages
-                        items={items}
-                        data={data}
-                        pages={pages}
-                    />
-                );
+                return <TopBarPages items={items} data={data} pages={pages} />;
             case "TopBarAddress":
-                return <TopBarAddress key="TopBarAddress" data={data}/>;
+                return <TopBarAddress key="TopBarAddress" data={data} />;
+            case "TopBarMarquee":
+                return <TopBarMarquee key="TopBarMarquee" data={data} />;
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">
