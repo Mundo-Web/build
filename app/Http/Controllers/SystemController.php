@@ -30,7 +30,7 @@ class SystemController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $path = $request->server('REQUEST_URI') ?? '/';
-        return Cache::remember("react_view_props_{$path}", 3600, function () use ($request, $path) {
+        $props = Cache::remember("react_view_props_{$path}", 3600, function () use ($request, $path) {
             $pages = JSON::parse(File::get(storage_path('app/pages.json')));
             $components = JSON::parse(File::get(storage_path('app/components.json')));
 
@@ -56,8 +56,8 @@ class SystemController extends BasicController
             if ($path === '/base-template') {
                 $props['systems'] = System::whereNull('page_id')->get();
                 $props['page'] = ['name' => 'Template base'];
-                $this->reactData = $props['page'];
-                $this->reactData['colors'] = SystemColor::all();
+                $props['reactData'] = $props['page'];
+                $props['reactData']['colors'] = SystemColor::all();
                 $generals = ['currency'];
                 foreach ($props['systems'] as $system) {
                     if ($system->component == 'content') continue;
@@ -68,7 +68,7 @@ class SystemController extends BasicController
                     }
                 }
                 $props['generals'] = General::whereIn('correlative', $generals)->get();
-                $this->reactData['fonts'] = $fonts;
+                $props['reactData']['fonts'] = $fonts;
                 return $props;
             }
 
@@ -80,17 +80,32 @@ class SystemController extends BasicController
             })->first();
 
             if (!$page) {
+                // Before aborting, check if this might be a referral code
+                // Extract the potential UUID from the path (remove leading slash)
+                $potentialUuid = ltrim($path, '/');
+
+                // Check if it looks like a UUID and if a user exists with this UUID
+                if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $potentialUuid)) {
+                    $user = \App\Models\User::where('uuid', $potentialUuid)->first();
+                    if ($user) {
+                        // It's a valid referral code, redirect to home with ref parameter
+                        // This allows the CheckReferral middleware to set the cookie
+                        return redirect('/?ref=' . $user->uuid);
+                    }
+                }
+
+                // Not a page and not a referral code, show 404
                 abort(404);
             }
 
             $page['using'] = $page['using'] ?? [];
 
             $props['page'] = $page;
-            $this->reactData = $page;
-            $this->reactData['colors'] = SystemColor::all();
+            $props['reactData'] = $page;
+            $props['reactData']['colors'] = SystemColor::all();
 
             // Fuentes if exists
-            $this->reactData['fonts'] = $fonts;
+            $props['reactData']['fonts'] = $fonts;
 
             $systems = [];
             if (isset($page['extends_base']) && $page['extends_base']) {
@@ -252,7 +267,7 @@ class SystemController extends BasicController
                     $props['filteredData'][$model] = $result;
                     // Pasar el modelo cargado solo como $props[$model] y en reactData igual (sin duplicar)
                     $props[$model] = $result;
-                    $this->reactData[$model] = $result;
+                    $props['reactData'][$model] = $result;
                 } elseif ($model) {
                     // Cargar todos los registros
                     $class = 'App\\Models\\' . $model;
@@ -279,6 +294,13 @@ class SystemController extends BasicController
 
             return $props;
         });
+
+        // Asignar reactData desde props (ya sea desde caché o recién generado)
+        if (isset($props['reactData'])) {
+            $this->reactData = $props['reactData'];
+        }
+
+        return $props;
     }
     public function handleReferralRoot(\Illuminate\Http\Request $request, $referral_code)
     {

@@ -37,11 +37,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $referralCode = \Illuminate\Support\Facades\Cookie::get('referral_code');
+
         return array_merge(parent::share($request), [
             // Compartir generals globalmente para SEO y configuraciones
             'generals' => General::where('status', true)->get()->keyBy('correlative'),
-            'referrer' => \Illuminate\Support\Facades\Cookie::get('referral_code')
-                ? \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->first()
+            'referral_code' => $referralCode,
+            'referrer' => $referralCode
+                ? \App\Models\User::where('uuid', $referralCode)->first()
                 : null,
         ]);
     }
