@@ -6,6 +6,129 @@ import "swiper/css";
 import "swiper/css/pagination";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
+const BenefitCard = ({ benefit, index }) => {
+    const isTouchDevice =
+        typeof window !== "undefined" &&
+        ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    const [isFlipped, setIsFlipped] = React.useState(false);
+
+    const handleFlip = () => {
+        if (isTouchDevice) {
+            setIsFlipped(!isFlipped);
+        }
+    };
+
+    return (
+        <div
+            className="h-full flex items-stretch cursor-pointer group pt-8"
+            onClick={handleFlip}
+        >
+            <div
+                className="relative h-full min-h-[420px] w-full flex flex-col rounded-[2.5rem]"
+                style={{ perspective: 1200 }}
+            >
+                {/* Contenedor de Rotación */}
+                <motion.div
+                    className="absolute inset-0 w-full h-full"
+                    style={{ transformStyle: "preserve-3d" }}
+                    animate={{
+                        rotateY: isTouchDevice ? (isFlipped ? 180 : 0) : 0,
+                    }}
+                    whileHover={!isTouchDevice ? { rotateY: 180 } : {}}
+                    transition={{
+                        type: "spring",
+                        stiffness: 60,
+                        damping: 15,
+                        mass: 1.2,
+                    }}
+                >
+                    {/* Cara Frontal */}
+                    <div
+                        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center p-10 bg-white rounded-[2.5rem] border border-neutral-100 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] overflow-hidden"
+                        style={{
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                            transform: "rotateY(0deg)",
+                            zIndex: 2,
+                        }}
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 transition-transform duration-500 group-hover:scale-150" />
+
+                        <div
+                            className="w-24 h-24 rounded-2xl flex items-center justify-center mb-8 shadow-inner transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
+                            style={{
+                                backgroundColor:
+                                    benefit.bg_color === "transparent"
+                                        ? "rgba(var(--primary-rgb), 0.1)"
+                                        : benefit.bg_color ||
+                                          "rgba(var(--primary-rgb), 0.1)",
+                            }}
+                        >
+                            <img
+                                src={`/storage/images/benefit/${benefit.image}`}
+                                alt={benefit.name}
+                                className="w-14 h-14 object-contain"
+                                onError={(e) =>
+                                    (e.target.src = "/api/cover/thumbnail/null")
+                                }
+                            />
+                        </div>
+
+                        <h3 className="text-4xl md:text-5xl font-light text-primary transition-transform duration-700 flex-shrink-0">
+                            {benefit.name}
+                        </h3>
+
+                        {!isTouchDevice && (
+                            <div className="flex items-center text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span>Ver detalle</span>
+                                <svg
+                                    className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform duration-300"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                    />
+                                </svg>
+                            </div>
+                        )}
+                        {isTouchDevice && (
+                            <span className="text-sm text-neutral-400 font-medium">
+                                Toca para ver más
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Cara Reverso */}
+                    <div
+                        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-center p-10 bg-gradient-to-br from-white to-neutral-50 rounded-[2.5rem] border border-primary/20 shadow-xl overflow-hidden"
+                        style={{
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                            transform: "rotateY(180deg)",
+                            zIndex: 3,
+                        }}
+                    >
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-tr-full -z-10" />
+
+                        <p className="text-lg md:text-xl text-neutral-700 leading-relaxed font-medium">
+                            {benefit.description}
+                        </p>
+
+                        <div className="mt-8 py-2 px-6 rounded-full bg-primary/10 text-primary font-bold text-sm">
+                            {benefit.name}
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
 const BenefitSimple = ({ data, items }) => {
     // Estado para swiper
     const [activeIndex, setActiveIndex] = React.useState(0);
@@ -65,18 +188,6 @@ const BenefitSimple = ({ data, items }) => {
             transition: {
                 duration: 0.8,
                 ease: [0.22, 1, 0.36, 1],
-            },
-        },
-    };
-
-    const floatingVariant = {
-        animate: {
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-            transition: {
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
             },
         },
     };
@@ -168,62 +279,13 @@ const BenefitSimple = ({ data, items }) => {
                         {items?.map((benefit, index) => (
                             <SwiperSlide
                                 key={benefit.id || index}
-                                className="h-auto "
+                                className="h-auto"
                             >
-                                <motion.div
-                                    variants={cardVariants}
-                                    className="h-full group pt-8"
-                                >
-                                    <div className="relative h-full min-h-[400px] p-10 bg-white rounded-[2.5rem] !overflow-hidden border border-neutral-100 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_-30px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-4">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 transition-transform duration-500 group-hover:scale-150" />
-
-                                        <div
-                                            className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8 shadow-inner transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
-                                            style={{
-                                                backgroundColor:
-                                                    benefit.bg_color ===
-                                                    "transparent"
-                                                        ? "rgba(var(--primary-rgb), 0.1)"
-                                                        : benefit.bg_color ||
-                                                          "rgba(var(--primary-rgb), 0.1)",
-                                            }}
-                                        >
-                                            <img
-                                                src={`/storage/images/benefit/${benefit.image}`}
-                                                alt={benefit.name}
-                                                className="w-12 h-12 object-contain"
-                                                onError={(e) =>
-                                                    (e.target.src =
-                                                        "/api/cover/thumbnail/null")
-                                                }
-                                            />
-                                        </div>
-
-                                        <h3 className="text-3xl font-bold text-neutral-900 mb-6 group-hover:text-primary transition-colors duration-300">
-                                            {benefit.name}
-                                        </h3>
-
-                                        <p className="text-lg text-neutral-500 leading-relaxed line-clamp-6">
-                                            {benefit.description}
-                                        </p>
-
-                                        <div className="mt-8 flex items-center text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <span>Saber más</span>
-                                            <svg
-                                                className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform duration-300"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
+                                <motion.div variants={cardVariants}>
+                                    <BenefitCard
+                                        benefit={benefit}
+                                        index={index}
+                                    />
                                 </motion.div>
                             </SwiperSlide>
                         ))}

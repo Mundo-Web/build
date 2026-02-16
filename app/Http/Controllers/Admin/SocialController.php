@@ -13,6 +13,7 @@ class SocialController extends BasicController
 {
     public $model = Social::class;
     public $reactView = 'Admin/Socials';
+    public $defaultOrderBy = 'order_index';
 
     public function setPaginationInstance(Request $request, string $model)
     {

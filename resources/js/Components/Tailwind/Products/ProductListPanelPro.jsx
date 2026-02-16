@@ -524,7 +524,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                     </motion.div>
 
                     {/* Contenedor flex - Cards se acomodan según su tamaño natural */}
-                    <div className="flex flex-wrap gap-0 justify-center">
+                    <div className="flex flex-wrap gap-x-6 justify-center">
                         {groupedItems.map((item, index) => (
                             <ProductCardItem
                                 key={item.id || index}
@@ -735,8 +735,7 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
                         
                         "
                                         >
-                                            {currentProduct?.name ||
-                                                selectedImage.name}
+                                            {selectedImage.name}
                                         </h3>
 
                                         {/* Descripción */}

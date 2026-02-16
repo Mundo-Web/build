@@ -640,6 +640,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/socials/status', [AdminSocialController::class, 'status']);
     Route::patch('/socials/{field}', [AdminSocialController::class, 'boolean']);
     Route::delete('/socials/{id}', [AdminSocialController::class, 'delete']);
+    Route::put('/socials/{id}/reorder', [AdminSocialController::class, 'reorder']);
 
     // Amenities (Amenidades para habitaciones)
     Route::post('/amenities', [AdminAmenityController::class, 'save']);

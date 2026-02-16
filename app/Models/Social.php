@@ -19,11 +19,12 @@ class Social extends Model
         'description',
         'icon',
         'visible',
+        'order_index',
         'status',
     ];
 
     protected $casts = [
-       
+
         'visible' => 'boolean',
         'status' => 'boolean',
     ];
