@@ -11,6 +11,8 @@ import {
     ChevronRight,
     Mail,
     Phone,
+    Home,
+    ShoppingCart,
 } from "lucide-react";
 import Global from "../../../Utils/Global";
 import ProfileImage from "./Components/ProfileImage";
@@ -320,6 +322,21 @@ const HeaderSticky = ({
         cart?.reduce((acc, item) => Number(acc) + Number(item.quantity), 0) ||
         0;
 
+    let isCustomer = false;
+    let dashboardUrl = "/admin/home";
+
+    if (isUser && Array.isArray(isUser.roles)) {
+        const roleNames = isUser.roles.map((r) => r.name?.toLowerCase());
+        isCustomer =
+            !roleNames.includes("admin") &&
+            !roleNames.includes("root") &&
+            !roleNames.includes("provider");
+
+        if (roleNames.includes("provider")) {
+            dashboardUrl = "/provider/home";
+        }
+    }
+
     return (
         <>
             <header
@@ -416,18 +433,59 @@ const HeaderSticky = ({
                                             </p>
                                         </div>
                                         <div className="p-2">
-                                            <a
-                                                href="/profile"
-                                                className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
-                                            >
-                                                <Settings
-                                                    size={18}
-                                                    className="text-neutral-light group-hover:text-black"
-                                                />
-                                                <span className="text-xs font-bold uppercase tracking-widest">
-                                                    Mi Perfil
-                                                </span>
-                                            </a>
+                                            {isCustomer ? (
+                                                <>
+                                                    <a
+                                                        href="/profile"
+                                                        className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                    >
+                                                        <UserIcon
+                                                            size={18}
+                                                            className="text-neutral-light group-hover:text-black"
+                                                        />
+                                                        <span className="text-xs font-bold uppercase tracking-widest">
+                                                            Mi Perfil
+                                                        </span>
+                                                    </a>
+                                                    <a
+                                                        href="/customer/dashboard"
+                                                        className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                    >
+                                                        <ShoppingCart
+                                                            size={18}
+                                                            className="text-neutral-light group-hover:text-black"
+                                                        />
+                                                        <span className="text-xs font-bold uppercase tracking-widest">
+                                                            Mis Pedidos
+                                                        </span>
+                                                    </a>
+                                                    <a
+                                                        href="/account"
+                                                        className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                    >
+                                                        <Settings
+                                                            size={18}
+                                                            className="text-neutral-light group-hover:text-black"
+                                                        />
+                                                        <span className="text-xs font-bold uppercase tracking-widest">
+                                                            Configuración
+                                                        </span>
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <a
+                                                    href={dashboardUrl}
+                                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                >
+                                                    <Home
+                                                        size={18}
+                                                        className="text-neutral-light group-hover:text-black"
+                                                    />
+                                                    <span className="text-xs font-bold uppercase tracking-widest">
+                                                        Dashboard
+                                                    </span>
+                                                </a>
+                                            )}
                                             <button
                                                 onClick={Logout}
                                                 className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors group text-red-500"
