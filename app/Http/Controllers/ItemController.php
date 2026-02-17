@@ -45,9 +45,9 @@ class ItemController extends BasicController
         try {
 
             $limite = $request->limit ?? 0;
-            
+
             // Obtener el producto principal por slug
-            $product = Item::with(['category',"store", 'brand', 'images', 'specifications'])
+            $product = Item::with(['category', "store", 'brand', 'images', 'specifications'])
                 ->where('slug', $request->slug)
                 ->firstOrFail();
 
@@ -56,9 +56,9 @@ class ItemController extends BasicController
             $uniqueVariants = $product->variants
                 ->groupBy('color')
                 ->map(function ($group) {
-                    return $group->first(); 
+                    return $group->first();
                 })
-                ->values(); 
+                ->values();
 
             $product->setRelation('variants', $uniqueVariants);
 
@@ -91,9 +91,9 @@ class ItemController extends BasicController
 
         try {
             $limite = $request->limit ?? 0;
-            
+
             // Obtener el producto principal por slug
-            $product = Item::with(['category',"store", 'brand', 'images', 'specifications'])
+            $product = Item::with(['category', "store", 'brand', 'images', 'specifications'])
                 ->where('slug', $request->slug)
                 ->firstOrFail();
 
@@ -106,9 +106,9 @@ class ItemController extends BasicController
             $uniqueVariants = $allVariants
                 ->groupBy('color')
                 ->map(function ($group) {
-                    return $group->first(); 
+                    return $group->first();
                 })
-                ->values(); 
+                ->values();
 
             $product->setRelation('variants', $uniqueVariants);
 
@@ -129,11 +129,11 @@ class ItemController extends BasicController
         $response = new Response();
 
         try {
-          
+
             // Obtener el producto principal por slug
-            $product = Item::with(['category',"store", 'brand', 'images', 'specifications'])
-            ->where('slug', $request->slug)
-            ->firstOrFail();
+            $product = Item::with(['category', "store", 'brand', 'images', 'specifications'])
+                ->where('slug', $request->slug)
+                ->firstOrFail();
 
             // Obtener las variantes (productos con el mismo nombre pero diferente ID)
             $sizes = Item::where('name', $product->name)
@@ -171,10 +171,10 @@ class ItemController extends BasicController
             ->where('items.visible', true)
             ->get();
         $details = WebDetail::where('page', 'courses')->get();
-        
+
         // Get all generals including SEO data
         $generals = General::where('status', true)->get()->keyBy('correlative');
-        
+
         return [
             'categories' => $categories,
             'details' => $details,
@@ -199,12 +199,13 @@ class ItemController extends BasicController
             ->leftJoin('item_amenity AS item_amenity', 'item_amenity.item_id', 'items.id')
             ->where('items.status', true)
             ->where('items.visible', true);
-        
+
+
         // Búsqueda inteligente con paráfrasis: detectar términos en cualquier orden
         if ($request->has('filter') && is_array($request->filter)) {
             $searchTerms = [];
             $this->extractSearchTerms($request->filter, $searchTerms);
-            
+
             if (!empty($searchTerms)) {
                 // Dividir cada término de búsqueda en palabras individuales
                 $allWords = [];
@@ -212,26 +213,26 @@ class ItemController extends BasicController
                     $words = preg_split('/\s+/', trim($term));
                     $allWords = array_merge($allWords, array_filter($words, fn($w) => strlen($w) >= 2));
                 }
-                
+
                 if (!empty($allWords)) {
                     // Convertir todas las palabras a minúsculas para búsqueda case-insensitive
                     $allWords = array_map('strtolower', $allWords);
-                    
+
                     // Cambiar lógica: buscar que CUALQUIER palabra coincida (OR entre palabras)
-                    $query->where(function($q) use ($allWords) {
+                    $query->where(function ($q) use ($allWords) {
                         foreach ($allWords as $word) {
                             // Escapar caracteres especiales para evitar SQL injection
                             $word = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $word);
                             // OR entre cada palabra: si encuentra "lector" O "optico" muestra el resultado
-                            $q->orWhere(function($subQ) use ($word) {
+                            $q->orWhere(function ($subQ) use ($word) {
                                 $subQ->whereRaw('LOWER(items.name) LIKE ?', ["%{$word}%"])
-                                     ->orWhereRaw('LOWER(items.summary) LIKE ?', ["%{$word}%"])
-                                     ->orWhereRaw('LOWER(items.description) LIKE ?', ["%{$word}%"])
-                                     ->orWhereRaw('LOWER(items.sku) LIKE ?', ["%{$word}%"]);
+                                    ->orWhereRaw('LOWER(items.summary) LIKE ?', ["%{$word}%"])
+                                    ->orWhereRaw('LOWER(items.description) LIKE ?', ["%{$word}%"])
+                                    ->orWhereRaw('LOWER(items.sku) LIKE ?', ["%{$word}%"]);
                             });
                         }
                     });
-                    
+
                     // Ordenar por relevancia: productos con MÁS coincidencias aparecen primero
                     $caseStatements = [];
                     foreach ($allWords as $word) {
@@ -246,11 +247,11 @@ class ItemController extends BasicController
                 }
             }
         }
-        
+
         $query->where(function ($query) {
-                $query->where('collection.status', true)
-                    ->orWhereNull('collection.id');
-            })
+            $query->where('collection.status', true)
+                ->orWhereNull('collection.id');
+        })
             ->where(function ($query) {
                 $query->where('collection.visible', true)
                     ->orWhereNull('collection.id');
@@ -501,18 +502,18 @@ class ItemController extends BasicController
             // Variables para manejar la lógica de subcategoría seleccionada
             $selectedSubcategoryInfo = null;
             $parentCategoryId = null;
-            
+
             // Si hay subcategoría seleccionada, obtener información de la categoría padre
             if (!empty($selectedSubcategories)) {
                 $subcategorySlug = $selectedSubcategories[0]; // Tomar la primera subcategoría
-                
+
                 // Buscar la subcategoría por slug o ID
                 if ($subcategorySlug) {
                     $selectedSubcategoryInfo = SubCategory::find($subcategorySlug);
                 } else {
                     $selectedSubcategoryInfo = SubCategory::where('slug', $subcategorySlug)->first();
                 }
-                
+
                 if ($selectedSubcategoryInfo && $selectedSubcategoryInfo->category_id) {
                     $parentCategoryId = $selectedSubcategoryInfo->category_id;
                 }
@@ -525,7 +526,7 @@ class ItemController extends BasicController
             $i4brand = clone $originalBuilder;
             $i4store = clone $originalBuilder;
             $i4tag = clone $originalBuilder;
-            
+
             // PADRES: aplicar filtros cruzados para mejor UX
             $collections = in_array('collection_id', $filterSequence)
                 ? Item::getForeign($originalBuilder, Collection::class, 'collection_id')
@@ -541,19 +542,19 @@ class ItemController extends BasicController
                 // Si hay subcategoría seleccionada, filtrar marcas por la categoría padre
                 $brandBuilder = clone $originalBuilder;
                 Log::info('Filtrando marcas por categoría padre de subcategoría', ['parent_category_id' => $parentCategoryId]);
-                
+
                 $brandBuilder->whereIn('items.category_id', [$parentCategoryId]);
-                
+
                 // Debug: Ver la query SQL que se está generando
                 Log::info('Query SQL para marcas filtradas por categoría padre', [
                     'sql' => $brandBuilder->toSql(),
                     'bindings' => $brandBuilder->getBindings()
                 ]);
-                
+
                 // Debug: Contar items antes del getForeign
                 $itemCount = $brandBuilder->count();
                 Log::info('Items encontrados en categoría padre', ['count' => $itemCount]);
-                
+
                 $brands = Item::getForeign($brandBuilder, Brand::class, 'brand_id');
                 Log::info('Marcas encontradas para categoría padre', [
                     'brands_count' => $brands->count(),
@@ -563,22 +564,22 @@ class ItemController extends BasicController
                 // Si hay categorías seleccionadas directamente, filtrar marcas por esas categorías
                 $brandBuilder = clone $originalBuilder;
                 Log::info('Filtrando marcas por categorías seleccionadas', ['categories' => $selectedCategories]);
-                
+
                 if (!empty($selectedCategories)) {
                     Log::info('CategoryIds para filtrar marcas', ['categoryIds' => $selectedCategories]);
                     $brandBuilder->whereIn('items.category_id', $selectedCategories);
-                    
+
                     // Debug: Ver la query SQL que se está generando
                     Log::info('Query SQL para marcas filtradas', [
                         'sql' => $brandBuilder->toSql(),
                         'bindings' => $brandBuilder->getBindings()
                     ]);
-                    
+
                     // Debug: Contar items antes del getForeign
                     $itemCount = $brandBuilder->count();
                     Log::info('Items encontrados con esas categorías', ['count' => $itemCount]);
                 }
-                
+
                 $brands = Item::getForeign($brandBuilder, Brand::class, 'brand_id');
                 Log::info('Marcas encontradas después del filtro', [
                     'brands_count' => $brands->count(),
@@ -654,7 +655,7 @@ class ItemController extends BasicController
             } elseif ((!empty($selectedBrands) || !empty($selectedStores)) && !in_array('category_id', $filterSequence)) {
                 // Si hay marcas o tiendas seleccionadas pero no categorías en secuencia, filtrar categorías por marcas/tiendas
                 $catBuilder = clone $originalBuilder;
-                
+
                 // Filtrar por marcas si existen
                 if (!empty($selectedBrands)) {
                     $brandIds = [];
@@ -672,7 +673,7 @@ class ItemController extends BasicController
                         $catBuilder->whereIn('brand_id', $brandIds);
                     }
                 }
-                
+
                 // Filtrar por tiendas si existen
                 if (!empty($selectedStores)) {
                     $storeIds = [];
@@ -690,7 +691,7 @@ class ItemController extends BasicController
                         $catBuilder->whereIn('store_id', $storeIds);
                     }
                 }
-                
+
                 $categories = Item::getForeign($catBuilder, Category::class, 'category_id');
             } else {
                 // Lógica normal - todas las categorías disponibles
@@ -708,14 +709,14 @@ class ItemController extends BasicController
             } elseif ($parentCategoryId) {
                 // Si hay una subcategoría seleccionada, mostrar todas las subcategorías de la categoría padre
                 $subcatBuilder = clone $originalBuilder;
-                
+
                 // Obtener todas las subcategorías de la categoría padre
                 $siblingSubcategoryIds = SubCategory::where('category_id', $parentCategoryId)
                     ->where('status', true)
                     ->where('visible', true)
                     ->pluck('id')
                     ->toArray();
-                
+
                 if (!empty($siblingSubcategoryIds)) {
                     $subcatBuilder->whereIn('subcategory_id', $siblingSubcategoryIds);
                     $subcategories = Item::getForeign($subcatBuilder, SubCategory::class, 'subcategory_id');
@@ -725,7 +726,7 @@ class ItemController extends BasicController
             } elseif (in_array('subcategory_id', $filterSequence) || !empty($selectedBrands) || !empty($selectedCategories) || !empty($selectedStores)) {
                 // Filtrar subcategorías cuando hay otros filtros activos
                 $subcatBuilder = clone $originalBuilder;
-                
+
                 // Aplicar filtro de marcas si existe
                 if (!empty($selectedBrands)) {
                     $brandIds = [];
@@ -743,7 +744,7 @@ class ItemController extends BasicController
                         $subcatBuilder->whereIn('brand_id', $brandIds);
                     }
                 }
-                
+
                 // Aplicar filtro de tiendas si existe
                 if (!empty($selectedStores)) {
                     $storeIds = [];
@@ -761,7 +762,7 @@ class ItemController extends BasicController
                         $subcatBuilder->whereIn('store_id', $storeIds);
                     }
                 }
-                
+
                 // Aplicar filtro de categorías si existe
                 if (!empty($selectedCategories)) {
                     $categoryIds = [];
@@ -779,7 +780,7 @@ class ItemController extends BasicController
                         $subcatBuilder->whereIn('category_id', $categoryIds);
                     }
                 }
-                
+
                 // Aplicar filtro de colecciones si existe
                 if (!empty($selectedCollections)) {
                     $collectionIds = [];
@@ -797,15 +798,15 @@ class ItemController extends BasicController
                         $subcatBuilder->whereIn('collection_id', $collectionIds);
                     }
                 }
-                
+
                 $subcategories = Item::getForeign($subcatBuilder, SubCategory::class, 'subcategory_id');
             } else {
                 $subcategories = Item::getForeign($i4subcategory, SubCategory::class, 'subcategory_id');
             }
-           
+
             // 5. TAGS: usar originalBuilder (independientes por ahora)
             $tags = Item::getForeignMany($originalBuilder, ItemTag::class, Tag::class, 'tag_id');
-            
+
             // 6. AMENITIES: obtener amenidades que tienen items visibles
             try {
                 $amenities = Amenity::select('amenities.*')
@@ -826,7 +827,7 @@ class ItemController extends BasicController
                     ->orderBy('name', 'ASC')
                     ->get();
             }
-            
+
             return [
                 'priceRanges' => $ranges,
                 'collections' => $collections,
@@ -1017,24 +1018,24 @@ class ItemController extends BasicController
     public function searchProduct(Request $request)
     {
         try {
-        
+
             $query = $request->input('query');
 
             $resultados = Item::select('items.*')
-              ->where('items.status', 1)
-              ->where('items.visible', 1)
-              ->where('items.name', 'like', "%$query%")
-              ->whereIn('items.id', function ($subquery) {
-                $subquery->select(DB::raw('MIN(id)'))
-                  ->from('items')
-                  ->where('items.visible', 1)
-                  ->groupBy('name');
-              })
-              ->join('categories', 'categories.id', 'items.category_id')
-              ->where('categories.status', 1)
-              ->where('categories.visible', 1)
-              ->get();
-        
+                ->where('items.status', 1)
+                ->where('items.visible', 1)
+                ->where('items.name', 'like', "%$query%")
+                ->whereIn('items.id', function ($subquery) {
+                    $subquery->select(DB::raw('MIN(id)'))
+                        ->from('items')
+                        ->where('items.visible', 1)
+                        ->groupBy('name');
+                })
+                ->join('categories', 'categories.id', 'items.category_id')
+                ->where('categories.status', 1)
+                ->where('categories.visible', 1)
+                ->get();
+
             return response()->json([
                 'status' => true,
                 'data' => $resultados,
@@ -1046,7 +1047,7 @@ class ItemController extends BasicController
             ], 500);
         }
     }
-    
+
     /**
      * Agregar scope para productos más vendidos (mediante joins con sale_details)
      */
@@ -1054,20 +1055,20 @@ class ItemController extends BasicController
     {
         $query = $query->select(['items.*', DB::raw('COALESCE(SUM(sale_details.quantity), 0) as total_sold')])
             ->leftJoin('sale_details', 'items.id', '=', 'sale_details.item_id')
-            ->leftJoin('sales', function($join) {
+            ->leftJoin('sales', function ($join) {
                 $join->on('sale_details.sale_id', '=', 'sales.id')
-                     ->where('sales.payment_status', '=', 'pagado'); // Solo ventas confirmadas
+                    ->where('sales.payment_status', '=', 'pagado'); // Solo ventas confirmadas
             })
             ->groupBy('items.id')
             ->orderBy('total_sold', 'DESC');
-            
+
         if ($limit) {
             $query->limit($limit);
         }
-        
+
         return $query;
     }
-    
+
     /**
      * Scope para productos con mejor descuento 
      */
@@ -1075,14 +1076,14 @@ class ItemController extends BasicController
     {
         $query = $query->where('discount_percent', '>', 0)
             ->orderBy('discount_percent', 'DESC');
-            
+
         if ($limit) {
             $query->limit($limit);
         }
-        
+
         return $query;
     }
-    
+
     /**
      * Scope para productos más vistos
      */
@@ -1090,14 +1091,14 @@ class ItemController extends BasicController
     {
         $query = $query->where('views', '>', 0)
             ->orderBy('views', 'DESC');
-            
+
         if ($limit) {
             $query->limit($limit);
         }
-        
+
         return $query;
     }
-    
+
     /**
      * Get most sold products
      */
@@ -1106,12 +1107,12 @@ class ItemController extends BasicController
         $response = new Response();
         try {
             $limit = $request->input('limit', 10);
-            
+
             $products = Item::select(['items.*', DB::raw('COALESCE(SUM(sale_details.quantity), 0) as total_sold')])
                 ->leftJoin('sale_details', 'items.id', '=', 'sale_details.item_id')
-                ->leftJoin('sales', function($join) {
+                ->leftJoin('sales', function ($join) {
                     $join->on('sale_details.sale_id', '=', 'sales.id')
-                         ->where('sales.payment_status', '=', 'pagado');
+                        ->where('sales.payment_status', '=', 'pagado');
                 })
                 ->where('items.status', true)
                 ->where('items.visible', true)
@@ -1131,7 +1132,7 @@ class ItemController extends BasicController
 
         return response($response->toArray(), $response->status);
     }
-    
+
     /**
      * Get most viewed products
      */
@@ -1140,7 +1141,7 @@ class ItemController extends BasicController
         $response = new Response();
         try {
             $limit = $request->input('limit', 10);
-            
+
             $products = Item::where('status', true)
                 ->where('visible', true)
                 ->where('views', '>', 0)
@@ -1158,7 +1159,7 @@ class ItemController extends BasicController
 
         return response($response->toArray(), $response->status);
     }
-    
+
     /**
      * Get products with best discounts
      */
@@ -1167,7 +1168,7 @@ class ItemController extends BasicController
         $response = new Response();
         try {
             $limit = $request->input('limit', 10);
-            
+
             $products = Item::where('status', true)
                 ->where('visible', true)
                 ->where('discount_percent', '>', 0)
@@ -1181,7 +1182,8 @@ class ItemController extends BasicController
         } catch (\Throwable $th) {
             $response->status = 400;
             $response->message = $th->getMessage();
-        }        return response($response->toArray(), $response->status);
+        }
+        return response($response->toArray(), $response->status);
     }
 
     /**
@@ -1219,7 +1221,7 @@ class ItemController extends BasicController
                 // Solo aplicar si NO hay términos de búsqueda
                 $searchTerms = [];
                 $this->extractSearchTerms($request->filter, $searchTerms);
-                
+
                 if (empty($searchTerms)) {
                     // No hay búsqueda de texto, aplicar filtros normales
                     $instance->where(function ($query) use ($request) {
@@ -1232,10 +1234,10 @@ class ItemController extends BasicController
             // Custom filter handling for tags
             if ($request->tag_id) {
                 $tagIds = is_array($request->tag_id) ? $request->tag_id : [$request->tag_id];
-                $instance->whereIn('items.id', function($query) use ($tagIds) {
+                $instance->whereIn('items.id', function ($query) use ($tagIds) {
                     $query->select('item_id')
-                          ->from('item_tags')
-                          ->whereIn('tag_id', $tagIds);
+                        ->from('item_tags')
+                        ->whereIn('tag_id', $tagIds);
                 });
             }
 
@@ -1245,69 +1247,91 @@ class ItemController extends BasicController
                     foreach ($request->sort as $sorting) {
                         $selector = $sorting['selector'];
                         $desc = $sorting['desc'] ? 'DESC' : 'ASC';
-                        
+
                         switch ($selector) {
                             case 'most_sold':
                                 // Para productos más vendidos, necesitamos hacer JOIN con sale_details y sales
                                 $instance = $instance->leftJoin('sale_details as sd', 'items.id', '=', 'sd.item_id')
-                                    ->leftJoin('sales as s', function($join) {
+                                    ->leftJoin('sales as s', function ($join) {
                                         $join->on('sd.sale_id', '=', 's.id')
-                                             ->where('s.payment_status', '=', 'pagado');
+                                            ->where('s.payment_status', '=', 'pagado');
                                     })
                                     ->selectRaw('items.*, COALESCE(SUM(sd.quantity), 0) as total_sold')
                                     ->groupBy([
-                                        'items.id', 'items.slug', 'items.name', 'items.summary', 'items.description',
-                                        'items.price', 'items.discount', 'items.final_price', 'items.discount_percent',
-                                        'items.banner', 'items.image', 'items.category_id', 'items.subcategory_id',
-                                        'items.brand_id', 'items.is_new', 'items.offering', 'items.recommended',
-                                        'items.featured', 'items.visible', 'items.status', 'items.created_at',
-                                        'items.updated_at', 'items.sku', 'items.stock', 'items.url', 'items.views',
-                                        'items.collection_id', 'items.color', 'items.texture'
+                                        'items.id',
+                                        'items.slug',
+                                        'items.name',
+                                        'items.summary',
+                                        'items.description',
+                                        'items.price',
+                                        'items.discount',
+                                        'items.final_price',
+                                        'items.discount_percent',
+                                        'items.banner',
+                                        'items.image',
+                                        'items.category_id',
+                                        'items.subcategory_id',
+                                        'items.brand_id',
+                                        'items.is_new',
+                                        'items.offering',
+                                        'items.recommended',
+                                        'items.featured',
+                                        'items.visible',
+                                        'items.status',
+                                        'items.created_at',
+                                        'items.updated_at',
+                                        'items.sku',
+                                        'items.stock',
+                                        'items.url',
+                                        'items.views',
+                                        'items.collection_id',
+                                        'items.color',
+                                        'items.texture'
                                     ])
                                     ->orderBy('total_sold', $desc);
                                 break;
-                                
+
                             case 'best_discount':
                                 // Para mejores descuentos, mostrar solo productos con descuento
                                 $instance = $instance->where('items.discount_percent', '>', 0)
                                     ->orderBy('items.discount_percent', $desc);
                                 break;
-                                
+
                             case 'most_viewed':
                             case 'views':
                                 // Para más visitados, ordenar por views
                                 $instance = $instance->orderBy('items.views', $desc);
                                 break;
-                                
+
                             case 'discount_percent':
                                 // Ordenar por porcentaje de descuento
                                 $instance = $instance->orderBy('items.discount_percent', $desc);
                                 break;
-                                
+
                             case 'offering':
                                 // Productos en oferta (con descuento > 0) primero
                                 $instance = $instance->orderByRaw('CASE WHEN items.discount_percent > 0 THEN 0 ELSE 1 END ASC')
                                     ->orderBy('items.discount_percent', 'DESC');
                                 break;
-                                
+
                             case 'is_new':
                                 // Productos nuevos primero
                                 $instance = $instance->orderByRaw('CASE WHEN items.is_new = 1 THEN 0 ELSE 1 END ASC')
                                     ->orderBy('items.created_at', 'DESC');
                                 break;
-                                
+
                             case 'featured':
                                 // Productos destacados primero
                                 $instance = $instance->orderByRaw('CASE WHEN items.featured = 1 THEN 0 ELSE 1 END ASC')
                                     ->orderBy('items.created_at', 'DESC');
                                 break;
-                                
+
                             case 'recommended':
                                 // Productos recomendados primero
                                 $instance = $instance->orderByRaw('CASE WHEN items.recommended = 1 THEN 0 ELSE 1 END ASC')
                                     ->orderBy('items.created_at', 'DESC');
                                 break;
-                                
+
                             default:
                                 // Ordenamiento estándar
                                 if ($this->prefix4filter && !str_contains($selector, '.')) {
@@ -1316,7 +1340,7 @@ class ItemController extends BasicController
                                 $instance = $instance->orderBy($selector, $desc);
                                 break;
                         }
-                        
+
                         // Solo aplicamos el primer criterio de ordenación para evitar conflictos
                         break;
                     }
@@ -1353,7 +1377,6 @@ class ItemController extends BasicController
             $response->data = $jpas;
             $response->summary = $this->setPaginationSummary($request, $instance, $originalInstance);
             $response->totalCount = $totalCount;
-
         } catch (\Throwable $th) {
             $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
         } finally {
@@ -1369,32 +1392,32 @@ class ItemController extends BasicController
         $response = new Response();
         try {
             $result = [];
-            
+
             // Convert category slugs to IDs
-           
+
             if ($request->has('category_slugs') && !empty($request->category_slugs)) {
                 $categorySlugs = is_array($request->category_slugs) ? $request->category_slugs : explode(',', $request->category_slugs);
                 $categoryIds = Category::whereIn('slug', $categorySlugs)->pluck('id')->toArray();
                 $result['category_ids'] = $categoryIds;
             }
-            
+
             // Convert brand slugs to IDs
             if ($request->has('brand_slugs') && !empty($request->brand_slugs)) {
                 $brandSlugs = is_array($request->brand_slugs) ? $request->brand_slugs : explode(',', $request->brand_slugs);
                 $brandIds = Brand::whereIn('slug', $brandSlugs)->pluck('id')->toArray();
                 $result['brand_ids'] = $brandIds;
             }
-            
+
             // Convert subcategory slugs to IDs
             if ($request->has('subcategory_slugs') && !empty($request->subcategory_slugs)) {
-           
+
                 $subcategorySlugs = is_array($request->subcategory_slugs) ? $request->subcategory_slugs : explode(',', $request->subcategory_slugs);
-            
+
                 $subcategoryIds = SubCategory::whereIn('slug', $subcategorySlugs)->pluck('id')->toArray();
-              
+
                 $result['subcategory_ids'] = $subcategoryIds; // Devolver el array completo, no solo el primer elemento
             }
-            
+
             // Convert collection slugs to IDs
             if ($request->has('collection_slugs') && !empty($request->collection_slugs)) {
                 $collectionSlugs = is_array($request->collection_slugs) ? $request->collection_slugs : explode(',', $request->collection_slugs);
@@ -1407,7 +1430,7 @@ class ItemController extends BasicController
                 $storeIds = Store::whereIn('slug', $storeSlugs)->pluck('id')->toArray();
                 $result['store_ids'] = $storeIds;
             }
-            
+
             $response->status = 200;
             $response->message = 'Slugs convertidos correctamente';
             $response->data = $result;
@@ -1415,7 +1438,7 @@ class ItemController extends BasicController
             $response->status = 400;
             $response->message = $th->getMessage();
         }
-        
+
         return response($response->toArray(), $response->status);
     }
 
@@ -1434,16 +1457,16 @@ class ItemController extends BasicController
                 ->where('tags.visible', true)
                 ->where('items.status', true)
                 ->where('items.visible', true)
-                ->where('tags.menu',true)
+                ->where('tags.menu', true)
                 // Solo tags activos: permanentes (sin fechas) o promocionales activos
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('tags.promotional_status', 'permanent')
-                          ->orWhere('tags.promotional_status', 'active');
+                        ->orWhere('tags.promotional_status', 'active');
                 })
                 ->select(
-                    'tags.id', 
+                    'tags.id',
                     'tags.menu',
-                    'tags.name', 
+                    'tags.name',
                     'tags.description',
                     'tags.icon',
                     'tags.background_color',
@@ -1455,9 +1478,9 @@ class ItemController extends BasicController
                     DB::raw('COUNT(items.id) as items_count')
                 )
                 ->groupBy(
-                    'tags.id', 
+                    'tags.id',
                     'tags.menu',
-                    'tags.name', 
+                    'tags.name',
                     'tags.description',
                     'tags.icon',
                     'tags.background_color',
@@ -1475,7 +1498,6 @@ class ItemController extends BasicController
             $response->status = 200;
             $response->message = 'Tags activos obtenidos correctamente';
             $response->data = $tags;
-
         } catch (\Throwable $th) {
             $response->status = 400;
             $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
@@ -1490,18 +1512,18 @@ class ItemController extends BasicController
     public function getItemCombos(Request $request, $itemId)
     {
         $response = new Response();
-        
+
         try {
-            $combos = Combo::whereHas('items', function($query) use ($itemId) {
+            $combos = Combo::whereHas('items', function ($query) use ($itemId) {
                 $query->where('item_id', $itemId)
-                      ->where('is_main_item', 1);
+                    ->where('is_main_item', 1);
             })
-            ->with(['items' => function($query) {
-                $query->select('items.id', 'items.name', 'items.image', 'items.final_price');
-            }])
-            ->where('visible', true)
-            ->where('status', 1)
-            ->get();
+                ->with(['items' => function ($query) {
+                    $query->select('items.id', 'items.name', 'items.image', 'items.final_price');
+                }])
+                ->where('visible', true)
+                ->where('status', 1)
+                ->get();
 
             $formattedCombos = $combos->map(function ($combo) {
                 return [
@@ -1513,7 +1535,7 @@ class ItemController extends BasicController
                     'discount_percent' => $combo->discount_percent ?? 0,
                     'image' => $combo->image ?: ($combo->items->first()->image ?? null),
                     'type' => 'combo',
-                    'combo_items' => $combo->items->map(function($item) {
+                    'combo_items' => $combo->items->map(function ($item) {
                         return [
                             'id' => $item->id,
                             'name' => $item->name,
@@ -1529,7 +1551,6 @@ class ItemController extends BasicController
             $response->status = 200;
             $response->message = 'Combos obtenidos correctamente';
             $response->data = $formattedCombos;
-
         } catch (\Throwable $th) {
             $response->status = 400;
             $response->message = $th->getMessage() . ' Ln.' . $th->getLine();
@@ -1537,20 +1558,44 @@ class ItemController extends BasicController
             return response($response->toArray(), $response->status);
         }
     }
-    
+
+    public function getMasters(Request $request)
+    {
+        $response = new Response();
+        try {
+
+            $items = Item::where('is_master', true)
+                ->where('status', true)
+                ->where('visible', true)
+                ->orderBy('order_index', 'asc')
+                ->get();
+
+            $response->status = 200;
+            $response->message = 'Productos maestros obtenidos correctamente';
+            $response->data = $items;
+        } catch (\Throwable $th) {
+            $response->status = 400;
+            $response->message = $th->getMessage();
+        } finally {
+            return response($response->toArray(), $response->status);
+        }
+    }
+
     /**
      * Extraer términos de búsqueda del array de filtros de manera recursiva
      */
     private function extractSearchTerms($filter, &$searchTerms)
     {
         if (!is_array($filter)) return;
-        
+
         foreach ($filter as $item) {
             if (is_array($item)) {
                 // Si es un array de condición [campo, operador, valor]
-                if (count($item) === 3 && 
+                if (
+                    count($item) === 3 &&
                     ($item[1] === 'contains' || $item[1] === 'like') &&
-                    (in_array($item[0], ['name', 'summary', 'description']))) {
+                    (in_array($item[0], ['name', 'summary', 'description']))
+                ) {
                     $searchTerms[] = $item[2];
                 } else {
                     // Recursión para arrays anidados

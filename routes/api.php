@@ -243,6 +243,7 @@ Route::post('/items/variations-items', [ItemController::class, 'variationsItems'
 Route::post('/items/sizes-items', [ItemController::class, 'getSizesItems'])->withoutMiddleware('throttle');
 Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->withoutMiddleware('throttle');
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
+Route::get('/items/masters', [ItemController::class, 'getMasters']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
 Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
 

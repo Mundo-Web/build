@@ -225,6 +225,26 @@ class ItemsRest extends BasicRest {
             return { data: [] };
         }
     };
+    // Método para obtener productos maestros
+    getMasters = async () => {
+        try {
+            const { status, result } = await Fetch(
+                `/api/${this.path}/masters`,
+                {
+                    method: "GET",
+                }
+            );
+            if (!status)
+                throw new Error(
+                    result?.message ??
+                        "Ocurrió un error al obtener los productos maestros"
+                );
+            return result;
+        } catch (error) {
+            console.error('Error fetching master products:', error);
+            return { status: 400, data: [] };
+        }
+    };
 }
 
 export default ItemsRest;

@@ -34,13 +34,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const result = await itemsRest.paginate({
-                    skip: 0,
-                    take: 6,
-                    status: 1,
-                    filter: ["is_master", "=", 1],
-                    requireTotalCount: false,
-                });
+                const result = await itemsRest.getMasters();
 
                 if (result.data) {
                     setProducts(result.data);
