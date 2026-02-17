@@ -10,28 +10,11 @@ import {
     Award,
 } from "lucide-react";
 
-const getIcon = (iconName, size = 32) => {
-    const icons = {
-        Truck,
-        ShieldCheck,
-        RefreshCcw,
-        Headset,
-        Star,
-        Zap,
-        CreditCard,
-        Award,
-    };
-    const Icon = icons[iconName] || Star;
-    return (
-        <Icon
-            size={size}
-            strokeWidth={1}
-            className="mb-4 text-gray-500 group-hover:text-white transition-colors"
-        />
-    );
-};
-
 const IndicatorRainstar = ({ items, data }) => {
+    if (items.length === 0) {
+        return null;
+    }
+
     return (
         <section
             className={`py-16 bg-black text-white border-t border-neutral-800 ${data?.class || ""}`}
@@ -48,18 +31,21 @@ const IndicatorRainstar = ({ items, data }) => {
                                 {/* Subtle background glow on hover */}
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
 
-                                {getIcon(indicator.icon)}
+                                <img
+                                    src={`/storage/images/indicator/${indicator.symbol}`}
+                                    alt={indicator.name}
+                                    className="w-16 h-16 md:w-20 md:h-20 object-contain filter brightness-0 invert opacity-80 group-hover:opacity-100 transition-all duration-300 mb-6"
+                                    onError={(e) =>
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
+                                    }
+                                />
 
-                                <div className="text-4xl md:text-5xl font-black mb-2 flex items-baseline tracking-tighter">
-                                    {indicator.value}
-                                    {indicator.suffix && (
-                                        <span className="text-xl md:text-2xl text-gray-500 ml-1 group-hover:text-gray-300 transition-colors">
-                                            {indicator.suffix}
-                                        </span>
-                                    )}
+                                <div className="text-xl md:text-2xl font-black mb-2 flex items-baseline tracking-tighter uppercase">
+                                    {indicator.name}
                                 </div>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 group-hover:text-white transition-colors">
-                                    {indicator.title}
+                                <span className="text-[10px] leading-relaxed font-bold uppercase tracking-[0.2em] text-gray-500 group-hover:text-gray-300 transition-colors max-w-[180px]">
+                                    {indicator.description}
                                 </span>
                             </div>
                         ))

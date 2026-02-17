@@ -38,7 +38,7 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                     skip: 0,
                     take: 6,
                     status: 1,
-                    filter: ["is_master", "=", true],
+                    filter: ["is_master", "=", 1],
                     requireTotalCount: false,
                 });
 

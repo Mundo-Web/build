@@ -4786,6 +4786,53 @@
                 "using": {
                     "model": "Social"
                 }
+            },
+            {
+                "id": "FooterRainstar",
+                "name": "Footer Editorial Premium Rainstar",
+                "image": "footer-rainstar.png",
+                "data": [
+                    "class",
+                    "element_id"
+                ],
+                "generals": [
+                    "footer_description",
+                    "address",
+                    "opening_hours",
+                    "phone_contact",
+                    "email_contact",
+                    "privacy_policy",
+                    "terms_conditions",
+                    "saleback_policy",
+                    "delivery_policy",
+                    "copyright"
+                ],
+                "using": {
+                    "model": "Social"
+                }
+            }
+        ]
+    },
+    {
+        "id": "legal",
+        "icon": "mdi mdi-gavel",
+        "name": "Legal",
+        "options": [
+            {
+                "id": "LegalSimple",
+                "name": "Contenido Legal Dinámico",
+                "image": "legal-simple.png",
+                "generals": [
+                    "privacy_policy",
+                    "terms_conditions",
+                    "delivery_policy",
+                    "saleback_policy"
+                ],
+                "data": [
+                    "correlative",
+                    "title",
+                    "element_id"
+                ]
             }
         ]
     },

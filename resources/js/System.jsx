@@ -92,6 +92,7 @@ const Support = React.lazy(() => import("./Components/Tailwind/Support"));
 const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
 const Store = React.lazy(() => import("./Components/Tailwind/Store"));
 const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
+const Legal = React.lazy(() => import("./Components/Tailwind/Legal"));
 
 // Componente de carga ligero para Suspense (debe ser igual al native-loader de public.blade.php)
 const LoadingFallback = () => {
@@ -591,6 +592,14 @@ const System = ({
             case "complaints":
                 return wrapWithAnimation(
                     <Complaint
+                        which={value}
+                        data={dataWithElementId}
+                        generals={generals}
+                    />,
+                );
+            case "legal":
+                return wrapWithAnimation(
+                    <Legal
                         which={value}
                         data={dataWithElementId}
                         generals={generals}

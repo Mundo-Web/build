@@ -1,16 +1,20 @@
 import React from "react";
 
 const FooterSimple = React.lazy(() => import("./Footer/FooterSimple"));
-const FooterSimpleCallToAction = React.lazy(() =>
-    import("./Footer/FooterSimpleCallToAction")
+const FooterSimpleCallToAction = React.lazy(
+    () => import("./Footer/FooterSimpleCallToAction"),
 );
-const FooterCallToAction = React.lazy(() =>
-    import("./Footer/FooterCallToAction")
+const FooterCallToAction = React.lazy(
+    () => import("./Footer/FooterCallToAction"),
 );
 const FooterPaani = React.lazy(() => import("./Footer/FooterPaani"));
 const FooterB = React.lazy(() => import("./Footer/FooterB"));
-const FooterTermsCTASocials = React.lazy(() => import("./Footer/FooterTermsCTASocials"));
-const FooterSalaFabulosa = React.lazy(() => import("./Footer/FooterSalaFabulosa"));
+const FooterTermsCTASocials = React.lazy(
+    () => import("./Footer/FooterTermsCTASocials"),
+);
+const FooterSalaFabulosa = React.lazy(
+    () => import("./Footer/FooterSalaFabulosa"),
+);
 const Footer2Den1 = React.lazy(() => import("./Footer/Footer2Den1"));
 const FooterBananaLab = React.lazy(() => import("./Footer/FooterBananaLab"));
 const FooterPideloPe = React.lazy(() => import("./Footer/FooterPideloPe"));
@@ -21,7 +25,10 @@ const FooterHuaillys = React.lazy(() => import("./Footer/FooterHuaillys"));
 const FooterFirstClass = React.lazy(() => import("./Footer/FooterFirstClass"));
 const FooterLaPetaca = React.lazy(() => import("./Footer/FooterLaPetaca"));
 const FooterPanelPro = React.lazy(() => import("./Footer/FooterPanelPro"));
-const FooterHostinfinity = React.lazy(() => import("./Footer/FooterHostinfinity"));
+const FooterHostinfinity = React.lazy(
+    () => import("./Footer/FooterHostinfinity"),
+);
+const FooterRainstar = React.lazy(() => import("./Footer/FooterRainstar"));
 
 const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
     const getFooter = () => {
@@ -59,10 +66,10 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
                         data={data}
                     />
                 );
-                case "FooterPaani":
+            case "FooterPaani":
                 return (
                     <FooterPaani
-                    data={data}
+                        data={data}
                         socials={items}
                         pages={pages}
                         generals={generals}
@@ -71,7 +78,7 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
             case "FooterTermsCTASocials":
                 return (
                     <FooterTermsCTASocials
-                    data={data}
+                        data={data}
                         socials={items}
                         pages={pages}
                         generals={generals}
@@ -80,7 +87,7 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
             case "FooterSalaFabulosa":
                 return (
                     <FooterSalaFabulosa
-                    data={data}
+                        data={data}
                         socials={items}
                         pages={pages}
                         generals={generals}
@@ -124,7 +131,7 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
                 );
             case "FooterDental":
                 return (
-                  <FooterDental
+                    <FooterDental
                         socials={items}
                         pages={pages}
                         generals={generals}
@@ -179,6 +186,15 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
             case "FooterHostinfinity":
                 return (
                     <FooterHostinfinity
+                        socials={items}
+                        pages={pages}
+                        generals={generals}
+                        data={data}
+                    />
+                );
+            case "FooterRainstar":
+                return (
+                    <FooterRainstar
                         socials={items}
                         pages={pages}
                         generals={generals}

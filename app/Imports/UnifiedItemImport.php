@@ -84,6 +84,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             'destacado' => ['destacado', 'featured', 'destacar', 'Destacado'],
             'visible' => ['visible', 'activo', 'active', 'Visible'],
             'estado' => ['estado', 'status', 'Estado'],
+            'es_maestro' => ['es_maestro', 'is_master', 'maestro', 'master', 'Es maestro'],
             // Nuevos campos para promociones y reglas
             'regla_descuento' => ['regla_descuento', 'regla_de_descuento', 'discount_rule', 'Regla de descuento'],
             'promociones' => ['promociones', 'tags', 'etiquetas', 'Promociones'],
@@ -326,6 +327,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'is_attributes' => $this->hasField($row, 'atributos'),
                 'is_specifications' => $this->hasField($row, 'especificaciones_principales') || $this->hasField($row, 'especificaciones_generales') || $this->hasField($row, 'especificaciones_tecnicas'),
                 'is_tags' => $this->hasField($row, 'promociones'),
+                'is_master' => $this->getBooleanValue($row, 'es_maestro', false),
             ];
 
             // Debug: verificar datos antes de crear el item
