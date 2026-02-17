@@ -604,8 +604,8 @@
                 "name": "Header Sticky Rainstarstore",
                 "image": "header-sticky.png",
                 "data": [
-                    "class",
-                    "element_id"
+                    "class"
+                
                 ],
                 "generals": [
                     "whatsapp_advisors",
@@ -4829,9 +4829,9 @@
                     "saleback_policy"
                 ],
                 "data": [
-                    "correlative",
-                    "title",
-                    "element_id"
+                    "select:correlative:Correlativo:privacy_policy|Política de Privacidad,terms_conditions|Términos y Condiciones,delivery_policy|Políticas de Envío,saleback_policy|Políticas de Devolución y Cambio",
+                    "title"
+                 
                 ]
             }
         ]
@@ -4840,6 +4840,20 @@
         "id": "complaints",
         "name": "Complaints",
         "options": [
+            {
+                "id": "ComplaintRainstar",
+                "name": "Rainstar Editorial Premium",
+                "data": [
+                    "class",
+                    "element_id"
+                ],
+                "generals": [
+                    "terms_conditions",
+                    "phone_contact",
+                    "email_contact",
+                    "opening_hours"
+                ]
+            },
             {
                 "id": "ComplaintStech",
                 "name": "Stech",

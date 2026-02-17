@@ -139,6 +139,7 @@ Route::get('/unified-import/field-mappings', [UnifiedImportController::class, 'g
 
 Route::post('/complaints', [ComplaintController::class, 'saveComplaint'])
   ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
+Route::get('/complaints/track/{code}', [ComplaintController::class, 'track']);
 Route::post('/whistleblowings', [WhistleblowingController::class, 'saveWhistleblowing'])
   ->middleware(\App\Http\Middleware\FormSecurityMiddleware::class);
 Route::get('/notification-variables/{type}', [NotificationVariablesController::class, 'getVariables']);

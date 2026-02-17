@@ -1,12 +1,17 @@
 import React from "react";
 
 const ComplaintStech = React.lazy(() => import("./Complaints/ComplaintStech"));
-const ComplaintSimple = React.lazy(() =>
-    import("./Complaints/ComplaintSimple")
+const ComplaintSimple = React.lazy(
+    () => import("./Complaints/ComplaintSimple"),
+);
+const ComplaintRainstar = React.lazy(
+    () => import("./Complaints/ComplaintRainstar"),
 );
 const Complaint = ({ which, data, generals }) => {
     const getComplaint = () => {
         switch (which) {
+            case "ComplaintRainstar":
+                return <ComplaintRainstar data={data} generals={generals} />;
             case "ComplaintStech":
                 return <ComplaintStech data={data} generals={generals} />;
             case "ComplaintSimple":

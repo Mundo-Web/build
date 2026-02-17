@@ -1,0 +1,44 @@
+[
+  {
+    "id": "01",
+    "name": "LIBRETA ELECTORAL O DNI",
+    "short_name": "L.E / DNI",
+    "length": 8,
+    "type_code": "01"
+  },
+  {
+    "id": "04",
+    "name": "CARNET DE EXTRANJERIA",
+    "short_name": "CARNET EXT.",
+    "length": 12,
+    "type_code": "04"
+  },
+  {
+    "id": "06",
+    "name": "REG. UNICO DE CONTRIBUYENTES",
+    "short_name": "RUC",
+    "length": 11,
+    "type_code": "06"
+  },
+  {
+    "id": "07",
+    "name": "PASAPORTE",
+    "short_name": "PASAPORTE",
+    "length": 12,
+    "type_code": "07"
+  },
+  {
+    "id": "11",
+    "name": "PART. DE NACIMIENTO-IDENTIDAD",
+    "short_name": "P. NAC.",
+    "length": 15,
+    "type_code": "11"
+  },
+  {
+    "id": "00",
+    "name": "OTROS",
+    "short_name": "OTROS",
+    "length": 15,
+    "type_code": "00"
+  }
+]

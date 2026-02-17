@@ -19,7 +19,7 @@ class ComplaintController extends BasicController
     public $model = Complaint::class;
     public $reactView = 'Complaint';
     public $reactRootView = 'public';
-    
+
     /**
      * Verificar CAPTCHA server-side usando el nuevo sistema
      */
@@ -27,18 +27,18 @@ class ComplaintController extends BasicController
     {
         // Verificar que el token exista y sea válido en cache
         $captchaData = Cache::get("captcha:{$token}");
-        
+
         if (!$captchaData) {
             Log::warning("CAPTCHA: Token inválido o expirado al enviar formulario: {$token}");
             return false;
         }
-        
+
         // Verificar que el CAPTCHA haya sido verificado previamente
         if (!isset($captchaData['verified']) || $captchaData['verified'] !== true) {
             Log::warning("CAPTCHA: Token no verificado al enviar formulario: {$token}");
             return false;
         }
-        
+
         return true;
     }
 
@@ -52,11 +52,11 @@ class ComplaintController extends BasicController
                 $timestamp = intval($parts[1]);
                 $currentTime = time() * 1000;
                 $maxAge = 10 * 60 * 1000; // 10 minutos
-                
+
                 return ($currentTime - $timestamp) <= $maxAge;
             }
         }
-        
+
         // Usar nuevo sistema seguro
         return $this->verifyCaptchaToken($token);
     }
@@ -79,7 +79,7 @@ class ComplaintController extends BasicController
 
             $request->validate([
                 'nombre' => 'required|string|max:255',
-                'tipo_documento' => 'required|string|in:ruc,dni,ce,pasaporte',
+                'tipo_documento' => 'required|string|in:ruc,dni,ce,pasaporte,01,04,06,07,11,00',
                 'numero_identidad' => 'required|string|max:20',
                 'celular' => 'nullable|string|max:20',
                 'correo_electronico' => 'required|email|max:255',
@@ -104,11 +104,11 @@ class ComplaintController extends BasicController
                     'message' => 'Por favor aceptar los términos y condiciones'
                 ], 400);
             }
-            
+
             // Verificar captcha (personalizado o reCAPTCHA)
             $token = $request->recaptcha_token;
             $isValidCaptcha = $this->verifyCustomCaptcha($token) || $this->verifyRecaptcha($token);
-            
+
             if (!$isValidCaptcha) {
                 Log::warning("CAPTCHA: Verificación fallida para formulario de queja desde IP: {$request->ip()}");
                 return response()->json([
@@ -116,7 +116,7 @@ class ComplaintController extends BasicController
                     'message' => 'Verificación de seguridad no válida. Por favor, completa el CAPTCHA correctamente.'
                 ], 400);
             }
-            
+
             // Invalidar el token después de usarlo (one-time use)
             Cache::forget("captcha:{$token}");
 
@@ -159,11 +159,10 @@ class ComplaintController extends BasicController
 
                 // Enviar notificación al cliente y al administrador usando NotificationHelper
                 NotificationHelper::sendToClientAndAdmin($complaint, new ClaimNotification($complaint), new AdminClaimNotification($complaint));
-                
+
                 Log::info('ComplaintController - Notificaciones de reclamo enviadas exitosamente', [
                     'complaint_id' => $complaint->id
                 ]);
-
             } catch (\Exception $e) {
                 Log::error('ComplaintController - Error enviando notificaciones de reclamo', [
                     'error' => $e->getMessage(),
@@ -190,6 +189,29 @@ class ComplaintController extends BasicController
             return response()->json([
                 'type' => 'error',
                 'message' => 'Error al registrar el reclamo' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function track($code)
+    {
+        try {
+            $complaint = Complaint::where('code', $code)->first();
+
+            if (!$complaint) {
+                return response()->json([
+                    'type' => 'error',
+                    'message' => 'Reclamo no encontrado'
+                ], 404);
+            }
+
+            return response()->json([
+                'type' => 'success',
+                'data' => $complaint
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'type' => 'error',
+                'message' => 'Error al buscar el reclamo'
             ], 500);
         }
     }

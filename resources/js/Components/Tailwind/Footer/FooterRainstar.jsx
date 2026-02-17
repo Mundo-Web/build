@@ -82,13 +82,13 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                 }}
                             />
                         </div>
-                        <p className="text-gray-400 text-base leading-relaxed">
+                        <p className="text-white text-base leading-relaxed">
                             {footerDescription ||
                                 "Elevando el estándar de la moda con piezas curadas para quienes exigen exclusividad y calidad superior."}
                         </p>
 
                         <div className="pt-4">
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-6">
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-6">
                                 Síguenos
                             </h4>
                             <div className="flex gap-4">
@@ -112,7 +112,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
 
                     {/* Navigation Section */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-8">
+                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
                             Explorar
                         </h4>
                         <ul className="space-y-4">
@@ -122,7 +122,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     <li key={idx}>
                                         <a
                                             href={page.pseudo_path || page.path}
-                                            className="text-white hover:text-gray-400 transition-colors flex items-center justify-between group text-sm"
+                                            className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm"
                                         >
                                             <span className="font-medium">
                                                 {page.name}
@@ -139,17 +139,17 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
 
                     {/* Legal Section */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-8">
+                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
                             Legal
                         </h4>
                         <ul className="space-y-6">
                             <li>
                                 <a
                                     href="/politicas-de-privacidad"
-                                    className="text-white hover:text-gray-400 transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                 >
                                     <span className="font-medium">
-                                        Privacidad
+                                        Política de Privacidad
                                     </span>
                                     <ArrowUpRight
                                         size={12}
@@ -160,10 +160,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                             <li>
                                 <a
                                     href="/terminos-y-condiciones"
-                                    className="text-white hover:text-gray-400 transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                 >
                                     <span className="font-medium">
-                                        Términos
+                                        Términos y Condiciones
                                     </span>
                                     <ArrowUpRight
                                         size={12}
@@ -174,10 +174,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                             <li>
                                 <a
                                     href="/politicas-de-devolucion-y-cambio"
-                                    className="text-white hover:text-gray-400 transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                 >
                                     <span className="font-medium">
-                                        Devoluciones
+                                        Políticas de Devolución y Cambio
                                     </span>
                                     <ArrowUpRight
                                         size={12}
@@ -188,9 +188,11 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                             <li>
                                 <a
                                     href="/politicas-de-envio"
-                                    className="text-white hover:text-gray-400 transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                 >
-                                    <span className="font-medium">Envío</span>
+                                    <span className="font-medium">
+                                        Políticas de Envío
+                                    </span>
                                     <ArrowUpRight
                                         size={12}
                                         className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -201,7 +203,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                 <div className="space-y-4">
                                     <a
                                         href="/libro-reclamaciones"
-                                        className="text-white hover:text-gray-400 transition-colors flex items-center justify-between group text-[11px] font-bold tracking-widest uppercase"
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-[11px] font-bold tracking-widest uppercase"
                                     >
                                         <span>Libro de Reclamaciones</span>
                                         <ArrowUpRight
@@ -231,10 +233,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                     {/* Newsletter + Contact Section */}
                     <div className="lg:col-span-4 space-y-12">
                         <div>
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-8">
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
                                 Suscríbete
                             </h4>
-                            <p className="text-gray-400 mb-6 text-xs leading-relaxed">
+                            <p className="text-white mb-6 text-xs leading-relaxed">
                                 Únete a nuestra comunidad exclusiva y recibe
                                 lanzamientos y eventos privados.
                             </p>
@@ -257,7 +259,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     {saving ? (
                                         <Loader2
                                             size={16}
-                                            className="animate-spin text-gray-500"
+                                            className="animate-spin text-white"
                                         />
                                     ) : (
                                         <ArrowUpRight size={16} />
@@ -267,7 +269,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                         </div>
 
                         <div>
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-8">
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
                                 Contacto
                             </h4>
                             <div className="space-y-6 text-sm tracking-wide">
@@ -275,9 +277,9 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     <div className="flex items-start gap-4 group">
                                         <MapPin
                                             size={18}
-                                            className="text-gray-500 mt-1 shrink-0 group-hover:text-white transition-colors"
+                                            className="text-white mt-1 shrink-0 group-hover:text-white transition-colors"
                                         />
-                                        <p className="text-gray-400 leading-relaxed group-hover:text-gray-200 transition-colors uppercase text-[11px] font-medium tracking-wider">
+                                        <p className="text-white leading-relaxed group-hover:text-gray-200 transition-colors uppercase text-[11px] font-medium tracking-wider">
                                             {address}
                                         </p>
                                     </div>
@@ -295,9 +297,9 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                                     >
                                                         <Phone
                                                             size={18}
-                                                            className="text-gray-500 shrink-0 group-hover:text-white transition-colors"
+                                                            className="text-white shrink-0 group-hover:text-white transition-colors"
                                                         />
-                                                        <span className="text-gray-400 group-hover:text-gray-200 transition-colors font-bold text-[11px] tracking-widest">
+                                                        <span className="text-white group-hover:text-gray-200 transition-colors font-bold text-[11px] tracking-widest">
                                                             {phone.trim()}
                                                         </span>
                                                     </a>
@@ -315,9 +317,9 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                                     >
                                                         <Mail
                                                             size={18}
-                                                            className="text-gray-500 shrink-0 group-hover:text-white transition-colors"
+                                                            className="text-white shrink-0 group-hover:text-white transition-colors"
                                                         />
-                                                        <span className="text-gray-400 group-hover:text-gray-200 transition-colors font-bold text-[11px] tracking-wider truncate">
+                                                        <span className="text-white group-hover:text-gray-200 transition-colors font-bold text-[11px] tracking-wider truncate">
                                                             {email.trim()}
                                                         </span>
                                                     </a>
@@ -328,13 +330,13 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     <div className="flex items-start gap-4 group pt-2 border-t border-neutral-900 mt-6 overflow-hidden">
                                         <Clock
                                             size={18}
-                                            className="text-gray-500 mt-1 shrink-0 group-hover:text-white transition-colors"
+                                            className="text-white mt-1 shrink-0 group-hover:text-white transition-colors"
                                         />
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-600 group-hover:text-gray-400 transition-colors">
+                                            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-600 group-hover:text-white transition-colors">
                                                 Horarios de atención
                                             </p>
-                                            <p className="text-gray-400 leading-relaxed group-hover:text-gray-200 transition-colors whitespace-pre-line text-[11px] lowercase first-letter:uppercase font-medium">
+                                            <p className="text-white leading-relaxed group-hover:text-gray-200 transition-colors whitespace-pre-line text-[11px] lowercase first-letter:uppercase font-medium">
                                                 {openingHours}
                                             </p>
                                         </div>
@@ -347,7 +349,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
 
                 {/* Bottom Section */}
                 <div className="pt-8 border-t border-neutral-900 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col md:flex-row items-center gap-4 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase text-center md:text-left">
+                    <div className="flex flex-col md:flex-row items-center gap-4 text-[10px] font-bold tracking-[0.2em] text-white uppercase text-center md:text-left">
                         <span>{copyright}</span>
                         <span className="hidden md:block opacity-30">|</span>
                         <span className="flex items-center gap-1">
