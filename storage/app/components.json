@@ -124,8 +124,8 @@
                     "cintillo"
                 ],
                 "data": [
-                    "class_content",
-                    "element_id"
+                    "class_content"
+                    
                 ]
             }
         ]
@@ -1125,7 +1125,6 @@
                 "image": "slider-premium.png",
                 "data": [
                     "class",
-                    "element_id",
                     "autoplayDelay"
                 ],
                 "using": {
@@ -1598,6 +1597,57 @@
                                 "color"
                             ],
                             "group_by_name": true
+                        }
+                    }
+                ]
+            },
+           
+            {
+                "id": "CatalogoFiltrosRainstar",
+                "name": "Producto Catalogo Filtro - Rainstar",
+                "image": "products-list.png",
+                "data": [
+                    "path",
+                    "title",
+                    "description",
+                    "link_cart",
+                    "background",
+                    "backgroundboton",
+                    "section_categories",
+                    "section_subcategories",
+                    "section_brands",
+                    "section_collections",
+                    "section_stores",
+                    "section_prices",
+                    "section_amenities"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Lista estándar",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "final_price",
+                                "image",
+                                "color",
+                                "is_new",
+                                "offering",
+                                "discount"
+                            ]
                         }
                     }
                 ]
@@ -2130,8 +2180,7 @@
                 "name": "Mosaico Editorial Rainstarstore (3 slots)",
                 "image": "category-mosaic.png",
                 "data": [
-                    "class",
-                    "element_id"
+                    "class"
                 ],
                 "using": {
                     "model": "Category",
@@ -2175,8 +2224,7 @@
                 "name": "Editorial Premium Indicators",
                 "image": "indicator-rainstar.png",
                 "data": [
-                    "class",
-                    "element_id"
+                    "class"
                 ],
                 "using": {
                     "model": "Indicator"
@@ -2251,7 +2299,7 @@
                 "name": "Indicadores - Hostinfinity (Stats Grid)",
                 "image": "indicator-hostinfinity.png",
                 "data": [
-                    "element_id",
+                 
                     "title",
                     "description",
                     "class_section",
@@ -2280,7 +2328,7 @@
                 "name": "Indicadores - Hostinfinity (Stats Grid) Image",
                 "image": "indicator-hostinfinity.png",
                 "data": [
-                    "element_id",
+                  
                     "title",
                     "description",
                     "class_section",
@@ -2319,8 +2367,7 @@
                     "title",
                     "button_text",
                     "button_link",
-                    "class",
-                    "element_id"
+                    "class"
                 ],
                 "using": {
                     "model": "Item",
@@ -3152,20 +3199,10 @@
                 "name": "Banner Premium Campaña (Llamada a la Acción)",
                 "image": "banner-premium-campaign.png",
                 "data": [
-                    "class",
-                    "element_id"
-                ]
-            },
-            {
-                "id": "BannerPremiumAtelier",
-                "name": "Banner Premium Atelier (Acción Secundaria)",
-                "image": "banner-premium-atelier.png",
-                "data": [
-                    "class",
-                    "element_id",
-                    "multi_description"
+                    "class"
                 ]
             }
+          
         ]
     },
     {
@@ -4808,8 +4845,8 @@
                 "name": "Footer Editorial Premium Rainstar",
                 "image": "footer-rainstar.png",
                 "data": [
-                    "class",
-                    "element_id"
+                    "class"
+                    
                 ],
                 "generals": [
                     "footer_description",
@@ -4860,8 +4897,7 @@
                 "id": "ComplaintRainstar",
                 "name": "Rainstar Editorial Premium",
                 "data": [
-                    "class",
-                    "element_id"
+                    "class"
                 ],
                 "generals": [
                     "terms_conditions",

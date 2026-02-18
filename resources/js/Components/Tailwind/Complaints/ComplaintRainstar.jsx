@@ -372,7 +372,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                 </h3>
                                 <ul className="space-y-6">
                                     <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="shrink-0 w-8 h-8 rounded-none bg-black text-white flex items-center justify-center text-[10px] font-bold">
                                             01
                                         </div>
                                         <p className="text-xs text-neutral-600 leading-relaxed uppercase tracking-wider font-medium">
@@ -381,7 +381,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                         </p>
                                     </li>
                                     <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="shrink-0 w-8 h-8 rounded-none bg-black text-white flex items-center justify-center text-[10px] font-bold">
                                             02
                                         </div>
                                         <p className="text-xs text-neutral-600 leading-relaxed uppercase tracking-wider font-medium">
@@ -390,7 +390,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                         </p>
                                     </li>
                                     <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="shrink-0 w-8 h-8 rounded-none bg-black text-white flex items-center justify-center text-[10px] font-bold">
                                             03
                                         </div>
                                         <p className="text-xs text-neutral-600 leading-relaxed uppercase tracking-wider font-medium">
@@ -750,7 +750,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                         <button
                                             type="button"
                                             onClick={resetForm}
-                                            className="px-12 py-5 text-[10px] font-bold uppercase tracking-widest border border-neutral-200 hover:border-primary hover:bg-primary hover:text-white transition-all duration-300"
+                                            className="px-12 py-5 text-[10px] font-bold uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all duration-300"
                                         >
                                             Limpiar Formulario
                                         </button>
@@ -761,7 +761,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                                 !isCaptchaVerified
                                             }
                                             type="submit"
-                                            className="flex-1 px-12 py-5 text-[10px] font-bold uppercase tracking-[0.2em] bg-black text-white hover:brightness-125 disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4 group shadow-2xl shadow-black/10"
+                                            className="flex-1 px-12 py-5 text-[10px] font-bold uppercase tracking-[0.2em] bg-black text-white hover:brightness-125 disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4 group"
                                         >
                                             {loading ? (
                                                 <Loader2
