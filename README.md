@@ -3,38 +3,44 @@
 Un creador de páginas e-commerce con arrastrar y soltar que te permite crear tiendas en línea completas mediante el ensamblaje de componentes prediseñados.
 
 ## Características
--   Interfaz de arrastrar y soltar
--   Componentes e-commerce prediseñados
--   Diseño responsivo
--   Vista previa en tiempo real
--   Personalización de componentes
--   Múltiples opciones de diseño
+
+- Interfaz de arrastrar y soltar
+- Componentes e-commerce prediseñados
+- Diseño responsivo
+- Vista previa en tiempo real
+- Personalización de componentes
+- Múltiples opciones de diseño
 
 ## Requisitos Previos
--   PHP >= 8.1
--   Composer
--   Node.js & NPM
--   MySQL
--   XAMPP/Apache
+
+- PHP >= 8.1
+- Composer
+- Node.js & NPM
+- MySQL
+- XAMPP/Apache
 
 ## Instalación
 
 1. Clone el repositorio:
+
 ```bash
 git clone https://github.com/Mundo-Web/build.git
 ```
 
 2. Instalar dependencias de PHP:
+
 ```bash
 composer install
 ```
 
 3. Crear archivo de configuración:
+
 ```bash
 cp .env.example .env
 ```
 
 4. Configurar variables de entorno:
+
 ```bash
 APP_NAME="Your Application Name"
 APP_ENV=local
@@ -42,11 +48,13 @@ APP_CORRELATIVE="your_application_name"
 ```
 
 5. Generar clave de aplicación:
+
 ```bash
 php artisan key:generate
 ```
 
 6. Correr migraciones de la base de datos:
+
 ```bash
 php artisan migrate
 ```
@@ -54,27 +62,38 @@ php artisan migrate
 1. Crear enlaces simbólicos:
 
 1.1. Windows:
+
 ```bash
 mklink /D "public\storage\images" "..\..\storage\app\images"
 mklink /D "public\cloud" "storage\app\images\repository"
 ```
 
 1.2. Linux:
+
 ```bash
 ln -s storage/app/images public/storage/images
 ln -s storage/app/images/repository public/cloud
 ```
 
 2. Establecer permisos:
+
 ```bash
 chmod -R 777 storage/
 chmod -R 777 bootstrap/cache/
 chmod -R 777 public/storage/
 ```
 
+7. Correr el comando de limpieza de imágenes:
+
+```bash
+php artisan images:clean
+php artisan images:clean --force
+```
+
 ## Nginx Configuration (Solo VPS)
 
 1. Crear un archivo de configuración para Nginx en `/etc/nginx/sites-available/[domain].conf`:
+
 ```conf
 server {
     listen 80;
@@ -110,16 +129,19 @@ server {
 ```
 
 2. Ejecutar Nginx Certbot:
+
 ```bash
 sudo certbot --nginx -d your-domain.com
-```	
+```
 
 2. Testear la configuración:
+
 ```bash
 sudo nginx -t
 ```
 
 3. Reiniciar Nginx:
+
 ```bash
 sudo systemctl restart nginx
 ```
