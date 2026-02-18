@@ -655,11 +655,6 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             name: "Premium Campaign Rainstar",
             icon: "mdi mdi-star-circle",
         },
-        {
-            id: "BannerPremiumAtelier",
-            name: "Premium Atelier Identity",
-            icon: "mdi mdi-palette-swatch",
-        },
     ];
 
     const normalizePageId = (value) =>
@@ -775,10 +770,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         idRef.current.value = banner?.id ?? "";
         nameRef.current.value = previewSnapshot.name;
 
-        const isMulti = !!(
-            previewSnapshot.multi_description ||
-            Array.isArray(previewSnapshot.description)
-        );
+        const isMulti =
+            previewSnapshot.multi_description !== undefined &&
+            previewSnapshot.multi_description !== null
+                ? Number(previewSnapshot.multi_description) === 1
+                : false;
         setIsMultiDescription(isMulti);
 
         if (isMulti) {
@@ -1549,55 +1545,60 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                                     >
                                                         Modo Lista
                                                     </span>
-                                                    <SwitchFormGroup
-                                                        id="multiDescSwitch"
-                                                        label={null}
-                                                        col="mb-0"
-                                                        checked={
-                                                            isMultiDescription
-                                                        }
-                                                        onChange={(checked) => {
-                                                            setIsMultiDescription(
-                                                                checked,
-                                                            );
-                                                            handlePreviewFieldChange(
-                                                                "multi_description",
-                                                                checked,
-                                                            );
-                                                            if (checked) {
-                                                                const currentVal =
-                                                                    descriptionRef
-                                                                        .current
-                                                                        ?.value ||
-                                                                    "";
-                                                                const newList =
-                                                                    [
-                                                                        currentVal,
-                                                                    ];
-                                                                setDescriptionList(
-                                                                    newList,
-                                                                );
-                                                                handlePreviewFieldChange(
-                                                                    "description",
-                                                                    newList,
-                                                                );
-                                                            } else {
-                                                                const combined =
-                                                                    descriptionList.join(
-                                                                        "\n",
-                                                                    );
-                                                                if (
-                                                                    descriptionRef.current
-                                                                )
-                                                                    descriptionRef.current.value =
-                                                                        combined;
-                                                                handlePreviewFieldChange(
-                                                                    "description",
-                                                                    combined,
-                                                                );
+                                                    <div className="form-check form-switch mb-0">
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id="multiDescSwitch"
+                                                            checked={
+                                                                isMultiDescription
                                                             }
-                                                        }}
-                                                    />
+                                                            onChange={(e) => {
+                                                                const checked =
+                                                                    e.target
+                                                                        .checked;
+                                                                setIsMultiDescription(
+                                                                    checked,
+                                                                );
+                                                                handlePreviewFieldChange(
+                                                                    "multi_description",
+                                                                    checked,
+                                                                );
+                                                                if (checked) {
+                                                                    const currentVal =
+                                                                        descriptionRef
+                                                                            .current
+                                                                            ?.value ||
+                                                                        "";
+                                                                    const newList =
+                                                                        [
+                                                                            currentVal,
+                                                                        ];
+                                                                    setDescriptionList(
+                                                                        newList,
+                                                                    );
+                                                                    handlePreviewFieldChange(
+                                                                        "description",
+                                                                        newList,
+                                                                    );
+                                                                } else {
+                                                                    const combined =
+                                                                        descriptionList.join(
+                                                                            "\n",
+                                                                        );
+                                                                    if (
+                                                                        descriptionRef.current
+                                                                    )
+                                                                        descriptionRef.current.value =
+                                                                            combined;
+                                                                    handlePreviewFieldChange(
+                                                                        "description",
+                                                                        combined,
+                                                                    );
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>

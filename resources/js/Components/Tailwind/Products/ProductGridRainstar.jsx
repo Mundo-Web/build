@@ -1,10 +1,12 @@
 import React from "react";
 import { ArrowRight, ShoppingCart } from "lucide-react";
+import Global from "../../../Utils/Global";
 
 const ProductCardRainstar = ({ item, cart, setCart }) => {
-    const isNew = item.status === "new" || item.is_new; // check both for flexibility
+    const isNew = item.status === "new" || item.is_new;
     const isOffer = item.offering || item.discount > 0;
     const finalPrice = item.final_price || item.price;
+    const CurrencySymbol = Global.get("APP_CURRENCY_SYMBOL") || "S/.";
 
     const imageUrl = item.image
         ? item.image.startsWith("http")
@@ -12,7 +14,13 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
             : `/storage/images/item/${item.image}`
         : "/api/cover/thumbnail/null";
 
+    const goToDetail = () => {
+        const slug = item.slug || item.id;
+        window.location.href = `/product/${slug}`;
+    };
+
     const addToCart = (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const existing = cart.find((i) => i.id === item.id);
         if (existing) {
@@ -29,18 +37,18 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
     };
 
     return (
-        <div className="group cursor-pointer">
+        <div className="group cursor-pointer" onClick={goToDetail}>
             <div className="relative overflow-hidden bg-gray-100 aspect-[3/4] mb-4 border border-transparent group-hover:border-black/5 transition-all">
                 {/* Badges */}
                 <div className="absolute top-0 left-0 p-3 z-10 flex flex-col items-start gap-2">
                     {isNew && (
                         <span className="bg-white text-black text-[9px] font-bold px-2 py-1 uppercase border border-black shadow-sm">
-                            New In
+                            Nuevo
                         </span>
                     )}
                     {isOffer && (
                         <span className="bg-black text-white text-[9px] font-bold px-2 py-1 uppercase">
-                            Sale
+                            En Oferta
                         </span>
                     )}
                 </div>
@@ -53,7 +61,8 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
                     className="absolute bottom-0 left-0 right-0 bg-white text-black py-4 font-bold uppercase text-xs tracking-widest translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20 border-t border-black hover:bg-black hover:text-white flex items-center justify-center gap-2"
                 >
                     <ShoppingCart size={14} />
-                    Add to Cart — ${Number(finalPrice).toFixed(2)}
+                    Agregar al carrito — {CurrencySymbol}{" "}
+                    {Number(finalPrice).toFixed(2)}
                 </button>
 
                 <img
@@ -82,14 +91,16 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
                     {isOffer ? (
                         <div className="flex flex-col items-end">
                             <span className="text-red-600">
-                                ${Number(finalPrice).toFixed(2)}
+                                {CurrencySymbol} {Number(finalPrice).toFixed(2)}
                             </span>
                             <span className="text-gray-400 line-through text-[10px]">
-                                ${Number(item.price).toFixed(2)}
+                                {CurrencySymbol} {Number(item.price).toFixed(2)}
                             </span>
                         </div>
                     ) : (
-                        <span>${Number(item.price).toFixed(2)}</span>
+                        <span>
+                            {CurrencySymbol} {Number(item.price).toFixed(2)}
+                        </span>
                     )}
                 </div>
             </div>

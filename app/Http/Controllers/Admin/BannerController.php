@@ -92,18 +92,12 @@ class BannerController extends BasicController
             $newData = $bannerJpa->data ?? [];
 
             // Solo actualizar campos que vienen en el request
+            // Solo actualizar campos que vienen en el request
             foreach ($body as $key => $value) {
                 // Si es un campo de imagen y es null (borrado explícito), eliminar del JSON
                 if (in_array($key, $this->imageFields) && $value === null) {
                     unset($newData[$key]);
-                }
-                // Si el valor NO es null y NO es string vacío, actualizar
-                elseif ($value !== null && $value !== '') {
-                    $newData[$key] = $value;
-                }
-                // Si viene como null o vacío, solo actualizar si NO existe previamente
-                // o si explícitamente se quiere borrar (ya manejado arriba para imágenes)
-                elseif (!isset($newData[$key])) {
+                } else {
                     $newData[$key] = $value;
                 }
             }

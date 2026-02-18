@@ -1,1 +1,0 @@
-var e=Object.defineProperty,s=(s,t,i)=>((s,t,i)=>t in s?e(s,t,{enumerable:!0,configurable:!0,writable:!0,value:i}):s[t]=i)(s,"symbol"!=typeof t?t+"":t,i);import{B as t}from"./BasicRest-DnRFj80Z.js";class i extends t{constructor(){super(...arguments),s(this,"path","admin/providers"),s(this,"hasFiles",!1),s(this,"invite",e=>this.post(`${this.path}/invite`,e))}}export{i as P};

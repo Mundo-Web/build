@@ -29,12 +29,14 @@ const BannerPremiumCampaign = ({ data }) => {
             </div>
 
             <div className="relative z-10 text-center max-w-4xl px-4">
-                <span className="block text-xs md:text-sm font-bold uppercase tracking-[0.3em] mb-4 text-gray-300">
-                    {description?.[1] || "Colección 2026"}
-                </span>
                 <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-8 leading-none">
-                    {name || "Rebel Elegance"}
+                    {name}
                 </h2>
+                {description && (
+                    <span className="block text-xs md:text-sm font-bold uppercase tracking-[0.3em] mb-4 text-gray-300">
+                        {description}
+                    </span>
+                )}
                 {button_text && (
                     <a
                         href={button_link || "#"}
