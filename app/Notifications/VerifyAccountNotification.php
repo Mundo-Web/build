@@ -11,14 +11,18 @@ use App\Mail\RawHtmlMail;
 class VerifyAccountNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-    protected $verificationUrl;
+    public $verificationUrl;
+    protected $name;
+    protected $lastname;
 
-    public function __construct($verificationUrl)
+    public function __construct($verificationUrl, $name = null, $lastname = null)
     {
         $this->verificationUrl = $verificationUrl;
+        $this->name = $name;
+        $this->lastname = $lastname;
     }
 
-        /**
+    /**
      * Variables disponibles para la plantilla de email.
      */
     public static function availableVariables()
@@ -30,7 +34,7 @@ class VerifyAccountNotification extends Notification implements ShouldQueue
             'email' => 'Correo electrónico',
             'year' => 'Año actual',
             'fecha_registro' => 'Fecha de registro',
-           
+
         ];
     }
 
@@ -41,16 +45,21 @@ class VerifyAccountNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $template = \App\Models\General::where('correlative', 'verify_account_email')->first();
+
+        $name = $this->name ?? ($notifiable->name ?? '');
+        $lastname = $this->lastname ?? ($notifiable->lastname ?? '');
+        $email = $notifiable->email ?? ($notifiable->routes['mail'] ?? '');
+
         $body = $template
             ? \App\Helpers\Text::replaceData($template->description, [
                 'verificationUrl' => $this->verificationUrl,
-                'nombre' => $notifiable->name ?? '',
-                'apellido' => $notifiable->lastname ?? '',
-                'email' => $notifiable->email ?? '',
+                'nombre' => $name,
+                'apellido' => $lastname,
+                'email' => $email,
                 'year' => date('Y'),
-                'fecha_registro' => $notifiable->created_at->translatedFormat('d \d\e F \d\e\l Y'),
+                'fecha_registro' => now()->translatedFormat('d \d\e F \d\e\l Y'),
             ])
             : 'Plantilla no encontrada';
-        return (new RawHtmlMail($body, 'Verifica tu cuenta',$notifiable->email));
+        return (new RawHtmlMail($body, 'Verifica tu cuenta', $email));
     }
 }

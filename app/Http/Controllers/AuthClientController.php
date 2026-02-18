@@ -28,6 +28,9 @@ use SoDe\Extend\Crypto;
 use SoDe\Extend\JSON;
 use SoDe\Extend\Response;
 use SoDe\Extend\Trace;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Auth\Access\AuthorizationException;
 use Spatie\Permission\Models\Role;
 
 class AuthClientController extends BasicController
@@ -37,6 +40,25 @@ class AuthClientController extends BasicController
     {
         $regex = "/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/";
         return preg_match($regex, $email) === 1;
+    }
+
+    public function verify(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            throw new AuthorizationException;
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect('/?verified=1');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect('/?verified=1');
     }
 
     public function login(Request $request): HttpResponse | ResponseFactory | RedirectResponse
@@ -78,11 +100,20 @@ class AuthClientController extends BasicController
     {
         $response = new Response();
         try {
+            \Log::info('--- Signup Process Start (Original Version) ---');
+            \Log::info('Signup - Raw Request:', $request->all());
+
             $email = Controller::decode($request->email);
             $password = Controller::decode($request->password);
             $confirmation = Controller::decode($request->confirmation);
             $name = Controller::decode($request->name);
             $lastname = Controller::decode($request->lastname);
+
+            \Log::info('Signup - Decoded Data:', [
+                'email' => $email,
+                'name' => $name,
+                'lastname' => $lastname
+            ]);
 
             // Validar contraseñas
             if ($password !== $confirmation) {
@@ -111,22 +142,62 @@ class AuthClientController extends BasicController
                 'lastname' => $lastname,
                 'email' => $email,
                 'password' => bcrypt($password),
-                'email_verified_at' => now(), // O null si requiere confirmación
+                'email_verified_at' => null, // Se verificará por correo
             ]);
 
-            // Enviar correo de bienvenida
-            $notificationService = new EmailNotificationService();
-            $notificationService->sendToUser($user, new VerifyAccountNotification(url('/')));
+            // Generar URL de verificación firmada
+            $verificationUrl = URL::temporarySignedRoute(
+                'verification.verify',
+                now()->addMinutes(60),
+                ['id' => $user->id, 'hash' => sha1($user->email)]
+            );
 
-            // Asignar rol
+            // Enviar correo de bienvenida con link de verificación
+            try {
+                if ($request->invitation_token || $request->invitation_type) {
+                    // Si es una invitación, usamos Notification::route
+                    \Log::info('Sending invitation email (Route Notification)...', ['email' => $email]);
+                    \Illuminate\Support\Facades\Notification::route('mail', $email)
+                        ->notify(new VerifyAccountNotification($verificationUrl, $name, $lastname));
+                } else {
+                    // Flujo normal para customers
+                    \Log::info('Sending standard customer email (User Notification)...', ['user_id' => $user->id]);
+                    $notificationService = new EmailNotificationService();
+                    $notificationService->sendToUser($user, new VerifyAccountNotification($verificationUrl));
+                }
+                \Log::info('Welcome email sent successfully.');
+            } catch (\Throwable $th) {
+                // Silently fail email sending but LOG IT
+                \Log::error('Welcome email failed: ' . $th->getMessage());
+            }
+
+            // Asignar rol por defecto Customer
             $role = Role::firstOrCreate(['name' => 'Customer']);
             $user->assignRole($role);
 
+            // Validar si es una invitación de proveedor (Lógica posterior al registro base)
+            try {
+                if ($request->invitation_token && $request->invitation_type === 'provider') {
+                    $invitation = \App\Models\ProviderInvitation::where('token', $request->invitation_token)
+                        ->where('email', $email)
+                        ->where('status', 'pending')
+                        ->first();
 
+                    if ($invitation) {
+                        $invitation->status = 'accepted';
+                        $invitation->save();
 
+                        // Cambiar rol a Provider
+                        $user->syncRoles(['Provider']);
+                    }
+                }
+            } catch (\Throwable $th) {
+                // Ignorar error de invitación
+            }
 
             // Iniciar sesión (opcional)
             Auth::login($user);
+            \Log::info('User logged in. Signup process completed successfully.');
 
             $response->status = 200;
             $response->message = 'Usuario registrado exitosamente.';

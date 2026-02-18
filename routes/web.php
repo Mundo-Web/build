@@ -193,6 +193,9 @@ Route::middleware(['can:Provider', 'auth'])->prefix('provider')->group(function 
     Route::get('/home', [ProviderController::class, 'dashboard'])->name('Provider/Home.jsx');
 });
 
+// Email verification route
+Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\AuthClientController::class, 'verify'])->name('verification.verify');
+
 
 if (env('APP_ENV') === 'local') {
     Route::get('/cloud/{uuid}', [RepositoryController::class, 'media']);
