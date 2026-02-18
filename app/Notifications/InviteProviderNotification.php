@@ -55,6 +55,6 @@ class InviteProviderNotification extends Notification implements ShouldQueue
             ])
             : "Hola, has sido invitado a unirte como proveedor. Haz clic aquí: {$this->invitationUrl}";
 
-        return (new RawHtmlMail($body, 'Invitación para unirte a Rainstar Store', $email));
+        return (new RawHtmlMail($body, 'Invitación para unirte a nuestro equipo', $email));
     }
 }
