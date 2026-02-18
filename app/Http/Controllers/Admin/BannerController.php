@@ -61,10 +61,10 @@ class BannerController extends BasicController
 
                 if ($deleteFlag === 'DELETE') {
                     // Find existing record to delete old image file
-                    if (isset($body['id'])) {
-                        $existingRecord = $this->model::find($body['id']);
-                        if ($existingRecord && $existingRecord->{$field}) {
-                            $oldFilename = $existingRecord->{$field};
+                    if ($request->id) {
+                        $existingRecord = $this->model::find($request->id);
+                        if ($existingRecord && isset($existingRecord->data[$field])) {
+                            $oldFilename = $existingRecord->data[$field];
                             if (!Text::has($oldFilename, '.')) {
                                 $oldFilename = "{$oldFilename}.enc";
                             }
@@ -91,19 +91,21 @@ class BannerController extends BasicController
 
             $newData = $bannerJpa->data ?? [];
 
-            // Solo actualizar campos que vienen en el request y no están vacíos
-            // O si el campo viene explícitamente con un valor (incluso vacío)
+            // Solo actualizar campos que vienen en el request
             foreach ($body as $key => $value) {
+                // Si es un campo de imagen y es null (borrado explícito), eliminar del JSON
+                if (in_array($key, $this->imageFields) && $value === null) {
+                    unset($newData[$key]);
+                }
                 // Si el valor NO es null y NO es string vacío, actualizar
-                if ($value !== null && $value !== '') {
+                elseif ($value !== null && $value !== '') {
                     $newData[$key] = $value;
                 }
                 // Si viene como null o vacío, solo actualizar si NO existe previamente
-                // o si explícitamente se quiere borrar
+                // o si explícitamente se quiere borrar (ya manejado arriba para imágenes)
                 elseif (!isset($newData[$key])) {
                     $newData[$key] = $value;
                 }
-                // Si existe y viene vacío, NO hacer nada (mantener el valor anterior)
             }
 
             $this->model::where('id', $request->id)

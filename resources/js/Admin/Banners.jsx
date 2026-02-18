@@ -1220,7 +1220,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             ReactAppend(
                                 container,
                                 <img
-                                    src={`/storage/images/system/${data?.data?.background}`}
+                                    src={`/storage/images/banner/${data?.data?.background}`}
                                     style={{
                                         width: "80px",
                                         height: "48px",
@@ -1245,7 +1245,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             ReactAppend(
                                 container,
                                 <img
-                                    src={`/storage/images/system/${data?.data?.image}`}
+                                    src={`/storage/images/banner/${data?.data?.image}`}
                                     style={{
                                         width: "80px",
                                         height: "48px",

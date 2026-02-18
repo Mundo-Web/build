@@ -19,6 +19,10 @@ export const resolveSystemAsset = (value) => {
   if (sanitized.startsWith("/")) {
     return sanitized;
   }
+  
+  // Legacy or specific check: if it looks like a system image, keep it? 
+  // But controller saves to 'banner'. Let's trust the default.
 
-  return `/storage/images/system/${sanitized}`;
+  // Si no tiene prefijo de ruta conocida, asumimos que es una imagen de banner
+  return `/storage/images/banner/${sanitized}`;
 };

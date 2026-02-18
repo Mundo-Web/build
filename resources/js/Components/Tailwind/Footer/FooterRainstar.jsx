@@ -24,6 +24,36 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
     const [jobModalOpen, setJobModalOpen] = useState(false);
     const [providerModalOpen, setProviderModalOpen] = useState(false);
 
+    // Efecto para escuchar clics globales en enlaces que apuntan al modal
+    React.useEffect(() => {
+        const handleGlobalLinkClick = (e) => {
+            const link = e.target.closest("a");
+            if (!link) return;
+            const href = link.getAttribute("href");
+
+            if (href === "#jobapplicationmodal") {
+                e.preventDefault();
+                setJobModalOpen(true);
+            } else if (href === "#providerjoinmodal") {
+                e.preventDefault();
+                setProviderModalOpen(true);
+            }
+        };
+
+        document.addEventListener("click", handleGlobalLinkClick);
+
+        // Verificar hash inicial
+        if (window.location.hash === "#jobapplicationmodal") {
+            setJobModalOpen(true);
+        } else if (window.location.hash === "#providerjoinmodal") {
+            setProviderModalOpen(true);
+        }
+
+        return () => {
+            document.removeEventListener("click", handleGlobalLinkClick);
+        };
+    }, []);
+
     const onEmailSubmit = async (e) => {
         e.preventDefault();
         if (!emailRef.current.value) return;

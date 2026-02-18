@@ -671,8 +671,8 @@
     "file": "assets/adjustTextColor-69KGUbTd.js",
     "name": "adjustTextColor"
   },
-  "_bannerUtils-FB4i6ekV.js": {
-    "file": "assets/bannerUtils-FB4i6ekV.js",
+  "_bannerUtils-kvbYzkju.js": {
+    "file": "assets/bannerUtils-kvbYzkju.js",
     "name": "bannerUtils"
   },
   "_culqiPayment-swQKIfPn.js": {
@@ -814,7 +814,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-C9bgrEfm.js",
+    "file": "assets/About-DHMN2-F7.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -1059,7 +1059,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-DTkOTsp_.js",
+    "file": "assets/Banners-BVNMGobh.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -1081,7 +1081,7 @@
       "_InputFormGroup-l6evfr7v.js",
       "_ReactAppend--Pw8l4To.js",
       "_SortByAfterField-DzAI86wF.js",
-      "_bannerUtils-FB4i6ekV.js",
+      "_bannerUtils-kvbYzkju.js",
       "_vendor-swiper-Cr_RrIb_.js",
       "resources/js/Components/Adminto/Footer.jsx",
       "resources/js/Components/Adminto/form/TippyButton.jsx",
@@ -2699,7 +2699,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-CV8vIZR9.js",
+    "file": "assets/Blog-CVpq1R8F.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -2732,7 +2732,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-D9_W9h3g.js",
+    "file": "assets/BlogArticle-Bcuc9GHC.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -3958,7 +3958,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-lo1NPYbg.js",
+    "file": "assets/Banner-B2AhirMu.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -4035,14 +4035,14 @@
     ]
   },
   "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx": {
-    "file": "assets/BannerBlogSectionKatya-BsTBetkH.js",
+    "file": "assets/BannerBlogSectionKatya-DiH9APgr.js",
     "name": "BannerBlogSectionKatya",
     "src": "resources/js/Components/Tailwind/Banners/BannerBlogSectionKatya.jsx",
     "isDynamicEntry": true,
     "imports": [
       "_vendor-react-C1oWoR6m.js",
       "_vendor-swiper-Cr_RrIb_.js",
-      "_bannerUtils-FB4i6ekV.js",
+      "_bannerUtils-kvbYzkju.js",
       "_SubscriptionsRest-Cpfkj2sC.js",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "resources/js/Components/Adminto/Footer.jsx",
@@ -4248,7 +4248,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-COwR6VV7.js",
+    "file": "assets/Base-DEhfa1fY.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -6691,7 +6691,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer.jsx": {
-    "file": "assets/Footer-DQQcURBo.js",
+    "file": "assets/Footer-DaJ1AIMj.js",
     "name": "Footer",
     "src": "resources/js/Components/Tailwind/Footer.jsx",
     "isEntry": true,
@@ -10327,7 +10327,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-DfE7A28t.js",
+    "file": "assets/Contact-Cn7ND_eG.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -10353,7 +10353,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-89zWUWYA.js",
+    "file": "assets/CourseDetails-CIepQ0Or.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -10378,7 +10378,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-CPuEY9yH.js",
+    "file": "assets/Courses-B-D6-dFA.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -10445,7 +10445,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-DK34orEc.js",
+    "file": "assets/Home-DyB7fEyZ.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -10610,7 +10610,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Cw7mWe-5.js",
+    "file": "assets/System-CRF-EnAV.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -1,4 +1,5 @@
 import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerPremiumCampaign = ({ data }) => {
     const {
@@ -10,21 +11,20 @@ const BannerPremiumCampaign = ({ data }) => {
         class: customClass = "",
     } = data;
 
+    const backgroundUrl = resolveSystemAsset(background);
+
     return (
         <section
             className={`relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden bg-black text-white my-12 ${customClass}`}
         >
             <div className="absolute inset-0 opacity-60">
                 <img
-                    src={
-                        background
-                            ? background.startsWith("blob:")
-                                ? background
-                                : `/storage/images/banner/${background}`
-                            : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=2000&q=80"
-                    }
+                    src={backgroundUrl || "/api/cover/thumbnail/null"}
                     alt={name || "Premium Campaign"}
                     className="w-full h-full object-cover"
+                    onError={(e) =>
+                        (e.target.src = "/api/cover/thumbnail/null")
+                    }
                 />
             </div>
 
