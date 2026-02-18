@@ -107,7 +107,7 @@ const ProductGridRainstar = ({ items, data, cart, setCart }) => {
             className={`py-20 bg-white ${data?.class || ""}`}
             id={data?.element_id}
         >
-            <div className="container mx-auto px-6 md:px-12">
+            <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto  ">
                 <div className="flex justify-between items-end mb-12">
                     <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-tight">
                         {title}

@@ -7687,7 +7687,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Indicator.jsx": {
-    "file": "assets/Indicator-nScin7nZ.js",
+    "file": "assets/Indicator-Bq68Vcbi.js",
     "name": "Indicator",
     "src": "resources/js/Components/Tailwind/Indicator.jsx",
     "isDynamicEntry": true,
@@ -8133,7 +8133,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DgWtHKyA.js",
+    "file": "assets/Product-r9YSbiBE.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isEntry": true,
@@ -8172,7 +8172,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-BY3XmRZr.js",
+    "file": "assets/ProductDetail-Cztj69ao.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -8313,7 +8313,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-DAmOYB20.js",
+    "file": "assets/ProductDetailHuaillys-Cqrult0p.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isEntry": true,
@@ -10610,7 +10610,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-BVusMEUe.js",
+    "file": "assets/System-Cw7mWe-5.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -20,7 +20,7 @@ const IndicatorRainstar = ({ items, data }) => {
             className={`py-16 bg-black text-white border-t border-neutral-800 ${data?.class || ""}`}
             id={data?.element_id}
         >
-            <div className="container mx-auto px-6 md:px-12">
+            <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto md:px-12">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                     {items && items.length > 0 ? (
                         items.map((indicator, index) => (
