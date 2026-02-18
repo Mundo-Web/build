@@ -173,6 +173,9 @@ Route::post('/job-applications', [JobApplicationController::class, 'save']);
 Route::post('/forgot-password-client', [AuthClientController::class, 'forgotPassword']);
 Route::post('/reset-password-client', [AuthClientController::class, 'resetPassword']);
 
+// Provider Invitations (public)
+Route::get('/provider-invitation/{token}', [ProviderController::class, 'getInvitationByToken']);
+
 // Google OAuth routes
 Route::post('/google-login', [App\Http\Controllers\GoogleAuthController::class, 'loginWithGoogle']);
 
@@ -701,6 +704,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/providers', [ProviderController::class, 'save']);
     Route::post('/providers/paginate', [ProviderController::class, 'paginate']);
     Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
+    Route::post('/providers/invite', [ProviderController::class, 'invite']);
     Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
 
 

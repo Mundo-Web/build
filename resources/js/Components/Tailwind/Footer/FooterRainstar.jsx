@@ -12,6 +12,8 @@ import {
 import { toast } from "sonner";
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Global from "../../../Utils/Global";
+import JobApplicationModal from "../Modals/JobApplicationModal";
+import ProviderJoinModal from "../Modals/ProviderJoinModal";
 
 const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
     const subscriptionsRest = new SubscriptionsRest();
@@ -19,6 +21,8 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
     const currentYear = new Date().getFullYear();
 
     const [saving, setSaving] = useState(false);
+    const [jobModalOpen, setJobModalOpen] = useState(false);
+    const [providerModalOpen, setProviderModalOpen] = useState(false);
 
     const onEmailSubmit = async (e) => {
         e.preventDefault();
@@ -134,6 +138,21 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                         </a>
                                     </li>
                                 ))}
+
+                            <li>
+                                <button
+                                    onClick={() => setProviderModalOpen(true)}
+                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                >
+                                    <span className="font-medium">
+                                        Únete a Nosotros
+                                    </span>
+                                    <ArrowUpRight
+                                        size={12}
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                    />
+                                </button>
+                            </li>
                         </ul>
                     </div>
 
@@ -365,6 +384,16 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                     </div>
                 </div>
             </div>
+
+            <JobApplicationModal
+                isOpen={jobModalOpen}
+                onClose={() => setJobModalOpen(false)}
+            />
+
+            <ProviderJoinModal
+                isOpen={providerModalOpen}
+                onClose={() => setProviderModalOpen(false)}
+            />
         </footer>
     );
 };

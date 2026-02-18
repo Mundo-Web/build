@@ -14,6 +14,7 @@ export default function SignUpSimple({ data }) {
     const [loading, setLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [invitationData, setInvitationData] = useState(null);
 
     const nameRef = useRef();
     const lastnameRef = useRef();
@@ -30,6 +31,55 @@ export default function SignUpSimple({ data }) {
     };
 
     useEffect(() => {
+        // Leer parámetros de invitación
+        const urlParams = new URLSearchParams(window.location.search);
+        const invitationType = urlParams.get("type");
+        const invitationToken = urlParams.get("token");
+
+        // Si hay una invitación, obtener los datos
+        if (invitationType === "provider" && invitationToken) {
+            fetch(`/api/provider-invitation/${invitationToken}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.success && data.data) {
+                        setInvitationData({
+                            email: data.data.email,
+                            name: data.data.name,
+                            phone: data.data.phone,
+                            token: invitationToken,
+                            type: invitationType,
+                        });
+
+                        // Pre-llenar el email
+                        if (emailRef.current && data.data.email) {
+                            emailRef.current.value = data.data.email;
+                        }
+
+                        // Pre-llenar el nombre (dividir en nombre y apellido si es posible)
+                        if (data.data.name) {
+                            const nameParts = data.data.name.trim().split(" ");
+                            if (nameParts.length > 0 && nameRef.current) {
+                                // Primer palabra como nombre
+                                nameRef.current.value = nameParts[0];
+                            }
+                            if (nameParts.length > 1 && lastnameRef.current) {
+                                // Resto como apellido
+                                lastnameRef.current.value = nameParts
+                                    .slice(1)
+                                    .join(" ");
+                            }
+                        } else {
+                            console.warn("No name data in invitation");
+                        }
+                    } else {
+                        console.error("Invalid response structure:", data);
+                    }
+                })
+                .catch((err) => {
+                    console.error("Error fetching invitation:", err);
+                });
+        }
+
         if (GET.message)
             Swal.fire({
                 icon: "info",
@@ -48,6 +98,7 @@ export default function SignUpSimple({ data }) {
         const name = nameRef.current.value;
         const lastname = lastnameRef.current.value;
         const confirmation = confirmationRef.current.value;
+
         if (password !== confirmation)
             return Swal.fire({
                 icon: "error",
@@ -64,6 +115,13 @@ export default function SignUpSimple({ data }) {
             lastname: jsEncrypt.encrypt(lastname),
             confirmation: jsEncrypt.encrypt(confirmation),
         };
+
+        // Si hay datos de invitación, agregarlos al request
+        if (invitationData) {
+            request.invitation_type = invitationData.type;
+            request.invitation_token = invitationData.token;
+        }
+
         const result = await AuthClientRest.signup(request);
 
         if (result) {
@@ -73,20 +131,23 @@ export default function SignUpSimple({ data }) {
         }
     };
     return (
-        <div id={data?.element_id || null} className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0 ">
+        <div
+            id={data?.element_id || null}
+            className="py-8 lg:py-0 lg:min-h-screen flex items-center justify-center bg-[#F7F9FB] px-primary 2xl:px-0 "
+        >
             <div className="2xl:max-w-7xl w-full mx-auto py-16">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="flex flex-col lg:flex-row">
-
                         <div className="hidden lg:block lg:w-1/2 relative">
-
-                            <img src={`/assets/resources/signup.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME}
+                            <img
+                                src={`/assets/resources/signup.png?v=${crypto.randomUUID()}`}
+                                alt={Global.APP_NAME}
                                 className="absolute inset-0 w-full h-full object-cover"
                                 onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = '/assets/img/logo-bk.svg';
-                                }} />
-
+                                    e.target.src = "/assets/img/logo-bk.svg";
+                                }}
+                            />
 
                             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                         </div>
@@ -100,10 +161,15 @@ export default function SignUpSimple({ data }) {
                                         Crear una nueva cuenta
                                     </h1>
                                     <p className="customtext-neutral-light">
-                                       Completa tus datos para crear tu cuenta y acceder a todas nuestras funciones de manera rápida y segura.
+                                        Completa tus datos para crear tu cuenta
+                                        y acceder a todas nuestras funciones de
+                                        manera rápida y segura.
                                     </p>
                                 </div>
-                                <form className="space-y-4 mt-4" onSubmit={onSignUpSubmit}>
+                                <form
+                                    className="space-y-4 mt-4"
+                                    onSubmit={onSignUpSubmit}
+                                >
                                     <div className="space-y-2">
                                         <label
                                             className="block text-sm mb-1 customtext-neutral-dark"
@@ -117,14 +183,19 @@ export default function SignUpSimple({ data }) {
                                             name="name"
                                             type="text"
                                             placeholder="Carlos Soria de la Flor"
-                                            className="w-full px-4 py-3 border customtext-neutral-dark  border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0   transition-all duration-300"
+                                            className="w-full px-4 py-3 border customtext-neutral-dark border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0 transition-all duration-300"
                                             required
                                         />
+                                        {invitationData?.name && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Datos de tu solicitud
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <label
                                             className="block text-sm mb-1 customtext-neutral-dark"
-                                            htmlFor="name"
+                                            htmlFor="lastname"
                                         >
                                             Apellidos
                                         </label>
@@ -134,9 +205,14 @@ export default function SignUpSimple({ data }) {
                                             name="lastname"
                                             type="text"
                                             placeholder="Carlos Soria de la Flor"
-                                            className="w-full px-4 py-3 border customtext-neutral-dark  border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0   transition-all duration-300"
+                                            className="w-full px-4 py-3 border customtext-neutral-dark border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0 transition-all duration-300"
                                             required
                                         />
+                                        {invitationData?.name && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Datos de tu solicitud
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <label
@@ -151,9 +227,17 @@ export default function SignUpSimple({ data }) {
                                             name="email"
                                             type="email"
                                             placeholder="hola@mail.com"
-                                            className="w-full px-4 py-3 border customtext-neutral-dark  border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0   transition-all duration-300"
+                                            className="w-full px-4 py-3 border customtext-neutral-dark border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0 transition-all duration-300"
                                             required
+                                            readOnly={invitationData !== null}
+                                            disabled={invitationData !== null}
                                         />
+                                        {invitationData && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Este email está vinculado a tu
+                                                invitación como proveedor
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <label
@@ -167,13 +251,19 @@ export default function SignUpSimple({ data }) {
                                                 id="password"
                                                 ref={passwordRef}
                                                 name="password"
-                                                type={showPassword ? "text" : "password"}
+                                                type={
+                                                    showPassword
+                                                        ? "text"
+                                                        : "password"
+                                                }
                                                 className="w-full px-4 py-3 pr-12 border customtext-neutral-dark border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0 transition-all duration-300"
                                                 required
                                             />
                                             <button
                                                 type="button"
-                                                onClick={togglePasswordVisibility}
+                                                onClick={
+                                                    togglePasswordVisibility
+                                                }
                                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
                                             >
                                                 {showPassword ? (
@@ -227,13 +317,19 @@ export default function SignUpSimple({ data }) {
                                                 id="confirm-password"
                                                 ref={confirmationRef}
                                                 name="confirm-password"
-                                                type={showConfirmPassword ? "text" : "password"}
+                                                type={
+                                                    showConfirmPassword
+                                                        ? "text"
+                                                        : "password"
+                                                }
                                                 className="w-full px-4 py-3 pr-12 border customtext-neutral-dark border-neutral-ligth rounded-xl focus:ring-0 focus:outline-0 transition-all duration-300"
                                                 required
                                             />
                                             <button
                                                 type="button"
-                                                onClick={toggleConfirmPasswordVisibility}
+                                                onClick={
+                                                    toggleConfirmPasswordVisibility
+                                                }
                                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
                                             >
                                                 {showConfirmPassword ? (

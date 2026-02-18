@@ -21,6 +21,7 @@ class JobApplication extends Model
         'position',
         'message',
         'cv',
+        'type',
         'reviewed',
         'status',
     ];

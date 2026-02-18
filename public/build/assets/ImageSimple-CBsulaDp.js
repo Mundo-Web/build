@@ -1,0 +1,1 @@
+import{j as e}from"./vendor-react-C1oWoR6m.js";import"./vendor-swiper-Cr_RrIb_.js";const a=({data:a})=>e.jsx("img",{id:a?.element_id||null,className:"w-full object-cover object-center aspect-square",src:a?.image,style:{aspectRatio:a?.aspect_ratio??1}});export{a as default};

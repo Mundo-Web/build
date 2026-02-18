@@ -30,6 +30,7 @@ class NotificationVariablesController extends Controller
             'admin_whistleblowing' => \App\Notifications\AdminWhistleblowingNotification::class,
             'job_application' => \App\Notifications\JobApplicationNotification::class,
             'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
+            'invite_provider' => \App\Notifications\InviteProviderNotification::class,
         ];
 
         if (array_key_exists($type, $mapping)) {
@@ -38,13 +39,13 @@ class NotificationVariablesController extends Controller
 
         if ($notificationClass && class_exists($notificationClass)) {
             if (method_exists($notificationClass, 'availableVariables')) {
-                 $variables = $notificationClass::availableVariables();
-                 \Illuminate\Support\Facades\Log::info("NotificationVariablesController: Found ".count($variables)." variables for class {$notificationClass}");
+                $variables = $notificationClass::availableVariables();
+                \Illuminate\Support\Facades\Log::info("NotificationVariablesController: Found " . count($variables) . " variables for class {$notificationClass}");
             } else {
-                 \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Method availableVariables not found in class {$notificationClass}");
+                \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Method availableVariables not found in class {$notificationClass}");
             }
         } else {
-            \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Class not found or not mapped for type {$type} (Class: ".($notificationClass ?? 'null').")");
+            \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Class not found or not mapped for type {$type} (Class: " . ($notificationClass ?? 'null') . ")");
             // Fallback for types not mapped or classes without the method (backward compatibility)
             switch ($type) {
                 case 'purchase_summary':
@@ -55,7 +56,7 @@ class NotificationVariablesController extends Controller
                         // ... legacy fallback if needed
                     ];
                     break;
-                // ... add other fallbacks if strictly necessary, but preferably rely on the classes
+                    // ... add other fallbacks if strictly necessary, but preferably rely on the classes
             }
         }
 

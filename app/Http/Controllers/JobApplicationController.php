@@ -32,11 +32,13 @@ class JobApplicationController extends BasicController
             'phone' => 'nullable|string',
             'position' => 'nullable|string',
             'message' => 'nullable|string',
+            'type' => 'nullable|string|in:job,provider',
         ], $messages);
 
         // Agregar campos adicionales
         $validatedData['reviewed'] = $request->reviewed ?? false;
         $validatedData['status'] = $request->status ?? true;
+        $validatedData['type'] = $request->type ?? 'job';
 
         return $validatedData;
     }
@@ -47,7 +49,7 @@ class JobApplicationController extends BasicController
             // Manejar archivo CV siguiendo el patrón de BasicController
             if ($request->hasFile('cv')) {
                 $snake_case = 'job_application';
-                
+
                 // Eliminar CV anterior si existe
                 if ($jpa->cv) {
                     $oldFilename = $jpa->cv;
@@ -63,7 +65,7 @@ class JobApplicationController extends BasicController
                 $ext = $file->getClientOriginalExtension();
                 $path = "images/{$snake_case}/{$uuid}.{$ext}";
                 Storage::put($path, file_get_contents($file));
-                
+
                 $jpa->cv = "{$uuid}.{$ext}";
                 $jpa->save();
             }
@@ -77,11 +79,10 @@ class JobApplicationController extends BasicController
 
             // Enviar notificación al cliente y al administrador
             NotificationHelper::sendToClientAndAdmin($jpa, new JobApplicationNotification($jpa));
-            
+
             Log::info('JobApplicationController - Notificaciones enviadas exitosamente', [
                 'job_application_id' => $jpa->id
             ]);
-
         } catch (\Exception $e) {
             Log::error('JobApplicationController - Error enviando notificaciones', [
                 'error' => $e->getMessage(),

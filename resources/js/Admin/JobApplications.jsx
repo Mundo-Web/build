@@ -11,8 +11,11 @@ import Swal from "sweetalert2";
 import JobApplicationsRest from "../Actions/Admin/JobApplicationsRest";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
+import ProvidersRest from "../Actions/Admin/ProvidersRest";
+import Fillable from "../Utils/Fillable";
 
 const jobApplicationsRest = new JobApplicationsRest();
+const providersRest = new ProvidersRest();
 
 const JobApplications = () => {
     const gridRef = useRef();
@@ -25,6 +28,7 @@ const JobApplications = () => {
     const phoneRef = useRef();
     const positionRef = useRef();
     const messageRef = useRef();
+    const typeRef = useRef();
     const cvRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
@@ -40,9 +44,22 @@ const JobApplications = () => {
         nameRef.current.value = data?.name ?? "";
         emailRef.current.value = data?.email ?? "";
         phoneRef.current.value = data?.phone ?? "";
-        positionRef.current.value = data?.position ?? "";
+
+        // Validar si position está disponible (Fillable)
+        if (
+            positionRef.current &&
+            Fillable.has("job_applications", "position")
+        ) {
+            positionRef.current.value = data?.position ?? "";
+        }
+
         messageRef.current.value = data?.message ?? "";
-        cvRef.current.value = null;
+        typeRef.current.value = data?.type ?? "job";
+
+        // Validar si cv está disponible (Fillable)
+        if (cvRef.current && Fillable.has("job_applications", "cv")) {
+            cvRef.current.value = null;
+        }
         setCurrentCV(data?.cv ?? null);
 
         $(modalRef.current).modal("show");
@@ -56,9 +73,17 @@ const JobApplications = () => {
             name: nameRef.current.value,
             email: emailRef.current.value,
             phone: phoneRef.current.value,
-            position: positionRef.current.value,
             message: messageRef.current.value,
+            type: typeRef.current.value,
         };
+
+        // Agregar position solo si está habilitado en Fillable
+        if (
+            positionRef.current &&
+            Fillable.has("job_applications", "position")
+        ) {
+            request.position = positionRef.current.value;
+        }
 
         const formData = new FormData();
         for (const key in request) {
@@ -67,9 +92,12 @@ const JobApplications = () => {
             }
         }
 
-        const file = cvRef.current.files[0];
-        if (file) {
-            formData.append("cv", file);
+        // Validar si cv está disponible (Fillable)
+        if (cvRef.current && Fillable.has("job_applications", "cv")) {
+            const file = cvRef.current.files[0];
+            if (file) {
+                formData.append("cv", file);
+            }
         }
 
         const result = await jobApplicationsRest.save(formData);
@@ -87,7 +115,7 @@ const JobApplications = () => {
         });
 
         if (!result) return;
-        
+
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
@@ -109,10 +137,41 @@ const JobApplications = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    const onInviteAsProvider = async (data) => {
+        const { isConfirmed } = await Swal.fire({
+            title: "¿Invitar como proveedor?",
+            text: `Se enviará una invitación a ${data.email}`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí, enviar invitación",
+        });
+
+        if (!isConfirmed) return;
+
+        console.log("Inviting provider with data:", data);
+        if (!data.id) {
+            console.error("Job Application ID is missing in data!", data);
+            Swal.fire(
+                "Error",
+                "No se pudo obtener el ID de la solicitud.",
+                "error",
+            );
+            return;
+        }
+
+        const result = await providersRest.invite({
+            email: data.email,
+            job_application_id: data.id,
+        });
+        if (result) {
+            Swal.fire("¡Enviado!", "La invitación ha sido enviada.", "success");
+        }
+    };
+
     const downloadCV = (cv) => {
         if (!cv) return;
         // Usar la ruta API del BasicController->media() como las imágenes
-        window.open(`/api/job-applications/media/${cv}`, '_blank');
+        window.open(`/api/job-applications/media/${cv}`, "_blank");
     };
 
     return (
@@ -166,23 +225,35 @@ const JobApplications = () => {
                         caption: "Teléfono",
                         width: "12%",
                     },
-                    {
+                    Fillable.has("job_applications", "position") && {
                         dataField: "position",
-                        caption: "Posición",
+                        caption: "Posición / Empresa",
                         width: "15%",
+                    },
+                    {
+                        dataField: "type",
+                        caption: "Tipo",
+                        width: "100px",
+                        cellTemplate: (container, { data }) => {
+                            const isProvider = data.type === "provider";
+                            container.append(
+                                `<span class="badge ${isProvider ? "bg-primary" : "bg-info"}">${isProvider ? "Proveedor" : "Trabajo"}</span>`,
+                            );
+                        },
                     },
                     {
                         dataField: "message",
                         caption: "Mensaje",
                         width: "20%",
                         cellTemplate: (container, { data }) => {
-                            const message = data.message || '';
-                            const shortMessage = message.length > 50 
-                                ? message.substring(0, 50) + '...' 
-                                : message;
+                            const message = data.message || "";
+                            const shortMessage =
+                                message.length > 50
+                                    ? message.substring(0, 50) + "..."
+                                    : message;
                             container.text(shortMessage);
                             if (message.length > 50) {
-                                container.attr('title', message);
+                                container.attr("title", message);
                             }
                         },
                     },
@@ -199,10 +270,10 @@ const JobApplications = () => {
                                         title: "Descargar CV",
                                         icon: "fa fa-download",
                                         onClick: () => downloadCV(data.cv),
-                                    })
+                                    }),
                                 );
                             } else {
-                                container.text('Sin CV');
+                                container.text("Sin CV");
                             }
                         },
                     },
@@ -223,7 +294,7 @@ const JobApplications = () => {
                                             value: !data.reviewed,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
@@ -236,7 +307,7 @@ const JobApplications = () => {
                     },
                     {
                         caption: "Acciones",
-                        width: "100px",
+                        width: "10%",
                         cellTemplate: (container, { data }) => {
                             container.css("text-overflow", "unset");
                             container.append(
@@ -245,15 +316,29 @@ const JobApplications = () => {
                                     title: "Ver detalles",
                                     icon: "fa fa-eye",
                                     onClick: () => onModalOpen(data, true),
-                                })
+                                }),
                             );
+
+                            // Solo mostrar botón de invitar si el tipo es 'provider'
+                            if (data.type === "provider") {
+                                container.append(
+                                    DxButton({
+                                        className:
+                                            "btn btn-xs btn-soft-primary",
+                                        title: "Invitar como proveedor",
+                                        icon: "fa fa-user-plus",
+                                        onClick: () => onInviteAsProvider(data),
+                                    }),
+                                );
+                            }
+
                             container.append(
                                 DxButton({
                                     className: "btn btn-xs btn-soft-danger",
                                     title: "Eliminar",
                                     icon: "fa fa-trash",
                                     onClick: () => onDeleteClicked(data),
-                                })
+                                }),
                             );
                         },
                         allowFiltering: false,
@@ -263,7 +348,13 @@ const JobApplications = () => {
             />
             <Modal
                 modalRef={modalRef}
-                title={isViewing ? "Ver solicitud" : (isEditing ? "Editar solicitud" : "Agregar solicitud")}
+                title={
+                    isViewing
+                        ? "Ver solicitud"
+                        : isEditing
+                          ? "Editar solicitud"
+                          : "Agregar solicitud"
+                }
                 onSubmit={onModalSubmit}
                 hideFooter={isViewing}
             >
@@ -294,11 +385,20 @@ const JobApplications = () => {
                             disabled={isViewing}
                         />
                     </div>
+                    {Fillable.has("job_applications", "position") && (
+                        <div className="col-md-6">
+                            <InputFormGroup
+                                eRef={positionRef}
+                                label="Posición / Empresa"
+                                disabled={isViewing}
+                            />
+                        </div>
+                    )}
                     <div className="col-md-6">
                         <InputFormGroup
-                            eRef={positionRef}
-                            label="Posición deseada"
-                            disabled={isViewing}
+                            eRef={typeRef}
+                            label="Tipo de Solicitud"
+                            disabled
                         />
                     </div>
                     <div className="col-md-12">
@@ -309,7 +409,7 @@ const JobApplications = () => {
                             disabled={isViewing}
                         />
                     </div>
-                    {!isViewing && (
+                    {!isViewing && Fillable.has("job_applications", "cv") && (
                         <div className="col-md-12">
                             <div className="mb-3">
                                 <label className="form-label">
@@ -329,37 +429,46 @@ const JobApplications = () => {
                             </div>
                         </div>
                     )}
-                    {isViewing && currentCV && (
-                        <div className="col-md-12">
-                            <div className="mb-3">
-                                <label className="form-label d-flex justify-content-between align-items-center">
-                                    <span>Curriculum Vitae</span>
-                                    <button
-                                        type="button"
-                                        className="btn btn-sm btn-primary"
-                                        onClick={() => downloadCV(currentCV)}
+                    {isViewing &&
+                        currentCV &&
+                        Fillable.has("job_applications", "cv") && (
+                            <div className="col-md-12">
+                                <div className="mb-3">
+                                    <label className="form-label d-flex justify-content-between align-items-center">
+                                        <span>Curriculum Vitae</span>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-primary"
+                                            onClick={() =>
+                                                downloadCV(currentCV)
+                                            }
+                                        >
+                                            <i className="fa fa-download me-2"></i>
+                                            Descargar CV
+                                        </button>
+                                    </label>
+                                    <div
+                                        className="border rounded"
+                                        style={{ height: "600px" }}
                                     >
-                                        <i className="fa fa-download me-2"></i>
-                                        Descargar CV
-                                    </button>
-                                </label>
-                                <div className="border rounded" style={{ height: '600px' }}>
-                                    <iframe
-                                        src={`/api/job-applications/media/${currentCV}`}
-                                        className="w-100 h-100"
-                                        style={{ border: 'none' }}
-                                        title="Vista previa del CV"
-                                    />
+                                        <iframe
+                                            src={`/api/job-applications/media/${currentCV}`}
+                                            className="w-100 h-100"
+                                            style={{ border: "none" }}
+                                            title="Vista previa del CV"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     {isViewing && (
                         <div className="col-md-12 text-end">
                             <button
                                 type="button"
                                 className="btn btn-secondary"
-                                onClick={() => $(modalRef.current).modal("hide")}
+                                onClick={() =>
+                                    $(modalRef.current).modal("hide")
+                                }
                             >
                                 Cerrar
                             </button>
@@ -375,6 +484,6 @@ CreateReactScript((el, properties) => {
     createRoot(el).render(
         <BaseAdminto {...properties} title="Solicitudes de Trabajo">
             <JobApplications {...properties} />
-        </BaseAdminto>
+        </BaseAdminto>,
     );
 });
