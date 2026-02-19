@@ -27,6 +27,7 @@ class ServiceController extends BasicController
     public $model = Service::class;
     public $reactView = 'Admin/Services';
     public $imageFields = ['image', 'background_image'];
+    public $defaultOrderBy = 'order_index';
     public $with4get = ['category', 'subcategory', 'images', 'features', 'specifications'];
 
     public function setReactViewProperties(Request $request)
@@ -35,7 +36,7 @@ class ServiceController extends BasicController
             ->where('status', true)
             ->orderBy('name')
             ->get();
-            
+
         $subcategories = ServiceSubCategory::select(['id', 'service_category_id', 'name'])
             ->where('status', true)
             ->orderBy('name')
@@ -63,7 +64,7 @@ class ServiceController extends BasicController
     {
         Log::info('ServiceController save method called');
         DB::beginTransaction();
-        
+
         try {
             // Validar datos básicos
             $validated = $request->validate([
@@ -94,7 +95,7 @@ class ServiceController extends BasicController
             if ($categoryId === '' || $categoryId === 'null' || $categoryId === null) {
                 $request->merge(['service_category_id' => null]);
             }
-            
+
             $subcategoryId = $request->input('service_subcategory_id');
             if ($subcategoryId === '' || $subcategoryId === 'null' || $subcategoryId === null) {
                 $request->merge(['service_subcategory_id' => null]);
@@ -108,11 +109,11 @@ class ServiceController extends BasicController
             // Procesar imágenes (image y background_image) usando la lógica del BasicController
             $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
             $imageData = [];
-            
+
             foreach ($this->imageFields as $field) {
                 // Check if image should be deleted (when hidden field contains 'DELETE')
                 $deleteFlag = $request->input($field . '_delete');
-                
+
                 if ($deleteFlag === 'DELETE') {
                     // Find existing record to delete old image file
                     if ($request->id) {
@@ -130,10 +131,10 @@ class ServiceController extends BasicController
                     $imageData[$field] = null;
                     continue;
                 }
-                
+
                 // Handle new image upload
                 if (!$request->hasFile($field)) continue;
-                
+
                 // Delete old image if exists and we're updating
                 if ($request->id) {
                     $existingRecord = Service::find($request->id);
@@ -146,7 +147,7 @@ class ServiceController extends BasicController
                         Storage::delete($oldPath);
                     }
                 }
-                
+
                 $full = $request->file($field);
                 $uuid = Crypto::randomUUID();
                 $ext = $full->getClientOriginalExtension();
@@ -176,21 +177,21 @@ class ServiceController extends BasicController
 
             // Procesar PDFs (múltiples archivos con ordenamiento)
             $pdfData = [];
-            
+
             // Cargar PDFs existentes si hay
             if ($service->pdf && is_array($service->pdf)) {
                 $pdfData = $service->pdf;
             }
-            
+
             // Agregar nuevos PDFs
             if ($request->hasFile('pdf')) {
                 $newPdfs = is_array($request->file('pdf')) ? $request->file('pdf') : [$request->file('pdf')];
-                
+
                 foreach ($newPdfs as $index => $pdfFile) {
                     if ($pdfFile && $pdfFile->isValid()) {
                         $pdfName = uniqid() . '_' . time() . '.pdf';
                         $pdfFile->storeAs('pdfs/service', $pdfName, 'public');
-                        
+
                         $pdfData[] = [
                             'name' => $pdfFile->getClientOriginalName(),
                             'path' => $pdfName,
@@ -199,18 +200,18 @@ class ServiceController extends BasicController
                     }
                 }
             }
-            
+
             // Eliminar PDFs marcados para eliminación
             if ($request->has('deleted_pdfs')) {
                 $deletedPdfs = json_decode($request->deleted_pdfs, true) ?? [];
                 foreach ($deletedPdfs as $pdfPath) {
                     Storage::disk('public')->delete('pdfs/service/' . $pdfPath);
-                    $pdfData = array_filter($pdfData, function($pdf) use ($pdfPath) {
+                    $pdfData = array_filter($pdfData, function ($pdf) use ($pdfPath) {
                         return $pdf['path'] !== $pdfPath;
                     });
                 }
             }
-            
+
             // Reordenar PDFs
             if (!empty($pdfData)) {
                 $pdfData = array_values($pdfData);
@@ -218,12 +219,12 @@ class ServiceController extends BasicController
                     $pdf['order'] = $index;
                 }
             }
-            
+
             $service->pdf = !empty($pdfData) ? $pdfData : null;
-            
+
             // Procesar Videos (múltiples links con ordenamiento)
             $videoData = [];
-            
+
             if ($request->has('linkvideo')) {
                 $videos = json_decode($request->linkvideo, true) ?? [];
                 foreach ($videos as $index => $videoUrl) {
@@ -235,15 +236,15 @@ class ServiceController extends BasicController
                     }
                 }
             }
-            
+
             // Eliminar videos marcados para eliminación
             if ($request->has('deleted_videos')) {
                 $deletedVideos = json_decode($request->deleted_videos, true) ?? [];
-                $videoData = array_filter($videoData, function($video, $index) use ($deletedVideos) {
+                $videoData = array_filter($videoData, function ($video, $index) use ($deletedVideos) {
                     return !in_array($index, $deletedVideos);
                 }, ARRAY_FILTER_USE_BOTH);
             }
-            
+
             // Reordenar videos
             if (!empty($videoData)) {
                 $videoData = array_values($videoData);
@@ -251,17 +252,17 @@ class ServiceController extends BasicController
                     $video['order'] = $index;
                 }
             }
-            
+
             $service->linkvideo = !empty($videoData) ? $videoData : null;
 
             // Procesar galería de imágenes
             if ($request->hasFile('gallery')) {
-                $galleryFiles = is_array($request->file('gallery')) 
-                    ? $request->file('gallery') 
+                $galleryFiles = is_array($request->file('gallery'))
+                    ? $request->file('gallery')
                     : [$request->file('gallery')];
-                
+
                 $currentMaxOrder = ServiceImage::where('service_id', $service->id)->max('order') ?? 0;
-                
+
                 foreach ($galleryFiles as $index => $file) {
                     if ($file && $file->isValid()) {
                         $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
@@ -269,7 +270,7 @@ class ServiceController extends BasicController
                         $ext = $file->getClientOriginalExtension();
                         $path = "images/{$snake_case}/{$uuid}.{$ext}";
                         Storage::put($path, file_get_contents($file));
-                        
+
                         ServiceImage::create([
                             'service_id' => $service->id,
                             'image' => "{$uuid}.{$ext}",
@@ -278,7 +279,7 @@ class ServiceController extends BasicController
                     }
                 }
             }
-            
+
             // Eliminar imágenes marcadas para eliminación
             if ($request->has('deleted_images')) {
                 $deletedImages = json_decode($request->deleted_images, true) ?? [];
@@ -301,7 +302,7 @@ class ServiceController extends BasicController
                 ServiceFeature::where('service_id', $service->id)
                     ->whereNotIn('id', $existingIds)
                     ->delete();
-                
+
                 foreach ($features as $feature) {
                     if (is_string($feature)) {
                         // Si es un string simple, crear nuevo
@@ -329,7 +330,7 @@ class ServiceController extends BasicController
                 ServiceSpecification::where('service_id', $service->id)
                     ->whereNotIn('id', $existingIds)
                     ->delete();
-                
+
                 foreach ($specifications as $spec) {
                     ServiceSpecification::updateOrCreate(
                         ['id' => $spec['id'] ?? null],
@@ -345,7 +346,6 @@ class ServiceController extends BasicController
 
             DB::commit();
             return response(['message' => 'Servicio guardado correctamente'], 200);
-            
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saving service: ' . $e->getMessage());
@@ -384,12 +384,12 @@ class ServiceController extends BasicController
                 $request->merge([$field => null]);
             }
         }
-        
+
         // Generar slug automáticamente si no existe
         if (!$request->has('slug') || empty($request->slug)) {
             $request->merge(['slug' => Str::slug($request->name)]);
         }
-        
+
         return parent::beforeSave($request);
     }
 
@@ -400,24 +400,24 @@ class ServiceController extends BasicController
     {
         try {
             $service = Service::findOrFail($request->id);
-            
+
             // Obtener información del dispositivo y sesión
             $deviceType = $this->getDeviceType($request);
             $sessionId = $request->session()->getId();
             $userId = auth()->check() ? auth()->id() : null;
-            
+
             // Verificar si ya existe un evento reciente (últimos 5 minutos) para evitar duplicados
             $recentEvent = AnalyticsEvent::where('session_id', $sessionId)
                 ->where('service_id', $service->id)
                 ->where('event_type', 'service_view')
                 ->where('created_at', '>', now()->subMinutes(5))
                 ->first();
-            
+
             // Solo incrementar si no hay evento reciente (anti-bot básico)
             if (!$recentEvent) {
                 // Incrementar contador de vistas
                 $service->increment('views');
-                
+
                 // Registrar evento en analytics
                 AnalyticsEvent::create([
                     'user_id' => $userId,
@@ -437,12 +437,11 @@ class ServiceController extends BasicController
                     ]
                 ]);
             }
-            
+
             return response()->json([
                 'success' => true,
                 'views' => $service->views
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error updating service views: ' . $e->getMessage());
             return response()->json([
@@ -457,15 +456,15 @@ class ServiceController extends BasicController
     private function getDeviceType(Request $request)
     {
         $userAgent = $request->userAgent();
-        
+
         if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', $userAgent)) {
             return 'tablet';
         }
-        
+
         if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', $userAgent)) {
             return 'mobile';
         }
-        
+
         return 'desktop';
     }
 
@@ -479,7 +478,7 @@ class ServiceController extends BasicController
             $serviceId = $request->input('id');
             $ip = $request->ip();
             $userAgent = $request->input('user_agent') ?? $request->header('User-Agent');
-            
+
             if (!$serviceId) {
                 return response([
                     'status' => 400,
@@ -495,20 +494,20 @@ class ServiceController extends BasicController
                     'message' => 'Servicio no encontrado'
                 ], 404);
             }
-            
+
             // Crear un hash único para este usuario (IP + user agent)
             $userHash = md5($ip . $userAgent);
-            
+
             // Detectar tipo de dispositivo
             $deviceType = $this->getDeviceType($request);
-            
+
             // Verificar si ya existe un click de este usuario en las últimas 24 horas
             $existingClick = DB::table('service_clicks')
                 ->where('service_id', $serviceId)
                 ->where('user_hash', $userHash)
                 ->where('created_at', '>=', now()->subHours(24))
                 ->first();
-            
+
             if (!$existingClick) {
                 // Registrar el click en la tabla de clicks
                 DB::table('service_clicks')->insert([
@@ -522,7 +521,7 @@ class ServiceController extends BasicController
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
-                
+
                 // Incrementar contador en la tabla services
                 DB::table('services')
                     ->where('id', $serviceId)
@@ -540,7 +539,7 @@ class ServiceController extends BasicController
                     'last_click' => $existingClick->created_at
                 ]);
             }
-            
+
             return response([
                 'status' => 200,
                 'message' => 'Click registrado exitosamente',
@@ -549,13 +548,12 @@ class ServiceController extends BasicController
                     'is_new_click' => !$existingClick
                 ]
             ], 200);
-            
         } catch (Exception $e) {
             Log::error('Error registering service click', [
                 'error' => $e->getMessage(),
                 'service_id' => $request->input('id')
             ]);
-            
+
             return response([
                 'status' => 500,
                 'message' => 'Error al registrar el click: ' . $e->getMessage()

@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     use HasFactory, HasUuids, HasDynamic;
-    
+
     public $incrementing = false;
     protected $keyType = 'string';
-    
+
     protected $fillable = [
         'service_category_id',
         'service_subcategory_id',
@@ -31,6 +31,7 @@ class Service extends Model
         'is_features',
         'is_specifications',
         'is_gallery',
+        'order_index',
     ];
 
     protected $casts = [
