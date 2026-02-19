@@ -147,7 +147,11 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
             }
         });
 
-        return Object.values(groups).map((group) => group.main);
+        return Object.values(groups)
+            .map((group) => group.main)
+            .sort(
+                (a, b) => (a.order_index || 99999) - (b.order_index || 99999),
+            );
     }, [items]);
 
     // Obtener datos del grupo del producto seleccionado
@@ -311,9 +315,9 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         if (item.agrupador) {
             setIsLoadingVariants(true);
             try {
-                // Usamos la ruta de la API que acabamos de verificar
+                // Usamos la ruta de la API pública que acabamos de crear
                 const response = await fetch(
-                    `/api/admin/items/variants/${item.agrupador}`,
+                    `/api/items/variants/${item.agrupador}`,
                 );
                 if (response.ok) {
                     const data = await response.json();

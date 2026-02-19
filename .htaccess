@@ -1,14 +1,21 @@
-# 1. Prohibir que Google o cualquier persona vea la lista de archivos/carpetas
+# 1. Evita que se listen las carpetas (el error que tenías en Google)
 Options -Indexes
 
-# 2. Definir que el archivo de inicio está en la carpeta public
-DirectoryIndex public/index.php
+# 2. Establece el archivo de inicio por defecto
+DirectoryIndex index.php
 
-RewriteEngine on
-# 3. Redirección transparente a la carpeta public
-RewriteCond %{REQUEST_URI} !^/public/
-RewriteRule ^(.*)$ public/$1 [L]
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
+    # Si la petición ya viene con /public/, no hagas nada
+    RewriteCond %{REQUEST_URI} ^/public/ [NC]
+    RewriteRule ^ - [L]
+
+    # Redirecciona todo lo demás a la carpeta /public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Mantén tu configuración de PHP intacta
 <IfModule mime_module>
   AddHandler application/x-httpd-ea-php82___lsphp .php .php8 .phtml 
 </IfModule>

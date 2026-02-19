@@ -37,6 +37,15 @@ class ItemController extends BasicController
     public $reactRootView = 'public';
     public $prefix4filter = 'items';
 
+    public function getVariants(string $agrupador)
+    {
+        return Item::where('agrupador', $agrupador)
+            ->where('is_master', false)
+            ->with(['attributes', 'images', 'applications']) // Include applications as well since frontend uses it
+            ->orderBy('order_index', 'asc')
+            ->get();
+    }
+
     public function variationsItems(Request $request)
     {
         $response = new Response();

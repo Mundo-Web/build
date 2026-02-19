@@ -249,6 +249,7 @@ Route::post('/items/colors-items', [ItemController::class, 'getColorsItems'])->w
 Route::post('/items/searchProducts', [ItemController::class, 'searchProduct']);
 Route::get('/items/masters', [ItemController::class, 'getMasters']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
+Route::get('/items/variants/{agrupador}', [ItemController::class, 'getVariants']);
 Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
 
 // ====================================
