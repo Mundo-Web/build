@@ -4348,6 +4348,20 @@
                 "using": {
                     "model": "Aboutus"
                 }
+            },
+            {
+                "id": "AboutRainstar",
+                "name": "About Rainstar - Editorial Premium",
+                "image": "about-rainstar.png",
+                "data": [
+                    "class"
+                ],
+                "generals": [
+                    "whatsapp_advisors"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
             }
         ]
     },

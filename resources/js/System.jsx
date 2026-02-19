@@ -554,6 +554,7 @@ const System = ({
                         data={dataWithElementId}
                         filteredData={filteredData}
                         items={getItems(itemsId)}
+                        generals={generals}
                     />,
                 );
             case "login":
