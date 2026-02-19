@@ -1,9 +1,14 @@
-RewriteEngine on
-RewriteCond %{REQUEST_URI} !^public
-RewriteRule ^(.*)$ public/$1 [L]
+# 1. Prohibir que Google o cualquier persona vea la lista de archivos/carpetas
+Options -Indexes
 
+# 2. Definir que el archivo de inicio está en la carpeta public
+DirectoryIndex public/index.php
+
+RewriteEngine on
+# 3. Redirección transparente a la carpeta public
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
 
 <IfModule mime_module>
   AddHandler application/x-httpd-ea-php82___lsphp .php .php8 .phtml 
 </IfModule>
-
