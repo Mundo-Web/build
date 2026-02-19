@@ -20,4 +20,22 @@ class PostController extends BasicController
             ->where('posts.status', true)
             ->where('category.status', true);
     }
+
+    public function related(Request $request)
+    {
+        $categoryId = $request->category_id;
+        $excludeId = $request->exclude_id;
+        $limit = $request->limit ?? 3;
+
+        $posts = Post::select(['posts.*'])
+            ->with(['category'])
+            ->where('category_id', $categoryId)
+            ->where('id', '!=', $excludeId)
+            ->where('status', true)
+            ->latest('created_at')
+            ->limit($limit)
+            ->get();
+
+        return response()->json($posts);
+    }
 }

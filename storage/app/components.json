@@ -4238,6 +4238,25 @@
                         "category"
                     ]
                 }
+            },
+            {
+                "id": "PostDetailRainstar",
+                "name": "Post Detail Rainstar - Editorial Premium",
+                "image": "post-detail-rainstar.png",
+                "data": [
+                    "title",
+                    "class_title"
+                ],
+                "using": {
+                    "model": "Post",
+                    "field": "slug",
+                    "with": [
+                        "category"
+                    ],
+                    "relations": [
+                        "category"
+                    ]
+                }
             }
         ]
     },

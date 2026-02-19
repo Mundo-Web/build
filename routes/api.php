@@ -226,6 +226,7 @@ Route::get('/job-applications/media/{uuid}', [AdminJobApplicationController::cla
 Route::get('/amenities/media/{uuid}', [AdminAmenityController::class, 'media']);
 
 Route::post('/posts/paginate', [PostController::class, 'paginate']);
+Route::post('/posts/related', [PostController::class, 'related']);
 Route::post('/items/paginate', [ItemController::class, 'paginate']);
 Route::post('/items/convert-slugs', [ItemController::class, 'convertSlugsToIds']);
 Route::post('/items/update-clicks', [AdminItemController::class, 'updateClicks']);
