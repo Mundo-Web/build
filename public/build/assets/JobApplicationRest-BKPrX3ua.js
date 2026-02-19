@@ -1,1 +1,0 @@
-var s=Object.defineProperty,e=(e,t,a)=>((e,t,a)=>t in e?s(e,t,{enumerable:!0,configurable:!0,writable:!0,value:a}):e[t]=a)(e,"symbol"!=typeof t?t+"":t,a);import{B as t}from"./BasicRest-xQKzLTAw.js";class a extends t{constructor(){super(...arguments),e(this,"path","job-applications"),e(this,"is_use_notify",!1),e(this,"hasFiles",!0)}}export{a as J};

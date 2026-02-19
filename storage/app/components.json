@@ -4104,6 +4104,22 @@
                         "category"
                     ]
                 }
+            },
+              {
+                "id": "BlogRainstar",
+                "name": "Blog - Rainstar Style",
+                "image": "blog-rainstar.png",
+                "data": [
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Post",
+                    "filters": ["is_published"],
+                    "with": ["category"],
+                    "limit": 12
+                },
+                "generals": []
             }
         ]
     },
