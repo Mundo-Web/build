@@ -3828,6 +3828,24 @@
                     "model": "Social"
                 }
             },
+             {
+                "id": "ContactRainstar",
+                "name": "Contact Rainstar",
+                "image": "contact-rainstar.png",
+                "data": [
+                    "title",
+                    "description",
+                    "title_ubication",
+                    "stores_support",
+                    "redirect"
+                ],
+                "generals": [
+                    "address",
+                    "phone_contact",
+                    "email_contact",
+                    "opening_hours"
+                ]
+            },
            
             {
                 "id": "ContactWebQuirurgica",
@@ -3928,6 +3946,19 @@
                 "using": {
                     "model": "Faq"
                 }
+            },
+            {
+                "id": "FaqRainstar",
+                "name": "Faq Rainstar - Editorial Premium",
+                "image": "faq-rainstar.png",
+                "data": [
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Faq"
+                },
+                "generals": []
             }
         ]
     },
@@ -6067,4 +6098,5 @@
             }
         ]
     }
+  
 ]

@@ -1,1 +1,0 @@
-var e=Object.defineProperty,s=(s,a,r)=>((s,a,r)=>a in s?e(s,a,{enumerable:!0,configurable:!0,writable:!0,value:r}):s[a]=r)(s,"symbol"!=typeof a?a+"":a,r);import{B as a}from"./BasicRest-BxJc2T7L.js";class r extends a{constructor(){super(...arguments),s(this,"path","admin/socials")}}export{r as S};
