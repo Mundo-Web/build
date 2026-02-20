@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import Tippy from "@tippyjs/react";
 import SocialsRest from "../../../Actions/SocialsRest";
+import CartModalRainstar from "../Components/CartModalRainstar";
 
 const SearchOverlay = ({ isOpen, onClose }) => {
     const [searchValue, setSearchValue] = useState("");
@@ -726,7 +727,7 @@ const HeaderSticky = ({
                 isOpen={searchOpen}
                 onClose={() => setSearchOpen(false)}
             />
-            <CartModal
+            <CartModalRainstar
                 modalOpen={cartModalOpen}
                 setModalOpen={setCartModalOpen}
                 cart={cart}

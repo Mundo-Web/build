@@ -113,7 +113,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'specs_iconos'
             ],
             'atributos' => ['atributos', 'attribute', 'atrib', 'Atributos', 'atributo'],
-            'valores' => ['valores', 'values', 'valor', 'Valores', 'valores_atributos']
+            'valores' => ['valores', 'values', 'valor', 'Valores', 'valores_atributos', 'valor del atributo', 'valor_del_atributo']
         ];
     }
 
