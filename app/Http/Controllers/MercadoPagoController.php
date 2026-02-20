@@ -29,7 +29,7 @@ class MercadoPagoController extends Controller
             // Configurar SDK de MercadoPago
             // MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
             MercadoPagoConfig::setAccessToken($access_token->description);
-            
+
             $discountAmount = 0;
             if ($request->coupon_id != 'null' && $request->coupon_discount > 0) {
                 $discountAmount = (float) $request->coupon_discount;
@@ -37,10 +37,10 @@ class MercadoPagoController extends Controller
 
             // Generar número de orden
             $orderNumber = $this->generateOrderNumber();
-            
+
             // Crear registro de venta con estado "pendiente" ANTES de crear la preferencia
             $saleStatusPendiente = SaleStatus::getByName('Pendiente');
-           
+
             $sale = Sale::create([
                 'code' => $orderNumber,
                 'user_id' => $request->user_id,
@@ -71,15 +71,15 @@ class MercadoPagoController extends Controller
                 'coupon_discount' => $discountAmount,
                 'total_amount' => $request->amount + $request->delivery - $discountAmount,
             ]);
-           
-             // Registrar detalles de la venta (sin afectar stock aún)
+
+            // Registrar detalles de la venta (sin afectar stock aún)
             foreach ($request->cart as $item) {
                 $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
                 $itemName = is_array($item) ? $item['name'] ?? null : $item->name ?? null;
                 $itemPrice = is_array($item) ? $item['final_price'] ?? null : $item->final_price ?? null;
                 $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
                 $color = is_array($item) ? $item['color'] ?? null : $item->color ?? null;
-    
+
                 SaleDetail::create([
                     'sale_id' => $sale->id,
                     'item_id' => $itemId,
@@ -89,7 +89,7 @@ class MercadoPagoController extends Controller
                     'colors' => $color,
                 ]);
             }
-            
+
             // Configurar items para MercadoPago
             $items = [];
 
@@ -102,7 +102,7 @@ class MercadoPagoController extends Controller
                     'currency_id' => 'PEN',
                 ];
             }
-            
+
             // Agregar envío si existe
             if ($request->delivery > 0) {
                 $items[] = [
@@ -113,7 +113,7 @@ class MercadoPagoController extends Controller
                     'currency_id' => 'PEN',
                 ];
             }
-            
+
             if ($discountAmount > 0) {
                 $items[] = [
                     'id' => 'discount',
@@ -123,13 +123,12 @@ class MercadoPagoController extends Controller
                     'currency_id' => 'PEN',
                 ];
             }
-            
+
             // Configurar preferencia
             $preferenceData = [
                 'items' => $items,
                 'payment_methods' => [
-                    'excluded_payment_methods' => [
-                    ],
+                    'excluded_payment_methods' => [],
                     'excluded_payment_types' => [
                         ['id' => 'ticket'], // Excluye pagos en efectivo (Ripley, Banco Azteca, etc.)
                         ['id' => 'atm'], // Excluye pagos en cajeros
@@ -146,7 +145,7 @@ class MercadoPagoController extends Controller
                     'surname' => $request->lastname,
                     'email' => $request->email,
                     'phone' => [
-                        'area_code' => $request->phone_prefix ??'',
+                        'area_code' => $request->phone_prefix ?? '',
                         'number' => $request->phone ?? '',
                     ],
                     'address' => [
@@ -163,19 +162,19 @@ class MercadoPagoController extends Controller
                 // 'auto_return' => 'approved',
                 'external_reference' => $orderNumber,
             ];
-            
+
             // Crear preferencia
             $client = new PreferenceClient();
-           
+
             // Guardar la preferencia
             $preference = $client->create($preferenceData);
-            
+
             if (!$preference || !isset($preference->id)) {
                 throw new \Exception('No se pudo crear la preferencia de pago');
             }
 
-             //usuario autenticado actualizar datos de contacto
-             if (Auth::check()) {
+            //usuario autenticado actualizar datos de contacto
+            if (Auth::check()) {
                 $userJpa = User::find(Auth::user()->id);
                 $userJpa->phone = $request->phone;
                 $userJpa->dni = $request->document;
@@ -187,7 +186,7 @@ class MercadoPagoController extends Controller
                 $userJpa->address = $request->address;
                 $userJpa->reference = $request->reference;
                 $userJpa->number = $request->number;
-            
+
                 $userJpa->save();
             }
 
@@ -201,7 +200,7 @@ class MercadoPagoController extends Controller
                 'cart' => $request->cart,
                 'sale_id' => $sale->id,
             ]);
-        }catch (MPApiException $e) {
+        } catch (MPApiException $e) {
             if (isset($sale)) {
                 $sale->delete();
             }
@@ -211,7 +210,7 @@ class MercadoPagoController extends Controller
                 'error' => $e->getApiResponse()->getContent(),
                 'details' => $e->getMessage()
             ], 400);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             if (isset($sale)) {
                 $sale->delete();
             }
@@ -230,7 +229,7 @@ class MercadoPagoController extends Controller
     public function handleSuccess(Request $request)
     {
         try {
-            
+
             $access_token = General::where('correlative', 'checkout_mercadopago_private_key')->first();
             // Verificar el pago con MercadoPago
             // MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
@@ -273,9 +272,9 @@ class MercadoPagoController extends Controller
                 'status_id' => $saleStatusPagado ? $saleStatusPagado->id : null,
             ]);
 
-            
+
             $saleDetails = SaleDetail::where('sale_id', $sale->id)->get();
-            
+
             // Actualizar stock (solo si el pago es aprobado)
             foreach ($saleDetails as $detail) {
                 Item::where('id', $detail->item_id)->decrement('stock', $detail->quantity);
@@ -284,7 +283,7 @@ class MercadoPagoController extends Controller
             // Enviar correo de resumen de compra al cliente y administrador
             try {
                 Log::info('MercadoPagoController - Preparando notificación de email');
-                
+
                 // Usar el helper para enviar tanto al cliente como al administrador
                 NotificationHelper::sendToClientAndAdmin($sale, new PurchaseSummaryNotification($sale, $saleDetails));
 
@@ -297,7 +296,6 @@ class MercadoPagoController extends Controller
             }
 
             return redirect('/cart?code=' . $sale->code);
-
         } catch (\Exception $e) {
             return redirect('/cart?message=' . urlencode($e->getMessage()));
         }
@@ -326,11 +324,10 @@ class MercadoPagoController extends Controller
 
     public function getOrder(Request $request)
     {
-        
-        try {
 
-            $order = Sale::where('code', $request->code) ->first();
-            
+        try {
+            $order = Sale::with('status')->where('code', $request->code)->first();
+
             if (!$order) {
                 return response()->json(
                     [
@@ -348,12 +345,12 @@ class MercadoPagoController extends Controller
             // Obtener los items con sus imágenes
             $items = [];
             $freeItems = [];
-            
+
             foreach ($saleDetails as $detail) {
                 $item = Item::select('name', 'image', 'color')
-                            ->where('id', $detail->item_id)
-                            ->first();
-                
+                    ->where('id', $detail->item_id)
+                    ->first();
+
                 $itemData = [
                     'id' => $detail->item_id,
                     'name' => $detail->name ?? ($item ? $item->name : 'Producto no encontrado'),
@@ -363,7 +360,7 @@ class MercadoPagoController extends Controller
                     'price' => $detail->price,
                     'is_free' => $detail->price == 0
                 ];
-                
+
                 // Si el precio es 0, es un producto gratuito
                 if ($detail->price == 0) {
                     $freeItems[] = $itemData;
@@ -371,21 +368,30 @@ class MercadoPagoController extends Controller
                     $items[] = $itemData;
                 }
             }
-            
-        // Formatear la respuesta
-        $response = [
+
+            // Formatear la respuesta
+            $response = [
                 'status' => true,
                 'order' => [
                     'code' => $order->code,
-                    'created_at' => $order->created_at->format('d/m/Y H:i'),
+                    'status_name' => $order->status->name ?? 'Pendiente',
+                    'status_color' => $order->status->color ?? '#000000',
+                    'created_at' => $order->created_at->toISOString(),
                     'payment_status' => $order->payment_status,
                     'amount' => $order->amount,
                     'delivery' => $order->delivery,
                     'additional_shipping_cost' => $order->additional_shipping_cost ?? 0,
                     'additional_shipping_description' => $order->additional_shipping_description ?? '',
+                    'delivery_type' => $order->delivery_type,
                     'coupon_id' => $order->coupon_id,
                     'coupon_discount' => $order->coupon_discount,
                     'total_amount' => $order->total_amount,
+                    // Direccion aplanada para el frontend
+                    'address' => $order->address,
+                    'department' => $order->department,
+                    'province' => $order->province,
+                    'district' => $order->district,
+                    'reference' => $order->reference,
                     // Agregar descuentos automáticos
                     'applied_promotions' => $order->applied_promotions ? json_decode($order->applied_promotions, true) : [],
                     'promotion_discount' => $order->promotion_discount ?? 0,
@@ -416,7 +422,6 @@ class MercadoPagoController extends Controller
             ];
 
             return response()->json($response);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,

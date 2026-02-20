@@ -1,13 +1,21 @@
 import React from "react";
 
-
 const CheckoutCulqi = React.lazy(() => import("./Checkouts/CheckoutCulqi"));
 const CheckoutKuchara = React.lazy(() => import("./Checkouts/CheckoutKuchara"));
 const CheckoutSteps = React.lazy(() => import("./Checkouts/CheckoutSteps"));
 const CheckoutStepsSF = React.lazy(() => import("./Checkouts/CheckoutStepsSF"));
-const CheckoutStepsPidelo = React.lazy(() => import("./Checkouts/CheckoutStepsPidelo"));
-const CheckoutStepsIbegruas = React.lazy(() => import("./Checkouts/CheckoutStepsIbegruas"));
-const CheckoutStepsRooms = React.lazy(() => import("./Checkouts/CheckoutStepsRooms"));
+const CheckoutStepsPidelo = React.lazy(
+    () => import("./Checkouts/CheckoutStepsPidelo"),
+);
+const CheckoutStepsIbegruas = React.lazy(
+    () => import("./Checkouts/CheckoutStepsIbegruas"),
+);
+const CheckoutStepsRooms = React.lazy(
+    () => import("./Checkouts/CheckoutStepsRooms"),
+);
+const CheckoutStepsRainstar = React.lazy(
+    () => import("./Checkouts/CheckoutStepsRainstar"),
+);
 const Checkout = ({
     which,
     data,
@@ -18,7 +26,7 @@ const Checkout = ({
     prefixes = [],
     ubigeos = [],
     contacts,
-    generals= [],
+    generals = [],
     categorias,
 }) => {
     const getCheckout = () => {
@@ -50,7 +58,7 @@ const Checkout = ({
                         categorias={categorias}
                     />
                 );
-             case "CheckoutStepsPidelo":
+            case "CheckoutStepsPidelo":
                 return (
                     <CheckoutStepsPidelo
                         data={data}
@@ -102,6 +110,21 @@ const Checkout = ({
                         contacts={contacts}
                         items={items}
                         generals={generals}
+                    />
+                );
+            case "CheckoutStepsRainstar":
+                return (
+                    <CheckoutStepsRainstar
+                        data={data}
+                        cart={cart}
+                        setCart={setCart}
+                        user={isUser}
+                        ubigeos={ubigeos}
+                        prefixes={prefixes}
+                        contacts={contacts}
+                        items={items}
+                        generals={generals}
+                        categorias={categorias}
                     />
                 );
             default:

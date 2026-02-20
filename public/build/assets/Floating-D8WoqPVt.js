@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/WhatsApp-l-NsrMzC.js","assets/vendor-react-SBvaUJTK.js","assets/vendor-swiper-Cr_RrIb_.js","vendor-swiper.css","vendor-react.css","assets/General-ClVW7qxN.js","assets/vendor-motion-DsSUWJCr.js"])))=>i.map(i=>d[i]);
+import{_ as r}from"./preload-helper-DAHR15QK.js";import{R as o}from"./vendor-react-SBvaUJTK.js";import"./vendor-swiper-Cr_RrIb_.js";o.lazy(()=>r(()=>import("./WhatsApp-l-NsrMzC.js"),__vite__mapDeps([0,1,2,3,4,5,6])));
