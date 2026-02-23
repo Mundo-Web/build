@@ -39,4 +39,12 @@ class JobApplication extends Model
     {
         return $this->belongsTo(User::class, 'referred_by_uuid', 'uuid');
     }
+
+    /**
+     * Invitación de proveedor asociada a esta solicitud
+     */
+    public function invitation()
+    {
+        return $this->hasOne(ProviderInvitation::class, 'job_application_id');
+    }
 }

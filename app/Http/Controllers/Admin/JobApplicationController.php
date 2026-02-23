@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\BasicController;
 use App\Models\JobApplication;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class JobApplicationController extends BasicController
@@ -14,7 +15,9 @@ class JobApplicationController extends BasicController
 
     public function setPaginationInstance(Request $request, string $model)
     {
-        return $model::with('referrer');
+        return $model::with('referrer', 'invitation')
+            ->addSelect(['*'])
+            ->addSelect(DB::raw("(SELECT COUNT(*) FROM users WHERE users.email = job_applications.email) as email_registered"));
     }
 
     public function beforeSave(Request $request)

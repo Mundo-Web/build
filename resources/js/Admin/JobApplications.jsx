@@ -35,7 +35,7 @@ const JobApplications = () => {
     const [currentCV, setCurrentCV] = useState(null);
     const [isViewing, setIsViewing] = useState(false);
 
-    const onModalOpen = (data, viewOnly = false) => {
+    const onModalOpen = async (data, viewOnly = false) => {
         setIsViewing(viewOnly);
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
@@ -63,6 +63,16 @@ const JobApplications = () => {
         setCurrentCV(data?.cv ?? null);
 
         $(modalRef.current).modal("show");
+
+        // Auto-marcar como revisado al ver detalles
+        if (viewOnly && data?.id && !data.reviewed) {
+            await jobApplicationsRest.boolean({
+                id: data.id,
+                field: "reviewed",
+                value: true,
+            });
+            $(gridRef.current).dxDataGrid("instance").refresh();
+        }
     };
 
     const onModalSubmit = async (e) => {
@@ -357,15 +367,39 @@ const JobApplications = () => {
 
                             // Solo mostrar botón de invitar si el tipo es 'provider'
                             if (data.type === "provider") {
-                                container.append(
-                                    DxButton({
-                                        className:
-                                            "btn btn-xs btn-soft-primary",
-                                        title: "Invitar como proveedor",
-                                        icon: "fa fa-user-plus",
-                                        onClick: () => onInviteAsProvider(data),
-                                    }),
-                                );
+                                const isEmailRegistered =
+                                    data.email_registered &&
+                                    data.email_registered > 0;
+                                const invitationAccepted =
+                                    data.invitation &&
+                                    data.invitation.status === "accepted";
+                                const isDisabled =
+                                    isEmailRegistered || invitationAccepted;
+
+                                if (isDisabled) {
+                                    container.append(
+                                        DxButton({
+                                            className:
+                                                "btn btn-xs btn-soft-success",
+                                            title: isEmailRegistered
+                                                ? "Ya registrado como usuario"
+                                                : "Invitación ya aceptada",
+                                            icon: "fa fa-check-circle",
+                                            onClick: () => {},
+                                        }),
+                                    );
+                                } else {
+                                    container.append(
+                                        DxButton({
+                                            className:
+                                                "btn btn-xs btn-soft-primary",
+                                            title: "Invitar como proveedor",
+                                            icon: "fa fa-user-plus",
+                                            onClick: () =>
+                                                onInviteAsProvider(data),
+                                        }),
+                                    );
+                                }
                             }
 
                             container.append(
