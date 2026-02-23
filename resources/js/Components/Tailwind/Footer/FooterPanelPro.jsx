@@ -238,13 +238,33 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                             href={`#productos`}
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                // Usar scroll personalizado más suave y lento
-                                                smoothScrollTo(
+                                                const targetEl =
                                                     document.getElementById(
                                                         "productos",
-                                                    ),
-                                                    1200,
-                                                );
+                                                    );
+                                                if (targetEl) {
+                                                    // Scroll suave a la sección de productos
+                                                    smoothScrollTo(
+                                                        targetEl,
+                                                        1200,
+                                                    );
+                                                    // Después del scroll, emitir evento para abrir el modal del producto
+                                                    setTimeout(() => {
+                                                        window.dispatchEvent(
+                                                            new CustomEvent(
+                                                                "open-product-modal",
+                                                                {
+                                                                    detail: {
+                                                                        productId:
+                                                                            product.id,
+                                                                        productName:
+                                                                            product.name,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        );
+                                                    }, 1300);
+                                                }
                                             }}
                                             className="hover:text-wood-300 transition-colors line-clamp-1"
                                             title={product.name}

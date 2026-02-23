@@ -302,6 +302,70 @@ const ProductListPanelPro = ({ items, data, onClickTracking }) => {
         return currentProduct.applications || [];
     }, [currentProduct]);
 
+    // Escuchar evento 'open-product-modal' disparado desde el footer u otro componente
+    useEffect(() => {
+        const handleOpenProductModal = (e) => {
+            const { productId, productName } = e.detail || {};
+            if (!productId && !productName) return;
+            if (!items || items.length === 0) return;
+
+            // Buscar el producto en los items agrupados o en la lista completa
+            let foundItem = null;
+
+            // Primero buscar por ID
+            if (productId) {
+                foundItem = groupedItems.find((item) => item.id === productId);
+                if (!foundItem) {
+                    foundItem = items.find((item) => item.id === productId);
+                }
+            }
+
+            // Si no se encontró por ID, buscar por nombre
+            if (!foundItem && productName) {
+                const searchName = productName.trim().toLowerCase();
+                foundItem = groupedItems.find(
+                    (item) => item.name?.trim().toLowerCase() === searchName,
+                );
+                if (!foundItem) {
+                    foundItem = items.find(
+                        (item) =>
+                            item.name?.trim().toLowerCase() === searchName,
+                    );
+                }
+            }
+
+            if (foundItem) {
+                // Abrir el modal del producto
+                if (onClickTracking) {
+                    onClickTracking(foundItem);
+                }
+                setSelectedImage(foundItem);
+                setSelectedVariant(foundItem);
+
+                if (foundItem.agrupador) {
+                    setIsLoadingVariants(true);
+                    fetch(`/api/items/variants/${foundItem.agrupador}`)
+                        .then((res) => (res.ok ? res.json() : Promise.reject()))
+                        .then((data) =>
+                            setVariantsForSelectedGroup([foundItem, ...data]),
+                        )
+                        .catch(() => setVariantsForSelectedGroup([foundItem]))
+                        .finally(() => setIsLoadingVariants(false));
+                } else {
+                    setVariantsForSelectedGroup([foundItem]);
+                }
+            }
+        };
+
+        window.addEventListener("open-product-modal", handleOpenProductModal);
+        return () => {
+            window.removeEventListener(
+                "open-product-modal",
+                handleOpenProductModal,
+            );
+        };
+    }, [groupedItems, items]);
+
     if (!items || items.length === 0) {
         return null;
     }
