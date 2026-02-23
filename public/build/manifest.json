@@ -859,7 +859,7 @@
     "isEntry": true
   },
   "resources/js/About.jsx": {
-    "file": "assets/About-Dj-dCrv9.js",
+    "file": "assets/About-DuQI10Mw.js",
     "name": "About",
     "src": "resources/js/About.jsx",
     "isEntry": true,
@@ -2744,7 +2744,7 @@
     ]
   },
   "resources/js/Blog.jsx": {
-    "file": "assets/Blog-D5R6vX5t.js",
+    "file": "assets/Blog-Cl2QfkbQ.js",
     "name": "Blog",
     "src": "resources/js/Blog.jsx",
     "isEntry": true,
@@ -2777,7 +2777,7 @@
     ]
   },
   "resources/js/BlogArticle.jsx": {
-    "file": "assets/BlogArticle-CcDhnlQl.js",
+    "file": "assets/BlogArticle-5vCQvqz8.js",
     "name": "BlogArticle",
     "src": "resources/js/BlogArticle.jsx",
     "isEntry": true,
@@ -4293,7 +4293,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Base.jsx": {
-    "file": "assets/Base-BNVurssA.js",
+    "file": "assets/Base-i1gaV3Il.js",
     "name": "Base",
     "src": "resources/js/Components/Tailwind/Base.jsx",
     "isDynamicEntry": true,
@@ -7032,7 +7032,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Footer.jsx": {
-    "file": "assets/Footer-9gb5zddf.js",
+    "file": "assets/Footer-DYi9hrS2.js",
     "name": "Footer",
     "src": "resources/js/Components/Tailwind/Footer.jsx",
     "isEntry": true,
@@ -10713,7 +10713,7 @@
     ]
   },
   "resources/js/Contact.jsx": {
-    "file": "assets/Contact-DjV_mlKh.js",
+    "file": "assets/Contact-DlZFgLI2.js",
     "name": "Contact",
     "src": "resources/js/Contact.jsx",
     "isEntry": true,
@@ -10739,7 +10739,7 @@
     ]
   },
   "resources/js/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-B02A_tQ1.js",
+    "file": "assets/CourseDetails-BzP5Mif-.js",
     "name": "CourseDetails",
     "src": "resources/js/CourseDetails.jsx",
     "isEntry": true,
@@ -10764,7 +10764,7 @@
     ]
   },
   "resources/js/Courses.jsx": {
-    "file": "assets/Courses-CcFPe3Pr.js",
+    "file": "assets/Courses-FNL6-0OB.js",
     "name": "Courses",
     "src": "resources/js/Courses.jsx",
     "isEntry": true,
@@ -10831,7 +10831,7 @@
     "isEntry": true
   },
   "resources/js/Home.jsx": {
-    "file": "assets/Home-CSg_FiA7.js",
+    "file": "assets/Home-GNQU4aqX.js",
     "name": "Home",
     "src": "resources/js/Home.jsx",
     "isEntry": true,
@@ -10944,15 +10944,16 @@
     ]
   },
   "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx": {
-    "file": "assets/BusinessIWorkCard-BOfdFH_1.js",
+    "file": "assets/BusinessIWorkCard-nXO_RV5k.js",
     "name": "BusinessIWorkCard",
     "src": "resources/js/Reutilizables/Businesses/BusinessIWorkCard.jsx",
     "isEntry": true,
     "imports": [
       "_vendor-react-SBvaUJTK.js",
+      "_BasicRest-Cgj77E-j.js",
+      "_vendor-swiper-Cr_RrIb_.js",
       "resources/js/Components/Tailwind/Checkouts/Components/OpenPayCardModal.jsx",
-      "_BooleanLimit-q2Ad9fGY.js",
-      "_vendor-swiper-Cr_RrIb_.js"
+      "_BooleanLimit-q2Ad9fGY.js"
     ]
   },
   "resources/js/Reutilizables/Pagination/FilterPagination.jsx": {
@@ -10995,7 +10996,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-RPhWinoT.js",
+    "file": "assets/System-Djso9yrr.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

@@ -235,7 +235,17 @@ const FooterPanelPro = ({ pages = [], generals = [], data, socials = [] }) => {
                                 {products.map((product) => (
                                     <li key={product.id}>
                                         <a
-                                            href={`#`}
+                                            href={`#productos`}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                // Usar scroll personalizado más suave y lento
+                                                smoothScrollTo(
+                                                    document.getElementById(
+                                                        "productos",
+                                                    ),
+                                                    1200,
+                                                );
+                                            }}
                                             className="hover:text-wood-300 transition-colors line-clamp-1"
                                             title={product.name}
                                         >
