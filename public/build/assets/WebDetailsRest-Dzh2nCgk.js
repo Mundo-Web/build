@@ -1,0 +1,1 @@
+var e=Object.defineProperty,r=(r,t,a)=>((r,t,a)=>t in r?e(r,t,{enumerable:!0,configurable:!0,writable:!0,value:a}):r[t]=a)(r,"symbol"!=typeof t?t+"":t,a);import"./vendor-react-SBvaUJTK.js";import{B as t}from"./BasicRest-Cgj77E-j.js";class a extends t{constructor(){super(...arguments),r(this,"path","admin/web-details")}}export{a as W};

@@ -18,35 +18,27 @@ const ProductCardItem = ({ item, index, onClick }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.95 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{
-                duration: 0.5,
-                delay: index * 0.05,
+                duration: 0.6,
+                delay: index * 0.1,
                 type: "spring",
-                stiffness: 100,
-                damping: 20,
+                stiffness: 70,
+                damping: 15,
             }}
-            className="cursor-pointer group relative flex justify-center items-center p-4 md:p-8"
+            className="cursor-pointer group relative flex justify-center items-center p-2"
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Background Glow Effect on Hover */}
-            <div
-                className={`absolute inset-0 bg-primary/5 rounded-3xl blur-2xl transition-opacity duration-500 pointer-events-none ${
-                    isHovered ? "opacity-100" : "opacity-0"
-                }`}
-            />
-
+            {/* Main Text */}
             {/* Main Text Container */}
-            <div className="relative z-10 transition-all duration-700 ease-out">
+            <div className="relative z-10 transition-transform duration-[2000ms] ease-out group-hover:scale-[1.05]">
                 {/* Layer 1: Image Text (Always visible mainly, background) */}
                 <h3
-                    className="font-sans font-bold lg:font-black text-[3.5rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-tight uppercase transition-all duration-500"
+                    className="font-sans font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase"
                     style={{
                         backgroundImage: `url(${imageUrl})`,
                         backgroundSize: "cover",
@@ -55,10 +47,7 @@ const ProductCardItem = ({ item, index, onClick }) => {
                         WebkitBackgroundClip: "text",
                         color: "transparent",
                         WebkitTextFillColor: "transparent",
-                        filter: isHovered
-                            ? "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3))"
-                            : "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))",
-                        transform: isHovered ? "translateY(-10px)" : "none",
+                        filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))",
                     }}
                 >
                     {item.name}
@@ -66,35 +55,14 @@ const ProductCardItem = ({ item, index, onClick }) => {
 
                 {/* Layer 2: Primary Color Text (Fades in on hover) */}
                 <h3
-                    className="absolute inset-0 font-sans font-bold lg:font-black text-[3.5rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-tight uppercase text-primary transition-all duration-500 pointer-events-none"
+                    className="absolute inset-0 font-sans font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase text-primary transition-opacity duration-[2000ms] ease-in-out pointer-events-none"
                     style={{
-                        opacity: isHovered ? 0.8 : 0,
-                        transform: isHovered ? "translateY(-10px)" : "none",
+                        opacity: isHovered ? 1 : 0,
                     }}
                     aria-hidden="true"
                 >
                     {item.name}
                 </h3>
-
-                {/* Interactive Indicator */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{
-                        opacity: isHovered ? 1 : 0,
-                        y: isHovered ? 0 : 10,
-                    }}
-                    className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
-                >
-                    <span className="text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-primary bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full shadow-sm">
-                        Ver Detalles
-                    </span>
-                    <motion.div
-                        animate={{ y: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                        <MousePointerClick className="w-4 h-4 text-primary" />
-                    </motion.div>
-                </motion.div>
             </div>
         </motion.div>
     );
