@@ -18,15 +18,17 @@ const ProductCardItem = ({ item, index, onClick }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
+            initial={{ opacity: 0, scale: 0.85, y: 60 }}
+            whileInView={{
+                opacity: 1,
+                scale: [0.85, 1.1, 1], // Crece y vuelve a su tamaño
+                y: [60, -15, 0], // Sube y se acomoda
+            }}
+            viewport={{ once: false, amount: 0.3 }} // Permite que se repita al scrolear de nuevo
             transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                type: "spring",
-                stiffness: 70,
-                damping: 15,
+                duration: 0.8,
+                delay: index * 0.05,
+                ease: "easeOut",
             }}
             className="cursor-pointer group relative flex justify-center items-center p-2"
             onClick={onClick}
@@ -35,7 +37,7 @@ const ProductCardItem = ({ item, index, onClick }) => {
         >
             {/* Main Text */}
             {/* Main Text Container */}
-            <div className="relative z-10 transition-transform duration-[2000ms] ease-out group-hover:scale-[1.05]">
+            <div className="relative z-10 transition-transform duration-700 ease-out group-hover:scale-[1.05]">
                 {/* Layer 1: Image Text (Always visible mainly, background) */}
                 <h3
                     className="font-sans font-bold lg:font-black text-[4rem] md:text-[10rem] xl:text-[14rem] leading-none tracking-normal uppercase"
