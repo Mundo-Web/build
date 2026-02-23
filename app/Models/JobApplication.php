@@ -22,6 +22,7 @@ class JobApplication extends Model
         'message',
         'cv',
         'type',
+        'referred_by_uuid',
         'reviewed',
         'status',
     ];
@@ -30,4 +31,12 @@ class JobApplication extends Model
         'reviewed' => 'boolean',
         'status' => 'boolean',
     ];
+
+    /**
+     * El proveedor que lo refirió (basado en UUID)
+     */
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by_uuid', 'uuid');
+    }
 }

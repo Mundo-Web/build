@@ -30,7 +30,7 @@ class User extends Authenticatable
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        
+
         // Solo usar conexión compartida si está habilitada la funcionalidad multi-DB
         // Y si estamos en contexto admin (no en relaciones de ventas)
         if (env('MULTI_DB_ENABLED', false) && $this->shouldUseSharedConnection()) {
@@ -53,21 +53,25 @@ class User extends Authenticatable
         foreach ($backtrace as $trace) {
             if (isset($trace['class']) && isset($trace['function'])) {
                 // Si SaleController está creando/guardando una venta
-                if (str_contains($trace['class'], 'SaleController') && 
-                    in_array($trace['function'], ['store', 'create', 'update'])) {
+                if (
+                    str_contains($trace['class'], 'SaleController') &&
+                    in_array($trace['function'], ['store', 'create', 'update'])
+                ) {
                     Log::info("🔵 User usando DB principal por creación de venta en: {$trace['class']}::{$trace['function']}");
                     return false;
                 }
-                
+
                 // Si SaleStatusTrace está guardando (registra user_id)
-                if (str_contains($trace['class'], 'SaleStatusTrace') && 
-                    in_array($trace['function'], ['save', 'create'])) {
+                if (
+                    str_contains($trace['class'], 'SaleStatusTrace') &&
+                    in_array($trace['function'], ['save', 'create'])
+                ) {
                     Log::info("🔵 User usando DB principal por creación de trace en: {$trace['class']}::{$trace['function']}");
                     return false;
                 }
             }
         }
-        
+
         // En TODOS los demás casos usar DB compartida:
         // - Autenticación (login, register)
         // - Admin panel (/admin/*)
@@ -84,6 +88,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'uuid',
+        'referred_by',
         // 'relative_id',
         'name',
         'lastname',
@@ -112,7 +117,7 @@ class User extends Authenticatable
         'document_number',
         'google_id',
     ];
-    
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -132,7 +137,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'status'=>'boolean',
+        'status' => 'boolean',
     ];
 
     public function isRoot()
@@ -149,5 +154,29 @@ class User extends Authenticatable
     public function getRole()
     {
         return $this->getRoleNames()[0];
+    }
+
+    /**
+     * El usuario que lo refirió
+     */
+    public function referredBy()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    /**
+     * Usuarios que este usuario refirió
+     */
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    /**
+     * Referidos recursivos (árbol completo)
+     */
+    public function referralsRecursive()
+    {
+        return $this->referrals()->with('referralsRecursive');
     }
 }

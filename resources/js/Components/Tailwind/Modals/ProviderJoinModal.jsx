@@ -1,21 +1,48 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ReactModal from "react-modal";
-import { CircleCheckBig, X, Upload, CheckCircle } from "lucide-react";
+import { CircleCheckBig, X, Upload, CheckCircle, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import JobApplicationRest from "../../../Actions/JobApplicationRest";
 
 const jobApplicationRest = new JobApplicationRest();
 
-const ProviderJoinModal = ({ isOpen, onClose }) => {
+const ProviderJoinModal = ({ isOpen, onClose, initialRef = null }) => {
     const [saving, setSaving] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [referralCode, setReferralCode] = useState(initialRef || "");
 
     const nameRef = useRef();
     const emailRef = useRef();
     const phoneRef = useRef();
     const messageRef = useRef();
     const cvRef = useRef();
+
+    // Detectar código de referido de: prop > URL param > cookie
+    useEffect(() => {
+        if (initialRef) {
+            setReferralCode(initialRef);
+            return;
+        }
+
+        // Leer de la URL (?ref=xxx)
+        const urlParams = new URLSearchParams(window.location.search);
+        const refFromUrl = urlParams.get("ref");
+        if (refFromUrl) {
+            setReferralCode(refFromUrl);
+            return;
+        }
+
+        // Leer de la cookie
+        const cookies = document.cookie.split(";");
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split("=");
+            if (name === "referral_code" && value) {
+                setReferralCode(decodeURIComponent(value));
+                return;
+            }
+        }
+    }, [initialRef, isOpen]);
 
     const handleClose = () => {
         onClose();
@@ -95,6 +122,11 @@ const ProviderJoinModal = ({ isOpen, onClose }) => {
             formData.append("phone", phone);
             formData.append("message", message);
             formData.append("type", "provider");
+
+            // Enviar código de referido si existe
+            if (referralCode) {
+                formData.append("referred_by_uuid", referralCode);
+            }
 
             if (cvRef.current?.files?.[0]) {
                 formData.append("cv", cvRef.current.files[0]);
@@ -264,6 +296,49 @@ const ProviderJoinModal = ({ isOpen, onClose }) => {
                                                         placeholder="+51 999 999 999"
                                                     />
                                                 </div>
+                                            </div>
+
+                                            {/* Campo de Código de Referido */}
+                                            <div>
+                                                <label
+                                                    className={
+                                                        rainstarLabelClass
+                                                    }
+                                                >
+                                                    <UserPlus
+                                                        size={12}
+                                                        className="inline mr-1 mb-0.5"
+                                                    />
+                                                    Código de Referido{" "}
+                                                    <span className="text-neutral-300 font-normal tracking-normal lowercase">
+                                                        (opcional)
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={referralCode}
+                                                    onChange={(e) =>
+                                                        setReferralCode(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className={
+                                                        rainstarInputClass +
+                                                        (referralCode
+                                                            ? " !border-b-green-500 text-green-700"
+                                                            : "")
+                                                    }
+                                                    placeholder="CÓDIGO UUID DEL PROVEEDOR QUE TE REFIRIÓ"
+                                                />
+                                                {referralCode && (
+                                                    <p className="text-[9px] text-green-600 mt-2 uppercase tracking-widest font-bold flex items-center gap-1">
+                                                        <CheckCircle
+                                                            size={10}
+                                                        />{" "}
+                                                        Código de referido
+                                                        aplicado
+                                                    </p>
+                                                )}
                                             </div>
 
                                             <div>

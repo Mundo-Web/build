@@ -12,6 +12,11 @@ class JobApplicationController extends BasicController
     public $model = JobApplication::class;
     public $reactView = 'Admin/JobApplications';
 
+    public function setPaginationInstance(Request $request, string $model)
+    {
+        return $model::with('referrer');
+    }
+
     public function beforeSave(Request $request)
     {
         return [
@@ -36,7 +41,7 @@ class JobApplicationController extends BasicController
             $file = $request->file('cv');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('documents/cv', $filename, 'public');
-            
+
             $jpa->cv = $filename;
             $jpa->save();
         }

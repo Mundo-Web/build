@@ -189,10 +189,47 @@ class AuthClientController extends BasicController
 
                         // Cambiar rol a Provider
                         $user->syncRoles(['Provider']);
+
+                        // Guardar referido: leer de la cookie, del request ref, o de la job_application
+                        $referralCode = $request->cookie('referral_code');
+                        if (!$referralCode) {
+                            // Por si viene como parámetro en la URL de invitación (&ref=xxx)
+                            $referralCode = $request->input('ref');
+                        }
+
+                        if ($referralCode) {
+                            $referrer = \App\Models\User::where('uuid', $referralCode)->first();
+                            if ($referrer) {
+                                $user->referred_by = $referrer->id;
+                                $user->save();
+                                \Log::info('Provider referred_by set during signup', [
+                                    'user_id' => $user->id,
+                                    'referred_by' => $referrer->id,
+                                    'referral_code' => $referralCode
+                                ]);
+                            }
+                        }
+
+                        // Si no se encontró por cookie/ref, intentar desde la job_application
+                        if (!$user->referred_by && $invitation->job_application_id) {
+                            $jobApp = \App\Models\JobApplication::find($invitation->job_application_id);
+                            if ($jobApp && $jobApp->referred_by_uuid) {
+                                $referrer = \App\Models\User::where('uuid', $jobApp->referred_by_uuid)->first();
+                                if ($referrer) {
+                                    $user->referred_by = $referrer->id;
+                                    $user->save();
+                                    \Log::info('Provider referred_by set from job_application', [
+                                        'user_id' => $user->id,
+                                        'referred_by' => $referrer->id
+                                    ]);
+                                }
+                            }
+                        }
                     }
                 }
             } catch (\Throwable $th) {
-                // Ignorar error de invitación
+                // Ignorar error de invitación pero loggear
+                \Log::error('Error during provider invitation processing: ' . $th->getMessage());
             }
 
             // Iniciar sesión (opcional)

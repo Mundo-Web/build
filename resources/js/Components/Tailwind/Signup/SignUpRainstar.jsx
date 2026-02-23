@@ -116,6 +116,13 @@ export default function SignUpRainstar({ data }) {
             request.invitation_token = invitationData.token;
         }
 
+        // Enviar el código de referido si existe en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get("ref");
+        if (refCode) {
+            request.ref = refCode;
+        }
+
         const result = await AuthClientRest.signup(request);
         setLoading(false);
 

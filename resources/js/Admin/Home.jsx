@@ -9,6 +9,7 @@ import { Toaster, toast } from "sonner";
 import HomeRest from "../Actions/Admin/HomeRest";
 import Tippy from "@tippyjs/react";
 import { CurrencySymbol } from "../Utils/Number2Currency";
+import ProviderTreeCard from "../Components/Adminto/ProviderTreeCard";
 
 const homeRest = new HomeRest();
 
@@ -263,6 +264,11 @@ const Home = ({
         product_views_by_device: {
             name: "Vistas de Productos por Dispositivo",
             category: "Gráficos",
+        },
+        // Organigrama de Proveedores
+        provider_tree: {
+            name: "Organigrama de Proveedores",
+            category: "Tablas",
         },
     };
 
@@ -5855,6 +5861,13 @@ const Home = ({
                     </div>
                 )}
             </div>
+
+            {/* Organigrama de Proveedores */}
+            {shouldShowCard("provider_tree") && (
+                <div className="row g-4 mb-4">
+                    <ProviderTreeCard />
+                </div>
+            )}
 
             {/* Modern Visibility Configuration Modal */}
             {showVisibilityModal && (

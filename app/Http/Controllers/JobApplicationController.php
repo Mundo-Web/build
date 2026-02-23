@@ -40,6 +40,12 @@ class JobApplicationController extends BasicController
         $validatedData['status'] = $request->status ?? true;
         $validatedData['type'] = $request->type ?? 'job';
 
+        // Capturar código de referido desde la cookie (si existe)
+        $referralCode = $request->cookie('referral_code') ?? $request->input('referred_by_uuid');
+        if ($referralCode) {
+            $validatedData['referred_by_uuid'] = $referralCode;
+        }
+
         return $validatedData;
     }
 

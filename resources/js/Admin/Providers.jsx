@@ -206,6 +206,11 @@ const Providers = ({}) => {
                   <input type="text" class="form-control" value="${data.uuid || ""}" readonly style="background-color: #f8f9fa;" placeholder="No generado">
                 </div>
 
+                 <div class="form-group mb-3">
+                  <label class="form-label" style="font-weight: 600; color: #495057; margin-bottom: 5px;">Referido por</label>
+                  <input type="text" class="form-control" value="${data.referred_by && typeof data.referred_by === "object" ? `${data.referred_by.name || ""} ${data.referred_by.lastname || ""}`.trim() || data.referred_by.email : "—"}" readonly style="background-color: #f8f9fa;" placeholder="Sin referido">
+                </div>
+
                 ${
                     data.alternate_phone
                         ? `
@@ -489,6 +494,42 @@ const Providers = ({}) => {
                         },
                     },
                     {
+                        dataField: "referred_by",
+                        caption: "Referido por",
+                        width: "15%",
+                        cellTemplate: (container, { data }) => {
+                            const ref = data.referred_by;
+                            if (ref && typeof ref === "object") {
+                                const name =
+                                    `${ref.name || ""} ${ref.lastname || ""}`.trim();
+                                ReactAppend(
+                                    container,
+                                    <div>
+                                        <span className="badge badge-soft-success">
+                                            <i className="fas fa-user-tag me-1"></i>
+                                            {name || ref.email}
+                                        </span>
+                                        <br />
+                                        <small
+                                            className="text-muted"
+                                            style={{ fontSize: "10px" }}
+                                        >
+                                            {ref.uuid
+                                                ? ref.uuid.substring(0, 8) +
+                                                  "..."
+                                                : ""}
+                                        </small>
+                                    </div>,
+                                );
+                            } else {
+                                ReactAppend(
+                                    container,
+                                    <span className="text-muted">—</span>,
+                                );
+                            }
+                        },
+                    },
+                    {
                         dataField: "status",
                         caption: "Estado",
                         dataType: "boolean",
@@ -497,7 +538,7 @@ const Providers = ({}) => {
                             if (data.status == 1) {
                                 ReactAppend(
                                     container,
-                                    <span className="badge badge-success">
+                                    <span className="badge badge-success badge-pill bg-primary">
                                         Activo
                                     </span>,
                                 );

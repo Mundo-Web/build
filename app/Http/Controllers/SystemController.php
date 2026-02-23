@@ -311,7 +311,7 @@ class SystemController extends BasicController
         if ($user) {
             // 43200 minutes = 30 days
             \Illuminate\Support\Facades\Cookie::queue('referral_code', $user->uuid, 43200);
-            return redirect('/');
+            return redirect('/?ref=' . $user->uuid);
         }
 
         // 3. Fallback: If not a user code, show 404 (or handle as normal 404)

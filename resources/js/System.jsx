@@ -161,15 +161,16 @@ const System = ({
     hasRole = () => {},
 }) => {
     // Lógica para mantener el código de referido en la URL (Sticky Referral)
+    // Solo en páginas marcadas como "referrable" en pages.json
     useEffect(() => {
-        if (referral_code) {
+        if (referral_code && page?.referrable) {
             const url = new URL(window.location.href);
             if (url.searchParams.get("ref") !== referral_code) {
                 url.searchParams.set("ref", referral_code);
                 window.history.replaceState({}, "", url.toString());
             }
         }
-    }, [referral_code]);
+    }, [referral_code, page]);
 
     const getItems = (itemsId) => {
         return systemItems[itemsId] ?? [];

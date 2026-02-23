@@ -34,7 +34,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
             if (href === "#jobapplicationmodal") {
                 e.preventDefault();
                 setJobModalOpen(true);
-            } else if (href === "#providerjoinmodal") {
+            } else if (
+                href === "#providerjoinmodal" ||
+                href === "#une-a-nosotros"
+            ) {
                 e.preventDefault();
                 setProviderModalOpen(true);
             }
@@ -43,14 +46,26 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
         document.addEventListener("click", handleGlobalLinkClick);
 
         // Verificar hash inicial
-        if (window.location.hash === "#jobapplicationmodal") {
-            setJobModalOpen(true);
-        } else if (window.location.hash === "#providerjoinmodal") {
-            setProviderModalOpen(true);
-        }
+        const checkHash = () => {
+            const hash = window.location.hash;
+            if (hash === "#jobapplicationmodal") {
+                setJobModalOpen(true);
+            } else if (
+                hash === "#providerjoinmodal" ||
+                hash === "#une-a-nosotros"
+            ) {
+                setProviderModalOpen(true);
+            }
+        };
+
+        checkHash();
+
+        // Escuchar cambios de hash (navegación SPA)
+        window.addEventListener("hashchange", checkHash);
 
         return () => {
             document.removeEventListener("click", handleGlobalLinkClick);
+            window.removeEventListener("hashchange", checkHash);
         };
     }, []);
 

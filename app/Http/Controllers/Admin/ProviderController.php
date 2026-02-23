@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BasicController;
 use App\Models\User;
+use App\Models\JobApplication;
 use App\Models\ProviderInvitation;
 use App\Notifications\InviteProviderNotification;
 use Illuminate\Http\Request;
@@ -22,13 +23,14 @@ class ProviderController extends BasicController
     public function setPaginationInstance(Request $request, string $model)
     {
         // Only show users with Provider role
-        $query = User::with('roles')
+        $query = User::with(['roles', 'referredBy'])
             ->whereHas('roles', function ($roleQuery) {
                 $roleQuery->where('name', 'Provider');
             });
 
         return $query;
     }
+
     public function save(Request $request): \Illuminate\Http\Response|\Illuminate\Routing\ResponseFactory
     {
         $data = $request->all();
@@ -48,6 +50,18 @@ class ProviderController extends BasicController
                 $user->uuid = \SoDe\Extend\Crypto::randomUUID();
                 $user->save();
             }
+
+            // Si viene de una invitación con job_application, propagar el referred_by
+            if (!$user->referred_by && isset($data['job_application_id'])) {
+                $jobApp = JobApplication::find($data['job_application_id']);
+                if ($jobApp && $jobApp->referred_by_uuid) {
+                    $referrer = User::where('uuid', $jobApp->referred_by_uuid)->first();
+                    if ($referrer) {
+                        $user->referred_by = $referrer->id;
+                        $user->save();
+                    }
+                }
+            }
         }
 
         return response([
@@ -60,6 +74,28 @@ class ProviderController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $user = Auth::user();
+
+        // Si estamos en la vista del proveedor dashboard, retornar props específicas
+        if ($this->reactView === 'Provider/Home') {
+            $referralUrl = $user && $user->uuid ? url('/' . $user->uuid) : '#';
+
+            // Contar referidos directos
+            $directReferrals = User::where('referred_by', $user->id)
+                ->whereHas('roles', function ($q) {
+                    $q->where('name', 'Provider');
+                })
+                ->count();
+
+            return [
+                'storeUrl' => $referralUrl,
+                'referralUrl' => $referralUrl,
+                'referralCode' => $user->uuid,
+                'directReferrals' => $directReferrals,
+                'user' => $user,
+            ];
+        }
+
+        // Vista admin de proveedores
         $storeUrl = $user && $user->uuid ? url('/' . $user->uuid) : '#';
 
         return [
@@ -70,7 +106,7 @@ class ProviderController extends BasicController
 
     public function invite(Request $request)
     {
-        \Log::info('Invite method request:', $request->all());
+        Log::info('Invite method request:', $request->all());
 
         try {
             $request->validate([
@@ -78,7 +114,7 @@ class ProviderController extends BasicController
                 'job_application_id' => 'nullable|uuid|exists:job_applications,id'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation failed during invite:', $e->errors());
+            Log::error('Validation failed during invite:', $e->errors());
             return response([
                 'status' => 422,
                 'message' => 'Datos inválidos.',
@@ -89,7 +125,7 @@ class ProviderController extends BasicController
         $email = $request->input('email');
         $jobApplicationId = $request->input('job_application_id');
 
-        \Log::info('Processing invitation:', [
+        Log::info('Processing invitation:', [
             'email' => $email,
             'job_application_id' => $jobApplicationId
         ]);
@@ -106,6 +142,16 @@ class ProviderController extends BasicController
         $token = Crypto::randomUUID();
         $invitationUrl = url('/crear-cuenta?type=provider&token=' . $token);
 
+        // Si la solicitud tiene un referido, incluir el ref en la URL de invitación
+        $referralUuid = null;
+        if ($jobApplicationId) {
+            $jobApp = JobApplication::find($jobApplicationId);
+            if ($jobApp && $jobApp->referred_by_uuid) {
+                $referralUuid = $jobApp->referred_by_uuid;
+                $invitationUrl .= '&ref=' . $referralUuid;
+            }
+        }
+
         // Store invitation
         try {
             ProviderInvitation::updateOrCreate(
@@ -117,9 +163,9 @@ class ProviderController extends BasicController
                     'job_application_id' => $jobApplicationId
                 ]
             );
-            \Log::info('Invitation stored successfully');
+            Log::info('Invitation stored successfully');
         } catch (\Throwable $th) {
-            \Log::error('Error storing invitation:', ['message' => $th->getMessage()]);
+            Log::error('Error storing invitation:', ['message' => $th->getMessage()]);
             return response([
                 'status' => 500,
                 'message' => 'Error al procesar la invitación.'
@@ -166,28 +212,10 @@ class ProviderController extends BasicController
                 'expires_at' => $invitation->expires_at
             ];
 
-            // Debug: Log invitation data
-            \Log::info('Invitation data:', [
-                'invitation_id' => $invitation->id,
-                'email' => $invitation->email,
-                'job_application_id' => $invitation->job_application_id,
-                'has_job_application' => $invitation->jobApplication !== null
-            ]);
-
             // Si hay una aplicación asociada, incluir los datos
             if ($invitation->jobApplication) {
                 $responseData['name'] = $invitation->jobApplication->name;
                 $responseData['phone'] = $invitation->jobApplication->phone;
-
-                \Log::info('Job application data:', [
-                    'name' => $invitation->jobApplication->name,
-                    'phone' => $invitation->jobApplication->phone
-                ]);
-            } else {
-                \Log::warning('No job application found for invitation', [
-                    'invitation_id' => $invitation->id,
-                    'job_application_id' => $invitation->job_application_id
-                ]);
             }
 
             return response([
@@ -202,9 +230,100 @@ class ProviderController extends BasicController
         }
     }
 
+    /**
+     * Obtener el árbol de proveedores (organigrama) para el admin dashboard
+     */
+    public function getProviderTree()
+    {
+        try {
+            // Obtener todos los proveedores con sus referidos recursivos
+            $providers = User::with(['referralsRecursive' => function ($query) {
+                $query->whereHas('roles', function ($q) {
+                    $q->where('name', 'Provider');
+                })->select('id', 'name', 'lastname', 'email', 'uuid', 'referred_by', 'created_at');
+            }])
+                ->whereHas('roles', function ($q) {
+                    $q->where('name', 'Provider');
+                })
+                ->whereNull('referred_by') // Solo los raíz (sin referidor)
+                ->select('id', 'name', 'lastname', 'email', 'uuid', 'referred_by', 'created_at')
+                ->get();
+
+            // También obtener proveedores cuyo referidor NO es proveedor
+            $orphanProviders = User::whereHas('roles', function ($q) {
+                $q->where('name', 'Provider');
+            })
+                ->whereNotNull('referred_by')
+                ->whereDoesntHave('referredBy', function ($q) {
+                    $q->whereHas('roles', function ($rq) {
+                        $rq->where('name', 'Provider');
+                    });
+                })
+                ->select('id', 'name', 'lastname', 'email', 'uuid', 'referred_by', 'created_at')
+                ->with(['referralsRecursive' => function ($query) {
+                    $query->whereHas('roles', function ($q) {
+                        $q->where('name', 'Provider');
+                    })->select('id', 'name', 'lastname', 'email', 'uuid', 'referred_by', 'created_at');
+                }])
+                ->get();
+
+            $allRoots = $providers->merge($orphanProviders);
+
+            // Estadísticas generales
+            $totalProviders = User::whereHas('roles', function ($q) {
+                $q->where('name', 'Provider');
+            })->count();
+
+            $providersWithReferrals = User::whereHas('roles', function ($q) {
+                $q->where('name', 'Provider');
+            })
+                ->has('referrals')
+                ->count();
+
+            return response([
+                'status' => 200,
+                'data' => [
+                    'tree' => $allRoots,
+                    'stats' => [
+                        'total_providers' => $totalProviders,
+                        'providers_with_referrals' => $providersWithReferrals,
+                        'root_providers' => $allRoots->count(),
+                    ]
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response([
+                'status' => 500,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function dashboard(Request $request)
     {
         $this->reactView = 'Provider/Home';
         return $this->reactView($request);
+    }
+
+    /**
+     * Props específicas para el dashboard del proveedor
+     */
+    public function setReactViewPropertiesForDashboard()
+    {
+        $user = Auth::user();
+        $referralUrl = $user && $user->uuid ? url('/' . $user->uuid) : '#';
+
+        // Contar referidos directos
+        $directReferrals = User::where('referred_by', $user->id)
+            ->whereHas('roles', function ($q) {
+                $q->where('name', 'Provider');
+            })
+            ->count();
+
+        return [
+            'referralUrl' => $referralUrl,
+            'referralCode' => $user->uuid,
+            'directReferrals' => $directReferrals,
+        ];
     }
 }

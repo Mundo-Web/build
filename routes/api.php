@@ -708,6 +708,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/providers/paginate', [ProviderController::class, 'paginate']);
     Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
     Route::post('/providers/invite', [ProviderController::class, 'invite']);
+    Route::get('/providers/tree', [ProviderController::class, 'getProviderTree']);
     Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
 
 

@@ -242,6 +242,42 @@ const JobApplications = () => {
                         },
                     },
                     {
+                        dataField: "referrer.name",
+                        caption: "Referido por",
+                        width: "14%",
+                        cellTemplate: (container, { data }) => {
+                            if (data.referrer) {
+                                const name =
+                                    `${data.referrer.name || ""} ${data.referrer.lastname || ""}`.trim();
+                                const uuid =
+                                    data.referred_by_uuid ||
+                                    data.referrer.uuid ||
+                                    "";
+                                const shortUuid = uuid
+                                    ? uuid.substring(0, 8) + "..."
+                                    : "";
+                                container.append(
+                                    `<div>
+                                        <span class="badge bg-soft-success text-success" title="${data.referrer.email || ""}">
+                                            <i class="fas fa-user-tag me-1"></i>${name || data.referrer.email}
+                                        </span>
+                                        ${shortUuid ? `<br><small class="text-muted" style="font-size:10px" title="${uuid}"><i class="fas fa-fingerprint me-1"></i>${shortUuid}</small>` : ""}
+                                    </div>`,
+                                );
+                            } else if (data.referred_by_uuid) {
+                                container.append(
+                                    `<span class="badge bg-soft-warning text-warning" title="${data.referred_by_uuid}">
+                                        <i class="fas fa-link me-1"></i>${data.referred_by_uuid.substring(0, 8)}...
+                                    </span>`,
+                                );
+                            } else {
+                                container.append(
+                                    `<span class="text-muted small">—</span>`,
+                                );
+                            }
+                        },
+                    },
+                    {
                         dataField: "message",
                         caption: "Mensaje",
                         width: "20%",
