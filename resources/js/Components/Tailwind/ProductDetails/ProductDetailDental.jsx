@@ -44,17 +44,22 @@ import {
     FloatingFocusManager,
 } from "@floating-ui/react";
 
-
-
-const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, setFavorites }) => {
-
+const ProductDetailDental = ({
+    item,
+    data,
+    setCart,
+    cart,
+    generals,
+    favorites,
+    setFavorites,
+}) => {
     const itemsRest = new ItemsRest();
 
     // Función para formatear números con separadores de miles
     const formatPrice = (price) => {
-        return Number(price).toLocaleString('es-PE', {
+        return Number(price).toLocaleString("es-PE", {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
         });
     };
     const [modalOpen, setModalOpen] = useState(false);
@@ -119,7 +124,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
         }
     };
 
-
     const productosRelacionados = async (item) => {
         try {
             // Preparar la solicitud
@@ -145,8 +149,11 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
         }
     };
 
-    const [expandedSpecificationMain, setExpanded] = useState(false);
+    const [expandedSpecificationMain, setExpandedSpecificationMain] =
+        useState(false);
+    const [expandedTechnicalSpecs, setExpandedTechnicalSpecs] = useState(false);
     const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
+
     const [whatsappAction, setWhatsappAction] = useState(null); // 'consult' o 'quote'
 
     // Swiper Refs
@@ -160,17 +167,17 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
 
     // Configuración de Floating UI para botón cotizar
     const { refs, floatingStyles, context } = useFloating({
-        open: isAdvisorDropdownOpen && whatsappAction === 'quote',
+        open: isAdvisorDropdownOpen && whatsappAction === "quote",
         onOpenChange: (open) => {
-            if (whatsappAction === 'quote') {
+            if (whatsappAction === "quote") {
                 setIsAdvisorDropdownOpen(open);
             }
         },
-        placement: 'bottom-start',
+        placement: "bottom-start",
         middleware: [
             offset(10),
             flip({
-                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
+                fallbackPlacements: ["top-start", "bottom-end", "top-end"],
             }),
             shift({ padding: 8 }),
         ],
@@ -178,18 +185,22 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     });
 
     // Configuración de Floating UI para link de consulta DESKTOP
-    const { refs: refsConsult, floatingStyles: floatingStylesConsult, context: contextConsult } = useFloating({
-        open: isAdvisorDropdownOpen && whatsappAction === 'consult',
+    const {
+        refs: refsConsult,
+        floatingStyles: floatingStylesConsult,
+        context: contextConsult,
+    } = useFloating({
+        open: isAdvisorDropdownOpen && whatsappAction === "consult",
         onOpenChange: (open) => {
-            if (whatsappAction === 'consult') {
+            if (whatsappAction === "consult") {
                 setIsAdvisorDropdownOpen(open);
             }
         },
-        placement: 'bottom-start',
+        placement: "bottom-start",
         middleware: [
             offset(10),
             flip({
-                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
+                fallbackPlacements: ["top-start", "bottom-end", "top-end"],
             }),
             shift({ padding: 8 }),
         ],
@@ -197,18 +208,22 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     });
 
     // Configuración de Floating UI para link de consulta MOBILE
-    const { refs: refsConsultMobile, floatingStyles: floatingStylesConsultMobile, context: contextConsultMobile } = useFloating({
-        open: isAdvisorDropdownOpen && whatsappAction === 'consult-mobile',
+    const {
+        refs: refsConsultMobile,
+        floatingStyles: floatingStylesConsultMobile,
+        context: contextConsultMobile,
+    } = useFloating({
+        open: isAdvisorDropdownOpen && whatsappAction === "consult-mobile",
         onOpenChange: (open) => {
-            if (whatsappAction === 'consult-mobile') {
+            if (whatsappAction === "consult-mobile") {
                 setIsAdvisorDropdownOpen(open);
             }
         },
-        placement: 'top-end',
+        placement: "top-end",
         middleware: [
             offset(10),
             flip({
-                fallbackPlacements: ['top-start', 'bottom-end', 'bottom-start'],
+                fallbackPlacements: ["top-start", "bottom-end", "bottom-start"],
             }),
             shift({ padding: 8 }),
         ],
@@ -233,13 +248,15 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
         role,
     ]);
 
-    const { getReferenceProps: getReferencePropsConsult, getFloatingProps: getFloatingPropsConsult } = useInteractions([
-        clickConsult,
-        dismissConsult,
-        roleConsult,
-    ]);
+    const {
+        getReferenceProps: getReferencePropsConsult,
+        getFloatingProps: getFloatingPropsConsult,
+    } = useInteractions([clickConsult, dismissConsult, roleConsult]);
 
-    const { getReferenceProps: getReferencePropsConsultMobile, getFloatingProps: getFloatingPropsConsultMobile } = useInteractions([
+    const {
+        getReferenceProps: getReferencePropsConsultMobile,
+        getFloatingProps: getFloatingPropsConsultMobile,
+    } = useInteractions([
         clickConsultMobile,
         dismissConsultMobile,
         roleConsultMobile,
@@ -248,16 +265,19 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     const handleClickWhatsApp = (event) => {
         event.preventDefault();
         const message = `¡Hola! Tengo dudas sobre este producto: ${item?.name}`;
-        
+
         if (advisors.length === 0) return;
-        
+
         if (advisors.length === 1) {
             // Un solo asesor, abrir directo
             const advisor = advisors[0];
-            window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+            window.open(
+                `https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`,
+                "_blank",
+            );
         } else {
             // Múltiples asesores, mostrar dropdown
-            setWhatsappAction('consult');
+            setWhatsappAction("consult");
             setIsAdvisorDropdownOpen(true);
         }
     };
@@ -265,16 +285,19 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     const handleClickWhatsAppMobile = (event) => {
         event.preventDefault();
         const message = `¡Hola! Tengo dudas sobre este producto: ${item?.name}`;
-        
+
         if (advisors.length === 0) return;
-        
+
         if (advisors.length === 1) {
             // Un solo asesor, abrir directo
             const advisor = advisors[0];
-            window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+            window.open(
+                `https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`,
+                "_blank",
+            );
         } else {
             // Múltiples asesores, mostrar dropdown
-            setWhatsappAction('consult-mobile');
+            setWhatsappAction("consult-mobile");
             setIsAdvisorDropdownOpen(true);
         }
     };
@@ -282,29 +305,38 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     const handleClickWhatsAppCotizar = (event) => {
         event.preventDefault();
         const message = `¡Hola! Me gustaría cotizar este producto: ${item?.name}`;
-        
+
         if (advisors.length === 0) return;
-        
+
         if (advisors.length === 1) {
             // Un solo asesor, abrir directo
             const advisor = advisors[0];
-            window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+            window.open(
+                `https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`,
+                "_blank",
+            );
         } else {
             // Múltiples asesores, mostrar dropdown
-            setWhatsappAction('quote');
+            setWhatsappAction("quote");
             setIsAdvisorDropdownOpen(true);
         }
     };
 
     const handleAdvisorSelect = (advisor) => {
         let message;
-        if (whatsappAction === 'quote') {
+        if (whatsappAction === "quote") {
             message = `¡Hola! Me gustaría cotizar este producto: ${item?.name}`;
-        } else if (whatsappAction === 'consult' || whatsappAction === 'consult-mobile') {
+        } else if (
+            whatsappAction === "consult" ||
+            whatsappAction === "consult-mobile"
+        ) {
             message = `¡Hola! Tengo dudas sobre este producto: ${item?.name}`;
         }
-        
-        window.open(`https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`, '_blank');
+
+        window.open(
+            `https://api.whatsapp.com/send?phone=${advisor.phone}&text=${encodeURIComponent(message)}`,
+            "_blank",
+        );
         setIsAdvisorDropdownOpen(false);
         setWhatsappAction(null);
     };
@@ -335,14 +367,19 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
     return (
         <>
             {/* Versión Mobile */}
-            <div id={data?.element_id || null} className="md:hidden  min-h-screen font-paragraph">
+            <div
+                id={data?.element_id || null}
+                className="md:hidden  min-h-screen font-paragraph"
+            >
                 {/* Header Estilo App */}
                 <div className="sticky top-0 bg-white shadow-sm z-20">
                     <div className="flex items-center p-4 gap-4 border-b">
                         {/* <button onClick={() => window.history.back()} className="text-gray-600">
                             <ChevronLeft size={24} />
                         </button>*/}
-                        <h1 className="text-lg font-bold flex-1 line-clamp-5">{item?.name}</h1>
+                        <h1 className="text-lg font-bold flex-1 line-clamp-5">
+                            {item?.name}
+                        </h1>
                     </div>
                 </div>
 
@@ -369,8 +406,12 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                             className="h-full"
                         >
                             {[item?.image, ...item?.images]
-                                .filter((image, index, self) =>
-                                    index === self.findIndex((img) => img?.url === image?.url)
+                                .filter(
+                                    (image, index, self) =>
+                                        index ===
+                                        self.findIndex(
+                                            (img) => img?.url === image?.url,
+                                        ),
                                 )
                                 .map((img, i) => (
                                     <SwiperSlide key={i}>
@@ -379,7 +420,10 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 src={`/storage/images/item/${img?.url || img}`}
                                                 className="w-full h-full object-contain"
                                                 loading="lazy"
-                                                onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
+                                                onError={(e) =>
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
+                                                }
                                             />
                                         </div>
                                     </SwiperSlide>
@@ -392,13 +436,19 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 ref={navigationPrevRef}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-lg hover:scale-110 transition-transform"
                             >
-                                <ChevronLeft className="text-gray-800" size={20} />
+                                <ChevronLeft
+                                    className="text-gray-800"
+                                    size={20}
+                                />
                             </button>
                             <button
                                 ref={navigationNextRef}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-lg hover:scale-110 transition-transform"
                             >
-                                <ChevronRight className="text-gray-800" size={20} />
+                                <ChevronRight
+                                    className="text-gray-800"
+                                    size={20}
+                                />
                             </button>
                         </div>
                     </div>
@@ -408,25 +458,34 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         <div className="flex justify-between items-start">
                             <div>
                                 <div className="text-3xl font-bold customtext-primary">
-                                    {CurrencySymbol()} {formatPrice(item?.final_price)}
-                                    <span className="ml-2 text-sm line-through text-gray-400">
-                                        {CurrencySymbol()} {formatPrice(item?.price)}
-                                    </span>
+                                    {CurrencySymbol()}{" "}
+                                    {formatPrice(item?.final_price)}
+                                    {item?.discount > 0 &&
+                                        item?.discount < item?.price && (
+                                            <span className="ml-2 text-sm line-through text-gray-400">
+                                                {CurrencySymbol()}{" "}
+                                                {formatPrice(item?.price)}
+                                            </span>
+                                        )}
                                 </div>
-                                <div className="text-xs text-gray-500 mt-1">SKU: {item?.sku}</div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                    SKU: {item?.sku}
+                                </div>
                             </div>
-                            <div className="bg-secondary customtext-primary px-3 py-1 rounded-full text-sm">
-                                {Number(item?.discount_percent).toFixed(0)}% OFF
-                            </div>
+                            {item?.discount > 0 &&
+                                item?.discount < item?.price && (
+                                    <div className="bg-secondary customtext-primary px-3 py-1 rounded-full text-sm">
+                                        {Number(item?.discount_percent).toFixed(
+                                            0,
+                                        )}
+                                        % OFF
+                                    </div>
+                                )}
                         </div>
                     </div>
 
-
-
                     {/* Acordeones */}
                     <div className="space-y-2">
-
-
                         {/* Descripción */}
                         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                             <div className="border-b">
@@ -434,20 +493,35 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className="w-full p-4 flex justify-between items-center"
                                 >
-                                    <span className="font-medium">Descripción del producto</span>
+                                    <span className="font-medium">
+                                        Descripción del producto
+                                    </span>
                                     <ChevronDown
-                                        className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
-                                            }`}
+                                        className={`transform transition-transform ${
+                                            isExpanded ? "rotate-180" : ""
+                                        }`}
                                     />
                                 </button>
                             </div>
                             {isExpanded && (
                                 <div className="p-4">
-                                    <div dangerouslySetInnerHTML={{ __html: item?.description }} />
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: item?.description,
+                                        }}
+                                    />
                                     <ul className="list-disc pl-5 mt-2">
-                                        {item?.features?.map((feature, i) => (
-                                            <li key={i} className="text-sm">{feature.feature}</li>
-                                        ))}
+                                        {item?.specifications?.map(
+                                            (spec, i) =>
+                                                spec.type === "principal" && (
+                                                    <li
+                                                        key={i}
+                                                        className="text-sm"
+                                                    >
+                                                        {spec.description}
+                                                    </li>
+                                                ),
+                                        )}
                                     </ul>
                                 </div>
                             )}
@@ -456,44 +530,137 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                             <div className="border-b">
                                 <button
-                                    onClick={() => setExpanded(!expandedSpecificationMain)}
+                                    onClick={() =>
+                                        setExpandedSpecificationMain(
+                                            !expandedSpecificationMain,
+                                        )
+                                    }
                                     className="w-full p-4 flex justify-between items-center"
                                 >
-                                    <span className="font-medium">Características</span>
+                                    <span className="font-medium">
+                                        Características
+                                    </span>
                                     <ChevronDown
-                                        className={`transform transition-transform ${expandedSpecificationMain ? "rotate-180" : ""
-                                            }`}
+                                        className={`transform transition-transform ${
+                                            expandedSpecificationMain
+                                                ? "rotate-180"
+                                                : ""
+                                        }`}
                                     />
                                 </button>
                             </div>
                             {expandedSpecificationMain && (
                                 <div className="p-4">
-                                    {item?.features.map((spec, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm mb-2">
-                                            <CheckCircle2 className="min-w-4 min-h-4 max-w-4 max-h-4 mt-0.5 customtext-primary" />
-                                            <span>{spec.feature}</span>
-                                        </div>
-                                    ))}
+                                    {console.log("MOBILE ACORDEON - MAP START")}
+                                    {item?.specifications?.map(
+                                        (spec, i) =>
+                                            spec.type === "principal" && (
+                                                <div
+                                                    key={i}
+                                                    className="flex items-start gap-3 text-sm mb-2"
+                                                >
+                                                    <CheckCircle2 className="min-w-4 min-h-4 max-w-4 max-h-4 mt-0.5 customtext-primary" />
+                                                    <span>
+                                                        {spec.description}
+                                                    </span>
+                                                </div>
+                                            ),
+                                    )}
+                                    {console.log("MOBILE ACORDEON - MAP END")}
                                 </div>
                             )}
                         </div>
+
+                        {/* Especificaciones Técnicas */}
+                        {item?.specifications.filter(
+                            (spec) => spec.type === "general",
+                        ).length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                                <div className="border-b">
+                                    <button
+                                        onClick={() =>
+                                            setExpandedTechnicalSpecs(
+                                                !expandedTechnicalSpecs,
+                                            )
+                                        }
+                                        className="w-full p-4 flex justify-between items-center"
+                                    >
+                                        <span className="font-medium">
+                                            Especificaciones Técnicas
+                                        </span>
+                                        <ChevronDown
+                                            className={`transform transition-transform ${
+                                                expandedTechnicalSpecs
+                                                    ? "rotate-180"
+                                                    : ""
+                                            }`}
+                                        />
+                                    </button>
+                                </div>
+                                {expandedTechnicalSpecs && (
+                                    <div className="p-4">
+                                        <div className="overflow-hidden rounded-lg border border-gray-200">
+                                            <table className="w-full">
+                                                <thead>
+                                                    <tr className="bg-gray-50 border-b border-gray-200">
+                                                        <th className="px-4 py-2 text-left text-xs font-semibold customtext-neutral-dark w-1/3">
+                                                            Especificación
+                                                        </th>
+                                                        <th className="px-4 py-2 text-left text-xs font-semibold customtext-neutral-dark w-2/3">
+                                                            Detalle
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {console.log(
+                                                        "MOBILE GENERAL MAP START",
+                                                    )}
+                                                    {item?.specifications.map(
+                                                        (spec, index) =>
+                                                            spec.type ===
+                                                                "general" && (
+                                                                <tr
+                                                                    key={index}
+                                                                    className="border-b border-gray-100 last:border-b-0"
+                                                                >
+                                                                    <td className="px-4 py-2 text-xs font-medium customtext-neutral-dark align-top">
+                                                                        {spec?.title ||
+                                                                            "Característica"}
+                                                                    </td>
+                                                                    <td className="px-4 py-2 text-xs customtext-primary">
+                                                                        {
+                                                                            spec?.description
+                                                                        }
+                                                                    </td>
+                                                                </tr>
+                                                            ),
+                                                    )}
+                                                    {console.log(
+                                                        "MOBILE GENERAL MAP END",
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
-
-
                 </div>
 
                 {/* Bottom Navigation */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[99]">
                     <div className="p-4 flex gap-4">
-                        <button 
+                        <button
                             ref={refs.setReference}
                             {...getReferenceProps()}
-                            onClick={(event) => { handleClickWhatsAppCotizar(event); }} 
+                            onClick={(event) => {
+                                handleClickWhatsAppCotizar(event);
+                            }}
                             className="flex-1 bg-primary text-white py-3 rounded-full font-medium active:scale-95 transition-transform"
                         >
                             Quiero Cotizar
                         </button>
-
                     </div>
                 </div>
             </div>
@@ -504,8 +671,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Left Column - Images and Delivery Options */}
                         <div className="space-y-6">
-
-
                             {/* Product Images */}
                             <div className="flex gap-6">
                                 {/* Thumbnails */}
@@ -517,48 +682,58 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 type: "main",
                                             })
                                         }
-                                        className={`w-16 h-16  rounded-xl p-2 border-2 ${selectedImage.url === item?.image
-                                            ? "border-primary "
-                                            : "border-gray-200"
-                                            }`}
+                                        className={`w-16 h-16  rounded-xl p-2 border-2 ${
+                                            selectedImage.url === item?.image
+                                                ? "border-primary "
+                                                : "border-gray-200"
+                                        }`}
                                     >
                                         <img
                                             src={`/storage/images/item/${item?.image}`}
                                             alt={item?.name}
                                             className="w-full h-full object-contain"
                                             onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </button>
-                                    {item?.images.filter((image, index, self) =>
-                                        index === self.findIndex((img) => img.url === image.url) // Filtra duplicados
-                                    ).map((image, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() =>
-                                                setSelectedImage({
-                                                    url: image.url,
-                                                    type: "gallery",
-                                                })
-                                            }
-                                            className={`w-16 h-16 border-2 rounded-xl p-2 ${selectedImage.url === image.url
-                                                ? "border-primary"
-                                                : "border-gray-200"
-                                                }`}
-                                        >
-                                            <img
-                                                src={`/storage/images/item/${image.url}`}
-                                                alt={`${item?.name} Thumbnail ${index + 1}`}
-                                                className="w-full h-full object-contain"
-                                                onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                    {item?.images
+                                        .filter(
+                                            (image, index, self) =>
+                                                index ===
+                                                self.findIndex(
+                                                    (img) =>
+                                                        img.url === image.url,
+                                                ), // Filtra duplicados
+                                        )
+                                        .map((image, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() =>
+                                                    setSelectedImage({
+                                                        url: image.url,
+                                                        type: "gallery",
+                                                    })
                                                 }
-                                            />
-                                        </button>
-                                    ))}
+                                                className={`w-16 h-16 border-2 rounded-xl p-2 ${
+                                                    selectedImage.url ===
+                                                    image.url
+                                                        ? "border-primary"
+                                                        : "border-gray-200"
+                                                }`}
+                                            >
+                                                <img
+                                                    src={`/storage/images/item/${image.url}`}
+                                                    alt={`${item?.name} Thumbnail ${index + 1}`}
+                                                    className="w-full h-full object-contain"
+                                                    onError={(e) =>
+                                                        (e.target.src =
+                                                            "/api/cover/thumbnail/null")
+                                                    }
+                                                />
+                                            </button>
+                                        ))}
                                 </div>
 
                                 {/* Main Image */}
@@ -570,8 +745,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 : `/storage/images/item/${selectedImage?.url}`
                                         }
                                         onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                         }
                                         alt={item?.name}
                                         className="w-full min-h-[600px] max-h-[600px] rounded-xl object-cover"
@@ -579,31 +754,34 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 </div>
                             </div>
 
-
                             <div className="flex lg:hidden gap-8 border-b-2 pb-8">
                                 {/* Price Section */}
                                 <div className=" w-full ">
-                                    {item?.discount > 0 && item?.discount < item?.price && (
-                                        <p className="text-sm customtext-primary mb-1">
-                                            Precio:{" "}
-                                            <span className="line-through line-clamp-1">
-                                                {CurrencySymbol()} {formatPrice(item?.price)}
-                                            </span>
-                                        </p>
-                                    )}
+                                    {item?.discount > 0 &&
+                                        item?.discount < item?.price && (
+                                            <p className="text-sm customtext-primary mb-1">
+                                                Precio:{" "}
+                                                <span className="line-through line-clamp-1">
+                                                    {CurrencySymbol()}{" "}
+                                                    {formatPrice(item?.price)}
+                                                </span>
+                                            </p>
+                                        )}
                                     <div className="flex items-center gap-4 ">
                                         <span className="text-[40px] font-bold line-clamp-1">
-                                            {CurrencySymbol()} {formatPrice(item?.final_price)}
+                                            {CurrencySymbol()}{" "}
+                                            {formatPrice(item?.final_price)}
                                         </span>
-                                        {item?.discount > 0 && item?.discount < item?.price && (
-                                            <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
-                                                -
-                                                {Number(
-                                                    item?.discount_percent
-                                                ).toFixed(1)}
-                                                %
-                                            </span>
-                                        )}
+                                        {item?.discount > 0 &&
+                                            item?.discount < item?.price && (
+                                                <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
+                                                    -
+                                                    {Number(
+                                                        item?.discount_percent,
+                                                    ).toFixed(1)}
+                                                    %
+                                                </span>
+                                            )}
                                     </div>
 
                                     {/* Quantity */}
@@ -634,7 +812,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     <button
                                         onClick={() => {
                                             onAddClicked(item);
-
                                         }}
                                         className="w-full bg-primary text-white py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4"
                                     >
@@ -647,16 +824,20 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                             <div className="block lg:hidden flex-1 w-full ">
                                 <div className="bg-[#F7F9FB] rounded-lg p-6">
                                     <h3 className="font-medium text-sm mb-4">
-                                        Especificaciones principales
+                                        Características
                                     </h3>
                                     <ul
-                                        className={`space-y-2  customtext-primary mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                            ? "max-h-full"
-                                            : "max-h-24 overflow-hidden"
-                                            }`}
+                                        className={`space-y-2  customtext-primary mb-4 transition-all duration-300 ${
+                                            expandedSpecificationMain
+                                                ? "max-h-full"
+                                                : "max-h-24 overflow-hidden"
+                                        }`}
                                         style={{ listStyleType: "disc" }}
                                     >
-                                        {item?.specifications.map(
+                                        {console.log(
+                                            "INTERNAL MOBILE - MAP START",
+                                        )}
+                                        {item?.specifications?.map(
                                             (spec, index) =>
                                                 spec.type === "principal" && (
                                                     <li
@@ -666,14 +847,17 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                         <CircleCheckIcon className="customtext-primary" />
                                                         {spec.description}
                                                     </li>
-                                                )
+                                                ),
+                                        )}
+                                        {console.log(
+                                            "INTERNAL MOBILE - MAP END",
                                         )}
                                     </ul>
                                     <button
                                         className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
                                         onClick={() =>
-                                            setExpanded(
-                                                !expandedSpecificationMain
+                                            setExpandedSpecificationMain(
+                                                !expandedSpecificationMain,
                                             )
                                         }
                                     >
@@ -690,74 +874,64 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                             </div>
 
                             {/* Especificaciones Técnicas - Solo en Desktop si data?.especification_tec === "left" */}
-                            {data?.especification_tec === "left" && (
-                                <div className="hidden lg:block flex-1 w-full">
-                                    <div className="bg-gray-100 rounded-lg p-6">
-                                        <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
-                                            Especificaciones Técnicas
-                                        </h3>
-                                        <ul
-                                            className="space-y-2 customtext-primary mb-4 transition-all duration-300 max-h-full overflow-hidden"
-                                            style={{ listStyleType: "disc" }}
-                                        >
-                                            {item?.specifications.filter(spec => spec.type === "general").length > 0 ? (
-                                                <div className="overflow-hidden rounded-lg border border-gray-200">
-                                                    <table className="w-full">
-                                                        <thead>
-                                                            <tr className="bg-gray-50 border-b border-gray-200">
-                                                                <th className="px-4 py-3 text-left text-sm font-semibold customtext-neutral-dark w-1/3">
-                                                                    Especificación
-                                                                </th>
-                                                                <th className="px-4 py-3 text-left text-sm font-semibold customtext-neutral-dark w-2/3">
-                                                                    Detalle
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {item?.specifications.map(
-                                                                (spec, index) =>
-                                                                    spec.type === "general" && (
-                                                                        <tr
-                                                                            key={index}
-                                                                            className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                                                                        >
-                                                                            <td className="px-4 py-3 text-sm font-medium customtext-neutral-dark align-top">
-                                                                                {spec?.title || "Característica"}
-                                                                            </td>
-                                                                            <td className="px-4 py-3 text-sm customtext-primary">
-                                                                                {spec?.description}
-                                                                            </td>
-                                                                        </tr>
-                                                                    )
-                                                            )}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            ) : (
-                                                <div className="text-center py-8 text-gray-500">
-                                                    <p className="text-sm">No hay especificaciones técnicas disponibles</p>
-                                                </div>
-                                            )}
-                                        </ul>
+                            {data?.especification_tec === "left" &&
+                                item?.specifications.filter(
+                                    (spec) => spec.type === "general",
+                                ).length > 0 && (
+                                    <div className="hidden lg:block flex-1 w-full">
+                                        <div className="bg-gray-100 rounded-lg p-6">
+                                            <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
+                                                Especificaciones Técnicas
+                                            </h3>
+                                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                                                <table className="w-full">
+                                                    <thead>
+                                                        <tr className="bg-gray-50 border-b border-gray-200">
+                                                            <th className="px-4 py-3 text-left text-sm font-semibold customtext-neutral-dark w-1/3">
+                                                                Especificación
+                                                            </th>
+                                                            <th className="px-4 py-3 text-left text-sm font-semibold customtext-neutral-dark w-2/3">
+                                                                Detalle
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {item?.specifications.map(
+                                                            (spec, index) =>
+                                                                spec.type ===
+                                                                    "general" && (
+                                                                    <tr
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                                                                    >
+                                                                        <td className="px-4 py-3 text-sm font-medium customtext-neutral-dark align-top">
+                                                                            {spec?.title ||
+                                                                                "Característica"}
+                                                                        </td>
+                                                                        <td className="px-4 py-3 text-sm customtext-primary">
+                                                                            {
+                                                                                spec?.description
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                ),
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-
-
-
-
-
+                                )}
                         </div>
 
                         {/* Right Column - Product Info */}
                         <div className="hidden md:block font-paragraph">
                             {/* Brand and Title */}
                             <div className="mb-4">
-
                                 {/* SKU and Availability */}
                                 <div className="font-paragraph flex customtext-primary items-center gap-8 text-sm mb-6">
-
-
                                     <span className="customtext-primary text-sm">
                                         SKU:{" "}
                                         <span className="customtext-neutral-dark font-medium">
@@ -779,75 +953,83 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 </h1>
                             </div>
 
-
                             <div className="flex flex-col gap-8 pb-8">
                                 {/* Price Section */}
                                 <div className=" w-full ">
                                     <div className="flex gap-8">
                                         <div>
-                                            {item?.discount > 0 && item?.discount < item?.price && (
-                                                <p className="text-sm customtext-primary mb-1 font-bold">
-                                                    Precio:{" "}
-                                                    <span className="line-through">
-                                                        {CurrencySymbol()} {formatPrice(item?.price)}
-                                                    </span>
-                                                </p>
-                                            )}
+                                            {item?.discount > 0 &&
+                                                item?.discount <
+                                                    item?.price && (
+                                                    <p className="text-sm customtext-primary mb-1 font-bold">
+                                                        Precio:{" "}
+                                                        <span className="line-through">
+                                                            {CurrencySymbol()}{" "}
+                                                            {formatPrice(
+                                                                item?.price,
+                                                            )}
+                                                        </span>
+                                                    </p>
+                                                )}
                                             <div className="flex items-center gap-4 relative customtext-neutral-dark font-extrabold">
                                                 <span className="text-[40px] font-bold ">
-                                                    {CurrencySymbol()} {formatPrice(item?.final_price)}
+                                                    {CurrencySymbol()}{" "}
+                                                    {formatPrice(
+                                                        item?.final_price,
+                                                    )}
                                                 </span>
-
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4 mt-4">
-                                            {item?.discount > 0 && item?.discount < item?.price && (
-                                                <span className=" bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
-                                                    -
-                                                    {Number(
-                                                        item?.discount_percent
-                                                    ).toFixed(0)}
-                                                    %
-                                                </span>)}
+                                            {item?.discount > 0 &&
+                                                item?.discount <
+                                                    item?.price && (
+                                                    <span className=" bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
+                                                        -
+                                                        {Number(
+                                                            item?.discount_percent,
+                                                        ).toFixed(0)}
+                                                        %
+                                                    </span>
+                                                )}
                                         </div>
                                     </div>
-
-
-
                                 </div>
                                 {/* */}
-                             
-                                    {data?.badge_category && (
- <p className="customtext-primary text-sm">
+
+                                {data?.badge_category && (
+                                    <p className="customtext-primary text-sm">
                                         Categoría:{" "}
                                         <span className="customtext-neutral-dark font-medium">
                                             {item?.category?.name}
                                         </span>
                                     </p>
-                                    )}
-                                   {data?.badge_brand && (    <p className="customtext-primary text-sm">
+                                )}
+                                {data?.badge_brand && (
+                                    <p className="customtext-primary text-sm">
                                         Marca:{" "}
                                         <span className="customtext-neutral-dark font-medium">
                                             {item?.brand?.name}
                                         </span>
                                     </p>
-)
-                                   }
+                                )}
 
-                                
-                            
                                 {/* Descripción */}
                                 {item?.description && (
-                                    <> <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
-                                    Descripción
-                                </h3>
-                                <div
-                                    className="customtext-neutral-dark"
-                                    dangerouslySetInnerHTML={{
-                                        __html: item?.description,
-                                    }}
-                                ></div></>)}
-                               
+                                    <>
+                                        {" "}
+                                        <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
+                                            Descripción
+                                        </h3>
+                                        <div
+                                            className="customtext-neutral-dark"
+                                            dangerouslySetInnerHTML={{
+                                                __html: item?.description,
+                                            }}
+                                        ></div>
+                                    </>
+                                )}
+
                                 {/* Características - Siempre visible */}
                                 <div className="flex-1 w-full ">
                                     <div className="bg-secondary rounded-xl p-6">
@@ -855,51 +1037,41 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                             Características
                                         </h3>
                                         <ul
-                                            className={`space-y-2  customtext-primary mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                                ? "max-h-full"
-                                                : "max-h-full overflow-hidden"
-                                                }`}
+                                            className={`space-y-2  customtext-primary mb-4 transition-all duration-300 ${
+                                                expandedSpecificationMain
+                                                    ? "max-h-full"
+                                                    : "max-h-full overflow-hidden"
+                                            }`}
                                             style={{ listStyleType: "disc" }}
                                         >
                                             {item?.specifications.map(
                                                 (spec, index) =>
                                                     spec.type ===
-                                                    "principal" && (
+                                                        "principal" && (
                                                         <li
                                                             key={index}
                                                             className="flex items-start gap-3"
                                                         >
                                                             <CircleCheckIcon className="customtext-primary min-h-4 min-w-4 max-h-4 max-w-4 mt-1" />
 
-
-
                                                             {spec?.description}
-
                                                         </li>
-                                                    )
+                                                    ),
                                             )}
-
                                         </ul>
-
                                     </div>
                                 </div>
 
                                 {/* Especificaciones Técnicas - Solo si NO es "left" */}
-                                {data?.especification_tec !== "left" && (
-                                    <div className="flex-1 w-full ">
-                                        <div className="bg-gray-100 rounded-lg p-6">
-                                        <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
-                                            Especificaciones Técnicas
-                                        </h3>
-                                        <ul
-                                            className={`space-y-2  customtext-primary mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                                ? "max-h-full"
-                                                : "max-h-full overflow-hidden"
-                                                }`}
-                                            style={{ listStyleType: "disc" }}
-                                        >
-
-                                            {item?.specifications.filter(spec => spec.type === "general").length > 0 ? (
+                                {data?.especification_tec !== "left" &&
+                                    item?.specifications.filter(
+                                        (spec) => spec.type === "general",
+                                    ).length > 0 && (
+                                        <div className="flex-1 w-full ">
+                                            <div className="bg-gray-100 rounded-lg p-6">
+                                                <h3 className="font-bold text-lg mb-4 customtext-neutral-dark">
+                                                    Especificaciones Técnicas
+                                                </h3>
                                                 <div className="overflow-hidden rounded-lg border border-gray-200">
                                                     <table className="w-full">
                                                         <thead>
@@ -915,33 +1087,32 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                         <tbody>
                                                             {item?.specifications.map(
                                                                 (spec, index) =>
-                                                                    spec.type === "general" && (
+                                                                    spec.type ===
+                                                                        "general" && (
                                                                         <tr
-                                                                            key={index}
+                                                                            key={
+                                                                                index
+                                                                            }
                                                                             className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
                                                                         >
                                                                             <td className="px-4 py-3 text-sm font-medium customtext-neutral-dark align-top">
-                                                                                {spec?.title || "Característica"}
+                                                                                {spec?.title ||
+                                                                                    "Característica"}
                                                                             </td>
                                                                             <td className="px-4 py-3 text-sm customtext-primary">
-                                                                                {spec?.description}
+                                                                                {
+                                                                                    spec?.description
+                                                                                }
                                                                             </td>
                                                                         </tr>
-                                                                    )
+                                                                    ),
                                                             )}
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                            ) : (
-                                                <div className="text-center py-8 text-gray-500">
-                                                    <p className="text-sm">No hay especificaciones técnicas disponibles</p>
-                                                </div>
-                                            )}
-                                        </ul>
-
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
                                 {/* Add to Cart */}
                                 <button
@@ -954,7 +1125,6 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                 >
                                     Cotizar este producto
                                 </button>
-
                             </div>
                             {/* Whatsapp */}
                             <motion.div
@@ -968,8 +1138,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     <img
                                         src="/assets/img/whatsapp.svg"
                                         onError={(e) =>
-                                        (e.target.src =
-                                            "assets/img/noimage/no_imagen_circular.png")
+                                            (e.target.src =
+                                                "assets/img/noimage/no_imagen_circular.png")
                                         }
                                         className="w-12 h-12 object-contain"
                                         loading="lazy"
@@ -982,7 +1152,9 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                 ref={refsConsult.setReference}
                                                 {...getReferencePropsConsult()}
                                                 className="underline"
-                                                onClick={(event) => handleClickWhatsApp(event)}
+                                                onClick={(event) =>
+                                                    handleClickWhatsApp(event)
+                                                }
                                             >
                                                 clic aquí
                                             </a>{" "}
@@ -991,23 +1163,21 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     </div>
                                 </motion.div>
                             </motion.div>
-
                         </div>
                     </div>
                 </div>
-
             </div>
             {relationsItems.length > 0 && (
                 <ProductBananaLab
-                    data={
-                       data}
+                    data={data}
                     items={relationsItems.slice(0, 4)}
                     cart={cart}
                     setCart={setCart}
                     favorites={favorites}
                     setFavorites={setFavorites}
                     textcolor="customtext-neutral-dark"
-                />)}
+                />
+            )}
             <CartModal
                 data={data}
                 cart={cart}
@@ -1018,26 +1188,55 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
 
             {/* Dropdown de Selección de Asesores */}
             {isAdvisorDropdownOpen && advisors.length > 1 && (
-                <FloatingFocusManager 
-                    context={whatsappAction === 'quote' ? context : whatsappAction === 'consult' ? contextConsult : contextConsultMobile} 
+                <FloatingFocusManager
+                    context={
+                        whatsappAction === "quote"
+                            ? context
+                            : whatsappAction === "consult"
+                              ? contextConsult
+                              : contextConsultMobile
+                    }
                     modal={false}
                 >
                     <div
-                        ref={whatsappAction === 'quote' ? refs.setFloating : whatsappAction === 'consult' ? refsConsult.setFloating : refsConsultMobile.setFloating}
-                        style={whatsappAction === 'quote' ? floatingStyles : whatsappAction === 'consult' ? floatingStylesConsult : floatingStylesConsultMobile}
-                        {...(whatsappAction === 'quote' ? getFloatingProps() : whatsappAction === 'consult' ? getFloatingPropsConsult() : getFloatingPropsConsultMobile())}
+                        ref={
+                            whatsappAction === "quote"
+                                ? refs.setFloating
+                                : whatsappAction === "consult"
+                                  ? refsConsult.setFloating
+                                  : refsConsultMobile.setFloating
+                        }
+                        style={
+                            whatsappAction === "quote"
+                                ? floatingStyles
+                                : whatsappAction === "consult"
+                                  ? floatingStylesConsult
+                                  : floatingStylesConsultMobile
+                        }
+                        {...(whatsappAction === "quote"
+                            ? getFloatingProps()
+                            : whatsappAction === "consult"
+                              ? getFloatingPropsConsult()
+                              : getFloatingPropsConsultMobile())}
                         className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 z-[1000]"
                     >
                         {/* Header */}
                         <div className="bg-gradient-to-r from-primary to-primary/90 p-4 text-white">
-                            <h3 className="font-bold text-base mb-1">Selecciona un asesor</h3>
+                            <h3 className="font-bold text-base mb-1">
+                                Selecciona un asesor
+                            </h3>
                             <p className="text-xs text-white/90">
-                                {whatsappAction === 'quote' ? '¿Con quién deseas cotizar?' : '¿Con quién quieres hablar?'}
+                                {whatsappAction === "quote"
+                                    ? "¿Con quién deseas cotizar?"
+                                    : "¿Con quién quieres hablar?"}
                             </p>
                         </div>
 
                         {/* Lista de asesores */}
-                        <div className="max-h-[400px] overflow-y-auto" style={{ minWidth: '300px', maxWidth: '350px' }}>
+                        <div
+                            className="max-h-[400px] overflow-y-auto"
+                            style={{ minWidth: "300px", maxWidth: "350px" }}
+                        >
                             {advisors.map((advisor, index) => (
                                 <button
                                     key={index}
@@ -1053,12 +1252,15 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                                     alt={advisor.name}
                                                     className="w-full h-full object-cover"
                                                     onError={(e) => {
-                                                        e.target.src = '/assets/img/placeholder-user.png';
+                                                        e.target.src =
+                                                            "/assets/img/placeholder-user.png";
                                                     }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-xl font-bold">
-                                                    {advisor.name?.charAt(0).toUpperCase()}
+                                                    {advisor.name
+                                                        ?.charAt(0)
+                                                        .toUpperCase()}
                                                 </div>
                                             )}
                                         </div>
@@ -1070,7 +1272,8 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                             {advisor.name}
                                         </p>
                                         <p className="text-xs text-gray-500 truncate mt-0.5">
-                                            {advisor.position || 'Asesor de ventas'}
+                                            {advisor.position ||
+                                                "Asesor de ventas"}
                                         </p>
                                         {advisor.phone && (
                                             <p className="text-xs text-gray-400 truncate mt-1">
@@ -1082,8 +1285,12 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
                                     {/* Icono de WhatsApp */}
                                     <div className="flex-shrink-0">
                                         <div className="w-10 h-10 rounded-full bg-green-500 group-hover:bg-green-600 transition-colors duration-200 flex items-center justify-center shadow-md">
-                                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                            <svg
+                                                className="w-6 h-6 text-white"
+                                                fill="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                                             </svg>
                                         </div>
                                     </div>
@@ -1095,5 +1302,5 @@ const ProductDetailDental = ({ item, data, setCart, cart, generals, favorites, s
             )}
         </>
     );
-}
+};
 export default ProductDetailDental;
