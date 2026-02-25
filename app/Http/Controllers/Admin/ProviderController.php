@@ -326,4 +326,10 @@ class ProviderController extends BasicController
             'directReferrals' => $directReferrals,
         ];
     }
+
+    public function profile(Request $request)
+    {
+        $this->reactView = 'Provider/Profile';
+        return $this->reactView($request);
+    }
 }

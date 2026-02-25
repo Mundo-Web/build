@@ -630,6 +630,15 @@
                 "generals": [
                     "whatsapp_advisors"
                 ]
+            },
+            {
+                "id": "WhatsAppProvider",
+                "icon": "mdi mdi-whatsapp",
+                "name": "WhatsApp (Proveedor)",
+                "image": "floating-whatsapp.png",
+                "generals": [
+                    "whatsapp_advisors"
+                ]
             }
         ]
     },

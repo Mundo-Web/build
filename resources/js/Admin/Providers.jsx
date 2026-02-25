@@ -32,6 +32,8 @@ const Providers = ({}) => {
     const dniRef = useRef();
     const roleRef = useRef();
     const inviteEmailRef = useRef();
+    const whatsappNumberRef = useRef();
+    const whatsappMessageRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
 
@@ -53,6 +55,8 @@ const Providers = ({}) => {
         $(phonePrefixRef.current).val(prefix).trigger("change");
 
         dniRef.current.value = data?.dni ?? data?.document_number ?? "";
+        whatsappNumberRef.current.value = data?.whatsapp_number ?? "";
+        whatsappMessageRef.current.value = data?.whatsapp_message ?? "";
 
         // Always force Provider role
         if (roleRef.current) roleRef.current.value = "Provider";
@@ -93,6 +97,8 @@ const Providers = ({}) => {
             phone: phoneRef.current.value,
             phone_prefix: phonePrefixRef.current.value,
             dni: dniRef.current.value,
+            whatsapp_number: whatsappNumberRef.current.value,
+            whatsapp_message: whatsappMessageRef.current.value,
             role: "Provider", // Force Provider Role
         };
 
@@ -268,6 +274,21 @@ const Providers = ({}) => {
                 `
                         : ""
                 }
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <label class="form-label" style="font-weight: 600; color: #495057; margin-bottom: 5px;">Número de WhatsApp</label>
+                      <input type="text" class="form-control" value="${data.whatsapp_number || "Usa el número principal"}" readonly style="background-color: #f8f9fa;">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <label class="form-label" style="font-weight: 600; color: #495057; margin-bottom: 5px;">Mensaje de WhatsApp</label>
+                      <input type="text" class="form-control" value="${data.whatsapp_message || "Mensaje por defecto"}" readonly style="background-color: #f8f9fa;">
+                    </div>
+                  </div>
+                </div>
                 
                 <div class="row">
                   <div class="col-md-6">
@@ -692,6 +713,28 @@ const Providers = ({}) => {
                         label="Teléfono"
                         type="tel"
                         col="col-md-9"
+                    />
+
+                    <div className="col-12">
+                        <hr />
+                        <h6 className="mb-3 text-success">
+                            <i className="mdi mdi-whatsapp"></i> Configuración
+                            WhatsApp Flotante
+                        </h6>
+                    </div>
+
+                    <InputFormGroup
+                        eRef={whatsappNumberRef}
+                        label="Número exclusivo WhatsApp (519... / opcional)"
+                        type="tel"
+                        col="col-md-6"
+                        placeholder="Si está vacío usará el principal"
+                    />
+                    <InputFormGroup
+                        eRef={whatsappMessageRef}
+                        label="Mensaje predeterminado"
+                        col="col-md-6"
+                        placeholder="Ej: ¡Hola! vengo de tu enlace..."
                     />
 
                     {/* Campo oculto para asegurar que se cree como Provider */}

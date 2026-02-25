@@ -1,0 +1,1 @@
+import"./vendor-react-B-uqHeN1.js";import{I as o}from"./ItemsRest-CD4iWVlb.js";import"./OpenPayCardModal-B_3LFVsG.js";import"./vendor-swiper-Cr_RrIb_.js";import"./BasicRest-CUn5q4Qs.js";import"./BooleanLimit-q2Ad9fGY.js";new o;

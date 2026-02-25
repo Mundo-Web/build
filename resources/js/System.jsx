@@ -157,6 +157,7 @@ const System = ({
     postsLatest,
     textstatic,
     categorias,
+    referrer,
     referral_code,
     hasRole = () => {},
 }) => {
@@ -287,6 +288,7 @@ const System = ({
             headerPosts,
             contacts,
             categorias,
+            referrer,
         };
 
         // Función helper para envolver con animación

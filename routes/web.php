@@ -191,6 +191,7 @@ Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function 
 
 Route::middleware(['can:Provider', 'auth'])->prefix('provider')->group(function () {
     Route::get('/home', [ProviderController::class, 'dashboard'])->name('Provider/Home.jsx');
+    Route::get('/profile', [ProviderController::class, 'profile'])->name('Provider/Profile.jsx');
 });
 
 // Email verification route

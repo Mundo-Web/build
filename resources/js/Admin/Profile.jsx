@@ -11,6 +11,9 @@ import ProfileRest from "../Actions/Admin/ProfileRest";
 const Profile = (props) => {
     const nameRef = useRef();
     const lastnameRef = useRef();
+    const phoneRef = useRef();
+    const whatsappNumberRef = useRef();
+    const whatsappMessageRef = useRef();
 
     const [session, setSession] = useState(props.session);
 
@@ -20,6 +23,9 @@ const Profile = (props) => {
         const request = {
             name: nameRef.current.value,
             lastname: lastnameRef.current.value,
+            phone: phoneRef.current.value,
+            whatsapp_number: whatsappNumberRef.current.value,
+            whatsapp_message: whatsappMessageRef.current.value,
         };
 
         const result = await ProfileRest.save(request);
@@ -29,9 +35,12 @@ const Profile = (props) => {
         const newSession = structuredClone(session);
         newSession.name = request.name;
         newSession.lastname = request.lastname;
+        newSession.phone = request.phone;
+        newSession.whatsapp_number = request.whatsapp_number;
+        newSession.whatsapp_message = request.whatsapp_message;
         newSession.birthdate = request.birthdate;
         setSession(newSession);
-        
+
         // Recargar la página para reflejar los cambios en todos los componentes
         setTimeout(() => {
             window.location.reload();
@@ -47,24 +56,24 @@ const Profile = (props) => {
 
             if (!ok)
                 throw new Error(
-                    "Ocurrio un error al comprimir la imagen. Intenta con otra."
+                    "Ocurrio un error al comprimir la imagen. Intenta con otra.",
                 );
 
             const request = new FormData();
             request.append(
                 "thumbnail",
-                await File.fromURL(`data:${type};base64,${thumbnail}`)
+                await File.fromURL(`data:${type};base64,${thumbnail}`),
             );
             request.append(
                 "full",
-                await File.fromURL(`data:${type};base64,${full}`)
+                await File.fromURL(`data:${type};base64,${full}`),
             );
 
             const res = await fetch("/api/profile", {
                 method: "POST",
                 headers: {
                     "X-Xsrf-Token": decodeURIComponent(
-                        Cookies.get("XSRF-TOKEN")
+                        Cookies.get("XSRF-TOKEN"),
                     ),
                 },
                 body: request,
@@ -83,7 +92,7 @@ const Profile = (props) => {
                 body: "La imagen de perfil se actualizo correctamente",
                 type: "success",
             });
-            
+
             // Recargar la página para reflejar los cambios en todos los componentes
             setTimeout(() => {
                 window.location.reload();
@@ -154,7 +163,37 @@ const Profile = (props) => {
                             value={session.lastname}
                             required
                         />
-                        <div className="text-center">
+                        <InputFormGroup
+                            eRef={phoneRef}
+                            label="Celular Principal"
+                            value={session.phone}
+                        />
+
+                        <div className="mt-4 mb-3 p-3 bg-light rounded border-start border-success border-4">
+                            <h6 className="text-success mb-1">
+                                <i className="mdi mdi-whatsapp"></i> WhatsApp
+                                Personalizado
+                            </h6>
+                            <small className="text-muted d-block mb-3">
+                                Si dejas estos campos vacíos, los clientes te
+                                contactarán a tu celular principal por defecto
+                                con el mensaje estándar.
+                            </small>
+                            <InputFormGroup
+                                eRef={whatsappNumberRef}
+                                label="Número exclusivo WhatsApp"
+                                value={session.whatsapp_number}
+                                placeholder="Ej. 51922333444"
+                            />
+                            <InputFormGroup
+                                eRef={whatsappMessageRef}
+                                label="Mensaje de recibimiento"
+                                value={session.whatsapp_message}
+                                placeholder="Ej: ¡Hola! vengo de tu enlace..."
+                            />
+                        </div>
+
+                        <div className="text-center mt-4">
                             <button
                                 className="btn btn-primary btn-block"
                                 type="submit"
@@ -180,6 +219,6 @@ CreateReactScript((el, properties) => {
     createRoot(el).render(
         <BaseAdminto {...properties} title="Perfil de usuario">
             <Profile {...properties} />
-        </BaseAdminto>
+        </BaseAdminto>,
     );
 });

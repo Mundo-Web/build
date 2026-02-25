@@ -116,6 +116,8 @@ class User extends Authenticatable
         'document_type',
         'document_number',
         'google_id',
+        'whatsapp_number',
+        'whatsapp_message',
     ];
 
 
