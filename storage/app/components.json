@@ -4646,7 +4646,8 @@
                     "link_denuncias",
                     "job_button",
                     "section_newsletter",
-                    "hide_policy_change_return"
+                    "hide_policy_change_return",
+                    "class_img_libro_reclamaciones"
                 ],
                 "using": {
                     "model": "Social",

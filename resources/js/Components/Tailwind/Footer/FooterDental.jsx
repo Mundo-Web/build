@@ -135,10 +135,11 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     >
                                         Libro de reclamaciones
                                     </span>
+
                                     <img
                                         src={`/assets/resources/libro-reclamaciones.png?v=${crypto.randomUUID()}`}
                                         alt={Global.APP_NAME}
-                                        className={`w-9/12 lg:w-7/12 object-contain object-center ${data?.class_logo || ""}`}
+                                        className={`w-9/12 lg:w-7/12 object-contain object-center ${data?.class_img_libro_reclamaciones || ""}`}
                                         onError={(e) => {
                                             e.target.onerror = null;
                                             e.target.style.display = "none";

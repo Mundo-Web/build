@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\ExchangeRate;
 use App\Helpers\CulqiConfig;
 use App\Models\RoleHasMenu;
+use App\Models\SystemColor;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -457,8 +458,8 @@ class BasicController extends Controller
         'APP_ENV' => env('APP_ENV'),
         'APP_CORRELATIVE' => env('APP_CORRELATIVE'),
         'APP_PROTOCOL' => env('APP_PROTOCOL', 'https'),
-        'GMAPS_API_KEY' => env('GMAPS_API_KEY'),
-        'APP_COLOR_PRIMARY' => env('APP_COLOR_PRIMARY', '#000000'),
+        'GMAPS_API_KEY' => General::where('correlative', 'gmaps_api_key')->first()?->description ?: env('GMAPS_API_KEY', ""),
+        'APP_COLOR_PRIMARY' => SystemColor::where('name', 'primary')->first()?->description ?: env('APP_COLOR_PRIMARY', "#000000"),
         'CULQI_PUBLIC_KEY' => CulqiConfig::getPublicKey(),
         'CULQI_API' => CulqiConfig::getApiUrl(),
         'CULQI_ENABLED' => CulqiConfig::isEnabled(),

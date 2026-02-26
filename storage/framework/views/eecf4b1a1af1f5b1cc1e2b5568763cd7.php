@@ -206,4 +206,4 @@
 </body>
 
 </html>
-<?php /**PATH C:\xampp\htdocs\projects\panelpro\resources\views/admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\projects\clickdentalperu\resources\views/admin.blade.php ENDPATH**/ ?>

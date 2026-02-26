@@ -198,7 +198,7 @@ const Generals = ({
             "google_client_secret",
             "google_oauth_enabled",
         ],
-        apis: ["tiny_api_key", "atalaya_leads_api_key"],
+        apis: ["tiny_api_key", "gmaps_api_key", "atalaya_leads_api_key"],
     };
 
     // Función memoizada para verificar si un tab debe mostrarse
@@ -768,6 +768,9 @@ const Generals = ({
         tinyApiKey:
             generals.find((x) => x.correlative == "tiny_api_key")
                 ?.description ?? "",
+        gmapsApiKey:
+            generals.find((x) => x.correlative == "gmaps_api_key")
+                ?.description ?? "",
         footerDescription:
             generals.find((x) => x.correlative == "footer_description")
                 ?.description ?? "",
@@ -957,6 +960,13 @@ const Generals = ({
     const handleTinyApiKeyChange = useCallback(
         (e) => {
             handleFieldChange("tinyApiKey", e.target.value);
+        },
+        [handleFieldChange],
+    );
+
+    const handleGmapsApiKeyChange = useCallback(
+        (e) => {
+            handleFieldChange("gmapsApiKey", e.target.value);
         },
         [handleFieldChange],
     );
@@ -1823,6 +1833,11 @@ const Generals = ({
                 correlative: "tiny_api_key",
                 name: "TinyMCE API Key",
                 description: formData.tinyApiKey || "",
+            },
+            {
+                correlative: "gmaps_api_key",
+                name: "Google Maps API Key",
+                description: formData.gmapsApiKey || "",
             },
             ...allEmailTemplateCorrelatives.map((correlative) => ({
                 correlative: `visibility_${correlative}`,
@@ -7157,6 +7172,53 @@ const Generals = ({
                                                     cargar el editor de texto
                                                     enriquecido en todo el panel
                                                     administrativo.
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </ConditionalField>
+
+                                    <ConditionalField correlative="gmaps_api_key">
+                                        <div className="card mb-4 border-light shadow-sm">
+                                            <div className="card-header bg-transparent">
+                                                <h6 className="mb-0 text-primary">
+                                                    <i className="fas fa-map-marker-alt me-2"></i>
+                                                    Google Maps API
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <label
+                                                    className="form-label"
+                                                    htmlFor="gmaps_api_key"
+                                                >
+                                                    Google Maps API Key{" "}
+                                                    <small className="text-muted">
+                                                        (Dejar en blanco para
+                                                        usar el valor del
+                                                        archivo .env)
+                                                    </small>
+                                                </label>
+                                                <div className="input-group">
+                                                    <span className="input-group-text">
+                                                        <i className="fas fa-key"></i>
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="gmaps_api_key"
+                                                        value={
+                                                            formData.gmapsApiKey
+                                                        }
+                                                        onChange={
+                                                            handleGmapsApiKeyChange
+                                                        }
+                                                        placeholder="Ingrese su API Key de Google Maps"
+                                                    />
+                                                </div>
+                                                <small className="text-muted mt-2 d-block">
+                                                    Esta key se utiliza para los
+                                                    mapas y autocompletado de
+                                                    direcciones en el sitio y el
+                                                    panel.
                                                 </small>
                                             </div>
                                         </div>

@@ -301,6 +301,7 @@ $component = Route::currentRouteName();
     $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
     ?>
     <?php if($culqiEnabled && $culqiPublicKey): ?>
+    <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
     <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
     <script type="text/javascript">
         window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
@@ -383,4 +384,4 @@ $component = Route::currentRouteName();
     </script>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\projects\panelpro\resources\views/public.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\xampp\htdocs\projects\clickdentalperu\resources\views/public.blade.php ENDPATH**/ ?>
