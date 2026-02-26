@@ -37,10 +37,10 @@ const Categories = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     const onModalOpen = (data) => {
-        console.log('=== onModalOpen called ===');
-        console.log('Full data object:', data);
-        console.log('data.banners specifically:', data?.banners);
-        console.log('typeof data.banners:', typeof data?.banners);
+        console.log("=== onModalOpen called ===");
+        console.log("Full data object:", data);
+        console.log("data.banners specifically:", data?.banners);
+        console.log("typeof data.banners:", typeof data?.banners);
 
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
@@ -49,55 +49,77 @@ const Categories = () => {
         nameRef.current.value = data?.name ?? "";
         aliasRef.current.value = data?.alias ?? "";
         descriptionRef.current.value = data?.description ?? "";
-        
+
         // Validar si banner está disponible (Fillable)
         if (bannerRef.current && bannerRef.image) {
-            bannerRef.image.src = data?.banner ? `/storage/images/category/${data.banner}` : '';
+            bannerRef.image.src = data?.banner
+                ? `/storage/images/category/${data.banner}`
+                : "";
             bannerRef.current.value = null;
             if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
         }
-        
+
         // Validar si image está disponible (Fillable)
         if (imageRef.current && imageRef.image) {
-            imageRef.image.src = data?.image ? `/storage/images/category/${data.image}` : '';
+            imageRef.image.src = data?.image
+                ? `/storage/images/category/${data.image}`
+                : "";
             imageRef.current.value = null;
             if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
         }
 
         // Load banners JSON (solo si está habilitado en Fillable)
-        if (bannersJsonRef.current && Fillable.has('categories', 'banners')) {
+        if (bannersJsonRef.current && Fillable.has("categories", "banners")) {
             let banners = data?.banners || [];
-            console.log('Categories.onModalOpen - data.banners:', data?.banners);
-            console.log('Categories.onModalOpen - banners type:', typeof banners);
+            console.log(
+                "Categories.onModalOpen - data.banners:",
+                data?.banners,
+            );
+            console.log(
+                "Categories.onModalOpen - banners type:",
+                typeof banners,
+            );
             // If banners is a string, parse it
-            if (typeof banners === 'string') {
+            if (typeof banners === "string") {
                 try {
                     banners = JSON.parse(banners);
                 } catch (e) {
-                    console.error('Error parsing banners JSON:', e);
+                    console.error("Error parsing banners JSON:", e);
                     banners = [];
                 }
             }
-            console.log('Categories.onModalOpen - calling setValue with:', banners);
+            console.log(
+                "Categories.onModalOpen - calling setValue with:",
+                banners,
+            );
             bannersJsonRef.current.setValue(banners);
 
             // Load images AFTER setValue - wait for refs to be ready
             const tryLoadImages = (attempt = 1) => {
                 console.log(`Attempt ${attempt} to load banner images...`);
                 const imageRefs = bannersJsonRef.current.getImageRefs();
-                console.log('imageRefs:', imageRefs);
+                console.log("imageRefs:", imageRefs);
 
                 let allLoaded = true;
                 banners.forEach((banner, index) => {
                     if (banner.image) {
                         const imgRef = imageRefs[index];
                         console.log(`Banner ${index} - Full ref:`, imgRef);
-                        console.log(`Banner ${index} - imgRef.image:`, imgRef?.image);
-                        console.log(`Banner ${index} - All properties:`, Object.keys(imgRef || {}));
+                        console.log(
+                            `Banner ${index} - imgRef.image:`,
+                            imgRef?.image,
+                        );
+                        console.log(
+                            `Banner ${index} - All properties:`,
+                            Object.keys(imgRef || {}),
+                        );
 
                         if (imgRef?.image) {
                             imgRef.image.src = `/storage/images/category/${banner.image}`;
-                            console.log(`✓ Loaded image for banner ${index}:`, banner.image);
+                            console.log(
+                                `✓ Loaded image for banner ${index}:`,
+                                banner.image,
+                            );
                         } else {
                             allLoaded = false;
                             console.log(`✗ Ref not ready for banner ${index}`);
@@ -115,7 +137,7 @@ const Categories = () => {
         }
 
         // Load stores (solo si está habilitado en Fillable)
-        if (storesRef.current && Fillable.has('categories', 'stores')) {
+        if (storesRef.current && Fillable.has("categories", "stores")) {
             SetSelectValue(storesRef.current, data?.stores ?? [], "id", "name");
         }
 
@@ -136,49 +158,49 @@ const Categories = () => {
         for (const key in request) {
             formData.append(key, request[key]);
         }
-        
+
         // Validar si image está disponible (Fillable)
-        if (imageRef.current && Fillable.has('categories', 'image')) {
+        if (imageRef.current && Fillable.has("categories", "image")) {
             const file = imageRef.current.files[0];
             if (file) {
                 formData.append("image", file);
             }
             // Check for image deletion flag
             if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-                formData.append('image_delete', 'DELETE');
+                formData.append("image_delete", "DELETE");
             }
         }
-        
+
         // Validar si banner está disponible (Fillable)
-        if (bannerRef.current && Fillable.has('categories', 'banner')) {
+        if (bannerRef.current && Fillable.has("categories", "banner")) {
             const file2 = bannerRef.current.files[0];
             if (file2) {
                 formData.append("banner", file2);
             }
             // Check for banner deletion flag
             if (bannerRef.getDeleteFlag && bannerRef.getDeleteFlag()) {
-                formData.append('banner_delete', 'DELETE');
+                formData.append("banner_delete", "DELETE");
             }
         }
 
         // Add banners JSON (solo si está habilitado en Fillable)
-        if (bannersJsonRef.current && Fillable.has('categories', 'banners')) {
-            formData.append('banners', bannersJsonRef.current.getValue());
+        if (bannersJsonRef.current && Fillable.has("categories", "banners")) {
+            formData.append("banners", bannersJsonRef.current.getValue());
 
             // Add banner images
             const bannerImages = bannersJsonRef.current.getImageFiles();
-            Object.keys(bannerImages).forEach(key => {
+            Object.keys(bannerImages).forEach((key) => {
                 formData.append(key, bannerImages[key]);
             });
         }
 
         // Add stores array (solo si está habilitado en Fillable)
-        if (storesRef.current && Fillable.has('categories', 'stores')) {
+        if (storesRef.current && Fillable.has("categories", "stores")) {
             const storesValue = $(storesRef.current).val();
             if (storesValue && storesValue.length > 0) {
-                formData.append('stores', JSON.stringify(storesValue));
+                formData.append("stores", JSON.stringify(storesValue));
             } else {
-                formData.append('stores', JSON.stringify([]));
+                formData.append("stores", JSON.stringify([]));
             }
         }
 
@@ -189,8 +211,10 @@ const Categories = () => {
         if (!result) return;
 
         // Reset delete flags after successful save
-        if (bannerRef.current && bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
-        if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        if (bannerRef.current && bannerRef.resetDeleteFlag)
+            bannerRef.resetDeleteFlag();
+        if (imageRef.current && imageRef.resetDeleteFlag)
+            imageRef.resetDeleteFlag();
 
         $(gridRef.current).dxDataGrid("instance").refresh();
         $(modalRef.current).modal("hide");
@@ -276,12 +300,15 @@ const Categories = () => {
         const newOrderIndex = e.toIndex;
 
         try {
-            const result = await categoriesRest.reorder(e.itemData.id, newOrderIndex);
+            const result = await categoriesRest.reorder(
+                e.itemData.id,
+                newOrderIndex,
+            );
             if (result) {
                 await e.component.refresh();
             }
         } catch (error) {
-            console.error('Error reordering category:', error);
+            console.error("Error reordering category:", error);
         }
     };
 
@@ -318,10 +345,10 @@ const Categories = () => {
                 rowDragging={{
                     allowReordering: true,
                     onReorder: onReorder,
-                    dropFeedbackMode: 'push'
+                    dropFeedbackMode: "push",
                 }}
                 sorting={{
-                    mode: 'single'
+                    mode: "single",
                 }}
                 columns={[
                     {
@@ -330,11 +357,11 @@ const Categories = () => {
                         visible: false,
                     },
                     {
-                        dataField: 'order_index',
-                        caption: 'Orden',
+                        dataField: "order_index",
+                        caption: "Orden",
                         visible: false,
-                        sortOrder: 'asc',
-                        sortIndex: 0
+                        sortOrder: "asc",
+                        sortIndex: 0,
                     },
                     {
                         dataField: "name",
@@ -346,7 +373,7 @@ const Categories = () => {
                         caption: "Descripción",
                         width: "50%",
                     },
-                    Fillable.has('categories', 'image') && {
+                    Fillable.has("categories", "image") && {
                         dataField: "image",
                         caption: "Imagen",
                         width: "90px",
@@ -364,14 +391,14 @@ const Categories = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                    (e.target.src =
-                                        "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                     }
-                                />
+                                />,
                             );
                         },
                     },
-                    Fillable.has('categories', 'banner') && {
+                    Fillable.has("categories", "banner") && {
                         dataField: "banner",
                         caption: "Banner",
                         width: "90px",
@@ -389,10 +416,10 @@ const Categories = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                    (e.target.src =
-                                        "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                     }
-                                />
+                                />,
                             );
                         },
                     },
@@ -403,8 +430,17 @@ const Categories = () => {
                         cellTemplate: (container, { data }) => {
                             $(container).empty();
                             const isFeatured = data.featured == 1;
-                            const hasLimit = BooleanLimit.has(modelKey, "featured");
-                            const isBlocked = hasLimit && BooleanLimit.shouldBlock(modelKey, "featured", isFeatured);
+                            const hasLimit = BooleanLimit.has(
+                                modelKey,
+                                "featured",
+                            );
+                            const isBlocked =
+                                hasLimit &&
+                                BooleanLimit.shouldBlock(
+                                    modelKey,
+                                    "featured",
+                                    isFeatured,
+                                );
                             const limitMessage = isBlocked
                                 ? BooleanLimit.getMessage(modelKey, "featured")
                                 : null;
@@ -427,7 +463,7 @@ const Categories = () => {
                                             previous: isFeatured,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
@@ -447,7 +483,7 @@ const Categories = () => {
                                             value: !data.visible,
                                         })
                                     }
-                                />
+                                />,
                             );
                         },
                     },
@@ -461,7 +497,7 @@ const Categories = () => {
                                     title: "Editar",
                                     icon: "fa fa-pen",
                                     onClick: () => onModalOpen(data),
-                                })
+                                }),
                             );
                             container.append(
                                 DxButton({
@@ -469,7 +505,7 @@ const Categories = () => {
                                     title: "Eliminar",
                                     icon: "fa fa-trash",
                                     onClick: () => onDeleteClicked(data),
-                                })
+                                }),
                             );
                         },
                         allowFiltering: false,
@@ -484,50 +520,55 @@ const Categories = () => {
                 size="xl"
             >
                 <input ref={idRef} type="hidden" />
-                
+
                 <div id="categories-container">
                     {/* Sistema de Pestañas */}
-                    <ul className="nav nav-pills nav-justified mb-4" role="tablist" style={{
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        padding: '4px',
-                        border: '1px solid #e9ecef'
-                    }}>
+                    <ul
+                        className="nav nav-pills nav-justified mb-4"
+                        role="tablist"
+                        style={{
+                            backgroundColor: "#f8f9fa",
+                            borderRadius: "8px",
+                            padding: "4px",
+                            border: "1px solid #e9ecef",
+                        }}
+                    >
                         <li className="nav-item" role="presentation">
-                            <button 
-                                className="nav-link active" 
-                                id="basic-info-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#basic-info" 
-                                type="button" 
-                                role="tab" 
-                                aria-controls="basic-info" 
+                            <button
+                                className="nav-link active"
+                                id="basic-info-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#basic-info"
+                                type="button"
+                                role="tab"
+                                aria-controls="basic-info"
                                 aria-selected="true"
                                 style={{
-                                    borderRadius: '6px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.3s ease'
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
                                 }}
                             >
                                 <i className="fas fa-info-circle me-2"></i>
                                 Información Básica
                             </button>
                         </li>
-                        {(Fillable.has('categories', 'banner') || Fillable.has('categories', 'image')) && (
+                        {(Fillable.has("categories", "banner") ||
+                            Fillable.has("categories", "image")) && (
                             <li className="nav-item" role="presentation">
-                                <button 
-                                    className="nav-link" 
-                                    id="multimedia-tab" 
-                                    data-bs-toggle="pill" 
-                                    data-bs-target="#multimedia" 
-                                    type="button" 
-                                    role="tab" 
-                                    aria-controls="multimedia" 
+                                <button
+                                    className="nav-link"
+                                    id="multimedia-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#multimedia"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="multimedia"
                                     aria-selected="false"
                                     style={{
-                                        borderRadius: '6px',
-                                        fontWeight: '500',
-                                        transition: 'all 0.3s ease'
+                                        borderRadius: "6px",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
                                     }}
                                 >
                                     <i className="fas fa-images me-2"></i>
@@ -535,21 +576,21 @@ const Categories = () => {
                                 </button>
                             </li>
                         )}
-                        {Fillable.has('categories', 'banners') && (
+                        {Fillable.has("categories", "banners") && (
                             <li className="nav-item" role="presentation">
-                                <button 
-                                    className="nav-link" 
-                                    id="banners-tab" 
-                                    data-bs-toggle="pill" 
-                                    data-bs-target="#banners" 
-                                    type="button" 
-                                    role="tab" 
-                                    aria-controls="banners" 
+                                <button
+                                    className="nav-link"
+                                    id="banners-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#banners"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="banners"
                                     aria-selected="false"
                                     style={{
-                                        borderRadius: '6px',
-                                        fontWeight: '500',
-                                        transition: 'all 0.3s ease'
+                                        borderRadius: "6px",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
                                     }}
                                 >
                                     <i className="fas fa-panorama me-2"></i>
@@ -557,21 +598,21 @@ const Categories = () => {
                                 </button>
                             </li>
                         )}
-                        {Fillable.has('categories', 'stores') && (
+                        {Fillable.has("categories", "stores") && (
                             <li className="nav-item" role="presentation">
-                                <button 
-                                    className="nav-link" 
-                                    id="stores-tab" 
-                                    data-bs-toggle="pill" 
-                                    data-bs-target="#stores" 
-                                    type="button" 
-                                    role="tab" 
-                                    aria-controls="stores" 
+                                <button
+                                    className="nav-link"
+                                    id="stores-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#stores"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="stores"
                                     aria-selected="false"
                                     style={{
-                                        borderRadius: '6px',
-                                        fontWeight: '500',
-                                        transition: 'all 0.3s ease'
+                                        borderRadius: "6px",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
                                     }}
                                 >
                                     <i className="fas fa-store me-2"></i>
@@ -584,7 +625,12 @@ const Categories = () => {
                     {/* Contenido de las Pestañas */}
                     <div className="tab-content">
                         {/* Pestaña: Información Básica */}
-                        <div className="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                        <div
+                            className="tab-pane fade show active"
+                            id="basic-info"
+                            role="tabpanel"
+                            aria-labelledby="basic-info-tab"
+                        >
                             <div className="row g-3">
                                 <div className="col-12">
                                     <div className="card border-0 shadow-sm">
@@ -609,6 +655,10 @@ const Categories = () => {
                                                         eRef={aliasRef}
                                                         label="Alias (Nombre para mostrar)"
                                                         placeholder="Ej: Tecnología y Electrónica"
+                                                        hidden={Fillable.has(
+                                                            "categories",
+                                                            "alias",
+                                                        )}
                                                     />
                                                 </div>
                                                 <div className="col-12">
@@ -617,6 +667,10 @@ const Categories = () => {
                                                         label="Descripción"
                                                         rows={4}
                                                         placeholder="Descripción detallada de la categoría..."
+                                                        hidden={Fillable.has(
+                                                            "categories",
+                                                            "description",
+                                                        )}
                                                     />
                                                 </div>
                                             </div>
@@ -627,8 +681,14 @@ const Categories = () => {
                         </div>
 
                         {/* Pestaña: Multimedia */}
-                        {(Fillable.has('categories', 'banner') || Fillable.has('categories', 'image')) && (
-                            <div className="tab-pane fade" id="multimedia" role="tabpanel" aria-labelledby="multimedia-tab">
+                        {(Fillable.has("categories", "banner") ||
+                            Fillable.has("categories", "image")) && (
+                            <div
+                                className="tab-pane fade"
+                                id="multimedia"
+                                role="tabpanel"
+                                aria-labelledby="multimedia-tab"
+                            >
                                 <div className="row g-3">
                                     <div className="col-12">
                                         <div className="card border-0 shadow-sm">
@@ -640,7 +700,10 @@ const Categories = () => {
                                             </div>
                                             <div className="card-body">
                                                 <div className="row g-3">
-                                                    {Fillable.has('categories', 'banner') && (
+                                                    {Fillable.has(
+                                                        "categories",
+                                                        "banner",
+                                                    ) && (
                                                         <div className="col-md-6">
                                                             <ImageFormGroup
                                                                 eRef={bannerRef}
@@ -651,11 +714,17 @@ const Categories = () => {
                                                             />
                                                             <small className="text-muted">
                                                                 <i className="fas fa-info-circle me-1"></i>
-                                                              Recomendado: 1600x900px (proporción 16:9)
+                                                                Recomendado:
+                                                                1600x900px
+                                                                (proporción
+                                                                16:9)
                                                             </small>
                                                         </div>
                                                     )}
-                                                    {Fillable.has('categories', 'image') && (
+                                                    {Fillable.has(
+                                                        "categories",
+                                                        "image",
+                                                    ) && (
                                                         <div className="col-md-6">
                                                             <ImageFormGroup
                                                                 eRef={imageRef}
@@ -666,7 +735,10 @@ const Categories = () => {
                                                             />
                                                             <small className="text-muted">
                                                                 <i className="fas fa-info-circle me-1"></i>
-                                                                Recomendado: 1600x900px (proporción 16:9)
+                                                                Recomendado:
+                                                                1600x900px
+                                                                (proporción
+                                                                16:9)
                                                             </small>
                                                         </div>
                                                     )}
@@ -679,15 +751,21 @@ const Categories = () => {
                         )}
 
                         {/* Pestaña: Banners del Catálogo */}
-                        {Fillable.has('categories', 'banners') && (
-                            <div className="tab-pane fade" id="banners" role="tabpanel" aria-labelledby="banners-tab">
+                        {Fillable.has("categories", "banners") && (
+                            <div
+                                className="tab-pane fade"
+                                id="banners"
+                                role="tabpanel"
+                                aria-labelledby="banners-tab"
+                            >
                                 <div className="row g-3">
                                     <div className="col-12">
                                         <div className="card border-0 shadow-sm">
                                             <div className="card-header bg-light">
                                                 <h6 className="mb-0">
                                                     <i className="fas fa-panorama me-2 text-info"></i>
-                                                    Banners Personalizados del Catálogo
+                                                    Banners Personalizados del
+                                                    Catálogo
                                                 </h6>
                                             </div>
                                             <div className="card-body">
@@ -706,8 +784,13 @@ const Categories = () => {
                         )}
 
                         {/* Pestaña: Ubicaciones (Stores) */}
-                        {Fillable.has('categories', 'stores') && (
-                            <div className="tab-pane fade" id="stores" role="tabpanel" aria-labelledby="stores-tab">
+                        {Fillable.has("categories", "stores") && (
+                            <div
+                                className="tab-pane fade"
+                                id="stores"
+                                role="tabpanel"
+                                aria-labelledby="stores-tab"
+                            >
                                 <div className="row g-3">
                                     <div className="col-12">
                                         <div className="card border-0 shadow-sm">
@@ -730,7 +813,9 @@ const Categories = () => {
                                                 />
                                                 <small className="text-muted mt-2 d-block">
                                                     <i className="fas fa-info-circle me-1"></i>
-                                                    Selecciona las tiendas donde esta categoría estará disponible
+                                                    Selecciona las tiendas donde
+                                                    esta categoría estará
+                                                    disponible
                                                 </small>
                                             </div>
                                         </div>
@@ -749,6 +834,6 @@ CreateReactScript((el, properties) => {
     createRoot(el).render(
         <BaseAdminto {...properties} title="Categorías">
             <Categories {...properties} />
-        </BaseAdminto>
+        </BaseAdminto>,
     );
 });
