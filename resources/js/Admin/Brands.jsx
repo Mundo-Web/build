@@ -1,245 +1,327 @@
-import BaseAdminto from '@Adminto/Base';
-import SwitchFormGroup from '@Adminto/form/SwitchFormGroup';
-import TextareaFormGroup from '@Adminto/form/TextareaFormGroup';
-import React, { useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import Swal from 'sweetalert2';
-import BrandsRest from '../Actions/Admin/BrandsRest';
-import InputFormGroup from '../Components/Adminto/form/InputFormGroup';
-import ImageFormGroup from '../Components/Adminto/form/ImageFormGroup';
-import Modal from '../Components/Adminto/Modal';
-import Table from '../Components/Adminto/Table';
-import DxButton from '../Components/dx/DxButton';
-import CreateReactScript from '../Utils/CreateReactScript';
-import ReactAppend from '../Utils/ReactAppend';
+import BaseAdminto from "@Adminto/Base";
+import SwitchFormGroup from "@Adminto/form/SwitchFormGroup";
+import TextareaFormGroup from "@Adminto/form/TextareaFormGroup";
+import React, { useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import Swal from "sweetalert2";
+import BrandsRest from "../Actions/Admin/BrandsRest";
+import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
+import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
+import Modal from "../Components/Adminto/Modal";
+import Table from "../Components/Adminto/Table";
+import DxButton from "../Components/dx/DxButton";
+import CreateReactScript from "../Utils/CreateReactScript";
+import ReactAppend from "../Utils/ReactAppend";
+import Fillable from "../Utils/Fillable";
 
-const brandsRest = new BrandsRest()
+const brandsRest = new BrandsRest();
 
 const Brands = () => {
+    const gridRef = useRef();
+    const modalRef = useRef();
 
-  const gridRef = useRef()
-  const modalRef = useRef()
+    // Form elements ref
+    const idRef = useRef();
+    const nameRef = useRef();
+    const descriptionRef = useRef();
+    const imageRef = useRef();
 
-  // Form elements ref
-  const idRef = useRef()
-  const nameRef = useRef()
-  const descriptionRef = useRef()
-  const imageRef = useRef()
+    const [isEditing, setIsEditing] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false)
+    const onModalOpen = (data) => {
+        if (data?.id) setIsEditing(true);
+        else setIsEditing(false);
 
-  const onModalOpen = (data) => {
-    if (data?.id) setIsEditing(true)
-    else setIsEditing(false)
+        // Reset delete flag when opening modal
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
 
-    // Reset delete flag when opening modal
-    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        idRef.current.value = data?.id ?? "";
+        nameRef.current.value = data?.name ?? "";
+        descriptionRef.current.value = data?.description ?? "";
+        imageRef.image.src = data?.image
+            ? `/storage/images/brand/${data.image}`
+            : "";
+        imageRef.current.value = null;
 
-    idRef.current.value = data?.id ?? ''
-    nameRef.current.value = data?.name ?? ''
-    descriptionRef.current.value = data?.description ?? ''
-    imageRef.image.src = data?.image ? `/storage/images/brand/${data.image}` : ''
-    imageRef.current.value = null
+        $(modalRef.current).modal("show");
+    };
 
-    $(modalRef.current).modal('show')
-  }
+    const onModalSubmit = async (e) => {
+        e.preventDefault();
 
-  const onModalSubmit = async (e) => {
-    e.preventDefault()
+        const request = {
+            id: idRef.current.value || undefined,
+            name: nameRef.current.value,
+            description: descriptionRef.current.value,
+        };
 
-    const request = {
-      id: idRef.current.value || undefined,
-      name: nameRef.current.value,
-      description: descriptionRef.current.value,
-    }
-
-    const formData = new FormData()
-    for (const key in request) {
-      formData.append(key, request[key])
-    }
-    const file = imageRef.current.files[0]
-    if (file) {
-      formData.append('image', file)
-    }
-
-    // Check for image deletion flag
-    if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
-      formData.append('image_delete', 'DELETE');
-    }
-
-    const result = await brandsRest.save(formData)
-    if (!result) return
-
-    // Reset delete flag after successful save
-    if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
-
-    $(gridRef.current).dxDataGrid('instance').refresh()
-    $(modalRef.current).modal('hide')
-  }
-
-  const onFeaturedChange = async ({ id, value }) => {
-    const result = await brandsRest.boolean({ id, field: 'featured', value })
-    if (!result) return
-    $(gridRef.current).dxDataGrid('instance').refresh()
-  }
-
-  const onVisibleChange = async ({ id, value }) => {
-    const result = await brandsRest.boolean({ id, field: 'visible', value })
-    if (!result) return
-    $(gridRef.current).dxDataGrid('instance').refresh()
-  }
-
-  const onDeleteClicked = async (id) => {
-    const { isConfirmed } = await Swal.fire({
-      title: 'Eliminar registro',
-      text: '¿Estas seguro de eliminar este registro?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si, eliminar',
-      cancelButtonText: 'Cancelar'
-    })
-    if (!isConfirmed) return
-    const result = await brandsRest.delete(id)
-    if (!result) return
-    $(gridRef.current).dxDataGrid('instance').refresh()
-  }
-
-  // Función para manejar el reordering remoto
-  const onReorder = async (e) => {
-    // e.toIndex es la nueva posición donde se quiere insertar el elemento
-    const newOrderIndex = e.toIndex;
-
-    try {
-      const result = await brandsRest.reorder(e.itemData.id, newOrderIndex);
-      if (result) {
-        await e.component.refresh();
-      }
-    } catch (error) {
-      console.error('Error reordering brand:', error);
-    }
-  };
-
-  return (<>
-    <Table gridRef={gridRef} title='Marcas' rest={brandsRest}
-      toolBar={(container) => {
-        container.unshift({
-          widget: 'dxButton', location: 'after',
-          options: {
-            icon: 'refresh',
-            hint: 'Refrescar tabla',
-            onClick: () => $(gridRef.current).dxDataGrid('instance').refresh()
-          }
-        });
-        container.unshift({
-          widget: 'dxButton', location: 'after',
-          options: {
-            icon: 'plus',
-            text: 'Nuevo registro',
-            hint: 'Nuevo registro',
-            onClick: () => onModalOpen()
-          }
-        });
-      }}
-      rowDragging={{
-        allowReordering: true,
-        onReorder: onReorder,
-        dropFeedbackMode: 'push'
-      }}
-      sorting={{
-        mode: 'single'
-      }}
-      columns={[
-        {
-          dataField: 'id',
-          caption: 'ID',
-          visible: false
-        },
-        {
-          dataField: 'order_index',
-          caption: 'Orden',
-          visible: false,
-          sortOrder: 'asc',
-          sortIndex: 0
-        },
-        {
-          dataField: 'name',
-          caption: 'Marca',
-          width: '30%',
-        },
-        {
-          dataField: 'description',
-          caption: 'Descripción',
-          width: '50%',
-        },
-        {
-          dataField: 'image',
-          caption: 'Imagen',
-          width: '90px',
-          allowFiltering: false,
-          cellTemplate: (container, { data }) => {
-            ReactAppend(container, <img src={`/storage/images/brand/${data.image}`} style={{ width: '80px', height: '48px', objectFit: 'cover', objectPosition: 'center', borderRadius: '4px' }} onError={e => e.target.src = '/api/cover/thumbnail/null'} />)
-          }
-        },
-        {
-          dataField: 'featured',
-          caption: 'Destacado',
-          dataType: 'boolean',
-          cellTemplate: (container, { data }) => {
-            $(container).empty()
-            ReactAppend(container, <SwitchFormGroup checked={data.featured == 1} onChange={() => onFeaturedChange({
-              id: data.id,
-              value: !data.featured
-            })} />)
-          }
-        },
-        {
-          dataField: 'visible',
-          caption: 'Visible',
-          dataType: 'boolean',
-          cellTemplate: (container, { data }) => {
-            $(container).empty()
-            ReactAppend(container, <SwitchFormGroup checked={data.visible == 1} onChange={() => onVisibleChange({
-              id: data.id,
-              value: !data.visible
-            })} />)
-          }
-        },
-        {
-          caption: 'Acciones',
-          cellTemplate: (container, { data }) => {
-            container.css('text-overflow', 'unset')
-            container.append(DxButton({
-              className: 'btn btn-xs btn-soft-primary',
-              title: 'Editar',
-              icon: 'fa fa-pen',
-              onClick: () => onModalOpen(data)
-            }))
-            container.append(DxButton({
-              className: 'btn btn-xs btn-soft-danger',
-              title: 'Eliminar',
-              icon: 'fa fa-trash',
-              onClick: () => onDeleteClicked(data.id)
-            }))
-          },
-          allowFiltering: false,
-          allowExporting: false
+        const formData = new FormData();
+        for (const key in request) {
+            formData.append(key, request[key]);
         }
-      ]} />
-    <Modal modalRef={modalRef} title={isEditing ? 'Editar marca' : 'Agregar marca'} onSubmit={onModalSubmit} size='sm'>
-      <ImageFormGroup eRef={imageRef} name="image" label='Imagen' col='col-12' aspect={16 / 9} />
-      <div className='row' id='faqs-container'>
-        <input ref={idRef} type='hidden' />
-        <InputFormGroup eRef={nameRef} label='Marca' col='col-12' required />
-        <TextareaFormGroup eRef={descriptionRef} label='Descripción' rows={3} />
-      </div>
-    </Modal>
-  </>
-  )
-}
+        const file = imageRef.current.files[0];
+        if (file) {
+            formData.append("image", file);
+        }
+
+        // Check for image deletion flag
+        if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+            formData.append("image_delete", "DELETE");
+        }
+
+        const result = await brandsRest.save(formData);
+        if (!result) return;
+
+        // Reset delete flag after successful save
+        if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
+        $(gridRef.current).dxDataGrid("instance").refresh();
+        $(modalRef.current).modal("hide");
+    };
+
+    const onFeaturedChange = async ({ id, value }) => {
+        const result = await brandsRest.boolean({
+            id,
+            field: "featured",
+            value,
+        });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    const onVisibleChange = async ({ id, value }) => {
+        const result = await brandsRest.boolean({
+            id,
+            field: "visible",
+            value,
+        });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    const onDeleteClicked = async (id) => {
+        const { isConfirmed } = await Swal.fire({
+            title: "Eliminar registro",
+            text: "¿Estas seguro de eliminar este registro?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Si, eliminar",
+            cancelButtonText: "Cancelar",
+        });
+        if (!isConfirmed) return;
+        const result = await brandsRest.delete(id);
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    // Función para manejar el reordering remoto
+    const onReorder = async (e) => {
+        // e.toIndex es la nueva posición donde se quiere insertar el elemento
+        const newOrderIndex = e.toIndex;
+
+        try {
+            const result = await brandsRest.reorder(
+                e.itemData.id,
+                newOrderIndex,
+            );
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error("Error reordering brand:", error);
+        }
+    };
+
+    return (
+        <>
+            <Table
+                gridRef={gridRef}
+                title="Marcas"
+                rest={brandsRest}
+                toolBar={(container) => {
+                    container.unshift({
+                        widget: "dxButton",
+                        location: "after",
+                        options: {
+                            icon: "refresh",
+                            hint: "Refrescar tabla",
+                            onClick: () =>
+                                $(gridRef.current)
+                                    .dxDataGrid("instance")
+                                    .refresh(),
+                        },
+                    });
+                    container.unshift({
+                        widget: "dxButton",
+                        location: "after",
+                        options: {
+                            icon: "plus",
+                            text: "Nuevo registro",
+                            hint: "Nuevo registro",
+                            onClick: () => onModalOpen(),
+                        },
+                    });
+                }}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: "push",
+                }}
+                sorting={{
+                    mode: "single",
+                }}
+                columns={[
+                    {
+                        dataField: "id",
+                        caption: "ID",
+                        visible: false,
+                    },
+                    {
+                        dataField: "order_index",
+                        caption: "Orden",
+                        visible: false,
+                        sortOrder: "asc",
+                        sortIndex: 0,
+                    },
+                    {
+                        dataField: "name",
+                        caption: "Marca",
+                        width: "30%",
+                    },
+                    Fillable.has("brands", "description") && {
+                        dataField: "description",
+                        caption: "Descripción",
+                        width: "50%",
+                    },
+                    Fillable.has("brands", "image") && {
+                        dataField: "image",
+                        caption: "Imagen",
+                        width: "90px",
+                        allowFiltering: false,
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <img
+                                    src={`/storage/images/brand/${data.image}`}
+                                    style={{
+                                        width: "80px",
+                                        height: "48px",
+                                        objectFit: "cover",
+                                        objectPosition: "center",
+                                        borderRadius: "4px",
+                                    }}
+                                    onError={(e) =>
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
+                                    }
+                                />,
+                            );
+                        },
+                    },
+                    Fillable.has("brands", "featured") && {
+                        dataField: "featured",
+                        caption: "Destacado",
+                        dataType: "boolean",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.featured == 1}
+                                    onChange={() =>
+                                        onFeaturedChange({
+                                            id: data.id,
+                                            value: !data.featured,
+                                        })
+                                    }
+                                />,
+                            );
+                        },
+                    },
+                    {
+                        dataField: "visible",
+                        caption: "Visible",
+                        dataType: "boolean",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.visible == 1}
+                                    onChange={() =>
+                                        onVisibleChange({
+                                            id: data.id,
+                                            value: !data.visible,
+                                        })
+                                    }
+                                />,
+                            );
+                        },
+                    },
+                    {
+                        caption: "Acciones",
+                        cellTemplate: (container, { data }) => {
+                            container.css("text-overflow", "unset");
+                            container.append(
+                                DxButton({
+                                    className: "btn btn-xs btn-soft-primary",
+                                    title: "Editar",
+                                    icon: "fa fa-pen",
+                                    onClick: () => onModalOpen(data),
+                                }),
+                            );
+                            container.append(
+                                DxButton({
+                                    className: "btn btn-xs btn-soft-danger",
+                                    title: "Eliminar",
+                                    icon: "fa fa-trash",
+                                    onClick: () => onDeleteClicked(data.id),
+                                }),
+                            );
+                        },
+                        allowFiltering: false,
+                        allowExporting: false,
+                    },
+                ]}
+            />
+            <Modal
+                modalRef={modalRef}
+                title={isEditing ? "Editar marca" : "Agregar marca"}
+                onSubmit={onModalSubmit}
+                size="sm"
+            >
+                <ImageFormGroup
+                    eRef={imageRef}
+                    name="image"
+                    label="Imagen"
+                    col="col-12"
+                    aspect={16 / 9}
+                    hidden={!Fillable.has("brands", "image")}
+                />
+                <div className="row" id="faqs-container">
+                    <input ref={idRef} type="hidden" />
+                    <InputFormGroup
+                        eRef={nameRef}
+                        label="Marca"
+                        col="col-12"
+                        required
+                    />
+                    <TextareaFormGroup
+                        eRef={descriptionRef}
+                        label="Descripción"
+                        rows={3}
+                        hidden={!Fillable.has("brands", "description")}
+                    />
+                </div>
+            </Modal>
+        </>
+    );
+};
 
 CreateReactScript((el, properties) => {
-
-  createRoot(el).render(<BaseAdminto {...properties} title='Marcas'>
-    <Brands {...properties} />
-  </BaseAdminto>);
-})
+    createRoot(el).render(
+        <BaseAdminto {...properties} title="Marcas">
+            <Brands {...properties} />
+        </BaseAdminto>,
+    );
+});
