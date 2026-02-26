@@ -655,10 +655,12 @@ const Categories = () => {
                                                         eRef={aliasRef}
                                                         label="Alias (Nombre para mostrar)"
                                                         placeholder="Ej: Tecnología y Electrónica"
-                                                        hidden={Fillable.has(
-                                                            "categories",
-                                                            "alias",
-                                                        )}
+                                                        hidden={
+                                                            !Fillable.has(
+                                                                "categories",
+                                                                "alias",
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                                 <div className="col-12">
@@ -667,10 +669,12 @@ const Categories = () => {
                                                         label="Descripción"
                                                         rows={4}
                                                         placeholder="Descripción detallada de la categoría..."
-                                                        hidden={Fillable.has(
-                                                            "categories",
-                                                            "description",
-                                                        )}
+                                                        hidden={
+                                                            !Fillable.has(
+                                                                "categories",
+                                                                "description",
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                             </div>
