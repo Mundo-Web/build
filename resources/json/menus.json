@@ -10,6 +10,7 @@
       { "label": "Combos", "href": "/admin/combos", "icon": "mdi mdi-package-variant-closed" },
       { "label": "Cupones", "href": "/admin/coupons", "icon": "mdi mdi-brightness-percent" },
       { "label": "Reglas de Descuento", "href": "/admin/discount-rules", "icon": "mdi mdi-pencil-ruler" },
+      { "label": "Plan de Carrera", "href": "/admin/ranks", "icon": "mdi mdi-seal-variant" },
       {
         "label": "Productos",
         "icon": "mdi mdi-view-dashboard",

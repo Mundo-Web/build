@@ -12,13 +12,18 @@ import { renderToString } from "react-dom/server";
 import Modal from "../Components/Adminto/Modal";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
+import ItemsRest from "../Actions/Admin/ItemsRest";
 
 const providersRest = new ProvidersRest();
+const itemsRest = new ItemsRest();
 
 const Providers = ({}) => {
     const gridRef = useRef();
     const modalRef = useRef();
     const inviteModalRef = useRef();
+    const vaultModalRef = useRef();
+    const vaultItemRef = useRef();
+    const vaultQuantityRef = useRef();
 
     // Form elements ref
     const idRef = useRef();
@@ -36,6 +41,9 @@ const Providers = ({}) => {
     const whatsappMessageRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
+    const [vaultData, setVaultData] = useState([]);
+    const [selectedProvider, setSelectedProvider] = useState(null);
+    const [allItems, setAllItems] = useState([]);
 
     const onModalOpen = (data) => {
         if (data?.id) setIsEditing(true);
@@ -173,6 +181,60 @@ const Providers = ({}) => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
+    const onVaultOpen = async (data) => {
+        setSelectedProvider(data);
+        const result = await providersRest.getVault(data.id);
+        if (result) setVaultData(result.data);
+
+        if (allItems.length === 0) {
+            const itemsRes = await itemsRest.paginate({
+                requireTotalCount: false,
+                take: 1000,
+            });
+            if (itemsRes) setAllItems(itemsRes.data);
+        }
+
+        $(vaultModalRef.current).modal("show");
+    };
+
+    const onVaultSubmit = async (e) => {
+        e.preventDefault();
+        const request = {
+            user_id: selectedProvider.id,
+            item_id: vaultItemRef.current.value,
+            quantity: vaultQuantityRef.current.value,
+        };
+
+        const result = await providersRest.updateVault(request);
+        if (result) {
+            const updatedVault = await providersRest.getVault(
+                selectedProvider.id,
+            );
+            if (updatedVault) setVaultData(updatedVault.data);
+            vaultQuantityRef.current.value = "";
+            $(vaultItemRef.current).val(null).trigger("change");
+        }
+    };
+
+    const onDeleteVaultItem = async (id) => {
+        const { isConfirmed } = await Swal.fire({
+            title: "¿Eliminar de la bóveda?",
+            text: "Se eliminará este artículo de la bóveda del proveedor.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+        });
+        if (!isConfirmed) return;
+
+        const result = await providersRest.deleteVaultItem(id);
+        if (result) {
+            const updatedVault = await providersRest.getVault(
+                selectedProvider.id,
+            );
+            if (updatedVault) setVaultData(updatedVault.data);
+        }
+    };
+
     const onViewDetails = (data) => {
         const createdDate = new Date(data.created_at);
         const formattedDate =
@@ -286,6 +348,56 @@ const Providers = ({}) => {
                     <div class="form-group mb-3">
                       <label class="form-label" style="font-weight: 600; color: #495057; margin-bottom: 5px;">Mensaje de WhatsApp</label>
                       <input type="text" class="form-control" value="${data.whatsapp_message || "Mensaje por defecto"}" readonly style="background-color: #f8f9fa;">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-2">
+                  <div class="col-12">
+                    <h6 class="text-primary mb-3" style="border-bottom: 1px solid #eee; padding-bottom: 10px; font-weight: 700;">
+                      <i class="fas fa-rocket me-2"></i> Progreso de Carrera
+                    </h6>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="card bg-light border-0 mb-3">
+                      <div class="card-body p-2 text-center">
+                        <small class="text-muted d-block">Rango Actual</small>
+                        <span class="badge w-100 mt-1" style="background-color: ${data.rank?.color || "#6c757d"}; font-size: 0.85rem;">
+                          ${data.rank?.name || "Sin Rango"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                   <div class="col-md-4">
+                    <div class="card bg-light border-0 mb-3">
+                      <div class="card-body p-2 text-center">
+                        <small class="text-muted d-block">Prendas Personales</small>
+                        <span class="fw-bold fs-5 text-dark">${Math.round(data.total_items || 0)}</span>
+                      </div>
+                    </div>
+                  </div>
+                   <div class="col-md-4">
+                    <div class="card bg-light border-0 mb-3">
+                      <div class="card-body p-2 text-center">
+                        <small class="text-muted d-block">Prendas Grupales</small>
+                        <span class="fw-bold fs-5 text-dark">${Math.round(data.group_items || 0)}</span>
+                      </div>
+                    </div>
+                  </div>
+                   <div class="col-md-6">
+                    <div class="card bg-light border-0 mb-3">
+                      <div class="card-body p-2 text-center">
+                        <small class="text-muted d-block">Volumen Personal</small>
+                        <span class="fw-bold fs-5 text-dark">S/ ${parseFloat(data.total_points || 0).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="card bg-light border-0 mb-3">
+                      <div class="card-body p-2 text-center">
+                        <small class="text-muted d-block">Volumen Grupal</small>
+                        <span class="fw-bold fs-5 text-dark">S/ ${parseFloat(data.group_points || 0).toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -551,6 +663,49 @@ const Providers = ({}) => {
                         },
                     },
                     {
+                        dataField: "rank.name",
+                        caption: "Rango",
+                        width: 120,
+                        cellTemplate: (container, { data }) => {
+                            if (data.rank) {
+                                ReactAppend(
+                                    container,
+                                    <span
+                                        className="badge px-2 py-1"
+                                        style={{
+                                            backgroundColor:
+                                                data.rank?.color || "#6c757d",
+                                            color: "#fff",
+                                        }}
+                                    >
+                                        <i className="fas fa-medal me-1"></i>
+                                        {data.rank.name}
+                                    </span>,
+                                );
+                            } else {
+                                ReactAppend(
+                                    container,
+                                    <span className="badge badge-soft-secondary px-2 py-1">
+                                        Sin Rango
+                                    </span>,
+                                );
+                            }
+                        },
+                    },
+                    {
+                        dataField: "total_points",
+                        caption: "Puntos",
+                        width: 100,
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <div className="text-center font-monospace">
+                                    {Math.round(data.total_points || 0)}
+                                </div>,
+                            );
+                        },
+                    },
+                    {
                         dataField: "status",
                         caption: "Estado",
                         dataType: "boolean",
@@ -585,6 +740,16 @@ const Providers = ({}) => {
                                     title: "Ver detalles",
                                     icon: "fa fa-eye",
                                     onClick: () => onViewDetails(data),
+                                }),
+                            );
+
+                            // Botón de Bóveda (Inventario de Premios)
+                            container.append(
+                                DxButton({
+                                    className: "btn btn-xs btn-soft-success",
+                                    title: "Bóveda de Inventario",
+                                    icon: "fa fa-vault",
+                                    onClick: () => onVaultOpen(data),
                                 }),
                             );
 
@@ -791,6 +956,116 @@ const Providers = ({}) => {
                         col="col-12"
                         required
                     />
+                </div>
+            </Modal>
+
+            <Modal
+                modalRef={vaultModalRef}
+                title={`Bóveda de ${selectedProvider?.name || "Proveedor"}`}
+                hideSave
+                size="lg"
+            >
+                <div>
+                    <form
+                        className="card card-body bg-light mb-4"
+                        onSubmit={onVaultSubmit}
+                    >
+                        <div className="row align-items-end">
+                            <div
+                                className="col-md-7"
+                                id="vault-select-container"
+                            >
+                                <SelectFormGroup
+                                    eRef={vaultItemRef}
+                                    label="Seleccionar Producto"
+                                    dropdownParent="#vault-select-container"
+                                    required
+                                >
+                                    <option value="">-- Seleccionar --</option>
+                                    {allItems.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}{" "}
+                                            {item.sku ? `(${item.sku})` : ""} -
+                                            Stock: {item.stock}
+                                        </option>
+                                    ))}
+                                </SelectFormGroup>
+                            </div>
+                            <div className="col-md-3">
+                                <InputFormGroup
+                                    eRef={vaultQuantityRef}
+                                    label="Cantidad"
+                                    type="number"
+                                    required
+                                />
+                            </div>
+                            <div className="col-md-2">
+                                <button
+                                    className="btn btn-primary w-100"
+                                    type="submit"
+                                >
+                                    <i className="fa fa-plus me-1"></i> Añadir
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div className="table-responsive">
+                        <table className="table table-sm table-centered mb-0">
+                            <thead className="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th className="text-center">
+                                        Cant. en Bóveda
+                                    </th>
+                                    <th className="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {vaultData.length === 0 ? (
+                                    <tr>
+                                        <td
+                                            colSpan="3"
+                                            className="text-center py-3 text-muted"
+                                        >
+                                            No hay ítems en la bóveda
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    vaultData.map((item) => (
+                                        <tr key={item.id}>
+                                            <td>
+                                                <strong>
+                                                    {item.item?.name}
+                                                </strong>
+                                                <br />
+                                                <small className="text-muted">
+                                                    {item.item?.sku}
+                                                </small>
+                                            </td>
+                                            <td className="text-center">
+                                                <span className="badge badge-soft-primary px-2 py-1">
+                                                    {item.quantity}
+                                                </span>
+                                            </td>
+                                            <td className="text-end">
+                                                <button
+                                                    className="btn btn-xs btn-outline-danger"
+                                                    onClick={() =>
+                                                        onDeleteVaultItem(
+                                                            item.id,
+                                                        )
+                                                    }
+                                                >
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </Modal>
         </>

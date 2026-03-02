@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import ReactModal from "react-modal";
 import Global from "../../../../../Utils/Global";
-import Tippy from "@tippyjs/react";
 import Number2Currency, {
     CurrencySymbol,
 } from "../../../../../Utils/Number2Currency";
@@ -11,7 +10,14 @@ import General from "../../../../../Utils/General";
 import SalesRest from "../../../../../Actions/SalesRest";
 import { Local } from "sode-extend-react";
 import { toast } from "sonner";
-import { CircleX, Upload, X, CheckCircle2, QrCode } from "lucide-react";
+import {
+    Upload,
+    X,
+    CheckCircle2,
+    QrCode,
+    ArrowRight,
+    ImageIcon,
+} from "lucide-react";
 
 const salesRest = new SalesRest();
 
@@ -31,76 +37,60 @@ export default function UploadVoucherModalYapeRainstar({
 }) {
     const [saving, setSaving] = useState(false);
     const [voucher, setVoucher] = useState(null);
+    const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
 
-    const handleUploadClick = () => {
-        if (!voucher) {
-            fileInputRef.current?.click();
-        } else {
-            handlePayment();
-        }
+    const handleFileChange = (e) => {
+        const f = e.target.files[0];
+        if (f) setVoucher(f);
     };
 
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            setVoucher(selectedFile);
-        }
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const f = e.dataTransfer.files[0];
+        if (f) setVoucher(f);
     };
 
     const handleRemoveFile = () => {
         setVoucher(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
+        if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
     const handlePayment = async () => {
         if (saving) return;
-
         if (!voucher) {
-            toast.error("Error al subir comprobante", {
-                description: `Por favor, sube tu comprobante de pago`,
-            });
+            toast.error("Adjunta el comprobante de pago antes de continuar");
             return;
         }
-
         setSaving(true);
-
         try {
             const updatedRequest = {
                 ...request,
                 payment_proof: voucher,
-                delivery_type: request.delivery_type || "domicilio",
-                applied_promotions: request.applied_promotions
+                delivery_type: request?.delivery_type || "domicilio",
+                applied_promotions: request?.applied_promotions
                     ? typeof request.applied_promotions === "string"
                         ? request.applied_promotions
                         : JSON.stringify(request.applied_promotions)
                     : null,
             };
-
             const formData = new FormData();
             Object.keys(updatedRequest).forEach((key) => {
                 let value = updatedRequest[key];
                 if (value !== null && value !== undefined) {
-                    if (typeof value === "object" && !(value instanceof File)) {
+                    if (typeof value === "object" && !(value instanceof File))
                         value = JSON.stringify(value);
-                    }
                     formData.append(key, value);
                 }
             });
-
             const result = await salesRest.save(formData);
-
             if (result) {
                 Local.delete(`${Global.APP_CORRELATIVE}_cart`);
                 location.href = `${location.origin}/cart?code=${result.code}`;
             }
-        } catch (error) {
-            console.error("Error al procesar el pago:", error);
-            toast.error("Error al procesar el pago", {
-                description: `Ocurrió un error al procesar tu pago`,
-            });
+        } catch {
+            toast.error("Ocurrió un error al procesar tu pago");
         } finally {
             setSaving(false);
         }
@@ -110,105 +100,106 @@ export default function UploadVoucherModalYapeRainstar({
         <ReactModal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="absolute left-1/2 -translate-x-1/2 bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] w-[95%] max-w-4xl top-1/2 -translate-y-1/2 overflow-hidden outline-none"
-            overlayClassName="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100]"
+            className="absolute left-1/2 -translate-x-1/2 bg-white w-[95%] max-w-4xl top-1/2 -translate-y-1/2 overflow-hidden outline-none shadow-2xl shadow-neutral-dark/10"
+            overlayClassName="fixed inset-0 bg-neutral-dark/40 backdrop-blur-sm z-[100]"
             ariaHideApp={false}
         >
-            <div className="flex flex-col md:flex-row min-h-[500px]">
-                {/* Lado Izquierdo: Resumen y QR */}
-                <div className="md:w-5/12 bg-black text-white p-8 flex flex-col relative overflow-hidden">
-                    <div className="relative z-10 flex-1">
-                        <div className="flex items-center gap-3 mb-8">
-                            <QrCode size={32} className="text-white" />
-                            <h2 className="text-3xl font-black uppercase tracking-tighter leading-none italic">
-                                ESCANEA <br /> EL{" "}
-                                <span className="text-neutral-500">QR</span>
+            <div className="flex flex-col md:flex-row min-h-[520px]">
+                {/* ── Left panel: QR + summary ── */}
+                <div className="md:w-5/12 bg-neutral-dark text-white p-8 flex flex-col gap-6 relative overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center gap-3">
+                        <QrCode size={24} className="text-white/60" />
+                        <div>
+                            <p className="text-[10px] font-bold tracking-widest text-white/30 uppercase">
+                                Pago con
+                            </p>
+                            <h2 className="text-2xl font-black tracking-tight text-white">
+                                {General.get("checkout_dwallet_name") ||
+                                    "Yape / Plin"}
                             </h2>
                         </div>
+                    </div>
 
-                        <div className="flex justify-center mb-8 p-4 bg-white border-4 border-neutral-800">
-                            <img
-                                src={`/assets/resources/${General.get("checkout_dwallet_qr")}`}
-                                alt={General.get("checkout_dwallet_name")}
-                                className="h-48 w-auto object-contain"
-                                onError={(e) => {
-                                    e.currentTarget.src =
-                                        "/assets/img/salafabulosa/logoyape.png";
-                                }}
-                            />
+                    {/* QR image */}
+                    <div className="bg-white p-3 border border-gray-200 mx-auto w-full max-w-[220px]">
+                        <img
+                            src={`/assets/resources/${General.get("checkout_dwallet_qr")}`}
+                            alt={General.get("checkout_dwallet_name")}
+                            className="w-full h-auto object-contain"
+                            onError={(e) => {
+                                e.currentTarget.src =
+                                    "/assets/img/salafabulosa/logoyape.png";
+                            }}
+                        />
+                    </div>
+
+                    {/* Price breakdown */}
+                    <div className="space-y-2.5 bg-white/5 p-4 border border-white/10">
+                        <p className="text-[10px] font-bold tracking-widest text-white/40 uppercase mb-3">
+                            Resumen
+                        </p>
+                        <div className="flex justify-between text-xs font-medium text-white/60">
+                            <span>Subtotal</span>
+                            <span>
+                                {CurrencySymbol()} {Number2Currency(subTotal)}
+                            </span>
                         </div>
-
-                        <div className="space-y-4">
-                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-neutral-500">
-                                Detalle de Pago
-                            </h3>
-                            <div className="space-y-2 border-l-2 border-neutral-800 pl-4">
-                                <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
-                                    <span>Subtotal</span>
-                                    <span>
-                                        {CurrencySymbol()}{" "}
-                                        {Number2Currency(subTotal)}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
-                                    <span>Envío</span>
-                                    <span>
-                                        {CurrencySymbol()}{" "}
-                                        {Number2Currency(envio)}
-                                    </span>
-                                </div>
-                                {descuentofinal > 0 && (
-                                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-red-500">
-                                        <span>Descuento</span>
-                                        <span>
-                                            -{CurrencySymbol()}{" "}
-                                            {Number2Currency(
-                                                descuentofinal +
-                                                    autoDiscountTotal,
-                                            )}
-                                        </span>
-                                    </div>
-                                )}
-                                <div className="flex justify-between text-lg font-black uppercase tracking-tight pt-2 border-t border-neutral-800 italic">
-                                    <span>Total</span>
-                                    <span>
-                                        {CurrencySymbol()}{" "}
-                                        {Number2Currency(totalFinal)}
-                                    </span>
-                                </div>
+                        <div className="flex justify-between text-xs font-medium text-white/60">
+                            <span>Envío</span>
+                            <span>
+                                {CurrencySymbol()} {Number2Currency(envio)}
+                            </span>
+                        </div>
+                        {(descuentofinal > 0 || autoDiscountTotal > 0) && (
+                            <div className="flex justify-between text-xs font-medium text-red-400">
+                                <span>Descuento</span>
+                                <span>
+                                    -{CurrencySymbol()}{" "}
+                                    {Number2Currency(
+                                        (descuentofinal || 0) +
+                                            (autoDiscountTotal || 0),
+                                    )}
+                                </span>
                             </div>
+                        )}
+                        <div className="flex justify-between text-base font-black text-white pt-2 border-t border-white/10">
+                            <span>Total</span>
+                            <span>
+                                {CurrencySymbol()} {Number2Currency(totalFinal)}
+                            </span>
                         </div>
                     </div>
 
-                    <div className="relative z-10 mt-8 text-[9px] font-black uppercase tracking-[0.3em] opacity-40">
-                        RAINSTAR PROCESO DE PAGO SEGURO
-                    </div>
-
-                    <div className="absolute -bottom-10 -right-10 text-[100px] font-black opacity-[0.03] select-none pointer-events-none italic leading-none rotate-12">
+                    {/* Watermark */}
+                    <div className="absolute -bottom-8 -right-8 text-[90px] font-black opacity-[0.04] select-none pointer-events-none leading-none rotate-12">
                         YAPE
                     </div>
                 </div>
 
-                {/* Lado Derecho: Subir Comprobante */}
-                <div className="flex-1 p-8 md:p-12 relative flex flex-col justify-center">
+                {/* ── Right panel: upload ── */}
+                <div className="flex-1 flex flex-col p-8 md:p-10 relative bg-white">
+                    {/* Close */}
                     <button
                         onClick={onClose}
-                        className="absolute top-8 right-8 text-black/20 hover:text-black transition-colors"
+                        className="absolute top-6 right-6 w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-neutral-dark/40 hover:text-neutral-dark hover:bg-gray-200 transition-colors"
                     >
-                        <X size={24} />
+                        <X size={18} />
                     </button>
 
-                    <div className="mb-10">
-                        <h3 className="text-2xl font-black uppercase tracking-tight mb-2">
-                            {General.get("checkout_dwallet_name")}
+                    {/* Header */}
+                    <div className="mb-6">
+                        <h3 className="text-2xl font-black tracking-tight text-neutral-dark mb-1">
+                            Adjunta tu comprobante
                         </h3>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+                        <p className="text-xs text-neutral-dark/30 font-medium leading-relaxed">
                             {General.get("checkout_dwallet_description") ||
-                                "REALIZA EL PAGO Y ADJUNTA LA CAPTURA DE PANTALLA"}
+                                "Realiza el pago y sube la captura de pantalla para confirmar."}
                         </p>
                     </div>
 
-                    <div className="space-y-6">
+                    {/* Upload area */}
+                    <div className="flex-1 flex flex-col gap-5">
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -219,71 +210,107 @@ export default function UploadVoucherModalYapeRainstar({
 
                         {!voucher ? (
                             <button
-                                onClick={handleUploadClick}
-                                className="w-full aspect-video border-4 border-dashed border-black/10 hover:border-black hover:bg-neutral-50 transition-all flex flex-col items-center justify-center gap-4 group"
+                                onClick={() => fileInputRef.current?.click()}
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                    setDragOver(true);
+                                }}
+                                onDragLeave={() => setDragOver(false)}
+                                onDrop={handleDrop}
+                                className={`flex-1 min-h-[180px] border-2 border-dashed transition-all flex flex-col items-center justify-center gap-4 group ${
+                                    dragOver
+                                        ? "border-neutral-dark bg-gray-50"
+                                        : "border-gray-300 hover:border-neutral-dark hover:bg-gray-50/50"
+                                }`}
                             >
-                                <div className="p-4 bg-neutral-100 group-hover:bg-black group-hover:text-white transition-colors border-2 border-black">
-                                    <Upload size={32} />
+                                <div
+                                    className={`p-4 border-2 transition-all ${dragOver ? "border-neutral-dark bg-neutral-dark text-white" : "border-gray-200 bg-gray-50 group-hover:border-neutral-dark group-hover:bg-neutral-dark group-hover:text-white"}`}
+                                >
+                                    <Upload size={28} />
                                 </div>
-                                <span className="font-black uppercase tracking-widest text-xs">
-                                    Subir captura de pago
-                                </span>
+                                <div className="text-center">
+                                    <p className="font-bold text-sm text-neutral-dark/60 group-hover:text-neutral-dark transition-colors">
+                                        Haz clic o arrastra tu comprobante
+                                    </p>
+                                    <p className="text-[10px] text-neutral-dark/30 mt-1 uppercase tracking-widest">
+                                        PNG, JPG o PDF
+                                    </p>
+                                </div>
                             </button>
                         ) : (
-                            <div className="relative bg-white border-4 border-black p-4 group">
-                                <div className="flex justify-between items-center mb-4">
+                            <div className="flex-1 border-2 border-gray-200 p-4 bg-gray-50/50">
+                                <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-black text-white">
-                                            <CheckCircle2 size={20} />
+                                        <div className="p-2 bg-neutral-dark text-white">
+                                            <CheckCircle2 size={18} />
                                         </div>
-                                        <span className="font-black uppercase tracking-tight text-sm truncate max-w-[200px]">
-                                            {voucher.name}
-                                        </span>
+                                        <div>
+                                            <p className="font-bold text-sm text-neutral-dark truncate max-w-[200px]">
+                                                {voucher.name}
+                                            </p>
+                                            <p className="text-[10px] text-neutral-dark/30">
+                                                {(voucher.size / 1024).toFixed(
+                                                    1,
+                                                )}{" "}
+                                                KB
+                                            </p>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={handleRemoveFile}
-                                        className="p-2 hover:bg-red-500 hover:text-white border-2 border-transparent hover:border-black transition-all"
+                                        className="p-2 hover:bg-red-50 hover:text-red-500 transition-colors border border-transparent hover:border-red-200"
                                     >
-                                        <X size={20} />
+                                        <X size={16} />
                                     </button>
                                 </div>
                                 {voucher.type.startsWith("image/") && (
-                                    <div className="border-2 border-black/5 p-2 overflow-hidden">
+                                    <div className="border border-gray-200 overflow-hidden bg-white">
                                         <img
                                             src={URL.createObjectURL(voucher)}
-                                            alt="Voucher preview"
-                                            className="w-full h-48 object-contain"
+                                            alt="Vista previa"
+                                            className="w-full max-h-48 object-contain"
                                         />
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-4 pt-6">
+                        {/* Actions */}
+                        <div className="flex flex-col gap-3 pt-2">
                             <button
-                                onClick={handleUploadClick}
+                                onClick={
+                                    voucher
+                                        ? handlePayment
+                                        : () => fileInputRef.current?.click()
+                                }
                                 disabled={saving}
-                                className={`h-16 bg-black text-white px-8 flex items-center justify-center gap-4 group transition-all ${
+                                className={`group flex items-center justify-center gap-3 py-5 px-8 font-bold text-sm tracking-widest uppercase transition-all duration-200 ${
                                     saving
-                                        ? "opacity-30 cursor-not-allowed"
-                                        : "hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]"
+                                        ? "bg-gray-100 text-neutral-dark/30 cursor-not-allowed"
+                                        : "bg-primary text-white hover:bg-neutral-dark shadow-lg shadow-primary/20"
                                 }`}
                             >
-                                <span className="font-black uppercase tracking-widest italic">
+                                <span>
                                     {saving
-                                        ? "PROCESANDO..."
+                                        ? "Procesando..."
                                         : voucher
-                                          ? "CONFIRMAR PAGO"
-                                          : "SUBIR CAPTURA"}
+                                          ? "Confirmar pago"
+                                          : "Subir captura"}
                                 </span>
+                                {!saving && (
+                                    <ArrowRight
+                                        size={16}
+                                        strokeWidth={2.5}
+                                        className="group-hover:translate-x-1 transition-transform"
+                                    />
+                                )}
                             </button>
-
                             <button
                                 onClick={onClose}
                                 disabled={saving}
-                                className="h-16 px-8 border-2 border-black font-black uppercase tracking-widest hover:bg-neutral-50 transition-colors italic"
+                                className="py-4 px-8 border-2 border-gray-200 text-neutral-dark font-bold text-sm tracking-widest uppercase hover:border-neutral-dark hover:bg-gray-50 transition-all"
                             >
-                                CANCELAR
+                                Cancelar
                             </button>
                         </div>
                     </div>

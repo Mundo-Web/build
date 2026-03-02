@@ -59,6 +59,7 @@ use App\Http\Controllers\Admin\WebDetailController as AdminWebDetailController;
 
 use App\Http\Controllers\Admin\ItemImageController as AdminItemImageController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\RankController as AdminRankController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\DeliveryZoneController as AdminDeliveryZoneController;
 use App\Http\Controllers\Admin\ImageUploadController;
@@ -486,9 +487,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/faqs', [AdminFaqController::class, 'save']);
     Route::post('/faqs/paginate', [AdminFaqController::class, 'paginate']);
-    Route::patch('/faqs/status', [AdminFaqController::class, 'status']);
     Route::patch('/faqs/{field}', [AdminFaqController::class, 'boolean']);
     Route::delete('/faqs/{id}', [AdminFaqController::class, 'delete']);
+
+    Route::post('/ranks', [AdminRankController::class, 'save']);
+    Route::post('/ranks/paginate', [AdminRankController::class, 'paginate']);
+    Route::patch('/ranks/status', [AdminRankController::class, 'status']);
+    Route::patch('/ranks/{field}', [AdminRankController::class, 'boolean']);
+    Route::delete('/ranks/{id}', [AdminRankController::class, 'delete']);
+    Route::put('/ranks/{id}/reorder', [AdminRankController::class, 'reorder']);
 
 
     Route::post('/banners', [AdminBannerController::class, 'save']);
@@ -709,6 +716,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
     Route::post('/providers/invite', [ProviderController::class, 'invite']);
     Route::get('/providers/tree', [ProviderController::class, 'getProviderTree']);
+    Route::get('/providers/{userId}/vault', [ProviderController::class, 'getVault']);
+    Route::post('/providers/vault', [ProviderController::class, 'updateVault']);
+    Route::delete('/providers/vault/{id}', [ProviderController::class, 'deleteVaultItem']);
     Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
 
 
@@ -769,6 +779,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/status', [CustomerSaleController::class, 'status']);
     Route::patch('/sales/{field}', [CustomerSaleController::class, 'boolean']);
     Route::delete('/sales/{id}', [CustomerSaleController::class, 'delete']);
+  });
+  Route::middleware('can:Provider')->prefix('provider')->group(function () {
+    Route::post('/vault/paginate', [ProviderController::class, 'paginateVault']);
   });
 });
 

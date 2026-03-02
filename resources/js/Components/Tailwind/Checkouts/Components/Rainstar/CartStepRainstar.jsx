@@ -12,6 +12,7 @@ import {
     Tag,
     ShieldCheck,
     ShoppingCart,
+    ShoppingBag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -174,36 +175,47 @@ export default function CartStepRainstar({
         <div className="grid lg:grid-cols-12 gap-12 pt-8 pb-20">
             {/* Left Content: Items List */}
             <div className="lg:col-span-8 space-y-8">
-                <div className="flex items-center justify-between mb-4 border-b-4 border-black pb-6">
-                    <h2 className="text-4xl font-black uppercase tracking-tighter flex items-center gap-4">
-                        <ShoppingBasket className="w-10 h-10" />
-                        Carrito
-                    </h2>
-                    <span className="bg-black text-white px-3 py-1 font-black text-[10px] uppercase tracking-widest">
-                        {cart.length} Artículos
-                    </span>
+                <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-8">
+                    <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 bg-gray-50 flex items-center justify-center rounded-full">
+                            <ShoppingBag className="w-8 h-8 text-neutral-dark" />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-black tracking-tighter text-neutral-dark">
+                                Mi Carrito
+                            </h2>
+                            <p className="text-xs font-bold tracking-wider text-neutral-dark/40 uppercase">
+                                {cart.length} artículos seleccionados
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <AnimatePresence mode="popLayout">
                     {isCartEmpty ? (
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="flex flex-col items-center justify-center py-24 border-4 border-dashed border-black/5"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex flex-col items-center justify-center py-24 border border-gray-100 rounded-3xl bg-gray-50/30 shadow-sm"
                         >
-                            <ShoppingCart className="w-24 h-24 text-black/10 mb-8" />
-                            <h3 className="text-2xl font-black uppercase tracking-tighter text-black/20">
+                            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-8">
+                                <ShoppingCart className="w-10 h-10 text-neutral-dark/20" />
+                            </div>
+                            <h3 className="text-2xl font-black tracking-tight text-neutral-dark mb-2">
                                 Tu carrito está vacío
                             </h3>
-                            <ButtonRainstar
-                                variant="outline"
-                                className="mt-8"
+                            <p className="text-xs font-bold text-neutral-dark/40 tracking-widest uppercase mb-10 text-center max-w-sm">
+                                Descubre nuestro catálogo y llena tu carrito con
+                                los mejores productos.
+                            </p>
+                            <button
                                 onClick={() =>
                                     (window.location.href = "/catalogo")
                                 }
+                                className="py-4 px-10 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-widest hover:bg-neutral-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
                             >
-                                Ir al catálogo
-                            </ButtonRainstar>
+                                Ir al Catálogo
+                            </button>
                         </motion.div>
                     ) : (
                         <div className="space-y-6">
@@ -223,15 +235,17 @@ export default function CartStepRainstar({
                 </AnimatePresence>
 
                 {/* Security Badge */}
-                <div className="border-2 border-black p-6 flex flex-col md:flex-row items-center gap-6 bg-neutral-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]">
-                    <ShieldCheck className="w-10 h-10 text-black shrink-0" />
+                <div className="border border-gray-100 p-8 flex flex-col md:flex-row items-center gap-8 bg-gray-50/50 rounded-2xl mt-12">
+                    <div className="w-16 h-16 bg-white flex items-center justify-center rounded-full shadow-sm">
+                        <ShieldCheck className="w-8 h-8 text-primary opacity-80 stroke-[1.5]" />
+                    </div>
                     <div className="text-center md:text-left">
-                        <h4 className="font-black uppercase tracking-tight text-[10px]">
-                            Compra Segura
+                        <h4 className="font-bold tracking-tight text-sm text-neutral-dark mb-1">
+                            Compra Garantizada
                         </h4>
-                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest leading-loose">
+                        <p className="text-xs font-bold text-neutral-dark/40  tracking-widest leading-relaxed">
                             Protegemos tus datos con los más altos estándares de
-                            cifrado. Tu transacción está garantizada.
+                            cifrado. Tu transacción está 100% segura.
                         </p>
                     </div>
                 </div>
@@ -239,38 +253,38 @@ export default function CartStepRainstar({
 
             {/* Right Content: Summary Widget */}
             <div className="lg:col-span-4">
-                <div className="sticky top-24 border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)]">
-                    <h3 className="text-3xl font-black uppercase tracking-tighter mb-6 border-b-2 border-black pb-4">
+                <div className="sticky top-24 border border-gray-100 bg-white p-8 rounded-none shadow-2xl shadow-neutral-dark/5">
+                    <h3 className="text-2xl font-black tracking-tight mb-8 border-b border-gray-50 pb-6 text-neutral-dark">
                         Resumen
                     </h3>
 
-                    <div className="space-y-4 mb-8">
+                    <div className="space-y-6 mb-10">
                         <div className="flex justify-between items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
                                 Subtotal
                             </span>
-                            <span className="text-xl font-black tracking-tighter">
+                            <span className="text-xl font-bold tracking-tight text-neutral-dark">
                                 {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
-                                Impuestos (I.G.V.)
+                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                Impuestos (IGV)
                             </span>
-                            <span className="text-xl font-black tracking-tighter">
+                            <span className="text-xl font-bold tracking-tight text-neutral-dark">
                                 {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
 
                         {/* Delivery Placeholder */}
-                        <div className="flex justify-between items-center py-2 border-y-2 border-black/5">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
-                                Costo de Envío
+                        <div className="flex justify-between items-center py-4 border-y border-gray-50">
+                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                Envío
                             </span>
-                            <span className="text-[10px] font-black bg-neutral-100 px-3 py-1 uppercase tracking-tighter">
+                            <span className="text-[10px] font-bold bg-gray-50/80 rounded-lg text-neutral-dark/40 px-3 py-1.5 uppercase tracking-wide">
                                 {envio > 0
                                     ? `${CurrencySymbol()} ${Number2Currency(envio)}`
-                                    : "Calculado en el siguiente paso"}
+                                    : "Calculado al finalizar"}
                             </span>
                         </div>
 
@@ -316,71 +330,80 @@ export default function CartStepRainstar({
                         )}
                     </div>
 
-                    {/* Final Total */}
-                    <div className="bg-black text-white p-6 mb-8 -mx-6 relative overflow-hidden group">
-                        <div className="flex justify-between items-end relative z-10">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em]">
-                                Total Final
+                    {/* Total Section matching CartModalRainstar.jsx */}
+                    <div className="border-t border-gray-100 pt-8 mt-8">
+                        <div className="flex justify-between items-end mb-8">
+                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 mb-2 uppercase">
+                                Total:
                             </span>
-                            <span className="text-4xl font-black tracking-tighter">
-                                {CurrencySymbol()} {Number2Currency(totalFinal)}
-                            </span>
-                        </div>
-                        {totalDiscount > 0 && (
-                            <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-white/40 line-through text-right relative z-10">
-                                Antes: {CurrencySymbol()}{" "}
-                                {Number2Currency(
-                                    totalWithoutDiscounts ||
-                                        totalFinal + totalDiscount,
+                            <div className="text-right">
+                                {totalDiscount > 0 && (
+                                    <div className="text-[10px] font-bold text-neutral-dark/30 line-through tracking-wider mb-1">
+                                        Antes: {CurrencySymbol()}{" "}
+                                        {Number2Currency(
+                                            totalWithoutDiscounts ||
+                                                totalFinal + totalDiscount,
+                                        )}
+                                    </div>
                                 )}
+                                <span className="text-5xl font-black tracking-tighter text-neutral-dark">
+                                    {CurrencySymbol()}{" "}
+                                    {Number2Currency(totalFinal)}
+                                </span>
                             </div>
-                        )}
-                        <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:rotate-12 transition-transform">
-                            <ShoppingCart size={40} />
+                        </div>
+
+                        <div className="space-y-4">
+                            <button
+                                onClick={handleContinueClick}
+                                disabled={isCartEmpty}
+                                className={`group w-full flex items-center justify-between py-6 px-10 transition-all duration-500 rounded-none shadow-xl ${
+                                    isCartEmpty
+                                        ? "bg-gray-100 text-neutral-dark/20 cursor-not-allowed"
+                                        : "bg-primary text-white hover:bg-primary/90 shadow-primary/20 active:translate-y-1 active:shadow-none"
+                                }`}
+                            >
+                                <span className="text-sm font-bold tracking-[0.2em] uppercase">
+                                    Continuar Compra
+                                </span>
+                                {!isCartEmpty && (
+                                    <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform stroke-[2.5]" />
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => (window.location.href = "/")}
+                                className="w-full py-4 text-xs font-bold tracking-widest text-neutral-dark/40 hover:text-neutral-dark transition-colors uppercase"
+                            >
+                                Seguir Comprando
+                            </button>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
-                        <ButtonRainstar
-                            onClick={handleContinueClick}
-                            disabled={isCartEmpty}
-                            className="w-full flex items-center justify-between"
-                        >
-                            <span className="text-xs">Continuar Compra</span>
-                            <ArrowRight size={18} strokeWidth={3} />
-                        </ButtonRainstar>
-
-                        <button
-                            onClick={() => (window.location.href = "/")}
-                            className="w-full text-[10px] font-black uppercase tracking-[0.5em] text-neutral-400 hover:text-black transition-colors"
-                        >
-                            [ Seguir Comprando ]
-                        </button>
-                    </div>
-
-                    <div className="mt-8 pt-8 border-t-4 border-black border-dashed text-center">
-                        <p className="text-[9px] font-bold text-neutral-400 uppercase leading-relaxed tracking-widest">
-                            Al proceder aceptas nuestros{" "}
+                    <div className="mt-8 pt-8 border-t border-gray-100 text-center">
+                        <p className="text-[10px] font-bold text-neutral-dark/40  leading-relaxed tracking-widest">
+                            Al realizar tu pedido, aceptas los{" "}
                             <a
                                 href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     openModal("terms_conditions");
                                 }}
-                                className="text-black underline font-black"
+                                className="text-neutral-dark underline hover:text-primary transition-colors uppercase"
                             >
-                                términos
+                                términos y condiciones
                             </a>{" "}
-                            y{" "}
+                            , y que nosotros usaremos sus datos personales de
+                            acuerdo con nuestra{" "}
                             <a
                                 href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     openModal("privacy_policy");
                                 }}
-                                className="text-black underline font-black"
+                                className="text-neutral-dark underline hover:text-primary transition-colors uppercase"
                             >
-                                políticas
+                                política de privacidad
                             </a>
                             .
                         </p>
@@ -397,63 +420,49 @@ export default function CartStepRainstar({
                 productName={selectedProduct?.name || ""}
             />
 
-            {/* Brutalist Login Modal */}
+            {/* Brutalist Login Modal (Refined) */}
             {showLoginModal && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999]">
+                <div className="fixed inset-0 bg-neutral-dark/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-6">
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="bg-white border-[10px] border-black p-12 max-w-lg w-full relative shadow-[30px_30px_0px_0px_rgba(0,0,0,1)]"
+                        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        className="bg-white rounded-2xl p-10 md:p-14 max-w-xl w-full relative shadow-2xl overflow-hidden"
                     >
                         <button
                             onClick={() => setShowLoginModal(false)}
-                            className="absolute top-8 right-8 hover:rotate-90 transition-transform p-2 border-4 border-black group"
+                            className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-neutral-dark/40 hover:text-neutral-dark transition-all"
                         >
-                            <X size={32} className="group-hover:scale-110" />
+                            <X className="w-5 h-5 stroke-[2]" />
                         </button>
-                        <div className="mb-12">
-                            <div className="inline-block bg-black text-white px-4 py-1 font-black text-[10px] uppercase tracking-widest mb-6">
-                                Acceso Requerido
+                        <div className="mb-10 text-center">
+                            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <ShieldCheck className="w-8 h-8 text-primary" />
                             </div>
-                            <h2 className="text-5xl font-black uppercase tracking-tighter leading-none mb-6">
+                            <h2 className="text-3xl font-black tracking-tight text-neutral-dark mb-4">
                                 Identifícate
                             </h2>
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400 leading-loose">
-                                Para procesar tu compra de forma segura en
-                                nuestro ecosistema, necesitamos verificar tu
-                                identidad.
+                            <p className="text-xs font-bold tracking-widest text-neutral-dark/40 uppercase">
+                                Para una experiencia personalizada, inicia
+                                sesión.
                             </p>
                         </div>
-                        <div className="grid gap-6">
-                            <ButtonRainstar
-                                size="lg"
+                        <div className="grid gap-4">
+                            <button
                                 onClick={() =>
                                     (window.location.href = "/iniciar-sesion")
                                 }
-                                className="w-full text-center"
+                                className="w-full py-5 px-8 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-widest hover:bg-neutral-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
                             >
-                                <span className="w-full">
-                                    Acceder al Sistema
-                                </span>
-                            </ButtonRainstar>
-                            <ButtonRainstar
-                                size="lg"
-                                variant="outline"
+                                Iniciar Sesión
+                            </button>
+                            <button
                                 onClick={() =>
                                     (window.location.href = "/crear-cuenta")
                                 }
-                                className="w-full text-center"
+                                className="w-full py-5 px-8 rounded-xl border border-gray-100 text-neutral-dark font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-all active:scale-95"
                             >
-                                <span className="w-full">
-                                    Crear Nueva Cuenta
-                                </span>
-                            </ButtonRainstar>
-                        </div>
-                        <div className="mt-12 pt-8 border-t-4 border-black border-dashed flex items-center gap-4">
-                            <Shield className="w-8 h-8 opacity-20" />
-                            <p className="text-[8px] font-black uppercase tracking-widest text-neutral-300">
-                                Protocolo SSL de grado bancario activado
-                            </p>
+                                Crear Cuenta
+                            </button>
                         </div>
                     </motion.div>
                 </div>

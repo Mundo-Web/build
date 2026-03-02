@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import Select from "react-select";
 import {
     Truck,
     MapPin,
@@ -22,6 +23,8 @@ import {
     XCircle,
     X,
     ChevronDown,
+    ShoppingBag,
+    ArrowRight,
 } from "lucide-react";
 import Number2Currency, {
     CurrencySymbol,
@@ -43,21 +46,26 @@ import OpenPayCardModalRainstar from "./OpenPayCardModalRainstar";
 import UploadVoucherModalYapeRainstar from "./UploadVoucherModalYapeRainstar";
 import UploadVoucherModalBancsRainstar from "./UploadVoucherModalBancsRainstar";
 
-// Sub-components moved outside to avoid re-creation and scope issues
-const InputBrutalist = ({ label, icon: Icon, name, error, ...props }) => (
-    <div className="space-y-2">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+// ─── Sub‑components (defined outside to avoid re-creation) ───────────────────
+
+const InputField = ({ label, icon: Icon, name, error, ...props }) => (
+    <div className="space-y-1.5">
+        <label className="text-xs font-bold tracking-widest text-neutral-400  block">
             {label}
         </label>
         <div className="relative group">
             <input
                 {...props}
                 name={name}
-                className={`w-full border-2 p-4 font-bold outline-none transition-all ${error ? "border-red-500 bg-red-50" : "border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:border-black"} ${Icon ? "pl-12" : ""}`}
+                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${
+                    error
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-200 focus:border-black hover:border-gray-400"
+                } ${Icon ? "pl-12" : ""}`}
             />
             {Icon && (
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-hover:text-black transition-colors">
-                    <Icon size={18} />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                    <Icon size={16} />
                 </div>
             )}
         </div>
@@ -69,24 +77,29 @@ const InputBrutalist = ({ label, icon: Icon, name, error, ...props }) => (
     </div>
 );
 
-const SelectBrutalist = ({ label, icon: Icon, children, error, ...props }) => (
-    <div className="space-y-2">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+// SelectField — NO fuerza uppercase en el texto de las opciones
+const SelectField = ({ label, icon: Icon, children, error, ...props }) => (
+    <div className="space-y-1.5">
+        <label className="text-xs font-bold tracking-widest text-neutral-400  block">
             {label}
         </label>
         <div className="relative group">
             <select
                 {...props}
-                className={`w-full border-2 p-4 font-bold outline-none appearance-none bg-white cursor-pointer transition-all ${error ? "border-red-500 bg-red-50" : "border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"} ${Icon ? "pl-12" : ""}`}
+                className={`w-full border-2 p-4 font-medium outline-none appearance-none bg-white cursor-pointer transition-all text-neutral-800 ${
+                    error
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-200 focus:border-black hover:border-gray-400"
+                } ${Icon ? "pl-12" : ""}`}
             >
                 {children}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400 group-hover:text-black transition-colors">
-                <ChevronDown size={18} />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                <ChevronDown size={16} />
             </div>
             {Icon && (
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-hover:text-black transition-colors">
-                    <Icon size={18} />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                    <Icon size={16} />
                 </div>
             )}
         </div>
@@ -98,7 +111,7 @@ const SelectBrutalist = ({ label, icon: Icon, children, error, ...props }) => (
     </div>
 );
 
-// Sub-components moved outside
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ShippingStepRainstar({
     data,
@@ -131,26 +144,33 @@ export default function ShippingStepRainstar({
     automaticDiscountTotal = 0,
     automaticDiscounts = [],
 }) {
-    // Standard cleaning functions
+    // ── Helpers ──────────────────────────────────────────────────────────────
     const cleanPhoneNumber = (phoneNumber, phonePrefix) => {
         if (!phoneNumber) return "";
-        if (phoneNumber.startsWith(phonePrefix)) {
+        if (phoneNumber.startsWith(phonePrefix))
             return phoneNumber.substring(phonePrefix.length);
-        }
         return phoneNumber;
     };
 
+    const formatPhoneNumber = (phonePrefix, phoneNumber) => {
+        if (!phoneNumber) return "";
+        if (phoneNumber.startsWith(phonePrefix)) return phoneNumber;
+        return `${phonePrefix}${phoneNumber}`;
+    };
+
+    const roundToTwoDecimals = (num) =>
+        Math.round((num + Number.EPSILON) * 100) / 100;
+
+    // ── State ────────────────────────────────────────────────────────────────
     const [isLoading, setIsLoading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
 
-    // Form Data matching SF exactly
     const [formData, setFormData] = useState(() => {
         const initialPhonePrefix = user?.phone_prefix || "51";
         const initialPhone = cleanPhoneNumber(
             user?.phone || "",
             initialPhonePrefix,
         );
-
         return {
             name: user?.name || "",
             lastname: user?.lastname || "",
@@ -183,7 +203,7 @@ export default function ShippingStepRainstar({
         dataCheckout?.payment_method || "",
     );
 
-    // Coupon State (Sync with parent)
+    // Coupon
     const [couponCode, setLocalCouponCode] = useState(
         dataCheckout?.coupon_code || "",
     );
@@ -198,11 +218,11 @@ export default function ShippingStepRainstar({
     const [couponLoading, setCouponLoading] = useState(false);
     const [couponError, setCouponError] = useState("");
 
-    // Store Picker State
+    // Store Picker
     const [selectedStore, setSelectedStore] = useState(null);
     const [showStoreSelector, setShowStoreSelector] = useState(false);
 
-    // Modal and Payment Process State
+    // Payment modals
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showVoucherModal, setShowVoucherModal] = useState(false);
     const [showVoucherModalBancs, setShowVoucherModalBancs] = useState(false);
@@ -212,30 +232,32 @@ export default function ShippingStepRainstar({
     const [paymentCommission, setPaymentCommission] = useState(0);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
-    // Initial load for ubigeo
+    // ── Effects ──────────────────────────────────────────────────────────────
     useEffect(() => {
         if (formData.ubigeo) {
             fetch(`/api/ubigeo/find/${formData.ubigeo}`)
                 .then((res) => res.json())
-                .then((data) => {
-                    if (data && data.distrito) {
+                .then((d) => {
+                    if (d && d.distrito) {
                         const option = {
                             value: formData.ubigeo,
-                            label: `${data.distrito}, ${data.provincia}, ${data.departamento}`,
+                            label: `${d.distrito}, ${d.provincia}, ${d.departamento}`,
                             data: {
                                 reniec: formData.ubigeo,
-                                departamento: data.departamento,
-                                provincia: data.provincia,
-                                distrito: data.distrito,
+                                departamento: d.departamento,
+                                provincia: d.provincia,
+                                distrito: d.distrito,
                             },
                         };
                         setSelectedUbigeo(option);
                         handleUbigeoChange(option);
                     }
-                });
+                })
+                .catch(() => {});
         }
     }, []);
 
+    // ── Handlers ─────────────────────────────────────────────────────────────
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -256,13 +278,13 @@ export default function ShippingStepRainstar({
             const response = await fetch(
                 `/api/ubigeo/search?q=${encodeURIComponent(inputValue)}`,
             );
-            const data = await response.json();
-            return data.map((item) => ({
+            const d = await response.json();
+            return d.map((item) => ({
                 value: item.reniec,
                 label: `${item.distrito}, ${item.provincia}, ${item.departamento}`,
                 data: item,
             }));
-        } catch (error) {
+        } catch {
             return [];
         }
     };
@@ -270,15 +292,15 @@ export default function ShippingStepRainstar({
     const handleUbigeoChange = async (selected) => {
         if (!selected) return;
         setErrors((prev) => ({ ...prev, ubigeo: "" }));
-        const { data } = selected;
+        const { data: ubiData } = selected;
 
         setSelectedUbigeo(selected);
         setFormData((prev) => ({
             ...prev,
-            department: data.departamento,
-            province: data.provincia,
-            district: data.distrito,
-            ubigeo: data.reniec || data.inei,
+            department: ubiData.departamento,
+            province: ubiData.provincia,
+            district: ubiData.distrito,
+            ubigeo: ubiData.reniec || ubiData.inei,
         }));
 
         setIsLoading(true);
@@ -288,13 +310,12 @@ export default function ShippingStepRainstar({
                 0,
             );
             const response = await DeliveryPricesRest.getShippingCost({
-                ubigeo: data.reniec || data.inei,
+                ubigeo: ubiData.reniec || ubiData.inei,
                 cart_total: cartTotal,
             });
 
             const options = [];
 
-            // 1. FREE SHIPPING
             if (
                 response.data.is_free &&
                 response.data.qualifies_free_shipping
@@ -308,7 +329,6 @@ export default function ShippingStepRainstar({
                 });
             }
 
-            // 2. STANDARD SHIPPING (Cleaning description like SF)
             if (response.data.is_standard && response.data.standard) {
                 if (
                     !response.data.is_free ||
@@ -325,12 +345,9 @@ export default function ShippingStepRainstar({
                             .replace(/200.*?mayor.*?/gi, "")
                             .replace(/\s+/g, " ")
                             .trim();
-
-                        if (!cleanDescription) {
+                        if (!cleanDescription)
                             cleanDescription = "Delivery a domicilio";
-                        }
                     }
-
                     options.push({
                         type: "standard",
                         price: response.data.standard.price,
@@ -341,7 +358,6 @@ export default function ShippingStepRainstar({
                 }
             }
 
-            // 3. EXPRESS SHIPPING
             if (response.data.express && response.data.express.price > 0) {
                 options.push({
                     type: "express",
@@ -352,7 +368,6 @@ export default function ShippingStepRainstar({
                 });
             }
 
-            // 4. AGENCY SHIPPING (Consultation like SF)
             if (response.data.is_agency && response.data.agency) {
                 options.push({
                     type: "agency",
@@ -367,7 +382,6 @@ export default function ShippingStepRainstar({
                 });
             }
 
-            // 5. STORE PICKUP
             if (response.data.is_store_pickup && response.data.store_pickup) {
                 options.push({
                     type: "store_pickup",
@@ -380,10 +394,8 @@ export default function ShippingStepRainstar({
             }
 
             setShippingOptions(options);
-            if (options[0]) {
-                handleOptionChange(options[0]);
-            }
-        } catch (error) {
+            if (options[0]) handleOptionChange(options[0]);
+        } catch {
             toast.error("Sin cobertura", {
                 description: "No realizamos envíos a esta ubicación",
             });
@@ -417,7 +429,7 @@ export default function ShippingStepRainstar({
                 setCouponDiscount(0);
                 setParentCouponCode(null);
             }
-        } catch (error) {
+        } catch {
             setCouponError("Error al validar cupón");
         } finally {
             setCouponLoading(false);
@@ -435,7 +447,6 @@ export default function ShippingStepRainstar({
         setSelectedOption(option.type);
         setEnvio(parseFloat(option.price || 0));
 
-        // Additional costs matching SF (total = subTotal + igv)
         if (calculateAdditionalShippingCost) {
             const totalAmount = parseFloat(subTotal) + parseFloat(igv);
             const extra = calculateAdditionalShippingCost(
@@ -467,24 +478,11 @@ export default function ShippingStepRainstar({
         if (!formData.address) newErrors.address = "Requerido";
         if (!formData.number) newErrors.number = "Requerido";
         if (!formData.document) newErrors.document = "Requerido";
-
-        if (formData.invoiceType === "factura" && !formData.businessName) {
+        if (formData.invoiceType === "factura" && !formData.businessName)
             newErrors.businessName = "Requerido para factura";
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-    const formatPhoneNumber = (phonePrefix, phoneNumber) => {
-        if (!phoneNumber) return "";
-        if (phoneNumber.startsWith(phonePrefix)) return phoneNumber;
-        return `${phonePrefix}${phoneNumber}`;
-    };
-
-    const roundToTwoDecimals = (num) =>
-        Math.round((num + Number.EPSILON) * 100) / 100;
-    const formatAmountForAPI = (amount) => parseFloat(amount).toFixed(2);
 
     const handlePaymentComplete = async (paymentMethod) => {
         try {
@@ -562,10 +560,10 @@ export default function ShippingStepRainstar({
                 number: formData.number,
                 comment: formData.comment,
                 reference: formData.reference,
-                amount: finalTotal, // Pass as number
-                delivery: envio, // Pass as number
+                amount: finalTotal,
+                delivery: envio,
                 delivery_type: deliveryType,
-                additional_shipping_cost: additionalShippingCost, // Pass as number
+                additional_shipping_cost: additionalShippingCost,
                 additional_shipping_description:
                     additionalShippingDescription || "",
                 cart: cart,
@@ -582,14 +580,14 @@ export default function ShippingStepRainstar({
                 businessName: formData.businessName,
                 payment_method: paymentMethod,
                 coupon_id: appliedCoupon ? appliedCoupon.id : null,
-                coupon_discount: couponDiscount, // Pass as number
-                payment_commission: commissionAmount, // Pass as number
-                payment_commission_percentage: commission, // Pass as number
+                coupon_discount: couponDiscount,
+                payment_commission: commissionAmount,
+                payment_commission_percentage: commission,
                 automatic_discounts: automaticDiscounts,
-                automatic_discount_total: automaticDiscountTotal, // Pass as number
+                automatic_discount_total: automaticDiscountTotal,
                 applied_promotions: automaticDiscounts,
-                promotion_discount: automaticDiscountTotal, // Pass as number
-                total_amount: finalTotal, // Pass as number
+                promotion_discount: automaticDiscountTotal,
+                total_amount: finalTotal,
             };
 
             setPaymentRequest(request);
@@ -639,7 +637,7 @@ export default function ShippingStepRainstar({
             } else {
                 toast.error("Error en el pago con OpenPay");
             }
-        } catch (error) {
+        } catch {
             toast.error("Error procesando pago con OpenPay");
         } finally {
             setPaymentLoading(false);
@@ -655,114 +653,301 @@ export default function ShippingStepRainstar({
         }
     };
 
+    // ── Render ───────────────────────────────────────────────────────────────
     return (
         <div className="pt-8 pb-20 max-w-7xl mx-auto px-4 md:px-0">
-            <div className="mb-12 flex items-center justify-between border-b-4 border-black pb-8">
+            {/* ── Header ── */}
+            <div className="mb-12 flex items-center justify-between border-b border-gray-100 pb-8">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 group"
+                    className="flex items-center gap-3 group text-neutral-dark/50 hover:text-neutral-dark transition-colors"
                 >
-                    <div className="p-2 border-2 border-black group-hover:bg-black group-hover:text-white transition-all">
-                        <ChevronLeft size={20} />
+                    <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all">
+                        <ChevronLeft size={18} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="text-xs font-bold tracking-widest uppercase hidden sm:block">
                         Volver
                     </span>
                 </button>
                 <div className="text-right">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                    <p className="text-[10px] font-bold tracking-widest text-neutral-dark/30 uppercase mb-1">
                         Paso 02
                     </p>
-                    <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
-                        Envío & Pago
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-neutral-dark">
+                        Envío &amp; Pago
                     </h2>
                 </div>
             </div>
 
             <form
                 onSubmit={handleSubmit}
-                className="grid lg:grid-cols-12 gap-16"
+                className="grid lg:grid-cols-12 gap-12"
             >
-                <div className="lg:col-span-7 space-y-16">
-                    {/* 01: Customer Data */}
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-4">
-                            <span className="w-10 h-10 bg-black text-white flex items-center justify-center font-black">
+                {/* ── LEFT COLUMN ── */}
+                <div className="lg:col-span-7 space-y-12">
+                    {/* ─── 01: Datos del cliente ─── */}
+                    <section className="space-y-6">
+                        <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                            <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                 01
-                            </span>
-                            <h3 className="text-2xl font-black uppercase tracking-tight">
+                            </div>
+                            <h3 className="text-xl font-black tracking-tight text-neutral-dark">
                                 Tus Datos
                             </h3>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <InputBrutalist
+                        <div className="grid md:grid-cols-2 gap-5">
+                            <InputField
                                 label="Nombre"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
                                 error={errors.name}
                                 icon={User}
+                                placeholder="Ej. Juan"
                                 required
                             />
-                            <InputBrutalist
+                            <InputField
                                 label="Apellidos"
                                 name="lastname"
                                 value={formData.lastname}
                                 onChange={handleChange}
                                 error={errors.lastname}
                                 icon={User}
+                                placeholder="Ej. Pérez García"
                                 required
                             />
                             <div className="md:col-span-2">
-                                <InputBrutalist
-                                    label="Email"
+                                <InputField
+                                    label="Correo electrónico"
                                     name="email"
                                     type="email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     error={errors.email}
                                     icon={Mail}
+                                    placeholder="correo@ejemplo.com"
                                     required
                                 />
                             </div>
 
-                            <div className="md:col-span-2 flex gap-4">
-                                <div className="w-32">
-                                    <SelectBrutalist
-                                        label="Prefijo"
-                                        name="phone_prefix"
-                                        value={formData.phone_prefix}
-                                        onChange={handleChange}
-                                    >
-                                        {prefixes.map((p, idx) => (
-                                            <option
-                                                key={`prefix-${idx}`}
-                                                value={p.code}
-                                            >
-                                                +{p.code} {p.country}
-                                            </option>
-                                        ))}
-                                    </SelectBrutalist>
-                                </div>
-                                <div className="flex-1">
-                                    <InputBrutalist
-                                        label="Teléfono / WhatsApp"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        error={errors.phone}
-                                        icon={Phone}
-                                        required
-                                    />
+                            {/* Phone with flag prefix */}
+                            <div className="md:col-span-2">
+                                <label className="text-xs font-bold tracking-widest text-neutral-400  block mb-1.5">
+                                    Teléfono / WhatsApp
+                                </label>
+                                <div className="flex gap-3">
+                                    {/* Prefix selector con banderas usando react-select */}
+                                    <div className="w-36 shrink-0">
+                                        <Select
+                                            name="phone_prefix"
+                                            value={(() => {
+                                                const found = prefixes.find(
+                                                    (p) =>
+                                                        (p.code ||
+                                                            p.realCode) ===
+                                                        formData.phone_prefix,
+                                                );
+                                                if (!found) return null;
+                                                return {
+                                                    value:
+                                                        found.code ||
+                                                        found.realCode,
+                                                    label:
+                                                        found.beautyCode ||
+                                                        `+${found.code}`,
+                                                    flag: found.flag,
+                                                    isoCode:
+                                                        found.isoCode?.ISO1 ||
+                                                        found.iso ||
+                                                        "",
+                                                    country: found.country,
+                                                };
+                                            })()}
+                                            onChange={(selected) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    phone_prefix:
+                                                        selected?.value || "",
+                                                }))
+                                            }
+                                            options={prefixes
+                                                .sort((a, b) =>
+                                                    (
+                                                        a.country || ""
+                                                    ).localeCompare(
+                                                        b.country || "",
+                                                    ),
+                                                )
+                                                .map((p) => ({
+                                                    value: p.code || p.realCode,
+                                                    label:
+                                                        p.beautyCode ||
+                                                        `+${p.code}`,
+                                                    flag: p.flag,
+                                                    isoCode:
+                                                        p.isoCode?.ISO1 ||
+                                                        p.iso ||
+                                                        "",
+                                                    country: p.country,
+                                                }))}
+                                            formatOptionLabel={({
+                                                flag,
+                                                label,
+                                                isoCode,
+                                                country,
+                                            }) => {
+                                                const code = (
+                                                    isoCode ||
+                                                    country?.substring(0, 2) ||
+                                                    ""
+                                                ).toLowerCase();
+                                                const flagServices = [
+                                                    `https://flagsapi.com/${code.toUpperCase()}/flat/24.png`,
+                                                    `https://flagcdn.com/${code}.svg`,
+                                                    `https://purecatamphetamine.github.io/country-flag-icons/3x2/${code.toUpperCase()}.svg`,
+                                                    `https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/${code}.svg`,
+                                                ];
+                                                let idx = 0;
+                                                const handleImgError = (e) => {
+                                                    idx++;
+                                                    if (
+                                                        idx <
+                                                        flagServices.length
+                                                    ) {
+                                                        e.target.src =
+                                                            flagServices[idx];
+                                                    } else {
+                                                        e.target.style.display =
+                                                            "none";
+                                                        const fb =
+                                                            e.target
+                                                                .nextElementSibling;
+                                                        if (
+                                                            fb?.classList.contains(
+                                                                "flag-fallback",
+                                                            )
+                                                        )
+                                                            fb.style.display =
+                                                                "flex";
+                                                    }
+                                                };
+                                                return (
+                                                    <div className="flex items-center gap-2">
+                                                        {code ? (
+                                                            <>
+                                                                <img
+                                                                    src={
+                                                                        flagServices[0]
+                                                                    }
+                                                                    alt={
+                                                                        country
+                                                                    }
+                                                                    className="w-5 h-3.5 object-cover rounded-sm border border-gray-200 flex-shrink-0"
+                                                                    onError={
+                                                                        handleImgError
+                                                                    }
+                                                                />
+                                                                <div
+                                                                    className="flag-fallback w-5 h-3.5 bg-gray-200 rounded-sm items-center justify-center flex-shrink-0 border border-gray-300 text-[8px] text-gray-500"
+                                                                    style={{
+                                                                        display:
+                                                                            "none",
+                                                                    }}
+                                                                >
+                                                                    {code.toUpperCase()}
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            flag && (
+                                                                <span className="text-base">
+                                                                    {flag}
+                                                                </span>
+                                                            )
+                                                        )}
+                                                        <span className="font-medium text-sm">
+                                                            {label}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            }}
+                                            placeholder="País"
+                                            isClearable={false}
+                                            isSearchable
+                                            filterOption={(
+                                                option,
+                                                inputValue,
+                                            ) =>
+                                                (option.data.country || "")
+                                                    .toLowerCase()
+                                                    .includes(
+                                                        inputValue.toLowerCase(),
+                                                    ) ||
+                                                (option.data.label || "")
+                                                    .toLowerCase()
+                                                    .includes(
+                                                        inputValue.toLowerCase(),
+                                                    )
+                                            }
+                                            styles={{
+                                                control: (base, state) => ({
+                                                    ...base,
+                                                    minHeight: "52px",
+                                                    border: `2px solid ${state.isFocused ? "#171717" : "#e5e7eb"}`,
+                                                    borderRadius: "0",
+                                                    boxShadow: "none",
+                                                    "&:hover": {
+                                                        borderColor: "#9ca3af",
+                                                    },
+                                                }),
+                                                option: (base, state) => ({
+                                                    ...base,
+                                                    backgroundColor:
+                                                        state.isSelected
+                                                            ? "#171717"
+                                                            : state.isFocused
+                                                              ? "#f3f4f6"
+                                                              : "white",
+                                                    color: state.isSelected
+                                                        ? "white"
+                                                        : "#374151",
+                                                    padding: "8px 12px",
+                                                }),
+                                                singleValue: (base) => ({
+                                                    ...base,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                }),
+                                                menu: (base) => ({
+                                                    ...base,
+                                                    zIndex: 9999,
+                                                    borderRadius: "0",
+                                                }),
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <InputField
+                                            label=""
+                                            name="phone"
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            error={errors.phone}
+                                            icon={Phone}
+                                            placeholder="999 888 777"
+                                            required
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="md:col-span-2 space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                            {/* Invoice type */}
+                            <div className="md:col-span-2 space-y-2">
+                                <label className="text-xs font-bold tracking-widest text-neutral-400  block">
                                     Tipo de Comprobante
                                 </label>
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     {["boleta", "factura"].map((type) => (
                                         <button
                                             key={type}
@@ -775,7 +960,11 @@ export default function ShippingStepRainstar({
                                                     },
                                                 })
                                             }
-                                            className={`flex-1 p-4 border-2 font-black uppercase text-xs tracking-widest transition-all ${formData.invoiceType === type ? "bg-black text-white border-black" : "border-black/10 hover:border-black"}`}
+                                            className={`flex-1 py-4 px-6 border-2 font-bold text-sm capitalize tracking-wide transition-all rounded-none ${
+                                                formData.invoiceType === type
+                                                    ? "bg-neutral-dark text-white border-neutral-dark"
+                                                    : "border-gray-200 text-neutral-dark/60 hover:border-neutral-dark hover:text-neutral-dark"
+                                            }`}
                                         >
                                             {type}
                                         </button>
@@ -783,65 +972,68 @@ export default function ShippingStepRainstar({
                                 </div>
                             </div>
 
-                            <SelectBrutalist
-                                label="Tipo de Identidad"
+                            {/* Document type + number */}
+                            <SelectField
+                                label="Tipo de Documento"
                                 name="documentType"
                                 value={formData.documentType}
                                 onChange={handleChange}
                                 icon={FileText}
+                                error={errors.documentType}
                             >
-                                <option key="dni" value="dni">
-                                    DNI
-                                </option>
-                                <option key="ce" value="ce">
-                                    C.E.
-                                </option>
-                                <option key="ruc" value="ruc">
-                                    R.U.C.
-                                </option>
-                                <option key="pasaporte" value="pasaporte">
-                                    Pasaporte
-                                </option>
-                            </SelectBrutalist>
-                            <InputBrutalist
-                                label="Nº de Documento"
+                                <option value="dni">DNI</option>
+                                <option value="ce">C.E.</option>
+                                <option value="ruc">R.U.C.</option>
+                                <option value="pasaporte">Pasaporte</option>
+                            </SelectField>
+
+                            <InputField
+                                label="N° de Documento"
                                 name="document"
                                 value={formData.document}
                                 onChange={handleChange}
                                 error={errors.document}
+                                placeholder="Ingresa tu documento"
                                 required
                             />
 
                             {formData.invoiceType === "factura" && (
                                 <div className="md:col-span-2">
-                                    <InputBrutalist
+                                    <InputField
                                         label="Razón Social"
                                         name="businessName"
                                         value={formData.businessName}
                                         onChange={handleChange}
                                         error={errors.businessName}
+                                        icon={Building2}
+                                        placeholder="Nombre de la empresa"
                                         required
                                     />
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </section>
 
-                    {/* 02: Delivery */}
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-4">
-                            <span className="w-10 h-10 bg-black text-white flex items-center justify-center font-black">
+                    {/* ─── 02: Entrega ─── */}
+                    <section className="space-y-6">
+                        <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                            <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                 02
-                            </span>
-                            <h3 className="text-2xl font-black uppercase tracking-tight">
+                            </div>
+                            <h3 className="text-xl font-black tracking-tight text-neutral-dark">
                                 Entrega
                             </h3>
                         </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-5">
+                            {/* Ubigeo async select */}
                             <div id="ubigeo-select-container">
                                 <label
-                                    className={`text-[10px] font-black uppercase tracking-widest mb-2 block ${errors.ubigeo ? "text-red-500" : "text-neutral-400"}`}
+                                    className={`text-xs font-bold tracking-widest  block mb-1.5 ${
+                                        errors.ubigeo
+                                            ? "text-red-500"
+                                            : "text-neutral-400"
+                                    }`}
                                 >
                                     Ubicación (Distrito, Provincia,
                                     Departamento)
@@ -851,102 +1043,135 @@ export default function ShippingStepRainstar({
                                     loadOptions={loadOptions}
                                     onChange={handleUbigeoChange}
                                     value={selectedUbigeo}
-                                    placeholder="Buscar ubicación..."
-                                    className="brutalist-select"
+                                    placeholder="Buscar tu ubicación..."
+                                    noOptionsMessage={({ inputValue }) =>
+                                        inputValue.length < 3
+                                            ? "Escribe al menos 3 letras"
+                                            : "Sin resultados"
+                                    }
+                                    loadingMessage={() => "Buscando..."}
                                     styles={{
-                                        control: (base) => ({
+                                        control: (base, state) => ({
                                             ...base,
-                                            border: "2px solid black",
+                                            border: `2px solid ${errors.ubigeo ? "#f87171" : state.isFocused ? "#171717" : "#e5e7eb"}`,
                                             borderRadius: "0",
-                                            padding: "8px",
-                                            fontWeight: "900",
+                                            padding: "6px 4px",
+                                            fontWeight: "500",
                                             boxShadow: "none",
+                                            backgroundColor: errors.ubigeo
+                                                ? "#fef2f2"
+                                                : "white",
                                             "&:hover": {
-                                                border: "2px solid black",
+                                                border: `2px solid ${errors.ubigeo ? "#f87171" : "#9ca3af"}`,
                                             },
                                         }),
                                         menu: (base) => ({
                                             ...base,
                                             borderRadius: "0",
-                                            border: "2px solid black",
+                                            border: "2px solid #171717",
                                             marginTop: "4px",
+                                            zIndex: 9999,
                                         }),
                                         option: (base, state) => ({
                                             ...base,
                                             backgroundColor: state.isFocused
-                                                ? "black"
+                                                ? "#171717"
                                                 : "white",
                                             color: state.isFocused
                                                 ? "white"
-                                                : "black",
-                                            fontWeight: "bold",
-                                            textTransform: "uppercase",
-                                            fontSize: "10px",
-                                            letterSpacing: "0.1em",
+                                                : "#262626",
+                                            fontWeight: "500",
+                                            fontSize: "13px",
+                                        }),
+                                        placeholder: (base) => ({
+                                            ...base,
+                                            color: "#9ca3af",
+                                            fontSize: "14px",
+                                        }),
+                                        singleValue: (base) => ({
+                                            ...base,
+                                            color: "#171717",
+                                            fontSize: "14px",
                                         }),
                                     }}
                                 />
                                 {errors.ubigeo && (
-                                    <p className="text-red-500 text-[10px] font-bold mt-1 uppercase italic">
+                                    <p className="text-red-500 text-[9px] font-bold mt-1 uppercase tracking-widest">
                                         {errors.ubigeo}
+                                    </p>
+                                )}
+                                {isLoading && (
+                                    <p className="text-[10px] text-neutral-400 font-bold tracking-widest mt-2 uppercase animate-pulse">
+                                        Calculando opciones de envío...
                                     </p>
                                 )}
                             </div>
 
-                            {/* ALWAYS show address fields if a location is selected, but toggle based on pickup if needed */}
+                            {/* Address fields */}
                             {selectedUbigeo &&
                                 selectedOption !== "store_pickup" && (
-                                    <div className="grid md:grid-cols-2 gap-6 bg-neutral-50 p-8 border-2 border-black border-dashed my-8">
+                                    <div className="grid md:grid-cols-2 gap-5 bg-gray-50/80 p-6 border border-gray-100 rounded-none mt-2">
                                         <div className="md:col-span-2">
-                                            <InputBrutalist
+                                            <InputField
                                                 label="Dirección / Avenida / Calle"
                                                 name="address"
                                                 value={formData.address}
                                                 onChange={handleChange}
                                                 error={errors.address}
+                                                icon={MapPin}
+                                                placeholder="Av. Principal 123"
                                                 required
                                             />
                                         </div>
-                                        <InputBrutalist
+                                        <InputField
                                             label="Número / Lote"
                                             name="number"
                                             value={formData.number}
                                             onChange={handleChange}
                                             error={errors.number}
+                                            placeholder="123"
                                             required
                                         />
-                                        <InputBrutalist
+                                        <InputField
                                             label="Interior / Piso / Dpto"
                                             name="comment"
                                             value={formData.comment}
                                             onChange={handleChange}
+                                            placeholder="Opcional"
                                         />
                                         <div className="md:col-span-2">
-                                            <InputBrutalist
+                                            <InputField
                                                 label="Referencia"
                                                 name="reference"
                                                 value={formData.reference}
                                                 onChange={handleChange}
+                                                placeholder="Ej. Frente al parque"
                                             />
                                         </div>
                                     </div>
                                 )}
 
+                            {/* Shipping options */}
                             {shippingOptions.length > 0 && (
-                                <div className="space-y-4 pt-4 border-t-4 border-black border-dotted mt-8">
-                                    <h4 className="font-black uppercase text-sm tracking-widest mb-4">
-                                        Selecciona un método:
+                                <div className="space-y-3 pt-4 border-t border-gray-100">
+                                    <h4 className="text-xs font-bold tracking-widest text-neutral-400 uppercase mb-3">
+                                        Elige tu método de envío
                                     </h4>
-                                    <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="grid md:grid-cols-2 gap-3">
                                         {shippingOptions.map((opt) => {
                                             const advisors =
                                                 General.get(
                                                     "whatsapp_advisors",
                                                 ) || [];
-                                            const location =
-                                                selectedUbigeo?.label ||
-                                                "mi ubicación";
+                                            const ubigeoInfo =
+                                                selectedUbigeo?.data;
+                                            const location = ubigeoInfo
+                                                ? `${ubigeoInfo.distrito}, ${ubigeoInfo.provincia}, ${ubigeoInfo.departamento}`
+                                                : selectedUbigeo?.label ||
+                                                  "mi ubicación";
                                             const consultMessage = `Hola, necesito consultar el costo de envío para: ${location}. ¿Me pueden ayudar?`;
+                                            const isSelected =
+                                                selectedOption === opt.type;
 
                                             return (
                                                 <div
@@ -960,25 +1185,45 @@ export default function ShippingStepRainstar({
                                                                 opt,
                                                             )
                                                         }
-                                                        className={`w-full p-6 border-2 text-left transition-all ${selectedOption === opt.type ? "bg-black text-white border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]" : "border-black/10 hover:border-black"}`}
+                                                        className={`w-full p-5 border-2 text-left transition-all ${
+                                                            isSelected
+                                                                ? "bg-neutral-dark text-white border-neutral-dark shadow-lg"
+                                                                : "border-gray-200 hover:border-neutral-dark bg-white"
+                                                        }`}
                                                     >
-                                                        <div className="flex justify-between items-center mb-2">
-                                                            <span className="font-black uppercase text-xs tracking-tighter">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <span
+                                                                className={`font-bold text-sm capitalize ${
+                                                                    isSelected
+                                                                        ? "text-white"
+                                                                        : "text-neutral-dark"
+                                                                }`}
+                                                            >
                                                                 {
                                                                     opt.deliveryType
                                                                 }
                                                             </span>
                                                             {!opt.showConsultButton && (
-                                                                <span className="font-black text-sm">
+                                                                <span
+                                                                    className={`font-black text-sm ${
+                                                                        isSelected
+                                                                            ? "text-white"
+                                                                            : "text-neutral-dark"
+                                                                    }`}
+                                                                >
                                                                     {opt.price ===
                                                                     0
-                                                                        ? "GRATIS"
+                                                                        ? "Gratis"
                                                                         : `${CurrencySymbol()} ${Number2Currency(opt.price)}`}
                                                                 </span>
                                                             )}
                                                         </div>
                                                         <p
-                                                            className={`text-[9px] uppercase tracking-widest leading-relaxed ${selectedOption === opt.type ? "text-white/60" : "text-neutral-400"}`}
+                                                            className={`text-xs leading-relaxed ${
+                                                                isSelected
+                                                                    ? "text-white/60"
+                                                                    : "text-neutral-400"
+                                                            }`}
                                                         >
                                                             {opt.description}
                                                         </p>
@@ -986,7 +1231,7 @@ export default function ShippingStepRainstar({
                                                         {opt.showConsultButton &&
                                                             advisors.length >
                                                                 0 && (
-                                                                <div className="mt-4 pt-4 border-t-2 border-black/10 border-dashed">
+                                                                <div className="mt-3 pt-3 border-t border-white/10">
                                                                     <button
                                                                         type="button"
                                                                         onClick={(
@@ -1023,7 +1268,7 @@ export default function ShippingStepRainstar({
                                                                                                                         "_blank",
                                                                                                                     )
                                                                                                                 }
-                                                                                                                className="p-2 bg-black text-white font-black text-[10px] uppercase tracking-widest"
+                                                                                                                className="p-2 bg-neutral-dark text-white font-bold text-xs uppercase tracking-widest rounded"
                                                                                                             >
                                                                                                                 Hablar
                                                                                                                 con{" "}
@@ -1039,7 +1284,11 @@ export default function ShippingStepRainstar({
                                                                                 );
                                                                             }
                                                                         }}
-                                                                        className={`w-full py-2 flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all ${selectedOption === opt.type ? "bg-white text-black hover:bg-neutral-100" : "bg-green-500 text-white hover:bg-green-600"}`}
+                                                                        className={`w-full py-2 flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                                                                            isSelected
+                                                                                ? "bg-white text-black hover:bg-neutral-100"
+                                                                                : "bg-green-500 text-white hover:bg-green-600"
+                                                                        }`}
                                                                     >
                                                                         <Phone
                                                                             size={
@@ -1056,11 +1305,42 @@ export default function ShippingStepRainstar({
                                             );
                                         })}
                                     </div>
+
+                                    {/* Características del método seleccionado */}
+                                    {selectedOption && (
+                                        <div className="space-y-2 mt-4">
+                                            {shippingOptions
+                                                .find(
+                                                    (o) =>
+                                                        o.type ===
+                                                        selectedOption,
+                                                )
+                                                ?.characteristics?.map(
+                                                    (char, index) => (
+                                                        <div
+                                                            key={`char-${index}`}
+                                                            className="flex items-start gap-3 bg-gray-50 px-4 py-3 border border-gray-100"
+                                                        >
+                                                            <div className="shrink-0 mt-0.5">
+                                                                <Info
+                                                                    size={16}
+                                                                    className="text-primary"
+                                                                />
+                                                            </div>
+                                                            <p className="text-sm text-neutral-dark/70 leading-relaxed">
+                                                                {char}
+                                                            </p>
+                                                        </div>
+                                                    ),
+                                                )}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
+                            {/* Store pickup selector */}
                             {showStoreSelector && (
-                                <div className="mt-8">
+                                <div className="mt-6">
                                     <StorePickupSelectorRainstar
                                         ubigeo={formData.ubigeo}
                                         onStoreSelect={setSelectedStore}
@@ -1075,66 +1355,80 @@ export default function ShippingStepRainstar({
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-                {/* Right Summary */}
+                {/* ── RIGHT COLUMN: Order summary ── */}
                 <div className="lg:col-span-5">
-                    <div className="sticky top-24 space-y-8">
-                        <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                            <h4 className="text-2xl font-black uppercase tracking-tighter mb-8 border-b-4 border-black pb-4">
-                                Detalle de Orden
-                            </h4>
+                    <div className="sticky top-24 border border-gray-100 bg-white shadow-2xl shadow-neutral-dark/5 rounded-none">
+                        {/* Summary header */}
+                        <div className="flex items-center gap-4 px-8 py-6 border-b border-gray-100">
+                            <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                                <ShoppingBag className="w-5 h-5 text-neutral-dark/40" />
+                            </div>
+                            <div>
+                                <h4 className="text-lg font-black tracking-tight text-neutral-dark">
+                                    Resumen del Pedido
+                                </h4>
+                                <p className="text-xs font-bold tracking-wider text-neutral-dark/30 uppercase">
+                                    {cart.length} artículo
+                                    {cart.length !== 1 ? "s" : ""}
+                                </p>
+                            </div>
+                        </div>
 
-                            <div className="space-y-4 mb-10 max-h-80 overflow-y-auto pr-4 brutalist-scroll">
-                                {cart.map((item, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="flex gap-4 pb-4 border-b-2 border-black/5"
-                                    >
-                                        <div className="w-16 h-16 border-2 border-black bg-white p-1 shrink-0">
-                                            <img
-                                                src={`/storage/images/item/${item.image}`}
-                                                className="w-full h-full object-cover grayscale"
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-[10px] font-black uppercase tracking-tighter leading-tight">
-                                                {item.name}
-                                            </p>
-                                            <p className="text-[9px] font-bold text-neutral-400 mt-1">
-                                                CANT: {item.quantity} ×{" "}
-                                                {CurrencySymbol()}{" "}
-                                                {Number2Currency(
-                                                    item.final_price ||
-                                                        item.price,
-                                                )}
-                                            </p>
-                                        </div>
-                                        <span className="font-black text-xs tracking-tighter">
+                        {/* Cart items */}
+                        <div className="max-h-56 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+                            {cart.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className="flex gap-4 items-start"
+                                >
+                                    <div className="w-14 h-14 border border-gray-100 bg-gray-50 shrink-0">
+                                        <img
+                                            src={`/storage/images/item/${item.image}`}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold text-neutral-dark leading-tight truncate">
+                                            {item.name}
+                                        </p>
+                                        <p className="text-[10px] text-neutral-400 mt-0.5">
+                                            Cant: {item.quantity} ×{" "}
                                             {CurrencySymbol()}{" "}
                                             {Number2Currency(
-                                                (item.final_price ||
-                                                    item.price) * item.quantity,
+                                                item.final_price || item.price,
                                             )}
-                                        </span>
+                                        </p>
                                     </div>
-                                ))}
-                            </div>
+                                    <span className="text-xs font-black text-neutral-dark shrink-0">
+                                        {CurrencySymbol()}{" "}
+                                        {Number2Currency(
+                                            (item.final_price || item.price) *
+                                                item.quantity,
+                                        )}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
 
-                            <div className="mb-10">
+                        <div className="px-8 pb-8 space-y-6">
+                            {/* Coupon */}
+                            <div className="pt-4 border-t border-gray-100">
                                 {!appliedCoupon ? (
-                                    <div className="flex border-2 border-black">
+                                    <div className="flex border border-gray-200">
                                         <input
                                             type="text"
                                             value={couponCode}
                                             onChange={(e) =>
-                                                setCouponCode(
-                                                    e.target.value.toUpperCase(),
+                                                setLocalCouponCode(
+                                                    e.target.value,
                                                 )
                                             }
-                                            className="flex-1 p-4 font-black text-xs uppercase outline-none"
-                                            placeholder="CÓDIGO CUPÓN"
+                                            className="flex-1 p-3.5 font-medium text-sm outline-none text-neutral-dark placeholder-neutral-300"
+                                            placeholder="Código de cupón"
                                             onKeyDown={(e) =>
                                                 e.key === "Enter" &&
                                                 (e.preventDefault(),
@@ -1145,21 +1439,22 @@ export default function ShippingStepRainstar({
                                             type="button"
                                             onClick={validateCoupon}
                                             disabled={couponLoading}
-                                            className="bg-black text-white px-6 font-black text-[10px] uppercase hover:bg-neutral-800"
+                                            className="bg-neutral-dark text-white px-5 font-bold text-xs uppercase hover:bg-black transition-colors"
                                         >
                                             {couponLoading ? "..." : "Aplicar"}
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="bg-black text-white p-4 flex justify-between items-center">
+                                    <div className="bg-neutral-dark text-white p-4 flex justify-between items-center">
                                         <div className="flex items-center gap-3">
-                                            <Tag size={16} />
+                                            <Tag size={15} />
                                             <div>
-                                                <p className="text-[10px] font-black uppercase">
+                                                <p className="text-xs font-black">
                                                     {appliedCoupon.code}
                                                 </p>
-                                                <p className="text-[8px] font-bold text-white/50">
-                                                    DSCTO: {CurrencySymbol()}{" "}
+                                                <p className="text-[10px] text-white/50 font-medium">
+                                                    Descuento:{" "}
+                                                    {CurrencySymbol()}{" "}
                                                     {Number2Currency(
                                                         couponDiscount,
                                                     )}
@@ -1167,56 +1462,60 @@ export default function ShippingStepRainstar({
                                             </div>
                                         </div>
                                         <button
+                                            type="button"
                                             onClick={removeCoupon}
-                                            className="hover:text-red-500 transition-colors"
+                                            className="hover:text-red-400 transition-colors"
                                         >
                                             <X size={16} />
                                         </button>
                                     </div>
                                 )}
                                 {couponError && (
-                                    <p className="text-red-500 text-[9px] font-black uppercase mt-2 italic">
+                                    <p className="text-red-500 text-[9px] font-bold uppercase mt-2 tracking-widest">
                                         {couponError}
                                     </p>
                                 )}
                             </div>
 
-                            <div className="space-y-4 mb-10">
-                                <div className="flex justify-between items-end">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">
+                            {/* Price breakdown */}
+                            <div className="space-y-3 pt-2 border-t border-gray-100">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
                                         Subtotal
                                     </span>
-                                    <span className="font-black text-xl tracking-tighter">
+                                    <span className="font-bold text-neutral-dark">
                                         {CurrencySymbol()}{" "}
                                         {Number2Currency(subTotal)}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-end">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
                                         I.G.V.
                                     </span>
-                                    <span className="font-black text-xl tracking-tighter">
+                                    <span className="font-bold text-neutral-dark">
                                         {CurrencySymbol()}{" "}
                                         {Number2Currency(igv)}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-end">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
                                         Envío
                                     </span>
-                                    <span className="font-black text-xl tracking-tighter">
+                                    <span className="font-bold text-neutral-dark">
                                         {envio > 0
                                             ? `${CurrencySymbol()} ${Number2Currency(envio)}`
-                                            : "GRATIS"}
+                                            : selectedUbigeo
+                                              ? "Gratis"
+                                              : "Al elegir ubicación"}
                                     </span>
                                 </div>
                                 {(couponDiscount > 0 ||
                                     automaticDiscountTotal > 0) && (
-                                    <div className="flex justify-between items-end text-red-600">
-                                        <span className="text-[10px] font-black uppercase tracking-widest">
+                                    <div className="flex justify-between items-center text-red-500">
+                                        <span className="text-xs font-bold tracking-widest ">
                                             Descuentos
                                         </span>
-                                        <span className="font-black text-xl tracking-tighter">
+                                        <span className="font-black">
                                             -{CurrencySymbol()}{" "}
                                             {Number2Currency(
                                                 (couponDiscount || 0) +
@@ -1228,46 +1527,40 @@ export default function ShippingStepRainstar({
                                 )}
                             </div>
 
-                            <div className="bg-black text-white p-8 -mx-10 mb-10 text-center relative overflow-hidden group">
-                                <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-4 opacity-30">
-                                    Total Final
-                                </p>
-                                <p className="text-5xl font-black tracking-tighter italic">
-                                    {CurrencySymbol()}{" "}
-                                    {Number2Currency(totalFinal)}
-                                </p>
-                                <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform">
-                                    <Lock size={64} />
+                            {/* Total */}
+                            <div className="border-t border-gray-100 pt-6">
+                                <div className="flex justify-between items-end mb-8">
+                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                        Total
+                                    </span>
+                                    <div className="text-right">
+                                        <span className="text-4xl font-black tracking-tighter text-neutral-dark">
+                                            {CurrencySymbol()}{" "}
+                                            {Number2Currency(totalFinal)}
+                                        </span>
+                                    </div>
                                 </div>
+
+                                {/* Submit button */}
+                                <button
+                                    type="submit"
+                                    disabled={paymentLoading}
+                                    className="group w-full flex items-center justify-between py-6 px-8 bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/20 active:translate-y-1 active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    <span className="text-sm font-bold tracking-[0.2em] uppercase">
+                                        {paymentLoading
+                                            ? "Procesando..."
+                                            : "Proceder al Pago"}
+                                    </span>
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform stroke-[2.5]" />
+                                </button>
                             </div>
-
-                            <ButtonRainstar
-                                type="submit"
-                                className="w-full h-24 text-xl flex items-center justify-between px-8"
-                                size="lg"
-                                disabled={paymentLoading}
-                            >
-                                <span>
-                                    {paymentLoading
-                                        ? "Procesando..."
-                                        : "Proceder al Pago"}
-                                </span>
-                                <ChevronRight strokeWidth={4} />
-                            </ButtonRainstar>
-                        </div>
-
-                        <div className="border-2 border-black p-6 flex gap-4 items-start bg-neutral-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
-                            <Shield className="shrink-0" />
-                            <p className="text-[9px] font-black uppercase tracking-widest leading-relaxed text-neutral-400">
-                                Tu pago será procesado de forma segura.
-                                Cumplimos con los estándares PCI-DSS de
-                                seguridad informática.
-                            </p>
                         </div>
                     </div>
                 </div>
             </form>
 
+            {/* ── Modals ── */}
             <PaymentModalRainstar
                 isOpen={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}

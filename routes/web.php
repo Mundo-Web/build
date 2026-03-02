@@ -50,6 +50,7 @@ use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryControll
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\RankController as AdminRankController;
 use App\Http\Controllers\Admin\RepositoryController as AdminRepositoryController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
@@ -172,6 +173,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/generals', [AdminGeneralController::class, 'reactView'])->name('Admin/Generals.jsx');
     Route::get('/coupons', [AdminCouponController::class, 'reactView'])->name('Admin/Coupons.jsx');
     Route::get('/faqs', [AdminFaqController::class, 'reactView'])->name('Admin/Faqs.jsx');
+    Route::get('/ranks', [AdminRankController::class, 'reactView'])->name('Admin/Ranks.jsx');
     Route::get('/users', [AdminUserController::class, 'reactView'])->name('Admin/Users.jsx');
     Route::get('/clients', [AdminClientController::class, 'reactView'])->name('Admin/Clients.jsx');
     Route::get('/providers', [ProviderController::class, 'reactView'])->name('Admin/Providers.jsx');
@@ -191,6 +193,7 @@ Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function 
 
 Route::middleware(['can:Provider', 'auth'])->prefix('provider')->group(function () {
     Route::get('/home', [ProviderController::class, 'dashboard'])->name('Provider/Home.jsx');
+    Route::get('/vault', [ProviderController::class, 'vault'])->name('Provider/Vault.jsx');
     Route::get('/profile', [ProviderController::class, 'profile'])->name('Provider/Profile.jsx');
 });
 

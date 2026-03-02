@@ -6,11 +6,21 @@ use App\Models\Sale;
 use App\Models\SaleStatusTrace;
 use App\Models\User;
 use App\Notifications\OrderStatusChangedNotification;
+use App\Models\SaleStatus;
+use App\Services\FinancialEngine;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SaleStatusObserver
 {
+    protected $financialEngine;
+
+    public function __construct(FinancialEngine $financialEngine)
+    {
+        $this->financialEngine = $financialEngine;
+    }
+
     /**
      * Sincroniza el usuario autenticado a la DB principal si MULTI_DB está habilitado
      * Detecta automáticamente qué columnas existen en la tabla users
@@ -20,31 +30,31 @@ class SaleStatusObserver
         if (!env('MULTI_DB_ENABLED', false)) {
             return Auth::id();
         }
-        
+
         $userId = Auth::id();
         if (!$userId) {
             return null;
         }
-        
+
         // Obtener usuario de la DB compartida
         $sharedUser = DB::connection('mysql_shared_users')
             ->table('users')
             ->where('id', $userId)
             ->first();
-        
+
         if (!$sharedUser) {
             return $userId;
         }
-        
+
         // Obtener las columnas que existen en la tabla users de la DB principal
         $mainConnection = config('database.default');
         $dbName = config("database.connections.{$mainConnection}.database");
         $columns = DB::connection($mainConnection)
             ->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS 
                       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'", [$dbName]);
-        
+
         $availableColumns = array_map(fn($col) => $col->COLUMN_NAME, $columns);
-        
+
         // Mapeo de todos los campos posibles
         $allFields = [
             'name' => $sharedUser->name,
@@ -62,14 +72,14 @@ class SaleStatusObserver
             'document_type' => $sharedUser->document_type ?? null,
             'is_new' => $sharedUser->is_new ?? 1,
         ];
-        
+
         // Filtrar solo los campos que existen en la tabla
         $fieldsToSync = array_filter(
             $allFields,
             fn($key) => in_array($key, $availableColumns),
             ARRAY_FILTER_USE_KEY
         );
-        
+
         // Sincronizar a la DB principal
         DB::connection($mainConnection)
             ->table('users')
@@ -77,27 +87,48 @@ class SaleStatusObserver
                 ['id' => $sharedUser->id],
                 $fieldsToSync
             );
-        
+
         return $userId;
     }
-    
+
     public function created(Sale $sale)
     {
         $userId = $this->syncAuthUserToMainDb();
-        
+
         SaleStatusTrace::create([
             'sale_id' => $sale->id,
             'status_id' => $sale->status_id,
             'user_id' => $userId,
         ]);
+
+        $this->processFinancialBrain($sale);
+    }
+
+    /**
+     * Procesa el cerebro financiero si el estado es final
+     */
+    protected function processFinancialBrain(Sale $sale)
+    {
+        $status = SaleStatus::find($sale->status_id);
+        if ($status && in_array(strtolower($status->name), ['culminado', 'pagado', 'completado'])) {
+            Log::info("🔵 [Cerebro Financiero] Procesando venta: {$sale->code}");
+            $this->financialEngine->processSale($sale);
+        }
     }
 
     // Registro de los cambios en el estado
+    public function updated(Sale $sale)
+    {
+        if ($sale->wasChanged('status_id')) {
+            $this->processFinancialBrain($sale);
+        }
+    }
+
     public function updating(Sale $sale)
     {
         if ($sale->isDirty('status_id')) {
             $userId = $this->syncAuthUserToMainDb();
-            
+
             SaleStatusTrace::create([
                 'sale_id' => $sale->id,
                 'status_id' => $sale->status_id,

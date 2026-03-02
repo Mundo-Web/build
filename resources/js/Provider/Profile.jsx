@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { Cookies, JSON, Notify, File } from "sode-extend-react";
+import { Cookies, JSON, Notify } from "sode-extend-react";
 import CreateReactScript from "../Utils/CreateReactScript";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import BaseAdminto from "@Adminto/Base";

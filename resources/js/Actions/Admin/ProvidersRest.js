@@ -22,6 +22,18 @@ class ProvidersRest extends BasicRest {
     }
   }
 
+  getVault = (userId) => {
+    return this.get(`${this.path}/${userId}/vault`)
+  }
+
+  updateVault = (data) => {
+    return this.post(`${this.path}/vault`, data)
+  }
+
+  deleteVaultItem = (id) => {
+    return this.delete(`${this.path}/vault/${id}`)
+  }
+
 }
 
 export default ProvidersRest

@@ -23,7 +23,12 @@ class SaleDetail extends Model
         'image',
         'colors',
         'type', // 'product' o 'combo'
-        'combo_data' // JSON con información del combo
+        'combo_data', // JSON con información del combo
+        'is_prize'
+    ];
+
+    protected $casts = [
+        'is_prize' => 'boolean'
     ];
 
     public function sale()

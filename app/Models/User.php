@@ -118,6 +118,11 @@ class User extends Authenticatable
         'google_id',
         'whatsapp_number',
         'whatsapp_message',
+        'rank_id',
+        'total_points',
+        'total_items',
+        'group_points',
+        'group_items',
     ];
 
 
@@ -180,5 +185,29 @@ class User extends Authenticatable
     public function referralsRecursive()
     {
         return $this->referrals()->with('referralsRecursive');
+    }
+
+    /**
+     * El inventario de premios (bóveda virtual) del usuario
+     */
+    public function inventoryVault()
+    {
+        return $this->hasMany(InventoryVault::class);
+    }
+
+    /**
+     * El rango actual del usuario
+     */
+    public function rank()
+    {
+        return $this->belongsTo(Rank::class);
+    }
+
+    /**
+     * Comisiones ganadas por el usuario
+     */
+    public function commissions()
+    {
+        return $this->hasMany(Commission::class);
     }
 }

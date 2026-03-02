@@ -73,15 +73,8 @@ const filterAnimations = {
         exit: { scale: 0, opacity: 0 },
         transition: { type: "spring", stiffness: 300, damping: 20 },
     },
-    hover: {
-        scale: 1.02,
-        y: -2,
-        transition: { duration: 0.2 },
-    },
-    tap: {
-        scale: 0.98,
-        transition: { duration: 0.1 },
-    },
+    hover: {},
+    tap: {},
     stagger: {
         animate: {
             transition: {
@@ -93,26 +86,22 @@ const filterAnimations = {
 
 // Estilos CSS modernos para una mejor experiencia de usuario
 const modernFilterStyles = {
-    filterContainer:
-        "bg-white border-2 border-primary rounded-none shadow-[20px_20px_0px_0px_rgba(0,0,0,0.1)]",
-    filterHeader:
-        "bg-primary text-white border-b-2 border-primary rounded-none p-6",
-    filterSection:
-        "group transition-all duration-300 border-b border-gray-100 last:border-b-0",
+    filterContainer: "bg-white border border-gray-100",
+    filterHeader: "bg-black text-white p-6",
+    filterSection: "border-b border-gray-100 last:border-b-0",
     filterButton:
-        "w-full flex items-center justify-between p-5 rounded-none transition-all duration-300 hover:bg-primary hover:text-white group",
-    filterContent: "bg-white rounded-none border-t border-gray-100",
+        "w-full flex items-center justify-between p-6 transition-all duration-300 group",
+    filterContent: "bg-white p-6 pt-0 transition-all duration-300",
     searchInput:
-        "w-full pl-12 pr-4 py-4 bg-gray-50 border-0 border-b-2 border-gray-200 rounded-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-300 uppercase text-[10px] tracking-widest font-bold",
-    checkbox:
-        "h-5 w-5 rounded-none border-2 border-primary text-primary focus:ring-0 transition-all duration-200 cursor-pointer",
-    label: "flex items-center gap-4 py-3 px-5 rounded-none transition-all duration-200 hover:bg-gray-50 cursor-pointer group",
-    activeFilter: "bg-primary text-white shadow-xl",
-    badge: "inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-none text-[10px] font-primary uppercase tracking-[0.2em]",
-    glowEffect: "ring-2 ring-primary",
-    pulseAnimation: "animate-pulse",
+        "w-full border-b border-gray-200 py-3 mb-6 focus:border-black focus:outline-none text-[10px] font-bold uppercase tracking-widest placeholder:text-gray-300 bg-transparent",
+    checkbox: "hidden",
+    label: "flex items-center justify-between py-2.5 group cursor-pointer",
+    activeFilter: "text-neutral-dark font-black",
+    badge: "inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-[9px] font-bold uppercase tracking-widest",
+    glowEffect: "",
+    pulseAnimation: "",
     shimmerEffect:
-        "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-primary/5 before:to-transparent",
+        "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-black/5 before:to-transparent",
 };
 
 const SkeletonCard = ({ delay = 0 }) => {
@@ -1653,7 +1642,7 @@ const CatalogoFiltrosRainstar = ({
                                 filtersOpen
                                     ? "flex flex-col h-full bg-transparent"
                                     : modernFilterStyles.filterContainer
-                            } lg:bg-white lg:border-2 lg:border-primary lg:rounded-none lg:shadow-[20px_20px_0px_0px_rgba(0,0,0,0.1)]`}
+                            } lg:bg-white lg:border lg:border-gray-100`}
                         >
                             {/* Contenido principal del modal mobile - ocupando todo excepto el footer */}
                             <div
@@ -1671,20 +1660,10 @@ const CatalogoFiltrosRainstar = ({
                                     transition={{ delay: 0.1 }}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <motion.div
-                                            className="p-2 bg-primary text-white rounded-none"
-                                            whileHover={{ rotate: 360 }}
-                                            transition={{ duration: 0.6 }}
-                                        >
-                                            <Filter className="h-5 w-5" />
-                                        </motion.div>
                                         <div>
-                                            <h2 className="text-xl font-bold text-white">
+                                            <h2 className="text-2xl font-black uppercase tracking-tighter text-white">
                                                 Filtros
                                             </h2>
-                                            <p className="text-sm text-white hidden lg:block">
-                                                Refina tu búsqueda con precisión
-                                            </p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -1719,34 +1698,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary text-white rounded-none"
-                                                        animate={{
-                                                            rotate: sections.coleccion
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <Package className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white ">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Colecciones
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Explora nuestras
-                                                            colecciones
-                                                            especiales
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -1755,11 +1712,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -1770,27 +1724,22 @@ const CatalogoFiltrosRainstar = ({
                                                         {...filterAnimations.section}
                                                     >
                                                         {/* Barra de búsqueda mejorada */}
-                                                        <div className="relative mb-4">
-                                                            <motion.div className="absolute left-4 top-4 z-[99]">
-                                                                <Search className="h-4 w-4" />
-                                                            </motion.div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Buscar colecciones..."
-                                                                className={
-                                                                    modernFilterStyles.searchInput
-                                                                }
-                                                                value={
-                                                                    searchCollection
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setSearchCollection(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="BUSCAR COLECCIONES..."
+                                                            className={
+                                                                modernFilterStyles.searchInput
+                                                            }
+                                                            value={
+                                                                searchCollection
+                                                            }
+                                                            onChange={(e) =>
+                                                                setSearchCollection(
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
 
                                                         {/* Lista de colecciones mejorada */}
                                                         <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
@@ -1816,44 +1765,18 @@ const CatalogoFiltrosRainstar = ({
                                                                                         0.05,
                                                                                 }}
                                                                             >
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className={
-                                                                                        modernFilterStyles.checkbox
-                                                                                    }
-                                                                                    onChange={() =>
-                                                                                        handleFilterChange(
-                                                                                            "collection_id",
-                                                                                            collection.slug,
-                                                                                        )
-                                                                                    }
-                                                                                    checked={selectedFilters.collection_id?.includes(
-                                                                                        collection.slug,
-                                                                                    )}
-                                                                                />
-                                                                                <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark transition-colors duration-200">
-                                                                                    {
-                                                                                        collection.name
-                                                                                    }
-                                                                                </span>
-                                                                                {selectedFilters.collection_id?.includes(
-                                                                                    collection.slug,
-                                                                                ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div
+                                                                                        className={`w-3 h-3 border border-black ${selectedFilters.collection_id?.includes(collection.slug) ? "bg-black" : "bg-transparent"}`}
+                                                                                    />
+                                                                                    <span
+                                                                                        className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.collection_id?.includes(collection.slug) ? "text-neutral-dark" : "text-gray-400"}`}
                                                                                     >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        {
+                                                                                            collection.name
+                                                                                        }
+                                                                                    </span>
+                                                                                </div>
                                                                             </motion.label>
                                                                         ),
                                                                     )
@@ -1902,33 +1825,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary rounded-lg shadow-md"
-                                                        animate={{
-                                                            rotate: sections.marca
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <Tag className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Marcas
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Selecciona tus
-                                                            marcas favoritas
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -1937,11 +1839,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -1952,27 +1851,20 @@ const CatalogoFiltrosRainstar = ({
                                                         {...filterAnimations.section}
                                                     >
                                                         {/* Barra de búsqueda mejorada */}
-                                                        <div className="relative mb-4">
-                                                            <motion.div className="absolute left-4 top-4 z-[99]">
-                                                                <Search className="h-4 w-4" />
-                                                            </motion.div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Buscar marcas..."
-                                                                className={
-                                                                    modernFilterStyles.searchInput
-                                                                }
-                                                                value={
-                                                                    searchBrand
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setSearchBrand(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="BUSCAR MARCAS..."
+                                                            className={
+                                                                modernFilterStyles.searchInput
+                                                            }
+                                                            value={searchBrand}
+                                                            onChange={(e) =>
+                                                                setSearchBrand(
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
 
                                                         {/* Lista de marcas mejorada */}
                                                         <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
@@ -1996,44 +1888,18 @@ const CatalogoFiltrosRainstar = ({
                                                                                     0.05,
                                                                             }}
                                                                         >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className={
-                                                                                    modernFilterStyles.checkbox
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    handleFilterChange(
-                                                                                        "brand_id",
-                                                                                        brand.slug,
-                                                                                    )
-                                                                                }
-                                                                                checked={selectedFilters.brand_id?.includes(
-                                                                                    brand.slug,
-                                                                                )}
-                                                                            />
-                                                                            <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
-                                                                                {
-                                                                                    brand.name
-                                                                                }
-                                                                            </span>
-                                                                            {selectedFilters.brand_id?.includes(
-                                                                                brand.slug,
-                                                                            ) && (
-                                                                                <motion.div
-                                                                                    className="ml-auto"
-                                                                                    initial={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                    animate={{
-                                                                                        scale: 1,
-                                                                                    }}
-                                                                                    exit={{
-                                                                                        scale: 0,
-                                                                                    }}
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div
+                                                                                    className={`w-3 h-3 border border-black ${selectedFilters.brand_id?.includes(brand.slug) ? "bg-black" : "bg-transparent"}`}
+                                                                                />
+                                                                                <span
+                                                                                    className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.brand_id?.includes(brand.slug) ? "text-neutral-dark" : "text-gray-400"}`}
                                                                                 >
-                                                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                </motion.div>
-                                                                            )}
+                                                                                    {
+                                                                                        brand.name
+                                                                                    }
+                                                                                </span>
+                                                                            </div>
                                                                         </motion.label>
                                                                     ),
                                                                 )}
@@ -2063,33 +1929,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary text-white rounded-none shadow-xl shadow-primary/5"
-                                                        animate={{
-                                                            rotate: sections.tienda
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <Store className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Tiendas
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Selecciona por
-                                                            tienda
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -2098,11 +1943,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -2113,27 +1955,20 @@ const CatalogoFiltrosRainstar = ({
                                                         {...filterAnimations.section}
                                                     >
                                                         {/* Barra de búsqueda mejorada */}
-                                                        <div className="relative mb-4">
-                                                            <motion.div className="absolute left-4 top-4 z-[99]">
-                                                                <Search className="h-4 w-4" />
-                                                            </motion.div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Buscar tiendas..."
-                                                                className={
-                                                                    modernFilterStyles.searchInput
-                                                                }
-                                                                value={
-                                                                    searchStore
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setSearchStore(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="BUSCAR TIENDAS..."
+                                                            className={
+                                                                modernFilterStyles.searchInput
+                                                            }
+                                                            value={searchStore}
+                                                            onChange={(e) =>
+                                                                setSearchStore(
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
 
                                                         {/* Lista de tiendas mejorada */}
                                                         <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
@@ -2157,44 +1992,18 @@ const CatalogoFiltrosRainstar = ({
                                                                                     0.05,
                                                                             }}
                                                                         >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className={
-                                                                                    modernFilterStyles.checkbox
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    handleFilterChange(
-                                                                                        "store_id",
-                                                                                        store.id,
-                                                                                    )
-                                                                                }
-                                                                                checked={selectedFilters.store_id?.includes(
-                                                                                    store.id,
-                                                                                )}
-                                                                            />
-                                                                            <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
-                                                                                {
-                                                                                    store.name
-                                                                                }
-                                                                            </span>
-                                                                            {selectedFilters.store_id?.includes(
-                                                                                store.id,
-                                                                            ) && (
-                                                                                <motion.div
-                                                                                    className="ml-auto"
-                                                                                    initial={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                    animate={{
-                                                                                        scale: 1,
-                                                                                    }}
-                                                                                    exit={{
-                                                                                        scale: 0,
-                                                                                    }}
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div
+                                                                                    className={`w-3 h-3 border border-black ${selectedFilters.store_id?.includes(store.id) ? "bg-black" : "bg-transparent"}`}
+                                                                                />
+                                                                                <span
+                                                                                    className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.store_id?.includes(store.id) ? "text-neutral-dark" : "text-gray-400"}`}
                                                                                 >
-                                                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                </motion.div>
-                                                                            )}
+                                                                                    {
+                                                                                        store.name
+                                                                                    }
+                                                                                </span>
+                                                                            </div>
                                                                         </motion.label>
                                                                     ),
                                                                 )}
@@ -2224,33 +2033,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary text-white rounded-none"
-                                                        animate={{
-                                                            rotate: sections.categoria
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <Layers className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Categorías
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Explora por
-                                                            categorías
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -2259,11 +2047,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -2274,27 +2059,22 @@ const CatalogoFiltrosRainstar = ({
                                                         {...filterAnimations.section}
                                                     >
                                                         {/* Barra de búsqueda */}
-                                                        <div className="relative mb-4">
-                                                            <motion.div className="absolute left-4 top-4 z-[99]">
-                                                                <Search className="h-4 w-4" />
-                                                            </motion.div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Buscar categorías..."
-                                                                className={
-                                                                    modernFilterStyles.searchInput
-                                                                }
-                                                                value={
-                                                                    searchCategory
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setSearchCategory(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="BUSCAR CATEGORÍAS..."
+                                                            className={
+                                                                modernFilterStyles.searchInput
+                                                            }
+                                                            value={
+                                                                searchCategory
+                                                            }
+                                                            onChange={(e) =>
+                                                                setSearchCategory(
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
 
                                                         {/* Lista de categorías con subcategorías */}
                                                         <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
@@ -2319,44 +2099,18 @@ const CatalogoFiltrosRainstar = ({
                                                                             <motion.label
                                                                                 className={`${modernFilterStyles.label} `}
                                                                             >
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className={
-                                                                                        modernFilterStyles.checkbox
-                                                                                    }
-                                                                                    onChange={() =>
-                                                                                        handleFilterChange(
-                                                                                            "category_id",
-                                                                                            category.id,
-                                                                                        )
-                                                                                    }
-                                                                                    checked={selectedFilters.category_id?.includes(
-                                                                                        category.id,
-                                                                                    )}
-                                                                                />
-                                                                                <span className="text-[10px] font-primary uppercase tracking-widest line-clamp-1 text-primary transition-colors duration-200">
-                                                                                    {
-                                                                                        category.name
-                                                                                    }
-                                                                                </span>
-                                                                                {selectedFilters.category_id?.includes(
-                                                                                    category.id,
-                                                                                ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div
+                                                                                        className={`w-3 h-3 border border-black ${selectedFilters.category_id?.includes(category.id) ? "bg-black" : "bg-transparent"}`}
+                                                                                    />
+                                                                                    <span
+                                                                                        className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.category_id?.includes(category.id) ? "text-neutral-dark" : "text-gray-400"}`}
                                                                                     >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        {
+                                                                                            category.name
+                                                                                        }
+                                                                                    </span>
+                                                                                </div>
                                                                             </motion.label>
 
                                                                             {/* Subcategorías expandibles */}
@@ -2388,34 +2142,29 @@ const CatalogoFiltrosRainstar = ({
                                                                                                     (
                                                                                                         sub,
                                                                                                     ) => (
-                                                                                                        <motion.label
+                                                                                                        <motion.div
                                                                                                             key={
                                                                                                                 sub.id
                                                                                                             }
-                                                                                                            className="flex items-center gap-3 py-2 px-3 rounded-none hover:bg-gray-100 transition-colors duration-200 cursor-pointer group"
-                                                                                                            whileHover={{
-                                                                                                                x: 3,
-                                                                                                            }}
-                                                                                                        >
-                                                                                                            <input
-                                                                                                                type="checkbox"
-                                                                                                                className="h-4 w-4 rounded-none border border-primary text-primary focus:ring-0"
-                                                                                                                onChange={() =>
-                                                                                                                    handleFilterChange(
-                                                                                                                        "subcategory_id",
-                                                                                                                        sub.slug,
-                                                                                                                    )
-                                                                                                                }
-                                                                                                                checked={selectedFilters.subcategory_id?.includes(
+                                                                                                            className="flex items-center gap-3 rounded-none cursor-pointer"
+                                                                                                            onClick={() =>
+                                                                                                                handleFilterChange(
+                                                                                                                    "subcategory_id",
                                                                                                                     sub.slug,
-                                                                                                                )}
+                                                                                                                )
+                                                                                                            }
+                                                                                                        >
+                                                                                                            <div
+                                                                                                                className={`w-3 h-3 border border-black ${selectedFilters.subcategory_id?.includes(sub.slug) ? "bg-black" : "bg-transparent"}`}
                                                                                                             />
-                                                                                                            <span className="text-[10px] font-primary uppercase tracking-widest line-clamp-1 text-primary transition-colors duration-200">
+                                                                                                            <span
+                                                                                                                className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.subcategory_id?.includes(sub.slug) ? "text-neutral-dark" : "text-gray-400"}`}
+                                                                                                            >
                                                                                                                 {
                                                                                                                     sub.name
                                                                                                                 }
                                                                                                             </span>
-                                                                                                        </motion.label>
+                                                                                                        </motion.div>
                                                                                                     ),
                                                                                                 )}
                                                                                             </div>
@@ -2452,34 +2201,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary text-white rounded-none"
-                                                        animate={{
-                                                            rotate: sections.subcategoria
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <Grid3X3 className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Subcategorías
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Busca por
-                                                            subcategorías
-                                                            específicas
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -2488,11 +2215,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -2521,7 +2245,7 @@ const CatalogoFiltrosRainstar = ({
                                                             </motion.div>
                                                             <input
                                                                 type="text"
-                                                                placeholder="Buscar subcategorías..."
+                                                                placeholder="BUSCAR SUBCATEGORÍAS..."
                                                                 className={
                                                                     modernFilterStyles.searchInput
                                                                 }
@@ -2561,44 +2285,26 @@ const CatalogoFiltrosRainstar = ({
                                                                                         0.05,
                                                                                 }}
                                                                             >
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className={
-                                                                                        modernFilterStyles.checkbox
-                                                                                    }
-                                                                                    onChange={() =>
+                                                                                <div
+                                                                                    className="flex items-center gap-3"
+                                                                                    onClick={() =>
                                                                                         handleFilterChange(
                                                                                             "subcategory_id",
                                                                                             subcategory.id,
                                                                                         )
                                                                                     }
-                                                                                    checked={selectedFilters.subcategory_id?.includes(
-                                                                                        subcategory.id,
-                                                                                    )}
-                                                                                />
-                                                                                <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark transition-colors duration-200">
-                                                                                    {
-                                                                                        subcategory.name
-                                                                                    }
-                                                                                </span>
-                                                                                {selectedFilters.subcategory_id?.includes(
-                                                                                    subcategory.id,
-                                                                                ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
+                                                                                >
+                                                                                    <div
+                                                                                        className={`w-3 h-3 border border-black ${selectedFilters.subcategory_id?.includes(subcategory.id) ? "bg-black" : "bg-transparent"}`}
+                                                                                    />
+                                                                                    <span
+                                                                                        className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.subcategory_id?.includes(subcategory.id) ? "text-neutral-dark" : "text-gray-400"}`}
                                                                                     >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        {
+                                                                                            subcategory.name
+                                                                                        }
+                                                                                    </span>
+                                                                                </div>
                                                                             </motion.label>
                                                                         ),
                                                                     )
@@ -2646,33 +2352,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary text-white rounded-none"
-                                                        animate={{
-                                                            rotate: sections.precio
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <TrendingUp className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Rango de Precio
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Encuentra tu
-                                                            presupuesto ideal
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -2681,11 +2366,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -2714,59 +2396,26 @@ const CatalogoFiltrosRainstar = ({
                                                                                     0.05,
                                                                             }}
                                                                         >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className={
-                                                                                    modernFilterStyles.checkbox
-                                                                                }
-                                                                                onChange={() =>
+                                                                            <div
+                                                                                className="flex items-center gap-3"
+                                                                                onClick={() =>
                                                                                     handleFilterChange(
                                                                                         "price",
                                                                                         range,
                                                                                     )
                                                                                 }
-                                                                                checked={
-                                                                                    selectedFilters.price?.some(
-                                                                                        (
-                                                                                            priceRange,
-                                                                                        ) =>
-                                                                                            priceRange.min ===
-                                                                                                range.min &&
-                                                                                            priceRange.max ===
-                                                                                                range.max,
-                                                                                    ) ||
-                                                                                    false
-                                                                                }
-                                                                            />
-                                                                            <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark  transition-colors duration-200">
-                                                                                {
-                                                                                    range.label
-                                                                                }
-                                                                            </span>
-                                                                            {selectedFilters.price?.some(
-                                                                                (
-                                                                                    priceRange,
-                                                                                ) =>
-                                                                                    priceRange.min ===
-                                                                                        range.min &&
-                                                                                    priceRange.max ===
-                                                                                        range.max,
-                                                                            ) && (
-                                                                                <motion.div
-                                                                                    className="ml-auto"
-                                                                                    initial={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                    animate={{
-                                                                                        scale: 1,
-                                                                                    }}
-                                                                                    exit={{
-                                                                                        scale: 0,
-                                                                                    }}
+                                                                            >
+                                                                                <div
+                                                                                    className={`w-3 h-3 border border-black ${selectedFilters.price?.some((priceRange) => priceRange.min === range.min && priceRange.max === range.max) ? "bg-black" : "bg-transparent"}`}
+                                                                                />
+                                                                                <span
+                                                                                    className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.price?.some((priceRange) => priceRange.min === range.min && priceRange.max === range.max) ? "text-neutral-dark" : "text-gray-400"}`}
                                                                                 >
-                                                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                </motion.div>
-                                                                            )}
+                                                                                    {
+                                                                                        range.label
+                                                                                    }
+                                                                                </span>
+                                                                            </div>
                                                                         </motion.label>
                                                                     ),
                                                                 )}
@@ -2796,33 +2445,12 @@ const CatalogoFiltrosRainstar = ({
                                                 className={
                                                     modernFilterStyles.filterButton
                                                 }
-                                                whileHover={
-                                                    filterAnimations.hover
-                                                }
-                                                whileTap={filterAnimations.tap}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <motion.div
-                                                        className="p-2 bg-primary text-white rounded-none shadow-xl shadow-primary/5"
-                                                        animate={{
-                                                            rotate: sections.amenidades
-                                                                ? 360
-                                                                : 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                        }}
-                                                    >
-                                                        <Coffee className="h-4 w-4 text-white" />
-                                                    </motion.div>
                                                     <div className="text-left">
-                                                        <span className="font-semibold customtext-neutral-dark group-hover:text-white">
+                                                        <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
                                                             Amenidades
                                                         </span>
-                                                        <p className="text-xs customtext-neutral-dark group-hover:text-white">
-                                                            Servicios y
-                                                            comodidades
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <motion.div
@@ -2831,11 +2459,8 @@ const CatalogoFiltrosRainstar = ({
                                                             ? 180
                                                             : 0,
                                                     }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                    }}
                                                 >
-                                                    <ChevronDown className="h-5 w-5 customtext-neutral-dark group-hover:text-white" />
+                                                    <ChevronDown className="h-4 w-4 text-neutral-dark" />
                                                 </motion.div>
                                             </motion.button>
 
@@ -2846,27 +2471,22 @@ const CatalogoFiltrosRainstar = ({
                                                         {...filterAnimations.section}
                                                     >
                                                         {/* Barra de búsqueda para amenidades */}
-                                                        <div className="relative mb-4">
-                                                            <motion.div className="absolute left-4 top-4 z-[99]">
-                                                                <Search className="h-4 w-4" />
-                                                            </motion.div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Buscar amenidades..."
-                                                                className={
-                                                                    modernFilterStyles.searchInput
-                                                                }
-                                                                value={
-                                                                    searchAmenity
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setSearchAmenity(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="BUSCAR AMENIDADES..."
+                                                            className={
+                                                                modernFilterStyles.searchInput
+                                                            }
+                                                            value={
+                                                                searchAmenity
+                                                            }
+                                                            onChange={(e) =>
+                                                                setSearchAmenity(
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
 
                                                         {/* Lista de amenidades mejorada */}
                                                         <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
@@ -2892,61 +2512,18 @@ const CatalogoFiltrosRainstar = ({
                                                                                         0.05,
                                                                                 }}
                                                                             >
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className={
-                                                                                        modernFilterStyles.checkbox
-                                                                                    }
-                                                                                    onChange={() =>
-                                                                                        handleFilterChange(
-                                                                                            "amenity_id",
-                                                                                            amenity.id,
-                                                                                        )
-                                                                                    }
-                                                                                    checked={selectedFilters.amenity_id?.includes(
-                                                                                        amenity.id,
-                                                                                    )}
-                                                                                />
-                                                                                <div className="flex items-center gap-2">
-                                                                                    {amenity.image && (
-                                                                                        <img
-                                                                                            src={`/storage/images/amenity/${amenity.image}`}
-                                                                                            alt={
-                                                                                                amenity.name
-                                                                                            }
-                                                                                            className="w-5 h-5 object-contain"
-                                                                                            onError={(
-                                                                                                e,
-                                                                                            ) =>
-                                                                                                (e.target.style.display =
-                                                                                                    "none")
-                                                                                            }
-                                                                                        />
-                                                                                    )}
-                                                                                    <span className="text-sm line-clamp-1 font-medium customtext-neutral-dark transition-colors duration-200">
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div
+                                                                                        className={`w-3 h-3 border border-black ${selectedFilters.amenity_id?.includes(amenity.id) ? "bg-black" : "bg-transparent"}`}
+                                                                                    />
+                                                                                    <span
+                                                                                        className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${selectedFilters.amenity_id?.includes(amenity.id) ? "text-neutral-dark" : "text-gray-400"}`}
+                                                                                    >
                                                                                         {
                                                                                             amenity.name
                                                                                         }
                                                                                     </span>
                                                                                 </div>
-                                                                                {selectedFilters.amenity_id?.includes(
-                                                                                    amenity.id,
-                                                                                ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                    >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
                                                                             </motion.label>
                                                                         ),
                                                                     )
@@ -3017,8 +2594,7 @@ const CatalogoFiltrosRainstar = ({
                                                         y: -10,
                                                     }}
                                                 >
-                                                    <h4 className="text-sm font-semibold customtext-neutral-dark mb-3 flex items-center gap-2">
-                                                        <Star className="h-4 w-4 customtext-primary" />
+                                                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-dark mb-4">
                                                         Filtros Activos
                                                     </h4>
                                                     <div className="flex flex-wrap gap-2">
@@ -3042,25 +2618,13 @@ const CatalogoFiltrosRainstar = ({
                                                                                 brandSlug,
                                                                             )
                                                                         }
-                                                                        className="group"
                                                                     >
-                                                                        <Tag className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 brand.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1  rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3088,25 +2652,13 @@ const CatalogoFiltrosRainstar = ({
                                                                                 collectionSlug,
                                                                             )
                                                                         }
-                                                                        className="group"
                                                                     >
-                                                                        <Package className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 collection.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3133,23 +2685,12 @@ const CatalogoFiltrosRainstar = ({
                                                                             )
                                                                         }
                                                                     >
-                                                                        <Layers className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 category.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1  rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3178,23 +2719,12 @@ const CatalogoFiltrosRainstar = ({
                                                                             )
                                                                         }
                                                                     >
-                                                                        <Grid3X3 className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 subcategory.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3221,23 +2751,12 @@ const CatalogoFiltrosRainstar = ({
                                                                             )
                                                                         }
                                                                     >
-                                                                        <Store className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 store.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3264,23 +2783,12 @@ const CatalogoFiltrosRainstar = ({
                                                                             )
                                                                         }
                                                                     >
-                                                                        <Hash className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 tag.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3307,23 +2815,12 @@ const CatalogoFiltrosRainstar = ({
                                                                             )
                                                                         }
                                                                     >
-                                                                        <Coffee className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {
                                                                                 amenity.name
                                                                             }
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 ) : null;
                                                             },
@@ -3355,22 +2852,11 @@ const CatalogoFiltrosRainstar = ({
                                                                             )
                                                                         }
                                                                     >
-                                                                        <TrendingUp className="h-3 w-3" />
-                                                                        <span>
+                                                                        <span className="text-[8px] font-bold uppercase tracking-widest">
                                                                             {matchedRange?.label ||
                                                                                 `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
                                                                         </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
+                                                                        <X className="h-2.5 w-2.5 ml-1" />
                                                                     </AnimatedBadge>
                                                                 );
                                                             },
@@ -3389,44 +2875,34 @@ const CatalogoFiltrosRainstar = ({
                                         transition={{ delay: 0.6 }}
                                     >
                                         <motion.button
-                                            className={`w-full p-4  rounded-none shadow-lg hover:shadow-xl transition-all duration-300 font-semibold ${data?.class_clear_button || "bg-secondary customtext-neutral-dark hover:bg-primary hover:text-white"}`}
+                                            className="w-full py-4 bg-black text-white rounded-none shadow-xl transition-all duration-300 font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-neutral-900"
                                             onClick={() => {
-                                                // Limpiar cada filtro individualmente usando setSelectedFilters con función
-                                                // Esto simula el comportamiento de handleFilterChange que funciona correctamente
-                                                setSelectedFilters((prev) => {
-                                                    const cleanFilters = {
-                                                        collection_id: [],
-                                                        category_id: [],
-                                                        brand_id: [],
-                                                        subcategory_id: [],
-                                                        store_id: [],
-                                                        tag_id: [],
-                                                        amenity_id: [],
-                                                        price: [],
-                                                        name: null,
-                                                        sort: [
-                                                            {
-                                                                selector:
-                                                                    "final_price",
-                                                                desc: true,
-                                                            },
-                                                        ],
-                                                    };
-
-                                                    return cleanFilters;
-                                                });
-
+                                                setSelectedFilters((prev) => ({
+                                                    collection_id: [],
+                                                    category_id: [],
+                                                    brand_id: [],
+                                                    subcategory_id: [],
+                                                    store_id: [],
+                                                    tag_id: [],
+                                                    amenity_id: [],
+                                                    price: [],
+                                                    name: null,
+                                                    sort: [
+                                                        {
+                                                            selector:
+                                                                "final_price",
+                                                            desc: true,
+                                                        },
+                                                    ],
+                                                }));
                                                 setFilterSequence([]);
                                             }}
-                                            whileHover={{ scale: 1.02, y: -2 }}
-                                            whileTap={{ scale: 0.98 }}
+                                            whileHover={{ scale: 1.01 }}
+                                            whileTap={{ scale: 0.99 }}
                                         >
                                             <div className="flex items-center justify-center gap-3">
-                                                <Trash className="h-5 w-5" />
-
-                                                <span>
-                                                    Limpiar todos los filtros
-                                                </span>
+                                                <Trash className="h-4 w-4" />
+                                                <span>Limpiar filtros</span>
                                             </div>
                                         </motion.button>
                                     </motion.div>
@@ -3437,16 +2913,13 @@ const CatalogoFiltrosRainstar = ({
                         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-white to-gray-50 border-t border-gray-200 p-4 shadow-2xl backdrop-blur-xl lg:hidden z-50">
                             <div className="flex items-center gap-3">
                                 <motion.button
-                                    className="flex-1 bg-primary text-white py-3 px-6 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
-                                    onClick={() => {
-                                        setFiltersOpen(false);
-                                        // Removido el scroll automático - solo cerrar el panel
-                                    }}
+                                    className="flex-1 bg-black text-white py-4 px-6 rounded-none font-bold text-[10px] uppercase tracking-[0.2em] shadow-2xl transition-all duration-300"
+                                    onClick={() => setFiltersOpen(false)}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <div className="flex items-center justify-center gap-2">
-                                        <ShoppingBag className="h-5 w-5" />
+                                        <ShoppingBag className="h-4 w-4" />
                                         <span>
                                             Ver {pagination.totalItems}{" "}
                                             Productos
@@ -3455,12 +2928,11 @@ const CatalogoFiltrosRainstar = ({
                                 </motion.button>
 
                                 <motion.button
-                                    className="p-3 bg-gray-100 hover:bg-gray-200 customtext-neutral-dark rounded-xl transition-colors duration-200"
+                                    className="p-4 bg-white border border-gray-100 text-neutral-dark rounded-none transition-colors duration-200"
                                     onClick={() => setFiltersOpen(false)}
-                                    whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                 >
-                                    <X className="h-5 w-5" />
+                                    <X className="h-4 w-4" />
                                 </motion.button>
                             </div>
                         </div>
@@ -3713,20 +3185,20 @@ const CatalogoFiltrosRainstar = ({
                         {/* Paginación mejorada */}
                         {Array.isArray(products) && products.length > 0 && (
                             <motion.div
-                                className="flex flex-col lg:flex-row justify-between items-center mb-12 w-full mt-12 gap-8 p-6 lg:p-12 bg-white border-2 border-primary rounded-none shadow-[20px_20px_0px_0px_rgba(0,0,0,0.1)]"
+                                className="flex flex-col lg:flex-row justify-between items-center w-full mt-24 pt-12 border-t border-gray-100 gap-8 bg-transparent"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
                             >
                                 {/* Navegación de páginas mejorada */}
-                                <div className="customtext-primary font-semibold w-full md:w-auto">
+                                <div className="w-full md:w-auto">
                                     <div className="overflow-x-auto pb-2">
-                                        <nav className="flex items-center gap-x-2 min-w-max">
+                                        <nav className="flex items-center gap-x-1 min-w-max">
                                             <motion.button
-                                                className={`p-4 inline-flex items-center gap-3 rounded-none transition-all duration-300 ${
+                                                className={`flex items-center gap-2 py-2 px-2 transition-all duration-300 ${
                                                     pagination.currentPage === 1
-                                                        ? "opacity-30 cursor-not-allowed border-neutral-200 text-neutral-400"
-                                                        : "bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white"
+                                                        ? " cursor-not-allowed text-neutral-dark"
+                                                        : "text-neutral-dark hover:opacity-60"
                                                 }`}
                                                 onClick={() =>
                                                     handlePageChange(
@@ -3739,12 +3211,12 @@ const CatalogoFiltrosRainstar = ({
                                                 }
                                                 whileTap={
                                                     pagination.currentPage !== 1
-                                                        ? { scale: 0.95 }
+                                                        ? { scale: 0.98 }
                                                         : {}
                                                 }
                                             >
                                                 <ChevronLeft className="h-4 w-4" />
-                                                <span className="hidden sm:inline text-[10px] font-primary uppercase tracking-widest">
+                                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-[0.2em]">
                                                     Anterior
                                                 </span>
                                             </motion.button>
@@ -3752,45 +3224,35 @@ const CatalogoFiltrosRainstar = ({
                                             {getPageNumbers().map(
                                                 (page, index) => (
                                                     <React.Fragment key={index}>
-                                                        {page === "..." ? (
-                                                            <span className="w-12 h-12 bg-transparent p-2 inline-flex items-center justify-center rounded-none text-primary font-primary">
-                                                                ...
-                                                            </span>
-                                                        ) : (
-                                                            <motion.button
-                                                                className={`w-12 h-12 p-2 inline-flex items-center justify-center rounded-none border-2 transition-all duration-300 text-[10px] font-primary tracking-widest
+                                                        <motion.button
+                                                            className={`w-10 h-10 flex items-center justify-center rounded-none transition-all duration-300 text-[10px] font-bold uppercase tracking-widest
                                                         ${
                                                             page ===
                                                             pagination.currentPage
-                                                                ? " bg-primary text-white border-primary"
-                                                                : "bg-white text-primary border-neutral-200 hover:border-primary"
+                                                                ? "bg-black text-white"
+                                                                : "bg-transparent text-gray-400 hover:text-neutral-dark"
                                                         }`}
-                                                                onClick={() =>
-                                                                    handlePageChange(
-                                                                        page,
-                                                                    )
-                                                                }
-                                                                whileHover={{
-                                                                    scale: 1.1,
-                                                                    y: -2,
-                                                                }}
-                                                                whileTap={{
-                                                                    scale: 0.95,
-                                                                }}
-                                                            >
-                                                                {page}
-                                                            </motion.button>
-                                                        )}
+                                                            onClick={() =>
+                                                                handlePageChange(
+                                                                    page,
+                                                                )
+                                                            }
+                                                            whileTap={{
+                                                                scale: 0.98,
+                                                            }}
+                                                        >
+                                                            {page}
+                                                        </motion.button>
                                                     </React.Fragment>
                                                 ),
                                             )}
 
                                             <motion.button
-                                                className={`p-4 inline-flex items-center gap-3 rounded-none transition-all duration-300 ${
+                                                className={`flex items-center gap-2 py-4 px-2 transition-all duration-300 ${
                                                     pagination.currentPage ===
                                                     pagination.totalPages
-                                                        ? "opacity-30 cursor-not-allowed border-neutral-200 text-neutral-400"
-                                                        : "bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white"
+                                                        ? " cursor-not-allowed text-neutral-dark"
+                                                        : "text-neutral-dark hover:opacity-60"
                                                 }`}
                                                 onClick={() =>
                                                     handlePageChange(
@@ -3805,11 +3267,11 @@ const CatalogoFiltrosRainstar = ({
                                                 whileTap={
                                                     pagination.currentPage !==
                                                     pagination.totalPages
-                                                        ? { scale: 0.95 }
+                                                        ? { scale: 0.98 }
                                                         : {}
                                                 }
                                             >
-                                                <span className="hidden sm:inline text-[10px] font-primary uppercase tracking-widest">
+                                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-[0.2em]">
                                                     Siguiente
                                                 </span>
                                                 <ChevronRight className="h-4 w-4" />
@@ -3819,15 +3281,12 @@ const CatalogoFiltrosRainstar = ({
                                 </div>
 
                                 {/* Información de paginación mejorada */}
-                                <motion.div
-                                    className="w-full md:w-auto text-center md:text-right"
-                                    whileHover={{ scale: 1.02 }}
-                                >
+                                <motion.div className="w-full md:w-auto text-center md:text-right">
                                     <div className="flex items-center justify-center md:justify-end gap-2 p-4">
-                                        <p className="font-semibold text-sm customtext-neutral-dark">
-                                            {pagination.from} - {pagination.to}{" "}
-                                            de {pagination.totalItems}{" "}
-                                            Resultados
+                                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-dark">
+                                            MOSTRANDO {pagination.from} -{" "}
+                                            {pagination.to} DE{" "}
+                                            {pagination.totalItems} PRODUCTOS
                                         </p>
                                     </div>
                                 </motion.div>
@@ -3940,15 +3399,14 @@ const AnimatedBadge = ({
     className = "",
 }) => {
     const colorClasses = {
-        primary: "bg-primary text-white",
+        primary: "bg-black text-white hover:bg-neutral-900 border border-black",
     };
 
     return (
         <motion.div
             className={`inline-flex items-center gap-2 px-4 py-2 ${colorClasses[color]} border-0 rounded-none text-[10px] font-primary uppercase tracking-widest cursor-pointer select-none ${className}`}
             onClick={onClick}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.98 }}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}

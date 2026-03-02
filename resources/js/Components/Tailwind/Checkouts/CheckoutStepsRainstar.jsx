@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import CartStepRainstar from "./Components/Rainstar/CartStepRainstar";
 import ShippingStepRainstar from "./Components/Rainstar/ShippingStepRainstar";
 import ConfirmationStepRainstar from "./Components/Rainstar/ConfirmationStepRainstar";
@@ -249,8 +250,8 @@ export default function CheckoutStepsRainstar({
     };
 
     return (
-        <section className="bg-white min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-[5%]">
+        <section className="bg-white min-h-screen py-12">
+            <div className="2xl:max-w-7xl 2xl:px-0 px-primary mx-auto">
                 {step === 1 && (
                     <CartStepRainstar
                         data={data}
@@ -318,25 +319,6 @@ export default function CheckoutStepsRainstar({
                         conversionScripts={conversionScripts}
                     />
                 )}
-
-                {/* Policies Footer */}
-                <div className="py-12 border-t border-black/5">
-                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-                        {Object.keys(policyItems).map((key) => (
-                            <button
-                                key={key}
-                                onClick={() => setModalOpen(key)}
-                                className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 hover:text-black transition-colors"
-                            >
-                                [ {policyItems[key]} ]
-                            </button>
-                        ))}
-                    </div>
-                    <p className="text-center text-[9px] font-bold text-neutral-300 mt-8 uppercase tracking-widest">
-                        © {new Date().getFullYear()} Rainstar. Todos los
-                        derechos reservados.
-                    </p>
-                </div>
             </div>
 
             {/* Policy Modals */}
@@ -353,33 +335,37 @@ export default function CheckoutStepsRainstar({
                         onRequestClose={closeModal}
                         contentLabel={title}
                         className="fixed inset-0 flex items-center justify-center p-4 z-[10000]"
-                        overlayClassName="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999]"
+                        overlayClassName="fixed inset-0 bg-neutral-dark/40 backdrop-blur-sm z-[9999]"
                         ariaHideApp={false}
                     >
-                        <div className="bg-white border-2 border-black w-full max-w-4xl max-h-[90vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                            <div className="flex items-center justify-between p-8 border-b-2 border-black bg-black text-white">
-                                <h2 className="text-2xl font-black uppercase tracking-tighter">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            className="bg-white border border-gray-100 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="flex items-center justify-between px-10 py-10 border-b border-gray-50">
+                                <h2 className="text-3xl font-black tracking-tighter text-neutral-dark">
                                     {title}
                                 </h2>
                                 <button
                                     onClick={closeModal}
-                                    className="hover:rotate-90 transition-transform p-2 border-2 border-white/20 hover:border-white"
+                                    className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 text-neutral-dark transition-all"
                                 >
-                                    <X size={24} />
+                                    <X className="w-6 h-6 stroke-[1.5]" />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-8 prose prose-neutral max-w-none">
+                            <div className="flex-1 overflow-y-auto p-10 prose prose-neutral max-w-none prose-p:text-neutral-dark/70 prose-headings:text-neutral-dark prose-p:leading-relaxed">
                                 <HtmlContent html={content} />
                             </div>
-                            <div className="p-8 border-t-2 border-black bg-neutral-50 flex justify-end">
+                            <div className="p-10 border-t border-gray-50 bg-gray-50/50 flex justify-end">
                                 <button
                                     onClick={closeModal}
-                                    className="px-8 py-3 bg-black text-white font-black uppercase text-xs tracking-[0.2em] hover:bg-neutral-800 transition-colors"
+                                    className="px-12 py-4 bg-neutral-dark text-white font-bold uppercase text-[10px] tracking-widest hover:bg-primary transition-all rounded-none shadow-xl shadow-neutral-dark/10"
                                 >
-                                    Entendido
+                                    Cerrar ahora
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     </ReactModal>
                 );
             })}

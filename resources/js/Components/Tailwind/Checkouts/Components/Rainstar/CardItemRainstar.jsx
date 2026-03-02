@@ -66,11 +66,11 @@ const CardItemRainstar = ({
     const originalPrice = item.price;
 
     return (
-        <div className="w-full bg-white border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-none transition-all group">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 w-full">
+        <div className="w-full bg-white border border-gray-100 p-6 hover:border-neutral-dark/20 hover:shadow-xl transition-all duration-500 group flex flex-col md:flex-row gap-6 items-center relative">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 w-full flex-1">
                 <div className="flex items-center gap-6 flex-grow">
                     <div className="relative flex-shrink-0">
-                        <div className="w-24 h-24 border-2 border-black overflow-hidden bg-white grayscale group-hover:grayscale-0 transition-all duration-500">
+                        <div className="w-28 h-28 overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:border-primary/20 transition-all duration-500">
                             <img
                                 src={
                                     isCombo
@@ -80,21 +80,21 @@ const CardItemRainstar = ({
                                         : `/storage/images/item/${item?.image}`
                                 }
                                 alt={item?.name}
-                                className="w-full h-full object-cover object-top"
+                                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
                                 onError={(e) =>
                                     (e.target.src = "/api/cover/thumbnail/null")
                                 }
                             />
                         </div>
                         {isCombo && (
-                            <div className="absolute -top-3 -right-3 bg-black text-white border-2 border-white p-2">
+                            <div className="absolute top-0 right-0 bg-primary text-white p-2 shadow-md">
                                 <Package size={14} />
                             </div>
                         )}
                         {hasPromotion && (
                             <button
                                 onClick={() => onPromotionClick(item)}
-                                className="absolute -bottom-3 -right-3 bg-red-600 text-white border-2 border-white p-2 animate-bounce hover:scale-110 transition-transform"
+                                className="absolute -bottom-3 -right-3 bg-primary text-white shadow-lg shadow-primary/30 p-2 rounded-full animate-bounce hover:scale-110 transition-transform z-10"
                                 title="¡Tienes una promoción disponible!"
                             >
                                 <Gift size={14} />
@@ -102,27 +102,27 @@ const CardItemRainstar = ({
                         )}
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                        <h3 className="font-black text-xs md:text-sm uppercase tracking-tighter leading-tight mb-2 line-clamp-2">
+                    <div className="flex-1 min-w-0 py-2">
+                        <h3 className="font-bold text-sm md:text-base text-neutral-dark tracking-tight leading-tight mb-2 line-clamp-2">
                             {item?.name}
                         </h3>
 
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             {isCombo ? (
-                                <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest">
+                                <p className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-1 inline-block">
                                     Combo / {item.combo_items?.length || 0}{" "}
                                     productos
                                 </p>
                             ) : (
-                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                                <p className="text-[10px] font-bold text-neutral-dark/40 uppercase tracking-widest">
                                     SKU: {item?.sku}
                                 </p>
                             )}
 
                             {item?.brand?.name && (
-                                <p className="text-[10px] font-black uppercase tracking-tight">
-                                    MARCA:{" "}
-                                    <span className="text-neutral-500">
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-neutral-dark/50">
+                                    Marca:{" "}
+                                    <span className="text-neutral-dark">
                                         {item?.brand?.name}
                                     </span>
                                 </p>
@@ -131,49 +131,50 @@ const CardItemRainstar = ({
                     </div>
                 </div>
 
-                <div className="flex flex-row justify-between md:flex-col items-center md:items-end gap-6 flex-shrink-0 border-t-2 md:border-t-0 pt-4 md:pt-0 border-black/5">
+                <div className="flex flex-row justify-between md:flex-col items-center md:items-end gap-6 flex-shrink-0 pt-4 md:pt-0">
                     <div className="text-right">
                         {(isCombo || item?.discount > 0) &&
                             originalPrice > itemPrice && (
-                                <div className="text-[10px] font-bold text-neutral-400 line-through tracking-tighter">
+                                <div className="text-[10px] font-bold text-neutral-dark/30 line-through tracking-wider mb-1">
                                     {CurrencySymbol()}{" "}
                                     {Number(
                                         originalPrice * item?.quantity,
                                     ).toFixed(2)}
                                 </div>
                             )}
-                        <div className="font-black text-2xl tracking-tighter">
+                        <div className="font-black text-2xl tracking-tighter text-neutral-dark">
                             {CurrencySymbol()}{" "}
                             {Number(itemPrice * item?.quantity).toFixed(2)}
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center border-2 border-black bg-white h-10">
+                    <div className="flex items-center gap-5">
+                        <div className="flex items-center bg-gray-50 rounded-full border border-gray-100 p-1">
                             <button
                                 type="button"
                                 onClick={onMinusClicked}
-                                className="w-8 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-neutral-dark transition-all"
                             >
-                                <Minus size={14} strokeWidth={3} />
+                                <Minus size={14} strokeWidth={2.5} />
                             </button>
-                            <span className="w-10 text-center font-black text-xs border-x-2 border-black">
+                            <span className="w-8 text-center font-bold text-xs text-neutral-dark pointer-events-none">
                                 {item?.quantity || 1}
                             </span>
                             <button
                                 type="button"
                                 onClick={onPlusClicked}
-                                className="w-8 h-full flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-neutral-dark transition-all"
                             >
-                                <Plus size={14} strokeWidth={3} />
+                                <Plus size={14} strokeWidth={2.5} />
                             </button>
                         </div>
 
                         <button
                             onClick={onDeleteClicked}
-                            className="p-2 border-2 border-transparent hover:border-red-600 text-neutral-400 hover:text-red-600 transition-all hover:scale-110"
+                            className="text-neutral-dark/20 hover:text-red-500 hover:scale-110 transition-all flex-shrink-0"
+                            title="Eliminar producto"
                         >
-                            <Trash2 size={20} strokeWidth={2.5} />
+                            <Trash2 size={20} strokeWidth={1.5} />
                         </button>
                     </div>
                 </div>

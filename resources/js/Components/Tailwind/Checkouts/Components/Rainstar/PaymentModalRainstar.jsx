@@ -10,65 +10,73 @@ import {
     Building2,
     Phone,
     ChevronRight,
+    ArrowRight,
+    Lock,
 } from "lucide-react";
 import General from "../../../../../Utils/General";
 import Global from "../../../../../Utils/Global";
 
+// ── Payment option card ────────────────────────────────────────────────────────
 const PaymentOption = ({
     active,
-    id,
     label,
     description,
     icon: Icon,
     onClick,
     commission,
 }) => (
-    <div className="pb-1 pr-1">
-        {" "}
-        {/* Wrapper to contain the shadow/translate effect */}
-        <button
-            type="button"
-            onClick={onClick}
-            className={`w-full p-6 text-left border-2 transition-all relative overflow-hidden group ${
-                active
-                    ? "border-black bg-black text-white shadow-none translate-x-1 translate-y-1"
-                    : "border-black bg-white hover:border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
-            }`}
-        >
-            <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-1">
-                    <h5 className="font-black uppercase tracking-tighter text-lg leading-none">
-                        {label}
-                    </h5>
+    <button
+        type="button"
+        onClick={onClick}
+        className={`w-full p-5 text-left border-2 transition-colors duration-150 relative overflow-hidden ${
+            active
+                ? "border-neutral-dark bg-neutral-dark"
+                : "border-gray-200 bg-white hover:border-neutral-dark/40 hover:bg-gray-50/60"
+        }`}
+    >
+        <div className="flex items-center gap-4">
+            {/* Radio indicator — siempre en el DOM */}
+            <div
+                className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors duration-150 ${
+                    active ? "border-white" : "border-gray-300"
+                }`}
+            >
+                <div
+                    className={`w-2 h-2 rounded-full transition-all duration-150 ${
+                        active ? "bg-white scale-100" : "bg-transparent scale-0"
+                    }`}
+                />
+            </div>
+            <div className="flex-1 min-w-0">
+                <h5
+                    className={`font-bold text-base leading-tight transition-colors duration-150 ${active ? "text-white" : "text-neutral-dark"}`}
+                >
+                    {label}
+                </h5>
+                <p
+                    className={`text-xs leading-snug mt-0.5 transition-colors duration-150 ${active ? "text-white/60" : "text-neutral-dark/40"}`}
+                >
+                    {description}
+                </p>
+                {commission > 0 && (
                     <p
-                        className={`text-[10px] uppercase tracking-widest leading-tight ${active ? "text-white/60" : "text-neutral-400"}`}
+                        className={`text-[10px] font-bold mt-1 transition-colors duration-150 ${active ? "text-white/50" : "text-amber-500"}`}
                     >
-                        {description}
+                        + Comisión del {commission}%
                     </p>
-                    {commission > 0 && (
-                        <p
-                            className={`text-[9px] font-black uppercase tracking-widest mt-1 ${active ? "text-white/40" : "text-amber-500"}`}
-                        >
-                            + COMISIÓN DEL {commission}%
-                        </p>
-                    )}
-                </div>
-                {Icon && (
-                    <Icon
-                        className={`w-8 h-8 ${active ? "text-white" : "text-black/10 group-hover:text-black/30"} transition-colors`}
-                        strokeWidth={active ? 2.5 : 1.5}
-                    />
                 )}
             </div>
-            {active && (
-                <div className="absolute -bottom-2 -right-4 bg-white/10 p-4 rotate-12">
-                    <CheckCircle2 size={40} />
-                </div>
-            )}
-        </button>
-    </div>
+        </div>
+        {/* Watermark — siempre en el DOM, solo transiciona opacity */}
+        <div
+            className={`absolute -bottom-3 -right-3 pointer-events-none transition-opacity duration-150 ${active ? "opacity-10" : "opacity-0"}`}
+        >
+            <CheckCircle2 size={48} className="text-white" />
+        </div>
+    </button>
 );
 
+// ── Main component ─────────────────────────────────────────────────────────────
 export default function PaymentModalRainstar({
     isOpen,
     onClose,
@@ -112,72 +120,64 @@ export default function PaymentModalRainstar({
         <ReactModal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="absolute left-1/2 -translate-x-1/2 bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] w-[95%] max-w-4xl top-1/2 -translate-y-1/2 overflow-hidden outline-none"
-            overlayClassName="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100]"
+            className="absolute left-1/2 -translate-x-1/2 bg-white w-[95%] max-w-4xl top-1/2 -translate-y-1/2 overflow-hidden outline-none shadow-2xl shadow-neutral-dark/10"
+            overlayClassName="fixed inset-0 bg-neutral-dark/40 backdrop-blur-sm z-[100]"
             ariaHideApp={false}
         >
-            <div className="flex flex-col md:flex-row min-h-[500px]">
-                {/* Lado Izquierdo: Imagen Decorativa */}
-                <div className="md:w-5/12 hidden md:block relative overflow-hidden bg-[#f8f5f2] border-r-4 border-black">
+            <div className="flex flex-col md:flex-row min-h-[520px]">
+                {/* ── Left panel ── */}
+                <div className="md:w-5/12 hidden md:flex flex-col bg-neutral-dark text-white p-10 relative overflow-hidden">
                     <img
-                        src={`/assets/resources/payments.png?v=${crypto.randomUUID()}`}
+                        src={`/assets/resources/payments.png`}
                         alt={Global.APP_NAME}
-                        className="h-full w-full object-cover grayscale contrast-125"
+                        className="absolute inset-0 w-full h-full object-cover "
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/assets/img/logo-bk.svg";
+                            e.target.style.display = "none";
                         }}
                     />
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] p-10 flex flex-col justify-between text-white">
-                        <div className="relative z-10">
-                            <h2 className="text-5xl font-black uppercase tracking-tight leading-[0.85] italic mb-6 drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                                PAGAR ES EL <br />
-                                <span className="text-white/50">PASO</span>{" "}
-                                <br />
-                                FINAL
-                            </h2>
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] leading-relaxed opacity-80 max-w-[200px]">
-                                TU SEGURIDAD ES NUESTRA PRIORIDAD. TODOS
-                                NUESTROS PROCESOS ESTÁN ENCRIPTADOS.
-                            </p>
-                        </div>
-                    </div>
                 </div>
 
-                {/* Lado Derecho: Opciones de Pago */}
-                <div className="flex-1 p-8 md:p-12 relative">
+                {/* ── Right panel ── */}
+                <div className="flex-1 flex flex-col p-8 md:p-10 relative bg-white">
+                    {/* Close button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-8 right-8 text-black/20 hover:text-black transition-colors"
+                        className="absolute top-6 right-6 w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-neutral-dark/40 hover:text-neutral-dark hover:bg-gray-200 transition-colors"
                     >
-                        <X size={24} />
+                        <X size={18} />
                     </button>
 
-                    <div className="mb-10">
-                        <h3 className="text-2xl font-black uppercase tracking-tight mb-2">
-                            Método de Pago
+                    {/* Header */}
+                    <div className="mb-7">
+                        <h3 className="text-2xl font-black tracking-tight text-neutral-dark mb-1">
+                            Selecciona un método
                         </h3>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
-                            SELECCIONA UNA DE LAS OPCIONES DISPONIBLES
+                        <p className="text-xs text-neutral-dark/30 font-bold tracking-widest uppercase">
+                            Opciones disponibles para tu pedido
                         </p>
                     </div>
 
+                    {/* Options */}
                     {hasNoOptions ? (
-                        <div className="p-12 border-2 border-dashed border-black/10 flex flex-col items-center justify-center text-center">
-                            <X className="text-black/10 mb-4" size={48} />
-                            <p className="font-black uppercase tracking-tight text-neutral-300">
+                        <div className="flex-1 flex flex-col items-center justify-center py-12 border-2 border-dashed border-gray-200">
+                            <X
+                                className="text-neutral-dark/20 mb-4"
+                                size={40}
+                            />
+                            <p className="font-bold text-neutral-dark/30 text-sm">
                                 Sin métodos de pago configurados
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-4 max-h-[420px] overflow-y-auto overflow-x-hidden p-2 -m-2 brutalist-scroll">
+                        <div className="flex-1 space-y-3 overflow-y-auto pr-1">
                             {ischeckmpobject?.description === "true" && (
                                 <PaymentOption
-                                    id="tarjeta"
                                     active={paymentMethod === "tarjeta"}
                                     onClick={() => setPaymentMethod("tarjeta")}
-                                    label="Tarjeta"
-                                    description="CRÉDITO Y DÉBITO (MERCADO PAGO)"
+                                    label="Tarjeta de crédito / débito"
+                                    description="Visa, Mastercard, Amex via Mercado Pago"
+                                    icon={CreditCard}
                                     commission={parseFloat(
                                         General.get(
                                             "checkout_mercadopago_commission",
@@ -185,14 +185,13 @@ export default function PaymentModalRainstar({
                                     )}
                                 />
                             )}
-
                             {ischeckopenpayobject?.description === "true" && (
                                 <PaymentOption
-                                    id="openpay"
                                     active={paymentMethod === "openpay"}
                                     onClick={() => setPaymentMethod("openpay")}
-                                    label="Tarjeta"
-                                    description="PAGO SEGURO BBVA"
+                                    label="Tarjeta — OpenPay BBVA"
+                                    description="Pago seguro respaldado por BBVA"
+                                    icon={CreditCard}
                                     commission={parseFloat(
                                         General.get(
                                             "checkout_openpay_commission",
@@ -200,14 +199,13 @@ export default function PaymentModalRainstar({
                                     )}
                                 />
                             )}
-
                             {ischeckculqiobject?.description === "true" && (
                                 <PaymentOption
-                                    id="culqi"
                                     active={paymentMethod === "culqi"}
                                     onClick={() => setPaymentMethod("culqi")}
-                                    label="Tarjeta"
-                                    description="TODAS LAS TARJETAS Y YAPE"
+                                    label="Tarjeta — Culqi"
+                                    description="Todas las tarjetas y Yape"
+                                    icon={CreditCard}
                                     commission={parseFloat(
                                         General.get(
                                             "checkout_culqi_commission",
@@ -215,14 +213,13 @@ export default function PaymentModalRainstar({
                                     )}
                                 />
                             )}
-
                             {General.get("checkout_dwallet") === "true" && (
                                 <PaymentOption
-                                    id="yape"
                                     active={paymentMethod === "yape"}
                                     onClick={() => setPaymentMethod("yape")}
                                     label="Yape / Plin"
-                                    description="PAGO RÁPIDO DESDE TU CELULAR"
+                                    description="Pago rápido desde tu celular"
+                                    icon={Phone}
                                     commission={parseFloat(
                                         General.get(
                                             "checkout_dwallet_commission",
@@ -230,16 +227,15 @@ export default function PaymentModalRainstar({
                                     )}
                                 />
                             )}
-
                             {General.get("checkout_transfer") === "true" && (
                                 <PaymentOption
-                                    id="transferencia"
                                     active={paymentMethod === "transferencia"}
                                     onClick={() =>
                                         setPaymentMethod("transferencia")
                                     }
-                                    label="Transferencia"
-                                    description="BANCA POR INTERNET O APP"
+                                    label="Transferencia bancaria"
+                                    description="Banca por internet o app del banco"
+                                    icon={Building2}
                                     commission={parseFloat(
                                         General.get(
                                             "checkout_transfer_commission",
@@ -250,33 +246,34 @@ export default function PaymentModalRainstar({
                         </div>
                     )}
 
-                    <div className="mt-10 pt-8 border-t-2 border-black/5 flex flex-col md:flex-row gap-4">
+                    {/* Actions */}
+                    <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
                         <button
                             disabled={!paymentMethod || saving}
                             onClick={handlePayment}
-                            className={`flex-1 h-16 bg-black text-white px-8 flex items-center justify-between group transition-all ${
+                            className={`flex-1 group flex items-center justify-center gap-3 py-5 px-8 font-bold text-sm tracking-widest uppercase transition-all duration-200 ${
                                 !paymentMethod || saving
-                                    ? "opacity-30 grayscale cursor-not-allowed"
-                                    : "hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"
+                                    ? "bg-gray-100 text-neutral-dark/30 cursor-not-allowed"
+                                    : "bg-primary text-white hover:bg-neutral-dark shadow-lg shadow-primary/20 hover:shadow-neutral-dark/20"
                             }`}
                         >
-                            <span className="font-black uppercase tracking-widest italic">
-                                {saving ? "PROCESANDO..." : "CONFIRMAR PAGO"}
+                            <span>
+                                {saving ? "Procesando..." : "Confirmar pago"}
                             </span>
                             {!saving && (
-                                <ChevronRight
+                                <ArrowRight
+                                    size={16}
+                                    strokeWidth={2.5}
                                     className="group-hover:translate-x-1 transition-transform"
-                                    strokeWidth={3}
                                 />
                             )}
                         </button>
-
                         <button
                             disabled={saving}
                             onClick={onClose}
-                            className="h-16 px-8 border-2 border-black font-black uppercase tracking-widest hover:bg-neutral-50 transition-colors italic"
+                            className="py-5 px-7 border-2 border-gray-200 text-neutral-dark font-bold text-sm tracking-widest uppercase hover:border-neutral-dark hover:bg-gray-50 transition-all"
                         >
-                            CANCELAR
+                            Cancelar
                         </button>
                     </div>
                 </div>

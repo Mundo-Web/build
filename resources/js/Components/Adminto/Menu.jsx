@@ -438,21 +438,27 @@ const Menu = ({ session, hasRole }) => {
 
                             <MenuItem
                                 href="/provider/home"
-                                icon="mdi mdi-home-outline"
+                                icon="mdi mdi-view-dashboard-outline"
                             >
-                                Inicio Dashboard
+                                Dashboard
+                            </MenuItem>
+                            <MenuItem
+                                href="/provider/vault"
+                                icon="mdi mdi-safe-square-outline"
+                            >
+                                Mi Bóveda
                             </MenuItem>
                             <MenuItem
                                 href="/provider/profile"
-                                icon="mdi mdi-account-box-outline"
+                                icon="mdi mdi-account-cog-outline"
                             >
-                                Mis Datos y WhatsApp
+                                Mis Perfil
                             </MenuItem>
                             <MenuItem
                                 href="/account"
-                                icon="mdi mdi-account-key-outline"
+                                icon="mdi mdi-shield-lock-outline"
                             >
-                                Config. de Autenticación
+                                Mi Cuenta
                             </MenuItem>
                         </ul>
                     </div>

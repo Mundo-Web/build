@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\General;
 use App\Notifications\PurchaseSummaryNotification;
 use App\Helpers\NotificationHelper;
+use App\Models\InventoryVault;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -373,12 +374,31 @@ class SaleController extends BasicController
                 $detailJpa->price = $itemJpa->final_price;
                 $detailJpa->quantity = $itemJpa->quantity;
                 $detailJpa->colors = $itemJpa->colors;
+
+                // Lógica de Bóveda de Inventario (Premios)
+                $quantityNeeded = $itemJpa->quantity;
+                $fromVault = 0;
+                if ($saleJpa->referrer_id) {
+                    $vault = InventoryVault::where('user_id', $saleJpa->referrer_id)
+                        ->where('item_id', $itemJpa->id)
+                        ->where('quantity', '>', 0)
+                        ->first();
+                    if ($vault) {
+                        $fromVault = min($vault->quantity, $quantityNeeded);
+                        $vault->decrement('quantity', $fromVault);
+                        $detailJpa->is_prize = ($fromVault >= $quantityNeeded);
+                    }
+                }
+
                 $detailJpa->user_formula_id = $itemJpa->user_formula_id;
                 $detailJpa->image = $itemJpa->image ?? null;
                 $detailJpa->save();
 
-                // Actualizar stock como PaymentController
-                Item::where('id', $itemJpa->id)->decrement('stock', $itemJpa->quantity);
+                // Actualizar stock físico lo que no vino de la bóveda
+                $fromPhysical = $quantityNeeded - $fromVault;
+                if ($fromPhysical > 0) {
+                    Item::where('id', $itemJpa->id)->decrement('stock', $fromPhysical);
+                }
 
                 $detailsJpa[] = $detailJpa->toArray();
             }
@@ -413,7 +433,24 @@ class SaleController extends BasicController
                 // Actualizar stock de items del combo
                 foreach ($comboJpa->items as $comboItem) {
                     $stockReduction = $comboItem->pivot->quantity * $comboJpa->quantity;
-                    Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+
+                    // Lógica de Bóveda de Inventario para items de combo
+                    $fromVault = 0;
+                    if ($saleJpa->referrer_id) {
+                        $vault = InventoryVault::where('user_id', $saleJpa->referrer_id)
+                            ->where('item_id', $comboItem->id)
+                            ->where('quantity', '>', 0)
+                            ->first();
+                        if ($vault) {
+                            $fromVault = min($vault->quantity, $stockReduction);
+                            $vault->decrement('quantity', $fromVault);
+                        }
+                    }
+
+                    $fromPhysical = $stockReduction - $fromVault;
+                    if ($fromPhysical > 0) {
+                        Item::where('id', $comboItem->id)->decrement('stock', $fromPhysical);
+                    }
                 }
 
                 $detailsJpa[] = $detailJpa->toArray();
@@ -613,7 +650,24 @@ class SaleController extends BasicController
                     // Actualizar stock de los items del combo
                     foreach ($comboJpa->items as $comboItem) {
                         $stockReduction = $comboItem->pivot->quantity * $item['quantity'];
-                        Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+
+                        // Lógica de Bóveda de Inventario para items de combo
+                        $fromVault = 0;
+                        if ($jpa->referrer_id) {
+                            $vault = InventoryVault::where('user_id', $jpa->referrer_id)
+                                ->where('item_id', $comboItem->id)
+                                ->where('quantity', '>', 0)
+                                ->first();
+                            if ($vault) {
+                                $fromVault = min($vault->quantity, $stockReduction);
+                                $vault->decrement('quantity', $fromVault);
+                            }
+                        }
+
+                        $fromPhysical = $stockReduction - $fromVault;
+                        if ($fromPhysical > 0) {
+                            Item::where('id', $comboItem->id)->decrement('stock', $fromPhysical);
+                        }
                     }
                 }
             } else {
@@ -621,7 +675,7 @@ class SaleController extends BasicController
                 $itemJpa = Item::find($item['id']);
                 if ($itemJpa) {
                     // Crear detalle de venta con todos los campos como PaymentController
-                    SaleDetail::create([
+                    $saleDetail = SaleDetail::create([
                         'sale_id' => $jpa->id,
                         'item_id' => $itemJpa->id,
                         'type' => 'item',
@@ -634,8 +688,26 @@ class SaleController extends BasicController
 
                     $totalPrice += $itemJpa->final_price * $item['quantity'];
 
-                    // Actualizar stock como lo hace PaymentController
-                    Item::where('id', $itemJpa->id)->decrement('stock', $item['quantity']);
+                    // Lógica de Bóveda de Inventario (Premios)
+                    $quantityNeeded = $item['quantity'];
+                    $fromVault = 0;
+                    if ($jpa->referrer_id) {
+                        $vault = InventoryVault::where('user_id', $jpa->referrer_id)
+                            ->where('item_id', $itemJpa->id)
+                            ->where('quantity', '>', 0)
+                            ->first();
+                        if ($vault) {
+                            $fromVault = min($vault->quantity, $quantityNeeded);
+                            $vault->decrement('quantity', $fromVault);
+                            $saleDetail->is_prize = ($fromVault >= $quantityNeeded);
+                            $saleDetail->save();
+                        }
+                    }
+
+                    $fromPhysical = $quantityNeeded - $fromVault;
+                    if ($fromPhysical > 0) {
+                        Item::where('id', $itemJpa->id)->decrement('stock', $fromPhysical);
+                    }
                 }
             }
         }

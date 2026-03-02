@@ -7,6 +7,10 @@ use App\Models\User;
 use App\Models\JobApplication;
 use App\Models\ProviderInvitation;
 use App\Notifications\InviteProviderNotification;
+use App\Models\InventoryVault;
+use App\Models\Commission;
+use App\Models\Rank;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +27,7 @@ class ProviderController extends BasicController
     public function setPaginationInstance(Request $request, string $model)
     {
         // Only show users with Provider role
-        $query = User::with(['roles', 'referredBy'])
+        $query = User::with(['roles', 'referredBy', 'rank'])
             ->whereHas('roles', function ($roleQuery) {
                 $roleQuery->where('name', 'Provider');
             });
@@ -75,8 +79,8 @@ class ProviderController extends BasicController
     {
         $user = Auth::user();
 
-        // Si estamos en la vista del proveedor dashboard, retornar props específicas
-        if ($this->reactView === 'Provider/Home') {
+        // Si estamos en la vistas del proveedor, retornar props específicas
+        if (str_starts_with($this->reactView, 'Provider/')) {
             $referralUrl = $user && $user->uuid ? url('/' . $user->uuid) : '#';
 
             // Contar referidos directos
@@ -86,12 +90,32 @@ class ProviderController extends BasicController
                 })
                 ->count();
 
+            // Comisiones totales y de hoy
+            $totalCommissions = Commission::where('user_id', $user->id)->sum('amount');
+            $commissionsToday = Commission::where('user_id', $user->id)->whereDate('created_at', Carbon::today())->sum('amount');
+            $commissionsMonth = Commission::where('user_id', $user->id)->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()])->sum('amount');
+
+            // Ventas referidas totales (ventas cuya comisión es de este usuario)
+            $totalReferrerSales = Commission::where('user_id', $user->id)->distinct('sale_id')->count('sale_id');
+
+            $nextRank = Rank::where('status', true)
+                ->where('order_index', '>', $user->rank?->order_index ?? 0)
+                ->orderBy('order_index', 'asc')
+                ->first();
+
+            /** @var User $user */
             return [
                 'storeUrl' => $referralUrl,
                 'referralUrl' => $referralUrl,
                 'referralCode' => $user->uuid,
                 'directReferrals' => $directReferrals,
-                'user' => $user,
+                'user' => $user->load('rank'),
+                'nextRank' => $nextRank,
+                'totalCommissions' => $totalCommissions,
+                'commissionsToday' => $commissionsToday,
+                'commissionsMonth' => $commissionsMonth,
+                'totalReferrerSales' => $totalReferrerSales,
+                'vault' => InventoryVault::with('item')->where('user_id', $user->id)->get(),
             ];
         }
 
@@ -308,28 +332,115 @@ class ProviderController extends BasicController
     /**
      * Props específicas para el dashboard del proveedor
      */
-    public function setReactViewPropertiesForDashboard()
+
+    public function vault(Request $request)
     {
-        $user = Auth::user();
-        $referralUrl = $user && $user->uuid ? url('/' . $user->uuid) : '#';
-
-        // Contar referidos directos
-        $directReferrals = User::where('referred_by', $user->id)
-            ->whereHas('roles', function ($q) {
-                $q->where('name', 'Provider');
-            })
-            ->count();
-
-        return [
-            'referralUrl' => $referralUrl,
-            'referralCode' => $user->uuid,
-            'directReferrals' => $directReferrals,
-        ];
+        $this->reactView = 'Provider/Vault';
+        return $this->reactView($request);
     }
 
     public function profile(Request $request)
     {
         $this->reactView = 'Provider/Profile';
         return $this->reactView($request);
+    }
+
+    public function paginateVault(Request $request)
+    {
+        $userId = Auth::id();
+        $query = InventoryVault::with('item.category')
+            ->where('user_id', $userId);
+
+        if ($request->has('search') && $request->input('search.value')) {
+            $searchValue = $request->input('search.value');
+            $query->whereHas('item', function ($q) use ($searchValue) {
+                $q->where('name', 'LIKE', "%{$searchValue}%")
+                    ->orWhere('sku', 'LIKE', "%{$searchValue}%");
+            });
+        }
+
+        $totalCount = $query->count();
+
+        if ($request->has('take')) {
+            $query->skip($request->input('skip', 0))->take($request->input('take'));
+        }
+
+        $data = $query->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $data,
+            'totalCount' => $totalCount
+        ]);
+    }
+
+    /**
+     * Obtener el inventario de la bóveda de un usuario
+     */
+    public function getVault($userId)
+    {
+        try {
+            $vault = InventoryVault::with('item')->where('user_id', $userId)->get();
+            return response([
+                'status' => 200,
+                'data' => $vault
+            ], 200);
+        } catch (\Throwable $th) {
+            return response([
+                'status' => 500,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Actualizar o crear una entrada en la bóveda
+     */
+    public function updateVault(Request $request)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'item_id' => 'required|exists:items,id',
+                'quantity' => 'required|integer|min:0'
+            ]);
+
+            $vault = InventoryVault::updateOrCreate(
+                [
+                    'user_id' => $request->user_id,
+                    'item_id' => $request->item_id
+                ],
+                [
+                    'quantity' => $request->quantity
+                ]
+            );
+
+            return response([
+                'status' => 200,
+                'message' => 'Bóveda actualizada exitosamente',
+                'data' => $vault->load('item')
+            ], 200);
+        } catch (\Throwable $th) {
+            return response([
+                'status' => 500,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteVaultItem($id)
+    {
+        try {
+            InventoryVault::where('id', $id)->delete();
+            return response([
+                'status' => 200,
+                'message' => 'Ítem eliminado de la bóveda'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response([
+                'status' => 500,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }

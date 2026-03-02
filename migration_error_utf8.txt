@@ -1,0 +1,26 @@
+﻿
+   INFO  Running migrations.  
+
+  2026_02_26_184132_create_rank_bonuses_and_user_milestones_tables  3ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'rank_bonuses' already exists (Connection: mysql, SQL: create table `rank_bonuses` (`id` bigint unsigned not null auto_increment primary key, `name` varchar(255) not null, `description` text null, `type` enum('amount', 'items') not null default 'items', `is_group` tinyint(1) not null default '0', `min_value` decimal(15, 2) not null, `bonus_amount` decimal(15, 2) not null, `status` tinyint(1) not null default '1', `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:829
+    825▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    826▕                 );
+    827▕             }
+    828▕ 
+  ➜ 829▕             throw new QueryException(
+    830▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    831▕             );
+    832▕         }
+    833▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:587
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'rank_bonuses' already exists")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:587
+      PDOStatement::execute()
+
