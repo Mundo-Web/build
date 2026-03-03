@@ -453,7 +453,8 @@
                     "class_text",
                     "class",
                     "link_cart",
-                    "type_topbar"
+                    "type_topbar",
+                    "is_ecommerce"
                 ],
                 "using": {
                     "model": "Category",

@@ -229,8 +229,8 @@ const HeaderSearchMenuSF = ({
             />
 
             {/* Navigation Bar */}
-            <div className="w-full border-b border-gray-100">
-                <div className="flex justify-between w-full px-[5%] py-2 lg:py-4 mx-auto replace-max-w-here 2xl:max-w-7xl 2xl:px-0">
+            <div className="w-full ">
+                <div className="flex justify-between px-[5%] py-2 lg:py-4 mx-auto w-full 2xl:max-w-7xl 2xl:px-0">
                     <nav className="flex h-[80px] items-center justify-between gap-10 w-full">
                         {/* Mobile hamburger button - Icono más moderno */}
                         <button
