@@ -1,0 +1,1 @@
+import{j as t}from"./vendor-react-BUvXLLEL.js";import{H as e}from"./HtmlContent-BLne4zwp.js";import"./vendor-swiper-Cr_RrIb_.js";const s=({data:s})=>t.jsx("section",{id:s?.element_id||null,className:"w-full",children:t.jsx(e,{html:s?.["code:html"]??""})});export{s as default};

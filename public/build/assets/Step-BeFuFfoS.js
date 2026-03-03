@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/StepSimple-WKKaGWld.js","assets/vendor-react-BUvXLLEL.js","assets/vendor-swiper-Cr_RrIb_.js","vendor-swiper.css","vendor-react.css","assets/StepKuchara-DiKdDzrm.js"])))=>i.map(i=>d[i]);
+import{_ as r}from"./preload-helper-DAHR15QK.js";import{R as p}from"./vendor-react-BUvXLLEL.js";import"./vendor-swiper-Cr_RrIb_.js";p.lazy(()=>r(()=>import("./StepSimple-WKKaGWld.js"),__vite__mapDeps([0,1,2,3,4]))),p.lazy(()=>r(()=>import("./StepKuchara-DiKdDzrm.js"),__vite__mapDeps([5,1,2,3,4])));

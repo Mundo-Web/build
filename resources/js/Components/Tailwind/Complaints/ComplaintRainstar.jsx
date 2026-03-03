@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import InputForm from "../Checkouts/Components/InputForm";
 import ubigeoData from "../../../../../storage/app/utils/ubigeo.json";
-import SelectForm from "../Checkouts/Components/SelectForm";
 import CustomCaptcha from "./CustomCaptcha";
 import ThankYouRainstar from "./ThankYouRainstar";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
+import { ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import {
     getDocumentTypesOptions,
     validateDocument,
@@ -22,10 +23,80 @@ import {
     Shield,
     ArrowRight,
     Loader2,
+    ChevronLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import Global from "../../../Utils/Global";
+
+const InputField = ({ label, name, error, ...props }) => (
+    <div className="space-y-1.5">
+        <label className="text-xs font-bold tracking-widest text-neutral-400 block mb-1.5">
+            {label}
+        </label>
+        <div className="relative">
+            <input
+                {...props}
+                name={name}
+                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${
+                    error
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-200 focus:border-black hover:border-gray-400"
+                }`}
+            />
+        </div>
+        {error && (
+            <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider">
+                {error}
+            </p>
+        )}
+    </div>
+);
+
+const SelectField = ({ label, options, placeholder, error, ...props }) => {
+    const isArrayOfObjects =
+        options.length > 0 && typeof options[0] === "object";
+    const normalizedOptions = options.map((option) =>
+        isArrayOfObjects
+            ? { value: option.value, label: option.label }
+            : { value: option, label: option },
+    );
+
+    return (
+        <div className="space-y-1.5 w-full">
+            <label className="text-xs font-bold tracking-widest text-neutral-400 block mb-1.5">
+                {label}
+            </label>
+            <div className="relative group">
+                <select
+                    {...props}
+                    className={`w-full border-2 p-4 font-medium outline-none appearance-none bg-white cursor-pointer transition-all text-neutral-800 ${
+                        error
+                            ? "border-red-400 bg-red-50"
+                            : "border-gray-200 focus:border-black hover:border-gray-400"
+                    }`}
+                >
+                    <option value="" disabled>
+                        {placeholder}
+                    </option>
+                    {normalizedOptions.map((opt, i) => (
+                        <option key={i} value={opt.value}>
+                            {opt.label}
+                        </option>
+                    ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                    <ChevronDown size={16} />
+                </div>
+            </div>
+            {error && (
+                <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider">
+                    {error}
+                </p>
+            )}
+        </div>
+    );
+};
 
 export default function ComplaintRainstar({ generals = [], data }) {
     // Data from Generals
@@ -326,10 +397,8 @@ export default function ComplaintRainstar({ generals = [], data }) {
         );
     }
 
-    const rainstarInputClass =
-        "!rounded-none !border-x-0 !border-t-0 border-b border-neutral-900 !px-0 py-4 bg-transparent focus:!ring-0 focus:!outline-none focus:!border-x-0 focus:!border-t-0 focus:border-b-1 text-xs uppercase tracking-widest placeholder:text-neutral-300 transition-all font-medium";
     const rainstarLabelClass =
-        "text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-2 block";
+        "text-xs font-bold tracking-widest text-neutral-400 block mb-1.5";
 
     return (
         <section
@@ -338,62 +407,66 @@ export default function ComplaintRainstar({ generals = [], data }) {
         >
             <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
-                <div className="mb-20">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-                        <div className="max-w-3xl">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400 mb-4 block">
-                                Servicio al Cliente
+                <div className="mb-24">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16 border-b-[6px] border-neutral-dark pb-12"
+                    >
+                        <div className="max-w-4xl">
+                            <span className="text-[11px] font-bold text-primary mb-6 block">
+                                Tu tranquilidad es prioridad
                             </span>
-                            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">
-                                Libro de <br /> Reclamaciones
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] text-neutral-dark mb-4">
+                                <TextWithHighlight
+                                    text={
+                                        data?.title || "Libro de Reclamaciones"
+                                    }
+                                />
                             </h1>
-                            <p className="text-neutral-500 text-lg max-w-xl leading-relaxed">
-                                En {Global.APP_NAME} valoramos tu experiencia.
-                                Si algo no cumplió con tus expectativas,
-                                permítenos corregirlo.
+                        </div>
+                        <div className="hidden md:block max-w-[280px]">
+                            <p className="text-right text-[11px] font-medium text-neutral-dark leading-relaxed italic">
+                                {data?.description ||
+                                    "En Rainstar valoramos tu experiencia. Si algo no cumplió con tus expectativas, permítenos corregirlo de inmediato."}
                             </p>
                         </div>
-                        <div className="hidden md:block">
-                            <div className="w-24 h-[1px] bg-neutral-900 mb-4"></div>
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                                Formulario Oficial
-                            </span>
-                        </div>
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                     {/* Sidebar Info */}
                     <div className="lg:col-span-4 order-2 lg:order-1">
                         <div className="sticky top-32 space-y-12">
-                            <div className="p-8 bg-neutral-50 border border-neutral-100">
-                                <h3 className="text-xs font-bold uppercase tracking-widest mb-6 border-b border-neutral-200 pb-4">
+                            <div className="p-8 bg-neutral-50 border-l-[6px] border-neutral-dark">
+                                <h3 className="text-sm font-black mb-8 text-neutral-dark">
                                     Información Útil
                                 </h3>
-                                <ul className="space-y-6">
+                                <ul className="space-y-8">
                                     <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-none bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="shrink-0 w-8 h-8 bg-neutral-dark text-white flex items-center justify-center text-[10px] font-black">
                                             01
                                         </div>
-                                        <p className="text-xs text-neutral-600 leading-relaxed uppercase tracking-wider font-medium">
+                                        <p className="text-[11px] text-neutral-500 leading-relaxed font-bold">
                                             Tu reclamo será atendido en un plazo
                                             máximo de 15 días calendario.
                                         </p>
                                     </li>
                                     <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-none bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="shrink-0 w-8 h-8 bg-neutral-dark text-white flex items-center justify-center text-[10px] font-black">
                                             02
                                         </div>
-                                        <p className="text-xs text-neutral-600 leading-relaxed uppercase tracking-wider font-medium">
+                                        <p className="text-[11px] text-neutral-500 leading-relaxed font-bold">
                                             Recibirás una copia de este reclamo
                                             en tu correo electrónico.
                                         </p>
                                     </li>
                                     <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-none bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="shrink-0 w-8 h-8 bg-neutral-dark text-white flex items-center justify-center text-[10px] font-black">
                                             03
                                         </div>
-                                        <p className="text-xs text-neutral-600 leading-relaxed uppercase tracking-wider font-medium">
+                                        <p className="text-[11px] text-neutral-500 leading-relaxed font-bold">
                                             Los datos personales proporcionados
                                             son estrictamente confidenciales.
                                         </p>
@@ -401,37 +474,37 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                 </ul>
                             </div>
 
-                            <div className="space-y-6">
-                                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">
+                            <div className="space-y-6 pt-12 border-t border-neutral-100">
+                                <h4 className="text-[11px] font-bold text-primary block">
                                     Atención Directa
                                 </h4>
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     {emailContact && (
-                                        <div className="group">
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-1">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-neutral-400 mb-1">
                                                 Email
                                             </p>
-                                            <p className="text-xs font-bold tracking-widest uppercase transition-colors group-hover:text-neutral-500">
+                                            <p className="text-sm font-black text-neutral-dark">
                                                 {emailContact}
                                             </p>
                                         </div>
                                     )}
                                     {phoneContact && (
-                                        <div className="group">
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-1">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-neutral-400 mb-1">
                                                 Teléfono
                                             </p>
-                                            <p className="text-xs font-bold tracking-widest uppercase transition-colors group-hover:text-neutral-500">
+                                            <p className="text-sm font-black text-neutral-dark">
                                                 {phoneContact}
                                             </p>
                                         </div>
                                     )}
                                     {openingHours && (
-                                        <div className="group">
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-1">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-neutral-400 mb-1">
                                                 Horario
                                             </p>
-                                            <p className="text-xs font-medium whitespace-pre-line text-neutral-500 uppercase tracking-widest leading-loose">
+                                            <p className="text-sm font-medium text-neutral-500 leading-relaxed">
                                                 {openingHours}
                                             </p>
                                         </div>
@@ -444,37 +517,35 @@ export default function ComplaintRainstar({ generals = [], data }) {
                     {/* Form area */}
                     <div className="lg:col-span-8 order-1 lg:order-2">
                         <form onSubmit={handleSubmit} className="space-y-20">
-                            {/* Section 1: Consumer ID */}
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-neutral-900 pb-4">
-                                    <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
+                            <div className="space-y-12">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                    <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                         01
-                                    </span>
-                                    <h2 className="text-xl font-bold uppercase tracking-tighter">
+                                    </div>
+                                    <h2 className="text-xl font-black tracking-tight text-neutral-dark">
                                         Identificación del Consumidor
                                     </h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                                     <div className="md:col-span-2">
-                                        <InputForm
+                                        <InputField
                                             label="Nombre Completo"
                                             name="nombre"
-                                            placeholder="EJ. JOHN DOE"
+                                            placeholder="Ej. John Doe"
                                             value={formData.nombre}
                                             onChange={handleChange}
-                                            className={rainstarInputClass}
-                                            labelClass={rainstarLabelClass}
                                         />
                                     </div>
                                     <div className="grid col-span-2 grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                                         <div className="md:col-span-1">
-                                            <SelectForm
+                                            <SelectField
                                                 label="Tipo de Documento"
                                                 options={typesDocument}
-                                                placeholder="SELECCIONA UNA OPCIÓN"
+                                                placeholder="Selecciona una opción"
                                                 value={formData.tipo_documento}
-                                                onChange={(val) => {
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
                                                     const validation =
                                                         validateDocument(
                                                             val,
@@ -483,7 +554,6 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                                     setFormData((p) => ({
                                                         ...p,
                                                         tipo_documento: val,
-                                                        // Truncar el número actual si excede el nuevo límite
                                                         numero_identidad:
                                                             p.numero_identidad.substring(
                                                                 0,
@@ -491,12 +561,10 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                                             ),
                                                     }));
                                                 }}
-                                                className={rainstarInputClass}
-                                                labelClass={rainstarLabelClass}
                                             />
                                         </div>
                                         <div className="md:col-span-1">
-                                            <InputForm
+                                            <InputField
                                                 label="Nº Documento"
                                                 name="numero_identidad"
                                                 placeholder="00000000"
@@ -504,183 +572,160 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                                     formData.numero_identidad
                                                 }
                                                 onChange={handleChange}
-                                                className={rainstarInputClass}
-                                                labelClass={rainstarLabelClass}
                                             />
                                         </div>
                                     </div>
-                                    <InputForm
+                                    <InputField
                                         label="Teléfono Móvil"
                                         name="celular"
                                         placeholder="+51 999 999 999"
                                         value={formData.celular}
                                         onChange={handleChange}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
                                     />
-                                    <InputForm
+                                    <InputField
                                         label="Email"
                                         name="correo_electronico"
-                                        placeholder="HELLO@EMAIL.COM"
+                                        placeholder="correo@ejemplo.com"
                                         value={formData.correo_electronico}
                                         onChange={handleChange}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
                                     />
                                 </div>
                             </div>
 
-                            {/* Section 2: Ubicación */}
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-neutral-900 pb-4">
-                                    <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
+                            <div className="space-y-12">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                    <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                         02
-                                    </span>
-                                    <h2 className="text-xl font-bold uppercase tracking-tighter">
+                                    </div>
+                                    <h2 className="text-xl font-black tracking-tight text-neutral-dark">
                                         Ubicación
                                     </h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-                                    <SelectForm
+                                    <SelectField
                                         label="Departamento"
                                         options={departamentos}
-                                        placeholder="SELECCIONA"
+                                        placeholder="Selecciona"
                                         value={departamento}
-                                        onChange={setDepartamento}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
+                                        onChange={(e) =>
+                                            setDepartamento(e.target.value)
+                                        }
                                     />
-                                    <SelectForm
+                                    <SelectField
                                         label="Provincia"
                                         disabled={!departamento}
                                         options={provincias}
-                                        placeholder="SELECCIONA"
+                                        placeholder="Selecciona"
                                         value={provincia}
-                                        onChange={setProvincia}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
+                                        onChange={(e) =>
+                                            setProvincia(e.target.value)
+                                        }
                                     />
-                                    <SelectForm
+                                    <SelectField
                                         label="Distrito"
                                         disabled={!provincia}
                                         options={distritos}
-                                        placeholder="SELECCIONA"
+                                        placeholder="Selecciona"
                                         value={distrito}
-                                        onChange={setDistrito}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
+                                        onChange={(e) =>
+                                            setDistrito(e.target.value)
+                                        }
                                     />
                                     <div className="md:col-span-3">
-                                        <InputForm
+                                        <InputField
                                             label="Dirección de Domicilio"
                                             name="direccion"
-                                            placeholder="AV. PRINCIPAL 123, URBANIZACIÓN..."
+                                            placeholder="Ej. Av. Principal 123, Urbanización..."
                                             value={formData.direccion}
                                             onChange={handleChange}
-                                            className={rainstarInputClass}
-                                            labelClass={rainstarLabelClass}
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Section 3: Product Info */}
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-neutral-900 pb-4">
-                                    <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
+                            <div className="space-y-12">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                    <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                         03
-                                    </span>
-                                    <h2 className="text-xl font-bold uppercase tracking-tighter">
+                                    </div>
+                                    <h2 className="text-xl font-black tracking-tight text-neutral-dark">
                                         Bien Contratado
                                     </h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                                    <SelectForm
+                                    <SelectField
                                         label="Tipo"
                                         options={typesContract}
-                                        placeholder="SELECCIONA UNA OPCIÓN"
+                                        placeholder="Selecciona una opción"
                                         value={formData.tipo_producto}
-                                        onChange={(val) =>
+                                        onChange={(e) =>
                                             setFormData((p) => ({
                                                 ...p,
-                                                tipo_producto: val,
+                                                tipo_producto: e.target.value,
                                             }))
                                         }
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
                                     />
-                                    <InputForm
+                                    <InputField
                                         label={`Monto (${CurrencySymbol()})`}
                                         type="number"
                                         name="monto_reclamado"
                                         placeholder="0.00"
                                         value={formData.monto_reclamado}
                                         onChange={handleChange}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
                                     />
                                     <div className="md:col-span-2">
-                                        <InputForm
+                                        <InputField
                                             label="Descripción del Producto o Servicio"
                                             name="descripcion_producto"
-                                            placeholder="NOMBRE DEL PRODUCTO, TALLA, MODELO O REFERENCIA"
+                                            placeholder="Ej. Nombre del producto, talla o modelo"
                                             value={
                                                 formData.descripcion_producto
                                             }
                                             onChange={handleChange}
-                                            className={rainstarInputClass}
-                                            labelClass={rainstarLabelClass}
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Section 4: Reclamo */}
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-neutral-900 pb-4">
-                                    <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
+                            <div className="space-y-12">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                    <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                         04
-                                    </span>
-                                    <h2 className="text-xl font-bold uppercase tracking-tighter">
+                                    </div>
+                                    <h2 className="text-xl font-black tracking-tight text-neutral-dark">
                                         Detalle de la Solicitud
                                     </h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                                    <SelectForm
+                                    <SelectField
                                         label="Tipo de Solicitud"
                                         options={typesClaim}
-                                        placeholder="SELECCIONA UNA OPCIÓN"
+                                        placeholder="Selecciona una opción"
                                         value={formData.tipo_reclamo}
-                                        onChange={(val) =>
+                                        onChange={(e) =>
                                             setFormData((p) => ({
                                                 ...p,
-                                                tipo_reclamo: val,
+                                                tipo_reclamo: e.target.value,
                                             }))
                                         }
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
                                     />
-                                    <InputForm
+                                    <InputField
                                         label="Fecha de Ocurrencia"
                                         type="date"
                                         name="fecha_ocurrencia"
                                         value={formData.fecha_ocurrencia}
                                         onChange={handleChange}
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
                                     />
                                     <div className="md:col-span-2">
-                                        <InputForm
+                                        <InputField
                                             label="Nº Pedido (Opcional)"
                                             name="numero_pedido"
-                                            placeholder="#12345"
+                                            placeholder="Ej. #12345"
                                             value={formData.numero_pedido}
                                             onChange={handleChange}
-                                            className={rainstarInputClass}
-                                            labelClass={rainstarLabelClass}
                                         />
                                     </div>
                                     <div className="md:col-span-2 space-y-4">
@@ -689,47 +734,46 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                         </label>
                                         <textarea
                                             name="detalle_reclamo"
-                                            placeholder="DESCRIBE LO SUCEDIDO CON EL MAYOR DETALLE POSIBLE..."
+                                            placeholder="Describe lo sucedido con el mayor detalle posible..."
                                             value={formData.detalle_reclamo}
                                             onChange={handleChange}
                                             rows={6}
-                                            className="w-full !border-x-0 !border-t-0 border-b border-neutral-900 p-0 focus:!ring-0 focus:!outline-none focus:!border-x-0 focus:!border-t-0 focus:border-b-2 transition-all uppercase text-xs tracking-widest placeholder:text-neutral-300 font-medium bg-transparent resize-none py-4"
+                                            className="w-full border-2 border-gray-200 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 focus:border-black hover:border-gray-400 resize-none"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Section 5: Verification */}
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-neutral-900 pb-4">
-                                    <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
+                            <div className="space-y-12">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                    <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                         05
-                                    </span>
-                                    <h2 className="text-xl font-bold uppercase tracking-tighter">
+                                    </div>
+                                    <h2 className="text-xl font-black tracking-tight text-neutral-dark">
                                         Confirmación
                                     </h2>
                                 </div>
 
                                 <div className="space-y-8">
-                                    <div className="flex items-start gap-4 p-8 bg-black text-white">
+                                    <div className="flex items-start gap-4 p-8 bg-neutral-dark text-white border-l-[6px] border-primary">
                                         <input
                                             type="checkbox"
                                             id="terminos"
                                             name="acepta_terminos"
-                                            className="mt-1 w-4 h-4 accent-white bg-transparent border-white"
+                                            className="mt-1 w-4 h-4 accent-primary bg-transparent border-white"
                                             checked={formData.acepta_terminos}
                                             onChange={handleChange}
                                         />
                                         <label
                                             htmlFor="terminos"
-                                            className="text-[10px] uppercase tracking-widest leading-relaxed font-bold"
+                                            className="text-[11px] leading-relaxed font-bold"
                                         >
                                             Declaro que la información es
                                             conforme y acepto los{" "}
                                             <button
                                                 type="button"
                                                 onClick={() => openModal(0)}
-                                                className="underline hover:text-neutral-300 transition-colors"
+                                                className="underline hover:text-primary transition-colors font-black"
                                             >
                                                 términos y condiciones
                                             </button>{" "}
@@ -750,7 +794,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                         <button
                                             type="button"
                                             onClick={resetForm}
-                                            className="px-12 py-5 text-[10px] font-bold uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all duration-300"
+                                            className="px-12 py-5 text-[11px] font-black uppercase tracking-widest border-2 border-neutral-dark hover:bg-neutral-dark hover:text-white transition-all duration-500"
                                         >
                                             Limpiar Formulario
                                         </button>
@@ -761,7 +805,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                                 !isCaptchaVerified
                                             }
                                             type="submit"
-                                            className="flex-1 px-12 py-5 text-[10px] font-bold uppercase tracking-[0.2em] bg-black text-white hover:brightness-125 disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4 group"
+                                            className="flex-1 px-12 py-5 text-[11px] font-black uppercase tracking-[0.2em] bg-neutral-dark text-white hover:bg-primary disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-4 group shadow-xl"
                                         >
                                             {loading ? (
                                                 <Loader2
@@ -773,7 +817,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                                     Registrar Reclamo
                                                     <ArrowRight
                                                         size={14}
-                                                        className="group-hover:translate-x-1 transition-transform"
+                                                        className="group-hover:translate-x-2 transition-transform duration-500"
                                                     />
                                                 </>
                                             )}
