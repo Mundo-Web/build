@@ -33,6 +33,8 @@ class NotificationVariableController extends Controller
             'admin_whistleblowing'  => \App\Notifications\AdminWhistleblowingNotification::class,
             'job_application'       => \App\Notifications\JobApplicationNotification::class,
             'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
+            'invite_provider'       => \App\Notifications\InviteProviderNotification::class,
+            'welcome_provider'      => \App\Notifications\WelcomeProviderNotification::class,
         ];
         if (!isset($map[$type])) {
             return response()->json(['error' => 'Tipo de notificación no válido'], 404);

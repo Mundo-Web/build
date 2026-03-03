@@ -35,5 +35,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('Customer', function ($user) {
             return $user->hasRole('Customer');
         });
+
+        // Define Gate for Management - includes anyone who can manage referrals or apps
+        Gate::define('Management', function ($user) {
+            return $user->hasRole(['Admin', 'Root', 'Provider']);
+        });
     }
 }

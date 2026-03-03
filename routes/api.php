@@ -687,12 +687,31 @@ Route::middleware('auth')->group(function () {
     Route::post('/room-availability/{roomId}/complete-cleaning', [AdminRoomAvailabilityController::class, 'completeCleaning']);
 
 
-    //JOB APLICATIONS
+    // JOB APPLICATIONS moved to management gate
+  });
+
+  Route::middleware('can:Management')->prefix('admin')->group(function () {
     Route::post('/job-applications', [AdminJobApplicationController::class, 'save']);
     Route::post('/job-applications/paginate', [AdminJobApplicationController::class, 'paginate']);
     Route::patch('/job-applications/status', [AdminJobApplicationController::class, 'status']);
     Route::patch('/job-applications/{field}', [AdminJobApplicationController::class, 'boolean']);
     Route::delete('/job-applications/{id}', [AdminJobApplicationController::class, 'delete']);
+
+    // Providers management
+    Route::post('/providers', [ProviderController::class, 'save']);
+    Route::post('/providers/paginate', [ProviderController::class, 'paginate']);
+    Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
+    Route::post('/providers/invite', [ProviderController::class, 'invite']);
+    Route::post('/providers/accept-application', [ProviderController::class, 'acceptApplication']);
+    Route::get('/providers/tree', [ProviderController::class, 'getProviderTree']);
+    Route::get('/providers/{userId}/vault', [ProviderController::class, 'getVault']);
+    Route::post('/providers/vault', [ProviderController::class, 'updateVault']);
+    Route::delete('/providers/vault/{id}', [ProviderController::class, 'deleteVaultItem']);
+    Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
+  });
+
+  Route::middleware('can:Admin')->prefix('admin')->group(function () {
+
 
     Route::post('/statuses', [AdminSaleStatusController::class, 'save']);
     Route::post('/statuses/paginate', [AdminSaleStatusController::class, 'paginate']);
@@ -710,18 +729,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/clients/paginate', [AdminClientController::class, 'paginate']);
     Route::patch('/clients/{field}', [AdminClientController::class, 'boolean']);
     Route::post('/clients/{id}/promote', [AdminClientController::class, 'promoteToProvider']);
-
-    // Providers management
-    Route::post('/providers', [ProviderController::class, 'save']);
-    Route::post('/providers/paginate', [ProviderController::class, 'paginate']);
-    Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
-    Route::post('/providers/invite', [ProviderController::class, 'invite']);
-    Route::get('/providers/tree', [ProviderController::class, 'getProviderTree']);
-    Route::get('/providers/{userId}/vault', [ProviderController::class, 'getVault']);
-    Route::post('/providers/vault', [ProviderController::class, 'updateVault']);
-    Route::delete('/providers/vault/{id}', [ProviderController::class, 'deleteVaultItem']);
-    Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
-
 
     // System routes - accessible by Admin and Root
     Route::post('/system', [AdminSystemController::class, 'save']);

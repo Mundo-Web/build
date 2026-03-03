@@ -8,6 +8,10 @@ class ProvidersRest extends BasicRest {
     return this.post(`${this.path}/invite`, data)
   }
 
+  acceptApplication = (data) => {
+    return this.post(`${this.path}/accept-application`, data)
+  }
+
   getTree = async () => {
     try {
       const res = await fetch(`/api/${this.path}/tree`, {

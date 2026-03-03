@@ -96,6 +96,7 @@ const Generals = ({
             "job_application_email",
             "admin_job_application_email",
             "invite_provider_email",
+            "welcome_provider_email",
         ],
         contact: [
             "phone_contact",
@@ -251,6 +252,7 @@ const Generals = ({
         "job_application_email",
         "admin_job_application_email",
         "invite_provider_email",
+        "welcome_provider_email",
     ];
 
     // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
@@ -310,6 +312,7 @@ const Generals = ({
             job_application_email: "job_application",
             admin_job_application_email: "admin_job_application",
             invite_provider_email: "invite_provider",
+            welcome_provider_email: "welcome_provider",
         };
         const type = correlativeToType[selectedEmailCorrelative];
         if (!type) {

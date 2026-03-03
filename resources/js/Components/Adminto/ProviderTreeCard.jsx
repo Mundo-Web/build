@@ -359,7 +359,7 @@ const OrgNode = ({ provider, level = 0, isCompanyRoot = false }) => {
 /* ───────────────────────────────────────────────
    Card principal
    ─────────────────────────────────────────────── */
-const ProviderTreeCard = () => {
+const ProviderTreeCard = ({ isProviderView = false }) => {
     const [treeData, setTreeData] = useState(null);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -492,9 +492,9 @@ const ProviderTreeCard = () => {
                 <div
                     className="card-header border-0 d-flex justify-content-between align-items-center"
                     style={{
-                        background:
-                            "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)",
-                        padding: "1.25rem 1.5rem",
+                        background: "#ffffff",
+                        padding: "1.25rem 2rem",
+                        borderBottom: "1px solid #f1f5f9",
                     }}
                 >
                     <div className="d-flex align-items-center">
@@ -503,25 +503,28 @@ const ProviderTreeCard = () => {
                             style={{
                                 width: "44px",
                                 height: "44px",
-                                backgroundColor: "rgba(255,255,255,0.12)",
-                                border: "1px solid rgba(255,255,255,0.1)",
+                                backgroundColor: "#f8fafc",
+                                border: "1px solid #e2e8f0",
                             }}
                         >
                             <i
-                                className="fas fa-sitemap text-white"
+                                className="fas fa-sitemap text-primary"
                                 style={{ fontSize: "18px" }}
                             ></i>
                         </div>
                         <div>
                             <h6
-                                className="mb-0 text-white fw-bold"
+                                className="mb-0 text-dark fw-bold"
                                 style={{ fontSize: "16px" }}
                             >
-                                Organigrama de Proveedores
+                                Organigrama{" "}
+                                {isProviderView
+                                    ? "de Referidos"
+                                    : "de Proveedores"}
                             </h6>
                             <small
                                 style={{
-                                    color: "rgba(255,255,255,0.5)",
+                                    color: "#64748b",
                                     fontSize: "11px",
                                 }}
                             >
@@ -534,18 +537,20 @@ const ProviderTreeCard = () => {
                             <>
                                 <div
                                     style={{
-                                        background: "rgba(255,255,255,0.08)",
-                                        border: "1px solid rgba(255,255,255,0.1)",
-                                        borderRadius: "10px",
-                                        padding: "6px 14px",
+                                        background: "#f8fafc",
+                                        border: "1px solid #e2e8f0",
+                                        borderRadius: "12px",
+                                        padding: "8px 18px",
                                         textAlign: "center",
                                     }}
                                 >
                                     <div
                                         style={{
-                                            fontSize: "18px",
+                                            fontSize: "20px",
                                             fontWeight: 800,
-                                            color: "#fff",
+                                            color: "#334155",
+                                            lineHeight: 1,
+                                            marginBottom: "2px",
                                         }}
                                     >
                                         {stats.total_providers || 0}
@@ -553,28 +558,31 @@ const ProviderTreeCard = () => {
                                     <div
                                         style={{
                                             fontSize: "9px",
-                                            color: "rgba(255,255,255,0.5)",
+                                            color: "#64748b",
                                             textTransform: "uppercase",
                                             letterSpacing: "1px",
+                                            fontWeight: 700,
                                         }}
                                     >
-                                        Proveedores
+                                        Socios
                                     </div>
                                 </div>
                                 <div
                                     style={{
-                                        background: "rgba(255,255,255,0.08)",
-                                        border: "1px solid rgba(255,255,255,0.1)",
-                                        borderRadius: "10px",
-                                        padding: "6px 14px",
+                                        background: "#eff6ff",
+                                        border: "1px solid #dbeafe",
+                                        borderRadius: "12px",
+                                        padding: "8px 18px",
                                         textAlign: "center",
                                     }}
                                 >
                                     <div
                                         style={{
-                                            fontSize: "18px",
+                                            fontSize: "20px",
                                             fontWeight: 800,
-                                            color: "#a5b4fc",
+                                            color: "#1e40af",
+                                            lineHeight: 1,
+                                            marginBottom: "2px",
                                         }}
                                     >
                                         {stats.providers_with_referrals || 0}
@@ -582,12 +590,13 @@ const ProviderTreeCard = () => {
                                     <div
                                         style={{
                                             fontSize: "9px",
-                                            color: "rgba(255,255,255,0.5)",
+                                            color: "#3b82f6",
                                             textTransform: "uppercase",
                                             letterSpacing: "1px",
+                                            fontWeight: 700,
                                         }}
                                     >
-                                        Con red
+                                        Líderes
                                     </div>
                                 </div>
                             </>
@@ -597,9 +606,9 @@ const ProviderTreeCard = () => {
                             onClick={loadTree}
                             title="Recargar"
                             style={{
-                                background: "rgba(255,255,255,0.1)",
-                                border: "1px solid rgba(255,255,255,0.15)",
-                                color: "#fff",
+                                background: "#ffffff",
+                                border: "1px solid #e2e8f0",
+                                color: "#64748b",
                                 borderRadius: "10px",
                                 width: "38px",
                                 height: "38px",
@@ -694,11 +703,23 @@ const ProviderTreeCard = () => {
 
                     {!loading && !error && treeData && treeData.length > 0 && (
                         <div className="org-tree-wrapper">
-                            <OrgTreeNode
-                                provider={companyRootNode}
-                                level={0}
-                                isCompanyRoot={true}
-                            />
+                            {isProviderView ? (
+                                treeData.map((node) => (
+                                    <OrgTreeNode
+                                        key={node.id}
+                                        provider={node}
+                                        level={0}
+                                        isCompanyRoot={true}
+                                        isProviderRoot={true}
+                                    />
+                                ))
+                            ) : (
+                                <OrgTreeNode
+                                    provider={companyRootNode}
+                                    level={0}
+                                    isCompanyRoot={true}
+                                />
+                            )}
                         </div>
                     )}
                 </div>
@@ -787,48 +808,58 @@ const ProviderTreeCard = () => {
 /* ───────────────────────────────────────────────
    Componente recursivo con conectores CSS ::before/::after
    ─────────────────────────────────────────────── */
-const OrgTreeNode = ({ provider, level = 0, isCompanyRoot = false }) => {
+const OrgTreeNode = ({
+    provider,
+    level = 0,
+    isCompanyRoot = false,
+    isProviderRoot = false,
+}) => {
     const [expanded, setExpanded] = useState(level < 2);
     const children = provider.referrals_recursive || provider.children || [];
     const hasChildren = children.length > 0;
-    const fullName = isCompanyRoot
-        ? Global.APP_NAME || "Empresa"
-        : `${provider.name || ""} ${provider.lastname || ""}`.trim() ||
-          "Sin nombre";
+    const fullName =
+        isCompanyRoot && !isProviderRoot
+            ? Global.APP_NAME || "Empresa"
+            : `${provider.name || ""} ${provider.lastname || ""}`.trim() ||
+              "Sin nombre";
     const childCount = children.length;
     const totalDescendants = countDescendants(provider);
 
     const getLevelStyle = () => {
         if (isCompanyRoot)
             return {
-                bg: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
-                border: "#475569",
-                text: "#fff",
-                badge: "#0f172a",
-                shadow: "0 8px 25px rgba(15,23,42,0.35)",
+                bg: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                border: "#e2e8f0",
+                text: "#1e293b",
+                badge: "#94a3b8",
+                iconColor: "#475569",
+                shadow: "0 10px 25px rgba(0, 0, 0, 0.04)",
             };
         if (level === 1)
             return {
-                bg: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-                border: "#a5b4fc",
-                text: "#fff",
-                badge: "#4f46e5",
-                shadow: "0 4px 15px rgba(99,102,241,0.25)",
+                bg: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+                border: "#bfdbfe",
+                text: "#1e40af",
+                badge: "#3b82f6",
+                iconColor: "#2563eb",
+                shadow: "0 6px 15px rgba(37, 99, 235, 0.06)",
             };
         if (hasChildren)
             return {
-                bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                border: "#6ee7b7",
-                text: "#fff",
-                badge: "#047857",
-                shadow: "0 4px 12px rgba(16,185,129,0.2)",
+                bg: "linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)",
+                border: "#99f6e4",
+                text: "#0f766e",
+                badge: "#14b8a6",
+                iconColor: "#0d9488",
+                shadow: "0 6px 15px rgba(20, 184, 166, 0.06)",
             };
         return {
             bg: "#ffffff",
-            border: "#e2e8f0",
-            text: "#374151",
-            badge: "#94a3b8",
-            shadow: "0 1px 4px rgba(0,0,0,0.04)",
+            border: "#f1f5f9",
+            text: "#64748b",
+            badge: "#cbd5e1",
+            iconColor: "#94a3b8",
+            shadow: "0 4px 10px rgba(0, 0, 0, 0.03)",
         };
     };
 
@@ -884,16 +915,12 @@ const OrgTreeNode = ({ provider, level = 0, isCompanyRoot = false }) => {
                               ? "38px"
                               : "30px",
                         borderRadius: "50%",
-                        background: isColoredNode
-                            ? "rgba(255,255,255,0.18)"
-                            : "#f1f5f9",
+                        background: "rgba(255, 255, 255, 0.4)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        margin: "0 auto 6px",
-                        border: isColoredNode
-                            ? "2px solid rgba(255,255,255,0.2)"
-                            : "2px solid #e2e8f0",
+                        margin: "0 auto 8px",
+                        border: `2px solid ${style.border}`,
                     }}
                 >
                     <i
@@ -910,7 +937,7 @@ const OrgTreeNode = ({ provider, level = 0, isCompanyRoot = false }) => {
                                 : level === 1
                                   ? "14px"
                                   : "11px",
-                            color: isColoredNode ? "#fff" : "#94a3b8",
+                            color: style.iconColor,
                         }}
                     ></i>
                 </div>
@@ -936,16 +963,16 @@ const OrgTreeNode = ({ provider, level = 0, isCompanyRoot = false }) => {
                 <div
                     style={{
                         fontSize: "9px",
-                        color: isColoredNode
-                            ? "rgba(255,255,255,0.55)"
-                            : "#94a3b8",
+                        color: isColoredNode ? "#000000" : "#000000",
                         marginBottom: hasChildren ? "5px" : "0",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                     }}
                 >
-                    {isCompanyRoot ? "Nodo principal" : provider.email}
+                    {isCompanyRoot && !isProviderRoot
+                        ? "Nodo principal"
+                        : provider.email}
                 </div>
 
                 {/* Badges */}
@@ -961,15 +988,14 @@ const OrgTreeNode = ({ provider, level = 0, isCompanyRoot = false }) => {
                         <span
                             style={{
                                 fontSize: "8px",
-                                fontWeight: 700,
-                                padding: "1px 6px",
-                                borderRadius: "8px",
-                                background: isColoredNode
-                                    ? "rgba(255,255,255,0.18)"
-                                    : "#f1f5f9",
-                                color: isColoredNode ? "#fff" : "#64748b",
+                                fontWeight: 800,
+                                padding: "2px 8px",
+                                borderRadius: "20px",
+                                background: "#f1f5f9",
+                                color: "#475569",
                                 textTransform: "uppercase",
-                                letterSpacing: "0.3px",
+                                letterSpacing: "0.5px",
+                                border: "1px solid #e2e8f0",
                             }}
                         >
                             {childCount} dir.
@@ -978,15 +1004,12 @@ const OrgTreeNode = ({ provider, level = 0, isCompanyRoot = false }) => {
                             <span
                                 style={{
                                     fontSize: "8px",
-                                    fontWeight: 600,
-                                    padding: "1px 6px",
-                                    borderRadius: "8px",
-                                    background: isColoredNode
-                                        ? "rgba(255,255,255,0.1)"
-                                        : "#f8fafc",
-                                    color: isColoredNode
-                                        ? "rgba(255,255,255,0.7)"
-                                        : "#94a3b8",
+                                    fontWeight: 700,
+                                    padding: "2px 8px",
+                                    borderRadius: "20px",
+                                    background: "#f8fafc",
+                                    color: "#64748b",
+                                    border: "1px solid #f1f5f9",
                                 }}
                             >
                                 {totalDescendants} tot.

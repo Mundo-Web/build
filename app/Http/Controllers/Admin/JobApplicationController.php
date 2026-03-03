@@ -15,9 +15,22 @@ class JobApplicationController extends BasicController
 
     public function setPaginationInstance(Request $request, string $model)
     {
-        return $model::with('referrer', 'invitation')
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $userTable = (new \App\Models\User())->getTable();
+        if (config('app.multi_db_enabled', env('MULTI_DB_ENABLED', false))) {
+            $userDatabase = config('database.connections.mysql_shared_users.database');
+            $userTable = $userDatabase . '.' . $userTable;
+        }
+
+        $query = $model::with('referrer', 'invitation')
             ->addSelect(['*'])
-            ->addSelect(DB::raw("(SELECT COUNT(*) FROM users WHERE users.email = job_applications.email) as email_registered"));
+            ->addSelect(\Illuminate\Support\Facades\DB::raw("(SELECT COUNT(*) FROM {$userTable} WHERE {$userTable}.email = job_applications.email) as email_registered"));
+
+        if ($user->hasRole('Provider') && !$user->hasAnyRole(['Root', 'Admin'])) {
+            $query->where('referred_by_uuid', $user->uuid);
+        }
+
+        return $query;
     }
 
     public function beforeSave(Request $request)

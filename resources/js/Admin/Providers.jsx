@@ -13,6 +13,7 @@ import Modal from "../Components/Adminto/Modal";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import SelectFormGroup from "../Components/Adminto/form/SelectFormGroup";
 import ItemsRest from "../Actions/Admin/ItemsRest";
+import ProviderTreeCard from "../Components/Adminto/ProviderTreeCard";
 
 const providersRest = new ProvidersRest();
 const itemsRest = new ItemsRest();
@@ -41,6 +42,7 @@ const Providers = ({}) => {
     const whatsappMessageRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
+    const [viewMode, setViewMode] = useState("table"); // 'table' or 'tree'
     const [vaultData, setVaultData] = useState([]);
     const [selectedProvider, setSelectedProvider] = useState(null);
     const [allItems, setAllItems] = useState([]);
@@ -465,365 +467,410 @@ const Providers = ({}) => {
     };
 
     return (
-        <>
-            <Table
-                gridRef={gridRef}
-                title="Proveedores"
-                rest={providersRest}
-                toolBar={(container) => {
-                    container.unshift({
-                        widget: "dxButton",
-                        location: "after",
-                        options: {
-                            icon: "refresh",
-                            hint: "Refrescar tabla",
-                            onClick: () =>
-                                $(gridRef.current)
-                                    .dxDataGrid("instance")
-                                    .refresh(),
+        <div className="container-fluid">
+            <div className="row mb-3">
+                <div className="col-12">
+                    <div className="card shadow-sm border-0">
+                        <div className="card-body py-2 d-flex justify-content-between align-items-center">
+                            <h4 className="header-title mb-0">
+                                <i className="fe-users me-2"></i>
+                                {viewMode === "table"
+                                    ? "Lista de Proveedores"
+                                    : "Organigrama de Proveedores"}
+                            </h4>
+                            <div className="d-flex gap-2">
+                                <button
+                                    className={`btn btn-sm ${viewMode === "table" ? "btn-primary" : "btn-outline-primary"}`}
+                                    onClick={() => setViewMode("table")}
+                                >
+                                    <i className="fe-list me-1"></i> Vista Tabla
+                                </button>
+                                <button
+                                    className={`btn btn-sm ${viewMode === "tree" ? "btn-success" : "btn-outline-success"}`}
+                                    onClick={() => setViewMode("tree")}
+                                >
+                                    <i className="fe-sitemap me-1"></i> Vista
+                                    Organigrama
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {viewMode === "table" ? (
+                <Table
+                    gridRef={gridRef}
+                    title="Proveedores"
+                    rest={providersRest}
+                    toolBar={(container) => {
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "refresh",
+                                hint: "Refrescar tabla",
+                                onClick: () =>
+                                    $(gridRef.current)
+                                        .dxDataGrid("instance")
+                                        .refresh(),
+                            },
+                        });
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "email",
+                                text: "Invitar proveedor",
+                                type: "default",
+                                stylingMode: "contained",
+                                hint: "Enviar invitación por correo",
+                                onClick: () => onInviteModalOpen(),
+                            },
+                        });
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "plus",
+                                text: "Nuevo proveedor",
+                                hint: "Crear nuevo proveedor",
+                                onClick: () => onModalOpen(),
+                            },
+                        });
+                    }}
+                    columns={[
+                        {
+                            dataField: "id",
+                            caption: "ID",
+                            visible: false,
                         },
-                    });
-                    container.unshift({
-                        widget: "dxButton",
-                        location: "after",
-                        options: {
-                            icon: "email",
-                            text: "Invitar proveedor",
-                            type: "default",
-                            stylingMode: "contained",
-                            hint: "Enviar invitación por correo",
-                            onClick: () => onInviteModalOpen(),
-                        },
-                    });
-                    container.unshift({
-                        widget: "dxButton",
-                        location: "after",
-                        options: {
-                            icon: "plus",
-                            text: "Nuevo proveedor",
-                            hint: "Crear nuevo proveedor",
-                            onClick: () => onModalOpen(),
-                        },
-                    });
-                }}
-                columns={[
-                    {
-                        dataField: "id",
-                        caption: "ID",
-                        visible: false,
-                    },
-                    {
-                        dataField: "name",
-                        caption: "Proveedor",
-                        width: "25%",
-                        cellTemplate: (container, { data }) => {
-                            ReactAppend(
-                                container,
-                                <div>
-                                    <strong>
-                                        {data.name} {data.lastname || ""}
-                                    </strong>
-                                    <br />
-                                    <small className="text-muted">
-                                        {data.email}
-                                    </small>
-                                    <br />
-                                    <span
-                                        className="badge badge-soft-primary"
-                                        style={{ fontSize: "10px" }}
-                                    >
-                                        {data.uuid}
-                                    </span>
-                                </div>,
-                            );
-                        },
-                    },
-                    {
-                        dataField: "phone",
-                        caption: "Teléfono",
-                        cellTemplate: (container, { data }) => {
-                            if (data.phone) {
-                                ReactAppend(
-                                    container,
-                                    <span>
-                                        {data.phone_prefix || "+51"}{" "}
-                                        {data.phone}
-                                    </span>,
-                                );
-                            } else {
-                                ReactAppend(
-                                    container,
-                                    <span className="text-muted">
-                                        - Sin teléfono -
-                                    </span>,
-                                );
-                            }
-                        },
-                    },
-                    {
-                        dataField: "document_number",
-                        caption: "Documento",
-                        cellTemplate: (container, { data }) => {
-                            if (data.document_number) {
+                        {
+                            dataField: "name",
+                            caption: "Proveedor",
+                            width: "25%",
+                            cellTemplate: (container, { data }) => {
                                 ReactAppend(
                                     container,
                                     <div>
-                                        <span>
-                                            {data.document_type || "DOC"}:{" "}
-                                            {data.document_number}
-                                        </span>
-                                    </div>,
-                                );
-                            } else {
-                                ReactAppend(
-                                    container,
-                                    <span className="text-muted">
-                                        - Sin documento -
-                                    </span>,
-                                );
-                            }
-                        },
-                    },
-                    {
-                        dataField: "city",
-                        caption: "Ubicación",
-                        cellTemplate: (container, { data }) => {
-                            const location = [data.city, data.department]
-                                .filter(Boolean)
-                                .join(", ");
-                            if (location) {
-                                ReactAppend(container, <span>{location}</span>);
-                            } else {
-                                ReactAppend(
-                                    container,
-                                    <span className="text-muted">
-                                        - Sin ubicación -
-                                    </span>,
-                                );
-                            }
-                        },
-                    },
-                    {
-                        dataField: "created_at",
-                        caption: "Registro",
-                        dataType: "date",
-                        cellTemplate: (container, { data }) => {
-                            const date = new Date(data.created_at);
-                            container.html(
-                                renderToString(
-                                    <>
-                                        <div>
-                                            {date.toLocaleDateString("es-ES")}
-                                        </div>
-                                        <small className="text-muted">
-                                            {date.toLocaleTimeString("es-ES", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                            })}
-                                        </small>
-                                    </>,
-                                ),
-                            );
-                        },
-                    },
-                    {
-                        dataField: "referred_by",
-                        caption: "Referido por",
-                        width: "15%",
-                        cellTemplate: (container, { data }) => {
-                            const ref = data.referred_by;
-                            if (ref && typeof ref === "object") {
-                                const name =
-                                    `${ref.name || ""} ${ref.lastname || ""}`.trim();
-                                ReactAppend(
-                                    container,
-                                    <div>
-                                        <span className="badge badge-soft-success">
-                                            <i className="fas fa-user-tag me-1"></i>
-                                            {name || ref.email}
-                                        </span>
+                                        <strong>
+                                            {data.name} {data.lastname || ""}
+                                        </strong>
                                         <br />
-                                        <small
-                                            className="text-muted"
+                                        <small className="text-muted">
+                                            {data.email}
+                                        </small>
+                                        <br />
+                                        <span
+                                            className="badge badge-soft-primary"
                                             style={{ fontSize: "10px" }}
                                         >
-                                            {ref.uuid
-                                                ? ref.uuid.substring(0, 8) +
-                                                  "..."
-                                                : ""}
-                                        </small>
+                                            {data.uuid}
+                                        </span>
                                     </div>,
                                 );
-                            } else {
-                                ReactAppend(
-                                    container,
-                                    <span className="text-muted">—</span>,
-                                );
-                            }
+                            },
                         },
-                    },
-                    {
-                        dataField: "rank.name",
-                        caption: "Rango",
-                        width: 120,
-                        cellTemplate: (container, { data }) => {
-                            if (data.rank) {
-                                ReactAppend(
-                                    container,
-                                    <span
-                                        className="badge px-2 py-1"
-                                        style={{
-                                            backgroundColor:
-                                                data.rank?.color || "#6c757d",
-                                            color: "#fff",
-                                        }}
-                                    >
-                                        <i className="fas fa-medal me-1"></i>
-                                        {data.rank.name}
-                                    </span>,
-                                );
-                            } else {
-                                ReactAppend(
-                                    container,
-                                    <span className="badge badge-soft-secondary px-2 py-1">
-                                        Sin Rango
-                                    </span>,
-                                );
-                            }
+                        {
+                            dataField: "phone",
+                            caption: "Teléfono",
+                            cellTemplate: (container, { data }) => {
+                                if (data.phone) {
+                                    ReactAppend(
+                                        container,
+                                        <span>
+                                            {data.phone_prefix || "+51"}{" "}
+                                            {data.phone}
+                                        </span>,
+                                    );
+                                } else {
+                                    ReactAppend(
+                                        container,
+                                        <span className="text-muted">
+                                            - Sin teléfono -
+                                        </span>,
+                                    );
+                                }
+                            },
                         },
-                    },
-                    {
-                        dataField: "total_points",
-                        caption: "Puntos",
-                        width: 100,
-                        cellTemplate: (container, { data }) => {
-                            ReactAppend(
-                                container,
-                                <div className="text-center font-monospace">
-                                    {Math.round(data.total_points || 0)}
-                                </div>,
-                            );
+                        {
+                            dataField: "document_number",
+                            caption: "Documento",
+                            cellTemplate: (container, { data }) => {
+                                if (data.document_number) {
+                                    ReactAppend(
+                                        container,
+                                        <div>
+                                            <span>
+                                                {data.document_type || "DOC"}:{" "}
+                                                {data.document_number}
+                                            </span>
+                                        </div>,
+                                    );
+                                } else {
+                                    ReactAppend(
+                                        container,
+                                        <span className="text-muted">
+                                            - Sin documento -
+                                        </span>,
+                                    );
+                                }
+                            },
                         },
-                    },
-                    {
-                        dataField: "status",
-                        caption: "Estado",
-                        dataType: "boolean",
-                        width: "120px",
-                        cellTemplate: (container, { data }) => {
-                            if (data.status == 1) {
+                        {
+                            dataField: "city",
+                            caption: "Ubicación",
+                            cellTemplate: (container, { data }) => {
+                                const location = [data.city, data.department]
+                                    .filter(Boolean)
+                                    .join(", ");
+                                if (location) {
+                                    ReactAppend(
+                                        container,
+                                        <span>{location}</span>,
+                                    );
+                                } else {
+                                    ReactAppend(
+                                        container,
+                                        <span className="text-muted">
+                                            - Sin ubicación -
+                                        </span>,
+                                    );
+                                }
+                            },
+                        },
+                        {
+                            dataField: "created_at",
+                            caption: "Registro",
+                            dataType: "date",
+                            cellTemplate: (container, { data }) => {
+                                const date = new Date(data.created_at);
+                                container.html(
+                                    renderToString(
+                                        <>
+                                            <div>
+                                                {date.toLocaleDateString(
+                                                    "es-ES",
+                                                )}
+                                            </div>
+                                            <small className="text-muted">
+                                                {date.toLocaleTimeString(
+                                                    "es-ES",
+                                                    {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    },
+                                                )}
+                                            </small>
+                                        </>,
+                                    ),
+                                );
+                            },
+                        },
+                        {
+                            dataField: "referred_by",
+                            caption: "Referido por",
+                            width: "15%",
+                            cellTemplate: (container, { data }) => {
+                                const ref = data.referred_by;
+                                if (ref && typeof ref === "object") {
+                                    const name =
+                                        `${ref.name || ""} ${ref.lastname || ""}`.trim();
+                                    ReactAppend(
+                                        container,
+                                        <div>
+                                            <span className="badge badge-soft-success">
+                                                <i className="fas fa-user-tag me-1"></i>
+                                                {name || ref.email}
+                                            </span>
+                                            <br />
+                                            <small
+                                                className="text-muted"
+                                                style={{ fontSize: "10px" }}
+                                            >
+                                                {ref.uuid
+                                                    ? ref.uuid.substring(0, 8) +
+                                                      "..."
+                                                    : ""}
+                                            </small>
+                                        </div>,
+                                    );
+                                } else {
+                                    ReactAppend(
+                                        container,
+                                        <span className="text-muted">—</span>,
+                                    );
+                                }
+                            },
+                        },
+                        {
+                            dataField: "rank.name",
+                            caption: "Rango",
+                            width: 120,
+                            cellTemplate: (container, { data }) => {
+                                if (data.rank) {
+                                    ReactAppend(
+                                        container,
+                                        <span
+                                            className="badge px-2 py-1"
+                                            style={{
+                                                backgroundColor:
+                                                    data.rank?.color ||
+                                                    "#6c757d",
+                                                color: "#fff",
+                                            }}
+                                        >
+                                            <i className="fas fa-medal me-1"></i>
+                                            {data.rank.name}
+                                        </span>,
+                                    );
+                                } else {
+                                    ReactAppend(
+                                        container,
+                                        <span className="badge badge-soft-secondary px-2 py-1">
+                                            Sin Rango
+                                        </span>,
+                                    );
+                                }
+                            },
+                        },
+                        {
+                            dataField: "total_points",
+                            caption: "Puntos",
+                            width: 100,
+                            cellTemplate: (container, { data }) => {
                                 ReactAppend(
                                     container,
-                                    <span className="badge badge-success badge-pill bg-primary">
-                                        Activo
-                                    </span>,
+                                    <div className="text-center font-monospace">
+                                        {Math.round(data.total_points || 0)}
+                                    </div>,
                                 );
-                            } else {
-                                ReactAppend(
-                                    container,
-                                    <span className="badge badge-secondary">
-                                        Archivado
-                                    </span>,
-                                );
-                            }
+                            },
                         },
-                    },
-                    {
-                        caption: "Acciones",
-                        cellTemplate: (container, { data }) => {
-                            container.css("text-overflow", "unset");
+                        {
+                            dataField: "status",
+                            caption: "Estado",
+                            dataType: "boolean",
+                            width: "120px",
+                            cellTemplate: (container, { data }) => {
+                                if (data.status == 1) {
+                                    ReactAppend(
+                                        container,
+                                        <span className="badge badge-success badge-pill bg-primary">
+                                            Activo
+                                        </span>,
+                                    );
+                                } else {
+                                    ReactAppend(
+                                        container,
+                                        <span className="badge badge-secondary">
+                                            Archivado
+                                        </span>,
+                                    );
+                                }
+                            },
+                        },
+                        {
+                            caption: "Acciones",
+                            cellTemplate: (container, { data }) => {
+                                container.css("text-overflow", "unset");
 
-                            // Botón de Detalles
-                            container.append(
-                                DxButton({
-                                    className: "btn btn-xs btn-soft-info",
-                                    title: "Ver detalles",
-                                    icon: "fa fa-eye",
-                                    onClick: () => onViewDetails(data),
-                                }),
-                            );
+                                // Botón de Detalles
+                                container.append(
+                                    DxButton({
+                                        className: "btn btn-xs btn-soft-info",
+                                        title: "Ver detalles",
+                                        icon: "fa fa-eye",
+                                        onClick: () => onViewDetails(data),
+                                    }),
+                                );
 
-                            // Botón de Bóveda (Inventario de Premios)
-                            container.append(
-                                DxButton({
-                                    className: "btn btn-xs btn-soft-success",
-                                    title: "Bóveda de Inventario",
-                                    icon: "fa fa-vault",
-                                    onClick: () => onVaultOpen(data),
-                                }),
-                            );
-
-                            // Botón de Activar (Restaurar) - Solo si está archivado
-                            if (data.status != 1) {
+                                // Botón de Bóveda (Inventario de Premios)
                                 container.append(
                                     DxButton({
                                         className:
                                             "btn btn-xs btn-soft-success",
-                                        title: "Restaurar (Activar)",
-                                        icon: "fa fa-check",
-                                        onClick: () =>
-                                            onStatusChange({
-                                                id: data.id,
-                                                value: true,
-                                            }), // Reactivar
+                                        title: "Bóveda de Inventario",
+                                        icon: "fa fa-vault",
+                                        onClick: () => onVaultOpen(data),
                                     }),
                                 );
-                            }
 
-                            // Botón de Editar
-                            container.append(
-                                DxButton({
-                                    className: "btn btn-xs btn-soft-primary",
-                                    title: "Editar",
-                                    icon: "fa fa-pen",
-                                    onClick: () => onModalOpen(data),
-                                }),
-                            );
-
-                            // Botón de Eliminar / Archivar
-                            container.append(
-                                DxButton({
-                                    className: `btn btn-xs ${data.status == 1 ? "btn-soft-warning" : "btn-soft-danger"}`,
-                                    title:
-                                        data.status == 1
-                                            ? "Archivar"
-                                            : "Eliminar permanentemente",
-                                    icon:
-                                        data.status == 1
-                                            ? "fa fa-archive"
-                                            : "fa fa-trash",
-                                    onClick: async () => {
-                                        if (data.status == 1) {
-                                            // Lógica de Archivar
-                                            const { isConfirmed } =
-                                                await Swal.fire({
-                                                    title: "¿Archivar Proveedor?",
-                                                    text: "El proveedor se desactivará y pasará a estado 'Archivado'.",
-                                                    icon: "warning",
-                                                    showCancelButton: true,
-                                                    confirmButtonText:
-                                                        "Sí, archivar",
-                                                    cancelButtonText:
-                                                        "Cancelar",
-                                                });
-                                            if (isConfirmed)
+                                // Botón de Activar (Restaurar) - Solo si está archivado
+                                if (data.status != 1) {
+                                    container.append(
+                                        DxButton({
+                                            className:
+                                                "btn btn-xs btn-soft-success",
+                                            title: "Restaurar (Activar)",
+                                            icon: "fa fa-check",
+                                            onClick: () =>
                                                 onStatusChange({
                                                     id: data.id,
-                                                    value: false,
-                                                });
-                                        } else {
-                                            // Lógica de Eliminar (Hard Delete)
-                                            onDeleteClicked(data.id);
-                                        }
-                                    },
-                                }),
-                            );
+                                                    value: true,
+                                                }), // Reactivar
+                                        }),
+                                    );
+                                }
+
+                                // Botón de Editar
+                                container.append(
+                                    DxButton({
+                                        className:
+                                            "btn btn-xs btn-soft-primary",
+                                        title: "Editar",
+                                        icon: "fa fa-pen",
+                                        onClick: () => onModalOpen(data),
+                                    }),
+                                );
+
+                                // Botón de Eliminar / Archivar
+                                container.append(
+                                    DxButton({
+                                        className: `btn btn-xs ${data.status == 1 ? "btn-soft-warning" : "btn-soft-danger"}`,
+                                        title:
+                                            data.status == 1
+                                                ? "Archivar"
+                                                : "Eliminar permanentemente",
+                                        icon:
+                                            data.status == 1
+                                                ? "fa fa-archive"
+                                                : "fa fa-trash",
+                                        onClick: async () => {
+                                            if (data.status == 1) {
+                                                // Lógica de Archivar
+                                                const { isConfirmed } =
+                                                    await Swal.fire({
+                                                        title: "¿Archivar Proveedor?",
+                                                        text: "El proveedor se desactivará y pasará a estado 'Archivado'.",
+                                                        icon: "warning",
+                                                        showCancelButton: true,
+                                                        confirmButtonText:
+                                                            "Sí, archivar",
+                                                        cancelButtonText:
+                                                            "Cancelar",
+                                                    });
+                                                if (isConfirmed)
+                                                    onStatusChange({
+                                                        id: data.id,
+                                                        value: false,
+                                                    });
+                                            } else {
+                                                // Lógica de Eliminar (Hard Delete)
+                                                onDeleteClicked(data.id);
+                                            }
+                                        },
+                                    }),
+                                );
+                            },
+                            allowFiltering: false,
+                            allowExporting: false,
                         },
-                        allowFiltering: false,
-                        allowExporting: false,
-                    },
-                ]}
-            />
+                    ]}
+                />
+            ) : (
+                <ProviderTreeCard />
+            )}
 
             <Modal
                 modalRef={modalRef}
@@ -1068,7 +1115,7 @@ const Providers = ({}) => {
                     </div>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 };
 

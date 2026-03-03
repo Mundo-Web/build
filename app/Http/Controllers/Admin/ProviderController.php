@@ -26,11 +26,19 @@ class ProviderController extends BasicController
 
     public function setPaginationInstance(Request $request, string $model)
     {
+        $user = Auth::user();
+
         // Only show users with Provider role
         $query = User::with(['roles', 'referredBy', 'rank'])
             ->whereHas('roles', function ($roleQuery) {
                 $roleQuery->where('name', 'Provider');
             });
+
+        // If the user has 'Provider' role but NOT 'Root' or 'Admin', 
+        // they can only see their own referrals.
+        if ($user->hasRole('Provider') && !$user->hasAnyRole(['Root', 'Admin'])) {
+            $query->where('referred_by', $user->id);
+        }
 
         return $query;
     }
@@ -260,7 +268,47 @@ class ProviderController extends BasicController
     public function getProviderTree()
     {
         try {
-            // Obtener todos los proveedores con sus referidos recursivos
+            $user = Auth::user();
+            $isProviderOnly = $user->hasRole('Provider') && !$user->hasAnyRole(['Root', 'Admin']);
+
+            if ($isProviderOnly) {
+                $providers = User::with(['referralsRecursive' => function ($query) {
+                    $query->whereHas('roles', function ($q) {
+                        $q->where('name', 'Provider');
+                    })->select('id', 'name', 'lastname', 'email', 'uuid', 'referred_by', 'created_at');
+                }])
+                    ->where('id', $user->id)
+                    ->select('id', 'name', 'lastname', 'email', 'uuid', 'referred_by', 'created_at')
+                    ->get();
+
+                // Función auxiliar para contar descendientes
+                $countDescendants = function ($u) use (&$countDescendants) {
+                    $count = 0;
+                    if ($u->referralsRecursive) {
+                        foreach ($u->referralsRecursive as $referral) {
+                            $count += 1 + $countDescendants($referral);
+                        }
+                    }
+                    return $count;
+                };
+
+                $rootProvider = $providers->first();
+                $totalDescendants = $rootProvider ? $countDescendants($rootProvider) : 0;
+                $directReferrals = $rootProvider ? $rootProvider->referralsRecursive->count() : 0;
+
+                return response([
+                    'status' => 200,
+                    'data' => [
+                        'tree' => $providers,
+                        'stats' => [
+                            'total_providers' => $totalDescendants + 1,
+                            'providers_with_referrals' => $directReferrals,
+                        ]
+                    ]
+                ], 200);
+            }
+
+            // Obtener todos los proveedores con sus referidos recursivos (Admin view)
             $providers = User::with(['referralsRecursive' => function ($query) {
                 $query->whereHas('roles', function ($q) {
                     $q->where('name', 'Provider');
@@ -321,6 +369,18 @@ class ProviderController extends BasicController
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+
+    public function referrals(Request $request)
+    {
+        $this->reactView = 'Admin/Providers';
+        return $this->reactView($request);
+    }
+
+    public function jobApplications(Request $request)
+    {
+        $this->reactView = 'Admin/JobApplications';
+        return $this->reactView($request);
     }
 
     public function dashboard(Request $request)
@@ -435,6 +495,75 @@ class ProviderController extends BasicController
             return response([
                 'status' => 200,
                 'message' => 'Ítem eliminado de la bóveda'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response([
+                'status' => 500,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Crear cuenta de proveedor directamente desde una solicitud de trabajo
+     */
+    public function acceptApplication(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|exists:job_applications,id'
+            ]);
+
+            $jobApp = JobApplication::find($request->id);
+
+            if (User::where('email', $jobApp->email)->exists()) {
+                return response([
+                    'status' => 400,
+                    'message' => 'Este correo ya está registrado como usuario.'
+                ], 400);
+            }
+
+            // Generar contraseña aleatoria
+            $password = \Illuminate\Support\Str::random(10);
+
+            // Crear el usuario
+            $user = User::create([
+                'name' => $jobApp->name,
+                'email' => $jobApp->email,
+                'phone' => $jobApp->phone,
+                'password' => bcrypt($password),
+                'status' => true,
+                'uuid' => \SoDe\Extend\Crypto::randomUUID()
+            ]);
+
+            $user->assignRole('Provider');
+
+            // Asignar el referidor si existe
+            if ($jobApp->referred_by_uuid) {
+                $referrer = User::where('uuid', $jobApp->referred_by_uuid)->first();
+                if ($referrer) {
+                    $user->referred_by = $referrer->id;
+                    $user->save();
+                }
+            }
+
+            // Marcar la solicitud como aceptada creando la invitación
+            ProviderInvitation::updateOrCreate(
+                ['email' => $jobApp->email],
+                [
+                    'token' => \SoDe\Extend\Crypto::randomUUID(),
+                    'status' => 'accepted',
+                    'job_application_id' => $jobApp->id,
+                    'expires_at' => now()
+                ]
+            );
+
+            // Notificar al nuevo proveedor con su contraseña
+            $user->notify(new \App\Notifications\WelcomeProviderNotification($user->name, $user->email, $password));
+
+            return response([
+                'status' => 200,
+                'message' => 'Cuenta de proveedor creada y bienvenida enviada.'
             ], 200);
         } catch (\Throwable $th) {
             return response([

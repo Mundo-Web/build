@@ -147,34 +147,28 @@ const JobApplications = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
-    const onInviteAsProvider = async (data) => {
+    const onAcceptAsProvider = async (data) => {
         const { isConfirmed } = await Swal.fire({
-            title: "¿Invitar como proveedor?",
-            text: `Se enviará una invitación a ${data.email}`,
+            title: "¿Aceptar como proveedor?",
+            text: `Se creará una cuenta y se enviará un correo de bienvenida a ${data.email}`,
             icon: "question",
             showCancelButton: true,
-            confirmButtonText: "Sí, enviar invitación",
+            confirmButtonText: "Sí, aceptar y crear cuenta",
+            cancelButtonText: "Cancelar",
         });
 
         if (!isConfirmed) return;
 
-        console.log("Inviting provider with data:", data);
-        if (!data.id) {
-            console.error("Job Application ID is missing in data!", data);
-            Swal.fire(
-                "Error",
-                "No se pudo obtener el ID de la solicitud.",
-                "error",
-            );
-            return;
-        }
-
-        const result = await providersRest.invite({
-            email: data.email,
-            job_application_id: data.id,
+        const result = await providersRest.acceptApplication({
+            id: data.id,
         });
         if (result) {
-            Swal.fire("¡Enviado!", "La invitación ha sido enviada.", "success");
+            Swal.fire(
+                "¡Éxito!",
+                "La cuenta ha sido creada y el correo enviado.",
+                "success",
+            );
+            $(gridRef.current).dxDataGrid("instance").refresh();
         }
     };
 
@@ -393,10 +387,10 @@ const JobApplications = () => {
                                         DxButton({
                                             className:
                                                 "btn btn-xs btn-soft-primary",
-                                            title: "Invitar como proveedor",
-                                            icon: "fa fa-user-plus",
+                                            title: "Aceptar como proveedor (Crear cuenta)",
+                                            icon: "fa fa-user-check",
                                             onClick: () =>
-                                                onInviteAsProvider(data),
+                                                onAcceptAsProvider(data),
                                         }),
                                     );
                                 }

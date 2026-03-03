@@ -9,6 +9,7 @@ import CanAccess from "../../Utils/CanAccess";
 
 const Menu = ({ session, hasRole }) => {
     const mainRole = session.roles[0];
+    const hasAnyRole = (roles) => roles.some((role) => hasRole(role));
     const [searchQuery, setSearchQuery] = useState("");
 
     // Función para filtrar menús según la búsqueda
@@ -431,10 +432,10 @@ const Menu = ({ session, hasRole }) => {
                         </ul>
                     </div>
                 )}
-                {hasRole("Provider") && (
+                {hasRole("Provider") && !hasAnyRole(["Root", "Admin"]) && (
                     <div id="sidebar-menu" className="show">
                         <ul id="side-menu">
-                            <li className="menu-title">Panel del Asesor</li>
+                            <li className="menu-title">Asesoría</li>
 
                             <MenuItem
                                 href="/provider/home"
@@ -448,11 +449,27 @@ const Menu = ({ session, hasRole }) => {
                             >
                                 Mi Bóveda
                             </MenuItem>
+
+                            <li className="menu-title">Mi Red</li>
+                            <MenuItem
+                                href="/provider/referrals"
+                                icon="mdi mdi-account-group-outline"
+                            >
+                                Mis Referidos
+                            </MenuItem>
+                            <MenuItem
+                                href="/provider/job-applications"
+                                icon="mdi mdi-clipboard-text-outline"
+                            >
+                                Mis Solicitudes
+                            </MenuItem>
+
+                            <li className="menu-title">Configuración</li>
                             <MenuItem
                                 href="/provider/profile"
                                 icon="mdi mdi-account-cog-outline"
                             >
-                                Mis Perfil
+                                Mi Perfil
                             </MenuItem>
                             <MenuItem
                                 href="/account"
