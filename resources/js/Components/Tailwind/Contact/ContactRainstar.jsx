@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import MessagesRest from "../../../Actions/MessagesRest";
 import Global from "../../../Utils/Global";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const messagesRest = new MessagesRest();
 
@@ -217,53 +218,60 @@ const ContactRainstar = ({ data, contacts }) => {
     };
 
     const rainstarInputClass =
-        "!rounded-none !border-x-0 !border-t-0 border-b border-neutral-900 !px-0 py-4 bg-transparent focus:!ring-0 focus:!outline-none focus:!border-x-0 focus:!border-t-0 focus:border-b-2 text-xs uppercase tracking-widest placeholder:text-neutral-300 transition-all font-medium w-full";
+        "w-full border-2 border-gray-200 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 focus:border-black hover:border-gray-400";
     const rainstarLabelClass =
-        "text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-2 block";
+        "text-[11px] font-bold text-neutral-400 block mb-1.5";
 
     return (
         <section
             id={data?.element_id}
-            className="bg-white min-h-screen pt-20 pb-32"
+            className="bg-white min-h-screen pt-24 pb-40"
         >
-            <div className="container mx-auto px-4 md:px-6 2xl:px-0 2xl:max-w-7xl">
-                {/* Header */}
-                <div className="mb-20">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b-4 border-black pb-8">
-                        <div className="max-w-3xl">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400 mb-4 block">
-                                Contáctanos
+            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+                {/* ── Header Section ─────────────────────────────────────────── */}
+                <div className="mb-24">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16 border-b-[6px] border-neutral-dark pb-12"
+                    >
+                        <div className="max-w-4xl">
+                            <span className="text-[11px] font-bold text-primary mb-6 block">
+                                Estamos para ayudarte
                             </span>
-                            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">
-                                {data?.title || "Hablemos Hoy"}
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-neutral-dark mb-4">
+                                <TextWithHighlight
+                                    text={data?.title || "Hablemos *Hoy*"}
+                                />
                             </h1>
                         </div>
-                        <div className="hidden md:block">
-                            <p className="text-right text-xs font-bold uppercase tracking-widest opacity-60 max-w-xs leading-relaxed">
+                        <div className="hidden md:block max-w-[280px]">
+                            <p className="text-right text-[11px] font-medium text-neutral-dark/40 leading-relaxed italic">
                                 {data?.description ||
-                                    "¿Tienes preguntas? Estamos aquí para ayudarte."}
+                                    "¿Tienes preguntas o propuestas? Nuestro equipo especializado está listo para brindarte una solución inmediata."}
                             </p>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
                     {/* Sidebar Info */}
-                    <div className="lg:col-span-4 order-2 lg:order-1 space-y-12">
+                    <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-6 order-2 lg:order-1">
                         {/* Store Card */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="border-4 border-black p-8 hover:bg-black hover:text-white transition-all duration-300 group"
+                            className="bg-neutral-50 p-10 hover:bg-neutral-dark group transition-all duration-500 border border-neutral-100"
                         >
-                            <div className="flex items-center gap-4 mb-4">
-                                <Store className="w-6 h-6 group-hover:text-white transition-colors" />
-                                <h3 className="text-lg font-black uppercase tracking-wider">
-                                    Tienda Principal
-                                </h3>
+                            <div className="bg-white w-12 h-12 flex items-center justify-center mb-8 group-hover:bg-primary transition-colors duration-500 shadow-sm">
+                                <MapPin className="w-5 h-5 text-neutral-dark group-hover:text-white" />
                             </div>
-                            <p className="text-sm font-bold uppercase tracking-widest opacity-80 leading-relaxed group-hover:opacity-100">
+                            <h3 className="text-sm font-black mb-4 text-neutral-dark group-hover:text-white/50 transition-colors">
+                                Sede Principal
+                            </h3>
+                            <p className="text-base font-bold leading-relaxed text-neutral-dark group-hover:text-white transition-colors">
                                 {mainStoreData
                                     ? mainStoreData.address
                                     : getContact("address")}
@@ -272,25 +280,25 @@ const ContactRainstar = ({ data, contacts }) => {
 
                         {/* Email Card */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="border-4 border-black p-8 hover:bg-black hover:text-white transition-all duration-300 group"
+                            className="bg-neutral-50 p-10 hover:bg-neutral-dark group transition-all duration-500 border border-neutral-100"
                         >
-                            <div className="flex items-center gap-4 mb-4">
-                                <Mail className="w-6 h-6 group-hover:text-white transition-colors" />
-                                <h3 className="text-lg font-black uppercase tracking-wider">
-                                    Email
-                                </h3>
+                            <div className="bg-white w-12 h-12 flex items-center justify-center mb-8 group-hover:bg-primary transition-colors duration-500 shadow-sm">
+                                <Mail className="w-5 h-5 text-neutral-dark group-hover:text-white" />
                             </div>
-                            <div className="space-y-2">
+                            <h3 className="text-sm font-black mb-4 text-neutral-dark group-hover:text-white/50 transition-colors">
+                                Canales Digitales
+                            </h3>
+                            <div className="space-y-3">
                                 {getContactEmails("email_contact").map(
                                     (email, index) => (
                                         <a
                                             key={index}
                                             href={`mailto:${email}`}
-                                            className="text-sm font-bold uppercase tracking-widest block hover:underline"
+                                            className="text-base font-bold block text-neutral-dark group-hover:text-white hover:text-primary transition-colors underline decoration-neutral-dark/10 group-hover:decoration-white/10"
                                         >
                                             {email}
                                         </a>
@@ -301,25 +309,25 @@ const ContactRainstar = ({ data, contacts }) => {
 
                         {/* Phone Card */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="border-4 border-black p-8 hover:bg-black hover:text-white transition-all duration-300 group"
+                            className="bg-neutral-50 p-10 hover:bg-neutral-dark group transition-all duration-500 border border-neutral-100"
                         >
-                            <div className="flex items-center gap-4 mb-4">
-                                <Phone className="w-6 h-6 group-hover:text-white transition-colors" />
-                                <h3 className="text-lg font-black uppercase tracking-wider">
-                                    Teléfono
-                                </h3>
+                            <div className="bg-white w-12 h-12 flex items-center justify-center mb-8 group-hover:bg-primary transition-colors duration-500 shadow-sm">
+                                <PhoneCall className="w-5 h-5 text-neutral-dark group-hover:text-white" />
                             </div>
-                            <div className="space-y-2">
+                            <h3 className="text-sm font-black mb-4 text-neutral-dark group-hover:text-white/50 transition-colors">
+                                Atención Directa
+                            </h3>
+                            <div className="space-y-3">
                                 {getContactPhones("phone_contact").map(
                                     (phone, index) => (
                                         <a
                                             key={index}
                                             href={`tel:${phone}`}
-                                            className="text-sm font-bold uppercase tracking-widest block hover:underline"
+                                            className="text-base font-bold block text-neutral-dark group-hover:text-white hover:text-primary transition-colors"
                                         >
                                             {phone}
                                         </a>
@@ -332,13 +340,13 @@ const ContactRainstar = ({ data, contacts }) => {
                     {/* Form area */}
                     <div className="lg:col-span-8 order-1 lg:order-2">
                         <form onSubmit={onSubmit} className="space-y-12">
-                            <div className="flex items-center gap-4 border-b border-neutral-900 pb-4 mb-8">
-                                <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
+                            <div className="flex items-center gap-4 border-b border-gray-100 pb-4 mb-8">
+                                <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                     01
-                                </span>
-                                <h2 className="text-xl font-bold uppercase tracking-tighter">
+                                </div>
+                                <h1 className="text-xl font-black tracking-tight text-neutral-dark">
                                     Envíanos un Mensaje
-                                </h2>
+                                </h1>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
@@ -351,7 +359,7 @@ const ContactRainstar = ({ data, contacts }) => {
                                         disabled={sending}
                                         type="text"
                                         name="name"
-                                        placeholder="EJ. JOHN DOE"
+                                        placeholder="Ej. John Doe"
                                         className={rainstarInputClass}
                                         required
                                     />
@@ -370,11 +378,11 @@ const ContactRainstar = ({ data, contacts }) => {
                                         value={phoneValue}
                                         onChange={handlePhoneChange}
                                         maxLength={11}
-                                        className={`${rainstarInputClass} ${phoneError ? "border-red-500 text-red-500" : ""}`}
+                                        className={`${rainstarInputClass} ${phoneError ? "border-red-400 bg-red-50" : ""}`}
                                         required
                                     />
                                     {phoneError && (
-                                        <p className="text-[10px] text-red-500 mt-1 font-bold uppercase tracking-wider">
+                                        <p className="text-[10px] text-red-500 mt-1 font-bold">
                                             {phoneError}
                                         </p>
                                     )}
@@ -389,7 +397,7 @@ const ContactRainstar = ({ data, contacts }) => {
                                         disabled={sending}
                                         type="email"
                                         name="email"
-                                        placeholder="EMAIL@EJEMPLO.COM"
+                                        placeholder="correo@ejemplo.com"
                                         className={rainstarInputClass}
                                         required
                                     />
@@ -403,7 +411,7 @@ const ContactRainstar = ({ data, contacts }) => {
                                         ref={descriptionRef}
                                         disabled={sending}
                                         name="message"
-                                        placeholder="¿CÓMO PODEMOS AYUDARTE?"
+                                        placeholder="¿Cómo podemos ayudarte?"
                                         rows="6"
                                         className={`${rainstarInputClass} resize-none`}
                                         required
@@ -415,17 +423,17 @@ const ContactRainstar = ({ data, contacts }) => {
                                 <button
                                     type="submit"
                                     disabled={sending}
-                                    className="px-12 py-5 text-[10px] font-bold uppercase tracking-[0.2em] bg-black text-white hover:brightness-125 disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4 group w-full md:w-auto"
+                                    className="px-12 py-6 text-[11px] font-black uppercase tracking-[0.2em] bg-neutral-dark text-white hover:bg-primary disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-6 group w-full md:w-auto shadow-xl"
                                 >
                                     {sending ? (
                                         <>
                                             <Loader2 className="animate-spin w-4 h-4" />
-                                            Enviando...
+                                            Procesando...
                                         </>
                                     ) : (
                                         <>
                                             Enviar Mensaje
-                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-500" />
                                         </>
                                     )}
                                 </button>
@@ -435,17 +443,30 @@ const ContactRainstar = ({ data, contacts }) => {
                 </div>
 
                 {/* Map Section */}
-                <div className="mt-32">
-                    <div className="flex items-center gap-4 border-b-4 border-black pb-8 mb-12">
-                        <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
-                            02
-                        </span>
-                        <h2 className="text-xl md:text-3xl font-black uppercase tracking-tighter">
-                            {data?.title_ubication || "Nuestras Ubicaciones"}
-                        </h2>
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mt-40"
+                >
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-12 mb-16 gap-8">
+                        <div className="flex items-center gap-6">
+                            <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
+                                02
+                            </div>
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-neutral-dark">
+                                <TextWithHighlight
+                                    text={
+                                        data?.title_ubication ||
+                                        "Nuestras *Ubicaciones*"
+                                    }
+                                />
+                            </h2>
+                        </div>
+                        <div className="hidden lg:block bg-neutral-dark h-[2px] flex-1 max-w-[100px] opacity-20"></div>
                     </div>
 
-                    <div className="relative border-4 border-black h-[500px] w-full bg-neutral-100 overflow-hidden">
+                    <div className="relative border-2 border-neutral-dark/10 h-[600px] w-full bg-neutral-100 overflow-hidden shadow-2xl">
                         {loadingStores && (
                             <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
                                 <Loader2 className="w-8 h-8 animate-spin" />
@@ -545,7 +566,7 @@ const ContactRainstar = ({ data, contacts }) => {
                             </GoogleMap>
                         </LoadScript>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

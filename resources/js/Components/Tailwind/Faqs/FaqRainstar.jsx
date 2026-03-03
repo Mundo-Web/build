@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, HelpCircle } from "lucide-react";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const FaqRainstar = ({ data, faqs }) => {
     const [expandedFaqs, setExpandedFaqs] = useState(new Set());
@@ -16,79 +17,96 @@ const FaqRainstar = ({ data, faqs }) => {
     };
 
     return (
-        <section id={data?.element_id} className="bg-white py-20">
-            <div className="container mx-auto px-4 md:px-6 2xl:px-0 2xl:max-w-7xl">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-20 border-b-4 border-black pb-8">
-                    <div className="max-w-3xl">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400 mb-4 block">
-                            Soporte
-                        </span>
-                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">
-                            {data?.title || "Preguntas Frecuentes"}
-                        </h1>
-                    </div>
-                    <div className="hidden md:block">
-                        <p className="text-right text-xs font-bold uppercase tracking-widest opacity-60 max-w-xs leading-relaxed">
-                            {data?.description ||
-                                "Encuentra respuestas a tus dudas sobre nuestros servicios."}
-                        </p>
-                    </div>
+        <section id={data?.element_id} className="bg-white py-24 md:py-40">
+            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+                {/* ── Header Section ─────────────────────────────────────────── */}
+                <div className="mb-24">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16 border-b-[6px] border-neutral-dark pb-12"
+                    >
+                        <div className="max-w-4xl">
+                            <span className="text-[11px] font-bold text-primary mb-6 block">
+                                Despeja tus dudas
+                            </span>
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-neutral-dark mb-4">
+                                <TextWithHighlight
+                                    text={data?.title || "Preguntas Frecuentes"}
+                                />
+                            </h1>
+                        </div>
+                        <div className="hidden md:block max-w-[280px]">
+                            <p className="text-right text-[11px] font-medium text-neutral-dark/40 leading-relaxed italic">
+                                {data?.description ||
+                                    "Encuentra respuestas inmediatas a las consultas más habituales de nuestros clientes sobre servicios y procesos."}
+                            </p>
+                        </div>
+                    </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    <div className="lg:col-span-8 lg:col-start-3">
-                        {faqs.map((faq, index) => (
-                            <div key={faq.id} className="border-b border-black">
-                                <button
-                                    onClick={() => toggleFaq(faq.id)}
-                                    className="w-full py-8 flex items-start justify-between gap-8 group text-left"
-                                >
-                                    <div className="flex items-baseline gap-6">
-                                        <span className="text-xs font-black uppercase tracking-tighter italic opacity-30">
-                                            {(index + 1)
-                                                .toString()
-                                                .padStart(2, "0")}
-                                        </span>
-                                        <h3
-                                            className={`text-xl md:text-2xl font-bold uppercase tracking-tight transition-colors ${expandedFaqs.has(faq.id) ? "text-black" : "text-neutral-500 group-hover:text-black"}`}
-                                        >
-                                            {faq.question}
-                                        </h3>
-                                    </div>
-                                    <span className="flex-shrink-0 pt-1">
-                                        {expandedFaqs.has(faq.id) ? (
-                                            <Minus className="w-6 h-6" />
-                                        ) : (
-                                            <Plus className="w-6 h-6" />
-                                        )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start">
+                    {faqs.map((faq, index) => (
+                        <motion.div
+                            key={faq.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.05 }}
+                            className={`border border-neutral-dark/5 group transition-all duration-500 h-fit ${expandedFaqs.has(faq.id) ? "bg-neutral-50 shadow-sm" : "hover:bg-neutral-50/30"}`}
+                        >
+                            <button
+                                onClick={() => toggleFaq(faq.id)}
+                                className="w-full py-8 px-8 flex items-center justify-between gap-6 text-left"
+                            >
+                                <div className="flex items-center gap-5">
+                                    <span
+                                        className={`text-[11px] font-black italic transition-all duration-500 ${expandedFaqs.has(faq.id) ? "text-primary opacity-100" : "opacity-20"}`}
+                                    >
+                                        {(index + 1)
+                                            .toString()
+                                            .padStart(2, "0")}
                                     </span>
-                                </button>
-                                <AnimatePresence>
-                                    {expandedFaqs.has(faq.id) && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{
-                                                height: "auto",
-                                                opacity: 1,
-                                            }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{
-                                                duration: 0.3,
-                                                ease: "easeInOut",
-                                            }}
-                                            className="overflow-hidden"
-                                        >
-                                            <div className="pb-8 pl-12 md:pl-16 pr-4">
-                                                <p className="text-sm md:text-base font-medium text-neutral-600 leading-relaxed">
-                                                    {faq.answer}
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        ))}
-                    </div>
+                                    <h3
+                                        className={`text-lg md:text-xl font-black tracking-tight transition-all duration-500 ${expandedFaqs.has(faq.id) ? "text-neutral-dark" : "text-neutral-dark/70 group-hover:text-neutral-dark"}`}
+                                    >
+                                        {faq.question}
+                                    </h3>
+                                </div>
+                                <div
+                                    className={`shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-500 border ${expandedFaqs.has(faq.id) ? "bg-neutral-dark border-neutral-dark text-white rotate-180" : "border-neutral-dark/10 text-neutral-dark group-hover:border-neutral-dark"}`}
+                                >
+                                    <Plus
+                                        className={`w-4 h-4 transition-transform duration-500 ${expandedFaqs.has(faq.id) ? "rotate-45" : ""}`}
+                                    />
+                                </div>
+                            </button>
+                            <AnimatePresence>
+                                {expandedFaqs.has(faq.id) && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{
+                                            height: "auto",
+                                            opacity: 1,
+                                        }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{
+                                            duration: 0.5,
+                                            ease: [0.04, 0.62, 0.23, 0.98],
+                                        }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="pb-8 px-8 pl-16 md:pl-20">
+                                            <p className="text-sm md:text-base font-medium text-neutral-dark/60 leading-relaxed border-l-2 border-primary/30 pl-6">
+                                                {faq.answer}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>
