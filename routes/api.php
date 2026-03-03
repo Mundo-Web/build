@@ -328,6 +328,7 @@ Route::get('/person/{dni}', [PersonController::class, 'find']);
 Route::post('/discount-rules/apply-to-cart', [AdminDiscountRulesController::class, 'applyToCart']);
 
 Route::post('/blog-categories/paginate', [BlogCategoryController::class, 'paginate']);
+Route::get('/blog-categories', [BlogCategoryController::class, 'all']);
 
 Route::middleware('auth')->group(function () {
   Route::get('/notification-variables/{type}', [NotificationVariableController::class, 'variables']);

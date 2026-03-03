@@ -2,8 +2,11 @@ import { Facebook, Link, TwitterIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import BlogPostCardRainstar from "../Blogs/Components/BlogPostCardRainstar";
 import PostsRest from "../../../Actions/PostsRest";
+import { motion } from "framer-motion";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const postsRest = new PostsRest();
+postsRest.is_use_notify = false;
 
 // Función para formatear la fecha
 function formatDate(dateString) {
@@ -74,9 +77,9 @@ export default function PostDetailRainstar({ item, data }) {
     return (
         <article
             id={data?.element_id || null}
-            className="min-h-screen bg-white font-sans text-neutral-dark"
+            className="min-h-screen bg-white font-sans text-neutral-dark py-16 md:py-24"
         >
-            <div className="container mx-auto px-4 md:px-6 2xl:px-0 2xl:max-w-7xl py-12 md:py-20">
+            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header Section */}
                 <div className="max-w-4xl mx-auto text-center mb-12">
                     {/* Category & Date */}
@@ -90,9 +93,9 @@ export default function PostDetailRainstar({ item, data }) {
 
                     {/* Title */}
                     <h1
-                        className={`text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter leading-[0.9] mb-10 text-neutral-dark ${data?.class_title || ""}`}
+                        className={`text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.9] mb-10 text-neutral-dark ${data?.class_title || ""}`}
                     >
-                        {item?.name}
+                        <TextWithHighlight text={item?.name} />
                     </h1>
 
                     {/* Tags */}
@@ -111,12 +114,18 @@ export default function PostDetailRainstar({ item, data }) {
                 </div>
 
                 {/* Featured Image */}
-                <div className="w-full mb-16 md:mb-24">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="w-full mb-16 md:mb-24"
+                >
                     <div className="mx-auto w-full max-w-7xl border border-gray-100 p-3 bg-white shadow-2xl">
                         <div className="relative aspect-[21/9] w-full bg-gray-50 overflow-hidden">
                             <img
                                 src={`/storage/images/post/${item?.image}`}
-                                alt={item?.title}
+                                alt={item?.name}
                                 className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
                                 onError={(e) =>
                                     (e.target.src = "/api/cover/thumbnail/null")
@@ -124,12 +133,18 @@ export default function PostDetailRainstar({ item, data }) {
                             />
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Content */}
                 <div className="max-w-3xl mx-auto">
                     <div
-                        className="prose prose-lg md:prose-xl max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-neutral-dark prose-p:text-neutral-dark/80 prose-p:font-medium prose-p:leading-relaxed prose-strong:text-neutral-dark prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-gray-50 prose-blockquote:py-8 prose-blockquote:pl-8 prose-blockquote:italic prose-blockquote:font-bold prose-img:border border-gray-100 prose-img:p-2 shadow-sm"
+                        className="prose prose-lg md:prose-xl max-w-none 
+                        prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-neutral-dark 
+                        prose-p:text-neutral-dark/80 prose-p:font-medium prose-p:leading-relaxed 
+                        prose-strong:text-neutral-dark 
+                        prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-gray-50 
+                        prose-blockquote:py-8 prose-blockquote:pl-8 prose-blockquote:italic prose-blockquote:font-bold 
+                        prose-img:border prose-img:border-gray-100 prose-img:p-2"
                         dangerouslySetInnerHTML={{ __html: item?.description }}
                     />
 
@@ -172,20 +187,20 @@ export default function PostDetailRainstar({ item, data }) {
 
                 {/* Related Posts Section */}
                 {relatedPosts.length > 0 && (
-                    <div className="mt-24 md:mt-40 border-t border-gray-100 pt-24">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+                    <div className="mt-24 md:mt-40 border-t border-black/5 pt-24">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
                             <div className="max-w-2xl">
-                                <span className="text-xs font-bold tracking-[0.3em] text-primary mb-4 block uppercase font-title">
-                                    Sigue explorando
+                                <span className="text-[11px] font-black tracking-[0.2em] text-primary mb-4 block uppercase whitespace-nowrap">
+                                    SIGUE EXPLORANDO
                                 </span>
                                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none text-neutral-dark">
                                     Artículos Relacionados
                                 </h2>
                             </div>
-                            <div className="hidden md:block">
+                            <div className="shrink-0">
                                 <a
                                     href="/blog"
-                                    className="text-xs font-bold uppercase tracking-widest border-b border-neutral-dark/20 pb-2 hover:border-primary hover:text-primary transition-all"
+                                    className="text-[11px] font-black tracking-[0.2em] uppercase border-b-2 border-neutral-dark pb-2 hover:text-primary hover:border-primary transition-all duration-300"
                                 >
                                     Ver Todo el Blog
                                 </a>

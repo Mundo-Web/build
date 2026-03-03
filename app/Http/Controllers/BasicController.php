@@ -59,6 +59,21 @@ class BasicController extends Controller
     return \response($response->toArray(), $response->status);
   }
 
+  public function all(Request $request)
+  {
+    $response = Response::simpleTryCatch(function () {
+      $query = $this->model::query();
+      if (Schema::hasColumn((new $this->model)->getTable(), 'status')) {
+        $query->where('status', true);
+      }
+      if (Schema::hasColumn((new $this->model)->getTable(), 'visible')) {
+        $query->where('visible', true);
+      }
+      return $query->get();
+    });
+    return response($response->toArray(), $response->status);
+  }
+
   public function media(Request $request, string $uuid)
   {
     try {

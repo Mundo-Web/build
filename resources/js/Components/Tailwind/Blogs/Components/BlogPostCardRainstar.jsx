@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export default function BlogPostCardRainstar({
     data,
@@ -27,16 +28,17 @@ export default function BlogPostCardRainstar({
             : text;
     };
 
+    // ── Flex / horizontal card (sidebar)  ────────────────────────────────────
     if (flex) {
-        // Version flex (horizontal)
         return (
-            <article className="group relative h-full bg-white border-4 border-black hover:border-black transition-all duration-300">
+            <article className="group relative h-full bg-white border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-150">
                 <a
                     href={`/post/${post?.slug}`}
                     className="flex h-full flex-col"
                 >
                     <div className="flex flex-col md:flex-row h-full">
-                        <div className="md:w-2/5 relative overflow-hidden border-b-4 md:border-b-0 md:border-r-4 border-black">
+                        {/* Image */}
+                        <div className="md:w-2/5 relative overflow-hidden shrink-0">
                             <img
                                 src={
                                     post?.image
@@ -44,30 +46,26 @@ export default function BlogPostCardRainstar({
                                         : "/assets/img/noimage/no_img.jpg"
                                 }
                                 alt={post?.title || post?.name}
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-110"
+                                className="w-full h-full min-h-[160px] object-cover group-hover:scale-105 transition-transform duration-500"
                                 onError={(e) => {
                                     e.target.src =
                                         "/assets/img/noimage/no_img.jpg";
                                 }}
                             />
-                            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
                         </div>
 
-                        <div className="p-6 md:w-3/5 flex flex-col justify-between group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                        {/* Content */}
+                        <div className="p-6 md:w-3/5 flex flex-col justify-between">
                             <div>
                                 {post?.category && (
-                                    <div className="mb-3">
-                                        <span className="inline-block px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest group-hover:bg-white group-hover:text-black transition-colors duration-300">
-                                            {post.category?.name}
-                                        </span>
-                                    </div>
+                                    <span className="inline-block px-2 py-0.5 bg-neutral-dark/5 text-neutral-dark/40 text-[10px] font-black tracking-widest uppercase mb-3">
+                                        {post.category?.name}
+                                    </span>
                                 )}
-
-                                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight mb-3 leading-none">
+                                <h3 className="text-lg md:text-xl font-bold tracking-tight leading-tight text-neutral-dark line-clamp-2 mb-3">
                                     {post?.title || post?.name}
                                 </h3>
-
-                                <p className="text-sm font-medium opacity-80 line-clamp-3 mb-4 uppercase tracking-wide">
+                                <p className="text-sm md:text-base text-neutral-dark/50 line-clamp-2 leading-relaxed">
                                     {extractText(
                                         post?.extract || post?.description,
                                         120,
@@ -75,13 +73,17 @@ export default function BlogPostCardRainstar({
                                 </p>
                             </div>
 
-                            <div className="flex items-center justify-between mt-4 pt-4 border-t-2 border-black/10 group-hover:border-white/20">
-                                <span className="text-xs font-bold uppercase tracking-widest opacity-60">
+                            <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+                                <span className="flex items-center gap-2 text-[11px] text-neutral-dark/40 font-bold uppercase tracking-wider">
+                                    <Calendar
+                                        size={12}
+                                        className="text-neutral-dark/20"
+                                    />
                                     {formatDate(post?.created_at)}
                                 </span>
-                                <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
-                                    Leer Artículo
-                                    <ArrowRight className="w-4 h-4 ml-1" />
+                                <span className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-neutral-dark/50 group-hover:text-neutral-dark group-hover:gap-2.5 transition-all duration-300">
+                                    Leer
+                                    <ArrowRight size={12} />
                                 </span>
                             </div>
                         </div>
@@ -91,13 +93,16 @@ export default function BlogPostCardRainstar({
         );
     }
 
-    // Version standard (vertical)
+    // ── Standard / vertical card  ────────────────────────────────────────────
     return (
         <article
-            className={`group relative bg-white border-4 border-black transition-all duration-300 hover:-translate-y-2 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] ${featured ? "h-full" : ""}`}
+            className={`group relative bg-white border border-gray-100 hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1.5 transition-all duration-300 ${featured ? "h-full" : ""}`}
         >
             <a href={`/post/${post?.slug}`} className="flex h-full flex-col">
-                <div className="relative overflow-hidden border-b-4 border-black aspect-[4/3]">
+                {/* Image */}
+                <div
+                    className={`relative overflow-hidden ${featured ? "aspect-[21/9]" : "aspect-[16/9]"}`}
+                >
                     <img
                         src={
                             post?.image
@@ -105,43 +110,51 @@ export default function BlogPostCardRainstar({
                                 : "/assets/img/noimage/no_img.jpg"
                         }
                         alt={post?.title || post?.name}
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         onError={(e) => {
                             e.target.src = "/assets/img/noimage/no_img.jpg";
                         }}
                     />
-
-                    <div className="absolute top-4 left-4">
-                        {post?.category && (
-                            <span className="px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    {/* Category badge */}
+                    {post?.category && (
+                        <div className="absolute top-4 left-4">
+                            <span className="px-3 py-1.5 bg-white/95 backdrop-blur-md text-neutral-dark text-[10px] font-black tracking-widest uppercase shadow-sm">
                                 {post.category?.name}
                             </span>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
-                <div className="p-6 flex-1 flex flex-col justify-between group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                {/* Content */}
+                <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
                     <div>
-                        <h3 className="text-xl font-black uppercase tracking-tight mb-4 leading-none line-clamp-3">
+                        <h3
+                            className={`${featured ? "text-2xl md:text-3xl" : "text-xl"} font-black tracking-tight leading-tight text-neutral-dark mb-4 line-clamp-2`}
+                        >
                             {post?.title || post?.name}
                         </h3>
-
-                        <p className="text-xs font-bold opacity-70 mb-6 uppercase tracking-wide line-clamp-3 leading-relaxed">
+                        <p
+                            className={`${featured ? "text-base" : "text-sm md:text-base"} text-neutral-dark/50 mb-6 line-clamp-3 leading-relaxed`}
+                        >
                             {extractText(
                                 post?.extract || post?.description,
-                                100,
+                                featured ? 250 : 160,
                             )}
                         </p>
                     </div>
 
-                    <div className="flex items-center justify-between border-t-2 border-black/10 group-hover:border-white/20 pt-4 mt-auto">
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">
+                    <div className="flex items-center justify-between border-t border-gray-100 pt-5 mt-auto">
+                        <span className="flex items-center gap-2 text-[11px] text-neutral-dark/40 font-bold uppercase tracking-wider">
+                            <Calendar
+                                size={12}
+                                className="text-neutral-dark/20"
+                            />
                             {formatDate(post?.created_at)}
                         </span>
-                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform duration-300">
-                            <span>Leer Más</span>
-                            <ArrowRight className="w-3 h-3" />
-                        </div>
+                        <span className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-neutral-dark/50 group-hover:text-neutral-dark group-hover:gap-2.5 transition-all duration-300">
+                            Leer más
+                            <ArrowRight size={12} />
+                        </span>
                     </div>
                 </div>
             </a>
