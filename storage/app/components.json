@@ -4512,18 +4512,7 @@
                 "id": "LoginSimple",
                 "name": "Simple"
             },
-            {
-                "id": "LoginSimpleSF",
-                "name": "SimpleSF"
-            },
-            {
-                "id": "LoginSimpleD2",
-                "name": "SimpleD2"
-            },
-            {
-                "id": "LoginBananaLab",
-                "name": "LoginBananaLab"
-            },
+          
             {
                 "id": "LoginRainstar",
                 "name": "Rainstar"
@@ -4538,14 +4527,8 @@
                 "id": "SignUpSimple",
                 "name": "Simple"
             },
-            {
-                "id": "SignUpSimpleSF",
-                "name": "SimpleSF"
-            },
-            {
-                "id": "SignUpSimpleD2",
-                "name": "SimpleD2"
-            },
+           
+           
             {
                 "id": "SignUpRainstar",
                 "name": "Rainstar"
@@ -4560,10 +4543,7 @@
                 "id": "ForgotPasswordSimple",
                 "name": "Simple"
             },
-            {
-                "id": "ForgotBananaLab",
-                "name": "ForgotBananaLab"
-            },
+          
             {
                 "id": "ForgotPasswordRainstar",
                 "name": "Rainstar"

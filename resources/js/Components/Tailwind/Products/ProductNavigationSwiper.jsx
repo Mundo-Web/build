@@ -10,10 +10,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import CardHoverBtn from "./Components/CardHoverBtn";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import ProductCardColors from "./Components/ProductCardColors";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
     const prevRef = useRef(null);
@@ -33,7 +33,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
             swiperInstance.navigation.update();
         }
     }, [swiperInstance]);
-    
+
     return (
         <section id={data?.element_id || null} className="py-12 lg:py-12">
             <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto w-full font-paragraph">
@@ -76,7 +76,6 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                                 slidesPerView: 5,
                             },
                         }}
-                        
                     >
                         {items.map((product, index) => (
                             <SwiperSlide key={index}>
@@ -96,7 +95,10 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                         aria-label="Productos anteriores"
                         onClick={() => swiperInstance?.slidePrev()}
                     >
-                        <ArrowLeft width={"2rem"} className="customtext-primary" />
+                        <ArrowLeft
+                            width={"2rem"}
+                            className="customtext-primary"
+                        />
                     </button>
 
                     <button
@@ -105,7 +107,10 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                         aria-label="Siguientes productos"
                         onClick={() => swiperInstance?.slideNext()}
                     >
-                        <ArrowRight width={"2rem"} className="customtext-primary" />
+                        <ArrowRight
+                            width={"2rem"}
+                            className="customtext-primary"
+                        />
                     </button>
                 </div>
             </div>

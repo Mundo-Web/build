@@ -104,6 +104,9 @@ class BannerController extends BasicController
 
             $this->model::where('id', $request->id)
                 ->update([
+                    'name' => $request->name,
+                    'subtitle' => $request->subtitle,
+                    'description' => $request->multi_description == 1 ? JSON::stringify($body['description']) : $request->description,
                     'data' => $newData
                 ]);
 

@@ -16,6 +16,7 @@ class System extends Model
     protected $fillable = [
         'id',
         'name',
+        'subtitle',
         'description',
         'page_id',
         'after_component',
@@ -33,7 +34,7 @@ class System extends Model
         'data' => 'array',
         'filters' => 'array',
         'filters_method_values' => 'array',
-        'visible'=>'boolean',
+        'visible' => 'boolean',
     ];
 
     public function after()

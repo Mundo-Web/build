@@ -14,6 +14,7 @@ class Banner extends System
 
     protected $fillable = [
         'name',
+        'subtitle',
         'description',
         'image',
         'background',

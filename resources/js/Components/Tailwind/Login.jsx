@@ -1,9 +1,7 @@
 import React from "react";
 
 const LoginSimple = React.lazy(() => import("./Login/LoginSimple"));
-const LoginSimpleSF = React.lazy(() => import("./Login/LoginSimpleSF"));
-const LoginBananaLab = React.lazy(() => import("./Login/LoginBananaLab"));
-const LoginSimpleD2 = React.lazy(() => import("./Login/LoginSimpleD2"));
+
 const LoginRainstar = React.lazy(() => import("./Login/LoginRainstar"));
 
 const Login = ({ data, which }) => {
@@ -11,12 +9,7 @@ const Login = ({ data, which }) => {
         switch (which) {
             case "LoginSimple":
                 return <LoginSimple data={data} />;
-            case "LoginSimpleSF":
-                return <LoginSimpleSF data={data} />;
-            case "LoginBananaLab":
-                return <LoginBananaLab data={data} />;
-            case "LoginSimpleD2":
-                return <LoginSimpleD2 data={data} />;
+
             case "LoginRainstar":
                 return <LoginRainstar data={data} />;
             default:

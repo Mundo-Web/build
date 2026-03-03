@@ -40,6 +40,7 @@ const TailwindBanner = lazy(() => import("../Components/Tailwind/Banner"));
 
 const getDefaultPreviewData = () => ({
     name: "",
+    subtitle: "",
     description: "",
     button_text: "",
     button_link: "",
@@ -55,6 +56,7 @@ const buildPreviewData = (data = {}) => {
     return {
         ...data,
         name: data?.name ?? defaults.name,
+        subtitle: data?.subtitle ?? defaults.subtitle,
         description: data?.description ?? defaults.description,
         button_text: data?.button_text ?? defaults.button_text,
         button_link: data?.button_link ?? defaults.button_link,
@@ -73,6 +75,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     // Form elements ref
     const idRef = useRef();
     const nameRef = useRef();
+    const subtitleRef = useRef();
     const descriptionRef = useRef();
     const backgroundRef = useRef();
     const imageRef = useRef();
@@ -767,8 +770,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
         idRef.current.value = banner?.id ?? "";
         nameRef.current.value = previewSnapshot.name;
-        idRef.current.value = banner?.id ?? "";
-        nameRef.current.value = previewSnapshot.name;
+        subtitleRef.current.value = previewSnapshot.subtitle;
 
         const isMulti =
             previewSnapshot.multi_description !== undefined &&
@@ -855,6 +857,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
             const systemData = {
                 name: `Banner - ${nameRef.current.value}`,
+                subtitle: subtitleRef.current.value,
                 component: "banner",
                 value: bannerType,
                 page_id: normalizedPageId,
@@ -877,7 +880,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                     : {}),
                 // Sobrescribir solo los campos que están en el formulario
                 name: nameRef.current.value,
-                name: nameRef.current.value,
+                subtitle: subtitleRef.current.value,
                 description: isMultiDescription
                     ? descriptionList.filter((x) => x && x.trim())
                     : descriptionRef.current.value,
@@ -1525,6 +1528,20 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                         )
                                     }
                                 />
+
+                                {Fillable.has("banners", "subtitle") && (
+                                    <TextareaFormGroup
+                                        eRef={subtitleRef}
+                                        label="Subtítulo / Texto Alternativo"
+                                        rows={2}
+                                        onChange={(event) =>
+                                            handlePreviewFieldChange(
+                                                "subtitle",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                )}
 
                                 {Fillable.has("banners", "description") && (
                                     <div className="form-group mb-3 border rounded p-3 bg-light">
