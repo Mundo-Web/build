@@ -7,6 +7,62 @@ import AuthClientRest from "../../../Actions/AuthClientRest";
 import InputForm from "../Checkouts/Components/InputForm";
 import GoogleSignInButton from "../../Google/GoogleSignInButton";
 import { ArrowRight, Loader2 } from "lucide-react";
+import React from "react"; // Added React import for React.forwardRef
+
+const InputField = React.forwardRef(
+    (
+        {
+            label,
+            name,
+            type = "text",
+            error,
+            icon: Icon,
+            value,
+            onChange,
+            placeholder,
+            suffix,
+            ...props
+        },
+        ref,
+    ) => (
+        <div className="space-y-1.5 w-full text-left">
+            <label className="text-xs font-bold tracking-widest text-neutral-light block mb-1.5">
+                {label}
+            </label>
+            <div className="relative group">
+                <input
+                    {...props}
+                    ref={ref}
+                    name={name}
+                    type={type}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder:text-neutral-300 text-sm ${
+                        error
+                            ? "border-red-400 bg-red-50"
+                            : "border-gray-200 focus:border-black hover:border-gray-400"
+                    } ${Icon ? "pl-12" : ""} ${suffix ? "pr-16" : ""}`}
+                />
+                {Icon && (
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                        <Icon size={18} />
+                    </div>
+                )}
+                {suffix && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        {suffix}
+                    </div>
+                )}
+            </div>
+            {error && (
+                <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider">
+                    {error}
+                </p>
+            )}
+        </div>
+    ),
+);
 
 export default function SignUpRainstar({ data }) {
     const jsEncrypt = new JSEncrypt();
@@ -133,218 +189,191 @@ export default function SignUpRainstar({ data }) {
         window.location.href = "/";
     };
 
-    const rainstarInputClass =
-        "!rounded-none !border-x-0 !border-t-0 border-b border-neutral-900 !px-0 py-4 bg-transparent focus:!ring-0 focus:!outline-none focus:!border-x-0 focus:!border-t-0 focus:border-b-1 text-xs uppercase tracking-widest placeholder:text-neutral-300 transition-all font-medium";
-    const rainstarLabelClass =
-        "text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-2 block";
-
     return (
         <section
             id={data?.element_id || null}
-            className="bg-white min-h-screen pt-20 pb-32 flex items-center"
+            className="bg-white min-h-screen flex items-center justify-center py-12 lg:py-12"
         >
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-                    {/* Info Side */}
-                    <div className="lg:col-span-5 order-2 lg:order-1 sticky top-32">
-                        <div className="space-y-8">
-                            <div>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400 mb-4 block">
-                                    Únete a Nosotros
-                                </span>
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none mb-6">
+            <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 xl:gap-24 items-center">
+                    {/* Left Side: Decorative Image (Desktop Only) */}
+                    <div className="hidden lg:block lg:col-span-6 h-full relative overflow-hidden group">
+                        <img
+                            src={`/assets/resources/signup.png?v=${Date.now()}`}
+                            alt={`Crear cuenta ${Global.APP_NAME}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                e.target.src = "/api/cover/thumbnail/null";
+                            }}
+                        />
+                        <div className="absolute inset-0 bg-neutral-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                    </div>
+
+                    {/* Right Side: Content (Header + Form) */}
+                    <div className="lg:col-span-6">
+                        <div className="max-w-md mx-auto lg:mx-0 py-12">
+                            <div className="mb-12">
+                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-8">
                                     Crear <br /> Cuenta
                                 </h1>
-                                <p className="text-neutral-500 text-sm uppercase tracking-widest leading-relaxed max-w-md">
-                                    Regístrate para acceder a ofertas
-                                    exclusivas, seguimiento de pedidos y más.
-                                </p>
                             </div>
 
-                            <div className="border-t border-neutral-100 pt-8">
-                                <p className="text-[10px] text-neutral-400 uppercase tracking-widest mb-4">
+                            <form
+                                onSubmit={onSignUpSubmit}
+                                className="space-y-10"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <InputField
+                                            label="Nombres"
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            placeholder="Juan"
+                                            required
+                                        />
+                                        {invitationData?.name && (
+                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
+                                                Datos de tu solicitud
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <InputField
+                                            label="Apellidos"
+                                            type="text"
+                                            name="lastname"
+                                            value={formData.lastname}
+                                            onChange={handleChange}
+                                            placeholder="Pérez"
+                                            required
+                                        />
+                                        {invitationData?.name && (
+                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
+                                                Datos de tu solicitud
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="relative">
+                                    <InputField
+                                        label="Email"
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        placeholder="hola@mail.com"
+                                        required
+                                        readOnly={invitationData !== null}
+                                        disabled={invitationData !== null}
+                                    />
+                                    {invitationData && (
+                                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
+                                            Este email está vinculado a tu
+                                            invitación como proveedor
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <InputField
+                                        label="Contraseña"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
+                                        placeholder="Mínimo 8 caracteres"
+                                        required
+                                        suffix={
+                                            <button
+                                                type="button"
+                                                onClick={
+                                                    togglePasswordVisibility
+                                                }
+                                                className="text-neutral-light hover:text-black transition-colors"
+                                            >
+                                                <span className="text-[10px] uppercase font-black tracking-widest">
+                                                    {showPassword
+                                                        ? "Ocultar"
+                                                        : "Ver"}
+                                                </span>
+                                            </button>
+                                        }
+                                    />
+                                    <InputField
+                                        label="Confirmar Contraseña"
+                                        name="confirmation"
+                                        value={formData.confirmation}
+                                        onChange={handleChange}
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
+                                        placeholder="Repite tu contraseña"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="pt-8">
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full py-6 text-[11px] font-black uppercase tracking-[0.4em] bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
+                                    >
+                                        {loading ? (
+                                            <Loader2
+                                                className="animate-spin"
+                                                size={18}
+                                            />
+                                        ) : (
+                                            <>
+                                                REGISTRARME
+                                                <ArrowRight
+                                                    size={18}
+                                                    className="group-hover:translate-x-2 transition-transform"
+                                                />
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+
+                                {Global.GOOGLE_OAUTH_ENABLED && (
+                                    <div className="pt-10 border-t border-neutral-100">
+                                        <p className="text-center text-[9px] font-black text-neutral-300 uppercase tracking-[0.5em] mb-8">
+                                            O regístrate con
+                                        </p>
+                                        <div className="flex justify-center">
+                                            <GoogleSignInButton
+                                                onSuccess={() =>
+                                                    (window.location.href = "/")
+                                                }
+                                                text="Google"
+                                                className="w-full py-5 border-2 border-neutral-100 text-[10px] font-black uppercase tracking-[0.2em] hover:border-black transition-all duration-300 flex items-center justify-center gap-4"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </form>
+
+                            <div className="pt-12 border-t border-neutral-100 mt-12">
+                                <p className="text-[10px] text-neutral-light  tracking-widest mb-4 font-black">
                                     ¿Ya tienes cuenta?
                                 </p>
                                 <a
-                                    href="/login"
-                                    className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]"
+                                    href="/iniciar-sesion"
+                                    className="group inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.3em] transition-all"
                                 >
-                                    Iniciar Sesión
+                                    INICIAR SESIÓN
                                     <ArrowRight
-                                        size={14}
-                                        className="group-hover:translate-x-1 transition-transform"
+                                        size={18}
+                                        className="group-hover:translate-x-2 transition-transform"
                                     />
                                 </a>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Spacer */}
-                    <div className="lg:col-span-1 hidden lg:block order-1 lg:order-2">
-                        <div className="w-[1px] h-full min-h-[400px] bg-neutral-100 mx-auto"></div>
-                    </div>
-
-                    {/* Form Side */}
-                    <div className="lg:col-span-6 order-1 lg:order-3">
-                        <form onSubmit={onSignUpSubmit} className="space-y-12">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div>
-                                    <InputForm
-                                        label="Nombres"
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        placeholder="JUAN"
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
-                                    />
-                                    {invitationData?.name && (
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mt-1">
-                                            Datos de tu solicitud
-                                        </p>
-                                    )}
-                                </div>
-                                <div>
-                                    {" "}
-                                    <InputForm
-                                        label="Apellidos"
-                                        type="text"
-                                        name="lastname"
-                                        value={formData.lastname}
-                                        onChange={handleChange}
-                                        placeholder="PÉREZ"
-                                        className={rainstarInputClass}
-                                        labelClass={rainstarLabelClass}
-                                    />
-                                    {invitationData?.name && (
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mt-1">
-                                            Datos de tu solicitud
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div>
-                                <InputForm
-                                    label="Email"
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="HOLA@MAIL.COM"
-                                    className={rainstarInputClass}
-                                    labelClass={rainstarLabelClass}
-                                    readOnly={invitationData !== null}
-                                    disabled={invitationData !== null}
-                                />
-                                {invitationData && (
-                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 mt-1">
-                                        Este email está vinculado a tu
-                                        invitación como proveedor
-                                    </p>
-                                )}
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-2">
-                                    <label
-                                        className={rainstarLabelClass}
-                                        htmlFor="password"
-                                    >
-                                        Contraseña
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            name="password"
-                                            type={
-                                                showPassword
-                                                    ? "text"
-                                                    : "password"
-                                            }
-                                            className={`border ${rainstarInputClass} w-full pr-10`}
-                                            required
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={togglePasswordVisibility}
-                                            className="absolute right-0 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-black transition-colors"
-                                        >
-                                            {showPassword ? (
-                                                <span className="text-[10px] uppercase font-bold tracking-widest">
-                                                    Ocultar
-                                                </span>
-                                            ) : (
-                                                <span className="text-[10px] uppercase font-bold tracking-widest">
-                                                    Ver
-                                                </span>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="space-y-0 w-full">
-                                    <label
-                                        className={rainstarLabelClass}
-                                        htmlFor="confirmation"
-                                    >
-                                        Confirmar Contraseña
-                                    </label>
-                                    <input
-                                        id="confirmation"
-                                        value={formData.confirmation}
-                                        onChange={handleChange}
-                                        name="confirmation"
-                                        type={
-                                            showPassword ? "text" : "password"
-                                        }
-                                        className={`${rainstarInputClass} w-full`}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="pt-8">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full sm:w-auto px-12 py-5 text-[10px] font-bold uppercase tracking-[0.2em] bg-black text-white hover:brightness-125 disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4 group shadow-2xl shadow-black/10 ml-auto"
-                                >
-                                    {loading ? (
-                                        <Loader2
-                                            className="animate-spin"
-                                            size={16}
-                                        />
-                                    ) : (
-                                        <>
-                                            REGISTRARME
-                                            <ArrowRight
-                                                size={14}
-                                                className="group-hover:translate-x-1 transition-transform"
-                                            />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-
-                            {Global.GOOGLE_OAUTH_ENABLED && (
-                                <div className="pt-8 border-t border-neutral-100 mt-8">
-                                    <p className="text-center text-[10px] text-neutral-400 uppercase tracking-widest mb-6">
-                                        O regístrate con
-                                    </p>
-                                    <div className="flex justify-center">
-                                        <GoogleSignInButton
-                                            onSuccess={() =>
-                                                (window.location.href = "/")
-                                            }
-                                            text="Google"
-                                            className="px-8 py-4 border border-neutral-200 text-[10px] font-bold uppercase tracking-widest hover:border-black hover:bg-black hover:text-white transition-all duration-300 flex items-center gap-3"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </form>
                     </div>
                 </div>
             </div>

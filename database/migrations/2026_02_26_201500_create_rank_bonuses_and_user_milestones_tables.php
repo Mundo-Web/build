@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+
+        Schema::dropIfExists('user_milestones');
+        Schema::dropIfExists('rank_bonuses');
         Schema::create('rank_bonuses', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('type', ['amount', 'items'])->default('items');
@@ -24,9 +27,9 @@ return new class extends Migration
         });
 
         Schema::create('user_milestones', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('rank_bonus_id')->constrained('rank_bonuses')->onDelete('cascade');
+            $table->foreignUuid('rank_bonus_id')->constrained('rank_bonuses')->onDelete('cascade');
             $table->timestamp('achieved_at')->useCurrent();
             $table->uuid('commission_id')->nullable();
             $table->foreign('commission_id')->references('id')->on('commissions')->onDelete('set null');
