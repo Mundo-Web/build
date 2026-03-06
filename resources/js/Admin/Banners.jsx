@@ -42,6 +42,7 @@ const getDefaultPreviewData = () => ({
     name: "",
     subtitle: "",
     description: "",
+    footer_text: "",
     button_text: "",
     button_link: "",
     contenedor: "relativo",
@@ -58,6 +59,7 @@ const buildPreviewData = (data = {}) => {
         name: data?.name ?? defaults.name,
         subtitle: data?.subtitle ?? defaults.subtitle,
         description: data?.description ?? defaults.description,
+        footer_text: data?.footer_text ?? defaults.footer_text,
         button_text: data?.button_text ?? defaults.button_text,
         button_link: data?.button_link ?? defaults.button_link,
         contenedor: data?.contenedor ?? defaults.contenedor,
@@ -77,6 +79,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const nameRef = useRef();
     const subtitleRef = useRef();
     const descriptionRef = useRef();
+    const footerTextRef = useRef();
     const backgroundRef = useRef();
     const imageRef = useRef();
     const buttonTextRef = useRef();
@@ -771,6 +774,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         idRef.current.value = banner?.id ?? "";
         nameRef.current.value = previewSnapshot.name;
         subtitleRef.current.value = previewSnapshot.subtitle;
+        if (footerTextRef.current)
+            footerTextRef.current.value = previewSnapshot.footer_text;
 
         const isMulti =
             previewSnapshot.multi_description !== undefined &&
@@ -884,6 +889,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                 description: isMultiDescription
                     ? descriptionList.filter((x) => x && x.trim())
                     : descriptionRef.current.value,
+                footer_text: footerTextRef.current?.value || "",
                 multi_description: isMultiDescription,
                 button_text: buttonTextRef.current.value,
                 button_link: buttonLinkRef.current.value,
@@ -1517,6 +1523,20 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                 role="tabpanel"
                                 aria-labelledby="content-tab"
                             >
+                                {Fillable.has("banners", "subtitle") && (
+                                    <TextareaFormGroup
+                                        eRef={subtitleRef}
+                                        label="Subtítulo"
+                                        rows={2}
+                                        onChange={(event) =>
+                                            handlePreviewFieldChange(
+                                                "subtitle",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                )}
+
                                 <TextareaFormGroup
                                     eRef={nameRef}
                                     label="Titulo Principal"
@@ -1528,20 +1548,6 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                         )
                                     }
                                 />
-
-                                {Fillable.has("banners", "subtitle") && (
-                                    <TextareaFormGroup
-                                        eRef={subtitleRef}
-                                        label="Subtítulo / Texto Alternativo"
-                                        rows={2}
-                                        onChange={(event) =>
-                                            handlePreviewFieldChange(
-                                                "subtitle",
-                                                event.target.value,
-                                            )
-                                        }
-                                    />
-                                )}
 
                                 {Fillable.has("banners", "description") && (
                                     <div className="form-group mb-3 border rounded p-3 bg-light">
@@ -1688,6 +1694,20 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                             />
                                         )}
                                     </div>
+                                )}
+
+                                {Fillable.has("banners", "footer_text") && (
+                                    <TextareaFormGroup
+                                        eRef={footerTextRef}
+                                        label="Texto Footer"
+                                        rows={2}
+                                        onChange={(event) =>
+                                            handlePreviewFieldChange(
+                                                "footer_text",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
                                 )}
 
                                 {Fillable.has("banners", "button_text") && (

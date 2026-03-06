@@ -32,7 +32,8 @@ class Banner extends System
         'filters_method_values',
         'contenedor',
         'type',
-        'multi_description'
+        'multi_description',
+        'footer_text'
     ];
 
     /**

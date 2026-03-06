@@ -7,13 +7,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
-const ProductCardColors = ({
-    product,
-    setCart,
-    cart,
-    textcolor = "",
-    fondo = "",
-}) => {
+const ProductCardColors = ({ product, setCart, cart }) => {
     const itemsRest = new ItemsRest();
     const [variationsItems, setVariationsItems] = useState(product.variants);
 
@@ -86,18 +80,16 @@ const ProductCardColors = ({
             key={product.id}
             className={`group w-full rounded-xl lg:rounded-2xl transition-transform duration-300 group flex-shrink-0 font-paragraph customtext-primary cursor-pointer`}
         >
-            <div
-                className={`p-0 ${fondo !== "" ? fondo : "bg-white"} rounded-xl lg:rounded-2xl`}
-            >
+            <div className={`p-0 bg-white rounded-xl lg:rounded-2xl`}>
                 <a href={`/item/${product.slug}`}>
                     {/* Imagen del producto y etiqueta de descuento */}
                     <div className="relative">
                         {isOffer && discountPercentage > 0 && (
-                            <span className="absolute top-8 right-0 bg-danger text-white text-base font-bold px-2 py-1 rounded-l-full">
+                            <span className="absolute top-8 right-0 bg-danger text-white text-base font-bold px-2 py-1 rounded-l-full z-10">
                                 -{discountPercentage}%
                             </span>
                         )}
-                        <div className="aspect-square rounded-3xl overflow-hidden bg-white">
+                        <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-white">
                             <img
                                 src={`/storage/images/item/${product.image}`}
                                 onError={(e) =>
@@ -114,7 +106,7 @@ const ProductCardColors = ({
                 {/* Información del producto */}
                 <div className="py-4">
                     <p
-                        className={`text-sm sm:text-base font-medium mb-1 ${textcolor?.trim() ? textcolor : "customtext-neutral-light"}`}
+                        className={`text-sm sm:text-base font-medium mb-1 text-secondary`}
                     >
                         {product.category.name}
                     </p>
@@ -213,7 +205,7 @@ const ProductCardColors = ({
                             <div className="flex items-center justify-between mt-4 mb-2">
                                 <div className="flex flex-col items-start gap-1">
                                     <span
-                                        className={`text-lg sm:text-xl md:text-2xl font-bold ${isOffer ? "text-danger" : textcolor?.trim() ? textcolor : "customtext-primary"}`}
+                                        className={`text-lg sm:text-xl md:text-2xl font-bold text-primary`}
                                     >
                                         {CurrencySymbol()}{" "}
                                         {finalPrice.toFixed(2)}
@@ -222,12 +214,9 @@ const ProductCardColors = ({
 
                                 {isOffer && price > finalPrice && (
                                     <div className="flex flex-col items-end gap-1">
-                                        <span className="text-xs sm:text-sm font-bold line-through text-danger opacity-70">
+                                        <span className="text-xs sm:text-sm font-bold line-through text-neutral-light ">
                                             {CurrencySymbol()}{" "}
                                             {price.toFixed(2)}
-                                        </span>
-                                        <span className="bg-danger text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                            -{discountPercentage}%
                                         </span>
                                     </div>
                                 )}

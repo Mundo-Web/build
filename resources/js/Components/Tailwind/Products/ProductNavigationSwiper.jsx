@@ -34,6 +34,8 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
         }
     }, [swiperInstance]);
 
+    if (items.length === 0) return null;
+
     return (
         <section id={data?.element_id || null} className="py-12 lg:py-12">
             <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto w-full font-paragraph">
@@ -45,7 +47,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                         </h2>
                         <a
                             href={data?.link_catalog}
-                            className="bg-accent transition-all duration-300 text-white border-none items-center px-10 py-3 text-base rounded-full font-semibold cursor-pointer hover:opacity-90"
+                            className="bg-accent transition-all duration-300 text-white border-none items-center px-10 py-4 text-lg rounded-full font-semibold cursor-pointer hover:opacity-90"
                         >
                             Ver todos
                         </a>
@@ -73,7 +75,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                                 slidesPerView: 4,
                             },
                             1550: {
-                                slidesPerView: 5,
+                                slidesPerView: 4,
                             },
                         }}
                     >
@@ -91,7 +93,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
                     {/* Navigation buttons */}
                     <button
                         ref={prevRef}
-                        className="absolute shadow-xl top-1/2 -left-8 z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-secondary rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2 hover:scale-105 transition-transform duration-200"
+                        className="absolute shadow-xl top-1/2 -left-8 z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2 hover:scale-105 transition-transform duration-200"
                         aria-label="Productos anteriores"
                         onClick={() => swiperInstance?.slidePrev()}
                     >
@@ -103,7 +105,7 @@ const ProductNavigationSwiper = ({ items, data, setCart, cart }) => {
 
                     <button
                         ref={nextRef}
-                        className="absolute top-1/2 -right-8 shadow-xl z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-secondary rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2 hover:scale-105 transition-transform duration-200"
+                        className="absolute top-1/2 -right-8 shadow-xl z-10 w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center bg-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2 hover:scale-105 transition-transform duration-200"
                         aria-label="Siguientes productos"
                         onClick={() => swiperInstance?.slideNext()}
                     >
