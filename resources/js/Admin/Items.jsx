@@ -563,9 +563,13 @@ const Items = ({
                 // Asegurar que tags sea un array
                 const tagsValue = request[key];
                 if (Array.isArray(tagsValue)) {
-                    tagsValue.forEach((tag, index) => {
-                        formData.append(`tags[${index}]`, tag);
-                    });
+                    if (tagsValue.length > 0) {
+                        tagsValue.forEach((tag, index) => {
+                            formData.append(`tags[${index}]`, tag);
+                        });
+                    } else {
+                        formData.append("tags", JSON.stringify([]));
+                    }
                 } else if (tagsValue) {
                     // Si no es array pero tiene valor, convertir a array
                     formData.append("tags[0]", tagsValue);
@@ -573,35 +577,34 @@ const Items = ({
             } else if (key === "amenities") {
                 // Enviar amenities como array de items individuales (como en Rooms.jsx)
                 const amenitiesValue = request[key];
-                if (
-                    Array.isArray(amenitiesValue) &&
-                    amenitiesValue.length > 0
-                ) {
-                    amenitiesValue.forEach((amenityId, index) => {
-                        formData.append(`amenities[${index}]`, amenityId);
-                    });
+                if (Array.isArray(amenitiesValue)) {
+                    if (amenitiesValue.length > 0) {
+                        amenitiesValue.forEach((amenityId, index) => {
+                            formData.append(`amenities[${index}]`, amenityId);
+                        });
+                    } else {
+                        formData.append("amenities", JSON.stringify([]));
+                    }
                 }
             } else if (key === "applications") {
                 // Enviar applications como array de items individuales
                 const applicationsValue = request[key];
-                if (
-                    Array.isArray(applicationsValue) &&
-                    applicationsValue.length > 0
-                ) {
-                    applicationsValue.forEach((applicationId, index) => {
-                        formData.append(
-                            `applications[${index}]`,
-                            applicationId,
-                        );
-                    });
+                if (Array.isArray(applicationsValue)) {
+                    if (applicationsValue.length > 0) {
+                        applicationsValue.forEach((applicationId, index) => {
+                            formData.append(
+                                `applications[${index}]`,
+                                applicationId,
+                            );
+                        });
+                    } else {
+                        formData.append("applications", JSON.stringify([]));
+                    }
                 }
             } else if (key === "attributes") {
                 // Enviar atributos como JSON con id y valor
                 const attributesValue = request[key];
-                if (
-                    Array.isArray(attributesValue) &&
-                    attributesValue.length > 0
-                ) {
+                if (Array.isArray(attributesValue)) {
                     formData.append(
                         "attributes",
                         JSON.stringify(attributesValue),

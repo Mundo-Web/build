@@ -282,7 +282,7 @@ class ItemController extends BasicController
                 'summary' => 'nullable|string',
                 'price' => 'nullable|numeric',
                 'discount' => 'nullable|numeric',
-                'tags' => 'nullable|array',
+                'tags' => 'nullable',
                 'description' => 'nullable|string',
                 'weight' => 'nullable|numeric',
 
@@ -832,7 +832,11 @@ class ItemController extends BasicController
         // Manejar tags como array o string separada por comas
         $tags = $request->input('tags', []);
         if (is_string($tags)) {
-            $tags = explode(',', $tags);
+            if ($tags === '[]') {
+                $tags = [];
+            } else {
+                $tags = explode(',', $tags);
+            }
         }
         // Filtrar valores vacíos
         $tags = array_filter($tags, function ($tag) {
@@ -859,24 +863,21 @@ class ItemController extends BasicController
         // Manejo de Amenidades
         if ($request->has('amenities')) {
             $amenities = $request->input('amenities', []);
-            // Log para debug
-            Log::info('Amenities recibidos:', ['amenities' => $amenities, 'type' => $request->input('type'), 'item_id' => $jpa->id]);
-
-            if (is_array($amenities) && count($amenities) > 0) {
-                $jpa->amenities()->sync($amenities);
-                Log::info('Amenities sincronizados correctamente', ['count' => count($amenities)]);
+            if (is_string($amenities)) {
+                $amenities = json_decode($amenities, true) ?? [];
             }
+            $jpa->amenities()->sync($amenities);
+            Log::info('Amenities sincronizados correctamente', ['count' => count((array)$amenities), 'item_id' => $jpa->id]);
         }
 
         // Manejo de Aplicaciones
         if ($request->has('applications')) {
             $applications = $request->input('applications', []);
-            Log::info('Applications recibidos:', ['applications' => $applications, 'item_id' => $jpa->id]);
-
-            if (is_array($applications) && count($applications) > 0) {
-                $jpa->applications()->sync($applications);
-                Log::info('Applications sincronizados correctamente', ['count' => count($applications)]);
+            if (is_string($applications)) {
+                $applications = json_decode($applications, true) ?? [];
             }
+            $jpa->applications()->sync($applications);
+            Log::info('Applications sincronizados correctamente', ['count' => count((array)$applications), 'item_id' => $jpa->id]);
         }
 
         // Manejo de Atributos con valores
@@ -889,28 +890,23 @@ class ItemController extends BasicController
                 $attributesData = json_decode($attributesData, true) ?? [];
             }
 
-            if (is_array($attributesData) && count($attributesData) > 0) {
-                // Preparar datos para sync con pivot
-                $syncData = [];
-                foreach ($attributesData as $index => $attr) {
-                    $attrId = is_array($attr) ? ($attr['id'] ?? $attr['attribute_id'] ?? null) : $attr;
-                    $value = is_array($attr) ? ($attr['value'] ?? $attr['pivot']['value'] ?? null) : null;
-                    $orderIndex = is_array($attr) ? ($attr['order_index'] ?? $attr['pivot']['order_index'] ?? $index) : $index;
+            // Preparar datos para sync con pivot
+            $syncData = [];
+            foreach ((array)$attributesData as $index => $attr) {
+                $attrId = is_array($attr) ? ($attr['id'] ?? $attr['attribute_id'] ?? null) : $attr;
+                $value = is_array($attr) ? ($attr['value'] ?? $attr['pivot']['value'] ?? null) : null;
+                $orderIndex = is_array($attr) ? ($attr['order_index'] ?? $attr['pivot']['order_index'] ?? $index) : $index;
 
-                    if ($attrId) {
-                        $syncData[$attrId] = [
-                            'value' => $value,
-                            'order_index' => $orderIndex
-                        ];
-                    }
+                if ($attrId) {
+                    $syncData[$attrId] = [
+                        'value' => $value,
+                        'order_index' => $orderIndex
+                    ];
                 }
-
-                $jpa->attributes()->sync($syncData);
-                Log::info('Attributes sincronizados correctamente', ['count' => count($syncData)]);
-            } else {
-                // Si no hay atributos, limpiar la relación
-                $jpa->attributes()->detach();
             }
+
+            $jpa->attributes()->sync($syncData);
+            Log::info('Attributes sincronizados correctamente', ['count' => count($syncData), 'item_id' => $jpa->id]);
         }
 
         // Eliminado procesamiento duplicado de galería - ya se maneja en el método save principal
