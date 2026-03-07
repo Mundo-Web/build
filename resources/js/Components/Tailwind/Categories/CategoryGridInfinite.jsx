@@ -113,7 +113,7 @@ const CategoryGridInfinite = ({ data, items }) => {
                                         variants={buttonVariants}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="bg-accent transition-all duration-300 text-white border-none items-center px-10 py-4 text-lg rounded-full font-semibold cursor-pointer hover:opacity-90"
+                                        className="bg-accent transition-all duration-300 text-white border-none items-center px-10 py-3 lg:py-4 text-lg rounded-full font-semibold cursor-pointer hover:opacity-90"
                                     >
                                         Ver todos
                                     </motion.a>

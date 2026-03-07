@@ -11,7 +11,6 @@ import {
     ChevronUp,
     CircleCheckIcon,
     DotIcon,
-    
 } from "lucide-react";
 
 import ItemsRest from "../../../Actions/ItemsRest";
@@ -25,8 +24,14 @@ import ProductNavigationSwiper from "../Products/ProductNavigationSwiper";
 import em from "../../../Utils/em";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
-
-export default function ProductDetailSF({ item, data, setCart, cart, textstatic, contacts}) {
+export default function ProductDetailSF({
+    item,
+    data,
+    setCart,
+    cart,
+    textstatic,
+    contacts,
+}) {
     const itemsRest = new ItemsRest();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState({
@@ -34,8 +39,6 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
         type: "main",
     });
 
-    
-  
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState(item?.slug);
     const [selectedVariant, setSelectedVariant] = useState(item);
@@ -52,11 +55,13 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             contacts.find((contacts) => contacts.correlative === correlative)
                 ?.description || ""
         );
-      };
-    
+    };
+
     /*TEXTOS */
-    const textProductRelation = textstatic.find(x => x.correlative == 'detailproduct-relation-title')?.title ?? '';
-    
+    const textProductRelation =
+        textstatic.find((x) => x.correlative == "detailproduct-relation-title")
+            ?.title ?? "";
+
     /*ESPECIFICACIONES */
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -78,23 +83,25 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
     //     });
     // };
     const onAddClicked = (product) => {
-
-        const variantToAdd  = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
+        const variantToAdd =
+            sizesItems.find((v) => v.slug === selectedSize) ||
+            selectedVariant ||
+            product;
         const newCart = structuredClone(cart);
         //const index = newCart.findIndex((x) => x.id == product.id);
-        const index = newCart.findIndex((x) => x.id == variantToAdd .id);
-        
+        const index = newCart.findIndex((x) => x.id == variantToAdd.id);
+
         if (index == -1) {
             //newCart.push({ ...product, quantity: quantity });
-            newCart.push({ 
-                ...variantToAdd , 
+            newCart.push({
+                ...variantToAdd,
                 quantity: quantity,
             });
         } else {
             newCart[index].quantity++;
         }
         setCart(newCart);
-    
+
         Swal.fire({
             title: "Producto agregado",
             text: `Se agregó ${selectedVariant.name || product.name} al carrito`,
@@ -107,19 +114,16 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
         }).then((result) => {
             if (result.isConfirmed) {
                 setModalOpen(!modalOpen);
-                
             }
         });
     };
-
-    
 
     const [associatedItems, setAssociatedItems] = useState([]);
     const [relationsItems, setRelationsItems] = useState([]);
     const [variationsItems, setVariationsItems] = useState([]);
     const [sizesItems, setSizesItems] = useState([]);
     const inCart = cart?.find((x) => x.id == item?.id);
-    
+
     useEffect(() => {
         if (item?.id) {
             productosRelacionados(item);
@@ -130,12 +134,12 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             setSelectedSize(item.slug);
         }
     }, [item]); // Agregar `item` como dependencia
-    
+
     const handleSizeChange = (sizeSlug) => {
-        const variant = sizesItems.find(v => v.slug === sizeSlug) || item;
+        const variant = sizesItems.find((v) => v.slug === sizeSlug) || item;
         setSelectedVariant(variant);
         setSelectedSize(sizeSlug);
-        window.history.pushState({}, '', `/item/${sizeSlug}`);
+        window.history.pushState({}, "", `/item/${sizeSlug}`);
     };
 
     const calculateDiscount = (price, finalPrice) => {
@@ -148,7 +152,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             const request = {
                 id: item?.id,
             };
-          
+
             const response = await itemsRest.updateViews(request);
 
             // Verificar si la respuesta es válida
@@ -204,7 +208,6 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             const relations = response;
 
             setRelationsItems(Object.values(relations));
-            
         } catch (error) {
             return;
             // Mostrar un mensaje de error al usuario si es necesario
@@ -217,7 +220,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             const request = {
                 slug: item?.slug,
             };
-            
+
             // Llamar al backend para verificar el combo
             const response = await itemsRest.getColors(request);
 
@@ -228,9 +231,8 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
             // Actualizar el estado con los productos asociados
             const variations = response;
-            
+
             setVariationsItems(variations.variants);
-            
         } catch (error) {
             return;
             // Mostrar un mensaje de error al usuario si es necesario
@@ -243,7 +245,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             const request = {
                 slug: item?.slug,
             };
-            
+
             // Llamar al backend para verificar el combo
             const response = await itemsRest.getSizes(request);
 
@@ -254,9 +256,8 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
             // Actualizar el estado con los productos asociados
             const variations = response;
-            
+
             setSizesItems(variations);
-            
         } catch (error) {
             return;
             // Mostrar un mensaje de error al usuario si es necesario
@@ -265,7 +266,7 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
     const total = associatedItems.reduce(
         (sum, product) => sum + parseFloat(product.final_price),
-        0
+        0,
     );
     const [expandedSpecificationMain, setExpanded] = useState(false);
 
@@ -292,14 +293,16 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
     };
     return (
         <>
-            <div id={data?.element_id || null} className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto pb-4 md:pb-6 xl:pb-8 bg-white">
+            <div
+                id={data?.element_id || null}
+                className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto pb-4 md:pb-6 xl:pb-8 bg-white"
+            >
                 <div className="bg-white rounded-xl py-4 md:py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20 2xl:gap-16">
                         {/* Left Column - Images and Delivery Options */}
                         <div className="space-y-6">
                             {/* Product Images */}
                             <div className="flex flex-col lg:flex-row gap-6">
-
                                 {/* Thumbnails - Desktop: left side, Mobile: bottom */}
                                 <div className="flex flex-row lg:flex-col gap-2 order-2 lg:order-1 lg:w-20">
                                     <button
@@ -334,16 +337,19 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                                     type: "gallery",
                                                 })
                                             }
-                                            className={`w-16 h-16 lg:w-20 lg:h-20 border-2 rounded-lg p-1 flex-shrink-0 ${
+                                            className={`rounded-xl p-1 border-2 flex-shrink-0 ${
                                                 selectedImage.url === image.url
                                                     ? "border-primary"
                                                     : "border-gray-200"
                                             }`}
                                         >
                                             <img
-                                                src={`/storage/images/item/${image.url}`||"/api/cover/thumbnail/null"}
+                                                src={
+                                                    `/storage/images/item/${image.url}` ||
+                                                    "/api/cover/thumbnail/null"
+                                                }
                                                 alt={`Thumbnail ${index + 1}`}
-                                                className="w-full h-full object-cover"
+                                                className="w-16 lg:w-20  aspect-[3/4] rounded-lg object-cover"
                                                 onError={(e) =>
                                                     (e.target.src =
                                                         "/api/cover/thumbnail/null")
@@ -374,7 +380,6 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
                         {/* Right Column - Product Info */}
                         <div className="flex flex-col gap-3">
-                            
                             {/* Brand and Title */}
                             <div className="font-paragraph">
                                 {item?.brand && (
@@ -401,34 +406,44 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 <span className="customtext-neutral-dark text-base 2xl:text-lg">
                                     Disponibilidad:{" "}
                                     <span className="customtext-neutral-dark font-bold">
-                                        {selectedVariant?.stock > 0 ? "En stock" : "Agotado"}
+                                        {selectedVariant?.stock > 0
+                                            ? "En stock"
+                                            : "Agotado"}
                                     </span>
                                 </span>
                             </div>
 
                             {/* Price Section */}
-                            {(selectedVariant?.price > 0 || selectedVariant?.final_price > 0) && (
+                            {(selectedVariant?.price > 0 ||
+                                selectedVariant?.final_price > 0) && (
                                 <div className="flex flex-col w-full xl:w-1/2 font-paragraph max-w-xl mt-5">
                                     <p className="text-base 2xl:text-lg customtext-neutral-dark opacity-70 font-medium">
                                         Precio:{" "}
                                         <span className="line-through">
-                                            {CurrencySymbol()} {selectedVariant?.price}
+                                            {CurrencySymbol()}{" "}
+                                            {selectedVariant?.price}
                                         </span>
                                     </p>
                                     <div className="flex flex-row items-center gap-4 relative">
                                         <span className="text-[40px] font-bold customtext-neutral-dark">
-                                            {CurrencySymbol()} {selectedVariant?.final_price}
+                                            {CurrencySymbol()}{" "}
+                                            {selectedVariant?.final_price}
                                         </span>
                                         <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl text-base">
-                                            -{calculateDiscount(selectedVariant?.price, selectedVariant?.final_price)}%
+                                            -
+                                            {calculateDiscount(
+                                                selectedVariant?.price,
+                                                selectedVariant?.final_price,
+                                            )}
+                                            %
                                         </span>
                                     </div>
                                 </div>
                             )}
-                            
+
                             {item?.summary && (
                                 <div className="flex flex-col customtext-neutral-dark font-paragraph text-base 2xl:text-lg my-3">
-                                    <p>{item?.summary}</p>       
+                                    <p>{item?.summary}</p>
                                 </div>
                             )}
 
@@ -440,20 +455,25 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
                                     <div className="flex gap-3 items-center justify-start w-full flex-wrap">
                                         {variationsItems.map((variant) => (
-                                            <Tippy key={variant.slug} content={variant.color}>
+                                            <Tippy
+                                                key={variant.slug}
+                                                content={variant.color}
+                                            >
                                                 <a
                                                     href={`/item/${variant.slug}`}
                                                     className={`variant-option rounded-full object-fit-cover transition-all duration-200 hover:scale-105 ${
-                                                        variant.color === item.color 
-                                                        ? "active p-[2px] border-[2px] border-primary shadow-lg"
-                                                        : "p-[2px] border-[2px] border-gray-200 hover:border-gray-400"
+                                                        variant.color ===
+                                                        item.color
+                                                            ? "active p-[2px] border-[2px] border-primary shadow-lg"
+                                                            : "p-[2px] border-[2px] border-gray-200 hover:border-gray-400"
                                                     }`}
                                                 >
                                                     <img
                                                         className="color-box rounded-full h-10 w-10 lg:h-12 lg:w-12 object-cover"
                                                         src={`/storage/images/item/${variant.texture || variant.image}`}
                                                         onError={(e) =>
-                                                            (e.target.src = "/api/cover/thumbnail/null")
+                                                            (e.target.src =
+                                                                "/api/cover/thumbnail/null")
                                                         }
                                                         alt={`Color ${variant.color}`}
                                                     />
@@ -474,15 +494,19 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                         {sizesItems.map((variant) => (
                                             <button
                                                 key={variant.slug}
-                                                onClick={() => handleSizeChange(variant.slug)}
+                                                onClick={() =>
+                                                    handleSizeChange(
+                                                        variant.slug,
+                                                    )
+                                                }
                                                 className={`relative min-w-12 h-12 px-3 flex items-center justify-center text-center font-medium rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
-                                                    selectedSize === variant.slug
+                                                    selectedSize ===
+                                                    variant.slug
                                                         ? "border-primary bg-primary text-white shadow-lg transform scale-105"
                                                         : "border-gray-200 bg-white customtext-neutral-dark hover:border-gray-300 hover:bg-gray-50"
                                                 }`}
                                             >
                                                 {variant.size}
-                                               
                                             </button>
                                         ))}
                                     </div>
@@ -498,12 +522,26 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                     <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden bg-white">
                                         <button
                                             type="button"
-                                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                            onClick={() =>
+                                                setQuantity(
+                                                    Math.max(1, quantity - 1),
+                                                )
+                                            }
                                             disabled={quantity <= 1}
                                             className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                         >
-                                            <svg className="w-4 h-4 customtext-neutral-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                                            <svg
+                                                className="w-4 h-4 customtext-neutral-dark"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M20 12H4"
+                                                />
                                             </svg>
                                         </button>
                                         <input
@@ -516,12 +554,26 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                            onClick={() =>
+                                                setQuantity(
+                                                    Math.min(10, quantity + 1),
+                                                )
+                                            }
                                             disabled={quantity >= 10}
                                             className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                         >
-                                            <svg className="w-4 h-4 customtext-neutral-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            <svg
+                                                className="w-4 h-4 customtext-neutral-dark"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M12 4v16m8-8H4"
+                                                />
                                             </svg>
                                         </button>
                                     </div>
@@ -544,7 +596,9 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     }`}
                                 >
-                                    {selectedVariant?.stock > 0 ? "Agregar al carrito" : "Producto agotado"}
+                                    {selectedVariant?.stock > 0
+                                        ? "Agregar al carrito"
+                                        : "Producto agotado"}
                                 </button>
                             )}
 
@@ -553,12 +607,12 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                 <a
                                     href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
                                         `Hola, deseo cotizar el siguiente producto:\n\n` +
-                                        `📦 Producto: ${item?.name}\n` +
-                                        `🔢 SKU: ${item?.sku}\n` +
-                                        `${item?.color ? `🎨 Color: ${item?.color}\n` : ''}` +
-                                        `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ''}` +
-                                        `📊 Cantidad: ${quantity}\n\n` +
-                                        `¿Podrían enviarme más información y el precio?`
+                                            `📦 Producto: ${item?.name}\n` +
+                                            `🔢 SKU: ${item?.sku}\n` +
+                                            `${item?.color ? `🎨 Color: ${item?.color}\n` : ""}` +
+                                            `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ""}` +
+                                            `📊 Cantidad: ${quantity}\n\n` +
+                                            `¿Podrían enviarme más información y el precio?`,
                                     )}`}
                                     target="_blank"
                                     className="hidden lg:flex w-full font-paragraph py-3 text-base 2xl:text-lg font-semibold rounded-3xl transition-all duration-300 mt-3 bg-primary text-white hover:bg-primary hover:shadow-lg transform hover:scale-[1.02] items-center justify-center gap-2"
@@ -584,22 +638,26 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                         >
                                             {item?.specifications.map(
                                                 (spec, index) =>
-                                                    spec.type === "principal" && (
+                                                    spec.type ===
+                                                        "principal" && (
                                                         <li
                                                             key={index}
                                                             className="gap-2  customtext-primary opacity-85 flex flex-row items-start"
-                                                        >   
+                                                        >
                                                             <CircleCheckIcon className="customtext-primary mt-1 min-w-4 min-h-4 max-w-4 max-h-4" />
-                                                           <span className="first-letter:uppercase"> {spec?.description?.toLowerCase()}</span>
+                                                            <span className="first-letter:uppercase">
+                                                                {" "}
+                                                                {spec?.description?.toLowerCase()}
+                                                            </span>
                                                         </li>
-                                                    )
+                                                    ),
                                             )}
                                         </ul>
                                         <button
                                             className="font-semibold flex flex-row gap-2 items-center text-base xl:text-[17px] 2xl:text-xl mb-4 customtext-neutral-dark font-paragraph pb-2 border-b border-neutral-dark"
                                             onClick={() =>
                                                 setExpanded(
-                                                    !expandedSpecificationMain
+                                                    !expandedSpecificationMain,
                                                 )
                                             }
                                         >
@@ -618,10 +676,12 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
                             {/* Whatsapp */}
                             <div className="w-full mt-5">
-                                <a  href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
-                                        `Hola, deseo mayor información acerca del producto: ${item?.name}`
+                                <a
+                                    href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
+                                        `Hola, deseo mayor información acerca del producto: ${item?.name}`,
                                     )}`}
-                                 target="_blank">
+                                    target="_blank"
+                                >
                                     <div className="bg-[#F7F9FB] flex flex-row rounded-xl p-5 gap-3">
                                         <img
                                             src="/assets/img/salafabulosa/whatsapp.png"
@@ -634,12 +694,11 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                         />
                                         <div className="customtext-neutral-dark font-paragraph text-base  2xl:text-xl font-semibold">
                                             <p>
-                                                ¿Tienes dudas sobre este producto? 
-                                                Haz 
+                                                ¿Tienes dudas sobre este
+                                                producto? Haz
                                                 <span className="underline"></span>
-                                                    clic aquí
-                                                
-                                                y chatea con nosotros por WhatsApp
+                                                clic aquí y chatea con nosotros
+                                                por WhatsApp
                                             </p>
                                         </div>
                                     </div>
@@ -651,40 +710,43 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
 
                 <div className="grid gap-10 lg:gap-20 md:grid-cols-2 bg-white rounded-xl p-4 sm:p-8 font-paragraph">
                     {/* Specifications Section */}
-                    {item?.specifications?.length > 0 && item.specifications.some(spec => spec.type === "general") && (
-                        <div>
-                            <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
-                                Especificaciones
-                            </h2>
-                            <div className="space-y-1">
-                                {item.specifications.map(
-                                    (spec, index) =>
-                                        spec.type === "general" && (
-                                            <div
-                                                key={index}
-                                                className={`grid grid-cols-2 gap-4 p-3 ${
-                                                    index % 2 === 0
-                                                        ? "bg-[#F7F9FB]"
-                                                        : "bg-white"
-                                                }`}
-                                            >
-                                                <div className="customtext-neutral-dark ">
-                                                    {spec.title}
+                    {item?.specifications?.length > 0 &&
+                        item.specifications.some(
+                            (spec) => spec.type === "general",
+                        ) && (
+                            <div>
+                                <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
+                                    Especificaciones
+                                </h2>
+                                <div className="space-y-1">
+                                    {item.specifications.map(
+                                        (spec, index) =>
+                                            spec.type === "general" && (
+                                                <div
+                                                    key={index}
+                                                    className={`grid grid-cols-2 gap-4 p-3 ${
+                                                        index % 2 === 0
+                                                            ? "bg-[#F7F9FB]"
+                                                            : "bg-white"
+                                                    }`}
+                                                >
+                                                    <div className="customtext-neutral-dark ">
+                                                        {spec.title}
+                                                    </div>
+                                                    <div className="customtext-neutral-dark opacity-75">
+                                                        {spec.description}
+                                                    </div>
                                                 </div>
-                                                <div className="customtext-neutral-dark opacity-75">
-                                                    {spec.description}
-                                                </div>
-                                            </div>
-                                        )
-                                )}
+                                            ),
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
                     {/* Additional Information Section */}
                     {data?.show_additional_info && (
                         <div className="font-paragraph">
-                            {item?.description?.replace(/<[^>]+>/g, '') && (
+                            {item?.description?.replace(/<[^>]+>/g, "") && (
                                 <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-3">
                                     Información adicional
                                 </h2>
@@ -697,39 +759,39 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                         : ""
                                 }`}
                             >
-                                {item?.description?.replace(/<[^>]+>/g, '') && (
+                                {item?.description?.replace(/<[^>]+>/g, "") && (
                                     <>
-                                    <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
-                                        Acerca de este artículo
-                                    </h3>
-                                    <div
-                                        className="customtext-neutral-dark"
-                                        dangerouslySetInnerHTML={{
-                                            __html: item?.description,
-                                        }}
-                                    ></div>
+                                        <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
+                                            Acerca de este artículo
+                                        </h3>
+                                        <div
+                                            className="customtext-neutral-dark"
+                                            dangerouslySetInnerHTML={{
+                                                __html: item?.description,
+                                            }}
+                                        ></div>
                                     </>
                                 )}
-                                
+
                                 {item?.features?.length > 0 && (
                                     <div className={`pl-10`}>
                                         <ul className="list-disc pl-5 space-y-2">
-                                            {item?.features.map((feature, index) => (
-                                                <li
-                                                    key={index}
-                                                    className="customtext-neutral-dark"
-                                                >
-                                                    {feature.feature}
-                                                </li>
-                                            ))}
+                                            {item?.features.map(
+                                                (feature, index) => (
+                                                    <li
+                                                        key={index}
+                                                        className="customtext-neutral-dark"
+                                                    >
+                                                        {feature.feature}
+                                                    </li>
+                                                ),
+                                            )}
                                         </ul>
                                     </div>
                                 )}
-                                
                             </div>
                         </div>
                     )}
-                    
                 </div>
             </div>
 
@@ -749,7 +811,9 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                             }`}
                         >
-                            {selectedVariant?.stock > 0 ? "Agregar al carrito" : "Producto agotado"}
+                            {selectedVariant?.stock > 0
+                                ? "Agregar al carrito"
+                                : "Producto agotado"}
                         </button>
                     )}
 
@@ -758,20 +822,19 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
                         <a
                             href={`https://api.whatsapp.com/send?phone=${getContact("phone_whatsapp")}&text=${encodeURIComponent(
                                 `Hola, deseo cotizar el siguiente producto:\n\n` +
-                                `📦 Producto: ${item?.name}\n` +
-                                `🔢 SKU: ${item?.sku}\n` +
-                                `${item?.color ? `🎨 Color: ${item?.color}\n` : ''}` +
-                                `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ''}` +
-                                `📊 Cantidad: ${quantity}\n\n` +
-                                `¿Podrían enviarme más información y el precio?`
+                                    `📦 Producto: ${item?.name}\n` +
+                                    `🔢 SKU: ${item?.sku}\n` +
+                                    `${item?.color ? `🎨 Color: ${item?.color}\n` : ""}` +
+                                    `${selectedVariant?.size ? `📏 Talla: ${selectedVariant?.size}\n` : ""}` +
+                                    `📊 Cantidad: ${quantity}\n\n` +
+                                    `¿Podrían enviarme más información y el precio?`,
                             )}`}
                             target="_blank"
                             className={`font-paragraph text-base py-3 font-semibold rounded-xl transition-all duration-300 bg-primary text-white hover:opacity-90 flex items-center justify-center gap-2 ${
                                 data?.button_buy ? "flex-1" : "w-full"
                             }`}
                         >
-                         
-                          Cotizar este producto
+                            Cotizar este producto
                         </a>
                     )}
                 </div>
@@ -784,14 +847,17 @@ export default function ProductDetailSF({ item, data, setCart, cart, textstatic,
             {relationsItems.length > 0 && (
                 <div className="-mt-10 mb-10 p-4">
                     <ProductNavigationSwiper
-                        data={{ title: "Productos relacionados", link_catalog: "/catalogo" }}
+                        data={{
+                            title: "Productos relacionados",
+                            link_catalog: "/catalogo",
+                        }}
                         items={relationsItems}
                         cart={cart}
                         setCart={setCart}
-                    />      
+                    />
                 </div>
-            )}             
-            
+            )}
+
             <CartModal
                 cart={cart}
                 data={data}

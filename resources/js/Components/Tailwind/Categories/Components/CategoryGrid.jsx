@@ -1,6 +1,26 @@
-﻿import { motion } from "framer-motion";
+﻿import { useRef, useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 export default function CategoryGrid({ categories }) {
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
+    const [swiperInstance, setSwiperInstance] = useState(null);
+
+    useEffect(() => {
+        if (swiperInstance && prevRef.current && nextRef.current) {
+            swiperInstance.params.navigation.prevEl = prevRef.current;
+            swiperInstance.params.navigation.nextEl = nextRef.current;
+            swiperInstance.navigation.init();
+            swiperInstance.navigation.update();
+        }
+    }, [swiperInstance]);
+
     // Ordenar categorías por order_index
     const sortedCategories = [...categories].sort(
         (a, b) => (a.order_index || 0) - (b.order_index || 0),
@@ -155,13 +175,74 @@ export default function CategoryGrid({ categories }) {
     };
 
     return (
-        <motion.div
-            className="w-full overflow-hidden"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-        >
-            {chunks.map((chunk, chunkIndex) => renderChunk(chunk, chunkIndex))}
-        </motion.div>
+        <div className="w-full">
+            {/* Desktop Grid */}
+            <motion.div
+                className="hidden lg:block w-full overflow-hidden"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                {chunks.map((chunk, chunkIndex) =>
+                    renderChunk(chunk, chunkIndex),
+                )}
+            </motion.div>
+
+            {/* Mobile Swiper */}
+            <div className="block lg:hidden w-full relative group">
+                <Swiper
+                    modules={[Autoplay, Pagination, Navigation]}
+                    spaceBetween={15}
+                    slidesPerView={1.2}
+                    centeredSlides={false}
+                    loop={true}
+                    autoplay={{
+                        delay: 3500,
+                        disableOnInteraction: false,
+                    }}
+                    onSwiper={setSwiperInstance}
+                    breakpoints={{
+                        640: {
+                            slidesPerView: 2.2,
+                        },
+                    }}
+                    className="category-swiper"
+                >
+                    {sortedCategories.map((category, index) => (
+                        <SwiperSlide key={index} className="h-[450px]">
+                            <CategoryCard
+                                category={category}
+                                className="h-[450px]"
+                            />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+
+                {/* Navigation buttons */}
+                <button
+                    ref={prevRef}
+                    className="absolute shadow-xl top-1/2 left-2 z-10 w-10 h-10 flex items-center justify-center bg-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2 hover:scale-105 transition-transform duration-200"
+                    aria-label="Categorías anteriores"
+                    onClick={() => swiperInstance?.slidePrev()}
+                >
+                    <ArrowLeft
+                        width={"1.5rem"}
+                        className="customtext-primary"
+                    />
+                </button>
+
+                <button
+                    ref={nextRef}
+                    className="absolute top-1/2 right-2 shadow-xl z-10 w-10 h-10 flex items-center justify-center bg-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed -translate-y-1/2 hover:scale-105 transition-transform duration-200"
+                    aria-label="Siguientes categorías"
+                    onClick={() => swiperInstance?.slideNext()}
+                >
+                    <ArrowRight
+                        width={"1.5rem"}
+                        className="customtext-primary"
+                    />
+                </button>
+            </div>
+        </div>
     );
 }

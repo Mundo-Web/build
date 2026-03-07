@@ -1103,7 +1103,7 @@
     ]
   },
   "resources/js/Admin/Banners.jsx": {
-    "file": "assets/Banners-B5938mmZ.js",
+    "file": "assets/Banners-CxuIYYFR.js",
     "name": "Banners",
     "src": "resources/js/Admin/Banners.jsx",
     "isEntry": true,
@@ -4061,7 +4061,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Banner.jsx": {
-    "file": "assets/Banner-pyIBayVi.js",
+    "file": "assets/Banner-B58IC5Ti.js",
     "name": "Banner",
     "src": "resources/js/Components/Tailwind/Banner.jsx",
     "isDynamicEntry": true,
@@ -4776,7 +4776,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Carrusel.jsx": {
-    "file": "assets/Carrusel-CgNXLJnW.js",
+    "file": "assets/Carrusel-csIxCc8o.js",
     "name": "Carrusel",
     "src": "resources/js/Components/Tailwind/Carrusel.jsx",
     "isDynamicEntry": true,
@@ -5084,7 +5084,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Category.jsx": {
-    "file": "assets/Category-FKVWcAyg.js",
+    "file": "assets/Category-DIVPkHps.js",
     "name": "Category",
     "src": "resources/js/Components/Tailwind/Category.jsx",
     "isDynamicEntry": true,
@@ -6497,7 +6497,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-EIUJCALC.js",
+    "file": "assets/Filter-UinrnSkT.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -6649,7 +6649,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx": {
-    "file": "assets/CatalogoFiltrosDental-BNsuBilJ.js",
+    "file": "assets/CatalogoFiltrosDental-DU2k8WSa.js",
     "name": "CatalogoFiltrosDental",
     "src": "resources/js/Components/Tailwind/Filters/CatalogoFiltrosDental.jsx",
     "isDynamicEntry": true,
@@ -8489,7 +8489,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DaIEoiBB.js",
+    "file": "assets/Product-DEzwJBjA.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isEntry": true,
@@ -8528,7 +8528,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-BUUPLYhO.js",
+    "file": "assets/ProductDetail-DrnUBQab.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -8670,7 +8670,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-DxAzVZLl.js",
+    "file": "assets/ProductDetailHuaillys-CjK20yEu.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isEntry": true,
@@ -11084,7 +11084,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-ClpY-w6x.js",
+    "file": "assets/System-C-pCcX4Y.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

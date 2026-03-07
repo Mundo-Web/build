@@ -52,7 +52,7 @@ const CarruselBenefitsInifinite2dn1 = ({ items, data }) => {
                                         }}
                                     />
                                 </div>
-                                <div className="flex flex-row items-center justify-center gap-2 text-sm sm:text-base lg:text-lg 2xl:text-2xl">
+                                <div className="flex flex-row items-center justify-center gap-2 text-lg 2xl:text-2xl">
                                     <TextWithHighlight
                                         text={benefit.name}
                                         color="bg-primary font-bold"

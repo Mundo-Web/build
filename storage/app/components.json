@@ -1311,12 +1311,10 @@
                 "name": "Producto Catalogo Filtro Dental",
                 "image": "products-list.png",
                 "data": [
-                    "path",
+                  
+                    "class_title",
                     "title",
-                    "description",
-                    "link_cart",
-                    "class_button",
-                    "show_price",
+                    "class_sort_options",
                     "section_collections",
                     "section_brands",
                     "section_categories",
@@ -1326,19 +1324,10 @@
                     "section_prices",
                     "section_stores",
                     "type_card_product",
+                    "class_product_container",
                     "class_product_card_container",
-                    "class_clear_button",
-                    "class_title",
-                    "cardType",
-                    "show_categories",
-                    "button_top",
-                    "button_bottom",
-                    "badge_offer_percent",
-                    "badge_category_up_name",
-                    "badge_brand_up_name",
-                    "is_card_content_description",
-                    "class_badge_category",
-                    "class_button_card_detail"
+                    "class_clear_button"
+                   
                 ],
                 "options": [
                     {

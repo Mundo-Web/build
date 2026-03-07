@@ -28,7 +28,7 @@ const BannerSimpleSF = ({ data }) => {
                         <div className="flex flex-col pt-10">
                             <a
                                 href={data?.button_link}
-                                className="w-auto bg-primary px-6 py-3 2xl:py-4 2xl:px-8 rounded-full text-white font-paragraph leading-none text-base 2xl:text-xl"
+                                className="w-auto bg-primary px-10 py-4 2xl:px-8 rounded-full text-white font-paragraph leading-none text-lg 2xl:text-xl"
                             >
                                 {data?.button_text}
                             </a>
@@ -42,7 +42,7 @@ const BannerSimpleSF = ({ data }) => {
                         onError={(e) =>
                             (e.target.src = "/api/cover/thumbnail/null")
                         }
-                        className="object-contain min-h-[350px] max-h-[400px] md:object-contain   xl:max-h-[500px] md:max-h-none w-full object-bottom"
+                        className="object-contain min-h-[250px] max-h-[300px] md:object-contain   xl:max-h-[500px] md:max-h-none w-full object-bottom"
                     />
                 </div>
             </div>
