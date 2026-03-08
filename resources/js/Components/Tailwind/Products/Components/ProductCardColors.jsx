@@ -93,8 +93,7 @@ const ProductCardColors = ({ product, setCart, cart }) => {
                             <img
                                 src={`/storage/images/item/${product.image}`}
                                 onError={(e) =>
-                                    (e.target.src =
-                                        "/assets/img/noimage/no_img.jpg")
+                                    (e.target.src = "/api/cover/thumbnail/null")
                                 }
                                 alt={product.name}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -129,6 +128,7 @@ const ProductCardColors = ({ product, setCart, cart }) => {
                                         >
                                             <img
                                                 className="color-box rounded-full h-7 w-7 sm:h-9 sm:w-9 object-fit-cover"
+                                                loading="lazy"
                                                 src={`/storage/images/item/${variant.texture || variant.image}`}
                                                 alt={variant.color}
                                                 onError={(e) =>
@@ -170,7 +170,8 @@ const ProductCardColors = ({ product, setCart, cart }) => {
                                             className="variant-option rounded-full border shadow-gray-500  object-fit-cover bg-[#F5F5F5]"
                                         >
                                             <img
-                                                className="color-box rounded-full h-7 w-7 sm:h-9 sm:w-9 object-fit-cover"
+                                                className="color-box rounded-full h-7 w-7 sm:h-9 sm:w-9 object-fit-cover "
+                                                loading="lazy"
                                                 src={`/storage/images/item/${variant.texture || variant.image}`}
                                                 alt={variant.color}
                                                 onError={(e) =>

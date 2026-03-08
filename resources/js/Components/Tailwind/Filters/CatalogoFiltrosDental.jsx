@@ -98,7 +98,7 @@ const modernFilterStyles = {
     filterSection:
         "group transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-50/60 hover:to-blue-50/40 rounded-xl",
     filterButton:
-        "w-full flex items-center justify-between p-4 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 group",
+        "w-full flex items-center justify-between p-4 rounded-xl transition-all duration-300 hover:bg-sections-color group",
     filterContent:
         "bg-gradient-to-b from-white/90 to-gray-50/50 rounded-xl border border-gray-200/40 backdrop-blur-sm",
     searchInput:
