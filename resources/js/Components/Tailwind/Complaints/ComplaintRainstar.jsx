@@ -405,7 +405,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
             id={data?.element_id || null}
             className="bg-white min-h-screen pt-20 pb-32"
         >
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
                 <div className="mb-24">
                     <motion.div
@@ -527,8 +527,8 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                     </h2>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                                    <div className="md:col-span-2">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                                    <div className="w-full col-span-2 lg:col-span-2">
                                         <InputField
                                             label="Nombre Completo"
                                             name="nombre"
@@ -575,20 +575,26 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                             />
                                         </div>
                                     </div>
-                                    <InputField
-                                        label="Teléfono Móvil"
-                                        name="celular"
-                                        placeholder="+51 999 999 999"
-                                        value={formData.celular}
-                                        onChange={handleChange}
-                                    />
-                                    <InputField
-                                        label="Email"
-                                        name="correo_electronico"
-                                        placeholder="correo@ejemplo.com"
-                                        value={formData.correo_electronico}
-                                        onChange={handleChange}
-                                    />
+                                    <div className="grid col-span-2 md:grid-cols-1">
+                                        {" "}
+                                        <InputField
+                                            label="Teléfono Móvil"
+                                            name="celular"
+                                            placeholder="+51 999 999 999"
+                                            value={formData.celular}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="grid col-span-2 md:grid-cols-1">
+                                        {" "}
+                                        <InputField
+                                            label="Email"
+                                            name="correo_electronico"
+                                            placeholder="correo@ejemplo.com"
+                                            value={formData.correo_electronico}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
