@@ -251,7 +251,7 @@ export default function CheckoutStepsRainstar({
 
     return (
         <section className="bg-white min-h-screen py-12">
-            <div className="2xl:max-w-7xl 2xl:px-0 px-primary mx-auto">
+            <div className="max-w-7xl px-primary mx-auto">
                 {step === 1 && (
                     <CartStepRainstar
                         data={data}

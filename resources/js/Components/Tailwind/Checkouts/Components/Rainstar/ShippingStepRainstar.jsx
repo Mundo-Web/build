@@ -655,7 +655,7 @@ export default function ShippingStepRainstar({
 
     // ── Render ───────────────────────────────────────────────────────────────
     return (
-        <div className="pt-8 pb-20 max-w-7xl mx-auto px-4 md:px-0">
+        <div className="pt-8 pb-20 max-w-7xl mx-auto  md:px-0">
             {/* ── Header ── */}
             <div className="mb-12 flex items-center justify-between border-b border-gray-100 pb-8">
                 <button
@@ -681,10 +681,10 @@ export default function ShippingStepRainstar({
 
             <form
                 onSubmit={handleSubmit}
-                className="grid lg:grid-cols-12 gap-12"
+                className="grid lg:grid-cols-12 gap-8 lg:gap-12"
             >
                 {/* ── LEFT COLUMN ── */}
-                <div className="lg:col-span-7 space-y-12">
+                <div className="lg:col-span-7 space-y-12 ">
                     {/* ─── 01: Datos del cliente ─── */}
                     <section className="space-y-6">
                         <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
@@ -1359,10 +1359,10 @@ export default function ShippingStepRainstar({
                 </div>
 
                 {/* ── RIGHT COLUMN: Order summary ── */}
-                <div className="lg:col-span-5">
-                    <div className="sticky top-24 border border-gray-100 bg-white shadow-2xl shadow-neutral-dark/5 rounded-none">
+                <div className="lg:col-span-5 w-full">
+                    <div className="lg:sticky lg:top-24 border border-gray-100 bg-white shadow-2xl shadow-neutral-dark/5 rounded-none">
                         {/* Summary header */}
-                        <div className="flex items-center gap-4 px-8 py-6 border-b border-gray-100">
+                        <div className="flex items-center gap-4 px-6 sm:px-8 py-6 border-b border-gray-100">
                             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
                                 <ShoppingBag className="w-5 h-5 text-neutral-dark/40" />
                             </div>
@@ -1414,7 +1414,7 @@ export default function ShippingStepRainstar({
                             ))}
                         </div>
 
-                        <div className="px-8 pb-8 space-y-6">
+                        <div className="px-6 sm:px-8 pb-8 space-y-6">
                             {/* Coupon */}
                             <div className="pt-4 border-t border-gray-100">
                                 {!appliedCoupon ? (
@@ -1534,7 +1534,7 @@ export default function ShippingStepRainstar({
                                         Total
                                     </span>
                                     <div className="text-right">
-                                        <span className="text-4xl font-black tracking-tighter text-neutral-dark">
+                                        <span className="text-3xl sm:text-4xl font-black tracking-tighter text-neutral-dark">
                                             {CurrencySymbol()}{" "}
                                             {Number2Currency(totalFinal)}
                                         </span>
@@ -1545,9 +1545,9 @@ export default function ShippingStepRainstar({
                                 <button
                                     type="submit"
                                     disabled={paymentLoading}
-                                    className="group w-full flex items-center justify-between py-6 px-8 bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/20 active:translate-y-1 active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="group w-full flex items-center justify-between py-5 sm:py-6 px-6 sm:px-8 bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/20 active:translate-y-1 active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
-                                    <span className="text-sm font-bold tracking-[0.2em] uppercase">
+                                    <span className="text-xs sm:text-sm font-bold tracking-normal sm:tracking-[0.2em] uppercase">
                                         {paymentLoading
                                             ? "Procesando..."
                                             : "Proceder al Pago"}
