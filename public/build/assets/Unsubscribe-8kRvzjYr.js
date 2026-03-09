@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/UnsubscribeSimple-z8K_Hda8.js","assets/vendor-react-Z-mlWBRL.js","assets/vendor-swiper-Cr_RrIb_.js","vendor-swiper.css","vendor-react.css","assets/Footer-B3ifaZRG.js","assets/CartKuchara-CR-HzNtU.js","assets/OpenPayCardModal-5cKua6uZ.js"])))=>i.map(i=>d[i]);
-import{_ as r}from"./preload-helper-DAHR15QK.js";import{R as e}from"./vendor-react-Z-mlWBRL.js";import"./vendor-swiper-Cr_RrIb_.js";e.lazy(()=>r(()=>import("./UnsubscribeSimple-z8K_Hda8.js"),__vite__mapDeps([0,1,2,3,4,5,6,7])));

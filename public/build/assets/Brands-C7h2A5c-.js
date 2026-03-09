@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/BrandMakita-CjlAJdUA.js","assets/vendor-react-CdD0MVWo.js","assets/vendor-swiper-B9Y_Akv-.js","vendor-swiper.css","vendor-react.css","assets/BrandMultivet-CRou_kOA.js"])))=>i.map(i=>d[i]);
+import{_ as r}from"./preload-helper-DAHR15QK.js";import{R as a}from"./vendor-react-CdD0MVWo.js";import"./vendor-swiper-B9Y_Akv-.js";a.lazy(()=>r(()=>import("./BrandMakita-CjlAJdUA.js"),__vite__mapDeps([0,1,2,3,4]))),a.lazy(()=>r(()=>import("./BrandMultivet-CRou_kOA.js"),__vite__mapDeps([5,1,2,3,4])));

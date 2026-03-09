@@ -234,15 +234,16 @@ const ContactRainstar = ({ data, contacts }) => {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16 border-b-[6px] border-neutral-dark pb-12"
+                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 pb-6 lg:mb-16 border-b-[6px] border-neutral-dark lg:pb-12"
                     >
                         <div className="max-w-4xl">
                             <span className="text-[11px] font-bold text-primary mb-6 block">
                                 Estamos para ayudarte
                             </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-neutral-dark mb-4">
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter lg:leading-[0.9] text-neutral-dark lg:mb-4">
                                 <TextWithHighlight
                                     text={data?.title || "Hablemos *Hoy*"}
+                                    color="bg-primary"
                                 />
                             </h1>
                         </div>

@@ -26,7 +26,7 @@ const IndicatorRainstar = ({ items, data }) => {
                         items.map((indicator, index) => (
                             <div
                                 key={indicator.id || index}
-                                className="flex flex-col items-center text-center p-8 border border-neutral-800 hover:border-white transition-all duration-500 group relative overflow-hidden"
+                                className="flex flex-col items-center text-center p-4 lg:p-8 border border-neutral-800 hover:border-white transition-all duration-500 group relative overflow-hidden"
                             >
                                 {/* Subtle background glow on hover */}
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -41,10 +41,10 @@ const IndicatorRainstar = ({ items, data }) => {
                                     }
                                 />
 
-                                <div className="text-xl md:text-2xl font-black mb-2 flex items-baseline tracking-tighter uppercase">
+                                <div className="text-lg md:text-2xl font-black mb-2 flex items-baseline tracking-tighter uppercase">
                                     {indicator.name}
                                 </div>
-                                <span className="text-[10px] leading-relaxed font-bold uppercase tracking-[0.2em] text-gray-500 group-hover:text-gray-300 transition-colors max-w-[180px]">
+                                <span className="text-[10px] leading-relaxed font-bold  tracking-[0.2em] text-gray-500 group-hover:text-gray-300 transition-colors max-w-[180px]">
                                     {indicator.description}
                                 </span>
                             </div>

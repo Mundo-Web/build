@@ -28,19 +28,19 @@ const BannerPremiumCampaign = ({ data }) => {
                 />
             </div>
 
-            <div className="relative z-10 text-center max-w-4xl px-4">
+            <div className="relative z-10 text-center max-w-4xl 2xl:px-0 px-primary">
                 <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-8 leading-none">
                     {name}
                 </h2>
                 {description && (
-                    <span className="block text-xs md:text-sm font-bold uppercase tracking-[0.3em] mb-4 text-gray-300">
+                    <span className="block text-xs md:text-base font-bold  tracking-[0.3em] mb-4 text-white">
                         {description}
                     </span>
                 )}
                 {button_text && (
                     <a
                         href={button_link || "#"}
-                        className="inline-block bg-white text-black px-12 py-4 text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 border border-white"
+                        className="inline-block bg-white text-black px-12 py-4 text-sm font-bold  tracking-widest hover:bg-black hover:text-white transition-all duration-300 border border-white"
                     >
                         {button_text}
                     </a>

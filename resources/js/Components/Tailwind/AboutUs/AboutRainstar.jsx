@@ -72,7 +72,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
             {/* ── Hero / Header ───────────────────────────────────────────── */}
             <motion.section
                 {...fadeUp}
-                className="relative overflow-hidden bg-neutral-dark text-white px-6 md:px-12 2xl:px-0 py-20 md:py-32"
+                className="relative overflow-hidden bg-neutral-dark text-white px-primary  mx-auto 2xl:px-0 py-20 md:py-32"
             >
                 {/* Decorative circles */}
                 <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
@@ -84,7 +84,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                     <p className="text-[10px] font-bold tracking-widest text-white/30 uppercase mb-4">
                         Quiénes somos
                     </p>
-                    <h1 className="text-5xl md:text-8xl font-black tracking-tight leading-none text-white mb-6">
+                    <h1 className="text-4xl md:text-8xl font-black tracking-tight leading-none text-white mb-6">
                         <TextWithHighlight
                             text={history?.title || "Sobre Nosotros"}
                             className="font-black"
@@ -94,7 +94,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                 </div>
             </motion.section>
 
-            <div className="px-4 md:px-6 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-20 md:py-28 space-y-28">
+            <div className="px-primary 2xl:max-w-7xl mx-auto w-full py-20 md:py-28 space-y-28">
                 {/* ── Historia ─────────────────────────────────────────────── */}
                 {history && (
                     <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">

@@ -18,7 +18,7 @@ const FaqRainstar = ({ data, faqs }) => {
 
     return (
         <section id={data?.element_id} className="bg-white py-24 md:py-40">
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* ── Header Section ─────────────────────────────────────────── */}
                 <div className="mb-24">
                     <motion.div

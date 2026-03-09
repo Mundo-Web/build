@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, A11y, Keyboard } from "swiper/modules";
+import "swiper/css";
 
 const CategoryMosaic = ({ items, data }) => {
     if (!items || items.length === 0) return null;
@@ -13,6 +16,7 @@ const CategoryMosaic = ({ items, data }) => {
         return chunks;
     };
 
+    const [activeIndex, setActiveIndex] = useState(0);
     const itemGroups = chunkItems(items, 3);
 
     const renderCard = (cat, layoutType) => {
@@ -47,12 +51,12 @@ const CategoryMosaic = ({ items, data }) => {
                             <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.4em] mb-2">
                                 Categoría
                             </p>
-                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4 leading-none">
+                            <h2 className="text-3xl md:text-5xl font-black text-white  tracking-tighter mb-4 leading-none">
                                 {cat.name}
                             </h2>
                             <a
                                 href={`/catalogo?category=${cat.slug}`}
-                                className="inline-flex items-center gap-2 text-white border-b border-white/50 pb-1 text-[10px] font-bold uppercase tracking-widest hover:border-white transition-all transform hover:translate-x-1"
+                                className="inline-flex items-center gap-2 text-white border-b border-white/50 pb-1 text-[10px] font-bold  tracking-widest hover:border-white transition-all transform hover:translate-x-1"
                             >
                                 Ver Colección <ArrowUpRight size={14} />
                             </a>
@@ -85,7 +89,8 @@ const CategoryMosaic = ({ items, data }) => {
             id={data?.element_id || null}
             className={`py-20 md:py-32 container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl ${data?.class || ""}`}
         >
-            <div className="flex flex-col gap-4">
+            {/* Desktop Mosaic Layout */}
+            <div className="hidden md:flex flex-col gap-4">
                 {itemGroups.map((group, groupIdx) => {
                     const groupLength = group.length;
 
@@ -113,6 +118,44 @@ const CategoryMosaic = ({ items, data }) => {
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Mobile Slider Layout */}
+            <div className="md:hidden relative group">
+                <Swiper
+                    modules={[Autoplay, A11y, Keyboard]}
+                    spaceBetween={0}
+                    slidesPerView={1}
+                    loop={items.length > 1}
+                    autoplay={{
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    }}
+                    onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                    className="w-full h-[550px]"
+                >
+                    {items.map((cat, index) => (
+                        <SwiperSlide key={cat.id || index}>
+                            {renderCard(cat, "full")}
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+
+                {/* SliderPremium Style Pagination */}
+                {items.length > 1 && (
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+                        {items.map((_, idx) => (
+                            <div
+                                key={idx}
+                                className={`h-2 transition-all duration-500  ${
+                                    idx === activeIndex
+                                        ? "w-12 bg-primary shadow-lg"
+                                        : "w-4 bg-primary/30"
+                                }`}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );
