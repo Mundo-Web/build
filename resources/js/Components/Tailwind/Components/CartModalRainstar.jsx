@@ -106,7 +106,7 @@ const CartModalRainstar = ({
                 <div className="flex-shrink-0 p-8 border-t border-gray-100 bg-white/80 backdrop-blur-md">
                     <div className="flex justify-between items-end mb-8">
                         <span className="text-xs font-bold tracking-widest text-neutral-dark/40 mb-2">
-                            TOTAL ESTIMADO:
+                            TOTAL:
                         </span>
                         <div className="text-right">
                             <span className="text-4xl font-black tracking-tighter text-neutral-dark">
@@ -118,7 +118,7 @@ const CartModalRainstar = ({
                     <div className="space-y-4">
                         <a
                             href={data?.link_cart || "/cart"}
-                            className={`group w-full flex items-center justify-between py-6 px-10 transition-all duration-500 rounded-none
+                            className={`group w-full flex items-center justify-between py-4 lg:py-6 px-10 transition-all duration-500 rounded-none
                                 ${
                                     isEmpty
                                         ? "bg-gray-100 text-neutral-dark/20 cursor-not-allowed pointer-events-none"

@@ -150,8 +150,8 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                         >
                             <input
                                 type="text"
-                                placeholder="¿QUÉ ESTÁS BUSCANDO?"
-                                className="w-full bg-transparent border-b-[3px] border-black py-8 text-3xl md:text-6xl font-black uppercase tracking-tighter placeholder-gray-200 focus:outline-none transition-colors focus:border-primary"
+                                placeholder="¿Qué estás buscando?"
+                                className="w-full bg-transparent border-b-[3px] border-primary py-4 lg:py-8 text-xl lg:text-3xl md:text-6xl font-black  tracking-tighter placeholder-gray-200 focus:outline-none transition-colors focus:border-primary"
                                 autoFocus
                                 value={searchValue}
                                 onChange={(e) =>
@@ -160,7 +160,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                             />
                             <button
                                 type="submit"
-                                className="absolute right-0 bottom-10 text-sm font-bold uppercase tracking-[0.3em] hover:text-primary transition-colors"
+                                className="absolute right-0 bottom-5 lg:bottom-10 text-sm font-bold uppercase tracking-[0.3em] hover:text-primary transition-colors"
                             >
                                 Buscar
                             </button>
@@ -348,9 +348,9 @@ const HeaderSticky = ({
                         : "relative py-6 bg-transparent text-black"
                 } ${data?.class || ""}`}
             >
-                <div className="px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  flex items-center justify-between relative">
+                <div className="px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  flex items-center gap-4 justify-between relative">
                     {/* Menu Trigger */}
-                    <div className="flex items-center gap-6 flex-1">
+                    <div className="flex items-center gap-6 flex-1 max-w-max">
                         <button
                             onClick={() => setMenuOpen(true)}
                             className="group flex items-center gap-3 transition-colors"
@@ -371,12 +371,12 @@ const HeaderSticky = ({
                     {/* Logo Central */}
                     <a
                         href="/"
-                        className="absolute left-1/2 -translate-x-1/2 transition-transform duration-500 hover:scale-105"
+                        className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 transition-transform duration-500 hover:scale-105"
                     >
                         <img
                             src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`}
                             alt={Global.APP_NAME}
-                            className="h-12 object-contain"
+                            className="h-6 lg:h-12 object-contain"
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = "/assets/img/logo-bk.svg";
@@ -398,7 +398,7 @@ const HeaderSticky = ({
                                     <ProfileImage
                                         uuid={isUser.uuid}
                                         name={isUser.name}
-                                        className="w-8 h-8 rounded-full border-2 border-black transition-colors"
+                                        className="w-8 h-8 rounded-full border-2 border-primary transition-colors"
                                     />
                                     <span className="hidden lg:block text-[10px] font-bold uppercase tracking-widest">
                                         {isUser.name}
@@ -423,9 +423,9 @@ const HeaderSticky = ({
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
-                                        className="absolute right-0 mt-4 w-64 bg-white shadow-2xl rounded-2xl overflow-hidden text-black z-[60]"
+                                        className="absolute -left-24   lg:right-0 mt-4 w-56 lg:w-64 bg-white shadow-2xl rounded-2xl overflow-hidden text-black z-[60]"
                                     >
-                                        <div className="p-6 bg-gray-50 border-b border-gray-100 text-center">
+                                        <div className="p-6 bg-sections-color border-b border-gray-100 text-center">
                                             <p className="text-[10px] uppercase tracking-widest text-neutral-light font-bold mb-1">
                                                 Bienvenido
                                             </p>
@@ -482,7 +482,7 @@ const HeaderSticky = ({
                                                         size={18}
                                                         className="text-neutral-light group-hover:text-black"
                                                     />
-                                                    <span className="text-xs font-bold uppercase tracking-widest">
+                                                    <span className="text-xs font-bold  tracking-widest">
                                                         Dashboard
                                                     </span>
                                                 </a>
@@ -492,7 +492,7 @@ const HeaderSticky = ({
                                                 className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors group text-red-500"
                                             >
                                                 <LogOut size={18} />
-                                                <span className="text-xs font-bold uppercase tracking-widest">
+                                                <span className="text-xs font-bold  tracking-widest">
                                                     Cerrar Sesión
                                                 </span>
                                             </button>
@@ -542,7 +542,7 @@ const HeaderSticky = ({
                     >
                         <button
                             onClick={() => setMenuOpen(false)}
-                            className="absolute top-10 right-10 p-2 hover:rotate-90 transition-transform duration-500"
+                            className="absolute top-10 right-10 p-2 hover:rotate-90 transition-transform duration-500 z-50"
                         >
                             <X size={32} strokeWidth={1} />
                         </button>
@@ -706,10 +706,10 @@ const HeaderSticky = ({
                                                 ))
                                             ) : (
                                                 <div className="flex gap-4">
-                                                    <span className="text-[10px] font-bold uppercase border-b border-black pb-1">
+                                                    <span className="text-[10px] font-bold uppercase border-b border-primary pb-1">
                                                         Instagram
                                                     </span>
-                                                    <span className="text-[10px] font-bold uppercase border-b border-black pb-1">
+                                                    <span className="text-[10px] font-bold uppercase border-b border-primary pb-1">
                                                         Facebook
                                                     </span>
                                                 </div>
