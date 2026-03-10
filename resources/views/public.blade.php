@@ -52,12 +52,15 @@ $component = Route::currentRouteName();
     }
     @endphp
 
+    @php
+        $version = env('APP_VERSION', '1.0.1');
+    @endphp
+
     <title><?php echo $pageTitle; ?> | <?php echo env('APP_NAME', 'Base Template'); ?></title>
-    <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo uniqid(); ?>" type="image/png">
-    <link rel="preload" href="/assets/resources/logo.png" as="image" type="image/png">
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+    <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ $version }}" type="image/png">
+    <link rel="preload" href="/assets/resources/logo.png?v={{ $version }}" as="image" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <meta name="description" content="<?php echo $pageDescription; ?>">
     @if($pageKeywords)
@@ -65,15 +68,17 @@ $component = Route::currentRouteName();
     <meta name="author" content="Powered by Mundo Web">
     <link rel="canonical" href="<?php echo $canonicalUrl; ?>">
 
+    <meta name="title" content="<?php echo $ogTitle ?? ($generals['meta_title']->description ?? 'Hostal La Petaca'); ?>">
+    <meta name="description" content="<?php echo $ogDescription ?? ($generals['meta_description']->description ?? ''); ?>">
+    <meta name="keywords" content="<?php echo $generals['meta_keywords']->description ?? ''; ?>">
+
     <meta property="og:type" content="<?php echo $isDetailPage ? 'article' : 'website'; ?>">
     <meta property="og:url" content="<?php echo $ogUrl; ?>">
-    <meta property="og:title" content="<?php echo $ogTitle; ?>">
-    <meta property="og:description" content="<?php echo $ogDescription; ?>">
-    @if($ogImage)
-    <meta property="og:image" content="<?php echo $ogImage; ?>">
+    <meta property="og:title" content="<?php echo $ogTitle ?? ($generals['og_title']->description ?? 'Hostal La Petaca'); ?>">
+    <meta property="og:description" content="<?php echo $ogDescription ?? ($generals['og_description']->description ?? ''); ?>">
+    <meta property="og:image" content="<?php echo $ogImage ?? ($generals['og_image']->description ?? ''); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    @endif
     <meta property="og:site_name" content="<?php echo $siteTitle; ?>">
 
     @if($isDetailPage && $item)
@@ -113,12 +118,6 @@ $component = Route::currentRouteName();
         <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Poppins'>
     </noscript>
 
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    </noscript>
-
-    <script src="https://cdn.tailwindcss.com" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

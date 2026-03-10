@@ -723,8 +723,13 @@ const System = ({
         //     hasRole
         // }}>
         <main className="font-paragraph">
-            {systemsSorted.map((system) => (
-                <React.Fragment key={system.id}>
+            {systemsSorted.map((system, index) => (
+                <React.Fragment
+                    key={
+                        system.id ??
+                        `sys-${index}-${system.component}-${system.element_id}`
+                    }
+                >
                     {getSystem(system)}
                 </React.Fragment>
             ))}

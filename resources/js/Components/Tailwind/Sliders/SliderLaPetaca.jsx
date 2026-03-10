@@ -114,7 +114,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
             opacity: 1,
             y: 0,
             scale: 1,
-            transition: { duration: 1.4, delay: 1.2, ease: "easeOut" },
+            transition: { duration: 1.0, delay: 0.2, ease: "easeOut" },
         },
         exit: {
             opacity: 0,
@@ -129,7 +129,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            transition: { duration: 1.1, delay: 2.0, ease: "easeOut" },
+            transition: { duration: 0.8, delay: 0.5, ease: "easeOut" },
         },
         exit: {
             opacity: 0,
@@ -144,7 +144,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
             opacity: 1,
             y: 0,
             scale: 1,
-            transition: { duration: 1.0, delay: 3.0, ease: "easeOut" },
+            transition: { duration: 0.6, delay: 0.8, ease: "easeOut" },
         },
         exit: {
             opacity: 0,

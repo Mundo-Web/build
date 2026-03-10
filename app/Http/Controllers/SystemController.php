@@ -34,7 +34,9 @@ class SystemController extends BasicController
         
         $props = Cache::remember($cacheKey, 3600, function () use ($request, $path) {
             $pages = JSON::parse(File::get(storage_path('app/pages.json')));
-            $components = JSON::parse(File::get(storage_path('app/components.json')));
+            // Cargar definiciones de componentes una sola vez y prepararlas para búsqueda rápida
+            $componentsData = File::get(storage_path('app/components.json'));
+            $components = collect(JSON::parse($componentsData))->keyBy('id');
 
             $props = [
                 'pages' => $pages,
@@ -217,6 +219,9 @@ class SystemController extends BasicController
                             $query->orderBy($table . '.updated_at', 'desc');
                         }
                     }
+                    if ($table === 'items') {
+                        $query->select(['id', 'name', 'slug', 'image', 'summary', 'price', 'discount', 'category_id', 'status']);
+                    }
                     $shortID = Crypto::short();
                     $system->itemsId = $shortID;
                     $props['systemItems'][$shortID] = $query->get();
@@ -238,11 +243,35 @@ class SystemController extends BasicController
             $props['jsons'] = $jsons;
             $props['params'] = $request->route() ? $request->route()->parameters() : [];
             $props['filteredData'] = [];
-            $props['generals'] = General::whereIn('correlative', $generals)->get();
-            $props['contacts'] = General::where('status', true)->get();
-            $props['stores'] = Store::where('status', true)->get();
-            $props['faqs'] = Faq::where('status', true)->get();
-            $props['categorias'] = Category::where('status', true)->get();
+
+            // Detectar qué recursos pesados se necesitan realmente
+            $requiredResources = [];
+            foreach ($systems as $system) {
+                $compDef = $components->get($system->component);
+                if ($compDef && isset($compDef['using']['model'])) {
+                    $requiredResources[] = strtolower($compDef['using']['model']);
+                }
+            }
+
+            // Carga condicional de recursos globales (Solo si se necesitan)
+            if (in_array('store', $requiredResources)) {
+                $props['stores'] = Store::where('status', true)->get();
+            }
+            if (in_array('faq', $requiredResources)) {
+                $props['faqs'] = Faq::where('status', true)->get();
+            }
+            if (in_array('post', $requiredResources)) {
+                $props['postsLatest'] = Post::where('status', true)
+                    ->select(['id', 'name', 'slug', 'image', 'created_at'])
+                    ->orderBy('created_at', 'desc')
+                    ->take(5)
+                    ->get();
+            }
+
+            // Categorías ligeras (Solo campos necesarios) ELIMINAR PROPS DUPLICADAS
+            $props['categorias'] = Category::where('status', true)
+                ->select(['id', 'name', 'slug', 'image'])
+                ->get();
             // Procesar el campo 'using'
             foreach ($page['using'] as $key => $using) {
                 $model = $using['model'] ?? null;

@@ -8447,7 +8447,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetail.jsx": {
-    "file": "assets/PostDetail-DYuMXAIJ.js",
+    "file": "assets/PostDetail-D8IwJUBr.js",
     "name": "PostDetail",
     "src": "resources/js/Components/Tailwind/PostDetail.jsx",
     "isDynamicEntry": true,
@@ -8462,7 +8462,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetails/PostDetailRainstar.jsx": {
-    "file": "assets/PostDetailRainstar-D3Upbmlq.js",
+    "file": "assets/PostDetailRainstar-DjrdI92d.js",
     "name": "PostDetailRainstar",
     "src": "resources/js/Components/Tailwind/PostDetails/PostDetailRainstar.jsx",
     "isDynamicEntry": true,
@@ -9795,7 +9795,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Slider.jsx": {
-    "file": "assets/Slider-nq72kKvr.js",
+    "file": "assets/Slider-DzTpPL-c.js",
     "name": "Slider",
     "src": "resources/js/Components/Tailwind/Slider.jsx",
     "isDynamicEntry": true,
@@ -11087,7 +11087,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-cPhdFqY4.js",
+    "file": "assets/System-BXmOvY06.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
