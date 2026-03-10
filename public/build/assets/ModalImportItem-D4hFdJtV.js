@@ -1,1 +1,0 @@
-import"./vendor-react-Cnaq9Gdr.js";import{I as o}from"./ItemsRest-BXT7QP28.js";import"./vendor-ui-D0Ot-UqA.js";import"./vendor-utils-BroNIUyT.js";import"./vendor-swiper-B9Y_Akv-.js";import"./vendor-motion-Bjux1Qsl.js";import"./BasicRest-BIa9i-hm.js";import"./BooleanLimit-q2Ad9fGY.js";new o;

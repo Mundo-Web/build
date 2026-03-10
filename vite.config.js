@@ -48,13 +48,14 @@ export default defineConfig({
                 // Code splitting mejorado
                 manualChunks: (id) => {
                     if (id.includes('node_modules')) {
-                        if (id.includes('react') || id.includes('react-dom')) {
+                        // Matching exact core packages to avoid bloating with 'react-icons', 'react-select', etc.
+                        if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/') || id.includes('/node_modules/scheduler/')) {
                             return 'vendor-react';
                         }
-                        if (id.includes('framer-motion') || id.includes('motion')) {
+                        if (id.includes('framer-motion')) {
                             return 'vendor-motion';
                         }
-                        if (id.includes('lucide') || id.includes('react-icons')) {
+                        if (id.includes('lucide-react') || id.includes('/node_modules/lucide/')) {
                             return 'vendor-icons';
                         }
                         if (id.includes('swiper')) {
@@ -62,12 +63,6 @@ export default defineConfig({
                         }
                         if (id.includes('devextreme')) {
                             return 'vendor-devextreme';
-                        }
-                        if (id.includes('lodash') || id.includes('axios')) {
-                            return 'vendor-utils';
-                        }
-                        if (id.includes('flowbite') || id.includes('sonner') || id.includes('tippy')) {
-                            return 'vendor-ui';
                         }
                     }
                 },

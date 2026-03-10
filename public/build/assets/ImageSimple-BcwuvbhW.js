@@ -1,1 +1,0 @@
-import{j as e}from"./vendor-react-Cnaq9Gdr.js";import"./vendor-utils-BroNIUyT.js";import"./vendor-swiper-B9Y_Akv-.js";import"./vendor-ui-D0Ot-UqA.js";import"./vendor-motion-Bjux1Qsl.js";const t=({data:t})=>e.jsx("img",{id:t?.element_id||null,className:"w-full object-cover object-center aspect-square",src:t?.image,style:{aspectRatio:t?.aspect_ratio??1}});export{t as default};
