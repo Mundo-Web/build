@@ -30,7 +30,9 @@ class SystemController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $path = $request->server('REQUEST_URI') ?? '/';
-        $props = Cache::remember("react_view_props_{$path}", 3600, function () use ($request, $path) {
+        $cacheKey = "react_view_props_" . md5($path);
+        
+        $props = Cache::remember($cacheKey, 3600, function () use ($request, $path) {
             $pages = JSON::parse(File::get(storage_path('app/pages.json')));
             $components = JSON::parse(File::get(storage_path('app/components.json')));
 
