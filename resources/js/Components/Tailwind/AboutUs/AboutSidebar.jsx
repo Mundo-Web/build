@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const AboutSidebar = ({ data, filteredData, items }) => {
-    const sections = items?.filter(item => item.status) || [];
-    const [selectedSection, setSelectedSection] = useState(sections[0] || null);
+    const sections = useMemo(() => items?.filter(item => item.status) || [], [items]);
+    const [selectedSection, setSelectedSection] = useState(null);
     const [strengths, setStrengths] = useState([]);
 
-    // Cargar strengths desde API solo si hay una sección "valores"
+    // Actualizar sección seleccionada cuando cambian las secciones
     useEffect(() => {
+        if (!selectedSection && sections.length > 0) {
+            setSelectedSection(sections[0]);
+        }
+    }, [sections, selectedSection]);
+
+    // Cargar strengths desde API solo si hay una sección "valores" y no se han cargado aún
+    useEffect(() => {
+        if (strengths.length > 0) return;
+
         const hasValoresSection = sections.some(section => 
             section.correlative?.toLowerCase().includes('valor') || 
             section.name?.toLowerCase().includes('valor')
@@ -19,7 +28,7 @@ const AboutSidebar = ({ data, filteredData, items }) => {
                 .then(data => setStrengths(data))
                 .catch(err => console.error('Error loading strengths:', err));
         }
-    }, [sections]);
+    }, [sections, strengths.length]);
 
     return (
         <section id={data?.element_id || null} className={`${data?.class_container || 'bg-neutral-900'}`}>
