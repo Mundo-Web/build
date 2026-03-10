@@ -141,7 +141,8 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         alt={Global.APP_NAME}
                                         className={`w-9/12 lg:w-7/12 object-contain object-center ${data?.class_img_libro_reclamaciones || ""}`}
                                         onError={(e) => {
-                                            e.target.onerror = null;
+                                            e.target.src =
+                                                "/api/cover/thumbnail/null";
                                             e.target.style.display = "none";
                                         }}
                                     />

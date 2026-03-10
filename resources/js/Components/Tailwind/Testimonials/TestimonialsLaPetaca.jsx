@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
-import { Quote, ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import TextWithHighlight from '../../../Utils/TextWithHighlight';
+import React, { useState, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import { Quote, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import "swiper/css";
+import "swiper/css/navigation";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const TestimonialsLaPetaca = ({ data, items }) => {
     const [totalPages, setTotalPages] = useState(0);
@@ -27,11 +27,16 @@ const TestimonialsLaPetaca = ({ data, items }) => {
     }
 
     const testimonials = items;
-    const title = data?.title || 'Lo Que Dicen Nuestros Huéspedes';
-    const subtitle = data?.subtitle || 'Las experiencias de quienes nos visitaron hablan por sí solas';
+    const title = data?.title || "Lo Que Dicen Nuestros Huéspedes";
+    const subtitle =
+        data?.subtitle ||
+        "Las experiencias de quienes nos visitaron hablan por sí solas";
 
     return (
-        <section id={data?.element_id || null} className="py-20 md:py-20 px-4 bg-sections-color relative overflow-hidden">
+        <section
+            id={data?.element_id || null}
+            className="py-20 md:py-20 px-4 bg-sections-color relative overflow-hidden"
+        >
             {/* Decoraciones de fondo sutiles */}
             <div className="absolute top-0 left-0 w-80 h-80 bg-accent rounded-full blur-3xl opacity-5 -translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl opacity-5 translate-x-1/2 translate-y-1/2"></div>
@@ -39,7 +44,6 @@ const TestimonialsLaPetaca = ({ data, items }) => {
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
                 <div className="text-center mb-14 md:mb-14">
-              
                     <h2 className="text-3xl md:text-5xl font-bold customtext-primary mb-5">
                         {title}
                     </h2>
@@ -62,8 +66,8 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                             pauseOnMouseEnter: true,
                         }}
                         navigation={{
-                            nextEl: '.testimonial-next',
-                            prevEl: '.testimonial-prev',
+                            nextEl: ".testimonial-next",
+                            prevEl: ".testimonial-prev",
                         }}
                         onSwiper={(swiper) => {
                             swiperRef.current = swiper;
@@ -74,23 +78,39 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                         breakpoints={{
                             768: { slidesPerView: 1.2, spaceBetween: 24 },
                             1024: { slidesPerView: 1.5, spaceBetween: 20 },
-                        1280: { slidesPerView: 2, spaceBetween: 24 },
+                            1280: { slidesPerView: 2, spaceBetween: 24 },
                         }}
                         className="testimonials-swiper !py-5"
                     >
                         {testimonials.map((testimonial, index) => (
-                            <SwiperSlide key={testimonial.id || index} className="!h-auto  !p-4">
+                            <SwiperSlide
+                                key={testimonial.id || index}
+                                className="!h-auto  !p-4"
+                            >
                                 <div className="group relative h-full cursor-pointer">
                                     {/* Card base */}
                                     <div className="bg-white p-7 rounded-2xl shadow-sm h-full flex flex-col border border-gray-100 transition-all duration-500 ease-out group-hover:opacity-0 group-hover:scale-95">
                                         {/* Quote icon */}
-                                        <Quote size={32} className="customtext-accent mb-4" />
+                                        <Quote
+                                            size={32}
+                                            className="customtext-accent mb-4"
+                                        />
 
                                         {/* Rating */}
                                         {testimonial.rating && (
                                             <div className="flex items-center gap-1 mb-4">
-                                                {[...Array(Number(testimonial.rating) || 5)].map((_, i) => (
-                                                    <Star key={i} size={16} className="customtext-warning fill-current" />
+                                                {[
+                                                    ...Array(
+                                                        Number(
+                                                            testimonial.rating,
+                                                        ) || 5,
+                                                    ),
+                                                ].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        size={16}
+                                                        className="customtext-warning fill-current"
+                                                    />
                                                 ))}
                                             </div>
                                         )}
@@ -98,8 +118,12 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                         {/* Testimonial text - truncado */}
                                         <p className="customtext-neutral-light leading-relaxed flex-grow mb-6 line-clamp-4">
                                             <TextWithHighlight
-                                            text={testimonial.testimonial || testimonial.text || testimonial.description}
-                                            color='bg-primary font-bold'
+                                                text={
+                                                    testimonial.testimonial ||
+                                                    testimonial.text ||
+                                                    testimonial.description
+                                                }
+                                                color="bg-primary font-bold"
                                             />
                                         </p>
 
@@ -110,20 +134,27 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                                     src={`/storage/images/testimony/${testimonial.image}`}
                                                     alt={testimonial.name}
                                                     className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                                                    onError={(e) => {
-                                                        e.target.onerror = null;
-                                                        e.target.style.display = 'none';
-                                                        e.target.nextElementSibling.style.display = 'flex';
-                                                    }}
+                                                    onError={(e) =>
+                                                        (e.target.src =
+                                                            "/api/cover/thumbnail/null")
+                                                    }
                                                 />
                                             ) : null}
-                                            <div className={`w-12 h-12 rounded-full bg-accent items-center justify-center text-white font-bold text-lg flex-shrink-0 ${testimonial.image ? 'hidden' : 'flex'}`}>
-                                                {testimonial.name?.charAt(0).toUpperCase()}
+                                            <div
+                                                className={`w-12 h-12 rounded-full bg-accent items-center justify-center text-white font-bold text-lg flex-shrink-0 ${testimonial.image ? "hidden" : "flex"}`}
+                                            >
+                                                {testimonial.name
+                                                    ?.charAt(0)
+                                                    .toUpperCase()}
                                             </div>
                                             <div>
-                                                <h4 className="font-bold customtext-primary">{testimonial.name}</h4>
+                                                <h4 className="font-bold customtext-primary">
+                                                    {testimonial.name}
+                                                </h4>
                                                 {testimonial.location && (
-                                                    <p className="text-sm customtext-secondary">{testimonial.location}</p>
+                                                    <p className="text-sm customtext-secondary">
+                                                        {testimonial.location}
+                                                    </p>
                                                 )}
                                             </div>
                                         </div>
@@ -132,22 +163,35 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                     {/* Card expandido en hover - con animación suave */}
                                     <div className="absolute inset-0 z-30 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none group-hover:pointer-events-auto origin-center">
                                         <div className="bg-white p-7 rounded-2xl shadow-xl flex flex-col h-full ring-2 ring-accent">
-                                        
                                             {/* Rating */}
                                             {testimonial.rating && (
                                                 <div className="flex items-center gap-1 mb-4">
-                                                    {[...Array(Number(testimonial.rating) || 5)].map((_, i) => (
-                                                        <Star key={i} size={16} className="customtext-warning fill-current" />
+                                                    {[
+                                                        ...Array(
+                                                            Number(
+                                                                testimonial.rating,
+                                                            ) || 5,
+                                                        ),
+                                                    ].map((_, i) => (
+                                                        <Star
+                                                            key={i}
+                                                            size={16}
+                                                            className="customtext-warning fill-current"
+                                                        />
                                                     ))}
                                                 </div>
                                             )}
 
                                             {/* Testimonial text - completo */}
                                             <p className="customtext-neutral-light leading-relaxed mb-6">
-                                                 <TextWithHighlight
-                                                    text={testimonial.testimonial || testimonial.text || testimonial.description}
-                                                    color='bg-primary font-bold'
-                                                    />
+                                                <TextWithHighlight
+                                                    text={
+                                                        testimonial.testimonial ||
+                                                        testimonial.text ||
+                                                        testimonial.description
+                                                    }
+                                                    color="bg-primary font-bold"
+                                                />
                                             </p>
 
                                             {/* Author */}
@@ -158,19 +202,32 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                                         alt={testimonial.name}
                                                         className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                                                         onError={(e) => {
-                                                            e.target.onerror = null;
-                                                            e.target.style.display = 'none';
-                                                            e.target.nextElementSibling.style.display = 'flex';
+                                                            e.target.onerror =
+                                                                null;
+                                                            e.target.style.display =
+                                                                "none";
+                                                            e.target.nextElementSibling.style.display =
+                                                                "flex";
                                                         }}
                                                     />
                                                 ) : null}
-                                                <div className={`w-12 h-12 rounded-full bg-accent items-center justify-center text-white font-bold text-lg flex-shrink-0 ${testimonial.image ? 'hidden' : 'flex'}`}>
-                                                    {testimonial.name?.charAt(0).toUpperCase()}
+                                                <div
+                                                    className={`w-12 h-12 rounded-full bg-accent items-center justify-center text-white font-bold text-lg flex-shrink-0 ${testimonial.image ? "hidden" : "flex"}`}
+                                                >
+                                                    {testimonial.name
+                                                        ?.charAt(0)
+                                                        .toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-bold customtext-primary">{testimonial.name}</h4>
+                                                    <h4 className="font-bold customtext-primary">
+                                                        {testimonial.name}
+                                                    </h4>
                                                     {testimonial.location && (
-                                                        <p className="text-sm customtext-secondary">{testimonial.location}</p>
+                                                        <p className="text-sm customtext-secondary">
+                                                            {
+                                                                testimonial.location
+                                                            }
+                                                        </p>
                                                     )}
                                                 </div>
                                             </div>
@@ -185,10 +242,16 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                     {testimonials.length > 2 && (
                         <>
                             <button className="testimonial-prev hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white shadow-lg hover:shadow-xl border border-gray-100 hover:border-accent items-center justify-center transition-all duration-300 hover:scale-105 disabled:opacity-30">
-                                <ChevronLeft size={20} className="customtext-primary" />
+                                <ChevronLeft
+                                    size={20}
+                                    className="customtext-primary"
+                                />
                             </button>
                             <button className="testimonial-next hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white shadow-lg hover:shadow-xl border border-gray-100 hover:border-accent items-center justify-center transition-all duration-300 hover:scale-105 disabled:opacity-30">
-                                <ChevronRight size={20} className="customtext-primary" />
+                                <ChevronRight
+                                    size={20}
+                                    className="customtext-primary"
+                                />
                             </button>
                         </>
                     )}
@@ -202,19 +265,27 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                 key={index}
                                 onClick={() => {
                                     if (swiperRef.current) {
-                                        const slidesPerView = Math.round(swiperRef.current.params.slidesPerView);
-                                        const targetSlide = index * slidesPerView;
+                                        const slidesPerView = Math.round(
+                                            swiperRef.current.params
+                                                .slidesPerView,
+                                        );
+                                        const targetSlide =
+                                            index * slidesPerView;
                                         if (testimonials.length > 2) {
-                                            swiperRef.current.slideToLoop(targetSlide);
+                                            swiperRef.current.slideToLoop(
+                                                targetSlide,
+                                            );
                                         } else {
-                                            swiperRef.current.slideTo(targetSlide);
+                                            swiperRef.current.slideTo(
+                                                targetSlide,
+                                            );
                                         }
                                     }
                                 }}
                                 className={`transition-all duration-300 rounded-full ${
                                     index === currentPage
-                                        ? 'w-8 h-2.5 bg-accent shadow-lg shadow-accent/50'
-                                        : 'w-2.5 h-2.5 bg-secondary hover:bg-secondary/50'
+                                        ? "w-8 h-2.5 bg-accent shadow-lg shadow-accent/50"
+                                        : "w-2.5 h-2.5 bg-secondary hover:bg-secondary/50"
                                 }`}
                                 aria-label={`Página ${index + 1}`}
                             />
