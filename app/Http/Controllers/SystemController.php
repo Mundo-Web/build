@@ -32,12 +32,14 @@ class SystemController extends BasicController
         $path = $request->server('REQUEST_URI') ?? '/';
         $cacheKey = "react_view_props_" . md5($path);
 
-        $props = Cache::remember($cacheKey, 3600, function () use ($request, $path) {
-            $pages = JSON::parse(File::get(storage_path('app/pages.json')));
-            // Cargar definiciones de componentes una sola vez y prepararlas para búsqueda rápida
-            $componentsData = File::get(storage_path('app/components.json'));
-            $components = collect(JSON::parse($componentsData))->keyBy('id');
+        $pages = Cache::remember('global_pages_json', 3600, function () {
+            return JSON::parse(File::get(storage_path('app/pages.json')));
+        });
+        $components = Cache::remember('global_components_json', 3600, function () {
+            return collect(JSON::parse(File::get(storage_path('app/components.json'))))->keyBy('id');
+        });
 
+        $props = Cache::remember($cacheKey, 3600, function () use ($request, $path, $pages, $components) {
             $props = [
                 'pages' => $pages,
                 'systems' => [],

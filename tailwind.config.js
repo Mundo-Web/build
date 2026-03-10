@@ -7,79 +7,47 @@ const colorShades = ['50', '100', '200', '300', '400', '500', '600', '700', '800
 const opacities = ['5', '10', '15', '20', '25', '30', '40', '50', '60', '70', '75', '80', '90', '95'];
 const properties = ['bg', 'text', 'border', 'ring', 'outline', 'shadow'];
 const states = ['hover', 'focus', 'active'];
-
 const generateSafelist = () => {
     const safelist = [];
+    const basicProps = ['bg', 'text', 'border'];
+    const extraProps = ['ring', 'outline', 'shadow'];
     
     colors.forEach(color => {
-        properties.forEach(prop => {
-            // Clases base
+        // Base properties for all colors
+        [...basicProps, ...extraProps].forEach(prop => {
             safelist.push(`${prop}-${color}`);
             safelist.push(`!${prop}-${color}`);
             
-            // Estados (hover, focus, active)
-            states.forEach(state => {
-                safelist.push(`${state}:${prop}-${color}`);
-                safelist.push(`${state}:!${prop}-${color}`);
-            });
-            
-            // Group hover
-            safelist.push(`group-hover:${prop}-${color}`);
-            
-            // Agregar variantes numéricas para todos los colores
+            // Hover states for basic props
+            if (basicProps.includes(prop)) {
+                safelist.push(`hover:${prop}-${color}`);
+                safelist.push(`hover:!${prop}-${color}`);
+            }
+        });
+
+        // Shades only for basic properties, and NO opacity for shades
+        basicProps.forEach(prop => {
             colorShades.forEach(shade => {
                 safelist.push(`${prop}-${color}-${shade}`);
-                states.forEach(state => {
-                    safelist.push(`${state}:${prop}-${color}-${shade}`);
-                });
-                safelist.push(`group-hover:${prop}-${color}-${shade}`);
-                
-                // Opacidades para cada shade (ej: bg-primary-500/20)
-                opacities.forEach(opacity => {
-                    safelist.push(`${prop}-${color}-${shade}/${opacity}`);
-                    states.forEach(state => {
-                        safelist.push(`${state}:${prop}-${color}-${shade}/${opacity}`);
-                    });
-                });
+                safelist.push(`hover:${prop}-${color}-${shade}`);
             });
-            
-            // Opacidades para color base (ej: bg-primary/20)
+        });
+
+        // Opacities only for the base color (no shades to avoid 10MB+ CSS)
+        basicProps.forEach(prop => {
             opacities.forEach(opacity => {
                 safelist.push(`${prop}-${color}/${opacity}`);
-                states.forEach(state => {
-                    safelist.push(`${state}:${prop}-${color}/${opacity}`);
-                });
-                safelist.push(`group-hover:${prop}-${color}/${opacity}`);
+                safelist.push(`hover:${prop}-${color}/${opacity}`);
             });
         });
-        
-        // Extras
-        safelist.push(`placeholder:text-${color}`);
+
+        // Gradients (simplified)
         safelist.push(`from-${color}`, `via-${color}`, `to-${color}`);
-        safelist.push(`hover:from-${color}`, `hover:via-${color}`, `hover:to-${color}`);
-        safelist.push(`divide-${color}`, `caret-${color}`);
-        
-        // Gradientes con opacidad para color base (ej: from-primary/50)
-        opacities.forEach(opacity => {
-            safelist.push(`from-${color}/${opacity}`, `via-${color}/${opacity}`, `to-${color}/${opacity}`);
-            safelist.push(`hover:from-${color}/${opacity}`, `hover:via-${color}/${opacity}`, `hover:to-${color}/${opacity}`);
-        });
-        
-        // Extras con shades para gradientes (incluyendo estados hover)
-        colorShades.forEach(shade => {
-            safelist.push(`from-${color}-${shade}`, `via-${color}-${shade}`, `to-${color}-${shade}`);
-            safelist.push(`hover:from-${color}-${shade}`, `hover:via-${color}-${shade}`, `hover:to-${color}-${shade}`);
-            
-            // Gradientes con shade y opacidad (ej: from-secondary-600/50)
-            opacities.forEach(opacity => {
-                safelist.push(`from-${color}-${shade}/${opacity}`, `via-${color}-${shade}/${opacity}`, `to-${color}-${shade}/${opacity}`);
-                safelist.push(`hover:from-${color}-${shade}/${opacity}`, `hover:via-${color}-${shade}/${opacity}`, `hover:to-${color}-${shade}/${opacity}`);
-            });
-        });
     });
-    
+
     return safelist;
 };
+;
 
 // Función helper para generar escala de colores con soporte de opacidad
 // Usamos color-mix con transparent para simular opacidades

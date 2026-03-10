@@ -53,7 +53,7 @@ $component = Route::currentRouteName();
     @endphp
 
     @php
-        $version = env('APP_VERSION', '1.0.1');
+    $version = env('APP_VERSION', '1.0.1');
     @endphp
 
     <title><?php echo $pageTitle; ?> | <?php echo env('APP_NAME', 'Base Template'); ?></title>
@@ -81,7 +81,7 @@ $component = Route::currentRouteName();
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="<?php echo $siteTitle; ?>">
 
-    @if($isDetailPage && $item)
+    @if($isDetailPage && isset($item))
     @if($item->created_at)
     <meta property="article:published_time" content="<?php echo $item->created_at; ?>"> @endif
     @if($item->updated_at)
@@ -239,27 +239,12 @@ $component = Route::currentRouteName();
 
     <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-page-background);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
         <style>
-            @keyframes pulse-loader {
-
-                0%,
-                100% {
-                    opacity: 1;
-                    transform: scale(1)
-                }
-
-                50% {
-                    opacity: 0.7;
-                    transform: scale(0.98)
-                }
-            }
-
-            #native-loader img {
-                animation: pulse-loader 2s ease-in-out infinite
-            }
+            @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes pulse-loader { 0% { transform: scale(0.95); opacity: 0.2; } 50% { transform: scale(1.05); opacity: 0.1; } 100% { transform: scale(0.95); opacity: 0.2; } }
         </style>
-        <div style="position:relative;">
-            <div style="position:absolute;inset:0;margin:-2rem;border-radius:50%;opacity:0.05;animation:pulse-loader 2s ease-in-out infinite;"></div>
-            <img src="/assets/resources/loading.png?v=<?php echo uniqid(); ?>" alt="Cargando..." style="width:300px;max-width:80vw;height:auto;position:relative;" onerror="this.src='/assets/resources/logo.png?v=<?php echo uniqid(); ?>';this.style.background='white';this.style.padding='0.5rem';this.style.borderRadius='8px';">
+        <div style="position:relative; display: flex; flex-direction: column; align-items: center;">
+            <div class="loader-spinner" style="width:80px;height:80px;border:4px solid #f3f3f3;border-top:4px solid <?php echo $data['colors']->firstWhere('name', 'primary')?->description ?? '#78673a'; ?>;border-radius:50%;animation:spin-loader 1s linear infinite;margin-bottom: 2rem;"></div>
+            <img src="/assets/resources/logo.png?v=<?php echo $version; ?>" alt="Logo" style="width:150px;height:auto;opacity:0.8;">
         </div>
     </div>
     <script>
@@ -281,7 +266,7 @@ $component = Route::currentRouteName();
 
     {!! $pixelScripts['body'] !!}
     @inertia
-    <script src="/lte/assets/js/vendor.min.js" defer></script>
+    <script src="/lte/assets/js/vendor.min.js?v=<?php echo $version; ?>" defer></script>
 
     @php $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000'; @endphp
     <script type="text/javascript">
@@ -291,59 +276,63 @@ $component = Route::currentRouteName();
     </script>
 
     @php
-    $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
-    $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
-    $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
-    $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
-    $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
+        $isCheckout = ($page->correlative ?? '') === 'checkout' || ($page->component ?? '') === 'checkout';
     @endphp
-    @if($culqiEnabled && $culqiPublicKey)
-    <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
-    <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
-    <script type="text/javascript">
-        window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
-        window.CULQI_ENABLED = true;
-        @if($culqiRsaId && $culqiRsaPublicKey)
-        window.CULQI_RSA_ID = "<?php echo $culqiRsaId; ?>";
-        window.CULQI_RSA_PUBLIC_KEY = `<?php echo $culqiRsaPublicKey; ?>`;
+
+    @if($isCheckout)
+        @php
+        $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
+        $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+        $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
+        $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
+        $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
+        @endphp
+        @if($culqiEnabled && $culqiPublicKey)
+        <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
+        <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
+        <script type="text/javascript">
+            window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
+            window.CULQI_ENABLED = true;
+            @if($culqiRsaId && $culqiRsaPublicKey)
+            window.CULQI_RSA_ID = "<?php echo $culqiRsaId; ?>";
+            window.CULQI_RSA_PUBLIC_KEY = `<?php echo $culqiRsaPublicKey; ?>`;
+            @endif
+        </script>
+        @else
+        <script type="text/javascript">
+            window.CULQI_ENABLED = false;
+        </script>
         @endif
-        console.log("✅ Culqi configurado");
-    </script>
+
+        @php
+        $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
+        $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+        $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
+        $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
+        $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
+        $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
+        @endphp
+        @if($openpayEnabled && $openpayMerchantId && $openpayPublicKey)
+        <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
+        <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
+        <script type="text/javascript">
+            window.OPENPAY_MERCHANT_ID = "<?php echo $openpayMerchantId; ?>";
+            window.OPENPAY_PUBLIC_KEY = "<?php echo $openpayPublicKey; ?>";
+            window.OPENPAY_SANDBOX_MODE = <?php echo $openpayIsSandbox ? 'true' : 'false'; ?>;
+        </script>
+        @endif
     @else
-    <script type="text/javascript">
-        window.CULQI_ENABLED = false;
-    </script>
+        <script type="text/javascript">
+            window.CULQI_ENABLED = false;
+        </script>
     @endif
 
-    @php
-    $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
-    $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
-    $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
-    $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
-    $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
-    $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
-    @endphp
-    @if($openpayEnabled && $openpayMerchantId && $openpayPublicKey)
-    <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
-    <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
-    <script type="text/javascript">
-        window.OPENPAY_MERCHANT_ID = "<?php echo $openpayMerchantId; ?>";
-        window.OPENPAY_PUBLIC_KEY = "<?php echo $openpayPublicKey; ?>";
-        window.OPENPAY_SANDBOX_MODE = <?php echo $openpayIsSandbox ? 'true' : 'false'; ?>;
-        console.log("✅ OpenPay configurado");
-    </script>
-    @else
-    <script type="text/javascript">
-        console.log("⚠️ OpenPay no está configurado");
-    </script>
-    @endif
-
-    <script src="/lte/assets/libs/select2/js/select2.full.min.js" defer></script>
+    <script src="/lte/assets/js/select2.full.min.js?v=<?php echo $version; ?>" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
-    <script src="/lte/assets/libs/moment/min/moment.min.js" defer></script>
-    <script src="/lte/assets/libs/moment/moment-timezone.js" defer></script>
-    <script src="/lte/assets/libs/moment/locale/es.js" defer></script>
-    <script src="/lte/assets/libs/quill/quill.min.js" defer></script>
+    <script src="/lte/assets/libs/moment/min/moment.min.js?v=<?php echo $version; ?>" defer></script>
+    <script src="/lte/assets/libs/moment/moment-timezone.js?v=<?php echo $version; ?>" defer></script>
+    <script src="/lte/assets/libs/moment/locale/es.js?v=<?php echo $version; ?>" defer></script>
+    <script src="/lte/assets/libs/quill/quill.min.js?v=<?php echo $version; ?>" defer></script>
 
     <script src="/assets/js/ecommerce-tracker.js" defer></script>
     <script>
