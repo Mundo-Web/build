@@ -39,19 +39,25 @@ class HandleInertiaRequests extends Middleware
     {
         $referralCode = \Illuminate\Support\Facades\Cookie::get('referral_code');
 
-        return array_merge(parent::share($request), [
-            // Whitelist de configuraciones necesarias para el frontend
-            'generals' => General::where('status', true)
+        // Cachear las generals compartidas por 5 minutos (se ejecuta en CADA request)
+        $sharedGenerals = \Illuminate\Support\Facades\Cache::remember('inertia_shared_generals', 300, function () {
+            return General::where('status', true)
                 ->whereIn('correlative', [
                     'site_title', 'site_description', 'site_keywords',
                     'og_title', 'og_description', 'og_image', 'og_url',
                     'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card',
                     'canonical_url', 'phone_whatsapp', 'favicon', 'logo'
                 ])
-                ->get(),
+                ->get();
+        });
+
+        return array_merge(parent::share($request), [
+            'generals' => $sharedGenerals,
             'referral_code' => $referralCode,
             'referrer' => $referralCode
-                ? \App\Models\User::where('uuid', $referralCode)->first()
+                ? \Illuminate\Support\Facades\Cache::remember('referrer_' . $referralCode, 600, function () use ($referralCode) {
+                    return \App\Models\User::where('uuid', $referralCode)->first();
+                })
                 : null,
         ]);
     }

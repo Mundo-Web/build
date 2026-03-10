@@ -201,14 +201,10 @@ const TestimonialsLaPetaca = ({ data, items }) => {
                                                         src={`/storage/images/testimony/${testimonial.image}`}
                                                         alt={testimonial.name}
                                                         className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                                                        onError={(e) => {
-                                                            e.target.onerror =
-                                                                null;
-                                                            e.target.style.display =
-                                                                "none";
-                                                            e.target.nextElementSibling.style.display =
-                                                                "flex";
-                                                        }}
+                                                        onError={(e) =>
+                                                            (e.target.src =
+                                                                "/api/cover/thumbnail/null")
+                                                        }
                                                     />
                                                 ) : null}
                                                 <div

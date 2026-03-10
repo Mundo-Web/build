@@ -19,31 +19,37 @@ class TrackUserSession
         
         // Solo trackear requests no-AJAX y evitar rutas de assets/api innecesarias
         if (!$request->ajax() && !$this->shouldSkipTracking($request)) {
-            try {
-                $this->trackUserSession($request);
-            } catch (\Exception $e) {
-                // Log error pero no fallar la request
-                Log::warning('Error tracking user session: ' . $e->getMessage(), [
-                    'url' => $request->url(),
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent()
-                ]);
-            }
+            // Diferir el tracking para que NO bloquee la respuesta al usuario
+            $requestData = [
+                'sessionId' => $request->session()->getId(),
+                'userId' => auth()->id(),
+                'url' => $request->url(),
+                'ip' => $request->ip(),
+                'userAgent' => $request->userAgent(),
+                'cfCountry' => $request->server('HTTP_CF_IPCOUNTRY', 'PE'),
+            ];
+            
+            app()->terminating(function () use ($requestData) {
+                try {
+                    $this->trackUserSessionDeferred($requestData);
+                } catch (\Exception $e) {
+                    Log::warning('Error tracking user session: ' . $e->getMessage());
+                }
+            });
         }
 
         return $response;
     }
 
-    private function trackUserSession(Request $request)
+    private function trackUserSessionDeferred(array $data)
     {
         $agent = new Agent();
-        $sessionId = $request->session()->getId();
-        $userId = auth()->id();
+        $agent->setUserAgent($data['userAgent']);
+        $sessionId = $data['sessionId'];
+        $userId = $data['userId'];
         
-        // Generar session_id si no existe
         if (!$sessionId) {
-            $sessionId = Str::uuid()->toString();
-            $request->session()->setId($sessionId);
+            return;
         }
 
         // Crear clave de cache única para esta sesión
@@ -68,25 +74,23 @@ class TrackUserSession
             ->first();
 
         if ($userSession) {
-            // Actualizar sesión existente
             $userSession->increment('page_views');
             $userSession->update([
-                'user_id' => $userId, // Actualizar user_id si el usuario se logueó
+                'user_id' => $userId,
                 'updated_at' => now()
             ]);
         } else {
-            // Crear nueva sesión usando transaction para evitar duplicados
-            DB::transaction(function() use ($sessionId, $userId, $agent, $request) {
+            DB::transaction(function() use ($sessionId, $userId, $agent, $data) {
                 UserSession::create([
                     'user_id' => $userId,
                     'session_id' => $sessionId,
                     'device_type' => $this->getDeviceType($agent),
                     'browser' => $agent->browser(),
                     'os' => $agent->platform(),
-                    'country' => $request->server('HTTP_CF_IPCOUNTRY', 'PE'),
+                    'country' => $data['cfCountry'],
                     'city' => null,
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
+                    'ip_address' => $data['ip'],
+                    'user_agent' => $data['userAgent'],
                     'page_views' => 1,
                     'duration' => 0,
                     'converted' => false
@@ -94,8 +98,7 @@ class TrackUserSession
             });
         }
 
-        // Marcar en cache que ya trackeamos esta sesión
-        Cache::put($cacheKey, true, 300); // 5 minutos
+        Cache::put($cacheKey, true, 300);
     }
 
     private function incrementPageViews($sessionId, $userId)

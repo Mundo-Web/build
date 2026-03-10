@@ -47,15 +47,14 @@ export default defineConfig({
             output: {
                 // Code splitting mejorado
                 manualChunks: (id) => {
-                    // Separar vendors pesados
                     if (id.includes('node_modules')) {
                         if (id.includes('react') || id.includes('react-dom')) {
                             return 'vendor-react';
                         }
-                        if (id.includes('framer-motion')) {
+                        if (id.includes('framer-motion') || id.includes('motion')) {
                             return 'vendor-motion';
                         }
-                        if (id.includes('lucide')) {
+                        if (id.includes('lucide') || id.includes('react-icons')) {
                             return 'vendor-icons';
                         }
                         if (id.includes('swiper')) {
@@ -63,6 +62,12 @@ export default defineConfig({
                         }
                         if (id.includes('devextreme')) {
                             return 'vendor-devextreme';
+                        }
+                        if (id.includes('lodash') || id.includes('axios')) {
+                            return 'vendor-utils';
+                        }
+                        if (id.includes('flowbite') || id.includes('sonner') || id.includes('tippy')) {
+                            return 'vendor-ui';
                         }
                     }
                 },

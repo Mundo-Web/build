@@ -437,10 +437,28 @@ class BasicController extends Controller
       $session->getAllPermissions();
     }
 
-    // Get Culqi configuration from database
-    $culqiPublicKey = \App\Models\General::where('correlative', 'checkout_culqi_public_key')->first();
-    $culqiEnabled = \App\Models\General::where('correlative', 'checkout_culqi')->first();
-    $culqiName = \App\Models\General::where('correlative', 'checkout_culqi_name')->first();
+    // Cargar TODAS las configuraciones globales en UNA sola query cacheada
+    $globalConfig = Cache::remember('global_config_generals', 300, function () {
+      return General::whereIn('correlative', [
+        'gmaps_api_key',
+        'checkout_culqi_public_key',
+        'checkout_culqi',
+        'checkout_culqi_name',
+        'checkout_culqi_rsa_id',
+        'checkout_culqi_rsa_public_key',
+        'checkout_culqi_supports_usd',
+        'exchange_rate_usd_pen',
+      ])->get()->keyBy('correlative');
+    });
+
+    $appColorPrimary = Cache::remember('global_color_primary', 300, function () {
+      return SystemColor::where('name', 'primary')->first()?->description ?: env('APP_COLOR_PRIMARY', "#000000");
+    });
+
+    $exchangeRate = $globalConfig->get('exchange_rate_usd_pen')?->description
+      ?? Cache::remember('global_exchange_rate_usd', 300, function () {
+        return ExchangeRate::where('currency', 'USD')->orderBy('date', 'desc')->first()?->rate ?? 3.75;
+      });
 
     $fillable = [];
     try {
@@ -463,6 +481,8 @@ class BasicController extends Controller
       $menus = RoleHasMenu::whereIn('role_id', $roleIds)->get();
     }
 
+    $culqiEnabled = filter_var($globalConfig->get('checkout_culqi')?->description ?? 'false', FILTER_VALIDATE_BOOLEAN);
+
     $properties = [
       'session' => $session,
       'global' => [
@@ -473,26 +493,27 @@ class BasicController extends Controller
         'APP_ENV' => env('APP_ENV'),
         'APP_CORRELATIVE' => env('APP_CORRELATIVE'),
         'APP_PROTOCOL' => env('APP_PROTOCOL', 'https'),
-        'GMAPS_API_KEY' => General::where('correlative', 'gmaps_api_key')->first()?->description ?: env('GMAPS_API_KEY', ""),
-        'APP_COLOR_PRIMARY' => SystemColor::where('name', 'primary')->first()?->description ?: env('APP_COLOR_PRIMARY', "#000000"),
-        'CULQI_PUBLIC_KEY' => CulqiConfig::getPublicKey(),
+        'GMAPS_API_KEY' => $globalConfig->get('gmaps_api_key')?->description ?: env('GMAPS_API_KEY', ""),
+        'APP_COLOR_PRIMARY' => $appColorPrimary,
+        'CULQI_PUBLIC_KEY' => $globalConfig->get('checkout_culqi_public_key')?->description ?: env('CULQI_PUBLIC_KEY'),
         'CULQI_API' => CulqiConfig::getApiUrl(),
-        'CULQI_ENABLED' => CulqiConfig::isEnabled(),
-        'CULQI_NAME' => CulqiConfig::getName(),
-        'CULQI_RSA_ID' => CulqiConfig::getRsaId(),
-        'CULQI_RSA_PUBLIC_KEY' => CulqiConfig::getRsaPublicKey(),
-        'CULQI_SUPPORTS_USD' => General::where('correlative', 'checkout_culqi_supports_usd')->first()?->description === 'true',
-        'EXCHANGE_RATE' => General::where('correlative', 'exchange_rate_usd_pen')->first()?->description ??
-          (ExchangeRate::where('currency', 'USD')->orderBy('date', 'desc')->first()?->rate ?? 3.75),
+        'CULQI_ENABLED' => $culqiEnabled,
+        'CULQI_NAME' => $globalConfig->get('checkout_culqi_name')?->description ?: 'Culqi',
+        'CULQI_RSA_ID' => $globalConfig->get('checkout_culqi_rsa_id')?->description ?: env('CULQI_RSA_ID'),
+        'CULQI_RSA_PUBLIC_KEY' => $globalConfig->get('checkout_culqi_rsa_public_key')?->description ?: env('CULQI_RSA_PUBLIC_KEY'),
+        'CULQI_SUPPORTS_USD' => ($globalConfig->get('checkout_culqi_supports_usd')?->description ?? '') === 'true',
+        'EXCHANGE_RATE' => $exchangeRate,
         'API_KEY_TINYMCE' => env('API_KEY_TINYMCE', "xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
       ],
       'can_access' => $menus,
       'fillable' => $fillable,
       'boolean_limits' => $this->resolveBooleanLimits()
     ];
+
+    // FIX CRÍTICO: Solo llamar setReactViewProperties UNA VEZ (antes se llamaba DOS VECES)
     $reactViewProperties = $this->setReactViewProperties($request);
     if (\is_array($reactViewProperties)) {
-      foreach ($this->setReactViewProperties($request) as $key => $value) {
+      foreach ($reactViewProperties as $key => $value) {
         $properties[$key] = $value;
       }
     } else {

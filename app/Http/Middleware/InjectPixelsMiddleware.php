@@ -31,7 +31,10 @@ class InjectPixelsMiddleware
             return $response;
         }
 
-        $pixels = PixelHelper::getPixelScripts();
+        // Cachear los scripts de pixeles por 1 hora (los IDs de pixel casi nunca cambian)
+        $pixels = \Illuminate\Support\Facades\Cache::remember('pixel_scripts', 3600, function () {
+            return PixelHelper::getPixelScripts();
+        });
 
         // Inyectar scripts del head antes del cierre de </head>
         if (!empty($pixels['head'])) {

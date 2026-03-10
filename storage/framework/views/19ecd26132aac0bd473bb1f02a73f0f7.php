@@ -75,7 +75,7 @@ $component = Route::currentRouteName();
     <meta property="og:type" content="<?php echo $isDetailPage ? 'article' : 'website'; ?>">
     <meta property="og:url" content="<?php echo $ogUrl; ?>">
     <meta property="og:title" content="<?php echo $ogTitle ?? ($generals['og_title']->description ?? 'Hostal La Petaca'); ?>">
-    <meta property="og:description" content="<?php echo $ogDescription ?? ($generals['og_description']->description ?? ''); ?>">
+    <meta property="og:description" content="<?php echo $ogDescription ?? ($generals['meta_description']->description ?? ''); ?>">
     <meta property="og:image" content="<?php echo $ogImage ?? ($generals['og_image']->description ?? ''); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -104,11 +104,6 @@ $component = Route::currentRouteName();
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
         <link rel="stylesheet" href="/lte/assets/libs/select2/css/select2.min.css">
-    </noscript>
-
-    <link rel="preload" href="/lte/assets/css/icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="/lte/assets/css/icons.min.css">
     </noscript>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -235,32 +230,55 @@ $component = Route::currentRouteName();
 
 <?php $bodyCustomHtml = $generals->where('correlative', 'body_custom_html')->first()?->description ?? ''; ?>
 
+<?php $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000'; ?>
+
 <body class="font-paragraph relative" style="background: var(--bg-page-background);">
     <?php if($bodyCustomHtml): ?> <?php echo $bodyCustomHtml; ?> <?php endif; ?>
 
     <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-page-background);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
         <style>
-            @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            @keyframes pulse-loader { 0% { transform: scale(0.95); opacity: 0.2; } 50% { transform: scale(1.05); opacity: 0.1; } 100% { transform: scale(0.95); opacity: 0.2; } }
+            @keyframes spin-loader {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes pulse-loader {
+                0% {
+                    transform: scale(0.95);
+                    opacity: 0.2;
+                }
+
+                50% {
+                    transform: scale(1.05);
+                    opacity: 0.1;
+                }
+
+                100% {
+                    transform: scale(0.95);
+                    opacity: 0.2;
+                }
+            }
         </style>
         <div style="position:relative; display: flex; flex-direction: column; align-items: center;">
-            <div class="loader-spinner" style="width:80px;height:80px;border:4px solid #f3f3f3;border-top:4px solid <?php echo $data['colors']->firstWhere('name', 'primary')?->description ?? '#78673a'; ?>;border-radius:50%;animation:spin-loader 1s linear infinite;margin-bottom: 2rem;"></div>
-            <img src="/assets/resources/logo.png?v=<?php echo $version; ?>" alt="Logo" style="width:150px;height:auto;opacity:0.8;">
+            <img src="/assets/resources/loading.png?v=<?php echo $version; ?>" alt="Logo" style="width:300px;max-width: 80vw;height:auto;opacity:0.8;" onError="this.onerror=null;this.src='/assets/resources/logo.png';" loading="eager">
         </div>
     </div>
     <script>
         (function() {
             window.addEventListener('load', function() {
-                setTimeout(function() {
-                    var loader = document.getElementById('native-loader');
-                    if (loader) {
-                        loader.style.opacity = '0';
-                        loader.style.visibility = 'hidden';
-                    }
+                var loader = document.getElementById('native-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    loader.style.visibility = 'hidden';
                     setTimeout(function() {
                         if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-                    }, 500);
-                }, 300);
+                    }, 200);
+                }
             });
         })();
     </script>
@@ -278,62 +296,59 @@ $component = Route::currentRouteName();
     </script>
 
     <?php
-        $isCheckout = ($page->correlative ?? '') === 'checkout' || ($page->component ?? '') === 'checkout';
+    $isCheckout = ($page->correlative ?? '') === 'checkout' || ($page->component ?? '') === 'checkout';
     ?>
 
     <?php if($isCheckout): ?>
-        <?php
-        $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
-        $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
-        $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
-        $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
-        $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
-        ?>
-        <?php if($culqiEnabled && $culqiPublicKey): ?>
-        <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
-        <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
-        <script type="text/javascript">
-            window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
-            window.CULQI_ENABLED = true;
-            <?php if($culqiRsaId && $culqiRsaPublicKey): ?>
-            window.CULQI_RSA_ID = "<?php echo $culqiRsaId; ?>";
-            window.CULQI_RSA_PUBLIC_KEY = `<?php echo $culqiRsaPublicKey; ?>`;
-            <?php endif; ?>
-        </script>
-        <?php else: ?>
-        <script type="text/javascript">
-            window.CULQI_ENABLED = false;
-        </script>
+    <?php
+    $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
+    $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+    $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
+    $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
+    $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
+    ?>
+    <?php if($culqiEnabled && $culqiPublicKey): ?>
+    <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
+    <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
+    <script type="text/javascript">
+        window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
+        window.CULQI_ENABLED = true;
+        <?php if($culqiRsaId && $culqiRsaPublicKey): ?>
+        window.CULQI_RSA_ID = "<?php echo $culqiRsaId; ?>";
+        window.CULQI_RSA_PUBLIC_KEY = `<?php echo $culqiRsaPublicKey; ?>`;
         <?php endif; ?>
-
-        <?php
-        $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
-        $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
-        $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
-        $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
-        $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
-        $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
-        ?>
-        <?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
-        <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
-        <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
-        <script type="text/javascript">
-            window.OPENPAY_MERCHANT_ID = "<?php echo $openpayMerchantId; ?>";
-            window.OPENPAY_PUBLIC_KEY = "<?php echo $openpayPublicKey; ?>";
-            window.OPENPAY_SANDBOX_MODE = <?php echo $openpayIsSandbox ? 'true' : 'false'; ?>;
-        </script>
-        <?php endif; ?>
+    </script>
     <?php else: ?>
-        <script type="text/javascript">
-            window.CULQI_ENABLED = false;
-        </script>
+    <script type="text/javascript">
+        window.CULQI_ENABLED = false;
+    </script>
+    <?php endif; ?>
+
+    <?php
+    $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
+    $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
+    $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
+    $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
+    $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
+    $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
+    ?>
+    <?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
+    <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
+    <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
+    <script type="text/javascript">
+        window.OPENPAY_MERCHANT_ID = "<?php echo $openpayMerchantId; ?>";
+        window.OPENPAY_PUBLIC_KEY = "<?php echo $openpayPublicKey; ?>";
+        window.OPENPAY_SANDBOX_MODE = <?php echo $openpayIsSandbox ? 'true' : 'false'; ?>;
+    </script>
+    <?php endif; ?>
+    <?php else: ?>
+    <script type="text/javascript">
+        window.CULQI_ENABLED = false;
+    </script>
     <?php endif; ?>
 
     <script src="/lte/assets/js/select2.full.min.js?v=<?php echo $version; ?>" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
-    <script src="/lte/assets/libs/moment/min/moment.min.js?v=<?php echo $version; ?>" defer></script>
-    <script src="/lte/assets/libs/moment/moment-timezone.js?v=<?php echo $version; ?>" defer></script>
-    <script src="/lte/assets/libs/moment/locale/es.js?v=<?php echo $version; ?>" defer></script>
     <script src="/lte/assets/libs/quill/quill.min.js?v=<?php echo $version; ?>" defer></script>
 
     <script src="/assets/js/ecommerce-tracker.js" defer></script>
