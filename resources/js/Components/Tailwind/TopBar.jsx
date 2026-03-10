@@ -52,6 +52,7 @@ const TopBar = ({
                         cart={cart}
                         setCart={setCart}
                         isUser={isUser}
+                        generals={generals}
                     />
                 );
             case "TopBarCopyrightSocials":

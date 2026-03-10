@@ -31,7 +31,7 @@ class SystemController extends BasicController
     {
         $path = $request->server('REQUEST_URI') ?? '/';
         $cacheKey = "react_view_props_" . md5($path);
-        
+
         $props = Cache::remember($cacheKey, 3600, function () use ($request, $path) {
             $pages = JSON::parse(File::get(storage_path('app/pages.json')));
             // Cargar definiciones de componentes una sola vez y prepararlas para búsqueda rápida
@@ -139,7 +139,8 @@ class SystemController extends BasicController
                 'importation_flete',
                 'importation_servicio',
                 'importation_seguro',
-                'importation_derecho_arancelario'
+                'importation_derecho_arancelario',
+
             ];
 
             $jsons = [];
@@ -219,9 +220,6 @@ class SystemController extends BasicController
                             $query->orderBy($table . '.updated_at', 'desc');
                         }
                     }
-                    if ($table === 'items') {
-                        $query->select(['id', 'name', 'slug', 'image', 'summary', 'price', 'discount', 'category_id', 'status']);
-                    }
                     $shortID = Crypto::short();
                     $system->itemsId = $shortID;
                     $props['systemItems'][$shortID] = $query->get();
@@ -241,6 +239,7 @@ class SystemController extends BasicController
 
             $props['systems'] = $systems;
             $props['jsons'] = $jsons;
+            $props['generals'] = General::whereIn('correlative', array_unique($generals))->get();
             $props['params'] = $request->route() ? $request->route()->parameters() : [];
             $props['filteredData'] = [];
 
@@ -262,7 +261,6 @@ class SystemController extends BasicController
             }
             if (in_array('post', $requiredResources)) {
                 $props['postsLatest'] = Post::where('status', true)
-                    ->select(['id', 'name', 'slug', 'image', 'created_at'])
                     ->orderBy('created_at', 'desc')
                     ->take(5)
                     ->get();

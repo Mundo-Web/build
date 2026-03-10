@@ -90,7 +90,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                     {/* Policies Column */}
                     <div>
                         <h3
-                            className={`customtext-primary font-bold mb-6 text-base ${data?.class_menu || ""}`}
+                            className={` font-bold mb-6 text-base  ${data?.class_menu || "customtext-primary"}`}
                         >
                             Políticas
                         </h3>
@@ -154,7 +154,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         className="cursor-pointer flex flex-col gap-2 items-start  "
                                     >
                                         <span
-                                            className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                            className={`hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:customtext-primary"}`}
                                         >
                                             Denuncias
                                         </span>
@@ -173,7 +173,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={`/cloud/${generals.find((item) => item.correlative === "politica_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:customtext-primary"}`}
                                     >
                                         Política del sistema de Gestión
                                     </a>
@@ -190,7 +190,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={`/cloud/${generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:customtext-primary"}`}
                                     >
                                         Alcance del sistema de Gestión
                                     </a>
@@ -199,13 +199,13 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         </ul>
 
                         <h3
-                            className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ""}`}
+                            className={`font-bold mb-6 text-base mt-8 ${data?.class_menu || "customtext-primary"}`}
                         >
                             Horarios de atención
                         </h3>
 
                         <p
-                            className={`cursor-pointer text-white whitespace-pre-line hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                            className={`cursor-pointer whitespace-pre-line hover:font-bold transition-all duration-300 ${data?.class_menu_item || "text-white hover:customtext-primary"}`}
                         >
                             {" "}
                             {generals.find(
@@ -219,7 +219,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                 {/* Newsletter Column */}
                 <div className="mt-4 lg:mt-0 col-span-1 md:col-span-2">
                     <h3
-                        className={`customtext-primary font-bold mb-4 text-base ${data?.class_menu || ""}`}
+                        className={`font-bold mb-4 text-base ${data?.class_menu || "customtext-primary"}`}
                     >
                         Únete a nuestro blog
                     </h3>

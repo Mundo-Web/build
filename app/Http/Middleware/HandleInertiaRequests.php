@@ -46,10 +46,7 @@ class HandleInertiaRequests extends Middleware
                     'site_title', 'site_description', 'site_keywords',
                     'og_title', 'og_description', 'og_image', 'og_url',
                     'twitter_title', 'twitter_description', 'twitter_image', 'twitter_card',
-                    'canonical_url', 'phone_whatsapp', 'header_menu_order',
-                    'address', 'email', 'business_hours',
-                    'privacy_policy', 'terms_conditions', 'saleback_policy',
-                    'politica_sistema_gestion', 'alcance_sistema_gestion', 'opening_hours'
+                    'canonical_url', 'phone_whatsapp', 'favicon', 'logo'
                 ])
                 ->get(),
             'referral_code' => $referralCode,
