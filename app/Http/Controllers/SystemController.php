@@ -318,13 +318,26 @@ class SystemController extends BasicController
             }
 
             $props['headerPosts'] = Cache::remember('global_posts_header', 3600, function() {
-                return Post::with('category')->where('status', true)->latest()->take(3)->get();
+                return Post::select(['id', 'name', 'slug', 'image', 'summary', 'category_id', 'created_at'])
+                    ->with(['category' => function($q) { $q->select(['id', 'name']); }])
+                    ->where('status', true)
+                    ->latest()
+                    ->take(3)
+                    ->get();
             });
             $props['postsLatest'] = Cache::remember('global_posts_latest', 3600, function() {
-                return Post::with('category')->where('status', true)->latest()->take(6)->get();
+                return Post::select(['id', 'name', 'slug', 'image', 'summary', 'category_id', 'created_at'])
+                    ->with(['category' => function($q) { $q->select(['id', 'name']); }])
+                    ->where('status', true)
+                    ->latest()
+                    ->take(6)
+                    ->get();
             });
             $props['textstatic'] = Cache::remember('global_aboutus_static', 3600, function() {
-                return Aboutus::where('visible', true)->where('status', true)->get();
+                return Aboutus::select(['id', 'name', 'summary', 'image', 'visible', 'status'])
+                    ->where('visible', true)
+                    ->where('status', true)
+                    ->get();
             });
 
             return $props;
