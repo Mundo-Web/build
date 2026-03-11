@@ -254,10 +254,14 @@ class SystemController extends BasicController
 
             // Carga condicional de recursos globales (Solo si se necesitan)
             if (in_array('store', $requiredResources)) {
-                $props['stores'] = Store::where('status', true)->get();
+                $props['stores'] = Cache::remember('global_stores_active', 3600, function() {
+                    return Store::where('status', true)->get();
+                });
             }
             if (in_array('faq', $requiredResources)) {
-                $props['faqs'] = Faq::where('status', true)->get();
+                $props['faqs'] = Cache::remember('global_faqs_active', 3600, function() {
+                    return Faq::where('status', true)->get();
+                });
             }
             if (in_array('post', $requiredResources)) {
                 $props['postsLatest'] = Post::where('status', true)

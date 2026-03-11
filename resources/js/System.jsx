@@ -12,11 +12,13 @@ const ScrollAnimation = React.lazy(
     () => import("./Components/Tailwind/Components/ScrollAnimation"),
 );
 
-// Importaciones lazy
-const NoComponent = React.lazy(() => import("./NoComponent"));
-const TopBar = React.lazy(() => import("./Components/Tailwind/TopBar"));
-const Header = React.lazy(() => import("./Components/Tailwind/Header"));
-const Footer = React.lazy(() => import("./Components/Tailwind/Footer"));
+// Importaciones críticas (NO LAZY para evitar parpadeo y mejorar LCP)
+import NoComponent from "./NoComponent";
+import TopBar from "./Components/Tailwind/TopBar";
+import Header from "./Components/Tailwind/Header";
+import Footer from "./Components/Tailwind/Footer";
+
+// Importaciones lazy (para componentes que pueden esperar)
 const Slider = React.lazy(() => import("./Components/Tailwind/Slider"));
 const Product = React.lazy(() => import("./Components/Tailwind/Product"));
 const Banner = React.lazy(() => import("./Components/Tailwind/Banner"));
@@ -108,25 +110,18 @@ const LoadingFallback = () => {
                 }
             `}</style>
             <div className="relative">
-                <div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                        opacity: 0.05,
-                        animation: "pulse-loader 2s ease-in-out infinite",
-                    }}
-                />
                 <img
-                    src="/assets/resources/loading.png"
+                    src="/assets/resources/logo.png"
                     alt="Cargando..."
                     className="relative"
                     style={{
-                        width: "300px",
-                        maxWidth: "80vw",
+                        width: "180px",
+                        maxWidth: "60vw",
                         animation: "pulse-loader 2s ease-in-out infinite",
                     }}
                     onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "/assets/resources/logo.png";
+                        e.target.src = "/assets/resources/icon.png";
                     }}
                     loading="eager"
                 />

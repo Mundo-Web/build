@@ -1,1 +1,0 @@
-var s=Object.defineProperty,e=(e,t,i)=>((e,t,i)=>t in e?s(e,t,{enumerable:!0,configurable:!0,writable:!0,value:i}):e[t]=i)(e,"symbol"!=typeof t?t+"":t,i);import{B as t}from"./BasicRest-Q6jxfRG0.js";class i extends t{constructor(){super(...arguments),e(this,"path","subscriptions"),e(this,"is_use_notify",!1)}}export{i as S};
