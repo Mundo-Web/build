@@ -90,17 +90,19 @@ Route::post('/test/notifications/contact', [NotificationTestController::class, '
 Route::post('/test/notifications/purchase', [NotificationTestController::class, 'testPurchaseNotification']);
 Route::get('/test/notifications/corporate-email', [NotificationTestController::class, 'checkCorporateEmail']);
 
-// Verificar si el archivo existe, si no, crear uno vacío
 $filePath = storage_path('app/pages.json');
-if (!file_exists($filePath)) {
-    file_put_contents($filePath, json_encode([]));
-}
-
-$pages = json_decode(File::get($filePath), true);
+$pages = \Illuminate\Support\Facades\Cache::remember('cached_pages_routes', 86400, function () use ($filePath) {
+    if (!file_exists($filePath)) {
+        file_put_contents($filePath, json_encode([]));
+    }
+    return json_decode(file_get_contents($filePath), true) ?: [];
+});
 
 // Public routes
 foreach ($pages as $page) {
-    Route::get($page['path'], [SystemController::class, 'reactView'])->name('System.jsx');
+    if (isset($page['path'])) {
+        Route::get($page['path'], [SystemController::class, 'reactView'])->name('System.jsx');
+    }
 }
 
 Route::get('/base-template', [SystemController::class, 'reactView'])->name('System.jsx');
@@ -241,6 +243,5 @@ Route::get('/deploy/migrate/{token}', function ($token) {
 });
 
 // Catch-all for Referral Codes (Smart Links)
-// This must be the LAST route to avoid conflicts with existing pages or assets
 Route::get('/{referral_code}', [\App\Http\Controllers\SystemController::class, 'handleReferralRoot'])
     ->where('referral_code', '[A-Za-z0-9\-]+');

@@ -118,10 +118,7 @@ $component = Route::currentRouteName();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 
-    <?php $pixelScripts = App\Helpers\PixelHelper::getPixelScripts(); ?>
-    <?php echo $pixelScripts['head']; ?>
-
-
+    <!-- Pixel injection is handled by InjectPixelsMiddleware with cache -->
     <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true'): ?>
     <link rel="stylesheet" href="<?php echo $data['fonts']['title']['url']; ?>">
     <?php endif; ?>
@@ -282,8 +279,6 @@ $component = Route::currentRouteName();
             });
         })();
     </script>
-
-    <?php echo $pixelScripts['body']; ?>
 
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->body; } else { ?><div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div><?php } ?>
     <script src="/lte/assets/js/vendor.min.js?v=<?php echo $version; ?>" defer></script>

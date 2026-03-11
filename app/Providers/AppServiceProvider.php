@@ -45,7 +45,10 @@ class AppServiceProvider extends ServiceProvider
         // Share generals data with all views for SEO and global configurations
         View::composer('*', function ($view) {
             if (!$view->offsetExists('generals')) {
-                $generals = General::where('status', true)->get();
+                // Caché rápido por 60 minutos para evitar consultas 'where status = true' por cada vista generada en Laravel (Blade).
+                $generals = \Illuminate\Support\Facades\Cache::remember('blade_view_generals_all', 3600, function () {
+                    return General::where('status', true)->get();
+                });
                 $view->with('generals', $generals);
             }
         });

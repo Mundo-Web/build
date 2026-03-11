@@ -63,10 +63,14 @@ class BasicController extends Controller
   {
     $response = Response::simpleTryCatch(function () {
       $query = $this->model::query();
-      if (Schema::hasColumn((new $this->model)->getTable(), 'status')) {
+      $table = (new $this->model)->getTable();
+      $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+          return \Illuminate\Support\Facades\Schema::getColumnListing($table);
+      });
+      if (in_array('status', $columns)) {
         $query->where('status', true);
       }
-      if (Schema::hasColumn((new $this->model)->getTable(), 'visible')) {
+      if (in_array('visible', $columns)) {
         $query->where('visible', true);
       }
       return $query->get();
@@ -519,6 +523,7 @@ class BasicController extends Controller
     } else {
       return $reactViewProperties;
     }
+    
     return Inertia::render($this->reactView, $properties)
       ->rootView($this->reactRootView)
       ->withViewData('data', $this->reactData ?? []);
@@ -562,7 +567,10 @@ class BasicController extends Controller
 
       if (Auth::check() && !($this->skipStatusFilter ?? false)) {
         $table = $this->prefix4filter ? $this->prefix4filter : (new $this->model)->getTable();
-        if (Schema::hasColumn($table, 'status')) {
+        $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+            return \Illuminate\Support\Facades\Schema::getColumnListing($table);
+        });
+        if (in_array('status', $columns)) {
           $instance->where($this->prefix4filter ? $this->prefix4filter . '.status' : 'status', true);
           $instance->whereNotNull($this->prefix4filter ? $this->prefix4filter . '.status' : 'status');
         }
@@ -716,9 +724,11 @@ class BasicController extends Controller
       if (!$jpa) {
         $body['slug'] = Crypto::randomUUID();
 
-        // Auto-asignar order_index si el modelo lo tiene y no se envió desde el frontend
         $table = (new $this->model)->getTable();
-        if (Schema::hasColumn($table, 'order_index') && !isset($body['order_index'])) {
+        $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+            return \Illuminate\Support\Facades\Schema::getColumnListing($table);
+        });
+        if (in_array('order_index', $columns) && !isset($body['order_index'])) {
           $maxOrderIndex = $this->model::max('order_index');
           $body['order_index'] = ($maxOrderIndex !== null) ? $maxOrderIndex + 1 : 0;
         }
@@ -743,17 +753,20 @@ class BasicController extends Controller
       }
 
       $table = (new $this->model)->getTable();
-      if (Schema::hasColumn($table, 'slug')) {
+      $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+          return \Illuminate\Support\Facades\Schema::getColumnListing($table);
+      });
+      if (in_array('slug', $columns)) {
         // Solo generar slug automático si no se proporcionó uno manualmente
         if (empty($jpa->slug) || (!$request->has('slug') || empty($request->slug))) {
           // Generar el slug base usando el nombre del producto
           $slugBase = $jpa->name;
           // Si existe el campo 'color' y tiene valor, añadirlo al slug
-          if (Schema::hasColumn($table, 'color') && !empty($jpa->color)) {
+          if (in_array('color', $columns) && !empty($jpa->color)) {
             $slugBase .= '-' . $jpa->color;
           }
 
-          if (Schema::hasColumn($table, 'size') && !empty($jpa->size)) {
+          if (in_array('size', $columns) && !empty($jpa->size)) {
             $slugBase .= '-' . $jpa->size;
           }
 

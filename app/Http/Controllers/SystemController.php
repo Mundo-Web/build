@@ -187,37 +187,28 @@ class SystemController extends BasicController
 
                     // aquí filtrar visible & status
                     $table = (new $using)->getTable();
-                    if (Schema::hasColumn($table, 'visible') && !Array2::find($system->filters ?? [], fn($x) => $x == 'ignoreVisibility')) {
+                    $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+                        return \Illuminate\Support\Facades\Schema::getColumnListing($table);
+                    });
+
+                    if (in_array('visible', $columns) && !Array2::find($system->filters ?? [], fn($x) => $x == 'ignoreVisibility')) {
                         $query->where('visible', true);
                     }
-                    if (Schema::hasColumn($table, 'status') && !Array2::find($system->filters ?? [], fn($x) => $x == 'ignoreStatus')) {
+                    if (in_array('status', $columns) && !Array2::find($system->filters ?? [], fn($x) => $x == 'ignoreStatus')) {
                         $query->where('status', true);
                     }
 
-                    // MODIFICACIÓN PARA MANEJAR VARIANTES DE COLOR:
-                    // Si es el modelo Item, agrupar por nombre y tomar solo un representante
-
-                    // if ($component['using']['model'] === 'Item') {
-                    //     $query->selectRaw('items.*')
-                    //         ->join(
-                    //             DB::raw('(SELECT MIN(id) as min_id FROM items GROUP BY name) as grouped'),
-                    //             function ($join) {
-                    //                 $join->on('items.id', '=', 'grouped.min_id');
-                    //             }
-                    //         );
-                    // }
-
                     // Priorizar orden por 'order_index' si existe (orden primario),
                     // y luego por 'updated_at' como orden secundario si está disponible.
-                    if (Schema::hasColumn($table, 'order_index')) {
+                    if (in_array('order_index', $columns)) {
                         $query->orderBy($table . '.order_index', 'asc');
-                        if (Schema::hasColumn($table, 'updated_at')) {
+                        if (in_array('updated_at', $columns)) {
                             $query->orderBy($table . '.updated_at', 'desc');
                         }
                     } else {
                         // Ordenar por updated_at para respetar los cambios más recientes en campos booleanos
                         // Solo si no hay un ordenamiento por 'views' previamente definido
-                        if (!$hasViewsOrder && Schema::hasColumn($table, 'updated_at')) {
+                        if (!$hasViewsOrder && in_array('updated_at', $columns)) {
                             $query->orderBy($table . '.updated_at', 'desc');
                         }
                     }
@@ -303,10 +294,14 @@ class SystemController extends BasicController
                     $class = 'App\\Models\\' . $model;
                     $query = $class::select($using['fields'] ?? ['*']);
                     $table = (new $class)->getTable();
-                    if (Schema::hasColumn($table, 'visible')) {
+                    $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+                        return \Illuminate\Support\Facades\Schema::getColumnListing($table);
+                    });
+
+                    if (in_array('visible', $columns)) {
                         $query->where('visible', true);
                     }
-                    if (Schema::hasColumn($table, 'status')) {
+                    if (in_array('status', $columns)) {
                         $query->where('status', true);
                     }
                     if (isset($using['relations'])) {

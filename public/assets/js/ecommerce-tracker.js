@@ -30,74 +30,90 @@ class EcommerceTracker {
      * Track Add to Cart event
      */
     async trackAddToCart(productId, quantity = 1, productData = {}) {
-        try {
-            const response = await fetch('/api/tracking/add-to-cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    quantity: quantity,
-                    ...productData
-                })
-            });
+        const url = '/api/tracking/add-to-cart';
+        const data = {
+            product_id: productId,
+            quantity: quantity,
+            ...productData,
+            _token: document.querySelector('meta[name="csrf-token"]')?.content || ''
+        };
 
-            const result = await response.json();
-            
-            if (result.success && result.tracking_scripts) {
-                // Ejecutar scripts de tracking
-                this.executeTrackingScripts(result.tracking_scripts);
-                console.log('✅ AddToCart tracked successfully');
-            }
-        } catch (error) {
-            console.error('❌ Error tracking AddToCart:', error);
+        // Usar sendBeacon para que sea 100% asíncrono y no bloquee el navegador
+        if (navigator.sendBeacon) {
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+            console.log('🚀 AddToCart sent via Beacon (Background)');
+        } else {
+            // Fallback para navegadores antiguos
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                keepalive: true
+            });
         }
+        
+        // Ejecutar trackings locales inmediatamente
+        this.trackLocalPixels('AddToCart', {
+            content_ids: [productId],
+            content_type: 'product',
+            value: productData.price || 0,
+            currency: 'PEN'
+        });
     }
 
     /**
      * Track Initiate Checkout event
      */
     async trackInitiateCheckout(cartItems) {
-        try {
-            const response = await fetch('/api/tracking/initiate-checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                },
-                body: JSON.stringify({
-                    cart_items: cartItems
-                })
-            });
+        const url = '/api/tracking/initiate-checkout';
+        const data = {
+            cart_items: cartItems,
+            _token: document.querySelector('meta[name="csrf-token"]')?.content || ''
+        };
 
-            const result = await response.json();
-            
-            if (result.success && result.tracking_scripts) {
-                this.executeTrackingScripts(result.tracking_scripts);
-                console.log('✅ InitiateCheckout tracked successfully');
-            }
-        } catch (error) {
-            console.error('❌ Error tracking InitiateCheckout:', error);
+        if (navigator.sendBeacon) {
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+            console.log('🚀 InitiateCheckout sent via Beacon');
+        } else {
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                keepalive: true
+            });
         }
+
+        this.trackLocalPixels('InitiateCheckout', {
+            content_ids: cartItems.map(i => i.id || i.product_id),
+            content_type: 'product',
+            value: cartItems.reduce((acc, i) => acc + (i.price * (i.quantity || 1)), 0),
+            currency: 'PEN'
+        });
     }
 
     /**
-     * Track Purchase (llamar en página de éxito)
+     * Track Purchase (en segundo plano)
      */
-    async trackPurchase(orderId) {
-        try {
-            const response = await fetch(`/api/tracking/purchase/${orderId}`);
-            const scripts = await response.text();
-            
-            if (scripts) {
-                this.executeTrackingScripts(scripts);
-                console.log('✅ Purchase tracked successfully');
-            }
-        } catch (error) {
-            console.error('❌ Error tracking Purchase:', error);
-        }
+    trackPurchase(orderId) {
+        const url = `/api/tracking/purchase/${orderId}`;
+        // Para purchase, a veces queremos los scripts de respuesta, 
+        // pero para no bloquear, disparamos y olvidamos (fire and forget)
+        fetch(url, { keepalive: true }).then(async r => {
+            const scripts = await r.text();
+            if (scripts) this.executeTrackingScripts(scripts);
+        });
+        console.log('🚀 Purchase tracking initiated');
+    }
+
+    /**
+     * Centraliza el disparo de los pixeles que ya existen en el navegador
+     */
+    trackLocalPixels(event, params) {
+        if (typeof fbq !== 'undefined') fbq('track', event, params);
+        if (typeof gtag !== 'undefined') gtag('event', event === 'AddToCart' ? 'add_to_cart' : 'begin_checkout', params);
+        if (typeof ttq !== 'undefined') ttq.track(event, params);
     }
 
     /**
