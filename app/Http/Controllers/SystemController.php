@@ -334,7 +334,7 @@ class SystemController extends BasicController
                     ->get();
             });
             $props['textstatic'] = Cache::remember('global_aboutus_static', 3600, function() {
-                return Aboutus::select(['id', 'name', 'summary', 'image', 'visible', 'status'])
+                return Aboutus::select(['id', 'name', 'description', 'image', 'visible', 'status'])
                     ->where('visible', true)
                     ->where('status', true)
                     ->get();
