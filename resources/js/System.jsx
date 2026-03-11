@@ -115,8 +115,8 @@ const LoadingFallback = () => {
                     alt="Cargando..."
                     className="relative"
                     style={{
-                        width: "180px",
-                        maxWidth: "60vw",
+                        width: "300px",
+                        maxWidth: "80vw",
                         animation: "pulse-loader 2s ease-in-out infinite",
                     }}
                     onError={(e) => {

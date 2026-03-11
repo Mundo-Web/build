@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
-import { CurrencySymbol } from '../../../Utils/Number2Currency';
-import { Users, Maximize2, ArrowRight, Sparkles, Bed, Coffee, ChevronRight } from 'lucide-react';
+import React, { useState } from "react";
+import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import {
+    Users,
+    Maximize2,
+    ArrowRight,
+    Sparkles,
+    Bed,
+    Coffee,
+    ChevronRight,
+} from "lucide-react";
 
 const LaPetacaCard = ({ item, index = 0 }) => {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -8,19 +16,20 @@ const LaPetacaCard = ({ item, index = 0 }) => {
 
     // Helper para obtener el nombre del amenity (soporta strings y objetos)
     const getAmenityName = (amenity) => {
-        if (typeof amenity === 'string') return amenity;
-        return amenity?.name || '';
+        if (typeof amenity === "string") return amenity;
+        return amenity?.name || "";
     };
 
     // Helper para obtener la imagen del amenity
     const getAmenityImage = (amenity) => {
-        if (typeof amenity === 'object' && amenity?.image) {
+        if (typeof amenity === "object" && amenity?.image) {
             return (
-                <img 
-                    src={`/storage/images/amenity/${amenity.image}`} 
-                    alt={amenity.name || ''}
+                <img
+                    src={`/storage/images/amenity/${amenity.image}`}
+                    alt={amenity.name || ""}
                     className="w-4 h-4 object-contain"
-                    onError={(e) => e.target.style.display = 'none'}
+                    onError={(e) => (e.target.style.display = "none")}
+                    loading="lazy"
                 />
             );
         }
@@ -28,19 +37,23 @@ const LaPetacaCard = ({ item, index = 0 }) => {
     };
 
     // Soporte para ambos: rooms y products
-    const image = item.image 
-        ? (item.image.startsWith('http') ? item.image : `/storage/images/item/${item.image}`)
-        : item.images?.[0]?.url || 'https://via.placeholder.com/400x300';
+    const image = `/storage/images/item/${item.image}`;
     const name = item.name || item.title;
     const price = parseFloat(item.price) || 0;
     const discount = parseFloat(item.discount) || 0;
     const hasDiscount = discount > 0;
     const finalPrice = hasDiscount ? discount : price;
-    const discountPercent = hasDiscount ? Math.round(((price - discount) / price) * 100) : 0;
-    const description = item.summary || item.description || item.short_description || '';
+    const discountPercent = hasDiscount
+        ? Math.round(((price - discount) / price) * 100)
+        : 0;
+    const description =
+        item.summary || item.description || item.short_description || "";
     const amenities = item.amenities || item.features || [];
-    const capacity = item.max_occupancy || item.capacity || item.max_guests || 0;
-    const size = item.size_m2 ? `${item.size_m2}m²` : (item.size || item.room_size || '');
+    const capacity =
+        item.max_occupancy || item.capacity || item.max_guests || 0;
+    const size = item.size_m2
+        ? `${item.size_m2}m²`
+        : item.size || item.room_size || "";
 
     const handleClick = () => {
         if (item.slug) {
@@ -50,11 +63,11 @@ const LaPetacaCard = ({ item, index = 0 }) => {
 
     return (
         <a
-            href={item.slug ? `/room/${item.slug}` : '#'}
+            href={item.slug ? `/room/${item.slug}` : "#"}
             className="group relative bg-white rounded-2xl md:rounded-3xl overflow-hidden transition-all duration-500 block shadow-sm hover:shadow-2xl border border-gray-100 hover:border-transparent"
-            style={{ 
+            style={{
                 animationDelay: `${index * 100}ms`,
-                transform: isHovered ? 'translateY(-8px)' : 'translateY(0)'
+                transform: isHovered ? "translateY(-8px)" : "translateY(0)",
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -65,23 +78,23 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                 {!isImageLoaded && (
                     <div className="absolute inset-0 bg-sections-color animate-pulse"></div>
                 )}
-                
+
                 <img
                     src={image}
                     alt={name}
                     className={`w-full h-full object-cover transition-all duration-700 ${
-                        isImageLoaded ? 'opacity-100' : 'opacity-0'
-                    } ${isHovered ? 'scale-105' : 'scale-100'}`}
+                        isImageLoaded ? "opacity-100" : "opacity-0"
+                    } ${isHovered ? "scale-105" : "scale-100"}`}
                     onLoad={() => setIsImageLoaded(true)}
-                    onError={(e) => {
-                        e.target.src = '/assets/img/noimage/no_img.jpg';
-                        setIsImageLoaded(true);
-                    }}
+                    onError={(e) =>
+                        (e.target.src = "/api/cover/thumbnail/null")
+                    }
+                    loading="lazy"
                 />
-                
+
                 {/* Gradient overlay sutil */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                
+
                 {/* Badge de descuento */}
                 {hasDiscount && (
                     <div className="absolute top-3 left-3 md:top-4 md:left-4 z-20">
@@ -96,14 +109,24 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                 <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 flex items-center gap-1.5 md:gap-2 z-10">
                     {capacity > 0 && (
                         <div className="flex items-center gap-1 md:gap-1.5 bg-white/90 backdrop-blur-sm px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-md">
-                            <Users size={11} className="customtext-accent md:w-[13px] md:h-[13px]" />
-                            <span className="text-[10px] md:text-xs font-semibold customtext-primary">{capacity}</span>
+                            <Users
+                                size={11}
+                                className="customtext-accent md:w-[13px] md:h-[13px]"
+                            />
+                            <span className="text-[10px] md:text-xs font-semibold customtext-primary">
+                                {capacity}
+                            </span>
                         </div>
                     )}
                     {size && (
                         <div className="flex items-center gap-1 md:gap-1.5 bg-white/90 backdrop-blur-sm px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-md">
-                            <Maximize2 size={11} className="customtext-accent md:w-[13px] md:h-[13px]" />
-                            <span className="text-[10px] md:text-xs font-semibold customtext-primary">{size}</span>
+                            <Maximize2
+                                size={11}
+                                className="customtext-accent md:w-[13px] md:h-[13px]"
+                            />
+                            <span className="text-[10px] md:text-xs font-semibold customtext-primary">
+                                {size}
+                            </span>
                         </div>
                     )}
                 </div>
@@ -113,7 +136,10 @@ const LaPetacaCard = ({ item, index = 0 }) => {
             <div className="p-4 md:p-6">
                 {/* Etiqueta tipo */}
                 <div className="flex items-center gap-1.5 mb-1.5 md:mb-2">
-                    <Bed size={12} className="customtext-accent md:w-[13px] md:h-[13px]" />
+                    <Bed
+                        size={12}
+                        className="customtext-accent md:w-[13px] md:h-[13px]"
+                    />
                     <span className="text-[10px] md:text-xs font-semibold customtext-accent uppercase tracking-wider">
                         Suite
                     </span>
@@ -134,11 +160,15 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                     <div className="flex flex-wrap gap-1 md:gap-1.5 mb-4 md:mb-5">
                         {amenities.slice(0, 2).map((amenity, i) => (
                             <div
-                                key={typeof amenity === 'object' ? amenity.id : i}
+                                key={
+                                    typeof amenity === "object" ? amenity.id : i
+                                }
                                 className="flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1 bg-sections-color rounded-full text-[10px] md:text-xs font-medium customtext-secondary"
                             >
                                 {getAmenityImage(amenity)}
-                                <span className="hidden sm:inline">{getAmenityName(amenity)}</span>
+                                <span className="hidden sm:inline">
+                                    {getAmenityName(amenity)}
+                                </span>
                             </div>
                         ))}
                         {amenities.length > 2 && (
@@ -152,22 +182,26 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                 {/* Footer con precio y CTA */}
                 <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-2 pt-3 md:pt-4 border-t border-gray-100">
                     {/* Precio */}
-                    <div className='flex flex-row lg:flex-col items-center gap-2'>
+                    <div className="flex flex-row lg:flex-col items-center gap-2">
                         <div className="flex flex-row lg:flex-col items-baseline gap-1.5 md:gap-2">
                             <span className="text-xl md:text-3xl font-bold customtext-primary">
-                                {CurrencySymbol()}{finalPrice.toFixed(0)}
+                                {CurrencySymbol()}
+                                {finalPrice.toFixed(0)}
                             </span>
                             {hasDiscount && (
                                 <span className="text-[10px] md:text-sm text-neutral-light line-through">
-                                    {CurrencySymbol()}{price.toFixed(0)}
+                                    {CurrencySymbol()}
+                                    {price.toFixed(0)}
                                 </span>
                             )}
                         </div>
-                        <span className="text-[10px] md:text-xs customtext-neutral-light">por noche</span>
+                        <span className="text-[10px] md:text-xs customtext-neutral-light">
+                            por noche
+                        </span>
                     </div>
 
                     {/* CTA Button */}
-                    <button 
+                    <button
                         onClick={(e) => {
                             e.preventDefault();
                             handleClick();
@@ -175,7 +209,10 @@ const LaPetacaCard = ({ item, index = 0 }) => {
                         className="flex w-full lg:max-w-max items-center justify-center gap-1 bg-primary hover:bg-secondary text-white px-3 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 shadow-md hover:shadow-lg group/btn"
                     >
                         <span>Reservar</span>
-                        <ChevronRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform duration-300" />
+                        <ChevronRight
+                            size={14}
+                            className="group-hover/btn:translate-x-0.5 transition-transform duration-300"
+                        />
                     </button>
                 </div>
             </div>
