@@ -30,16 +30,17 @@ class SystemController extends BasicController
     public function setReactViewProperties(Request $request)
     {
         $path = $request->server('REQUEST_URI') ?? '/';
-        $cacheKey = "react_view_props_" . md5($path);
+        $pathOnly = parse_url($path, PHP_URL_PATH) ?: '/';
+        $cacheKey = "react_view_props_" . md5($pathOnly);
 
-        $pages = Cache::remember('global_pages_json', 600, function () {
+        $pages = Cache::remember('global_pages_json', 3600, function () {
             return JSON::parse(File::get(storage_path('app/pages.json')));
         });
-        $components = Cache::remember('global_components_json', 600, function () {
+        $components = Cache::remember('global_components_json', 3600, function () {
             return collect(JSON::parse(File::get(storage_path('app/components.json'))))->keyBy('id');
         });
 
-        $props = Cache::remember($cacheKey, 600, function () use ($request, $path, $pages, $components) {
+        $props = Cache::remember($cacheKey, 600, function () use ($request, $pathOnly, $pages, $components) {
             $props = [
                 'systems' => [],
                 'params' => []
@@ -58,28 +59,28 @@ class SystemController extends BasicController
                 ]
             ];
 
-            if ($path === '/base-template') {
+            if ($pathOnly === '/base-template') {
                 $props['systems'] = System::whereNull('page_id')->get();
                 $props['page'] = ['name' => 'Template base'];
                 $props['reactData'] = $props['page'];
                 $props['reactData']['colors'] = SystemColor::all();
-                $generals = ['currency'];
+                $generals_keys = ['currency'];
                 foreach ($props['systems'] as $system) {
                     if ($system->component == 'content') continue;
                     $parent = collect($components)->firstWhere('id', $system->component);
                     $component = collect($parent['options'])->firstWhere('id', $system->value);
                     if (isset($component['generals'])) {
-                        $generals = array_merge($generals, $component['generals']);
+                        $generals_keys = array_merge($generals_keys, $component['generals']);
                     }
                 }
-                $props['generals'] = General::whereIn('correlative', $generals)->get();
+                $props['generals'] = General::whereIn('correlative', array_unique($generals_keys))->get();
                 $props['reactData']['fonts'] = $fonts;
                 return $props;
             }
 
-            $page = collect($pages)->filter(function ($item) use ($path) {
+            $page = collect($pages)->filter(function ($item) use ($pathOnly) {
                 $path2check = isset($item['pseudo_path']) && $item['pseudo_path'] ?  $item['pseudo_path'] : $item['path'];
-                return strpos($path, $path2check) === 0; // Filtra las páginas que comienzan con el path
+                return strpos($pathOnly, $path2check) === 0; // Filtra las páginas que comienzan con el path
             })->sortByDesc(function ($item) {
                 return strlen($item['pseudo_path'] ?? $item['path']);
             })->first();
@@ -87,7 +88,7 @@ class SystemController extends BasicController
             if (!$page) {
                 // Before aborting, check if this might be a referral code
                 // Extract the potential UUID from the path (remove leading slash)
-                $potentialUuid = ltrim($path, '/');
+                $potentialUuid = ltrim($pathOnly, '/');
 
                 // Check if it looks like a UUID and if a user exists with this UUID
                 if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $potentialUuid)) {
@@ -120,7 +121,7 @@ class SystemController extends BasicController
             }
 
             // Include all SEO generals by default plus currency
-            $generals = [
+            $generals_keys = [
                 'currency',
                 'whatsapp_advisors',
                 'additional_shipping_costs',
@@ -141,7 +142,6 @@ class SystemController extends BasicController
                 'importation_servicio',
                 'importation_seguro',
                 'importation_derecho_arancelario',
-
             ];
 
             $jsons = [];
@@ -225,13 +225,21 @@ class SystemController extends BasicController
                 }
 
                 if (isset($component['generals'])) {
-                    $generals = array_merge($generals, $component['generals']);
+                    $generals_keys = array_merge($generals_keys, $component['generals']);
                 }
             }
 
             $props['systems'] = $systems;
             $props['jsons'] = $jsons;
-            $props['generals'] = General::whereIn('correlative', array_unique($generals))->get();
+            
+            // Caché para los generales de esta página específica
+            $generals_keys = array_unique($generals_keys);
+            sort($generals_keys);
+            $generals_cache_key = 'generals_set_' . md5(implode('|', $generals_keys));
+            
+            $props['generals'] = Cache::remember($generals_cache_key, 3600, function() use ($generals_keys) {
+                return General::whereIn('correlative', $generals_keys)->get();
+            });
             $props['params'] = $request->route() ? $request->route()->parameters() : [];
             $props['filteredData'] = [];
 
@@ -258,10 +266,12 @@ class SystemController extends BasicController
                     ->get();
             }
 
-            // Categorías ligeras (Solo campos necesarios) ELIMINAR PROPS DUPLICADAS
-            $props['categorias'] = Category::where('status', true)
-                ->select(['id', 'name', 'slug', 'image'])
-                ->get();
+            // Categorías ligeras (Cacheado por 1 hora)
+            $props['categorias'] = Cache::remember('global_categories_nav', 3600, function() {
+                return Category::where('status', true)
+                    ->select(['id', 'name', 'slug', 'image'])
+                    ->get();
+            });
             // Procesar el campo 'using'
             foreach ($page['using'] as $key => $using) {
                 $model = $using['model'] ?? null;
@@ -282,13 +292,7 @@ class SystemController extends BasicController
                     $result = $class::with($relations)
                         ->where($field, $value)
                         ->first();
-                    Log::info('SEO POST RESULT', [
-                        'result' => $result
-                    ]);
                     $props['filteredData'][$model] = $result;
-                    // Pasar el modelo cargado solo como $props[$model] y en reactData igual (sin duplicar)
-                    $props[$model] = $result;
-                    $props['reactData'][$model] = $result;
                 } elseif ($model) {
                     // Cargar todos los registros
                     $class = 'App\\Models\\' . $model;
@@ -313,9 +317,15 @@ class SystemController extends BasicController
                 }
             }
 
-            $props['headerPosts'] = Post::with('category')->where('status', true)->latest()->take(3)->get();
-            $props['postsLatest'] = Post::with('category')->where('status', true)->latest()->take(6)->get();
-            $props['textstatic'] = Aboutus::where('visible', true)->where('status', true)->get();
+            $props['headerPosts'] = Cache::remember('global_posts_header', 3600, function() {
+                return Post::with('category')->where('status', true)->latest()->take(3)->get();
+            });
+            $props['postsLatest'] = Cache::remember('global_posts_latest', 3600, function() {
+                return Post::with('category')->where('status', true)->latest()->take(6)->get();
+            });
+            $props['textstatic'] = Cache::remember('global_aboutus_static', 3600, function() {
+                return Aboutus::where('visible', true)->where('status', true)->get();
+            });
 
             return $props;
         });
@@ -325,9 +335,17 @@ class SystemController extends BasicController
             $this->reactData = $props['reactData'];
         }
 
-        // Agregar los JSONs grandes DESPUÉS del cache para no duplicar datos en Redis
+        // Solo enviar las páginas necesarias (o ninguna si el frontend ya las tiene)
         $props['pages'] = $pages;
-        $props['components'] = $components;
+
+        // OPTIMIZACIÓN CRÍTICA: Filtrar el diccionario de componentes. 
+        // Solo enviamos las definiciones que la página actual REALMENTE necesita.
+        $usedComponents = [];
+        foreach ($props['systems'] as $system) {
+            if ($system->component == 'content') continue;
+            $usedComponents[] = $system->component;
+        }
+        $props['components'] = collect($components)->only(array_unique($usedComponents));
 
         return $props;
     }
