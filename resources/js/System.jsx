@@ -111,7 +111,7 @@ const LoadingFallback = () => {
             `}</style>
             <div className="relative">
                 <img
-                    src="/assets/resources/logo.png"
+                    src="/assets/resources/loading.png"
                     alt="Cargando..."
                     className="relative"
                     style={{
@@ -121,7 +121,7 @@ const LoadingFallback = () => {
                     }}
                     onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "/assets/resources/icon.png";
+                        e.target.src = "/assets/resources/logo.png";
                     }}
                     loading="eager"
                 />
