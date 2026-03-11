@@ -17,12 +17,12 @@ import NoComponent from "./NoComponent";
 import TopBar from "./Components/Tailwind/TopBar";
 import Header from "./Components/Tailwind/Header";
 import Footer from "./Components/Tailwind/Footer";
+import Slider from "./Components/Tailwind/Slider";
+import Product from "./Components/Tailwind/Product";
+import Banner from "./Components/Tailwind/Banner";
+import Category from "./Components/Tailwind/Category";
 
 // Importaciones lazy (para componentes que pueden esperar)
-const Slider = React.lazy(() => import("./Components/Tailwind/Slider"));
-const Product = React.lazy(() => import("./Components/Tailwind/Product"));
-const Banner = React.lazy(() => import("./Components/Tailwind/Banner"));
-const Category = React.lazy(() => import("./Components/Tailwind/Category"));
 const Collection = React.lazy(() => import("./Components/Tailwind/Collection"));
 const Cart = React.lazy(() => import("./Components/Tailwind/Cart"));
 const Step = React.lazy(() => import("./Components/Tailwind/Step"));
@@ -156,6 +156,16 @@ const System = ({
     referral_code,
     hasRole = () => {},
 }) => {
+    React.useEffect(() => {
+        // Matar el loader nativo de PHP de inmediato para que el usuario vea la web
+        const nativeLoader = document.getElementById("native-loader");
+        if (nativeLoader) {
+            nativeLoader.style.opacity = "0";
+            nativeLoader.style.visibility = "hidden";
+            setTimeout(() => nativeLoader.remove(), 500);
+        }
+    }, []);
+
     // Lógica para mantener el código de referido en la URL (Sticky Referral)
     // Solo en páginas marcadas como "referrable" en pages.json
     useEffect(() => {

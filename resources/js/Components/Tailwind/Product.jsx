@@ -40,7 +40,7 @@ const ProductInfiniteSlider = React.lazy(
 const ProductIbergruasSwiper = React.lazy(
     () => import("./Products/ProductIbergruasSwiper"),
 );
-const ProductLaPetaca = React.lazy(() => import("./Products/ProductLaPetaca"));
+import ProductLaPetaca from "./Products/ProductLaPetaca";
 const ProductListPanelPro = React.lazy(
     () => import("./Products/ProductListPanelPro"),
 );

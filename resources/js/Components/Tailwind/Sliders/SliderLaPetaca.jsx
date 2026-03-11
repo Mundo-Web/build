@@ -34,20 +34,8 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
         data?.showIndicators !== "false" && data?.showIndicators !== false;
     const sliderClass = data?.class_slider || "";
 
-    // Estado para saber si la página cargó completa
-    const [pageReady, setPageReady] = React.useState(false);
-
-    React.useEffect(() => {
-        const handleLoad = () => setPageReady(true);
-
-        if (document.readyState === "complete") {
-            setPageReady(true);
-        } else {
-            window.addEventListener("load", handleLoad);
-        }
-
-        return () => window.removeEventListener("load", handleLoad);
-    }, []);
+    // El slider ya está listo cuando se monta el componente
+    const [pageReady, setPageReady] = React.useState(true);
 
     // Función para scroll suave personalizado con animación más lenta
     const smoothScrollTo = (targetElement, duration = 1200) => {
@@ -200,6 +188,8 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 src={`/storage/images/slider/${slide.bg_image}`}
                                 alt={slide.name}
                                 className="w-full h-full object-cover"
+                                loading={index === 0 ? "eager" : "lazy"}
+                                fetchPriority={index === 0 ? "high" : "low"}
                             />
                             {/* ...existing code for overlays and content... */}
                             {slide?.show_overlay !== false &&

@@ -25,7 +25,7 @@ const SliderProductBannerKatya = React.lazy(
     () => import("./Sliders/SliderProductBannerKatya"),
 );
 const SliderFirstClass = React.lazy(() => import("./Sliders/SliderFirstClass"));
-const SliderLaPetaca = React.lazy(() => import("./Sliders/SliderLaPetaca"));
+import SliderLaPetaca from "./Sliders/SliderLaPetaca";
 const SliderHostinfinity = React.lazy(
     () => import("./Sliders/SliderHostinfinity"),
 );

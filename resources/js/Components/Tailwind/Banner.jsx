@@ -1,8 +1,8 @@
 import React, { lazy } from "react";
 
-const BannerSimple = lazy(() => import("./Banners/BannerSimple"));
+import BannerSimple from "./Banners/BannerSimple";
 const BannerAd = lazy(() => import("./Banners/BannerAd"));
-const BannerFullWidth = lazy(() => import("./Banners/BannerFullWidth"));
+import BannerFullWidth from "./Banners/BannerFullWidth";
 const BannerFlex = lazy(() => import("./Banners/BannerFlex"));
 const BannerIbergruas = lazy(() => import("./Banners/BannerIbergruas"));
 const BannerPublicitario = lazy(() => import("./Banners/BannerPublicitario"));
