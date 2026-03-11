@@ -187,7 +187,7 @@ class SystemController extends BasicController
 
                     // aquí filtrar visible & status
                     $table = (new $using)->getTable();
-                    $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+                    $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function () use ($table) {
                         return \Illuminate\Support\Facades\Schema::getColumnListing($table);
                     });
 
@@ -231,13 +231,13 @@ class SystemController extends BasicController
 
             $props['systems'] = $systems;
             $props['jsons'] = $jsons;
-            
+
             // Caché para los generales de esta página específica
             $generals_keys = array_unique($generals_keys);
             sort($generals_keys);
             $generals_cache_key = 'generals_set_' . md5(implode('|', $generals_keys));
-            
-            $props['generals'] = Cache::remember($generals_cache_key, 3600, function() use ($generals_keys) {
+
+            $props['generals'] = Cache::remember($generals_cache_key, 3600, function () use ($generals_keys) {
                 return General::whereIn('correlative', $generals_keys)->get();
             });
             $props['params'] = $request->route() ? $request->route()->parameters() : [];
@@ -254,12 +254,12 @@ class SystemController extends BasicController
 
             // Carga condicional de recursos globales (Solo si se necesitan)
             if (in_array('store', $requiredResources)) {
-                $props['stores'] = Cache::remember('global_stores_active', 3600, function() {
+                $props['stores'] = Cache::remember('global_stores_active', 3600, function () {
                     return Store::where('status', true)->get();
                 });
             }
             if (in_array('faq', $requiredResources)) {
-                $props['faqs'] = Cache::remember('global_faqs_active', 3600, function() {
+                $props['faqs'] = Cache::remember('global_faqs_active', 3600, function () {
                     return Faq::where('status', true)->get();
                 });
             }
@@ -271,7 +271,7 @@ class SystemController extends BasicController
             }
 
             // Categorías ligeras (Cacheado por 1 hora)
-            $props['categorias'] = Cache::remember('global_categories_nav', 3600, function() {
+            $props['categorias'] = Cache::remember('global_categories_nav', 3600, function () {
                 return Category::where('status', true)
                     ->select(['id', 'name', 'slug', 'image'])
                     ->get();
@@ -302,7 +302,7 @@ class SystemController extends BasicController
                     $class = 'App\\Models\\' . $model;
                     $query = $class::select($using['fields'] ?? ['*']);
                     $table = (new $class)->getTable();
-                    $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function() use ($table) {
+                    $columns = \Illuminate\Support\Facades\Cache::remember('schema_columns_' . $table, 86400, function () use ($table) {
                         return \Illuminate\Support\Facades\Schema::getColumnListing($table);
                     });
 
@@ -321,23 +321,27 @@ class SystemController extends BasicController
                 }
             }
 
-            $props['headerPosts'] = Cache::remember('global_posts_header', 3600, function() {
-                return Post::select(['id', 'name', 'slug', 'image', 'summary', 'category_id', 'created_at'])
-                    ->with(['category' => function($q) { $q->select(['id', 'name']); }])
+            $props['headerPosts'] = Cache::remember('global_posts_header', 3600, function () {
+                return Post::select(['id', 'name', 'slug', 'image', 'summary', 'category_id', 'created_at', 'post_date'])
+                    ->with(['category' => function ($q) {
+                        $q->select(['id', 'name']);
+                    }])
                     ->where('status', true)
                     ->latest()
                     ->take(3)
                     ->get();
             });
-            $props['postsLatest'] = Cache::remember('global_posts_latest', 3600, function() {
-                return Post::select(['id', 'name', 'slug', 'image', 'summary', 'category_id', 'created_at'])
-                    ->with(['category' => function($q) { $q->select(['id', 'name']); }])
+            $props['postsLatest'] = Cache::remember('global_posts_latest', 3600, function () {
+                return Post::select(['id', 'name', 'slug', 'image', 'summary', 'category_id', 'created_at', 'post_date'])
+                    ->with(['category' => function ($q) {
+                        $q->select(['id', 'name']);
+                    }])
                     ->where('status', true)
                     ->latest()
                     ->take(6)
                     ->get();
             });
-            $props['textstatic'] = Cache::remember('global_aboutus_static', 3600, function() {
+            $props['textstatic'] = Cache::remember('global_aboutus_static', 3600, function () {
                 return Aboutus::select(['id', 'name', 'description', 'image', 'visible', 'status'])
                     ->where('visible', true)
                     ->where('status', true)

@@ -17,7 +17,13 @@ const AboutUs = ({ data, which, filteredData, items, generals }) => {
     const getAboutUs = () => {
         switch (which) {
             case "AboutSimple":
-                return <AboutSimple data={data} filteredData={filteredData} />;
+                return (
+                    <AboutSimple
+                        data={data}
+                        filteredData={filteredData}
+                        items={items}
+                    />
+                );
 
             case "AboutImage":
                 return <AboutImage data={data} filteredData={filteredData} />;

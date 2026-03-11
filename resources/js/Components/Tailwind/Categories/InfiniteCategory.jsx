@@ -58,18 +58,18 @@ const InfiniteCategory = ({ items, data }) => {
                         {items.map((category) => (
                             <SwiperSlide
                                 key={category.id}
-                                className="group px-2"
+                                className="group px-2 !h-auto"
                             >
                                 <a
                                     href={`/catalogo?category=${category.slug}`}
-                                    className="block group"
+                                    className="block group h-full"
                                 >
-                                    <div className="bg-sections-color rounded-xl p-4 transition-transform duration-300">
-                                        <div className="aspect-square relative mb-4">
+                                    <div className="bg-sections-color rounded-xl p-4 transition-all duration-300 h-full flex flex-col hover:shadow-md">
+                                        <div className="aspect-square relative mb-4 flex-shrink-0 flex items-center justify-center bg-white rounded-lg overflow-hidden">
                                             <img
                                                 src={`/storage/images/category/${category.image}`}
-                                                alt={`categoia ${category.name}`}
-                                                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                                                alt={`categoria ${category.name}`}
+                                                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110 p-2"
                                                 loading="lazy"
                                                 onError={(e) =>
                                                     (e.target.src =
@@ -77,9 +77,11 @@ const InfiniteCategory = ({ items, data }) => {
                                                 }
                                             />
                                         </div>
-                                        <h3 className="text-center font-semibold text-base customtext-neutral-dark">
-                                            {category.name}
-                                        </h3>
+                                        <div className="flex-1 flex items-center justify-center">
+                                            <h3 className="text-center font-semibold text-sm md:text-base customtext-neutral-dark line-clamp-2 leading-tight">
+                                                {category.name}
+                                            </h3>
+                                        </div>
                                     </div>
                                 </a>
                             </SwiperSlide>

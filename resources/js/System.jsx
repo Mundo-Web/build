@@ -368,7 +368,7 @@ const System = ({
                         favorites={favorites}
                         generals={generals}
                         setFavorites={setFavorites}
-                        contacts={contacts}
+                        // contacts={generals}
                     />,
                 );
             case "category":
@@ -457,7 +457,7 @@ const System = ({
                         favorites={favorites}
                         setFavorites={setFavorites}
                         textstatic={textstatic}
-                        contacts={contacts}
+                        //contacts={contacts}
                     />,
                 );
             case "cart":
@@ -480,7 +480,7 @@ const System = ({
                         isUser={session}
                         prefixes={jsons?.prefixes ?? []}
                         ubigeos={jsons?.ubigeos ?? []}
-                        contacts={contacts}
+                        //  contacts={contacts}
                         generals={generals}
                         categorias={categorias}
                     />
@@ -490,14 +490,18 @@ const System = ({
                     <Contact
                         which={value}
                         data={dataWithElementId}
-                        contacts={contacts}
+                        //  contacts={contacts}
                         generals={generals}
                         items={getItems(itemsId)}
                     />,
                 );
             case "faq":
                 return wrapWithAnimation(
-                    <Faq which={value} data={dataWithElementId} faqs={faqs} />,
+                    <Faq
+                        which={value}
+                        data={dataWithElementId}
+                        faqs={getItems(itemsId)}
+                    />,
                 );
             case "thank":
                 return wrapWithAnimation(
@@ -593,7 +597,7 @@ const System = ({
                 return (
                     <Footer
                         {...componentProps}
-                        contacts={contacts}
+                        // contacts={contacts}
                         generals={generals}
                         stores={stores}
                     />
@@ -690,7 +694,8 @@ const System = ({
                         which={value}
                         data={dataWithElementId}
                         items={getItems(itemsId)}
-                        contacts={contacts}
+
+                        // contacts={contacts}
                     />,
                 );
             case "support":

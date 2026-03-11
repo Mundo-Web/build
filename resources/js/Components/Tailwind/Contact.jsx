@@ -25,7 +25,7 @@ const Contact = ({
                 return (
                     <ContactSimple
                         data={data}
-                        contacts={contacts}
+                        contacts={generals}
                         setContact={setContact}
                     />
                 );
@@ -33,7 +33,7 @@ const Contact = ({
                 return (
                     <ContactGrid
                         data={data}
-                        contacts={contacts}
+                        generals={generals}
                         setContact={setContact}
                     />
                 );
@@ -41,7 +41,7 @@ const Contact = ({
                 return (
                     <ContactAko
                         data={data}
-                        contacts={contacts}
+                        contacts={generals}
                         setContact={setContact}
                     />
                 );
@@ -49,7 +49,7 @@ const Contact = ({
                 return (
                     <ContactKatya
                         data={data}
-                        contacts={contacts}
+                        // contacts={generals}
                         setContact={setContact}
                         generals={generals}
                     />
@@ -58,7 +58,7 @@ const Contact = ({
                 return (
                     <ContactHuaillys
                         data={data}
-                        contacts={contacts}
+                        //  contacts={contacts}
                         setContact={setContact}
                         generals={generals}
                     />
@@ -75,7 +75,13 @@ const Contact = ({
                     />
                 );
             case "ContactRainstar":
-                return <ContactRainstar data={data} contacts={contacts} />;
+                return (
+                    <ContactRainstar
+                        data={data}
+                        // contacts={contacts}
+                        generals={generals}
+                    />
+                );
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

@@ -91,6 +91,10 @@ const SliderImagen = ({ items, data }) => {
                                 },
                             }}
                             className="!mx-auto !w-11/12 !px-10 2xl:!px-0  relative z-10"
+                            style={{
+                                maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+                                WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
+                            }}
                         >
                             {[...items, ...items].filter((brand) => brand.image).map((brand, index) => (
                                 <SwiperSlide key={index} className="!w-auto">
@@ -101,7 +105,7 @@ const SliderImagen = ({ items, data }) => {
                                             <img
                                                 src={`/storage/images/brand/${brand.image}`}
                                                 alt={brand.name}
-                                                className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image }`} //"grayscale brightness-0 invert"
+                                                className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image }`}
                                                 onLoad={handleImagesLoad}
                                                 style={{
                                                     objectFit: 'contain',

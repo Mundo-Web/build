@@ -1,7 +1,7 @@
 import { Plus, Minus, SquarePlus, SquareMinus } from "lucide-react";
 import { useState } from "react";
 
-const FaqSimple = ({ data,faqs }) => {
+const FaqSimple = ({ data, faqs }) => {
     const [expandedFaqs, setExpandedFaqs] = useState(new Set([4])); // FAQ 4 starts expanded
 
     const toggleFaq = (id) => {
@@ -14,13 +14,22 @@ const FaqSimple = ({ data,faqs }) => {
         setExpandedFaqs(newExpanded);
     };
 
+    if (!faqs || faqs.length === 0) {
+        return null;
+    }
+
     return (
-        <section id={data?.element_id || null} className="bg-[#F7F9FB] pb-12 px-primary">
+        <section
+            id={data?.element_id || null}
+            className="bg-[#F7F9FB] pb-12 px-primary"
+        >
             <div className="mx-auto    2xl:max-w-7xl gap-12 bg-white rounded-xl p-4 md:p-8">
-                <h1 className={`text-[40px] font-bold text-center mb-4 ${data?.class_title || 'customtext-neutral-dark'}`}>
+                <h1
+                    className={`text-[40px] font-bold text-center mb-4 ${data?.class_title || "customtext-neutral-dark"}`}
+                >
                     Preguntas frecuentes
                 </h1>
-               {/* <p className="text-center  cusomtext-neutral-light mb-12 max-w-3xl mx-auto">
+                {/* <p className="text-center  cusomtext-neutral-light mb-12 max-w-3xl mx-auto">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     Vivamus eu fermentum justo, ac fermentum nulla. Sed sed
                     scelerisque urna, vitae ultricies libero. Pellentesque
@@ -34,7 +43,9 @@ const FaqSimple = ({ data,faqs }) => {
                             className="  p-2 cursor-pointer w-full md:w-1/2"
                             onClick={() => toggleFaq(faq.id)}
                         >
-                            <div className={`p-4 rounded-lg shadow-sm bg-[#F7F9FB] ${data?.class_card_container || ''}`}>
+                            <div
+                                className={`p-4 rounded-lg shadow-sm bg-[#F7F9FB] ${data?.class_card_container || ""}`}
+                            >
                                 <div className="flex justify-between items-start p-4">
                                     <h3 className="text-base font-semibold pr-8">
                                         {faq.question}
@@ -48,7 +59,9 @@ const FaqSimple = ({ data,faqs }) => {
                                     </button>
                                 </div>
                                 {expandedFaqs.has(faq.id) && faq.answer && (
-                                    <p className={`mt-4 p-4 text-sm ${data?.class_faq_answer || 'customtext-neutral-light '}`}>
+                                    <p
+                                        className={`mt-4 p-4 text-sm ${data?.class_faq_answer || "customtext-neutral-light "}`}
+                                    >
                                         {faq.answer}
                                     </p>
                                 )}

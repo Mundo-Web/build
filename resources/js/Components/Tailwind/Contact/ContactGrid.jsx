@@ -12,10 +12,10 @@ import Global from "../../../Utils/Global";
 import { toast } from "sonner";
 const messagesRest = new MessagesRest();
 
-const ContactGrid = ({ data, contacts }) => {
+const ContactGrid = ({ data, generals }) => {
     const getContact = (correlative) => {
         return (
-            contacts.find((contact) => contact.correlative === correlative)
+            generals.find((contact) => contact.correlative === correlative)
                 ?.description || ""
         );
     };
@@ -41,7 +41,7 @@ const ContactGrid = ({ data, contacts }) => {
     };
 
     const location =
-        contacts.find((x) => x.correlative == "location")?.description ?? "0,0";
+        generals.find((x) => x.correlative == "location")?.description ?? "0,0";
 
     const locationGps = {
         lat: Number(location.split(",").map((x) => x.trim())[0]),

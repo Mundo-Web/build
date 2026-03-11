@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import ReactModal from "react-modal";
 import CartItemRow from "./CartItemRow";
-import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
+import Number2Currency, {
+    CurrencySymbol,
+} from "../../../Utils/Number2Currency";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 
 ReactModal.setAppElement("#app");
 
 const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
-    
     useEffect(() => {
         if (modalOpen) {
             document.body.classList.add("overflow-hidden");
@@ -18,7 +20,10 @@ const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
         }
     }, [modalOpen]);
 
-    const totalPrice = cart.reduce((acc, item) => acc + (item.final_price * item.quantity), 0);
+    const totalPrice = cart.reduce(
+        (acc, item) => acc + item.final_price * item.quantity,
+        0,
+    );
     const isEmpty = cart.length === 0;
 
     return (
@@ -33,18 +38,18 @@ const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
             <div className="flex flex-col flex-1 h-full">
                 {/* Header */}
                 <div className="flex-shrink-0 flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                    <motion.h2 
+                    <motion.h2
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-2xl font-bold text-gray-900"
                     >
                         Tu Carrito
                     </motion.h2>
-                    <button 
+                    <button
                         onClick={() => setModalOpen(false)}
                         className="p-2 rounded-full hover:bg-gray-50 transition-colors"
                     >
-                        <i className="mdi mdi-close text-2xl text-gray-500 hover:text-gray-700 transition-colors"></i>
+                        <X size={24} />
                     </button>
                 </div>
 
@@ -89,18 +94,20 @@ const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
                 {/* Footer - Siempre visible y fijo en la parte inferior */}
                 <div className="flex-shrink-0 pt-4 border-t border-gray-100 bg-white sticky bottom-0 z-10">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="text-lg font-semibold text-gray-900">Total:</span>
+                        <span className="text-lg font-semibold text-gray-900">
+                            Total:
+                        </span>
                         <span className="text-xl font-bold text-gray-900">
                             {CurrencySymbol()} {Number2Currency(totalPrice)}
                         </span>
                     </div>
                     <a
-                        href={data?.link_cart || '/cart'}
+                        href={data?.link_cart || "/cart"}
                         disabled={isEmpty}
                         className={`w-full block text-center py-4 rounded-xl font-semibold transition-all duration-300 ${
-                            isEmpty 
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                            : 'bg-primary text-white hover:shadow-lg hover:scale-[1.02] active:scale-100'
+                            isEmpty
+                                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                : "bg-primary text-white hover:shadow-lg hover:scale-[1.02] active:scale-100"
                         }`}
                     >
                         Ir al carrito

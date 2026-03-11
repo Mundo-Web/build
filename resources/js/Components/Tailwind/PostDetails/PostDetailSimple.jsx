@@ -1,4 +1,3 @@
-
 import { Facebook, Link, TwitterIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -15,7 +14,7 @@ function formatDate(dateString) {
     });
 }
 
-export default function PostDetailSimple({ item,data }) {
+export default function PostDetailSimple({ item, data }) {
     const [copied, setCopied] = useState(false);
     const shareUrl = window.location.href;
 
@@ -44,7 +43,10 @@ export default function PostDetailSimple({ item,data }) {
     };
 
     return (
-        <article id={data?.element_id || null} className="min-h-screen bg-white font-title">
+        <article
+            id={data?.element_id || null}
+            className="min-h-screen bg-white font-title"
+        >
             <div className="px-[5%] 2xl:max-w-6xl mx-auto py-8 flex flex-col justify-center">
                 {/* Metadata */}
                 <div className="flex customtext-neutral-light items-center gap-2 text-base mb-4 customtext-primary font-semibold 2xl:text-lg max-w-xl mx-auto">
@@ -53,25 +55,29 @@ export default function PostDetailSimple({ item,data }) {
                     <time>{formatDate(item?.created_at)}</time>
                 </div>
 
+                {/* Title */}
+                <h1
+                    className={` text-3xl md:text-4xl lg:text-5xl font-bold mb-8 max-w-5xl mx-auto text-center 2xl:max-w-6xl ${data?.class_title || "customtext-neutral-dark"}`}
+                >
+                    {item?.name}
+                </h1>
 
-                                {/* Title */}
-                                <h1 className={`font-title text-3xl md:text-4xl lg:text-5xl font-bold mb-4 max-w-5xl mx-auto text-center 2xl:max-w-6xl ${data?.class_title || 'customtext-neutral-dark'}`}>
-                                        {item?.name}
-                                </h1>
-
-                                {/* Tags (badges) */}
-                                {Array.isArray(item?.tags) && item.tags.length > 0 && (
-                                    <div className="flex flex-wrap justify-center gap-2 mb-6">
-                                        {item.tags.map((tag, idx) => (
-                                            <span key={idx} className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">
-                                                #{tag.name}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
+                {/* Tags (badges) */}
+                {Array.isArray(item?.tags) && item.tags.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2 mb-6">
+                        {item.tags.map((tag, idx) => (
+                            <span
+                                key={idx}
+                                className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold"
+                            >
+                                #{tag.name}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
                 {/* Featured Image */}
-                <div className="relative mb-8 max-w-4xl 2xl:max-w-5xl h-auto mx-auto">
+                <div className="relative mb-8 max-w-4xl 2xl:max-w-5xl h-auto mx-auto rounded-xl overflow-hidden">
                     <img
                         src={`/storage/images/post/${item?.image}`}
                         alt="Main Thumbnail"
@@ -84,7 +90,7 @@ export default function PostDetailSimple({ item,data }) {
 
                 {/* Content */}
                 <div
-                    className="prose prose-lg max-w-none customtext-neutral-light font-title text-base xl:text-lg"
+                    className="prose prose-lg max-w-none customtext-neutral-light font-title text-base xl:text-lg [&_img]:rounded-xl [&_img]:shadow-sm"
                     dangerouslySetInnerHTML={{ __html: item?.description }}
                 />
 

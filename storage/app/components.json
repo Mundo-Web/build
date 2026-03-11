@@ -3801,6 +3801,10 @@
                 "name": "Simple",
                 "data": [
                     "redirect"
+                ], 
+                "generals":[
+                    "email_contact",
+                    "phone_contact"
                 ]
             },
             {
@@ -3817,6 +3821,10 @@
                     "description_ubication",
                     "stores_support",
                     "description"
+                ],
+                "generals":[
+                    "email_contact",
+                    "phone_contact"
                 ]
             },
             {
@@ -3945,7 +3953,12 @@
                     "class_card_container",
                     "class_faq_answer",
                     "class_title"
-                ]
+                ],
+                "using": {
+                    "model": "Faq"
+                }
+                    
+                
             },
             {
                 "id": "FaqModern",
@@ -3958,7 +3971,10 @@
                     "class_description",
                     "class_faq_answer",
                     "show_contact_cta"
-                ]
+                ],
+                  "using": {
+                    "model": "Faq"
+                }
             },
             {
                 "id": "FaqChat",
@@ -3971,7 +3987,10 @@
                     "class_description",
                     "class_faq_answer",
                     "show_contact_cta"
-                ]
+                ],
+                  "using": {
+                    "model": "Faq"
+                }
             },
             {
                 "id": "FaqWebQuirurgica",
@@ -4322,6 +4341,7 @@
                 "using": {
                     "model": "Aboutus"
                 }
+                
             },
             {
                 "id": "AboutImage",

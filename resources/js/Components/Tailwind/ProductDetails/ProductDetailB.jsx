@@ -37,9 +37,6 @@ import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 
-
-
-
 const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     const itemsRest = new ItemsRest();
     const combosRest = new CombosCartRest();
@@ -65,7 +62,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     };
     /*ESPECIFICACIONES */
     const [isExpanded, setIsExpanded] = useState(false);
-    const [isSpecificationsExpanded, setIsSpecificationsExpanded] = useState(false);
+    const [isSpecificationsExpanded, setIsSpecificationsExpanded] =
+        useState(false);
 
     // Referencias para medir contenido
     const descriptionRef = useRef(null);
@@ -73,10 +71,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
     // Estados para controlar si se necesita "Ver más"
     const [needsDescriptionExpand, setNeedsDescriptionExpand] = useState(false);
-    const [needsSpecificationsExpand, setNeedsSpecificationsExpand] = useState(false);
+    const [needsSpecificationsExpand, setNeedsSpecificationsExpand] =
+        useState(false);
 
     // Estados para modal de políticas de envío
-    const [deliveryPolicyModalOpen, setDeliveryPolicyModalOpen] = useState(false);
+    const [deliveryPolicyModalOpen, setDeliveryPolicyModalOpen] =
+        useState(false);
 
     // Estados para modal de tiendas
     const [storeListModalOpen, setStoreListModalOpen] = useState(false);
@@ -108,11 +108,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             const deltaX = e.clientX - lastMousePosition.x;
             const deltaY = e.clientY - lastMousePosition.y;
 
-            setZoomPosition(prev => {
+            setZoomPosition((prev) => {
                 // Ajustar la sensibilidad para movimiento más suave
                 const sensitivity = 0.3; // Reducir para movimiento más suave
-                const newX = Math.max(0, Math.min(100, prev.x - deltaX * sensitivity));
-                const newY = Math.max(0, Math.min(100, prev.y - deltaY * sensitivity));
+                const newX = Math.max(
+                    0,
+                    Math.min(100, prev.x - deltaX * sensitivity),
+                );
+                const newY = Math.max(
+                    0,
+                    Math.min(100, prev.y - deltaY * sensitivity),
+                );
                 return { x: newX, y: newY };
             });
 
@@ -127,9 +133,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             const limitedY = Math.max(10, Math.min(90, y));
 
             // Interpolación muy suave para el hover
-            setZoomPosition(prev => ({
+            setZoomPosition((prev) => ({
                 x: prev.x + (limitedX - prev.x) * 0.1,
-                y: prev.y + (limitedY - prev.y) * 0.1
+                y: prev.y + (limitedY - prev.y) * 0.1,
             }));
         }
     };
@@ -145,12 +151,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
     // WhatsApp configuration
     const phone_whatsapp = generals?.find(
-        (general) => general.correlative === "phone_whatsapp"
+        (general) => general.correlative === "phone_whatsapp",
     );
 
     const numeroWhatsApp = phone_whatsapp?.description;
     const mensajeWhatsApp = encodeURIComponent(
-        `¡Hola! Tengo dudas sobre este producto: ${item?.name}`
+        `¡Hola! Tengo dudas sobre este producto: ${item?.name}`,
     );
     const linkWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${mensajeWhatsApp}`;
 
@@ -162,13 +168,13 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     const loadStores = async () => {
         setLoadingStores(true);
         try {
-            const response = await fetch('/api/stores');
+            const response = await fetch("/api/stores");
             const result = await response.json();
             if (result.status) {
                 setStores(result.data || []);
             }
         } catch (error) {
-            console.error('Error loading stores:', error);
+            console.error("Error loading stores:", error);
             setStores([]);
         } finally {
             setLoadingStores(false);
@@ -239,10 +245,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
         setTimeout(checkContentHeight, 100);
 
         // También verificar cuando cambie el tamaño de la ventana
-        window.addEventListener('resize', checkContentHeight);
+        window.addEventListener("resize", checkContentHeight);
 
         return () => {
-            window.removeEventListener('resize', checkContentHeight);
+            window.removeEventListener("resize", checkContentHeight);
         };
     }, [item]); // Ejecutar cuando cambie el item
     const handleViewUpdate = async (item) => {
@@ -265,15 +271,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
         try {
             // El backend ya filtra por:
             // - status = 1 (activos)
-            // - visible = true 
+            // - visible = true
             // - is_main_item = 1 (solo si el item actual es el producto principal)
             const response = await combosRest.getItemCombos(item.id);
-            
+
             if (response && response.data) {
                 setAvailableCombos(response.data);
             }
         } catch (error) {
-            console.error('Error loading combos:', error);
+            console.error("Error loading combos:", error);
             setAvailableCombos([]);
         }
     };
@@ -328,29 +334,29 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     };
     const addComboToCart = (combo) => {
         const newCart = structuredClone(cart);
-        
+
         // Verificar si el combo ya está en el carrito
         const existingComboIndex = newCart.findIndex(
-            (x) => x.id === combo.id && x.type === 'combo'
+            (x) => x.id === combo.id && x.type === "combo",
         );
-        
+
         if (existingComboIndex === -1) {
             // Agregar nuevo combo al carrito
             newCart.push({
                 ...combo,
-                type: 'combo',
+                type: "combo",
                 quantity: 1,
-                image:combo?.image,
+                image: combo?.image,
                 final_price: combo?.final_price || combo?.price,
                 price: combo?.price,
                 discount: combo?.discount || 0,
-                discount_percent: combo?.discount_percent || 0
+                discount_percent: combo?.discount_percent || 0,
             });
         } else {
             // Incrementar cantidad del combo existente
             newCart[existingComboIndex].quantity++;
         }
-         setCart(newCart);
+        setCart(newCart);
 
         /*   Swal.fire({
                title: "Producto agregado",
@@ -364,12 +370,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
     const total = associatedItems.reduce(
         (sum, product) => sum + parseFloat(product?.final_price),
-        0
+        0,
     );
-    
+
     const comboTotal = availableCombos.reduce(
         (sum, combo) => sum + parseFloat(combo?.price || 0),
-        0
+        0,
     );
     const [expandedSpecificationMain, setExpanded] = useState(false);
 
@@ -412,11 +418,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                 const deltaX = e.clientX - lastMousePosition.x;
                 const deltaY = e.clientY - lastMousePosition.y;
 
-                setZoomPosition(prev => {
+                setZoomPosition((prev) => {
                     // Sensibilidad ajustada para movimiento más suave y controlado
                     const sensitivity = 0.25;
-                    const newX = Math.max(5, Math.min(95, prev.x - deltaX * sensitivity));
-                    const newY = Math.max(5, Math.min(95, prev.y - deltaY * sensitivity));
+                    const newX = Math.max(
+                        5,
+                        Math.min(95, prev.x - deltaX * sensitivity),
+                    );
+                    const newY = Math.max(
+                        5,
+                        Math.min(95, prev.y - deltaY * sensitivity),
+                    );
                     return { x: newX, y: newY };
                 });
 
@@ -425,27 +437,32 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
         };
 
         if (isDragging) {
-            document.addEventListener('mouseup', handleGlobalMouseUp);
-            document.addEventListener('mousemove', handleGlobalMouseMove);
+            document.addEventListener("mouseup", handleGlobalMouseUp);
+            document.addEventListener("mousemove", handleGlobalMouseMove);
         }
 
         return () => {
-            document.removeEventListener('mouseup', handleGlobalMouseUp);
-            document.removeEventListener('mousemove', handleGlobalMouseMove);
+            document.removeEventListener("mouseup", handleGlobalMouseUp);
+            document.removeEventListener("mousemove", handleGlobalMouseMove);
         };
     }, [isDragging, isZoomEnabled, lastMousePosition]);
 
     return (
         <>
             {/* Versión Mobile */}
-            <div id={data?.element_id || null} className="md:hidden bg-gray-50 min-h-screen">
+            <div
+                id={data?.element_id || null}
+                className="px-primary md:hidden bg-gray-50 min-h-screen"
+            >
                 {/* Header Estilo App */}
                 <div className="sticky top-0 bg-white shadow-sm z-20">
                     <div className="flex items-center p-4 gap-4 border-b">
                         {/* <button onClick={() => window.history.back()} className="text-gray-600">
                             <ChevronLeft size={24} />
                         </button>*/}
-                        <h1 className="text-lg font-bold flex-1 line-clamp-5">{item?.name}</h1>
+                        <h1 className="text-lg font-bold flex-1 line-clamp-5">
+                            {item?.name}
+                        </h1>
                     </div>
                 </div>
 
@@ -472,8 +489,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             className="h-full"
                         >
                             {[item?.image, ...(item?.images || [])]
-                                .filter((image, index, self) =>
-                                    index === self.findIndex((img) => img?.url === image?.url)
+                                .filter(
+                                    (image, index, self) =>
+                                        index ===
+                                        self.findIndex(
+                                            (img) => img?.url === image?.url,
+                                        ),
                                 )
                                 .map((img, i) => (
                                     <SwiperSlide key={i}>
@@ -482,7 +503,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 src={`/storage/images/item/${img?.url || img}`}
                                                 className="w-full h-full object-cover aspect-square"
                                                 loading="lazy"
-                                                onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
+                                                onError={(e) =>
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
+                                                }
                                             />
                                         </div>
                                     </SwiperSlide>
@@ -495,13 +519,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 ref={navigationPrevRef}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-lg hover:scale-110 transition-transform"
                             >
-                                <ChevronLeft className="text-gray-800" size={20} />
+                                <ChevronLeft
+                                    className="text-gray-800"
+                                    size={20}
+                                />
                             </button>
                             <button
                                 ref={navigationNextRef}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-lg hover:scale-110 transition-transform"
                             >
-                                <ChevronRight className="text-gray-800" size={20} />
+                                <ChevronRight
+                                    className="text-gray-800"
+                                    size={20}
+                                />
                             </button>
                         </div>
                     </div>
@@ -512,17 +542,26 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <div>
                                 <div className="text-3xl font-bold customtext-primary">
                                     {CurrencySymbol()} {item?.final_price}
-                                      {item?.discount > 0 && item?.price > item?.final_price &&(
-                                    <span className="ml-2 text-sm line-through text-gray-400">
-                                        {CurrencySymbol()} {item?.price}
-                                    </span>)}
+                                    {item?.discount > 0 &&
+                                        item?.price > item?.final_price && (
+                                            <span className="ml-2 text-sm line-through text-gray-400">
+                                                {CurrencySymbol()} {item?.price}
+                                            </span>
+                                        )}
                                 </div>
-                                <div className="text-xs customtext-neutral-light mt-1">SKU: {item?.sku}</div>
+                                <div className="text-xs customtext-neutral-light mt-1">
+                                    SKU: {item?.sku}
+                                </div>
                             </div>
-                              {item?.discount > 0 && item?.price > item?.final_price &&(
-                            <div className="bg-secondary customtext-primary px-3 py-1 rounded-full text-sm">
-                                {Number(item?.discount_percent).toFixed(0)}% OFF
-                            </div>)}
+                            {item?.discount > 0 &&
+                                item?.price > item?.final_price && (
+                                    <div className="bg-secondary customtext-primary px-3 py-1 rounded-full text-sm">
+                                        {Number(item?.discount_percent).toFixed(
+                                            0,
+                                        )}
+                                        % OFF
+                                    </div>
+                                )}
                         </div>
                     </div>
 
@@ -532,14 +571,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <span className="font-medium">Cantidad</span>
                             <div className="flex items-center gap-3">
                                 <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    onClick={() =>
+                                        setQuantity(Math.max(1, quantity - 1))
+                                    }
                                     className="w-8 h-8 rounded-full bg-secondary customtext-primary flex items-center justify-center"
                                 >
                                     -
                                 </button>
-                                <span className="w-8 text-center font-medium">{quantity}</span>
+                                <span className="w-8 text-center font-medium">
+                                    {quantity}
+                                </span>
                                 <button
-                                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                    onClick={() =>
+                                        setQuantity(Math.min(10, quantity + 1))
+                                    }
                                     className="w-8 h-8 rounded-full bg-secondary customtext-primary flex items-center justify-center"
                                 >
                                     +
@@ -554,20 +599,30 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                             <div className="border-b">
                                 <button
-                                    onClick={() => setExpanded(!expandedSpecificationMain)}
+                                    onClick={() =>
+                                        setExpanded(!expandedSpecificationMain)
+                                    }
                                     className="w-full p-4 flex justify-between items-center"
                                 >
-                                    <span className="font-medium">Especificaciones técnicas</span>
+                                    <span className="font-medium">
+                                        Especificaciones técnicas
+                                    </span>
                                     <ChevronDown
-                                        className={`transform transition-transform ${expandedSpecificationMain ? "rotate-180" : ""
-                                            }`}
+                                        className={`transform transition-transform ${
+                                            expandedSpecificationMain
+                                                ? "rotate-180"
+                                                : ""
+                                        }`}
                                     />
                                 </button>
                             </div>
                             {expandedSpecificationMain && (
                                 <div className="p-4">
                                     {item?.specifications.map((spec, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm mb-2">
+                                        <div
+                                            key={i}
+                                            className="flex items-start gap-3 text-sm mb-2"
+                                        >
                                             <CheckCircle2 className="min-w-4 min-h-4 max-w-4 max-h-4 mt-0.5 customtext-primary" />
                                             <span>{spec.description}</span>
                                         </div>
@@ -583,19 +638,28 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className="w-full p-4 flex justify-between items-center"
                                 >
-                                    <span className="font-medium">Descripción del producto</span>
+                                    <span className="font-medium">
+                                        Descripción del producto
+                                    </span>
                                     <ChevronDown
-                                        className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
-                                            }`}
+                                        className={`transform transition-transform ${
+                                            isExpanded ? "rotate-180" : ""
+                                        }`}
                                     />
                                 </button>
                             </div>
                             {isExpanded && (
                                 <div className="p-4">
-                                    <div dangerouslySetInnerHTML={{ __html: item?.description }} />
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: item?.description,
+                                        }}
+                                    />
                                     <ul className="list-disc pl-5 mt-2">
                                         {item?.features?.map((feature, i) => (
-                                            <li key={i} className="text-sm">{feature.feature}</li>
+                                            <li key={i} className="text-sm">
+                                                {feature.feature}
+                                            </li>
                                         ))}
                                     </ul>
                                 </div>
@@ -604,7 +668,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                     </div>
 
                     {/* Complementary Products Mobile */}
-                    {(associatedItems.length > 0 || availableCombos.length > 0) && (
+                    {(associatedItems.length > 0 ||
+                        availableCombos.length > 0) && (
                         <div className="mt-8">
                             <div className="flex items-center gap-2 mb-6">
                                 <ShoppingCart className="w-6 h-6 customtext-primary" />
@@ -617,68 +682,117 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             {availableCombos.length > 0 && (
                                 <div className="mb-6">
                                     {availableCombos.map((combo, index) => (
-                                        <div key={`combo-mobile-${combo.id}`} className="border rounded-lg p-4 mb-4 bg-gay-50">
-                                           
-                                            
+                                        <div
+                                            key={`combo-mobile-${combo.id}`}
+                                            className="border rounded-lg p-4 mb-4 bg-gay-50"
+                                        >
                                             {/* Mostrar productos del combo */}
                                             <div className="flex gap-4 mb-4">
                                                 <div className="w-full flex gap-2 overflow-x-auto">
-                                                    {combo.combo_items?.map((comboItem, itemIndex) => (
-                                                        <div key={itemIndex} className="flex items-center gap-2">
-                                                            <img
-                                                                src={`/storage/images/item/${comboItem.image}`}
-                                                                className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
-                                                                onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
-                                                                alt={comboItem.name}
-                                                            />
-                                                            {itemIndex < combo.combo_items.length - 1 && (
-                                                                <span className="text-lg font-bold customtext-primary flex items-center justify-center">
-                                                                    <Plus size={16} />
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    ))}
+                                                    {combo.combo_items?.map(
+                                                        (
+                                                            comboItem,
+                                                            itemIndex,
+                                                        ) => (
+                                                            <div
+                                                                key={itemIndex}
+                                                                className="flex items-center gap-2"
+                                                            >
+                                                                <img
+                                                                    src={`/storage/images/item/${comboItem.image}`}
+                                                                    className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
+                                                                    onError={(
+                                                                        e,
+                                                                    ) =>
+                                                                        (e.target.src =
+                                                                            "/api/cover/thumbnail/null")
+                                                                    }
+                                                                    alt={
+                                                                        comboItem.name
+                                                                    }
+                                                                />
+                                                                {itemIndex <
+                                                                    combo
+                                                                        .combo_items
+                                                                        .length -
+                                                                        1 && (
+                                                                    <span className="text-lg font-bold customtext-primary flex items-center justify-center">
+                                                                        <Plus
+                                                                            size={
+                                                                                16
+                                                                            }
+                                                                        />
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ),
+                                                    )}
                                                 </div>
                                             </div>
 
                                             {/* Lista detallada de productos */}
-                                            {combo.combo_items?.map((comboItem, itemIndex) => (
-                                                <div key={itemIndex} className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white">
-                                                    <CheckSquare className="w-4 h-4 customtext-primary" />
-                                                    <div className="flex-1 font-semibold">
-                                                        <p className="text-sm text-gray-700 font-medium">
-                                                            {comboItem.name}
+                                            {combo.combo_items?.map(
+                                                (comboItem, itemIndex) => (
+                                                    <div
+                                                        key={itemIndex}
+                                                        className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white"
+                                                    >
+                                                        <CheckSquare className="w-4 h-4 customtext-primary" />
+                                                        <div className="flex-1 font-semibold">
+                                                            <p className="text-sm text-gray-700 font-medium">
+                                                                {comboItem.name}
+                                                            </p>
+                                                            <span className="text-xs text-gray-500">
+                                                                Cantidad:{" "}
+                                                                {comboItem.quantity ||
+                                                                    1}
+                                                            </span>
+                                                        </div>
+                                                        <p className="font-bold text-gray-700 text-sm">
+                                                            {CurrencySymbol()}{" "}
+                                                            {parseFloat(
+                                                                comboItem.price,
+                                                            ).toFixed(2)}
                                                         </p>
-                                                        <span className="text-xs text-gray-500">
-                                                            Cantidad: {comboItem.quantity || 1}
-                                                        </span>
                                                     </div>
-                                                    <p className="font-bold text-gray-700 text-sm">
-                                                        {CurrencySymbol()} {parseFloat(comboItem.price).toFixed(2)}
-                                                    </p>
-                                                </div>
-                                            ))}
+                                                ),
+                                            )}
 
                                             {/* Total y botón */}
                                             <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
                                                 {combo.discount > 0 && (
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className="text-xs customtext-primary line-through">
-                                                            {CurrencySymbol()} {parseFloat(combo.price).toFixed(2)}
+                                                            {CurrencySymbol()}{" "}
+                                                            {parseFloat(
+                                                                combo.price,
+                                                            ).toFixed(2)}
                                                         </span>
                                                         <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
-                                                            -{combo.discount_percent}%
+                                                            -
+                                                            {
+                                                                combo.discount_percent
+                                                            }
+                                                            %
                                                         </span>
                                                     </div>
                                                 )}
                                                 <span className="text-xs font-semibold customtext-primary">
-                                                    {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
+                                                    {combo.discount > 0
+                                                        ? "Precio con descuento"
+                                                        : "Precio del combo"}
                                                 </span>
                                                 <p className="font-bold mb-2 customtext-primary text-2xl ">
-                                                    {CurrencySymbol()} {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                    {CurrencySymbol()}{" "}
+                                                    {parseFloat(
+                                                        combo.final_price ||
+                                                            combo.price,
+                                                    ).toFixed(2)}
                                                 </p>
                                                 <button
-                                                    onClick={() => addComboToCart(combo)}
+                                                    onClick={() =>
+                                                        addComboToCart(combo)
+                                                    }
                                                     className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-primary transition-all duration-300 hover:shadow-md"
                                                 >
                                                     Agregar combo completo
@@ -688,7 +802,6 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     ))}
                                 </div>
                             )}
-
                         </div>
                     )}
 
@@ -704,8 +817,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     <Truck className="w-8 h-8 customtext-primary" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-sm text-start customtext-neutral-dark">Envío a domicilio</p>
-                                    <p className="text-start text-xs customtext-neutral-light mt-1 underline">Consultar</p>
+                                    <p className="font-semibold text-sm text-start customtext-neutral-dark">
+                                        Envío a domicilio
+                                    </p>
+                                    <p className="text-start text-xs customtext-neutral-light mt-1 underline">
+                                        Consultar
+                                    </p>
                                 </div>
                             </div>
                         </button>
@@ -719,21 +836,18 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     <Store className="w-8 h-8 customtext-primary" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-start text-sm customtext-neutral-dark">Retiro en tienda</p>
-                                    <p className="text-start text-xs customtext-neutral-light mt-1 underline">Consultar tiendas disponibles</p>
+                                    <p className="font-semibold text-start text-sm customtext-neutral-dark">
+                                        Retiro en tienda
+                                    </p>
+                                    <p className="text-start text-xs customtext-neutral-light mt-1 underline">
+                                        Consultar tiendas disponibles
+                                    </p>
                                 </div>
                             </div>
                         </button>
                         {/* Support - Mejorado */}
-                        <motion.div
-
-                            className="w-full p-6 cursor-pointer hover:bg-gray-50 transition-colors duration-200 flex items-center  gap-4"
-                        >
-                            <motion.div
-                                className=" flex flex-row rounded-xl gap-3"
-
-                            >
-
+                        <motion.div className="w-full p-6 cursor-pointer hover:bg-gray-50 transition-colors duration-200 flex items-center  gap-4">
+                            <motion.div className=" flex flex-row rounded-xl gap-3">
                                 <div className="bg-secondary min-w-12 max-w-12 min-h-12 max-h-12 flex items-center justify-center rounded-full flex-shrink-0">
                                     <svg
                                         className="w-8 h-8 customtext-primary"
@@ -745,8 +859,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 </div>
                                 <div className="font-semibold text-sm customtext-neutral-dark cursor-pointer">
                                     <p>
-                                        ¿Tienes dudas?
-                                        Haz{" "}
+                                        ¿Tienes dudas? Haz{" "}
                                         <a
                                             className="underline"
                                             onClick={handleClickWhatsApp}
@@ -764,7 +877,13 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                 {/* Bottom Navigation */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[99]">
                     <div className="p-4 flex gap-4">
-                        <button onClick={() => { onAddClicked(item); window.location.href = "/cart" }} className="flex-1 bg-primary text-white py-3 rounded-xl font-medium active:scale-95 transition-transform">
+                        <button
+                            onClick={() => {
+                                onAddClicked(item);
+                                window.location.href = "/cart";
+                            }}
+                            className="flex-1 bg-primary text-white py-3 rounded-xl font-medium active:scale-95 transition-transform"
+                        >
                             Comprar ahora
                         </button>
                         <button
@@ -778,22 +897,23 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             </div>
 
             {/* Desktop View */}
-            <div className="px-primary mx-auto py-12 bg-[#F7F9FB] hidden md:block ">
+            <div className="px-primary mx-auto py-12  2xl:px-0 2xl:max-w-7xl bg-sections-color hidden md:block ">
                 <div className="bg-white rounded-xl p-4 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Left Column - Images and Delivery Options */}
                         <div className="space-y-6">
                             <div className="mb-6 md:hidden">
                                 <p className="customtext-neutral-light text-sm">
-                                 {item?.brand?.name?(
-                                    <>
-                                       Marca:{" "}
-                                    <span className="customtext-neutral-dark">
-                                        {item?.brand?.name}
-                                    </span></>
-                                 ):
-                                 item?.category?.name
-                                 }
+                                    {item?.brand?.name ? (
+                                        <>
+                                            Marca:{" "}
+                                            <span className="customtext-neutral-dark">
+                                                {item?.brand?.name}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        item?.category?.name
+                                    )}
                                 </p>
                                 <h1 className="customtext-neutral-dark text-[28px] md:text-[40px] font-bold mt-2">
                                     {item?.name}
@@ -811,48 +931,58 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 type: "main",
                                             })
                                         }
-                                        className={`w-16 h-16  rounded-lg p-1 border-2 ${selectedImage.url === item?.image
-                                            ? "border-primary "
-                                            : "border-gray-200"
-                                            }`}
+                                        className={`w-16 h-16  rounded-lg p-1 border-2 ${
+                                            selectedImage.url === item?.image
+                                                ? "border-primary "
+                                                : "border-gray-200"
+                                        }`}
                                     >
                                         <img
                                             src={`/storage/images/item/${item?.image}`}
                                             alt="Main Thumbnail"
                                             className="w-full h-full object-cover rounded-lg aspect-square"
                                             onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </button>
-                                    {item?.images.filter((image, index, self) =>
-                                        index === self.findIndex((img) => img.url === image.url) // Filtra duplicados
-                                    ).map((image, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() =>
-                                                setSelectedImage({
-                                                    url: image?.url,
-                                                    type: "gallery",
-                                                })
-                                            }
-                                            className={`w-16 h-16 border-2 rounded-lg p-1 ${selectedImage.url === image.url
-                                                ? "border-primary"
-                                                : "border-gray-200"
-                                                }`}
-                                        >
-                                            <img
-                                                src={`/storage/images/item/${image?.url}`}
-                                                alt={`Thumbnail ${index + 1}`}
-                                                className="w-full h-full object-cover rounded-lg aspect-square"
-                                                onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                    {item?.images
+                                        .filter(
+                                            (image, index, self) =>
+                                                index ===
+                                                self.findIndex(
+                                                    (img) =>
+                                                        img.url === image.url,
+                                                ), // Filtra duplicados
+                                        )
+                                        .map((image, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() =>
+                                                    setSelectedImage({
+                                                        url: image?.url,
+                                                        type: "gallery",
+                                                    })
                                                 }
-                                            />
-                                        </button>
-                                    ))}
+                                                className={`w-16 h-16 border-2 rounded-lg p-1 ${
+                                                    selectedImage.url ===
+                                                    image.url
+                                                        ? "border-primary"
+                                                        : "border-gray-200"
+                                                }`}
+                                            >
+                                                <img
+                                                    src={`/storage/images/item/${image?.url}`}
+                                                    alt={`Thumbnail ${index + 1}`}
+                                                    className="w-full h-full object-cover rounded-lg aspect-square"
+                                                    onError={(e) =>
+                                                        (e.target.src =
+                                                            "/api/cover/thumbnail/null")
+                                                    }
+                                                />
+                                            </button>
+                                        ))}
                                 </div>
 
                                 {/* Main Image */}
@@ -860,30 +990,38 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     {/* Zoom Icon */}
                                     <button
                                         onClick={handleZoomClick}
-                                        className={`absolute top-3 right-3 z-10 p-2 rounded-full shadow-lg transition-all duration-200 ${isZoomEnabled
-                                                ? 'bg-primary text-white opacity-100'
-                                                : 'bg-white/90 hover:bg-white text-gray-700 hover:text-primary group-hover:opacity-100 opacity-60'
-                                            }`}
-                                        title={isZoomEnabled ? "Desactivar zoom" : "Activar zoom"}
+                                        className={`absolute top-3 right-3 z-10 p-2 rounded-full shadow-lg transition-all duration-200 ${
+                                            isZoomEnabled
+                                                ? "bg-primary text-white opacity-100"
+                                                : "bg-white/90 hover:bg-white text-gray-700 hover:text-primary group-hover:opacity-100 opacity-60"
+                                        }`}
+                                        title={
+                                            isZoomEnabled
+                                                ? "Desactivar zoom"
+                                                : "Activar zoom"
+                                        }
                                     >
                                         <ZoomIn className="w-5 h-5" />
                                     </button>
 
                                     <div
-                                        className={`relative overflow-hidden rounded-lg select-none ${isZoomEnabled
+                                        className={`relative overflow-hidden rounded-lg select-none ${
+                                            isZoomEnabled
                                                 ? isDragging
-                                                    ? 'cursor-grabbing'
-                                                    : 'cursor-grab'
-                                                : 'cursor-pointer'
-                                            }`}
+                                                    ? "cursor-grabbing"
+                                                    : "cursor-grab"
+                                                : "cursor-pointer"
+                                        }`}
                                         onMouseMove={handleMouseMove}
                                         onMouseDown={handleMouseDown}
                                         onMouseUp={handleMouseUp}
                                         onMouseLeave={handleMouseLeave}
-                                        onClick={() => !isZoomEnabled && handleZoomClick()}
+                                        onClick={() =>
+                                            !isZoomEnabled && handleZoomClick()
+                                        }
                                         style={{
-                                            height: 'auto',
-                                            position: 'relative'
+                                            height: "auto",
+                                            position: "relative",
                                         }}
                                     >
                                         <img
@@ -894,26 +1032,27 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     : `/storage/images/item/${selectedImage?.url}`
                                             }
                                             onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
                                             }
                                             alt="Product main"
                                             className="w-full rounded-lg object-cover aspect-square"
                                             style={{
                                                 ...(isZoomEnabled
                                                     ? {
-                                                        transform: `scale(2.5)`,
-                                                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                                                        transition: isDragging
-                                                            ? 'none'
-                                                            : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform-origin 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                    }
+                                                          transform: `scale(2.5)`,
+                                                          transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                                          transition: isDragging
+                                                              ? "none"
+                                                              : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform-origin 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                                                      }
                                                     : {
-                                                        transform: 'scale(1)',
-                                                        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-                                                    }),
-                                                userSelect: 'none',
-                                                pointerEvents: 'auto'
+                                                          transform: "scale(1)",
+                                                          transition:
+                                                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                                                      }),
+                                                userSelect: "none",
+                                                pointerEvents: "auto",
                                             }}
                                             draggable={false}
                                         />
@@ -933,7 +1072,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                                                     <span>
-                                                        {isDragging ? 'Arrastrando vista...' : 'Mantén presionado y arrastra'}
+                                                        {isDragging
+                                                            ? "Arrastrando vista..."
+                                                            : "Mantén presionado y arrastra"}
                                                     </span>
                                                 </div>
                                             </div>
@@ -953,7 +1094,6 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             }}
                                                         />
                                                     </div>
-
                                                 </div>
                                             </div>
                                         )}
@@ -988,12 +1128,13 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     </p>
                                     <div className="flex items-center gap-4 ">
                                         <span className="text-[40px] font-bold line-clamp-1">
-                                            {CurrencySymbol()} {item?.final_price}
+                                            {CurrencySymbol()}{" "}
+                                            {item?.final_price}
                                         </span>
                                         <span className="bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
                                             -
                                             {Number(
-                                                item?.discount_percent
+                                                item?.discount_percent,
                                             ).toFixed(1)}
                                             %
                                         </span>
@@ -1008,7 +1149,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             <div className="flex items-center gap-4">
                                                 <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
                                                     <button
-                                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                                        onClick={() =>
+                                                            setQuantity(
+                                                                Math.max(
+                                                                    1,
+                                                                    quantity -
+                                                                        1,
+                                                                ),
+                                                            )
+                                                        }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
                                                         disabled={quantity <= 1}
                                                     >
@@ -1020,9 +1169,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         </span>
                                                     </div>
                                                     <button
-                                                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                                        onClick={() =>
+                                                            setQuantity(
+                                                                Math.min(
+                                                                    10,
+                                                                    quantity +
+                                                                        1,
+                                                                ),
+                                                            )
+                                                        }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
-                                                        disabled={quantity >= 10}
+                                                        disabled={
+                                                            quantity >= 10
+                                                        }
                                                     >
                                                         +
                                                     </button>
@@ -1040,7 +1199,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             onAddClicked(item);
                                             setModalOpen(!modalOpen);
                                         }}
-                                        className={`w-full bg-primary  py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${data?.class_button || 'text-white'}`}
+                                        className={`w-full bg-primary  py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${data?.class_button || "text-white"}`}
                                     >
                                         Agregar al carrito
                                     </button>
@@ -1054,10 +1213,11 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                         Especificaciones principales
                                     </h3>
                                     <ul
-                                        className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                            ? "max-h-full"
-                                            : "max-h-24 overflow-hidden"
-                                            }`}
+                                        className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${
+                                            expandedSpecificationMain
+                                                ? "max-h-full"
+                                                : "max-h-24 overflow-hidden"
+                                        }`}
                                         style={{ listStyleType: "disc" }}
                                     >
                                         {item?.specifications.map(
@@ -1070,14 +1230,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         <CircleCheckIcon className="customtext-primary" />
                                                         {spec.description}
                                                     </li>
-                                                )
+                                                ),
                                         )}
                                     </ul>
                                     <button
                                         className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
                                         onClick={() =>
                                             setExpanded(
-                                                !expandedSpecificationMain
+                                                !expandedSpecificationMain,
                                             )
                                         }
                                     >
@@ -1108,74 +1268,135 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             Combos recomendados
                                         </h3>
                                         {availableCombos.map((combo, index) => (
-                                            <div key={`combo-${combo.id}`} className="border rounded-lg p-4 mb-4 bg-blue-50">
+                                            <div
+                                                key={`combo-${combo.id}`}
+                                                className="border rounded-lg p-4 mb-4 bg-blue-50"
+                                            >
                                                 {/* Header del combo */}
                                                 <div className="flex items-center gap-2 mb-4">
                                                     <div className="bg-primary text-white rounded-full p-1">
-                                                        <ShoppingCart size={14} />
+                                                        <ShoppingCart
+                                                            size={14}
+                                                        />
                                                     </div>
-                                                    <span className="text-sm font-semibold customtext-primary">COMBO: {combo.name}</span>
+                                                    <span className="text-sm font-semibold customtext-primary">
+                                                        COMBO: {combo.name}
+                                                    </span>
                                                 </div>
-                                                
+
                                                 {/* Mostrar productos del combo */}
                                                 <div className="flex gap-4 mb-4">
                                                     <div className="w-2/3 flex gap-2">
-                                                        {combo.combo_items?.map((comboItem, itemIndex) => (
-                                                            <div key={itemIndex} className="flex items-center gap-2">
-                                                                <img
-                                                                    src={`/storage/images/item/${comboItem.image}`}
-                                                                    className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
-                                                                    onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
-                                                                    alt={comboItem.name}
-                                                                />
-                                                                {itemIndex < combo.combo_items.length - 1 && (
-                                                                    <span className="text-lg font-bold customtext-primary">
-                                                                        <Plus size={16} />
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        ))}
+                                                        {combo.combo_items?.map(
+                                                            (
+                                                                comboItem,
+                                                                itemIndex,
+                                                            ) => (
+                                                                <div
+                                                                    key={
+                                                                        itemIndex
+                                                                    }
+                                                                    className="flex items-center gap-2"
+                                                                >
+                                                                    <img
+                                                                        src={`/storage/images/item/${comboItem.image}`}
+                                                                        className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
+                                                                        onError={(
+                                                                            e,
+                                                                        ) =>
+                                                                            (e.target.src =
+                                                                                "/api/cover/thumbnail/null")
+                                                                        }
+                                                                        alt={
+                                                                            comboItem.name
+                                                                        }
+                                                                    />
+                                                                    {itemIndex <
+                                                                        combo
+                                                                            .combo_items
+                                                                            .length -
+                                                                            1 && (
+                                                                        <span className="text-lg font-bold customtext-primary">
+                                                                            <Plus
+                                                                                size={
+                                                                                    16
+                                                                                }
+                                                                            />
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ),
+                                                        )}
                                                     </div>
                                                 </div>
 
                                                 {/* Lista detallada de productos */}
-                                                {combo.combo_items?.map((comboItem, itemIndex) => (
-                                                    <div key={itemIndex} className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white">
-                                                        <CheckSquare className="w-4 h-4 customtext-primary" />
-                                                        <div className="flex-1 font-semibold">
-                                                            <p className="text-sm text-gray-700 font-medium">
-                                                                {comboItem.name}
+                                                {combo.combo_items?.map(
+                                                    (comboItem, itemIndex) => (
+                                                        <div
+                                                            key={itemIndex}
+                                                            className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white"
+                                                        >
+                                                            <CheckSquare className="w-4 h-4 customtext-primary" />
+                                                            <div className="flex-1 font-semibold">
+                                                                <p className="text-sm text-gray-700 font-medium">
+                                                                    {
+                                                                        comboItem.name
+                                                                    }
+                                                                </p>
+                                                                <span className="text-xs text-gray-500">
+                                                                    Cantidad:{" "}
+                                                                    {comboItem.quantity ||
+                                                                        1}
+                                                                </span>
+                                                            </div>
+                                                            <p className="font-bold text-gray-700 text-sm">
+                                                                {CurrencySymbol()}{" "}
+                                                                {parseFloat(
+                                                                    comboItem.price,
+                                                                ).toFixed(2)}
                                                             </p>
-                                                            <span className="text-xs text-gray-500">
-                                                                Cantidad: {comboItem.quantity || 1}
-                                                            </span>
                                                         </div>
-                                                        <p className="font-bold text-gray-700 text-sm">
-                                                            {CurrencySymbol()} {parseFloat(comboItem.price).toFixed(2)}
-                                                        </p>
-                                                    </div>
-                                                ))}
+                                                    ),
+                                                )}
 
                                                 {/* Total y botón */}
                                                 <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
                                                     {combo.discount > 0 && (
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <span className="text-xs customtext-primary line-through">
-                                                                {CurrencySymbol()} {parseFloat(combo.price).toFixed(2)}
+                                                                {CurrencySymbol()}{" "}
+                                                                {parseFloat(
+                                                                    combo.price,
+                                                                ).toFixed(2)}
                                                             </span>
                                                             <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
-                                                                -{combo.discount_percent}%
+                                                                -
+                                                                {
+                                                                    combo.discount_percent
+                                                                }
+                                                                %
                                                             </span>
                                                         </div>
                                                     )}
                                                     <span className="text-xs font-semibold customtext-primary">
-                                                        {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
+                                                        {combo.discount > 0
+                                                            ? "Precio con descuento"
+                                                            : "Precio del combo"}
                                                     </span>
                                                     <p className="font-bold mb-2 customtext-primary text-lg">
-                                                        {CurrencySymbol()} {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                        {CurrencySymbol()}{" "}
+                                                        {parseFloat(
+                                                            combo.final_price ||
+                                                                combo.price,
+                                                        ).toFixed(2)}
                                                     </p>
                                                     <button
-                                                        onClick={() => addComboToCart(combo)}
+                                                        onClick={() =>
+                                                            addComboToCart(
+                                                                combo,
+                                                            )
+                                                        }
                                                         className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-primary transition-all duration-300 hover:shadow-md"
                                                     >
                                                         Agregar combo completo
@@ -1201,44 +1422,50 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 src={`/storage/images/item/${product?.image}`}
                                                                 className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
                                                                 onError={(e) =>
-                                                                (e.target.src =
-                                                                    "/api/cover/thumbnail/null")
+                                                                    (e.target.src =
+                                                                        "/api/cover/thumbnail/null")
                                                                 }
                                                             />
                                                             {index <
                                                                 associatedItems.length -
-                                                                1 && (
-                                                                    <span className="text-2xl font-bold">
-                                                                        <Plus />
-                                                                    </span>
-                                                                )}
+                                                                    1 && (
+                                                                <span className="text-2xl font-bold">
+                                                                    <Plus />
+                                                                </span>
+                                                            )}
                                                         </div>
-                                                    )
+                                                    ),
                                                 )}
                                             </div>
                                         </div>
 
-                                        {associatedItems.map((product, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
-                                            >
-                                                <CheckSquare className="w-5 h-5 customtext-primary" />
-                                                <div className="flex-1 font-semibold">
-                                                    <span className="text-[10px] customtext-neutral-dark block">
-                                                        {product?.brand?.name}
-                                                    </span>
-                                                    <p className="text-sm customtext-neutral-light font-medium">
-                                                        {product?.name}
+                                        {associatedItems.map(
+                                            (product, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex mt-4 gap-4 p-4 border rounded-lg items-center"
+                                                >
+                                                    <CheckSquare className="w-5 h-5 customtext-primary" />
+                                                    <div className="flex-1 font-semibold">
+                                                        <span className="text-[10px] customtext-neutral-dark block">
+                                                            {
+                                                                product?.brand
+                                                                    ?.name
+                                                            }
+                                                        </span>
+                                                        <p className="text-sm customtext-neutral-light font-medium">
+                                                            {product?.name}
+                                                        </p>
+                                                    </div>
+                                                    <p className="font-bold customtext-neutral-dark">
+                                                        {CurrencySymbol()}{" "}
+                                                        {parseFloat(
+                                                            product?.final_price,
+                                                        ).toFixed(2)}
                                                     </p>
                                                 </div>
-                                                <p className="font-bold customtext-neutral-dark">
-                                                    {CurrencySymbol()} {parseFloat(
-                                                        product?.final_price
-                                                    ).toFixed(2)}
-                                                </p>
-                                            </div>
-                                        ))}
+                                            ),
+                                        )}
 
                                         <div className=" w-full flex flex-col justify-start items-start bg-gray-50 p-4 rounded-lg mt-4">
                                             <span className="text-xs font-semibold customtext-neutral-light">
@@ -1246,11 +1473,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             </span>
 
                                             <p className="font-bold mb-2 customtext-neutral-dark">
-                                                {CurrencySymbol()} {total.toFixed(2)}
+                                                {CurrencySymbol()}{" "}
+                                                {total.toFixed(2)}
                                             </p>
                                             <button
-                                                onClick={() => addAssociatedItems()}
-                                                className={`bg-primary text-xs font-semibold  w-max py-3 px-6 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || 'text-white'}`}
+                                                onClick={() =>
+                                                    addAssociatedItems()
+                                                }
+                                                className={`bg-primary text-xs font-semibold  w-max py-3 px-6 rounded-xl hover:opacity-90 transition-all duration-300 hover:shadow-md ${data?.class_button || "text-white"}`}
                                             >
                                                 Agregar al carrito
                                             </button>
@@ -1261,7 +1491,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             {/* Delivery Options - Mejoradas */}
                             <div className="border rounded-lg overflow-hidden flex justify-center">
                                 <button
-                                    onClick={() => setDeliveryPolicyModalOpen(true)}
+                                    onClick={() =>
+                                        setDeliveryPolicyModalOpen(true)
+                                    }
                                     className="w-full p-6 hover:bg-gray-50 transition-colors duration-200 flex items-center  gap-4"
                                 >
                                     <div className=" flex gap-2 items-center">
@@ -1269,11 +1501,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             <Truck className="w-6 h-6 customtext-primary" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-start text-sm customtext-neutral-dark">Envío a domicilio</p>
-                                            <p className="text-start text-xs customtext-neutral-light mt-1 underline" >Consultar </p>
+                                            <p className="font-semibold text-start text-sm customtext-neutral-dark">
+                                                Envío a domicilio
+                                            </p>
+                                            <p className="text-start text-xs customtext-neutral-light mt-1 underline">
+                                                Consultar{" "}
+                                            </p>
                                         </div>
                                     </div>
-
                                 </button>
 
                                 <button
@@ -1285,22 +1520,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             <Store className="w-6 h-6 customtext-primary" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-start text-sm customtext-neutral-dark">Retiro en tienda</p>
-                                            <p className="text-start text-xs customtext-neutral-light mt-1 underline">Consultar</p>
+                                            <p className="font-semibold text-start text-sm customtext-neutral-dark">
+                                                Retiro en tienda
+                                            </p>
+                                            <p className="text-start text-xs customtext-neutral-light mt-1 underline">
+                                                Consultar
+                                            </p>
                                         </div>
                                     </div>
                                 </button>
 
                                 {/* Support - Mejorado */}
-                                <motion.div
-
-                                    className="w-full p-6 cursor-pointer hover:bg-gray-50 transition-colors duration-200 flex items-center  gap-4"
-                                >
-                                    <motion.div
-                                        className=" flex flex-row rounded-xl gap-3"
-
-                                    >
-
+                                <motion.div className="w-full p-6 cursor-pointer hover:bg-gray-50 transition-colors duration-200 flex items-center  gap-4">
+                                    <motion.div className=" flex flex-row rounded-xl gap-3">
                                         <div className="bg-secondary min-w-10 max-w-10 min-h-10 max-h-10 flex items-center justify-center rounded-full flex-shrink-0">
                                             <svg
                                                 className="w-6 h-6 customtext-primary"
@@ -1312,22 +1544,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                         </div>
                                         <div className="font-semibold text-sm customtext-neutral-dark cursor-pointer">
                                             <p>
-                                                ¿Tienes dudas?
-                                                Haz{" "}
+                                                ¿Tienes dudas? Haz{" "}
                                                 <a
                                                     className="underline"
-                                                    onClick={handleClickWhatsApp}
+                                                    onClick={
+                                                        handleClickWhatsApp
+                                                    }
                                                 >
                                                     clic aquí
                                                 </a>{" "}
-
                                             </p>
                                         </div>
                                     </motion.div>
                                 </motion.div>
                             </div>
-
-
                         </div>
 
                         {/* Right Column - Product Info */}
@@ -1336,14 +1566,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <div className="mb-6">
                                 <p className="customtext-neutral-light text-sm">
                                     {item?.brand?.name ? (
-
-                                        <>Marca:{" "}
+                                        <>
+                                            Marca:{" "}
                                             <span className="customtext-neutral-dark">
                                                 {item?.brand?.name}
-                                            </span></>
-                                    ) :
+                                            </span>
+                                        </>
+                                    ) : (
                                         item?.category?.name
-                                    }
+                                    )}
                                 </p>
                                 <h1 className="customtext-neutral-dark text-[40px] font-bold mt-2">
                                     {item?.name}
@@ -1375,16 +1606,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             Especificaciones principales
                                         </h3>
                                         <ul
-                                            className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                                ? "max-h-full"
-                                                : "max-h-28 overflow-hidden"
-                                                }`}
+                                            className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${
+                                                expandedSpecificationMain
+                                                    ? "max-h-full"
+                                                    : "max-h-28 overflow-hidden"
+                                            }`}
                                             style={{ listStyleType: "disc" }}
                                         >
                                             {item?.specifications.map(
                                                 (spec, index) =>
                                                     spec.type ===
-                                                    "principal" && (
+                                                        "principal" && (
                                                         <li
                                                             key={index}
                                                             className="flex gap-2 items-start"
@@ -1392,14 +1624,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             <CircleCheckIcon className="customtext-primary min-w-5 min-h-5 max-w-5 max-h-5 mt-1" />
                                                             {spec.description}
                                                         </li>
-                                                    )
+                                                    ),
                                             )}
                                         </ul>
                                         <button
                                             className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
                                             onClick={() =>
                                                 setExpanded(
-                                                    !expandedSpecificationMain
+                                                    !expandedSpecificationMain,
                                                 )
                                             }
                                         >
@@ -1417,29 +1649,33 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
                                 {/* Price Section */}
                                 <div className=" w-5/12 ">
-                                    {item?.discount > 0 && item?.price > item?.final_price &&(
-                                    <p className="text-sm customtext-neutral-light mb-1">
-                                        Precio:{" "}
-                                        <span className="line-through">
-                                            {CurrencySymbol()} {item?.price}
-                                        </span>
-                                    </p>)}
-                                
-                                      <div className="flex items-center gap-4 relative ">
-                                        <span className="text-[36px] font-bold ">
-                                            {CurrencySymbol()} {item?.final_price}
-                                        </span>
-                                          {item?.discount > 0 && item?.price > item?.final_price &&(
-                                        <span className=" absolute text-sm -top-8 right-0 bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
-                                            -
-                                            {Number(
-                                                item?.discount_percent
-                                            ).toFixed(1)}
-                                            %
-                                        </span>
+                                    {item?.discount > 0 &&
+                                        item?.price > item?.final_price && (
+                                            <p className="text-sm customtext-neutral-light mb-1">
+                                                Precio:{" "}
+                                                <span className="line-through">
+                                                    {CurrencySymbol()}{" "}
+                                                    {item?.price}
+                                                </span>
+                                            </p>
                                         )}
+
+                                    <div className="flex items-center gap-4 relative ">
+                                        <span className="text-[36px] font-bold ">
+                                            {CurrencySymbol()}{" "}
+                                            {item?.final_price}
+                                        </span>
+                                        {item?.discount > 0 &&
+                                            item?.price > item?.final_price && (
+                                                <span className=" absolute text-sm -top-8 right-0 bg-[#F93232] text-white font-bold px-3 py-2 rounded-xl">
+                                                    -
+                                                    {Number(
+                                                        item?.discount_percent,
+                                                    ).toFixed(1)}
+                                                    %
+                                                </span>
+                                            )}
                                     </div>
-                                  
 
                                     {/* Quantity */}
                                     <div className="mt-4">
@@ -1450,7 +1686,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             <div className="flex items-center gap-4">
                                                 <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
                                                     <button
-                                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                                        onClick={() =>
+                                                            setQuantity(
+                                                                Math.max(
+                                                                    1,
+                                                                    quantity -
+                                                                        1,
+                                                                ),
+                                                            )
+                                                        }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
                                                         disabled={quantity <= 1}
                                                     >
@@ -1462,9 +1706,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         </span>
                                                     </div>
                                                     <button
-                                                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                                        onClick={() =>
+                                                            setQuantity(
+                                                                Math.min(
+                                                                    10,
+                                                                    quantity +
+                                                                        1,
+                                                                ),
+                                                            )
+                                                        }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
-                                                        disabled={quantity >= 10}
+                                                        disabled={
+                                                            quantity >= 10
+                                                        }
                                                     >
                                                         +
                                                     </button>
@@ -1482,7 +1736,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             onAddClicked(item);
                                             setModalOpen(!modalOpen);
                                         }}
-                                        className={`w-full bg-primary py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${data?.class_button || 'text-white'}`}
+                                        className={`w-full bg-primary py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${data?.class_button || "text-white"}`}
                                     >
                                         Agregar al carrito
                                     </button>
@@ -1490,7 +1744,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             </div>
 
                             {/* Complementary Products */}
-                            {(associatedItems.length > 0 || availableCombos.length > 0) && (
+                            {(associatedItems.length > 0 ||
+                                availableCombos.length > 0) && (
                                 <div className="mt-8 ">
                                     <div className="flex items-center gap-2 mb-6">
                                         <ShoppingCart className="w-6 h-6 customtext-primary" />
@@ -1503,50 +1758,93 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     {/* Mostrar combos disponibles */}
                                     {availableCombos.length > 0 && (
                                         <div className="mb-6">
-                                          
                                             {availableCombos.map((combo) => (
-                                                <div key={`combo-desktop-${combo.id}`} className="border rounded-lg p-6 mb-4 bg-gray-50">
-                                                  
+                                                <div
+                                                    key={`combo-desktop-${combo.id}`}
+                                                    className="border rounded-lg p-6 mb-4 bg-gray-50"
+                                                >
                                                     {/* Mostrar productos del combo en fila */}
                                                     <div className="flex gap-4 mb-4">
                                                         <div className="w-2/3 flex gap-2">
-                                                            {combo.combo_items?.map((comboItem, itemIndex) => (
-                                                                <div key={itemIndex} className="flex items-center gap-2">
-                                                                    <img
-                                                                        src={`/storage/images/item/${comboItem.image}`}
-                                                                        className="rounded-lg aspect-square w-24 h-24 object-cover bg-white"
-                                                                        onError={(e) => e.target.src = "/api/cover/thumbnail/null"}
-                                                                        alt={comboItem.name}
-                                                                    />
-                                                                    {itemIndex < combo.combo_items.length - 1 && (
-                                                                        <span className="text-2xl font-bold customtext-primary">
-                                                                            <Plus />
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            ))}
+                                                            {combo.combo_items?.map(
+                                                                (
+                                                                    comboItem,
+                                                                    itemIndex,
+                                                                ) => (
+                                                                    <div
+                                                                        key={
+                                                                            itemIndex
+                                                                        }
+                                                                        className="flex items-center gap-2"
+                                                                    >
+                                                                        <img
+                                                                            src={`/storage/images/item/${comboItem.image}`}
+                                                                            className="rounded-lg aspect-square w-24 h-24 object-cover bg-white"
+                                                                            onError={(
+                                                                                e,
+                                                                            ) =>
+                                                                                (e.target.src =
+                                                                                    "/api/cover/thumbnail/null")
+                                                                            }
+                                                                            alt={
+                                                                                comboItem.name
+                                                                            }
+                                                                        />
+                                                                        {itemIndex <
+                                                                            combo
+                                                                                .combo_items
+                                                                                .length -
+                                                                                1 && (
+                                                                            <span className="text-2xl font-bold customtext-primary">
+                                                                                <Plus />
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                ),
+                                                            )}
                                                         </div>
-                                                        
+
                                                         {/* Sección de precio y botón */}
                                                         <div className="w-1/3 flex flex-col justify-between items-end bg-blue-100 p-4 rounded-lg">
-                                                            {combo.discount > 0 && (
+                                                            {combo.discount >
+                                                                0 && (
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className="text-sm customtext-primary line-through">
-                                                                        {CurrencySymbol()} {parseFloat(combo.price).toFixed(2)}
+                                                                        {CurrencySymbol()}{" "}
+                                                                        {parseFloat(
+                                                                            combo.price,
+                                                                        ).toFixed(
+                                                                            2,
+                                                                        )}
                                                                     </span>
                                                                     <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
-                                                                        -{combo.discount_percent}%
+                                                                        -
+                                                                        {
+                                                                            combo.discount_percent
+                                                                        }
+                                                                        %
                                                                     </span>
                                                                 </div>
                                                             )}
                                                             <span className="text-xs font-semibold customtext-primary">
-                                                                {combo.discount > 0 ? 'Precio con descuento' : 'Precio del combo'}
+                                                                {combo.discount >
+                                                                0
+                                                                    ? "Precio con descuento"
+                                                                    : "Precio del combo"}
                                                             </span>
                                                             <p className="font-bold mb-2 customtext-primary text-xl">
-                                                                {CurrencySymbol()} {parseFloat(combo.final_price || combo.price).toFixed(2)}
+                                                                {CurrencySymbol()}{" "}
+                                                                {parseFloat(
+                                                                    combo.final_price ||
+                                                                        combo.price,
+                                                                ).toFixed(2)}
                                                             </p>
                                                             <button
-                                                                onClick={() => addComboToCart(combo)}
+                                                                onClick={() =>
+                                                                    addComboToCart(
+                                                                        combo,
+                                                                    )
+                                                                }
                                                                 className="bg-primary text-white text-sm font-semibold w-full py-3 rounded-xl hover:bg-accent transition-all duration-300 hover:shadow-md"
                                                             >
                                                                 Agregar combo
@@ -1555,28 +1853,43 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     </div>
 
                                                     {/* Lista detallada de productos */}
-                                                    {combo.combo_items?.map((comboItem, itemIndex) => (
-                                                        <div key={itemIndex} className="flex mt-2 gap-4 p-4 border rounded-lg items-center bg-white">
-                                                            <CheckSquare className="w-5 h-5 customtext-primary" />
-                                                            <div className="flex-1 font-semibold">
-                                                                <p className="text-sm text-gray-700 font-medium">
-                                                                    {comboItem.name}
+                                                    {combo.combo_items?.map(
+                                                        (
+                                                            comboItem,
+                                                            itemIndex,
+                                                        ) => (
+                                                            <div
+                                                                key={itemIndex}
+                                                                className="flex mt-2 gap-4 p-4 border rounded-lg items-center bg-white"
+                                                            >
+                                                                <CheckSquare className="w-5 h-5 customtext-primary" />
+                                                                <div className="flex-1 font-semibold">
+                                                                    <p className="text-sm text-gray-700 font-medium">
+                                                                        {
+                                                                            comboItem.name
+                                                                        }
+                                                                    </p>
+                                                                    <span className="text-xs text-gray-500">
+                                                                        Cantidad:{" "}
+                                                                        {comboItem.quantity ||
+                                                                            1}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="font-bold text-gray-700">
+                                                                    {CurrencySymbol()}{" "}
+                                                                    {parseFloat(
+                                                                        comboItem.price,
+                                                                    ).toFixed(
+                                                                        2,
+                                                                    )}
                                                                 </p>
-                                                                <span className="text-xs text-gray-500">
-                                                                    Cantidad: {comboItem.quantity || 1}
-                                                                </span>
                                                             </div>
-                                                            <p className="font-bold text-gray-700">
-                                                                {CurrencySymbol()} {parseFloat(comboItem.price).toFixed(2)}
-                                                            </p>
-                                                        </div>
-                                                    ))}
+                                                        ),
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
                                     )}
-
-                                  
                                 </div>
                             )}
                         </div>
@@ -1590,20 +1903,22 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         </h2>
                         <div
                             ref={specificationsRef}
-                            className={`space-y-1 transition-all duration-300 ${!isSpecificationsExpanded
-                                ? "max-h-[400px] overflow-hidden"
-                                : ""
-                                }`}
+                            className={`space-y-1 transition-all duration-300 ${
+                                !isSpecificationsExpanded
+                                    ? "max-h-[400px] overflow-hidden"
+                                    : ""
+                            }`}
                         >
                             {item?.specifications.map(
                                 (spec, index) =>
                                     spec.type === "general" && (
                                         <div
                                             key={index}
-                                            className={`flex gap-4 px-4 py-1 ${index % 2 === 0
-                                                ? "bg-[#F7F9FB]"
-                                                : "bg-white"
-                                                }`}
+                                            className={`flex gap-4 px-4 py-1 ${
+                                                index % 2 === 0
+                                                    ? "bg-[#F7F9FB]"
+                                                    : "bg-white"
+                                            }`}
                                         >
                                             <div className="customtext-neutral-light min-w-56 max-w-56">
                                                 {spec.title}
@@ -1612,18 +1927,27 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {spec.description}
                                             </div>
                                         </div>
-                                    )
+                                    ),
                             )}
                         </div>
                         {needsSpecificationsExpand && (
                             <button
                                 className="border-2 border-primary w-max px-5 py-3 my-8 rounded-xl flex items-center gap-2 customtext-primary font-semibold cursor-pointer hover:bg-primary hover:text-white transition-all duration-300"
-                                onClick={() => setIsSpecificationsExpanded(!isSpecificationsExpanded)}
+                                onClick={() =>
+                                    setIsSpecificationsExpanded(
+                                        !isSpecificationsExpanded,
+                                    )
+                                }
                             >
-                                {isSpecificationsExpanded ? "Ver menos" : "Ver más especificaciones"}
+                                {isSpecificationsExpanded
+                                    ? "Ver menos"
+                                    : "Ver más especificaciones"}
                                 <ChevronDown
-                                    className={`transform transition-transform ${isSpecificationsExpanded ? "rotate-180" : ""
-                                        }`}
+                                    className={`transform transition-transform ${
+                                        isSpecificationsExpanded
+                                            ? "rotate-180"
+                                            : ""
+                                    }`}
                                 />
                             </button>
                         )}
@@ -1636,10 +1960,11 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         </h2>
                         <div
                             ref={descriptionRef}
-                            className={`space-y-2 transition-all duration-300 ${!isExpanded
-                                ? "max-h-[400px] overflow-hidden"
-                                : ""
-                                }`}
+                            className={`space-y-2 transition-all duration-300 ${
+                                !isExpanded
+                                    ? "max-h-[400px] overflow-hidden"
+                                    : ""
+                            }`}
                         >
                             <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
                                 Acerca de este artículo
@@ -1670,8 +1995,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             >
                                 {isExpanded ? "Ver menos" : "Ver más"}
                                 <ChevronDown
-                                    className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
-                                        }`}
+                                    className={`transform transition-transform ${
+                                        isExpanded ? "rotate-180" : ""
+                                    }`}
                                 />
                             </button>
                         )}
@@ -1684,12 +2010,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                     items={relationsItems}
                     cart={cart}
                     setCart={setCart}
-                />)}
+                />
+            )}
 
             {/* Modal de Políticas de Envío */}
             {deliveryPolicyModalOpen && (
                 <ReactModal
-
                     isOpen={deliveryPolicyModalOpen}
                     onRequestClose={() => setDeliveryPolicyModalOpen(false)}
                     contentLabel={"Políticas de Envío"}
@@ -1700,9 +2026,13 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                     <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
                         {/* Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                            <h2 className="text-2xl font-bold text-gray-900 pr-4">Políticas de Envío</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 pr-4">
+                                Políticas de Envío
+                            </h2>
                             <button
-                                onClick={() => setDeliveryPolicyModalOpen(false)}
+                                onClick={() =>
+                                    setDeliveryPolicyModalOpen(false)
+                                }
                                 className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
                                 aria-label="Cerrar modal"
                             >
@@ -1713,14 +2043,24 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         {/* Content */}
                         <div className="flex-1 overflow-y-auto p-6">
                             <div className="prose prose-gray max-w-none">
-                                <HtmlContent html={generals?.find(g => g.correlative === 'delivery_policy')?.description} />
+                                <HtmlContent
+                                    html={
+                                        generals?.find(
+                                            (g) =>
+                                                g.correlative ===
+                                                "delivery_policy",
+                                        )?.description
+                                    }
+                                />
                             </div>
                         </div>
 
                         {/* Footer */}
                         <div className="flex justify-end p-6 border-t border-gray-200">
                             <button
-                                onClick={() => setDeliveryPolicyModalOpen(false)}
+                                onClick={() =>
+                                    setDeliveryPolicyModalOpen(false)
+                                }
                                 className="px-6 py-2 bg-primary text-white rounded-lg  transition-colors duration-200 font-medium"
                             >
                                 Cerrar
@@ -1728,8 +2068,6 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         </div>
                     </div>
                 </ReactModal>
-
-
             )}
 
             {/* Modal de Listado de Tiendas */}
@@ -1747,7 +2085,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         <div className="flex items-center justify-between p-6 border-b border-gray-200">
                             <div className="flex items-center gap-3">
                                 <Store className="w-8 h-8 text-primary" />
-                                <h2 className="text-2xl font-bold text-gray-900">Nuestras Tiendas</h2>
+                                <h2 className="text-2xl font-bold text-gray-900">
+                                    Nuestras Tiendas
+                                </h2>
                             </div>
                             <button
                                 onClick={() => setStoreListModalOpen(false)}
@@ -1764,21 +2104,31 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 <div className="flex items-center justify-center py-12">
                                     <div className="flex flex-col items-center gap-4">
                                         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                                        <p className="text-gray-600">Cargando tiendas...</p>
+                                        <p className="text-gray-600">
+                                            Cargando tiendas...
+                                        </p>
                                     </div>
                                 </div>
                             ) : stores.length === 0 ? (
                                 <div className="flex items-center justify-center py-12">
                                     <div className="text-center">
                                         <Store className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                        <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay tiendas disponibles</h3>
-                                        <p className="text-gray-500">Por el momento no tenemos tiendas registradas.</p>
+                                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                                            No hay tiendas disponibles
+                                        </h3>
+                                        <p className="text-gray-500">
+                                            Por el momento no tenemos tiendas
+                                            registradas.
+                                        </p>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     {stores.map((store) => (
-                                        <div key={store.id} className="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+                                        <div
+                                            key={store.id}
+                                            className="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow duration-200"
+                                        >
                                             {/* Store Image */}
                                             <div className="mb-4">
                                                 {store.image ? (
@@ -1787,12 +2137,16 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         alt={store.name}
                                                         className="w-full h-32 object-cover rounded-lg"
                                                         onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            e.target.nextElementSibling.style.display = 'flex';
+                                                            e.target.style.display =
+                                                                "none";
+                                                            e.target.nextElementSibling.style.display =
+                                                                "flex";
                                                         }}
                                                     />
                                                 ) : null}
-                                                <div className={`w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center ${store.image ? 'hidden' : 'flex'}`}>
+                                                <div
+                                                    className={`w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center ${store.image ? "hidden" : "flex"}`}
+                                                >
                                                     <Store className="w-12 h-12 text-gray-400" />
                                                 </div>
                                             </div>
@@ -1800,23 +2154,42 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             {/* Store Header */}
                                             <div className="mb-4">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <h3 className="font-bold text-lg text-gray-900 flex-1">{store.name}</h3>
+                                                    <h3 className="font-bold text-lg text-gray-900 flex-1">
+                                                        {store.name}
+                                                    </h3>
                                                     {/* Badge del tipo de establecimiento */}
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${store.type === 'tienda' ? 'bg-green-100 text-green-800' :
-                                                            store.type === 'oficina' ? 'bg-blue-100 customtext-primary' :
-                                                                store.type === 'almacen' ? 'bg-yellow-100 text-yellow-800' :
-                                                                    store.type === 'showroom' ? 'bg-purple-100 text-purple-800' :
-                                                                        'bg-gray-100 text-gray-800'
-                                                        }`}>
-                                                        {store.type === 'tienda' ? 'Tienda' :
-                                                            store.type === 'oficina' ? 'Oficina' :
-                                                                store.type === 'almacen' ? 'Almacén' :
-                                                                    store.type === 'showroom' ? 'Showroom' :
-                                                                        store.type || 'Otro'}
+                                                    <span
+                                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                            store.type ===
+                                                            "tienda"
+                                                                ? "bg-green-100 text-green-800"
+                                                                : store.type ===
+                                                                    "oficina"
+                                                                  ? "bg-blue-100 customtext-primary"
+                                                                  : store.type ===
+                                                                      "almacen"
+                                                                    ? "bg-yellow-100 text-yellow-800"
+                                                                    : store.type ===
+                                                                        "showroom"
+                                                                      ? "bg-purple-100 text-purple-800"
+                                                                      : "bg-gray-100 text-gray-800"
+                                                        }`}
+                                                    >
+                                                        {store.type === "tienda"
+                                                            ? "Tienda"
+                                                            : store.type ===
+                                                                "oficina"
+                                                              ? "Oficina"
+                                                              : store.type ===
+                                                                  "almacen"
+                                                                ? "Almacén"
+                                                                : store.type ===
+                                                                    "showroom"
+                                                                  ? "Showroom"
+                                                                  : store.type ||
+                                                                    "Otro"}
                                                     </span>
                                                 </div>
-
-
                                             </div>
 
                                             {/* Store Details */}
@@ -1824,14 +2197,18 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {/* Address */}
                                                 <div className="flex items-start gap-2">
                                                     <Home className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                                                    <p className="text-sm text-gray-700 leading-relaxed">{store.address}</p>
+                                                    <p className="text-sm text-gray-700 leading-relaxed">
+                                                        {store.address}
+                                                    </p>
                                                 </div>
 
                                                 {/* Phone */}
                                                 {store.phone && (
                                                     <div className="flex items-center gap-2">
                                                         <Phone className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                                        <p className="text-sm text-gray-700">{store.phone}</p>
+                                                        <p className="text-sm text-gray-700">
+                                                            {store.phone}
+                                                        </p>
                                                     </div>
                                                 )}
 
@@ -1839,60 +2216,139 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {store.manager && (
                                                     <div className="flex items-center gap-2">
                                                         <CircleUserRound className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                                        <p className="text-sm text-gray-700">Encargado: {store.manager}</p>
+                                                        <p className="text-sm text-gray-700">
+                                                            Encargado:{" "}
+                                                            {store.manager}
+                                                        </p>
                                                     </div>
                                                 )}
 
                                                 {/* Business Hours */}
                                                 {store.business_hours && (
                                                     <div className="bg-white rounded-md p-3 mt-3">
-                                                        <div className="text-xs font-medium text-gray-700 mb-2">Horarios de atención:</div>
+                                                        <div className="text-xs font-medium text-gray-700 mb-2">
+                                                            Horarios de
+                                                            atención:
+                                                        </div>
                                                         <div className="text-xs text-gray-600">
                                                             {(() => {
                                                                 try {
-                                                                    const hours = typeof store.business_hours === 'string'
-                                                                        ? JSON.parse(store.business_hours)
-                                                                        : store.business_hours;
+                                                                    const hours =
+                                                                        typeof store.business_hours ===
+                                                                        "string"
+                                                                            ? JSON.parse(
+                                                                                  store.business_hours,
+                                                                              )
+                                                                            : store.business_hours;
 
-                                                                    const today = new Date().toLocaleDateString('es-PE', { weekday: 'long' });
-                                                                    const todayMap = {
-                                                                        'lunes': 'Lunes',
-                                                                        'martes': 'Martes',
-                                                                        'miércoles': 'Miércoles',
-                                                                        'jueves': 'Jueves',
-                                                                        'viernes': 'Viernes',
-                                                                        'sábado': 'Sábado',
-                                                                        'domingo': 'Domingo'
-                                                                    };
+                                                                    const today =
+                                                                        new Date().toLocaleDateString(
+                                                                            "es-PE",
+                                                                            {
+                                                                                weekday:
+                                                                                    "long",
+                                                                            },
+                                                                        );
+                                                                    const todayMap =
+                                                                        {
+                                                                            lunes: "Lunes",
+                                                                            martes: "Martes",
+                                                                            miércoles:
+                                                                                "Miércoles",
+                                                                            jueves: "Jueves",
+                                                                            viernes:
+                                                                                "Viernes",
+                                                                            sábado: "Sábado",
+                                                                            domingo:
+                                                                                "Domingo",
+                                                                        };
 
-                                                                    const todaySpanish = todayMap[today.toLowerCase()] || today;
-                                                                    const todaySchedule = hours.find(h =>
-                                                                        h.day.toLowerCase() === todaySpanish.toLowerCase()
-                                                                    );
+                                                                    const todaySpanish =
+                                                                        todayMap[
+                                                                            today.toLowerCase()
+                                                                        ] ||
+                                                                        today;
+                                                                    const todaySchedule =
+                                                                        hours.find(
+                                                                            (
+                                                                                h,
+                                                                            ) =>
+                                                                                h.day.toLowerCase() ===
+                                                                                todaySpanish.toLowerCase(),
+                                                                        );
 
-                                                                    if (todaySchedule) {
-                                                                        const status = todaySchedule.closed
-                                                                            ? `Hoy: Cerrado`
-                                                                            : `Hoy: ${todaySchedule.open} - ${todaySchedule.close}`;
+                                                                    if (
+                                                                        todaySchedule
+                                                                    ) {
+                                                                        const status =
+                                                                            todaySchedule.closed
+                                                                                ? `Hoy: Cerrado`
+                                                                                : `Hoy: ${todaySchedule.open} - ${todaySchedule.close}`;
 
-                                                                        const isOpen = !todaySchedule.closed && (() => {
-                                                                            const now = new Date();
-                                                                            const currentTime = now.getHours() * 60 + now.getMinutes();
-                                                                            const [openHour, openMin] = todaySchedule.open.split(':').map(Number);
-                                                                            const [closeHour, closeMin] = todaySchedule.close.split(':').map(Number);
-                                                                            const openTime = openHour * 60 + openMin;
-                                                                            const closeTime = closeHour * 60 + closeMin;
-                                                                            return currentTime >= openTime && currentTime <= closeTime;
-                                                                        })();
+                                                                        const isOpen =
+                                                                            !todaySchedule.closed &&
+                                                                            (() => {
+                                                                                const now =
+                                                                                    new Date();
+                                                                                const currentTime =
+                                                                                    now.getHours() *
+                                                                                        60 +
+                                                                                    now.getMinutes();
+                                                                                const [
+                                                                                    openHour,
+                                                                                    openMin,
+                                                                                ] =
+                                                                                    todaySchedule.open
+                                                                                        .split(
+                                                                                            ":",
+                                                                                        )
+                                                                                        .map(
+                                                                                            Number,
+                                                                                        );
+                                                                                const [
+                                                                                    closeHour,
+                                                                                    closeMin,
+                                                                                ] =
+                                                                                    todaySchedule.close
+                                                                                        .split(
+                                                                                            ":",
+                                                                                        )
+                                                                                        .map(
+                                                                                            Number,
+                                                                                        );
+                                                                                const openTime =
+                                                                                    openHour *
+                                                                                        60 +
+                                                                                    openMin;
+                                                                                const closeTime =
+                                                                                    closeHour *
+                                                                                        60 +
+                                                                                    closeMin;
+                                                                                return (
+                                                                                    currentTime >=
+                                                                                        openTime &&
+                                                                                    currentTime <=
+                                                                                        closeTime
+                                                                                );
+                                                                            })();
 
                                                                         return (
                                                                             <div className="flex items-center justify-between">
-                                                                                <span>{status}</span>
-                                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${isOpen
-                                                                                        ? 'bg-green-100 text-green-800'
-                                                                                        : 'bg-red-100 text-red-800'
-                                                                                    }`}>
-                                                                                    {isOpen ? 'Abierto' : 'Cerrado'}
+                                                                                <span>
+                                                                                    {
+                                                                                        status
+                                                                                    }
+                                                                                </span>
+                                                                                <span
+                                                                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                                                        isOpen
+                                                                                            ? "bg-green-100 text-green-800"
+                                                                                            : "bg-red-100 text-red-800"
+                                                                                    }`}
+                                                                                >
+                                                                                    {isOpen
+                                                                                        ? "Abierto"
+                                                                                        : "Cerrado"}
                                                                                 </span>
                                                                             </div>
                                                                         );
@@ -1909,7 +2365,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {/* Description */}
                                                 {store.description && (
                                                     <div className="pt-2 border-t border-gray-200">
-                                                        <p className="text-xs text-gray-600 leading-relaxed">{store.description}</p>
+                                                        <p className="text-xs text-gray-600 leading-relaxed">
+                                                            {store.description}
+                                                        </p>
                                                     </div>
                                                 )}
                                             </div>
@@ -1922,7 +2380,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         {/* Footer */}
                         <div className="flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50">
                             <p className="text-sm text-gray-600">
-                                {stores.length > 0 && `${stores.length} tienda${stores.length !== 1 ? 's' : ''} disponible${stores.length !== 1 ? 's' : ''}`}
+                                {stores.length > 0 &&
+                                    `${stores.length} tienda${stores.length !== 1 ? "s" : ""} disponible${stores.length !== 1 ? "s" : ""}`}
                             </p>
                             <button
                                 onClick={() => setStoreListModalOpen(false)}
@@ -1944,5 +2403,5 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             />
         </>
     );
-}
+};
 export default ProductDetail;

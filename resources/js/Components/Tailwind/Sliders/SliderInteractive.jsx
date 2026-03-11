@@ -6,66 +6,67 @@ import Global from "../../../Utils/Global";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
-
-  
     // Verificar si las animaciones están habilitadas
-    const hasAnimation = data?.animation_slider === "true" || data?.animation_slider === "si" || data?.animation_slider === true;
+    const hasAnimation =
+        data?.animation_slider === "true" ||
+        data?.animation_slider === "si" ||
+        data?.animation_slider === true;
 
-    const imageVariants = hasAnimation ? {
-        initial: {
-            scale: 1,
-            opacity: 1
-        },
-        animate: {
-            scale: [1, 1.2, 1],
-            x: [1, -50, 1],
-            opacity: 1,
-            transition: {
-                duration: 20,
+    const imageVariants = hasAnimation
+        ? {
+              initial: {
+                  scale: 1,
+                  opacity: 1,
+              },
+              animate: {
+                  scale: [1, 1.2, 1],
+                  x: [1, -50, 1],
+                  opacity: 1,
+                  transition: {
+                      duration: 20,
 
-                repeat: Infinity,
-                repeatType: "loop"
-            }
-        },
-        exit: {
-            scale: 1,
-            opacity: 0.8,
-            transition: {
-                duration: 0.3,
-                ease: "easeInOut"
-            }
-        }
-    } : {
-        initial: {
-            scale: 1,
-            opacity: 1
-        },
-        animate: {
-            scale: [1, 1, 1],
+                      repeat: Infinity,
+                      repeatType: "loop",
+                  },
+              },
+              exit: {
+                  scale: 1,
+                  opacity: 0.8,
+                  transition: {
+                      duration: 0.3,
+                      ease: "easeInOut",
+                  },
+              },
+          }
+        : {
+              initial: {
+                  scale: 1,
+                  opacity: 1,
+              },
+              animate: {
+                  scale: [1, 1, 1],
 
-            opacity: 1,
-            transition: {
-                duration: 20,
-
-
-            }
-        },
-        exit: {
-            scale: 1,
-            opacity: 0.8,
-            transition: {
-                duration: 0.3,
-                ease: "easeInOut"
-            }
-        }
-    };
+                  opacity: 1,
+                  transition: {
+                      duration: 20,
+                  },
+              },
+              exit: {
+                  scale: 1,
+                  opacity: 0.8,
+                  transition: {
+                      duration: 0.3,
+                      ease: "easeInOut",
+                  },
+              },
+          };
 
     // Variantes de animación para los textos
     const titleVariants = {
         initial: {
             opacity: 0,
             y: 60,
-            scale: 0.8
+            scale: 0.8,
         },
         animate: {
             opacity: 1,
@@ -74,8 +75,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             transition: {
                 duration: 0.8,
                 delay: 0.8,
-                ease: "easeOut"
-            }
+                ease: "easeOut",
+            },
         },
         exit: {
             opacity: 0,
@@ -83,16 +84,16 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             scale: 0.9,
             transition: {
                 duration: 0.4,
-                ease: "easeInOut"
-            }
-        }
-    }
+                ease: "easeInOut",
+            },
+        },
+    };
 
     const descriptionVariants = {
         initial: {
             opacity: 0,
             y: 40,
-            filter: "blur(10px)"
+            filter: "blur(10px)",
         },
         animate: {
             opacity: 1,
@@ -102,8 +103,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             transition: {
                 duration: 0.7,
                 delay: 1.3,
-                ease: "easeOut"
-            }
+                ease: "easeOut",
+            },
         },
         exit: {
             opacity: 0,
@@ -111,16 +112,16 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             filter: "blur(8px)",
             transition: {
                 duration: 0.3,
-                ease: "easeInOut"
-            }
-        }
-    }
+                ease: "easeInOut",
+            },
+        },
+    };
 
     const buttonsVariants = {
         initial: {
             opacity: 0,
             y: 40,
-            scale: 0.9
+            scale: 0.9,
         },
         animate: {
             opacity: 1,
@@ -129,8 +130,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             transition: {
                 duration: 0.6,
                 delay: 1.6,
-                ease: "easeOut"
-            }
+                ease: "easeOut",
+            },
         },
         exit: {
             opacity: 0,
@@ -138,19 +139,19 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             scale: 0.8,
             transition: {
                 duration: 0.2,
-                ease: "easeInOut"
-            }
-        }
-    }
+                ease: "easeInOut",
+            },
+        },
+    };
 
     const containerVariants = {
         initial: {},
         animate: {
             transition: {
-                staggerChildren: 0.1
-            }
+                staggerChildren: 0.1,
+            },
         },
-        exit: {}
+        exit: {},
     };
 
     //TODO: Validación y conversión de infiniteLoop
@@ -169,10 +170,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
 
     // Obtener datos de WhatsApp de generals
     const phoneWhatsappObj = generals?.find(
-        (item) => item.correlative === "phone_whatsapp"
+        (item) => item.correlative === "phone_whatsapp",
     );
     const messageWhatsappObj = generals?.find(
-        (item) => item.correlative === "message_whatsapp"
+        (item) => item.correlative === "message_whatsapp",
     );
 
     const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
@@ -184,10 +185,15 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     const startX = useRef(0);
     const currentTranslate = useRef(0);
 
-
     // Ordenar items por order_index de menor a mayor antes de reasignar índices
-    const sortedItems = items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) || [];
-    const duplicatedItems = [sortedItems[sortedItems.length - 1], ...sortedItems, sortedItems[0]];
+    const sortedItems =
+        items?.sort((a, b) => (a.order_index || 0) - (b.order_index || 0)) ||
+        [];
+    const duplicatedItems = [
+        sortedItems[sortedItems.length - 1],
+        ...sortedItems,
+        sortedItems[0],
+    ];
     const validAlignments = ["center", "left", "right"];
     const validPosition = ["yes", "true", "si"];
     const showPagination = validAlignments.includes(data?.paginationAlignment);
@@ -201,21 +207,22 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         : "true";
 
     const nextSlide = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % duplicatedItems.length);
+        setCurrentIndex(
+            (prevIndex) => (prevIndex + 1) % duplicatedItems.length,
+        );
     };
 
     const prevSlide = () => {
         setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? duplicatedItems.length - 1 : prevIndex - 1
+            prevIndex === 0 ? duplicatedItems.length - 1 : prevIndex - 1,
         );
     };
-
 
     // Helper para saber si el evento fue sobre un botón o enlace
     const isEventOnButtonOrLink = (e) => {
         let el = e.target;
         while (el) {
-            if (el.tagName === 'A' || el.tagName === 'BUTTON') return true;
+            if (el.tagName === "A" || el.tagName === "BUTTON") return true;
             el = el.parentElement;
         }
         return false;
@@ -244,7 +251,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         const threshold = 20;
         const deltaX = Math.abs(
             (currentTranslate.current + currentIndex * 100) *
-            (window.innerWidth / 100)
+                (window.innerWidth / 100),
         );
         if (deltaX > threshold) {
             if (currentTranslate.current > -currentIndex * 100) {
@@ -282,12 +289,12 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         if (!isDragging.current) return;
         isDragging.current = false;
         if (!sliderRef.current) return;
-        
+
         sliderRef.current.style.transition = "transform 0.5s ease-in-out";
         const threshold = 50; // Aumentado de 20 a 50 para mejor detección
         const deltaX = Math.abs(
             (currentTranslate.current + currentIndex * 100) *
-            (window.innerWidth / 100)
+                (window.innerWidth / 100),
         );
         if (deltaX > threshold) {
             if (currentTranslate.current > -currentIndex * 100) {
@@ -325,8 +332,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 sliderRef.current.style.transition = "none";
                 setCurrentIndex(duplicatedItems.length - 2);
                 requestAnimationFrame(() => {
-                    sliderRef.current.style.transform = `translateX(-${(duplicatedItems.length - 2) * 100
-                        }%)`;
+                    sliderRef.current.style.transform = `translateX(-${
+                        (duplicatedItems.length - 2) * 100
+                    }%)`;
                     setTimeout(() => {
                         sliderRef.current.style.transition =
                             "transform 0.5s ease-in-out";
@@ -338,8 +346,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 sliderRef.current.style.transition = "none";
                 setCurrentIndex(1);
                 requestAnimationFrame(() => {
-                    sliderRef.current.style.transform = `translateX(-${1 * 100
-                        }%)`;
+                    sliderRef.current.style.transform = `translateX(-${
+                        1 * 100
+                    }%)`;
                     setTimeout(() => {
                         sliderRef.current.style.transition =
                             "transform 0.5s ease-in-out";
@@ -371,7 +380,12 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             canvas.height = img.height;
             const ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0, img.width, img.height);
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+            );
             let colorSum = 0;
             for (let i = 0; i < imageData.data.length; i += 4) {
                 const r = imageData.data[i];
@@ -386,19 +400,23 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         };
     };
 
-
     // Cada vez que cambia el slide, revisa si la imagen es oscura
     useEffect(() => {
         const currentItem = duplicatedItems[currentIndex];
         if (currentItem?.bg_image) {
-            checkImageDarkness(`/storage/images/slider/${currentItem.bg_image}`);
+            checkImageDarkness(
+                `/storage/images/slider/${currentItem.bg_image}`,
+            );
         }
     }, [currentIndex, duplicatedItems]);
 
     return (
-        <div id={data?.element_id || null} className={`relative w-full mx-auto ${data?.class_slider_section|| ""}`}>
+        <div
+            id={data?.element_id || null}
+            className={`relative w-full mx-auto ${data?.class_slider_section || ""}`}
+        >
             <div
-                className={`overflow-hidden relative ${isDragging.current ? 'cursor-grabbing' : 'cursor-grab'} ease`}
+                className={`overflow-hidden relative ${isDragging.current ? "cursor-grabbing" : "cursor-grab"} ease`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -406,21 +424,20 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
-                style={{ userSelect: 'none' }}
+                style={{ userSelect: "none" }}
             >
                 <div
                     ref={sliderRef}
                     className={`flex ${data?.class_slider || ""}`}
                     style={{
                         transform: `translateX(-${currentIndex * 100}%)`,
-                        transition: 'transform 0.5s ease-in-out'
+                        transition: "transform 0.5s ease-in-out",
                     }}
                 >
                     {duplicatedItems.map((item, index) => (
                         <div
                             key={`slide-${index}`}
                             className={`w-full min-h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative`}
-                   
                         >
                             <AnimatePresence>
                                 {currentIndex === index && (
@@ -436,7 +453,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             initial="initial"
                                             animate="animate"
                                             exit="exit"
-                                            onClick={(e)=> window.location = item?.button_link}
+                                            onClick={(e) =>
+                                                (window.location =
+                                                    item?.button_link)
+                                            }
                                         />
                                         {/* Mobile Image */}
                                         <motion.img
@@ -449,41 +469,71 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             initial="initial"
                                             animate="animate"
                                             exit="exit"
-                                            onClick={(e)=> window.location = item?.button_link}
-
+                                            onClick={(e) =>
+                                                (window.location =
+                                                    item?.button_link)
+                                            }
                                         />
                                     </>
                                 )}
                             </AnimatePresence>
 
                             {/* Overlays personalizados por slide (como SliderMultivet) */}
-                            {(item?.show_overlay !== false && item?.show_overlay !== 0) && (
-                                <div 
-                                    className="absolute inset-0"
-                                    style={{
-                                        background: `linear-gradient(${
-                                            item?.overlay_direction === 'to-r' ? 'to right' :
-                                            item?.overlay_direction === 'to-l' ? 'to left' :
-                                            item?.overlay_direction === 'to-t' ? 'to top' :
-                                            item?.overlay_direction === 'to-b' ? 'to bottom' :
-                                            item?.overlay_direction === 'to-tr' ? 'to top right' :
-                                            item?.overlay_direction === 'to-tl' ? 'to top left' :
-                                            item?.overlay_direction === 'to-br' ? 'to bottom right' :
-                                            item?.overlay_direction === 'to-bl' ? 'to bottom left' :
-                                            'to bottom'
-                                        }, ${item?.overlay_color || '#000000'}${Math.round((item?.overlay_opacity ?? 50) * 2.55).toString(16).padStart(2, '0')}, transparent)`
-                                    }}
-                                ></div>
-                            )}
-                            
+                            {item?.show_overlay !== false &&
+                                item?.show_overlay !== 0 && (
+                                    <div
+                                        className="absolute inset-0"
+                                        style={{
+                                            background: `linear-gradient(${
+                                                item?.overlay_direction ===
+                                                "to-r"
+                                                    ? "to right"
+                                                    : item?.overlay_direction ===
+                                                        "to-l"
+                                                      ? "to left"
+                                                      : item?.overlay_direction ===
+                                                          "to-t"
+                                                        ? "to top"
+                                                        : item?.overlay_direction ===
+                                                            "to-b"
+                                                          ? "to bottom"
+                                                          : item?.overlay_direction ===
+                                                              "to-tr"
+                                                            ? "to top right"
+                                                            : item?.overlay_direction ===
+                                                                "to-tl"
+                                                              ? "to top left"
+                                                              : item?.overlay_direction ===
+                                                                  "to-br"
+                                                                ? "to bottom right"
+                                                                : item?.overlay_direction ===
+                                                                    "to-bl"
+                                                                  ? "to bottom left"
+                                                                  : "to bottom"
+                                            }, ${item?.overlay_color || "#000000"}${Math.round(
+                                                (item?.overlay_opacity ?? 50) *
+                                                    2.55,
+                                            )
+                                                .toString(16)
+                                                .padStart(
+                                                    2,
+                                                    "0",
+                                                )}, transparent)`,
+                                        }}
+                                    ></div>
+                                )}
+
                             {/* Overlays por defecto si el overlay personalizado está desactivado */}
-                            {(item?.show_overlay === false || item?.show_overlay === 0) && (
+                            {(item?.show_overlay === false ||
+                                item?.show_overlay === 0) && (
                                 <>
                                     {/* Overlay por defecto desde data.class_overlay */}
                                     {data?.class_overlay && (
-                                        <div className={`absolute inset-0 ${data?.class_overlay}`}></div>
+                                        <div
+                                            className={`absolute inset-0 ${data?.class_overlay}`}
+                                        ></div>
                                     )}
-                                    
+
                                     {/* Overlays legacy (mantener compatibilidad) */}
                                     {data?.overlayMobile && (
                                         <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
@@ -497,88 +547,144 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                 </>
                             )}
 
-                         {data?.only_image && (<>
-
-                            <div className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider_container || ""}`}>
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={`content-${currentIndex}-${item.name}`}
-                                        variants={containerVariants}
-                                        initial="initial"
-                                        animate="animate"
-                                        exit="exit"
-                                        className={`${Global.APP_CORRELATIVE === "stechperu" ?"py-10":"py-20"} flex flex-col gap-5 lg:gap-10 h-full lg:h-auto  lg:py-0 items-start justify-between lg:justify-normal lg:items-start w-full`}
+                            {!data?.only_image && (
+                                <>
+                                    <div
+                                        className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider_container || ""}`}
                                     >
-                                        <div>
-                                            <motion.h2
-                                                variants={titleVariants}
-                                                className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-6/12  md:w-full md:max-w-md text-[30px]  " : "w-full  md:w-full text-[40px]  md:max-w-lg "} font-title leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${data?.class_title}`}
-                                                style={{
-                                                    color: item.title_color || (isDarkBg ? "#FFFFFF" : "#000000"),
-                                                    textShadow: "0 0 20px rgba(0, 0, 0, .25)",
-                                                }}
-                                            >
-                                                <TextWithHighlight text={item.name} color="" />
-                                            </motion.h2>
-                                            <motion.p
-                                                variants={descriptionVariants}
-                                                className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-8/12" : "w-full"} md:w-full md:max-w-md text-lg leading-tight font-paragraph ${data?.class_description}`}
-                                                style={{
-                                                    color: item.description_color || (isDarkBg ? "#FFFFFF" : "#000000"),
-                                                    textShadow: "0 0 20px rgba(0, 0, 0, .25)",
-                                                }}
-                                            >
-                                                {item.description}
-                                            </motion.p>
-                                        </div>
-                                        {item.button_text && item.button_link && (
+                                        <AnimatePresence mode="wait">
                                             <motion.div
-                                                variants={buttonsVariants}
-                                                className={`flex flex-row gap-5 md:gap-10  w-full  ${Global.APP_CORRELATIVE === "stechperu" ? "justify-center lg:justify-start items-center lg:items-start":"items-start"}`}
+                                                key={`content-${currentIndex}-${item.name}`}
+                                                variants={containerVariants}
+                                                initial="initial"
+                                                animate="animate"
+                                                exit="exit"
+                                                className={`${Global.APP_CORRELATIVE === "stechperu" ? "py-10" : "py-20"} flex flex-col gap-5 lg:gap-10 h-full lg:h-auto  lg:py-0 items-start justify-between lg:justify-normal lg:items-start w-full`}
                                             >
-                                                <a
-                                                    href={item.button_link}
-                                                    ref={(el) => (buttonsRef.current[index] = el)}
-                                                    className={`bg-primary border-none flex flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold text-white ${data?.class_button_primary || "text-white"}`}
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                    }}
-                                                    onMouseDown={e => e.stopPropagation()}
-                                                    onTouchStart={e => e.stopPropagation()}
-                                                >
-                                                    {item.button_text}
-                                                    <Tag
-                                                        width={"1.25rem"}
-                                                        className={`transform rotate-90 ${data?.class_icon_primary || ""}`}
-                                                    />
-                                                </a>
-
-                                                {/* Botón de WhatsApp */}
-                                                {data?.whatsapp_info && phoneWhatsapp && (
-                                                    <a
-                                                        href={`https://wa.me/${phoneWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(messageWhatsapp || '¡Hola! Me interesa obtener más información sobre sus productos.')}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="bg-white border-2 border-neutral-dark backdrop-blur-sm text-gray-800 flex flex-row items-center gap-3 px-6 lg:px-8 py-3 lg:py-4 text-sm lg:text-base rounded-xl tracking-wide font-bold"
-                                                        onClick={e => {
-                                                            e.stopPropagation();
+                                                <div>
+                                                    <motion.h2
+                                                        variants={titleVariants}
+                                                        className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-6/12  md:w-full md:max-w-md text-[30px]  " : "w-full  md:w-full text-[40px]  md:max-w-lg "} font-title leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${data?.class_title}`}
+                                                        style={{
+                                                            color:
+                                                                item.title_color ||
+                                                                (isDarkBg
+                                                                    ? "#FFFFFF"
+                                                                    : "#000000"),
+                                                            textShadow:
+                                                                "0 0 20px rgba(0, 0, 0, .25)",
                                                         }}
-                                                        onMouseDown={e => e.stopPropagation()}
-                                                        onTouchStart={e => e.stopPropagation()}
                                                     >
-                                                        <MessageCircle
-                                                            width={"1.25rem"}
-                                                            className="customtext-neutral-dark"
+                                                        <TextWithHighlight
+                                                            text={item.name}
+                                                            color=""
                                                         />
-                                                        Hablar con un asesor
-                                                    </a>
-                                                )}
+                                                    </motion.h2>
+                                                    <motion.p
+                                                        variants={
+                                                            descriptionVariants
+                                                        }
+                                                        className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-8/12" : "w-full"} md:w-full md:max-w-md text-lg leading-tight font-paragraph ${data?.class_description}`}
+                                                        style={{
+                                                            color:
+                                                                item.description_color ||
+                                                                (isDarkBg
+                                                                    ? "#FFFFFF"
+                                                                    : "#000000"),
+                                                            textShadow:
+                                                                "0 0 20px rgba(0, 0, 0, .25)",
+                                                        }}
+                                                    >
+                                                        {item.description}
+                                                    </motion.p>
+                                                </div>
+                                                {item.button_text &&
+                                                    item.button_link && (
+                                                        <motion.div
+                                                            variants={
+                                                                buttonsVariants
+                                                            }
+                                                            className={`flex flex-row gap-5 md:gap-10  w-full  ${Global.APP_CORRELATIVE === "stechperu" ? "justify-center lg:justify-start items-center lg:items-start" : "items-start"}`}
+                                                        >
+                                                            <a
+                                                                href={
+                                                                    item.button_link
+                                                                }
+                                                                ref={(el) =>
+                                                                    (buttonsRef.current[
+                                                                        index
+                                                                    ] = el)
+                                                                }
+                                                                className={`bg-primary border-none flex flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold text-white ${data?.class_button_primary || "text-white"}`}
+                                                                onClick={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                }}
+                                                                onMouseDown={(
+                                                                    e,
+                                                                ) =>
+                                                                    e.stopPropagation()
+                                                                }
+                                                                onTouchStart={(
+                                                                    e,
+                                                                ) =>
+                                                                    e.stopPropagation()
+                                                                }
+                                                            >
+                                                                {
+                                                                    item.button_text
+                                                                }
+                                                                <Tag
+                                                                    width={
+                                                                        "1.25rem"
+                                                                    }
+                                                                    className={`transform rotate-90 ${data?.class_icon_primary || ""}`}
+                                                                />
+                                                            </a>
+
+                                                            {/* Botón de WhatsApp */}
+                                                            {data?.whatsapp_info &&
+                                                                phoneWhatsapp && (
+                                                                    <a
+                                                                        href={`https://wa.me/${phoneWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(messageWhatsapp || "¡Hola! Me interesa obtener más información sobre sus productos.")}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="bg-white border-2 border-neutral-dark backdrop-blur-sm text-gray-800 flex flex-row items-center gap-3 px-6 lg:px-8 py-3 lg:py-4 text-sm lg:text-base rounded-xl tracking-wide font-bold"
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) => {
+                                                                            e.stopPropagation();
+                                                                        }}
+                                                                        onMouseDown={(
+                                                                            e,
+                                                                        ) =>
+                                                                            e.stopPropagation()
+                                                                        }
+                                                                        onTouchStart={(
+                                                                            e,
+                                                                        ) =>
+                                                                            e.stopPropagation()
+                                                                        }
+                                                                    >
+                                                                        <MessageCircle
+                                                                            width={
+                                                                                "1.25rem"
+                                                                            }
+                                                                            className="customtext-neutral-dark"
+                                                                        />
+                                                                        Hablar
+                                                                        con un
+                                                                        asesor
+                                                                    </a>
+                                                                )}
+                                                        </motion.div>
+                                                    )}
                                             </motion.div>
-                                        )}
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
-                         </>)}
+                                        </AnimatePresence>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -613,20 +719,22 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto ">
                     <div className="relative">
                         <div
-                            className={`absolute bottom-4 ${alignmentClassPagination === "left"
+                            className={`absolute bottom-4 ${
+                                alignmentClassPagination === "left"
                                     ? "inset-x-0 left-0"
                                     : alignmentClassPagination === "right"
-                                        ? "right-0"
-                                        : "left-1/2 transform -translate-x-1/2"
-                                }`}
+                                      ? "right-0"
+                                      : "left-1/2 transform -translate-x-1/2"
+                            }`}
                         >
                             {sortedItems.map((_, index) => (
                                 <div
                                     key={`dot-${index}`}
-                                    className={`inline-flex mx-1 w-3 h-3 rounded-full ${currentIndex === index + 1
-                                            ? "bg-white h-5 w-5 lg:w-6 lg:h-6 items-center justify-center border-2 border-primary"
+                                    className={`inline-flex mx-1 w-3 h-3 rounded-full ${
+                                        currentIndex === index + 1
+                                            ? "bg-transparent h-5 w-5 lg:w-6 lg:h-6 items-center justify-center border-2 border-primary"
                                             : "bg-secondary"
-                                        }`}
+                                    }`}
                                     onClick={() => setCurrentIndex(index + 1)}
                                 >
                                     {currentIndex === index + 1 && (

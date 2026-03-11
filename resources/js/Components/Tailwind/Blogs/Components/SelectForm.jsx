@@ -12,7 +12,8 @@ const SelectForm = ({
     label,
     labelClass,
     className,
-    disabled = false
+    disabled = false,
+    value
 }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [selectedOption, setSelectedOption] = useState(null)
@@ -32,6 +33,20 @@ const SelectForm = ({
             ? { value: option[computedValueKey], label: option[computedLabelKey] }
             : { value: option, label: option } // Si es un string, lo usamos como value y label
     )
+
+    // Sincronizar con el valor externo
+    useEffect(() => {
+        if (!value) {
+            setSelectedOption(null);
+            setSearchTerm("");
+            return;
+        }
+
+        const option = normalizedOptions.find(opt => opt.value == value);
+        if (option) {
+            setSelectedOption(option);
+        }
+    }, [value, options]);
 
     // Filtrar opciones por búsqueda
     const filteredOptions = normalizedOptions.filter((option) =>
