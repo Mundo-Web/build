@@ -3018,6 +3018,15 @@
                 ]
             },
             {
+                "id": "BannerPidelo",
+                "name": "BannerPidelo",
+                "data": [
+                    "btn_secondary",
+                    "overlay"
+                    
+                ]
+            },
+            {
                 "id": "BannerPublicitario",
                 "name": "BannerPublicitario",
                 "data": [

@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
 // Generar safelist dinámico para colores de la DB
-const colors = ['white', 'black', 'page-background','primary', 'secondary', 'accent', 'neutral-light', 'neutral-dark', 'warning', 'info', 'danger', 'success', 'sections-color'];
+const colors = [ 'page-background','primary', 'secondary', 'accent', 'neutral-light', 'neutral-dark', 'warning', 'info', 'danger', 'success', 'sections-color'];
 const colorShades = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
 // Opacidades comunes usadas en Tailwind (5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95)
 const opacities = ['5', '10', '15', '20', '25', '30', '40', '50', '60', '70', '75', '80', '90', '95'];
@@ -47,7 +47,8 @@ const generateSafelist = () => {
 
     return safelist;
 };
-;
+
+
 
 // Función helper para generar escala de colores con soporte de opacidad
 // Usamos color-mix con transparent para simular opacidades

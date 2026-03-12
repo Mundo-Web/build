@@ -3,7 +3,13 @@ import { motion } from "framer-motion";
 import { Star, Eye, Heart, Tag, ChevronRightCircle } from "lucide-react";
 import { toast } from "sonner";
 
-const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onClickTracking }) => {
+const CardProductMultivet = ({
+    product,
+    data,
+    favorites = [],
+    setFavorites,
+    onClickTracking,
+}) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // Verificar si el producto está en favoritos
@@ -11,11 +17,11 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
 
     // Función para formatear precio
     const formatPrice = (price) => {
-        if (!price) return '';
-        return new Intl.NumberFormat('es-PE', {
-            style: 'currency',
-            currency: 'PEN',
-            minimumFractionDigits: 2
+        if (!price) return "";
+        return new Intl.NumberFormat("es-PE", {
+            style: "currency",
+            currency: "PEN",
+            minimumFractionDigits: 2,
         }).format(price);
     };
 
@@ -25,7 +31,7 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
         return Array.from({ length: 5 }, (_, i) => (
             <Star
                 key={i}
-                className={`w-4 h-4 ${i < Math.floor(numRating) ? 'customtext-accent fill-current' : 'text-gray-300'}`}
+                className={`w-4 h-4 ${i < Math.floor(numRating) ? "customtext-accent fill-current" : "text-gray-300"}`}
             />
         ));
     };
@@ -37,18 +43,20 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
 
         if (setFavorites) {
             const newFavorites = isFavorite
-                ? favorites.filter(fav => fav.id !== product.id)
+                ? favorites.filter((fav) => fav.id !== product.id)
                 : [...favorites, product];
 
             setFavorites(newFavorites);
 
             toast.success(
-                isFavorite ? "Producto eliminado de favoritos" : "Producto agregado a favoritos",
+                isFavorite
+                    ? "Producto eliminado de favoritos"
+                    : "Producto agregado a favoritos",
                 {
                     description: product?.name,
                     duration: 2000,
                     position: "bottom-center",
-                }
+                },
             );
         }
     };
@@ -59,15 +67,22 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
         if (onClickTracking && product) {
             onClickTracking(product);
         }
-        
+
         const slug = product?.slug || product?.id;
         window.location.href = `/product/${slug}`;
     };
 
     // Calcular descuento si hay precio original
-    const hasDiscount = product?.price && product?.final_price && parseFloat(product.price) > parseFloat(product.final_price);
+    const hasDiscount =
+        product?.price &&
+        product?.final_price &&
+        parseFloat(product.price) > parseFloat(product.final_price);
     const discountPercentage = hasDiscount
-        ? Math.round(((parseFloat(product.price) - parseFloat(product.final_price)) / parseFloat(product.price)) * 100)
+        ? Math.round(
+              ((parseFloat(product.price) - parseFloat(product.final_price)) /
+                  parseFloat(product.price)) *
+                  100,
+          )
         : 0;
 
     return (
@@ -78,11 +93,15 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
             {/* Imagen del producto */}
             <div className="relative overflow-hidden bg-gray-50 w-full aspect-square">
                 <img
-                    src={product?.image ? `/api/items/media/${product.image}` : '/assets/img/noimage/no_img.jpg'}
-                    alt={product?.name || 'Producto'}
+                    src={
+                        product?.image
+                            ? `/api/items/media/${product.image}`
+                            : "/assets/img/noimage/no_img.jpg"
+                    }
+                    alt={product?.name || "Producto"}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
-                        e.target.src = '/assets/img/noimage/no_img.jpg';
+                        e.target.src = "/assets/img/noimage/no_img.jpg";
                     }}
                 />
 
@@ -98,34 +117,37 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
                 ) : data?.badge_offer_percent ? (
                     hasDiscount && (
                         <div className="absolute top-3 left-3 bg-danger text-white rounded-full text-sm font-bold shadow-lg z-10">
-                            <span className="bg-danger text-white bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold">
+                            <span className="bg-danger text-white bg-opacity-10  px-3 py-2 rounded-full text-xs font-bold">
                                 -{discountPercentage}%
                             </span>
                         </div>
                     )
                 ) : (
                     product?.category && (
-                        <div className="absolute top-3 left-3 bg-accent text-white rounded-full text-sm font-bold shadow-lg z-10">
-                            <span className="bg-accent customtext-primary bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold">
+                        <div className="absolute top-3 left-3 bg-accent text-primary rounded-full text-sm font-bold shadow-lg z-10">
+                            <span
+                                className={`bg-accent text-primary  px-3 py-2 rounded-full text-xs font-bold ${data?.class_badge_category || ""}`}
+                            >
                                 {product.category.name || product.category}
                             </span>
                         </div>
                     )
                 )}
 
-
-
-
-
-
                 {/* Badge de marca en la imagen (solo si NO se muestra arriba del nombre) */}
                 {!data?.badge_brand_up_name && product?.brand && (
                     <div className="absolute top-3 right-3 flex items-center justify-center transition-all duration-300 z-10">
                         <img
-                            src={product.brand.image ? `/api/brands/media/${product.brand.image}` : '/assets/img/noimage/no_img.jpg'}
-                            alt={product.brand.name || 'Marca'}
+                            src={
+                                product.brand.image
+                                    ? `/api/brands/media/${product.brand.image}`
+                                    : "/assets/img/noimage/no_img.jpg"
+                            }
+                            alt={product.brand.name || "Marca"}
                             className="max-h-14 max-w-14 object-contain"
-                            onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
+                            onError={(e) => {
+                                e.target.src = "/assets/img/noimage/no_img.jpg";
+                            }}
                         />
                     </div>
                 )}
@@ -133,84 +155,96 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
 
             {/* Contenido del producto */}
             <div className="p-5 flex-1 flex flex-col">
-
-             <div className="flex justify-between">
-                   {/* Badge de categoría sobre el nombre */}
-                {data?.badge_category_up_name && product?.category && (
-                    <div className="mb-2">
-                        <span className={`bg-accent customtext-primary bg-opacity-10 customtext-primary px-3 py-2 rounded-full text-xs font-bold ${data?.class_badge_category || ''}`}>
-                            {product.category.name || product.category}
-                        </span>
-                    </div>
-                )}
-                {data?.badge_brand_up_name && product?.brand && (
-                    <div className="mb-2">
-                        <img
-                            src={product.brand.image ? `/api/brands/media/${product.brand.image}` : '/assets/img/noimage/no_img.jpg'}
-                            alt={product.brand.name || 'Marca'}
-                            className="max-h-10 max-w-20 object-contain"
-                            onError={(e) => { e.target.src = '/assets/img/noimage/no_img.jpg' }}
-                        />
-                    </div>
-                )}
-
-             </div>
+                <div className="flex justify-between">
+                    {/* Badge de categoría sobre el nombre */}
+                    {data?.badge_category_up_name && product?.category && (
+                        <div className="mb-2">
+                            <span
+                                className={`bg-accent text-primary bg-opacity-10  px-3 py-2 rounded-full text-xs font-bold ${data?.class_badge_category || ""}`}
+                            >
+                                {product.category.name || product.category}
+                            </span>
+                        </div>
+                    )}
+                    {data?.badge_brand_up_name && product?.brand && (
+                        <div className="mb-2">
+                            <img
+                                src={
+                                    product.brand.image
+                                        ? `/api/brands/media/${product.brand.image}`
+                                        : "/assets/img/noimage/no_img.jpg"
+                                }
+                                alt={product.brand.name || "Marca"}
+                                className="max-h-10 max-w-20 object-contain"
+                                onError={(e) => {
+                                    e.target.src =
+                                        "/assets/img/noimage/no_img.jpg";
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
                 {/* Nombre del producto */}
                 <h3 className="text-lg mt-2 font-bold customtext-neutral-dark mb-2 group-hover:customtext-primary transition-colors duration-300 font-title line-clamp-2 min-h-[3.5rem]">
                     {product?.name}
                 </h3>
 
                 {/* Descripción corta */}
-                {!data?.is_card_content_description &&
-                    product?.description ? (
-                    <p className="customtext-neutral-light text-sm mb-3 line-clamp-2 min-h-[2.5rem]"
-                        dangerouslySetInnerHTML={{ __html: product.description }}>
-                    </p>
+                {!data?.is_card_content_description && product?.description ? (
+                    <p
+                        className="customtext-neutral-light text-sm mb-3 line-clamp-2 min-h-[2.5rem]"
+                        dangerouslySetInnerHTML={{
+                            __html: product.description,
+                        }}
+                    ></p>
                 ) : (
-                    <p className="customtext-neutral-light text-sm mb-1 line-clamp-2 min-h-[2rem]"
-                    >
+                    <p className="customtext-neutral-light text-sm mb-1 line-clamp-2 min-h-[2rem]">
                         {product?.sku}
                     </p>
-                )
-                }
-
-
-
+                )}
 
                 {/* Spacer para empujar el contenido inferior hacia abajo */}
                 <div className="flex-1"></div>
 
                 {/* Precios */}
-               { product?.final_price && product?.final_price > 0 && (
-                 <div className="flex items-center justify-between mb-4">
-                    {data?.badge_offer_percent && hasDiscount ? (
-                        <div className="flex items-center space-x-3">
-                            <div className="text-xl font-bold customtext-secondary font-title">
-                                {formatPrice(product?.final_price)}
-                            </div>
-                            <span className="text-sm customtext-neutral-light line-through">
-                                {formatPrice(product.price)}
-                            </span>
-                        </div>
-                    ) : (
-                        <div className="space-y-1">
-                            <div className="text-xl font-bold customtext-secondary font-title">
-                                {formatPrice(product?.final_price || product?.price)}
-                            </div>
-                            {hasDiscount && (
-                                <div className="flex items-center space-x-2">
-                                    <span className="text-sm customtext-neutral-light line-through">
-                                        {formatPrice(product.price)}
-                                    </span>
-                                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-bold">
-                                        Ahorra {formatPrice(parseFloat(product.price) - parseFloat(product.final_price))}
-                                    </span>
+                {product?.final_price && product?.final_price > 0 && (
+                    <div className="flex items-center justify-between mb-4">
+                        {data?.badge_offer_percent && hasDiscount ? (
+                            <div className="flex items-center space-x-3">
+                                <div className="text-xl font-bold customtext-secondary font-title">
+                                    {formatPrice(product?.final_price)}
                                 </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-               )}
+                                <span className="text-sm customtext-neutral-light line-through">
+                                    {formatPrice(product.price)}
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="space-y-1">
+                                <div className="text-xl font-bold customtext-secondary font-title">
+                                    {formatPrice(
+                                        product?.final_price || product?.price,
+                                    )}
+                                </div>
+                                {hasDiscount && (
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-sm customtext-neutral-light line-through">
+                                            {formatPrice(product.price)}
+                                        </span>
+                                        <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-bold">
+                                            Ahorra{" "}
+                                            {formatPrice(
+                                                parseFloat(product.price) -
+                                                    parseFloat(
+                                                        product.final_price,
+                                                    ),
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Botones de acción */}
                 <div className="flex space-x-2">
@@ -221,14 +255,11 @@ const CardProductMultivet = ({ product, data, favorites = [], setFavorites, onCl
                         }}
                         type="button"
                         disabled={!product?.stock && !product?.stock > 0}
-                        className={`flex-1 bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary disabled:opacity-50 disabled:cursor-not-allowed ${data?.class_button_card_detail || ''}`}
+                        className={`flex-1 bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center space-x-2 hover:bg-accent hover:customtext-primary disabled:opacity-50 disabled:cursor-not-allowed ${data?.class_button_card_detail || ""}`}
                     >
-
                         <span>Ver detalle</span>
                         <ChevronRightCircle className="w-5 h-5" />
                     </button>
-
-
                 </div>
             </div>
         </div>

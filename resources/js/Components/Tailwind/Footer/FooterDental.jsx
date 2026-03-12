@@ -90,7 +90,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                     {/* Policies Column */}
                     <div>
                         <h3
-                            className={` font-bold mb-6 text-base  ${data?.class_menu || "customtext-primary"}`}
+                            className={` font-bold mb-6 text-base  ${data?.class_menu || "text-primary"}`}
                         >
                             Políticas
                         </h3>
@@ -100,7 +100,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                             <li>
                                 <a
                                     onClick={() => openModal(0)}
-                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    className={`cursor-pointer hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Políticas de privacidad
                                 </a>
@@ -110,7 +110,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(1)}
-                                    className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    className={`cursor-pointer hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Términos y Condiciones
                                 </a>
@@ -120,7 +120,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(2)}
-                                    className={` cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    className={` cursor-pointer hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Políticas de cambio
                                 </a>
@@ -131,7 +131,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     className="cursor-pointer flex flex-col gap-2 items-start  "
                                 >
                                     <span
-                                        className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                        className={`hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
                                     >
                                         Libro de reclamaciones
                                     </span>
@@ -155,7 +155,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         className="cursor-pointer flex flex-col gap-2 items-start  "
                                     >
                                         <span
-                                            className={`hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:customtext-primary"}`}
+                                            className={`hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
                                         >
                                             Denuncias
                                         </span>
@@ -174,7 +174,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={`/cloud/${generals.find((item) => item.correlative === "politica_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:customtext-primary"}`}
+                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
                                     >
                                         Política del sistema de Gestión
                                     </a>
@@ -191,7 +191,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={`/cloud/${generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:customtext-primary"}`}
+                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
                                     >
                                         Alcance del sistema de Gestión
                                     </a>
@@ -200,13 +200,13 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         </ul>
 
                         <h3
-                            className={`font-bold mb-6 text-base mt-8 ${data?.class_menu || "customtext-primary"}`}
+                            className={`font-bold mb-6 text-base mt-8 ${data?.class_menu || "text-primary"}`}
                         >
                             Horarios de atención
                         </h3>
 
                         <p
-                            className={`cursor-pointer whitespace-pre-line hover:font-bold transition-all duration-300 ${data?.class_menu_item || "text-white hover:customtext-primary"}`}
+                            className={`cursor-pointer whitespace-pre-line hover:font-bold transition-all duration-300 ${data?.class_menu_item || "text-white hover:text-primary"}`}
                         >
                             {" "}
                             {generals.find(
@@ -220,7 +220,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                 {/* Newsletter Column */}
                 <div className="mt-4 lg:mt-0 col-span-1 md:col-span-2">
                     <h3
-                        className={`font-bold mb-4 text-base ${data?.class_menu || "customtext-primary"}`}
+                        className={`font-bold mb-4 text-base ${data?.class_menu || "text-primary"}`}
                     >
                         Únete a nuestro blog
                     </h3>
@@ -274,7 +274,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                     </form>
                     <div>
                         <h3
-                            className={`customtext-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ""}`}
+                            className={`text-primary font-bold mb-6 text-base mt-8 ${data?.class_menu || ""}`}
                         >
                             Nuestras redes
                         </h3>
@@ -288,7 +288,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={social.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-base flex bg-white customtext-primary w-8 h-8 pt-0.5 items-center justify-center rounded-full"
+                                        className="text-base flex bg-white text-primary w-8 h-8 pt-0.5 items-center justify-center rounded-full"
                                     >
                                         <i className={social.icon}></i>
                                     </a>
@@ -300,7 +300,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         {data?.job_button && (
                             <button
                                 onClick={() => setJobModalOpen(true)}
-                                className="mt-6 px-5 py-2.5 bg-white customtext-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer shadow-md"
+                                className="mt-6 px-5 py-2.5 bg-white text-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer shadow-md"
                             >
                                 Trabaja con nosotros
                             </button>

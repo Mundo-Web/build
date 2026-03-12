@@ -2,6 +2,7 @@ import React from "react";
 import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerPidelo = ({ data }) => {
+    console.log(data);
     const backgroundUrl = resolveSystemAsset(data?.background);
     // Procesar el nombre para resaltar palabras entre *asteriscos*
     const renderName = (name) => {
@@ -32,9 +33,7 @@ const BannerPidelo = ({ data }) => {
                 >
                     {/* Overlay oscuro */}
                     {data?.overlay && (
-
                         <div className="absolute inset-0 bg-black bg-opacity-60 rounded-2xl z-0"></div>
-
                     )}
                     <div className="relative z-10 flex flex-col items-center justify-center h-full w-full gap-6">
                         <h1 className="text-3xl font-title  md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-widest text-white drop-shadow-lg mb-2">
@@ -52,14 +51,14 @@ const BannerPidelo = ({ data }) => {
                                     {data?.button_text}
                                 </a>
                             )}
-                          {data?.btn_secondary &&(
-                              <a
-                                href="/catalogo"
-                                className="border-white hover:border-black hover:bg-primary text-white text-base 2xl:text-xl tracking-normal border cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center shadow-lg"
-                            >
-                                Ver Productos
-                            </a>
-                          )}
+                            {data?.btn_secondary && (
+                                <a
+                                    href="/catalogo"
+                                    className="border-white hover:border-black hover:bg-primary text-white text-base 2xl:text-xl tracking-normal border cursor-pointer w-full sm:w-max px-5 sm:px-10 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center shadow-lg"
+                                >
+                                    Ver Productos
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>
