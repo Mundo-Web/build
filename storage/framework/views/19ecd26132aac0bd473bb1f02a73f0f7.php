@@ -63,7 +63,7 @@ $component = Route::currentRouteName();
     $logoUrl = asset('assets/resources/logo.png');
 
     // Schema Organization & WebSite
-    $isEcommerce = trim(\App\Models\General::get('is_ecommerce') ?? 'false') === 'true';
+    $isEcommerce = trim($generals->where('correlative', 'is_ecommerce')->first()?->description ?? 'false') === 'true';
     $searchEnabled = (data_get($data, 'search_enabled') == true || data_get($data, 'search_enabled') == 'true');
     $searchPattern = data_get($data, 'search_pattern') ?? '/catalogo?q={search_term_string}';
 
