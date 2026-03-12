@@ -122,6 +122,7 @@ class SystemController extends BasicController
 
             // Include all SEO generals by default plus currency
             $generals_keys = [
+                'is_ecommerce',
                 'currency',
                 'whatsapp_advisors',
                 'additional_shipping_costs',

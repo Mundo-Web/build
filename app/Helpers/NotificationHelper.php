@@ -61,10 +61,8 @@ class NotificationHelper
         }
         
         // Verificar si es un dominio personalizado que usa Zoho
-        // Esto requeriría verificar los registros MX, pero por ahora 
-        // asumimos que dominios como s-tech.com.pe podrían usar Zoho
         $domain = substr(strrchr($email, "@"), 1);
-        $possibleZohoDomains = ['s-tech.com.pe']; // Agregar más dominios conocidos que usan Zoho
+        $possibleZohoDomains = [parse_url(config('app.url'), PHP_URL_HOST)]; 
         
         return in_array(strtolower($domain), $possibleZohoDomains);
     }    /**

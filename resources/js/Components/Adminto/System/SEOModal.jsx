@@ -25,6 +25,8 @@ const SEOModal = ({ dataLoaded, setDataLoaded, modalRef }) => {
   const keywordsRef = useRef(null)
   const sitemapPriorityRef = useRef(null)
   const sitemapFrequencyRef = useRef(null)
+  const searchEnabledRef = useRef(null)
+  const searchPatternRef = useRef(null)
 
   const onSeoChange = async (e) => {
     e.preventDefault()
@@ -33,7 +35,9 @@ const SEOModal = ({ dataLoaded, setDataLoaded, modalRef }) => {
       description: descriptionRef.current.value,
       keywords: $(keywordsRef.current).val(),
       sitemap_priority: parseFloat(sitemapPriorityRef.current.value) || 0.8,
-      sitemap_frequency: $(sitemapFrequencyRef.current).val() || 'weekly'
+      sitemap_frequency: $(sitemapFrequencyRef.current).val() || 'weekly',
+      search_enabled: searchEnabledRef.current.checked,
+      search_pattern: searchPatternRef.current.value
     })
     if (!result) return
     setDataLoaded(null)
@@ -46,6 +50,8 @@ const SEOModal = ({ dataLoaded, setDataLoaded, modalRef }) => {
     SetSelectValue(keywordsRef.current, dataLoaded?.keywords ?? []);
     sitemapPriorityRef.current.value = dataLoaded?.sitemap_priority ?? 0.8
     SetSelectValue(sitemapFrequencyRef.current, dataLoaded?.sitemap_frequency ?? 'weekly');
+    searchEnabledRef.current.checked = dataLoaded?.search_enabled ?? false;
+    searchPatternRef.current.value = dataLoaded?.search_pattern ?? '/catalogo?search={search_term_string}';
   }, [dataLoaded])
 
   return (
@@ -83,7 +89,27 @@ const SEOModal = ({ dataLoaded, setDataLoaded, modalRef }) => {
               ))}
             </SelectFormGroup>
           </div>
+         </div>
+
+        <hr className="my-3" />
+        <h6 className="text-muted mb-3">
+          <i className="fas fa-search me-1"></i>
+          Configuración de Búsqueda (Google Schema)
+        </h6>
+
+        <div className="form-check form-switch mb-2">
+          <input className="form-check-input" type="checkbox" id="search_enabled" ref={searchEnabledRef} />
+          <label className="form-check-label fw-bold" htmlFor="search_enabled">Habilitar Buscador en Google</label>
         </div>
+        
+        <InputFormGroup 
+          eRef={searchPatternRef} 
+          label='Patrón de URL de búsqueda' 
+          placeholder='/catalogo?search={search_term_string}'
+        />
+        <small className="text-muted d-block mt-n2 mb-2">
+          Usa <code>{`{search_term_string}`}</code> como marcador de posición para el término de búsqueda.
+        </small>
       </div>
     </Modal>
   )

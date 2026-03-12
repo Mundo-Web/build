@@ -68,6 +68,7 @@ const Generals = ({
     // Mapeo de tabs a correlatives - COMPLETO para reflejar todos los tabs del formulario
     const tabCorrelatives = {
         general: [
+            "is_ecommerce",
             "address",
             "cintillo",
             "copyright",
@@ -453,6 +454,9 @@ const Generals = ({
         copyright:
             generals.find((x) => x.correlative == "copyright")?.description ??
             "",
+        is_ecommerce:
+            generals.find((x) => x.correlative == "is_ecommerce")
+                ?.description === "true",
         address:
             generals.find((x) => x.correlative == "address")?.description ?? "",
         openingHours:
@@ -1377,6 +1381,11 @@ const Generals = ({
                 correlative: "email_contact",
                 name: "Correo de contacto",
                 description: formData.emails.join(","),
+            },
+            {
+                correlative: "is_ecommerce",
+                name: "¿Es un proyecto E-commerce?",
+                description: String(formData.is_ecommerce || false),
             },
             {
                 correlative: "address",
@@ -2396,6 +2405,32 @@ const Generals = ({
                             role="tabpanel"
                         >
                             <div className="row">
+                                <ConditionalField correlative="is_ecommerce">
+                                    <div className="col-12 mb-3">
+                                        <div className="card bg-light border-0">
+                                            <div className="card-body py-2">
+                                                <div className="form-check form-switch d-flex align-items-center gap-2 min-h-0">
+                                                    <input
+                                                        className="form-check-input mt-0"
+                                                        type="checkbox"
+                                                        id="is_ecommerce"
+                                                        checked={formData.is_ecommerce}
+                                                        onChange={(e) => handleFieldChange("is_ecommerce", e.target.checked)}
+                                                        style={{ width: '2.5rem', height: '1.25rem', cursor: 'pointer' }}
+                                                    />
+                                                    <label className="form-check-label fw-bold mb-0 cursor-pointer" htmlFor="is_ecommerce">
+                                                        <i className="fas fa-shopping-cart text-primary me-2"></i>
+                                                        ¿Este proyecto es un E-commerce?
+                                                    </label>
+                                                    <Tippy content="Si se activa, se habilitarán opciones de búsqueda y catálogo en el Schema de Google.">
+                                                        <i className="fas fa-question-circle text-muted small cursor-help"></i>
+                                                    </Tippy>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ConditionalField>
+
                                 <ConditionalField correlative="cintillo">
                                     <div className="col-md-6 mb-2">
                                         <div className="alert alert-info">

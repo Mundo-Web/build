@@ -1,17 +1,17 @@
-@php
+<?php
 $component = Route::currentRouteName();
-@endphp
+?>
 
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-    @viteReactRefresh
+    <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    @php
+    <?php
     $isDetailPage = isset($data['using']['slug']) && is_array($data['using']['slug']) && isset($data['using']['slug']['model']);
     $modelName = $isDetailPage ? $data['using']['slug']['model'] : null;
     $item = null;
@@ -50,21 +50,21 @@ $component = Route::currentRouteName();
     $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
     $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
     }
-    @endphp
+    ?>
 
-    @php
+    <?php
     $version = config('app.version', '1.0.1');
-    @endphp
+    ?>
 
     <title><?php echo $pageTitle; ?> | <?php echo config('app.name', 'Base Template'); ?></title>
-    <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ $version }}" type="image/png">
-    <link rel="preload" href="/assets/resources/logo.png?v={{ $version }}" as="image" type="image/png">
+    <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e($version); ?>" type="image/png">
+    <link rel="preload" href="/assets/resources/logo.png?v=<?php echo e($version); ?>" as="image" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <meta name="description" content="<?php echo $pageDescription; ?>">
-    @if($pageKeywords)
-    <meta name="keywords" content="<?php echo $pageKeywords; ?>"> @endif
+    <?php if($pageKeywords): ?>
+    <meta name="keywords" content="<?php echo $pageKeywords; ?>"> <?php endif; ?>
     <meta name="author" content="Powered by Mundo Web">
     <link rel="canonical" href="<?php echo $canonicalUrl; ?>">
 
@@ -81,25 +81,25 @@ $component = Route::currentRouteName();
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="<?php echo $siteTitle; ?>">
 
-    @if($isDetailPage && isset($item))
-    @if($item->created_at)
-    <meta property="article:published_time" content="<?php echo $item->created_at; ?>"> @endif
-    @if($item->updated_at)
-    <meta property="article:modified_time" content="<?php echo $item->updated_at; ?>"> @endif
-    @if($item->category)
-    <meta property="article:section" content="<?php echo $item->category->name; ?>"> @endif
-    @if($item->tags && count($item->tags) > 0)
-    @foreach($item->tags as $tag)
-    <meta property="article:tag" content="<?php echo $tag->name; ?>"> @endforeach
-    @endif
-    @endif
+    <?php if($isDetailPage && isset($item)): ?>
+    <?php if($item->created_at): ?>
+    <meta property="article:published_time" content="<?php echo $item->created_at; ?>"> <?php endif; ?>
+    <?php if($item->updated_at): ?>
+    <meta property="article:modified_time" content="<?php echo $item->updated_at; ?>"> <?php endif; ?>
+    <?php if($item->category): ?>
+    <meta property="article:section" content="<?php echo $item->category->name; ?>"> <?php endif; ?>
+    <?php if($item->tags && count($item->tags) > 0): ?>
+    <?php $__currentLoopData = $item->tags; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <meta property="article:tag" content="<?php echo $tag->name; ?>"> <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
+    <?php endif; ?>
 
     <meta property="twitter:card" content="<?php echo $twitterCard; ?>">
     <meta property="twitter:url" content="<?php echo $ogUrl; ?>">
     <meta property="twitter:title" content="<?php echo $twitterTitle; ?>">
     <meta property="twitter:description" content="<?php echo $twitterDescription; ?>">
-    @if($twitterImage)
-    <meta property="twitter:image" content="<?php echo $twitterImage; ?>"> @endif
+    <?php if($twitterImage): ?>
+    <meta property="twitter:image" content="<?php echo $twitterImage; ?>"> <?php endif; ?>
 
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
@@ -119,18 +119,18 @@ $component = Route::currentRouteName();
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 
     <!-- Pixel injection is handled by InjectPixelsMiddleware with cache -->
-    @if ($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true')
+    <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true'): ?>
     <link rel="stylesheet" href="<?php echo $data['fonts']['title']['url']; ?>">
-    @endif
+    <?php endif; ?>
 
-    @if ($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true')
+    <?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true'): ?>
     <link rel="stylesheet" href="<?php echo $data['fonts']['paragraph']['url']; ?>">
-    @endif
+    <?php endif; ?>
 
-    @vite(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()])
-    @inertiaHead
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()]); ?>
+    <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->head; } ?>
 
-    @php
+    <?php
     $siteName = config('app.name', 'Mundo Web');
     $logoUrl = asset('assets/resources/logo.png');
 
@@ -202,15 +202,16 @@ $component = Route::currentRouteName();
     ]
     ];
     }
-    @endphp
+    ?>
 
-    @foreach($schemas as $schema)
+    <?php $__currentLoopData = $schemas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schema): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
     <script type="application/ld+json">
-        {!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-    </script>
-    @endforeach
+        <?php echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
 
-    @if ($component == 'BlogArticle.jsx')
+    </script>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+    <?php if($component == 'BlogArticle.jsx'): ?>
     <link href="/lte/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />
     <link href="/lte/assets/libs/quill/quill.bubble.css" rel="stylesheet" type="text/css" />
     <style>
@@ -223,7 +224,7 @@ $component = Route::currentRouteName();
             border-radius: 8px;
         }
     </style>
-    @endif
+    <?php endif; ?>
     <style>
         body {
             width: 100%;
@@ -234,36 +235,36 @@ $component = Route::currentRouteName();
         }
     </style>
 
-    @if ($data['fonts']['title']['url'] && $data['fonts']['title']['source'] == 'true')
+    <?php if($data['fonts']['title']['url'] && $data['fonts']['title']['source'] == 'true'): ?>
     <style>
         @font-face {
             font-family: "<?php echo $data['fonts']['title']['name']; ?>";
             src: url('<?php echo $data['fonts']['title']['url']; ?>') format('woff2');
         }
     </style>
-    @endif
-    @if ($data['fonts']['title']['name'])
+    <?php endif; ?>
+    <?php if($data['fonts']['title']['name']): ?>
     <style>
         .font-title {
             font-family: "<?php echo $data['fonts']['title']['name']; ?>", sans-serif;
         }
     </style>
-    @endif
-    @if ($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] == 'true')
+    <?php endif; ?>
+    <?php if($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] == 'true'): ?>
     <style>
         @font-face {
             font-family: "<?php echo $data['fonts']['paragraph']['name']; ?>";
             src: url('<?php echo $data['fonts']['paragraph']['url']; ?>') format('woff2');
         }
     </style>
-    @endif
-    @if ($data['fonts']['paragraph']['name'])
+    <?php endif; ?>
+    <?php if($data['fonts']['paragraph']['name']): ?>
     <style>
         * {
             font-family: "<?php echo $data['fonts']['paragraph']['name']; ?>", sans-serif;
         }
     </style>
-    @endif
+    <?php endif; ?>
 
     <style>
         /* CSS Variables - Using PHP Echo to avoid Blade formatter issues */
@@ -305,12 +306,12 @@ $component = Route::currentRouteName();
 
 </head>
 
-@php $bodyCustomHtml = $generals->where('correlative', 'body_custom_html')->first()?->description ?? ''; @endphp
+<?php $bodyCustomHtml = $generals->where('correlative', 'body_custom_html')->first()?->description ?? ''; ?>
 
-@php $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000'; @endphp
+<?php $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000'; ?>
 
 <body class="font-paragraph relative" style="background: var(--bg-page-background);">
-    @if($bodyCustomHtml) {!! $bodyCustomHtml !!} @endif
+    <?php if($bodyCustomHtml): ?> <?php echo $bodyCustomHtml; ?> <?php endif; ?>
 
     <div id="native-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-page-background);z-index:9999;transition:opacity 0.5s ease-out,visibility 0.5s ease-out;">
         <style>
@@ -360,54 +361,54 @@ $component = Route::currentRouteName();
         })();
     </script>
 
-    @inertia
+    <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->body; } else { ?><div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div><?php } ?>
     <script src="/lte/assets/js/vendor.min.js?v=<?php echo $version; ?>" defer></script>
 
-    @php $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000'; @endphp
+    <?php $appColorPrimary = $data['colors']->firstWhere('name', 'primary')?->description ?? '#000000'; ?>
     <script type="text/javascript">
-        window.APP_URL = "{{url('/')}}";
+        window.APP_URL = "<?php echo e(url('/')); ?>";
         window.APP_COLOR_PRIMARY = "<?php echo $appColorPrimary; ?>";
         window.APP_NAME = "<?php echo config('app.name', 'Mi Empresa'); ?>";
     </script>
 
-    @php
+    <?php
     $isCheckout = ($page->correlative ?? '') === 'checkout' || ($page->component ?? '') === 'checkout';
-    @endphp
+    ?>
 
-    @if($isCheckout)
-    @php
+    <?php if($isCheckout): ?>
+    <?php
     $culqiEnabledRaw = $generals->where('correlative', 'checkout_culqi')->first()?->description ?? 'false';
     $culqiEnabled = in_array(strtolower($culqiEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
     $culqiPublicKey = $generals->where('correlative', 'checkout_culqi_public_key')->first()?->description ?? '';
     $culqiRsaId = $generals->where('correlative', 'checkout_culqi_rsa_id')->first()?->description ?? '';
     $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
-    @endphp
-    @if($culqiEnabled && $culqiPublicKey)
+    ?>
+    <?php if($culqiEnabled && $culqiPublicKey): ?>
     <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
     <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
     <script type="text/javascript">
         window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
         window.CULQI_ENABLED = true;
-        @if($culqiRsaId && $culqiRsaPublicKey)
+        <?php if($culqiRsaId && $culqiRsaPublicKey): ?>
         window.CULQI_RSA_ID = "<?php echo $culqiRsaId; ?>";
         window.CULQI_RSA_PUBLIC_KEY = `<?php echo $culqiRsaPublicKey; ?>`;
-        @endif
+        <?php endif; ?>
     </script>
-    @else
+    <?php else: ?>
     <script type="text/javascript">
         window.CULQI_ENABLED = false;
     </script>
-    @endif
+    <?php endif; ?>
 
-    @php
+    <?php
     $openpayEnabledRaw = $generals->where('correlative', 'checkout_openpay')->first()?->description ?? 'false';
     $openpayEnabled = in_array(strtolower($openpayEnabledRaw), ['true', '1', 'on', 'yes', 'si', 'enabled']);
     $openpayMerchantId = $generals->where('correlative', 'checkout_openpay_merchant_id')->first()?->description ?? '';
     $openpayPublicKey = $generals->where('correlative', 'checkout_openpay_public_key')->first()?->description ?? '';
     $openpayIsSandbox = $generals->where('correlative', 'checkout_openpay_sandbox_mode')->first()?->description ?? 'false';
     $openpayIsSandbox = in_array(strtolower($openpayIsSandbox), ['true', '1', 'on', 'yes', 'si']);
-    @endphp
-    @if($openpayEnabled && $openpayMerchantId && $openpayPublicKey)
+    ?>
+    <?php if($openpayEnabled && $openpayMerchantId && $openpayPublicKey): ?>
     <script type="text/javascript" src="https://js.openpay.pe/openpay.v1.min.js"></script>
     <script type="text/javascript" src="https://js.openpay.pe/openpay-data.v1.min.js"></script>
     <script type="text/javascript">
@@ -415,12 +416,12 @@ $component = Route::currentRouteName();
         window.OPENPAY_PUBLIC_KEY = "<?php echo $openpayPublicKey; ?>";
         window.OPENPAY_SANDBOX_MODE = <?php echo $openpayIsSandbox ? 'true' : 'false'; ?>;
     </script>
-    @endif
-    @else
+    <?php endif; ?>
+    <?php else: ?>
     <script type="text/javascript">
         window.CULQI_ENABLED = false;
     </script>
-    @endif
+    <?php endif; ?>
 
     <script src="/lte/assets/js/select2.full.min.js?v=<?php echo $version; ?>" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
@@ -462,4 +463,4 @@ $component = Route::currentRouteName();
     </script>
 </body>
 
-</html>
+</html><?php /**PATH C:\xampp\htdocs\projects\lapetaca_backend\resources\views/public.blade.php ENDPATH**/ ?>
