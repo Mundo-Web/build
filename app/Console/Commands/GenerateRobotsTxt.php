@@ -70,7 +70,7 @@ class GenerateRobotsTxt extends Command
         
         // Sitemap
         $content .= "# Sitemap\n";
-        $content .= "Sitemap: " . rtrim($sitemapUrl, '/') . "/sitemap.xml\n";
+        $content .= "Sitemap: " . rtrim(url('/'), '/') . "/sitemap.xml\n";
         
         return $content;
     }

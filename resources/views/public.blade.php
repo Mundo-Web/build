@@ -30,9 +30,9 @@ $component = Route::currentRouteName();
     $ogTitle = $pageTitle; $ogDescription = $pageDescription; $ogImage = $pageImage; $ogUrl = $pageUrl;
     $twitterTitle = $pageTitle; $twitterDescription = $pageDescription; $twitterImage = $pageImage;
     $twitterCard = 'summary_large_image'; $canonicalUrl = $pageUrl;
-    $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? env('APP_NAME');
+    $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? config('app.name', 'Mundo Web');
     } else {
-    $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? env('APP_NAME');
+    $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? config('app.name', 'Mundo Web');
     $siteDescription = $generals->where('correlative', 'site_description')->first()?->description ?? '';
     $siteKeywords = $generals->where('correlative', 'site_keywords')->first()?->description ?? '';
     $pageTitle = $data['name'] ?? $siteTitle;
@@ -53,7 +53,7 @@ $component = Route::currentRouteName();
     @endphp
 
     @php
-    $version = env('APP_VERSION', '1.0.1');
+    $version = config('app.version', '1.0.1');
     @endphp
 
     <title><?php echo $pageTitle; ?> | <?php echo config('app.name', 'Base Template'); ?></title>
@@ -68,13 +68,13 @@ $component = Route::currentRouteName();
     <meta name="author" content="Powered by Mundo Web">
     <link rel="canonical" href="<?php echo $canonicalUrl; ?>">
 
-    <meta name="title" content="<?php echo $ogTitle ?? ($generals['meta_title']->description ?? 'Hostal La Petaca'); ?>">
+    <meta name="title" content="<?php echo $ogTitle ?? ($generals['meta_title']->description ?? 'Mundo Web'); ?>">
     <meta name="description" content="<?php echo $ogDescription ?? ($generals['meta_description']->description ?? ''); ?>">
     <meta name="keywords" content="<?php echo $generals['meta_keywords']->description ?? ''; ?>">
 
     <meta property="og:type" content="<?php echo $isDetailPage ? 'article' : 'website'; ?>">
     <meta property="og:url" content="<?php echo $ogUrl; ?>">
-    <meta property="og:title" content="<?php echo $ogTitle ?? ($generals['og_title']->description ?? 'Hostal La Petaca'); ?>">
+    <meta property="og:title" content="<?php echo $ogTitle ?? ($generals['og_title']->description ?? 'Mundo Web'); ?>">
     <meta property="og:description" content="<?php echo $ogDescription ?? ($generals['meta_description']->description ?? ''); ?>">
     <meta property="og:image" content="<?php echo $ogImage ?? ($generals['og_image']->description ?? ''); ?>">
     <meta property="og:image:width" content="1200">
