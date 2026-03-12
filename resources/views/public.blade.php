@@ -135,9 +135,11 @@ $component = Route::currentRouteName();
     $logoUrl = asset('assets/resources/logo.png');
 
     // Schema Organization & WebSite (Basic for all pages)
-    $isEcommerce = ($generals->where('correlative', 'is_ecommerce')->first()?->description ?? 'false') === 'true';
-    $searchEnabled = ($page['search_enabled'] ?? false);
-    $searchPattern = $page['search_pattern'] ?? '/catalogo?search={search_term_string}';
+    $isEcommerce = trim(\App\Models\General::get('is_ecommerce') ?? 'false') === 'true';
+    $searchEnabled = (isset($data['search_enabled']) && ($data['search_enabled'] == true || $data['search_enabled'] == 'true'));
+    $searchPattern = $data['search_pattern'] ?? '/catalogo?search={search_term_string}';
+    @endphp
+    @php
 
     $websiteSchema = [
         "@context" => "https://schema.org",
