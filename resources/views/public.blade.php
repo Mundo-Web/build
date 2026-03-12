@@ -141,8 +141,6 @@ $component = Route::currentRouteName();
     $pageName = data_get($data, 'name', 'Unknown');
     $pageId = data_get($data, 'id', 'No-ID');
     @endphp
-    <!-- DEBUG SCHEMA: Page={{ $pageName }} ({{ $pageId }}), isEcommerce={{ $isEcommerce ? 'true' : 'false' }}, searchEnabled={{ $searchEnabled ? 'true' : 'false' }}, pattern={{ $searchPattern }} -->
-    <!-- DEBUG KEYS: {{ is_array($data) || is_object($data) ? implode(',', array_keys((array)$data)) : 'not-an-array' }} -->
     @php
 
     $websiteSchema = [
