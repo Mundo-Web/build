@@ -136,10 +136,13 @@ $component = Route::currentRouteName();
 
     // Schema Organization & WebSite (Basic for all pages)
     $isEcommerce = trim(\App\Models\General::get('is_ecommerce') ?? 'false') === 'true';
-    $searchEnabled = (isset($data['search_enabled']) && ($data['search_enabled'] == true || $data['search_enabled'] == 'true'));
-    $searchPattern = $data['search_pattern'] ?? '/catalogo?search={search_term_string}';
+    $searchEnabled = (data_get($data, 'search_enabled') == true || data_get($data, 'search_enabled') == 'true');
+    $searchPattern = data_get($data, 'search_pattern') ?? '/catalogo?q={search_term_string}';
+    $pageName = data_get($data, 'name', 'Unknown');
+    $pageId = data_get($data, 'id', 'No-ID');
     ?>
-    <!-- DEBUG SCHEMA: isEcommerce=<?php echo e($isEcommerce ? 'true' : 'false'); ?>, searchEnabled=<?php echo e($searchEnabled ? 'true' : 'false'); ?>, pattern=<?php echo e($searchPattern); ?> -->
+    <!-- DEBUG SCHEMA: Page=<?php echo e($pageName); ?> (<?php echo e($pageId); ?>), isEcommerce=<?php echo e($isEcommerce ? 'true' : 'false'); ?>, searchEnabled=<?php echo e($searchEnabled ? 'true' : 'false'); ?>, pattern=<?php echo e($searchPattern); ?> -->
+    <!-- DEBUG KEYS: <?php echo e(is_array($data) || is_object($data) ? implode(',', array_keys((array)$data)) : 'not-an-array'); ?> -->
     <?php
 
     $websiteSchema = [
