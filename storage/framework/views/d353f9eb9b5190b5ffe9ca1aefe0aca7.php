@@ -206,4 +206,4 @@
 </body>
 
 </html>
-<?php /**PATH C:\xampp\htdocs\projects\stechperu\resources\views/admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\projects\lapetaca_backend\resources\views/admin.blade.php ENDPATH**/ ?>

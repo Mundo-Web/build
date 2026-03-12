@@ -304,7 +304,7 @@ const System = ({
             return (
                 <ScrollAnimation
                     animationConfig={{ ...animationConfig, ...customConfig }}
-                    key={element_id}
+                    key={element_id || `anim-${component}-${itemsId}`}
                 >
                     {content}
                 </ScrollAnimation>
@@ -339,7 +339,16 @@ const System = ({
                     const contentSystems = SortByAfterField(systems).filter(
                         (x) => Boolean(x.page_id),
                     );
-                    return contentSystems.map((content) => getSystem(content));
+                    return contentSystems.map((content, idx) => (
+                        <React.Fragment
+                            key={
+                                content.id ??
+                                `content-${idx}-${content.component}`
+                            }
+                        >
+                            {getSystem(content)}
+                        </React.Fragment>
+                    ));
                 }
                 break;
             case "filter":

@@ -1,4 +1,6 @@
 const SortByAfterField = (components) => {
+  if (!Array.isArray(components)) return [];
+
   // Crear un mapa con los componentes por ID para búsquedas rápidas
   const componentMap = Object.fromEntries(components.map(c => [c.id, c]));
 

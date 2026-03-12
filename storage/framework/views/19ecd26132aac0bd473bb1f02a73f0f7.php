@@ -382,4 +382,4 @@ $component = Route::currentRouteName();
     </script>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\projects\stechperu\resources\views/public.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\xampp\htdocs\projects\lapetaca_backend\resources\views/public.blade.php ENDPATH**/ ?>
