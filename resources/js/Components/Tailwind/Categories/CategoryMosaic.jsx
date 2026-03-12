@@ -41,10 +41,9 @@ const CategoryMosaic = ({ items, data }) => {
                             src={`/storage/images/category/${cat.image}`}
                             className="w-full !h-full object-cover object-top transition-transform duration-1000 group-hover:scale-110"
                             alt={cat.name}
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/api/cover/thumbnail/null";
-                            }}
+                            onError={(e) =>
+                                (e.target.src = "/api/cover/thumbnail/null")
+                            }
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500"></div>
                         <div className="absolute bottom-8 left-8 right-8">

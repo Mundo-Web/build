@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, EffectFade } from 'swiper/modules';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import 'swiper/css';
-import 'swiper/css/autoplay';
-import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, EffectFade } from "swiper/modules";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import "swiper/css";
+import "swiper/css/autoplay";
+import "swiper/css/navigation";
 
 const CategoryInfiniteSlider = ({ items, data }) => {
     const navigationPrevRef = useRef(null);
@@ -21,28 +21,33 @@ const CategoryInfiniteSlider = ({ items, data }) => {
     };
 
     return (
-        <section id={data?.element_id || null} className="py-8 lg:py-20 font-paragraph bg-scondary">
+        <section
+            id={data?.element_id || null}
+            className="py-8 lg:py-20 font-paragraph bg-scondary"
+        >
             <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                 <div className="flex mb-8 w-full justify-between items-center">
-
                     {/* Título */}
-                {data?.title && (
-                    <div className="  text-left">
-                        <h2 className="text-3xl lg:text-5xl  customtext-neutral-dark font-title mb-3 uppercase tracking-wide">
-                            {data.title}
-                        </h2>
-                        {data?.description && (
-                            <p className="customtext-neutral-dark font-paragraph text-base">
-                                {data.description}
-                            </p>
-                        )}
-                    </div>
-                )}
- {data?.link_catalog && (
-                <a href={data?.link_catalog} className="text-base bg-primary rounded-lg cursor-pointer text-white px-6 py-3 font-paragraph font-semibold  hover:underline">
-                    {data?.link_text || 'Ver toda la carta'}
-                </a>
- )}
+                    {data?.title && (
+                        <div className="  text-left">
+                            <h2 className="text-3xl lg:text-5xl  customtext-neutral-dark font-title mb-3 uppercase tracking-wide">
+                                {data.title}
+                            </h2>
+                            {data?.description && (
+                                <p className="customtext-neutral-dark font-paragraph text-base">
+                                    {data.description}
+                                </p>
+                            )}
+                        </div>
+                    )}
+                    {data?.link_catalog && (
+                        <a
+                            href={data?.link_catalog}
+                            className="text-base bg-primary rounded-lg cursor-pointer text-white px-6 py-3 font-paragraph font-semibold  hover:underline"
+                        >
+                            {data?.link_text || "Ver toda la carta"}
+                        </a>
+                    )}
                 </div>
 
                 {/* Swiper Slider */}
@@ -61,8 +66,10 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                             nextEl: navigationNextRef.current,
                         }}
                         onBeforeInit={(swiper) => {
-                            swiper.params.navigation.prevEl = navigationPrevRef.current;
-                            swiper.params.navigation.nextEl = navigationNextRef.current;
+                            swiper.params.navigation.prevEl =
+                                navigationPrevRef.current;
+                            swiper.params.navigation.nextEl =
+                                navigationNextRef.current;
                         }}
                         loop={items.length > 4}
                         speed={800}
@@ -84,9 +91,11 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                     >
                         {items.map((category, index) => (
                             <SwiperSlide key={category.id}>
-                                <div 
+                                <div
                                     className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full my-4"
-                                    onClick={() => handleCategoryClick(category)}
+                                    onClick={() =>
+                                        handleCategoryClick(category)
+                                    }
                                 >
                                     {/* Imagen de la categoría */}
                                     <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
@@ -94,9 +103,10 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                                             src={`/storage/images/category/${category.image}`}
                                             alt={category.name}
                                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                            onError={(e) => {
-                                                e.target.src = '/assets/img/noimage/no_img.jpg';
-                                            }}
+                                            onError={(e) =>
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
+                                            }
                                         />
                                     </div>
 
@@ -105,7 +115,7 @@ const CategoryInfiniteSlider = ({ items, data }) => {
                                         <h3 className="text-lg lg:text-xl font-bold customtext-neutral-dark group-hover:text-white transition-colors duration-300  text-left">
                                             {category.name}
                                         </h3>
-                                        
+
                                         {category.description && (
                                             <p className="text-sm customtext-neutral-dark group-hover:text-white transition-colors duration-300 font-paragraph text-left mt-2 line-clamp-2">
                                                 {category.description}

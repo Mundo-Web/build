@@ -62,7 +62,10 @@ const CategoryCarousel = ({ data, items }) => {
                             <img
                                 className="absolute w-full h-full rounded-2xl top-0 left-0 object-cover object-center"
                                 src={`/storage/images/category/${item.image}`}
-                                alt=""
+                                alt={item.name}
+                                onError={(e) =>
+                                    (e.target.src = "/api/cover/thumbnail/null")
+                                }
                             />
                             <div className="relative block">
                                 <h2

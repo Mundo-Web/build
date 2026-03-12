@@ -9,7 +9,10 @@ export default function CategoryCard({
                 featured ? "h-[300px] lg:h-[500px]" : "h-[238px]"
             }`}
         >
-            <a href={`/catalogo?category=${category.slug}`} className={` ${flex && "flex gap-4 h-full"}`}>
+            <a
+                href={`/catalogo?category=${category.slug}`}
+                className={` ${flex && "flex gap-4 h-full"}`}
+            >
                 <div
                     className={`relative  w-full h-full overflow-hidden rounded-3xl ${
                         flex && "   h-full"
@@ -17,7 +20,9 @@ export default function CategoryCard({
                 >
                     <img
                         src={`/storage/images/category/${category?.image}`}
-                        onError={e => e.target.src = 'assets/img/noimage/noimagenslider.jpg'}
+                        onError={(e) =>
+                            (e.target.src = "/api/cover/thumbnail/null")
+                        }
                         alt={category?.name}
                         fill
                         className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 ${
@@ -32,7 +37,9 @@ export default function CategoryCard({
                                 "linear-gradient(187.83deg, rgba(0, 0, 0, 0) 34.08%, rgba(0, 0, 0, 0.4) 92.08%)",
                         }}
                     ></div>
-                    <div className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}>
+                    <div
+                        className={`absolute p-4 lg:p-8 bottom-0 mt-4 space-y-1 lg:space-y-2`}
+                    >
                         <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-semibold ">
                             {category?.name}
                         </h3>
