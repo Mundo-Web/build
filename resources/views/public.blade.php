@@ -139,6 +139,7 @@ $component = Route::currentRouteName();
     $searchEnabled = (isset($data['search_enabled']) && ($data['search_enabled'] == true || $data['search_enabled'] == 'true'));
     $searchPattern = $data['search_pattern'] ?? '/catalogo?search={search_term_string}';
     @endphp
+    <!-- DEBUG SCHEMA: isEcommerce={{ $isEcommerce ? 'true' : 'false' }}, searchEnabled={{ $searchEnabled ? 'true' : 'false' }}, pattern={{ $searchPattern }} -->
     @php
 
     $websiteSchema = [
