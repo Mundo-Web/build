@@ -57,6 +57,82 @@ $component = Route::currentRouteName();
     ?>
 
     <title><?php echo $pageTitle; ?> | <?php echo config('app.name', 'Base Template'); ?></title>
+
+    <?php
+    $siteName = config('app.name', 'Mundo Web');
+    $logoUrl = asset('assets/resources/logo.png');
+
+    // Schema Organization & WebSite
+    $isEcommerce = trim(\App\Models\General::get('is_ecommerce') ?? 'false') === 'true';
+    $searchEnabled = (data_get($data, 'search_enabled') == true || data_get($data, 'search_enabled') == 'true');
+    $searchPattern = data_get($data, 'search_pattern') ?? '/catalogo?q={search_term_string}';
+
+    // Graph Construction
+    $graph = [
+        [
+            "@type" => "Organization",
+            "@id" => url('/#organization'),
+            "name" => $siteName,
+            "url" => url('/'),
+            "logo" => [
+                "@type" => "ImageObject",
+                "url" => $logoUrl
+            ],
+            "sameAs" => array_filter([
+                $generals->where('correlative', 'facebook')->first()?->description,
+                $generals->where('correlative', 'instagram')->first()?->description,
+                $generals->where('correlative', 'twitter')->first()?->description,
+                $generals->where('correlative', 'linkedin')->first()?->description,
+            ])
+        ],
+        [
+            "@type" => "WebSite",
+            "@id" => url('/#website'),
+            "name" => $siteName,
+            "url" => url('/'),
+            "publisher" => ["@id" => url('/#organization')]
+        ]
+    ];
+
+    // Search Action (Only for Home and if enabled)
+    if ($isEcommerce && $searchEnabled) {
+        $searchUrl = rtrim(url('/'), '/') . (str_starts_with($searchPattern, '/') ? '' : '/') . $searchPattern;
+        $graph[1]["potentialAction"] = [
+            "@type" => "SearchAction",
+            "target" => [
+                "@type" => "EntryPoint",
+                "urlTemplate" => $searchUrl
+            ],
+            "query-input" => "required name=search_term_string"
+        ];
+    }
+
+    // Details/Article
+    if ($isDetailPage && isset($item)) {
+        $graph[] = [
+            "@type" => "BlogPosting",
+            "headline" => $pageTitle,
+            "description" => $pageDescription,
+            "image" => $pageImage,
+            "datePublished" => $item->created_at ? $item->created_at->toIso8601String() : null,
+            "dateModified" => $item->updated_at ? $item->updated_at->toIso8601String() : null,
+            "author" => ["@id" => url('/#organization')],
+            "publisher" => ["@id" => url('/#organization')],
+            "mainEntityOfPage" => [
+                "@type" => "WebPage",
+                "@id" => url()->current()
+            ]
+        ];
+    }
+    ?>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": <?php echo json_encode($graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+
+    }
+    </script>
     <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e($version); ?>" type="image/png">
     <link rel="preload" href="/assets/resources/logo.png?v=<?php echo e($version); ?>" as="image" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -130,90 +206,7 @@ $component = Route::currentRouteName();
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()]); ?>
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->head; } ?>
 
-    <?php
-    $siteName = config('app.name', 'Mundo Web');
-    $logoUrl = asset('assets/resources/logo.png');
 
-    // Schema Organization & WebSite (Basic for all pages)
-    $isEcommerce = trim(\App\Models\General::get('is_ecommerce') ?? 'false') === 'true';
-    $searchEnabled = (data_get($data, 'search_enabled') == true || data_get($data, 'search_enabled') == 'true');
-    $searchPattern = data_get($data, 'search_pattern') ?? '/catalogo?q={search_term_string}';
-    $pageName = data_get($data, 'name', 'Unknown');
-    $pageId = data_get($data, 'id', 'No-ID');
-    ?>
-    <?php
-
-    $websiteSchema = [
-        "@context" => "https://schema.org",
-        "@type" => "WebSite",
-        "name" => $siteName,
-        "url" => $canonicalUrl
-    ];
-
-    if ($isEcommerce && $searchEnabled) {
-        $websiteSchema["potentialAction"] = [
-            "@type" => "SearchAction",
-            "target" => [
-                "@type" => "EntryPoint",
-                "urlTemplate" => rtrim($canonicalUrl, '/') . (str_starts_with($searchPattern, '/') ? '' : '/') . $searchPattern
-            ],
-            "query-input" => "required name=search_term_string"
-        ];
-    }
-
-    $schemas = [
-        [
-            "@context" => "https://schema.org",
-            "@type" => "Organization",
-            "name" => $siteName,
-            "url" => url('/'),
-            "logo" => $logoUrl,
-            "sameAs" => array_filter([
-                $generals->where('correlative', 'facebook')->first()?->description,
-                $generals->where('correlative', 'instagram')->first()?->description,
-                $generals->where('correlative', 'twitter')->first()?->description,
-                $generals->where('correlative', 'linkedin')->first()?->description,
-            ])
-        ],
-        $websiteSchema
-    ];
-
-    // Schema Article (Specific for blog posts)
-    if ($isDetailPage && isset($item)) {
-    $schemas[] = [
-    "@context" => "https://schema.org",
-    "@type" => "BlogPosting",
-    "headline" => $pageTitle,
-    "description" => $pageDescription,
-    "image" => $pageImage,
-    "datePublished" => $item->created_at ? $item->created_at->toIso8601String() : null,
-    "dateModified" => $item->updated_at ? $item->updated_at->toIso8601String() : null,
-    "author" => [
-    "@type" => "Organization",
-    "name" => $siteName
-    ],
-    "publisher" => [
-    "@type" => "Organization",
-    "name" => $siteName,
-    "logo" => [
-    "@type" => "ImageObject",
-    "url" => $logoUrl
-    ]
-    ],
-    "mainEntityOfPage" => [
-    "@type" => "WebPage",
-    "@id" => url()->current()
-    ]
-    ];
-    }
-    ?>
-
-    <?php $__currentLoopData = $schemas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schema): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-    <script type="application/ld+json">
-        <?php echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
-
-    </script>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     <?php if($component == 'BlogArticle.jsx'): ?>
     <link href="/lte/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />
