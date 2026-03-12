@@ -56,7 +56,7 @@ $component = Route::currentRouteName();
     $version = env('APP_VERSION', '1.0.1');
     @endphp
 
-    <title><?php echo $pageTitle; ?> | <?php echo env('APP_NAME', 'Base Template'); ?></title>
+    <title><?php echo $pageTitle; ?> | <?php echo config('app.name', 'Base Template'); ?></title>
     <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ $version }}" type="image/png">
     <link rel="preload" href="/assets/resources/logo.png?v={{ $version }}" as="image" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -129,6 +129,76 @@ $component = Route::currentRouteName();
 
     @vite(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()])
     @inertiaHead
+
+    @php
+    $siteName = config('app.name', 'Mundo Web');
+    $logoUrl = asset('assets/resources/logo.png');
+
+    // Schema Organization & WebSite (Basic for all pages)
+    $schemas = [
+    [
+    "@context" => "https://schema.org",
+    "@type" => "Organization",
+    "name" => $siteName,
+    "url" => url('/'),
+    "logo" => $logoUrl,
+    "sameAs" => array_filter([
+    $generals->where('correlative', 'facebook')->first()?->description,
+    $generals->where('correlative', 'instagram')->first()?->description,
+    $generals->where('correlative', 'twitter')->first()?->description,
+    $generals->where('correlative', 'linkedin')->first()?->description,
+    ])
+    ],
+    [
+    "@context" => "https://schema.org",
+    "@type" => "WebSite",
+    "name" => $siteName,
+    "url" => url('/'),
+    "potentialAction" => [
+    "@type" => "SearchAction",
+    "target" => url('/buscar') . "?q={search_term_string}",
+    "query-input" => "required name=search_term_string"
+    ]
+    ]
+    ];
+
+    // Schema Article (Specific for blog posts)
+    if ($isDetailPage && isset($item)) {
+    $schemas[] = [
+    "@context" => "https://schema.org",
+    "@type" => "BlogPosting",
+    "headline" => $pageTitle,
+    "description" => $pageDescription,
+    "image" => $pageImage,
+    "datePublished" => $item->created_at ? $item->created_at->toIso8601String() : null,
+    "dateModified" => $item->updated_at ? $item->updated_at->toIso8601String() : null,
+    "author" => [
+    "@type" => "Organization",
+    "name" => $siteName
+    ],
+    "publisher" => [
+    "@type" => "Organization",
+    "name" => $siteName,
+    "logo" => [
+    "@type" => "ImageObject",
+    "url" => $logoUrl
+    ]
+    ],
+    "mainEntityOfPage" => [
+    "@type" => "WebPage",
+    "@id" => url()->current()
+    ]
+    ];
+    }
+    @endphp
+
+    @foreach($schemas as $schema)
+    <script type="application/ld+json">
+        {
+            !!json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!
+        }
+    </script>
+    @endforeach
 
     @if ($component == 'BlogArticle.jsx')
     <link href="/lte/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />
@@ -287,7 +357,7 @@ $component = Route::currentRouteName();
     <script type="text/javascript">
         window.APP_URL = "{{url('/')}}";
         window.APP_COLOR_PRIMARY = "<?php echo $appColorPrimary; ?>";
-        window.APP_NAME = "<?php echo env('APP_NAME', 'Mi Empresa'); ?>";
+        window.APP_NAME = "<?php echo config('app.name', 'Mi Empresa'); ?>";
     </script>
 
     @php
