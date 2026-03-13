@@ -5479,7 +5479,11 @@
                     "footer_text"
                 ],
                 "using": {
-                    "model": "Partner"
+                    "model": "Partner",
+                        "fields": [
+                        "name",
+                        "image"
+                    ]
                 }
             }
         ]

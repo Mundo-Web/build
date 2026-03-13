@@ -9328,7 +9328,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Partner.jsx": {
-    "file": "assets/Partner-CzBWSkkN.js",
+    "file": "assets/Partner-ByzIgQyu.js",
     "name": "Partner",
     "src": "resources/js/Components/Tailwind/Partner.jsx",
     "isDynamicEntry": true,
@@ -9342,12 +9342,13 @@
     ]
   },
   "resources/js/Components/Tailwind/Partner/PartnerMblens.jsx": {
-    "file": "assets/PartnerMblens-BatSFOq4.js",
+    "file": "assets/PartnerMblens-CO24GX0l.js",
     "name": "PartnerMblens",
     "src": "resources/js/Components/Tailwind/Partner/PartnerMblens.jsx",
     "isEntry": true,
     "imports": [
-      "_vendor-react-DGtfu94Q.js"
+      "_vendor-react-DGtfu94Q.js",
+      "_vendor-swiper-DUKK6iF5.js"
     ]
   },
   "resources/js/Components/Tailwind/Partner/PartnerSimple.jsx": {
@@ -12209,7 +12210,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-B2CvRwkm.js",
+    "file": "assets/System-DgabNBsG.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
