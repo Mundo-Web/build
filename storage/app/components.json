@@ -853,7 +853,9 @@
                     "class_title",
                     "class_description",
                     "class_overlay",
-                    "class_content_slider"
+                    "class_content_slider",
+                    "class_container",
+                    "class_container_slider"
                 ],
                 "using": {
                     "model": "Slider"

@@ -341,8 +341,12 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                             <div
                                 className={`relative text-shadow-none z-10 h-full flex items-center ${data?.class_content_slider}`}
                             >
-                                <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">
-                                    <div className="grid lg:grid-cols-1 gap-12 items-center h-full">
+                                <div
+                                    className={`w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto ${data?.class_container}`}
+                                >
+                                    <div
+                                        className={`grid lg:grid-cols-1 gap-12 items-center h-full ${data?.class_container_slider}`}
+                                    >
                                         {/* Text Content */}
                                         <AnimatePresence mode="wait">
                                             <motion.div
