@@ -149,7 +149,7 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                                             >
                                                 {slide.subtitle}
                                             </span>
-                                            <h1
+                                            <h2
                                                 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter mb-6 leading-[0.9]"
                                                 style={{
                                                     color:
@@ -158,7 +158,7 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                                                 }}
                                             >
                                                 {slide.name}
-                                            </h1>
+                                            </h2>
                                             {slide.description && (
                                                 <p
                                                     className="text-white/80 text-sm md:text-lg mb-8 max-w-2xl font-medium tracking-wide"

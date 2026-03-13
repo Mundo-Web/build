@@ -36,9 +36,9 @@ const BannerPidelo = ({ data }) => {
                         <div className="absolute inset-0 bg-black bg-opacity-60 rounded-2xl z-0"></div>
                     )}
                     <div className="relative z-10 flex flex-col items-center justify-center h-full w-full gap-6">
-                        <h1 className="text-3xl font-title  md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-widest text-white drop-shadow-lg mb-2">
+                        <h2 className="text-3xl font-title  md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-widest text-white drop-shadow-lg mb-2">
                             {renderName(data?.name)}
-                        </h1>
+                        </h2>
                         <p className="text-white italic text-base md:text-lg lg:text-xl 2xl:text-2xl font-paragraph max-w-2xl mx-auto drop-shadow-lg">
                             {data?.description}
                         </p>

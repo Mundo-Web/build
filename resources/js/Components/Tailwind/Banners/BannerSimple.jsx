@@ -15,9 +15,9 @@ const BannerSimple = ({ data }) => {
                         backgroundRepeat: "no-repeat",
                     }}
                 >
-                    <h1 className="text-2xl text-white font-bold mb-2">
+                    <h2 className="text-2xl text-white font-bold mb-2">
                         {data?.name}
-                    </h1>
+                    </h2>
                     <p className="text-white mb-2">{data?.description}</p>
                     {data?.button_link && data?.button_text && (
                         <button

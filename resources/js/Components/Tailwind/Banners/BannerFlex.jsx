@@ -38,9 +38,9 @@ const BannerFlex = ({ data }) => {
                                 {data?.subtitle}
                             </h3>
                         )}
-                        <h1 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl 2xl:leading-tight font-semibold text-primary">
+                        <h2 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl 2xl:leading-tight font-semibold text-primary">
                             {data?.name}
-                        </h1>
+                        </h2>
                         <p className="text-lg xl:text-xl 2xl:text-2xl text-primary">
                             {data?.description}
                         </p>

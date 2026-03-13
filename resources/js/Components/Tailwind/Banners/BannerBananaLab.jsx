@@ -5,9 +5,12 @@ import { resolveSystemAsset } from "./bannerUtils";
 const BannerBananaLab = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
     const imageUrl = resolveSystemAsset(data?.image);
-    
+
     return (
-        <div id={data?.element_id || null} className=" px-primary 2xl:px-0 2xl:max-w-7xl mx-auto font-paragraph lg:py-10">    
+        <div
+            id={data?.element_id || null}
+            className=" px-primary 2xl:px-0 2xl:max-w-7xl mx-auto font-paragraph lg:py-10"
+        >
             <div
                 className="relative rounded-3xl md:rounded-2xl h-[630px] lg:h-[450px] p-4 md:p-0"
                 style={{
@@ -32,9 +35,9 @@ const BannerBananaLab = ({ data }) => {
                     {/* Right side - Content */}
                     <div className="md:order-1 md:w-5/12 xl:w-7/12 text-white z-10">
                         <div className="max-w-sm 2xl:max-w-lg">
-                            <h1 className="text-[32px] leading-[1.2] font-semibold mb-2 lg:text-4xl">
+                            <h2 className="text-[32px] leading-[1.2] font-semibold mb-2 lg:text-4xl">
                                 {data?.name}
-                            </h1>
+                            </h2>
                             <p className="text-[14.2px] mb-7">
                                 {data?.description}
                             </p>

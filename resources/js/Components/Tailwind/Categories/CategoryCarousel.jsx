@@ -10,9 +10,9 @@ const CategoryCarousel = ({ data, items }) => {
                 <div className="flex flex-wrap justify-between mb-[2%]">
                     <div>
                         {data?.title && (
-                            <h1 className="text-2xl font-bold mb-[2%]">
+                            <h2 className="text-2xl font-bold mb-[2%]">
                                 {data?.title}
-                            </h1>
+                            </h2>
                         )}
                         {data?.description && (
                             <p className="text-sm mb-[3%]">

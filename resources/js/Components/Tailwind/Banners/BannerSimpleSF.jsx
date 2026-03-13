@@ -14,12 +14,12 @@ const BannerSimpleSF = ({ data }) => {
         >
             <div className="flex flex-col md:flex-row justify-start items-stretch bg-sections-color w-full rounded-3xl relative">
                 <div className="flex flex-col gap-5 py-8 lg:py-16 px-8 lg:pl-16 xl:pl-20  justify-start items-start w-full max-w-xl 2xl:max-w-2xl text-white text-left self-center">
-                    <h1 className="text-neutral-dark  font-paragraph font-semibold text-4xl xl:text-5xl 2xl:text-7xl">
+                    <h2 className="text-neutral-dark  font-paragraph font-semibold text-4xl xl:text-5xl 2xl:text-7xl">
                         <TextWithHighlight
                             text={data?.name}
                             color="bg-secondary"
                         />
-                    </h1>
+                    </h2>
 
                     <p className="text-neutral-dark  font-paragraph font-normal text-base xl:text-lg 2xl:text-2xl">
                         {data?.description}

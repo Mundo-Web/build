@@ -1,5 +1,5 @@
-import React from 'react';
-import { resolveSystemAsset } from './bannerUtils';
+import React from "react";
+import { resolveSystemAsset } from "./bannerUtils";
 
 const BannerFullWidth = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
@@ -20,15 +20,20 @@ const BannerFullWidth = ({ data }) => {
             <div className="px-[5%] 2xl:px-0 2xl:max-w-7xl w-full mx-auto py-[5%] md:py-[2.5%] relative z-20">
                 <div className="grid grid-cols-2 aspect-[3/1]">
                     <div className="w-full flex flex-col items-start justify-center">
-                        <h1 className="text-6xl text-white font-bold mb-6 whitespace-pre-line">
-                            {data?.name?.split('*').map((part, index) => 
+                        <h2 className="text-6xl text-white font-bold mb-6 whitespace-pre-line">
+                            {data?.name?.split("*").map((part, index) =>
                                 index % 2 === 0 ? (
                                     <span key={index}>{part}</span>
                                 ) : (
-                                    <span key={index} className="customtext-primary">{part}</span>
-                                )
+                                    <span
+                                        key={index}
+                                        className="customtext-primary"
+                                    >
+                                        {part}
+                                    </span>
+                                ),
                             )}
-                        </h1>
+                        </h2>
                         <p className="text-white mb-4">{data?.description}</p>
                         {data?.button_link && data?.button_text && (
                             <button
