@@ -25,6 +25,7 @@ import {
     Store,
     Package,
     Coffee,
+    CircleSlash2,
 } from "lucide-react";
 import ItemsRest from "../../../Actions/ItemsRest";
 import ArrayJoin from "../../../Utils/ArrayJoin";
@@ -475,7 +476,8 @@ const CatalogoFiltrosDental = ({
                 "=",
                 collections.find((c) => c.slug === slug)?.id || slug,
             ]);
-            transformedFilters.push(ArrayJoin(collectionConditions, "or"));
+            const joined = ArrayJoin(collectionConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         if (filters.category_id.length > 0) {
@@ -484,7 +486,8 @@ const CatalogoFiltrosDental = ({
                 "=",
                 id,
             ]);
-            transformedFilters.push(ArrayJoin(categoryConditions, "or"));
+            const joined = ArrayJoin(categoryConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         if (filters.subcategory_id.length > 0) {
@@ -493,7 +496,8 @@ const CatalogoFiltrosDental = ({
                 "=",
                 id,
             ]);
-            transformedFilters.push(ArrayJoin(subcategoryConditions, "or"));
+            const joined = ArrayJoin(subcategoryConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         if (filters.brand_id.length > 0) {
@@ -509,7 +513,8 @@ const CatalogoFiltrosDental = ({
                     return ["brand.slug", "=", slug];
                 }
             });
-            transformedFilters.push(ArrayJoin(brandConditions, "or"));
+            const joined = ArrayJoin(brandConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         if (filters.store_id.length > 0) {
@@ -518,7 +523,8 @@ const CatalogoFiltrosDental = ({
                 "=",
                 stores.find((s) => s.slug === slug)?.id || slug,
             ]);
-            transformedFilters.push(ArrayJoin(storeConditions, "or"));
+            const joined = ArrayJoin(storeConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         if (filters.tag_id && filters.tag_id.length > 0) {
@@ -527,7 +533,8 @@ const CatalogoFiltrosDental = ({
                 "=",
                 tagId,
             ]);
-            transformedFilters.push(ArrayJoin(tagConditions, "or"));
+            const joined = ArrayJoin(tagConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         // Filtro de amenidades
@@ -537,19 +544,22 @@ const CatalogoFiltrosDental = ({
                 "=",
                 amenityId,
             ]);
-            transformedFilters.push(ArrayJoin(amenityConditions, "or"));
+            const joined = ArrayJoin(amenityConditions, "or");
+            transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
 
         if (filters.price && filters.price.length > 0) {
             const priceConditions = filters.price.map((priceRange) => [
+                ["final_price", ">=", Number(priceRange.min)],
                 "and",
-                [
-                    ["final_price", ">=", priceRange.min],
-                    "and",
-                    ["final_price", "<=", priceRange.max],
-                ],
+                ["final_price", "<=", Number(priceRange.max)],
             ]);
-            transformedFilters.push(ArrayJoin(priceConditions, "or"));
+
+            if (priceConditions.length === 1) {
+                transformedFilters.push(priceConditions[0]);
+            } else {
+                transformedFilters.push(ArrayJoin(priceConditions, "or"));
+            }
         }
 
         if (filters.name) {
@@ -601,41 +611,31 @@ const CatalogoFiltrosDental = ({
 
         // Buscar en categorías
         const matchedCategories = categories.filter((cat) => {
-            const match =
-                cat.name.toLowerCase().includes(lowerQuery) ||
-                lowerQuery.includes(cat.name.toLowerCase());
+            const match = cat.name.toLowerCase().includes(lowerQuery);
             return match;
         });
 
         // Buscar en marcas
         const matchedBrands = brands.filter((brand) => {
-            const match =
-                brand.name.toLowerCase().includes(lowerQuery) ||
-                lowerQuery.includes(brand.name.toLowerCase());
+            const match = brand.name.toLowerCase().includes(lowerQuery);
             return match;
         });
 
         // Buscar en subcategorías
         const matchedSubcategories = subcategories.filter((subcat) => {
-            const match =
-                subcat.name.toLowerCase().includes(lowerQuery) ||
-                lowerQuery.includes(subcat.name.toLowerCase());
+            const match = subcat.name.toLowerCase().includes(lowerQuery);
             return match;
         });
 
         // Buscar en colecciones
         const matchedCollections = collections.filter((collection) => {
-            const match =
-                collection.name.toLowerCase().includes(lowerQuery) ||
-                lowerQuery.includes(collection.name.toLowerCase());
+            const match = collection.name.toLowerCase().includes(lowerQuery);
             return match;
         });
 
         // Buscar en tiendas
         const matchedStores = stores.filter((store) => {
-            const match =
-                store.name.toLowerCase().includes(lowerQuery) ||
-                lowerQuery.includes(store.name.toLowerCase());
+            const match = store.name.toLowerCase().includes(lowerQuery);
             return match;
         });
 
@@ -1070,7 +1070,12 @@ const CatalogoFiltrosDental = ({
             setSubcategories(response?.summary?.subcategories || []);
             setCollections(response?.summary?.collections || []);
             setStores(response?.summary?.stores || []);
-            setPriceRanges(response?.summary?.priceRanges || []);
+            
+            // Only update price ranges if they are not fixed by dat_prices
+            if (!data?.dat_prices) {
+              setPriceRanges(response?.summary?.priceRanges || []);
+            }
+            
             setTags(response?.summary?.tags || []);
             setAmenities(response?.summary?.amenities || data?.amenities || []);
         } catch (error) {
@@ -1161,17 +1166,12 @@ const CatalogoFiltrosDental = ({
             }, 50);
         }
 
-        // Aplicar búsqueda inteligente si hay un término de búsqueda inicial
-        if (GET.search && intelligentSearchEnabled) {
-            // Pequeño delay para asegurar que las categorías, marcas, etc. estén cargadas
-            setTimeout(() => {
-                handleIntelligentSearch(GET.search);
-            }, 150);
+        // NO llamar a fetchProducts aquí, ya que el useEffect de selectedFilters se encargará del mount.
+        // Solo marcaría loading:
+        if (!hasSearched) {
+            setLoading(true);
         }
-
-        // Initial fetch to get products and update summary data (no es filtrado)
-        fetchProducts(1, false);
-    }, [filteredData, intelligentSearchEnabled]); // Agregar intelligentSearchEnabled como dependencia
+    }, [filteredData]); // Simplificar dependencias
 
     useEffect(() => {
         // Cuando cambian los filtros, volvemos a la primera página SIN hacer scroll
@@ -1334,7 +1334,8 @@ const CatalogoFiltrosDental = ({
                     : [];
                 const isAlreadySelected = currentPrices.some(
                     (range) =>
-                        range.min === value.min && range.max === value.max,
+                        Number(range.min) === Number(value.min) &&
+                        Number(range.max) === Number(value.max),
                 );
                 let newPrices;
                 if (isAlreadySelected) {
@@ -1419,16 +1420,58 @@ const CatalogoFiltrosDental = ({
     const filteredAmenities = amenities.filter((amenity) =>
         amenity.name.toLowerCase().includes(searchAmenity.toLowerCase()),
     );
-
-    // Obtener rangos de precios - priorizar data.dat_prices si existe
+    console.log("data precio", data?.dat_prices);
+    // Obtener rangos de precios - priorizar data.dat_prices si existe, luego los que vienen del backend
     const getPriceRanges = () => {
-        if (
-            data?.dat_prices &&
-            Array.isArray(data.dat_prices) &&
-            data.dat_prices.length > 0
-        ) {
-            return data.dat_prices;
+        let customPrices = data?.dat_prices;
+
+        // Si es un string (JSON), intentamos parsearlo
+        if (typeof customPrices === "string") {
+            try {
+                customPrices = JSON.parse(customPrices);
+            } catch (e) {
+                console.error("Error parsing dat_prices:", e);
+                customPrices = null;
+            }
         }
+
+        // 1. Prioridad: Rangos personalizados definidos por el usuario
+        if (
+            customPrices &&
+            Array.isArray(customPrices) &&
+            customPrices.length > 0
+        ) {
+            return customPrices.map((r) => ({
+                ...r,
+                min: Number(r.min),
+                max: Number(r.max),
+                label: r.label || `${CurrencySymbol()} ${r.min} - ${r.max}`,
+            }));
+        }
+
+        // 2. Prioridad: Rangos dinámicos calculados por el backend (summary)
+        if (
+            priceRanges &&
+            Array.isArray(priceRanges) &&
+            priceRanges.length > 0
+        ) {
+            return priceRanges.map((r) => {
+                const min = Number(r.min);
+                const max = Number(r.max);
+                return {
+                    ...r,
+                    min,
+                    max,
+                    label:
+                        r.label ||
+                        (max >= 999999
+                            ? `Más de ${CurrencySymbol()} ${min.toLocaleString()}`
+                            : `${CurrencySymbol()} ${min.toLocaleString()} - ${CurrencySymbol()} ${max.toLocaleString()}`),
+                };
+            });
+        }
+
+        // 3. Fallback: Rangos estáticos
         return staticPriceRanges;
     };
 
@@ -2755,10 +2798,18 @@ const CatalogoFiltrosDental = ({
                                                                                         (
                                                                                             priceRange,
                                                                                         ) =>
-                                                                                            priceRange.min ===
-                                                                                                range.min &&
-                                                                                            priceRange.max ===
-                                                                                                range.max,
+                                                                                            Number(
+                                                                                                priceRange.min,
+                                                                                            ) ===
+                                                                                                Number(
+                                                                                                    range.min,
+                                                                                                ) &&
+                                                                                            Number(
+                                                                                                priceRange.max,
+                                                                                            ) ===
+                                                                                                Number(
+                                                                                                    range.max,
+                                                                                                ),
                                                                                     ) ||
                                                                                     false
                                                                                 }
@@ -2772,10 +2823,10 @@ const CatalogoFiltrosDental = ({
                                                                                 (
                                                                                     priceRange,
                                                                                 ) =>
-                                                                                    priceRange.min ===
-                                                                                        range.min &&
-                                                                                    priceRange.max ===
-                                                                                        range.max,
+                                                                                    Number(priceRange.min) ===
+                                                                                        Number(range.min) &&
+                                                                                    Number(priceRange.max) ===
+                                                                                        Number(range.max),
                                                                             ) && (
                                                                                 <motion.div
                                                                                     className="ml-auto"
@@ -3364,10 +3415,10 @@ const CatalogoFiltrosDental = ({
                                                                         (
                                                                             range,
                                                                         ) =>
-                                                                            range.min ===
-                                                                                priceRange.min &&
-                                                                            range.max ===
-                                                                                priceRange.max,
+                                                                            Number(range.min) ===
+                                                                                Number(priceRange.min) &&
+                                                                            Number(range.max) ===
+                                                                                Number(priceRange.max),
                                                                     );
                                                                 return (
                                                                     <AnimatedBadge
@@ -3655,7 +3706,7 @@ const CatalogoFiltrosDental = ({
                                       !isFiltering &&
                                       showNoResults ? (
                                         <motion.div
-                                            className="w-full flex items-center justify-center py-16"
+                                            className="w-full col-span-2 lg:col-span-3  xl:col-span-3 flex items-center justify-center py-16"
                                             initial={{
                                                 opacity: 0,
                                                 scale: 0.8,
@@ -3679,6 +3730,9 @@ const CatalogoFiltrosDental = ({
                                                     animate={{ opacity: 1 }}
                                                     transition={{ delay: 0.3 }}
                                                 >
+                                                    <div className="flex items-center justify-center">
+                                                        <CircleSlash2 className="w-24 h-24 text-gray-200" />
+                                                    </div>
                                                     <h3 className="text-xl font-bold customtext-neutral-dark">
                                                         ¡Ups! No encontramos
                                                         productos

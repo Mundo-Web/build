@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const AboutMultivet = ({ data, filteredData, items }) => {
-    const { aboutuses, webdetail, strengths } = filteredData;
+    const aboutuses = items;
     const history = items?.find(
         (item) => item.correlative === "section-historia",
     );
@@ -60,6 +60,17 @@ const AboutMultivet = ({ data, filteredData, items }) => {
             transition: { duration: 0.3, ease: "easeOut" },
         },
     };
+
+    const [strengths, setStrengths] = useState([]);
+    // Cargar strengths desde API solo si hay una sección "valores" y no se han cargado aún
+    useEffect(() => {
+        if (strengths.length > 0) return;
+
+        fetch("/api/strengths")
+            .then((res) => res.json())
+            .then((data) => setStrengths(data))
+            .catch((err) => console.error("Error loading strengths:", err));
+    }, [aboutuses, strengths.length]);
 
     return (
         <main
@@ -205,10 +216,10 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                                         <img
                                             src={`/storage/images/strength/${item?.image}`}
                                             alt={item?.name}
-                                            className="w-10 h-10 object-contain filter brightness-0 invert"
+                                            className="w-10 h-10 object-contain"
                                             onError={(e) =>
                                                 (e.target.src =
-                                                    "/assets/img/noimage/noicon.png")
+                                                    "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </div>
@@ -276,10 +287,10 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                                         <img
                                             src={`/storage/images/strength/${item?.image}`}
                                             alt={item?.name}
-                                            className="w-10 h-10 object-contain filter brightness-0 invert"
+                                            className="w-10 h-10 object-contain "
                                             onError={(e) =>
                                                 (e.target.src =
-                                                    "/assets/img/noimage/noicon.png")
+                                                    "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </div>

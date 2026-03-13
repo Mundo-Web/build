@@ -1225,19 +1225,9 @@ class ItemController extends BasicController
             }
 
             if ($request->filter) {
-                // NO aplicar el filtro automático de DevExtreme para búsquedas
-                // porque ya lo manejamos en setPaginationInstance con búsqueda inteligente
-                // Solo aplicar si NO hay términos de búsqueda
-                $searchTerms = [];
-                $this->extractSearchTerms($request->filter, $searchTerms);
-
-                if (empty($searchTerms)) {
-                    // No hay búsqueda de texto, aplicar filtros normales
-                    $instance->where(function ($query) use ($request) {
-                        dxDataGrid::filter($query, $request->filter ?? [], false, $this->prefix4filter);
-                    });
-                }
-                // Si hay términos de búsqueda, la lógica ya se aplicó en setPaginationInstance
+                $instance->where(function ($query) use ($request) {
+                    dxDataGrid::filter($query, $request->filter ?? [], false, $this->prefix4filter, [], []);
+                });
             }
 
             // Custom filter handling for tags

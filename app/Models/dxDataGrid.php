@@ -8,7 +8,7 @@ use SoDe\Extend\Text;
 
 class dxDataGrid
 {
-    static function filter(Builder $builder, array $dxFilter, bool $flat = true, $prefix4undotted = null, $ignorePrefix = [])
+    static function filter(Builder $builder, array $dxFilter, bool $flat = true, $prefix4undotted = null, $ignorePrefix = [], $skipFields = [])
     {
         if (\count($dxFilter) == 0) return;
         $hasArray = JSON::find($dxFilter, function ($x) {
@@ -17,8 +17,8 @@ class dxDataGrid
         if ($hasArray) {
             if ($dxFilter[0] == '!') {
                 $filtering = $dxFilter[1];
-                $builder->whereNot(function ($query) use ($filtering, $flat, $prefix4undotted, $ignorePrefix) {
-                    dxDataGrid::filter($query, $filtering, $flat, $prefix4undotted, $ignorePrefix);
+                $builder->whereNot(function ($query) use ($filtering, $flat, $prefix4undotted, $ignorePrefix, $skipFields) {
+                    dxDataGrid::filter($query, $filtering, $flat, $prefix4undotted, $ignorePrefix, $skipFields);
                 });
             } else {
                 $isAnd = JSON::find($dxFilter, function ($x) {
@@ -29,18 +29,19 @@ class dxDataGrid
                 });
                 foreach ($dxFilter as $filtering) {
                     if ($isAnd) {
-                        $builder->where(function ($query) use ($filtering, $flat, $prefix4undotted, $ignorePrefix) {
-                            dxDataGrid::filter($query, $filtering, $flat, $prefix4undotted, $ignorePrefix);
+                        $builder->where(function ($query) use ($filtering, $flat, $prefix4undotted, $ignorePrefix, $skipFields) {
+                            dxDataGrid::filter($query, $filtering, $flat, $prefix4undotted, $ignorePrefix, $skipFields);
                         });
                     } else {
-                        $builder->orWhere(function ($query) use ($filtering, $flat, $prefix4undotted, $ignorePrefix) {
-                            dxDataGrid::filter($query, $filtering, $flat, $prefix4undotted, $ignorePrefix);
+                        $builder->orWhere(function ($query) use ($filtering, $flat, $prefix4undotted, $ignorePrefix, $skipFields) {
+                            dxDataGrid::filter($query, $filtering, $flat, $prefix4undotted, $ignorePrefix, $skipFields);
                         });
                     }
                 }
             }
         } else {
             $selector = $dxFilter[0];
+            if (in_array($selector, $skipFields)) return;
             if (!str_contains($selector, '.') && $prefix4undotted && !Text::startsWith($selector, '!') && !in_array($selector, $ignorePrefix)) {
                 $selector = "{$prefix4undotted}.{$selector}";
             } else {

@@ -68,7 +68,7 @@ class SystemController extends BasicController
             if (!is_subclass_of($className, Model::class)) continue;
 
             $modelInstance = new $className();
-            $fields = $modelInstance->getFillable();
+            $fields = \Illuminate\Support\Facades\Schema::getColumnListing($modelInstance->getTable());
 
             $relations = $this->getRelations($modelInstance);
 

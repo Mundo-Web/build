@@ -1326,7 +1326,20 @@
                     "type_card_product",
                     "class_product_container",
                     "class_product_card_container",
-                    "class_clear_button"
+                    "class_clear_button",
+
+                  
+                    
+                 
+                   
+                  
+                    
+                    "badge_offer_percent",
+                    "badge_category_up_name",
+                    "badge_brand_up_name",
+                    "is_card_content_description",
+                    "class_badge_category",
+                    "class_button_card_detail"
                    
                 ],
                 "options": [

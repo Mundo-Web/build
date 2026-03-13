@@ -297,7 +297,7 @@ class SystemController extends BasicController
                     $result = $class::with($relations)
                         ->where($field, $value)
                         ->first();
-                    $props['filteredData'][$model] = $result;
+                    $props['filteredData'][$key] = $result;
                 } elseif ($model) {
                     // Cargar todos los registros
                     $class = 'App\\Models\\' . $model;
@@ -316,7 +316,7 @@ class SystemController extends BasicController
                     if (isset($using['relations'])) {
                         $query->with($using['relations']);
                     }
-                    $props['filteredData'][$model] = $query->get();
+                    $props['filteredData'][$key] = $query->get();
                 } elseif (isset($using['static'])) {
                     $props['filteredData'][$key] = $using['static'];
                 }

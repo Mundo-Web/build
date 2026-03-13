@@ -171,15 +171,13 @@ const BasicEditing4System = (page) => {
                         <i className="mdi mdi-cloud-search-outline me-1"></i>
                         Editar SEO
                     </button>
-                    {params.length > 0 && (
-                        <button
-                            className="dropdown-item"
-                            onClick={() => onParamsClicked(page)}
-                        >
-                            <i className="mdi mdi-code-braces me-1"></i>
-                            Parámetros
-                        </button>
-                    )}
+                    <button
+                        className="dropdown-item"
+                        onClick={() => onParamsClicked(page)}
+                    >
+                        <i className="mdi mdi-database-cog-outline me-1"></i>
+                        Gestionar datos
+                    </button>
                     <div className="dropdown-divider"></div>
                     <button
                         className="dropdown-item"
