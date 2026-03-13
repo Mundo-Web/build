@@ -356,7 +356,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                     className={`w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto`}
                                 >
                                     <div
-                                        className={`flex gap-12  items-center min-h-max pt-16 lg:pt-0  ${data?.class_container_slider}`}
+                                        className={`flex gap-12  items-center  min-h-max lg:h-full pt-16 lg:pt-0  ${data?.class_container_slider}`}
                                     >
                                         {/* Text Content */}
                                         <AnimatePresence mode="wait">
