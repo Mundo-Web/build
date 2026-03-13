@@ -91,12 +91,12 @@ const BannerMultivet = ({ data }) => {
                         viewport={{ once: true, amount: 0.3 }}
                         variants={contentVariants}
                     >
-                        <motion.h1
+                        <motion.h2
                             className={`font-bold font-title text-3xl sm:text-4xl lg:text-5xl xl:text-5xl 2xl:text-6xl leading-tight text-secondary text-opacity-90  ${data?.class_title || ""}`}
                             variants={titleVariants}
                         >
                             {data?.name}
-                        </motion.h1>
+                        </motion.h2>
 
                         {Array.isArray(data?.description) ||
                         data?.multi_description ? (
