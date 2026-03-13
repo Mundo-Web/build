@@ -5119,9 +5119,10 @@
                 "name": "Multivet",
                 "image": "testimonials-multivet.png",
                 "data": [
-                    "insert_html_content",
+             
                     "title",
-                    "subtitle"
+                    "subtitle",
+                    "star_color"
                     
                 ],
                 "using": {
