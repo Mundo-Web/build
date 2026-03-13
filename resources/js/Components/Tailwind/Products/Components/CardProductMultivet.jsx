@@ -93,7 +93,7 @@ const CardProductMultivet = ({
             {/* Imagen del producto */}
             <div className="relative overflow-hidden bg-gray-50 w-full aspect-square">
                 <img
-                    src={`/api/items/media/${product.image}`}
+                    src={`/storage/images/item/${product.image}`}
                     alt={product?.name || "Producto"}
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

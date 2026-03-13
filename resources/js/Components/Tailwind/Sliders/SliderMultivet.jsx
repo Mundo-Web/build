@@ -172,7 +172,11 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
     useEffect(() => {
         if (sortedItems[currentSlide]) {
             const currentItem = sortedItems[currentSlide];
-            const imageSrc = `/storage/images/slider/${currentItem.bg_image || "undefined"}`;
+            const isMobile = window.innerWidth < 768;
+            const imageSrc =
+                isMobile && currentItem.bg_image_mobile
+                    ? `/storage/images/slider/${currentItem.bg_image_mobile}`
+                    : `/storage/images/slider/${currentItem.bg_image || "undefined"}`;
             checkImageDarkness(imageSrc);
         }
     }, [currentSlide, sortedItems]);
@@ -255,35 +259,42 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                 : "opacity-0 scale-105 pointer-events-none"
                         }`}
                     >
-                        {/* Background Images */}
+                        {/* Background Images - Optimized with <picture> to avoid double download */}
                         <AnimatePresence>
                             {currentSlide === index && (
-                                <>
-                                    {/* Desktop Image */}
-                                    <motion.img
-                                        key={`image-desktop-${index}`}
-                                        src={`/storage/images/slider/${slide?.bg_image || "undefined"}`}
-                                        alt={slide?.name}
-                                        loading="lazy"
-                                        className={`hidden md:block absolute top-0 left-0 h-full w-full object-cover ${data?.imageBgPosition || "object-center"} z-0`}
-                                        variants={imageVariants}
-                                        initial="initial"
-                                        animate="animate"
-                                        exit="exit"
-                                    />
-                                    {/* Mobile Image */}
-                                    <motion.img
-                                        key={`image-mobile-${index}`}
-                                        src={`/storage/images/slider/${slide?.bg_image_mobile || slide?.bg_image || "undefined"}`}
-                                        alt={slide?.name}
-                                        loading="lazy"
-                                        className={`block md:hidden absolute top-0 left-0 h-full w-full object-cover ${data?.imageBgPosition || "object-center"} z-0`}
-                                        variants={imageVariants}
-                                        initial="initial"
-                                        animate="animate"
-                                        exit="exit"
-                                    />
-                                </>
+                                <motion.div
+                                    key={`image-container-${index}`}
+                                    className="absolute inset-0 z-0 h-full w-full"
+                                    variants={imageVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                >
+                                    <picture>
+                                        {/* Desktop Image Source */}
+                                        <source
+                                            media="(min-width: 768px)"
+                                            srcSet={`/storage/images/slider/${slide?.bg_image}`}
+                                            onError={(e) =>
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
+                                            }
+                                        />
+                                        {/* Mobile Image (also serves as fallback) */}
+                                        <img
+                                            src={`/storage/images/slider/${slide?.bg_image_mobile || slide?.bg_image}`}
+                                            alt={slide?.name}
+                                            loading={
+                                                index === 0 ? "eager" : "lazy"
+                                            }
+                                            onError={(e) =>
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
+                                            }
+                                            className={`h-full w-full object-cover ${data?.imageBgPosition || "object-center"}`}
+                                        />
+                                    </picture>
+                                </motion.div>
                             )}
                         </AnimatePresence>
 
@@ -339,13 +350,13 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                         {/* Content */}
                         {index === currentSlide && (
                             <div
-                                className={`relative text-shadow-none z-10 h-full flex items-center ${data?.class_content_slider}`}
+                                className={`relative text-shadow-none z-10 h-full flex  ${data?.class_content_slider}`}
                             >
                                 <div
-                                    className={`w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto ${data?.class_container}`}
+                                    className={`w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto`}
                                 >
                                     <div
-                                        className={`grid lg:grid-cols-1 gap-12 items-center h-full ${data?.class_container_slider}`}
+                                        className={`flex gap-12  items-center min-h-max pt-16 lg:pt-0  ${data?.class_container_slider}`}
                                     >
                                         {/* Text Content */}
                                         <AnimatePresence mode="wait">
